@@ -12,7 +12,6 @@ import dagger.Provides;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TransientApiSessionManager;
 import is.hello.sense.util.Logger;
-import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.android.AndroidApacheClient;
 import retrofit.converter.JacksonConverter;
@@ -37,8 +36,7 @@ public class ApiModule {
     }
 
     @Provides ObjectMapper provideObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper;
+        return new ObjectMapper();
     }
 
     @Singleton @Provides RestAdapter provideRestAdapter(@NonNull ObjectMapper mapper, @NonNull final ApiSessionManager sessionManager) {
@@ -47,12 +45,9 @@ public class ApiModule {
         builder.setConverter(new JacksonConverter(mapper));
         builder.setEndpoint(ApiService.BASE_URL);
         builder.setLog(Logger.RETROFIT_LOGGER);
-        builder.setRequestInterceptor(new RequestInterceptor() {
-            @Override
-            public void intercept(RequestFacade request) {
-                if (sessionManager.hasSession())
-                    request.addHeader("Authorization", "Bearer " + sessionManager.getAccessToken());
-            }
+        builder.setRequestInterceptor(request -> {
+            if (sessionManager.hasSession())
+                request.addHeader("Authorization", "Bearer " + sessionManager.getAccessToken());
         });
         return builder.build();
     }

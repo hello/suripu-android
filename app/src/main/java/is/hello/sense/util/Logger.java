@@ -71,12 +71,7 @@ public class Logger {
         return clazz.getSimpleName();
     }
 
-    public static final RestAdapter.Log RETROFIT_LOGGER = new RestAdapter.Log() {
-        @Override
-        public void log(String message) {
-            Logger.info("Retrofit", message);
-        }
-    };
+    public static final RestAdapter.Log RETROFIT_LOGGER = message -> Logger.info("Retrofit", message);
 
     //endregion
 }

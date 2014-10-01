@@ -10,9 +10,8 @@ public class TransientApiSessionManager extends ApiSessionManager {
         this.session = session;
     }
 
-    @Nullable
     @Override
-    public OAuthSession getOAuthSession() {
+    public @Nullable OAuthSession getOAuthSession() {
         return this.session;
     }
 }
