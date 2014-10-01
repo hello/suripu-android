@@ -1,12 +1,18 @@
 package is.hello.sense.api;
 
+import android.support.annotation.NonNull;
+
+import java.util.List;
+
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.sessions.OAuthRequest;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.PUT;
+import retrofit.http.Path;
 import rx.Observable;
 
 public interface ApiService {
@@ -33,6 +39,16 @@ public interface ApiService {
 
     @PUT("/account")
     Observable<Account> updateAccount(@Body Account account);
+
+    //endregion
+
+
+    //region Timeline
+
+    @GET("/timeline/{month}-{day}-{year}")
+    Observable<List<Timeline>> timelineForDate(@NonNull @Path("month") String month,
+                                               @NonNull @Path("day") String day,
+                                               @NonNull @Path("year") String year);
 
     //endregion
 }

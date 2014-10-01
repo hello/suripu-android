@@ -2,23 +2,40 @@ package is.hello.sense.api.sessions;
 
 import android.support.annotation.Nullable;
 
+import rx.subjects.ReplaySubject;
+
 public abstract class ApiSessionManager {
+    public final ReplaySubject<OAuthSession> currentSession = ReplaySubject.create(1);
+
+    public ApiSessionManager() {
+        currentSession.onNext(retrieveOAuthSession());
+    }
+
     //region Abstract
 
-    public abstract void setOAuthSession(@Nullable OAuthSession session);
-    public abstract @Nullable OAuthSession getOAuthSession();
+    protected abstract void storeOAuthSession(@Nullable OAuthSession session);
+    protected abstract @Nullable OAuthSession retrieveOAuthSession();
 
     //endregion
 
 
     //region Accessors
 
+    public void setSession(@Nullable OAuthSession session) {
+        storeOAuthSession(session);
+        currentSession.onNext(session);
+    }
+
+    public @Nullable OAuthSession getSession() {
+        return retrieveOAuthSession();
+    }
+
     public boolean hasSession() {
-        return getOAuthSession() != null;
+        return retrieveOAuthSession() != null;
     }
 
     public @Nullable String getAccessToken() {
-        OAuthSession session = getOAuthSession();
+        OAuthSession session = getSession();
         if (session != null) {
             return session.getAccessToken();
         } else {

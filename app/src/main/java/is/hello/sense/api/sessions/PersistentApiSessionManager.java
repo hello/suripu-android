@@ -25,7 +25,7 @@ public class PersistentApiSessionManager extends ApiSessionManager {
     }
 
     @Override
-    public void setOAuthSession(@Nullable OAuthSession session) {
+    protected void storeOAuthSession(@Nullable OAuthSession session) {
         SharedPreferences.Editor editor = preferences.edit();
         if (session != null) {
             try {
@@ -41,7 +41,7 @@ public class PersistentApiSessionManager extends ApiSessionManager {
     }
 
     @Override
-    public @Nullable OAuthSession getOAuthSession() {
+    protected @Nullable OAuthSession retrieveOAuthSession() {
         if (preferences.contains(SESSION_KEY)) {
             String serializedValue = preferences.getString(SESSION_KEY, null);
             try {
