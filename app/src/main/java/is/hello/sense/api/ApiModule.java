@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.api.sessions.TransientApiSessionManager;
+import is.hello.sense.api.sessions.PersistentApiSessionManager;
 import is.hello.sense.util.Logger;
 import retrofit.RestAdapter;
 import retrofit.android.AndroidApacheClient;
@@ -31,11 +31,11 @@ public class ApiModule {
         return applicationContext;
     }
 
-    @Singleton @Provides ApiSessionManager getApiSessionManager() {
-        return new TransientApiSessionManager();
+    @Singleton @Provides ApiSessionManager getApiSessionManager(@NonNull Context context, @NonNull ObjectMapper mapper) {
+        return new PersistentApiSessionManager(context, mapper);
     }
 
-    @Provides ObjectMapper provideObjectMapper() {
+    @Singleton @Provides ObjectMapper provideObjectMapper() {
         return new ObjectMapper();
     }
 
