@@ -18,6 +18,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/COPYING'
+        exclude 'LICENSE'
+    }
 }
 
 dependencies {
@@ -33,6 +40,8 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.4.2'
     compile 'com.fasterxml.jackson.core:jackson-core:2.4.2'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.2'
+
+    compile 'com.android.support:support-v4:20.0.0'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }

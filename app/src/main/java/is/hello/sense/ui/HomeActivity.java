@@ -1,12 +1,26 @@
-package is.hello.sense;
+package is.hello.sense.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import javax.inject.Inject;
 
-public class HomeActivity extends Activity {
+import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
+import is.hello.sense.api.sessions.OAuthRequest;
+import is.hello.sense.api.sessions.OAuthSession;
+import is.hello.sense.ui.common.InjectionActivity;
+import rx.Observable;
+import rx.Observer;
+
+import static rx.android.observables.AndroidObservable.bindActivity;
+
+
+public class HomeActivity extends InjectionActivity {
+
+    @Inject ApiService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
