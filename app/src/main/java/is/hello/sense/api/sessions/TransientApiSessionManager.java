@@ -5,6 +5,10 @@ import android.support.annotation.Nullable;
 public class TransientApiSessionManager extends ApiSessionManager {
     private OAuthSession session;
 
+    public TransientApiSessionManager() {
+        synchronizeState();
+    }
+
     @Override
     protected void storeOAuthSession(@Nullable OAuthSession session) {
         this.session = session;

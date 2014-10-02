@@ -1,0 +1,35 @@
+package is.hello.sense.ui.activities;
+
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+
+import is.hello.sense.R;
+import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.fragments.TemporaryOnboardingFragment;
+
+public class OnboardingActivity extends InjectionActivity {
+    private static final String FRAGMENT_TAG = "OnboardingFragment";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_onboarding);
+
+        if (savedInstanceState == null)
+            showFragment(new TemporaryOnboardingFragment());
+    }
+
+
+    private void showFragment(@NonNull Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
+            transaction.add(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
+        } else {
+            transaction.replace(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
+        }
+        transaction.commit();
+    }
+}

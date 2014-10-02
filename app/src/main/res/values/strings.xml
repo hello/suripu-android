@@ -4,5 +4,11 @@
     <string name="app_name">Sense</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
+    <string name="button_sign_in">Sign In</string>
+
+    <string name="dialog_error_title">An Error Occurred</string>
+    <string name="dialog_error_generic_message">An unknown error has occurred.</string>
 
 </resources>

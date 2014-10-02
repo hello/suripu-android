@@ -10,12 +10,12 @@ import java.io.OutputStream;
 import is.hello.sense.api.ApiService;
 import retrofit.mime.TypedOutput;
 
-public class OAuthRequest implements TypedOutput {
+public class OAuthCredentials implements TypedOutput {
     public final String username;
     public final String password;
     private final ByteArrayOutputStream outputStream;
 
-    public OAuthRequest(@NonNull String username, @NonNull String password) {
+    public OAuthCredentials(@NonNull String username, @NonNull String password) {
         this.username = username;
         this.password = password;
         this.outputStream = new ByteArrayOutputStream();

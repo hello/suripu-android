@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="@dimen/activity_margin">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_large"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.Heading"
+            android:text="@string/button_sign_in"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_small"
+            android:textAppearance="@style/AppTheme.Text.FieldLabel"
+            android:text="@string/label_email" />
+
+        <EditText
+            android:id="@+id/fragment_temporary_onboarding_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_medium"
+            android:inputType="textEmailAddress"
+            android:textAppearance="@style/AppTheme.Text.EditText"
+            android:nextFocusForward="@+id/fragment_temporary_onboarding_password"
+            android:hint="@string/label_email"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_small"
+            android:textAppearance="@style/AppTheme.Text.FieldLabel"
+            android:text="@string/label_password" />
+
+        <EditText
+            android:id="@+id/fragment_temporary_onboarding_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_large"
+            android:inputType="textPassword"
+            android:textAppearance="@style/AppTheme.Text.EditText"
+            android:hint="@string/label_password"/>
+
+        <Button
+            android:id="@+id/fragment_temporary_onboarding_sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_sign_in"/>
+
+    </LinearLayout>
+
+</ScrollView>

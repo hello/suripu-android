@@ -6,7 +6,7 @@ import java.util.List;
 
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Timeline;
-import is.hello.sense.api.sessions.OAuthRequest;
+import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
 import retrofit.http.GET;
@@ -24,7 +24,7 @@ public interface ApiService {
     //region OAuth
 
     @POST("/oauth2/token")
-    Observable<OAuthSession> authorize(@Body OAuthRequest request);
+    Observable<OAuthSession> authorize(@Body OAuthCredentials request);
 
     //endregion
 

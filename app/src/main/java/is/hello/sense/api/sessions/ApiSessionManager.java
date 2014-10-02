@@ -7,14 +7,13 @@ import rx.subjects.ReplaySubject;
 public abstract class ApiSessionManager {
     public final ReplaySubject<OAuthSession> currentSession = ReplaySubject.create(1);
 
-    public ApiSessionManager() {
-        currentSession.onNext(retrieveOAuthSession());
-    }
-
     //region Abstract
 
     protected abstract void storeOAuthSession(@Nullable OAuthSession session);
     protected abstract @Nullable OAuthSession retrieveOAuthSession();
+    protected void synchronizeState() {
+        currentSession.onNext(retrieveOAuthSession());
+    }
 
     //endregion
 
@@ -23,7 +22,7 @@ public abstract class ApiSessionManager {
 
     public void setSession(@Nullable OAuthSession session) {
         storeOAuthSession(session);
-        currentSession.onNext(session);
+        synchronizeState();
     }
 
     public @Nullable OAuthSession getSession() {
