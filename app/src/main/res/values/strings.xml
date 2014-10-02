@@ -12,4 +12,9 @@
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
     <string name="dialog_loading_message">Loading…</string>
 
+    <string name="format_date">MMMM d</string>
+    <string name="format_time">hh:mm a</string>
+    <string name="format_date_placeholder">Unknown</string>
+    <string name="format_date_last_night">Last Night</string>
+
 </resources>

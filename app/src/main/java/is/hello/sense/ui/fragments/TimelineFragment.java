@@ -19,6 +19,7 @@ import is.hello.sense.api.model.TimelineDate;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.bindFragment;
@@ -31,6 +32,7 @@ public class TimelineFragment extends InjectionFragment {
     private TextView messageText;
 
     @Inject ApiService apiService;
+    @Inject DateFormatter dateFormatter;
 
     private TimelinePresenter presenter;
 
@@ -78,7 +80,7 @@ public class TimelineFragment extends InjectionFragment {
 
     public void bindData(@NonNull List<Timeline> data) {
         Timeline now = data.get(0);
-        dateText.setText(now.getDate());
+        dateText.setText(dateFormatter.formatAsTimelineDate(now.getDate()));
         scoreText.setText(Long.toString(now.getScore()));
         messageText.setText(now.getMessage());
     }

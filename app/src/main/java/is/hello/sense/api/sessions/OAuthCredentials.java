@@ -2,6 +2,7 @@ package is.hello.sense.api.sessions;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,6 +17,12 @@ public class OAuthCredentials implements TypedOutput {
     private final ByteArrayOutputStream outputStream;
 
     public OAuthCredentials(@NonNull String username, @NonNull String password) {
+        if (TextUtils.isEmpty(username))
+            throw new IllegalArgumentException("username cannot be omitted");
+
+        if (TextUtils.isEmpty(password))
+            throw new IllegalArgumentException("password cannot be omitted");
+
         this.username = username;
         this.password = password;
         this.outputStream = new ByteArrayOutputStream();

@@ -2,7 +2,7 @@ package is.hello.sense.api.model;
 
 import junit.framework.TestCase;
 
-import static is.hello.sense.TestUtils.assertThrows;
+import static is.hello.sense.AssertExtensions.assertThrows;
 
 public class TimelineDateTests extends TestCase {
     public void testToday() {

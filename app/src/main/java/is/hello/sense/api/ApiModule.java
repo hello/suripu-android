@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import javax.inject.Singleton;
 
@@ -37,7 +38,9 @@ public class ApiModule {
     }
 
     @Singleton @Provides ObjectMapper provideObjectMapper() {
-        return new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JodaModule());
+        return mapper;
     }
 
     @Singleton @Provides RestAdapter provideRestAdapter(@NonNull ObjectMapper mapper,

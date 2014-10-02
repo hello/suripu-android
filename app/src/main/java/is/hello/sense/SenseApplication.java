@@ -21,7 +21,7 @@ public class SenseApplication extends Application {
         super.onCreate();
 
         HelloBle.init(this);
-        this.graph = ObjectGraph.create(new ApiModule(this), new SenseAppModule());
+        this.graph = ObjectGraph.create(new ApiModule(this), new SenseAppModule(this));
 
         instance = this;
     }

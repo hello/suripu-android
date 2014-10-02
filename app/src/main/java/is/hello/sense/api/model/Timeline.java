@@ -1,7 +1,10 @@
 package is.hello.sense.api.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import org.joda.time.DateTime;
 
 import java.util.List;
 
@@ -13,7 +16,8 @@ public class Timeline extends ApiResponse {
     private String message;
 
     @JsonProperty("date")
-    private String date; //mm-dd-yyyy
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "M-d-yy")
+    private DateTime date;
 
     @JsonProperty("segments")
     @JsonDeserialize(contentAs = TimelineSegment.class)
@@ -28,7 +32,7 @@ public class Timeline extends ApiResponse {
         return message;
     }
 
-    public String getDate() {
+    public DateTime getDate() {
         return date;
     }
 
