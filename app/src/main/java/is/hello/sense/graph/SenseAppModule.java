@@ -9,7 +9,7 @@ import is.hello.sense.ui.fragments.TemporaryOnboardingFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 
 @Module(
-    includes = ApiModule.class,
+    includes = {ApiModule.class},
     injects = {
         LaunchActivity.class,
         HomeActivity.class,

@@ -27,7 +27,7 @@ public class ApiModule {
         this.applicationContext = applicationContext.getApplicationContext();
     }
 
-    @Provides Context providesApplicationContext() {
+    @Provides Context providesApiApplicationContext() {
         return applicationContext;
     }
 
