@@ -16,7 +16,7 @@ public class Timeline extends ApiResponse {
     private String message;
 
     @JsonProperty("date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "M-d-yy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-M-d")
     private DateTime date;
 
     @JsonProperty("segments")

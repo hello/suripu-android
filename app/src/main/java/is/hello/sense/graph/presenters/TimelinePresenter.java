@@ -28,7 +28,7 @@ public class TimelinePresenter implements Presenter {
     public void update() {
         Observable<List<Timeline>> update = service.timelineForDate(date.monthOfYear().getAsString(),
                                                                     date.dayOfMonth().getAsString(),
-                                                                    date.yearOfCentury().getAsString());
+                                                                    date.year().getAsString());
         update.subscribe(timeline::onNext, timeline::onError);
     }
 }

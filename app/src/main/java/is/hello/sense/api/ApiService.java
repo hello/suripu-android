@@ -48,10 +48,10 @@ public interface ApiService {
 
     //region Timeline
 
-    @GET("/timeline/{month}-{day}-{year}")
-    Observable<List<Timeline>> timelineForDate(@NonNull @Path("month") String month,
-                                               @NonNull @Path("day") String day,
-                                               @NonNull @Path("year") String year);
+    @GET("/timeline/{year}-{month}-{day}")
+    Observable<List<Timeline>> timelineForDate(@NonNull @Path("year") String year,
+                                               @NonNull @Path("month") String month,
+                                               @NonNull @Path("day") String day);
 
     //endregion
 
