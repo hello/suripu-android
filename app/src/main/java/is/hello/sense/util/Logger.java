@@ -16,10 +16,6 @@ public class Logger {
     //region Primitive
 
     public static int println(int priority, @NonNull String tag, @NonNull String message) {
-        if (priority < MAX_PRIOIRTY) {
-            return 0;
-        }
-
         return Log.println(priority, tag, message);
     }
 

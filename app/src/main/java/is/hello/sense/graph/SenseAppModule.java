@@ -6,6 +6,7 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.TemporaryOnboardingFragment;
+import is.hello.sense.ui.fragments.TimelineFragment;
 
 @Module(
     includes = ApiModule.class,
@@ -14,6 +15,7 @@ import is.hello.sense.ui.fragments.TemporaryOnboardingFragment;
         HomeActivity.class,
         OnboardingActivity.class,
         TemporaryOnboardingFragment.class,
+        TimelineFragment.class,
     }
 )
 public class SenseAppModule {

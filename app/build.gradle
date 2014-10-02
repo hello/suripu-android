@@ -20,6 +20,8 @@ android {
         targetSdkVersion 20
         versionCode 1
         versionName "1.0"
+
+        testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
     buildTypes {
         release {
@@ -37,6 +39,7 @@ android {
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/COPYING'
         exclude 'LICENSE'
+        exclude 'LICENSE.txt'
     }
 }
 
@@ -66,4 +69,9 @@ dependencies {
     compile 'com.android.support:support-v4:20.0.0'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    androidTestCompile ('com.jakewharton.espresso:espresso:1.1-r3') {
+        exclude group: 'com.squareup.dagger', module: 'dagger'
+        exclude group: 'org.hamcrest', module: 'hamcrest-integration'
+    }
 }

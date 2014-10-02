@@ -4,6 +4,10 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <instrumentation
+        android:name="com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
+        android:targetPackage="is.hello.sense" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"

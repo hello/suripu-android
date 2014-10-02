@@ -7,6 +7,10 @@
         <item name="android:textSize">@dimen/text_size_large</item>
     </style>
 
+    <style name="AppTheme.Text.Body">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+    </style>
+
     <style name="AppTheme.Text.FieldLabel">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/text_size_medium</item>

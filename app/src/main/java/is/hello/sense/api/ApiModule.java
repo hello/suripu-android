@@ -44,7 +44,8 @@ public class ApiModule {
         builder.setClient(new AndroidApacheClient());
         builder.setConverter(new JacksonConverter(mapper));
         builder.setEndpoint(ApiService.BASE_URL);
-        builder.setLog(Logger.RETROFIT_LOGGER);
+        builder.setLogLevel(RestAdapter.LogLevel.FULL);
+        //builder.setLog(Logger.RETROFIT_LOGGER);
         builder.setRequestInterceptor(request -> {
             if (sessionManager.hasSession())
                 request.addHeader("Authorization", "Bearer " + sessionManager.getAccessToken());
