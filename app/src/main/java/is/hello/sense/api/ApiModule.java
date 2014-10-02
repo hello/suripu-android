@@ -27,11 +27,12 @@ public class ApiModule {
         this.applicationContext = applicationContext.getApplicationContext();
     }
 
-    @Provides Context providesApplicationContext() {
+    @Provides @ApiAppContext Context providesApiApplicationContext() {
         return applicationContext;
     }
 
-    @Singleton @Provides ApiSessionManager getApiSessionManager(@NonNull Context context, @NonNull ObjectMapper mapper) {
+    @Singleton @Provides ApiSessionManager getApiSessionManager(@NonNull @ApiAppContext Context context,
+                                                                @NonNull ObjectMapper mapper) {
         return new PersistentApiSessionManager(context, mapper);
     }
 
@@ -39,13 +40,14 @@ public class ApiModule {
         return new ObjectMapper();
     }
 
-    @Singleton @Provides RestAdapter provideRestAdapter(@NonNull ObjectMapper mapper, @NonNull final ApiSessionManager sessionManager) {
+    @Singleton @Provides RestAdapter provideRestAdapter(@NonNull ObjectMapper mapper,
+                                                        @NonNull final ApiSessionManager sessionManager) {
         RestAdapter.Builder builder = new RestAdapter.Builder();
         builder.setClient(new AndroidApacheClient());
         builder.setConverter(new JacksonConverter(mapper));
         builder.setEndpoint(ApiService.BASE_URL);
         builder.setLogLevel(RestAdapter.LogLevel.FULL);
-        //builder.setLog(Logger.RETROFIT_LOGGER);
+        builder.setLog(Logger.RETROFIT_LOGGER);
         builder.setRequestInterceptor(request -> {
             if (sessionManager.hasSession())
                 request.addHeader("Authorization", "Bearer " + sessionManager.getAccessToken());

@@ -16,6 +16,9 @@ public class Logger {
     //region Primitive
 
     public static int println(int priority, @NonNull String tag, @NonNull String message) {
+        if (priority > MAX_PRIOIRTY)
+            return 0;
+
         return Log.println(priority, tag, message);
     }
 
@@ -31,6 +34,15 @@ public class Logger {
 
 
     //region Printing
+
+    public static int debug(@NonNull String tag, @NonNull String message, @Nullable Throwable e) {
+        return println(Log.DEBUG, tag, formatMessage(message, e));
+    }
+
+    public static int debug(@NonNull String tag, @NonNull String message) {
+        return debug(tag, message, null);
+    }
+
 
     public static int info(@NonNull String tag, @NonNull String message, @Nullable Throwable e) {
         return println(Log.INFO, tag, formatMessage(message, e));
