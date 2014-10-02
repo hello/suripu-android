@@ -10,5 +10,6 @@
 
     <string name="dialog_error_title">An Error Occurred</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
+    <string name="dialog_loading_message">Loading…</string>
 
 </resources>

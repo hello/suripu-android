@@ -20,6 +20,7 @@ import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
@@ -31,7 +32,6 @@ public class TemporaryOnboardingFragment extends InjectionFragment {
 
     private EditText email;
     private EditText password;
-    private Button signInButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -39,7 +39,8 @@ public class TemporaryOnboardingFragment extends InjectionFragment {
 
         this.email = (EditText) view.findViewById(R.id.fragment_temporary_onboarding_email);
         this.password = (EditText) view.findViewById(R.id.fragment_temporary_onboarding_password);
-        this.signInButton = (Button) view.findViewById(R.id.fragment_temporary_onboarding_sign_in);
+
+        Button signInButton = (Button) view.findViewById(R.id.fragment_temporary_onboarding_sign_in);
         signInButton.setOnClickListener(this::signIn);
 
         return view;
@@ -52,7 +53,7 @@ public class TemporaryOnboardingFragment extends InjectionFragment {
     }
 
     public void signIn(@NonNull View sender) {
-        signInButton.setEnabled(false);
+        LoadingDialogFragment.show(getFragmentManager());
 
         OAuthCredentials credentials = new OAuthCredentials(email.getText().toString(), password.getText().toString());
         Observable<OAuthSession> request = bindFragment(this, apiService.authorize(credentials));
@@ -60,7 +61,7 @@ public class TemporaryOnboardingFragment extends InjectionFragment {
             apiSessionManager.setSession(session);
             showHomeActivity();
         }, error -> {
-            signInButton.setEnabled(true);
+            LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getFragmentManager(), error);
         });
     }
