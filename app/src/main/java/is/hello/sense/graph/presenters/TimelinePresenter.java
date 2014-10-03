@@ -26,9 +26,9 @@ public class TimelinePresenter implements Presenter {
 
     @Override
     public void update() {
-        Observable<List<Timeline>> update = service.timelineForDate(date.monthOfYear().getAsString(),
-                                                                    date.dayOfMonth().getAsString(),
-                                                                    date.year().getAsString());
+        Observable<List<Timeline>> update = service.timelineForDate(date.year().getAsString(),
+                                                                    date.monthOfYear().getAsString(),
+                                                                    date.dayOfMonth().getAsString());
         update.subscribe(timeline::onNext, timeline::onError);
     }
 }

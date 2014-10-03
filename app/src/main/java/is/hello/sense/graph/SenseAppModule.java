@@ -12,6 +12,7 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.fragments.TemporaryOnboardingFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.widget.SegmentView;
 
 @Module(
     includes = {ApiModule.class},
@@ -19,9 +20,13 @@ import is.hello.sense.ui.fragments.TimelineFragment;
         LaunchActivity.class,
         HomeActivity.class,
         OnboardingActivity.class,
+
         TemporaryOnboardingFragment.class,
         TimelineFragment.class,
+
         TimelineSegmentAdapter.class,
+
+        SegmentView.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

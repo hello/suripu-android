@@ -11,6 +11,7 @@ import java.util.List;
 
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.TimelineSegment;
+import is.hello.sense.ui.widget.SegmentView;
 
 public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     public TimelineSegmentAdapter(@NonNull Context context) {
@@ -33,6 +34,14 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return super.getView(position, convertView, parent);
+        SegmentView view = (SegmentView) convertView;
+        if (view == null) {
+            view = new SegmentView(getContext());
+        }
+
+        TimelineSegment segment = getItem(position);
+        view.displaySegment(segment);
+
+        return view;
     }
 }

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/activity_margin"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/fragment_timeline_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:text="@string/app_name"/>
+
+    <is.hello.sense.ui.widget.PieGraphView
+        android:id="@+id/fragment_timeline_sleep_score_chart"
+        android:layout_width="@dimen/grand_sleep_summary_height"
+        android:layout_height="@dimen/grand_sleep_summary_width"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_gravity="center"
+        app:maxValue="100"
+        app:value="50"
+        app:fillColor="@color/sleep_light">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/fragment_timeline_sleep_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textAppearance="@style/AppTheme.Text.BigScore"
+                android:text="@string/mock_score"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textAppearance="@style/AppTheme.Text.BigScore.Details"
+                android:text="@string/sleep_score"/>
+
+        </LinearLayout>
+
+    </is.hello.sense.ui.widget.PieGraphView>
+
+    <TextView
+        android:id="@+id/fragment_timeline_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:text="@string/app_name"/>
+
+</LinearLayout>

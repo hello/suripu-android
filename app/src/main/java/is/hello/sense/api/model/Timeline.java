@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Timeline extends ApiResponse {
     @JsonProperty("score")
-    private long score;
+    private int score;
 
     @JsonProperty("message")
     private String message;
@@ -24,7 +24,7 @@ public class Timeline extends ApiResponse {
     private List<TimelineSegment> segments;
 
 
-    public long getScore() {
+    public int getScore() {
         return score;
     }
 

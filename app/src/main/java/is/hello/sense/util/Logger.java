@@ -11,14 +11,9 @@ import retrofit.RestAdapter;
  * class to allow uploading of logs to services.
  */
 public class Logger {
-    public static int MAX_PRIOIRTY = Log.VERBOSE;
-
     //region Primitive
 
     public static int println(int priority, @NonNull String tag, @NonNull String message) {
-        if (priority > MAX_PRIOIRTY)
-            return 0;
-
         return Log.println(priority, tag, message);
     }
 
@@ -49,7 +44,7 @@ public class Logger {
     }
 
     public static int info(@NonNull String tag, @NonNull String message) {
-        return warn(tag, message, null);
+        return info(tag, message, null);
     }
 
 
@@ -79,7 +74,7 @@ public class Logger {
         return clazz.getSimpleName();
     }
 
-    public static final RestAdapter.Log RETROFIT_LOGGER = message -> Logger.info("Retrofit", message);
+    public static final RestAdapter.Log RETROFIT_LOGGER = message -> Logger.debug("Retrofit", message);
 
     //endregion
 }

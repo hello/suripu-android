@@ -13,8 +13,10 @@
     <string name="dialog_loading_message">Loading…</string>
 
     <string name="format_date">MMMM d</string>
-    <string name="format_time">hh:mm a</string>
+    <string name="format_time">h:mm a</string>
     <string name="format_date_placeholder">Unknown</string>
     <string name="format_date_last_night">Last Night</string>
+    <string name="event_type_content_description">Event Type</string>
+    <string name="sleep_score">Sleep Score</string>
 
 </resources>

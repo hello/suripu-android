@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mock_event_type">Light disturbance</string>
+    <string name="mock_event_message">There was a disturbance for 2 minutes</string>
+    <string name="mock_time">8:35 PM</string>
+    <string name="mock_score">50</string>
+</resources>

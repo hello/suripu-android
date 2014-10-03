@@ -2,9 +2,25 @@
 <resources>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
+    <color name="grey">#515151</color>
     <color name="transparent">#00FFFFFF</color>
     
     <color name="background_button_normal">#eaeaea</color>
     <color name="background_button_pressed">#d5d5d5</color>
     <color name="background_button_disabled">#88eaeaea</color>
+
+    <color name="timeline_border">#919191</color>
+
+    <color name="sleep_score_high">#5dcc51</color>
+    <color name="sleep_score_average">#f1e57f</color>
+    <color name="sleep_score_bad">#cc5651</color>
+
+    <color name="sensor_alert">#f47b1f</color>
+    <color name="sensor_warning">#f43821</color>
+    <color name="sensor_ideal">#44d774</color>
+
+    <color name="sleep_light">#6aacfb</color>
+    <color name="sleep_intermediate">#4d95ef</color>
+    <color name="sleep_deep">#276ed9</color>
+    <color name="sleep_awake">#515acc</color>
 </resources>

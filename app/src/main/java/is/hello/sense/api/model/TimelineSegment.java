@@ -23,7 +23,7 @@ public class TimelineSegment extends ApiResponse {
     private List<TimelineSensor> sensors;
 
     @JsonProperty("sleep_depth")
-    private long sleepDepth;
+    private int sleepDepth;
 
     @JsonProperty("event_type")
     private String eventType;
@@ -52,7 +52,7 @@ public class TimelineSegment extends ApiResponse {
         return sensors;
     }
 
-    public long getSleepDepth() {
+    public int getSleepDepth() {
         return sleepDepth;
     }
 

@@ -2,6 +2,18 @@
 <resources>
     <style name="AppTheme.Text" parent="android:TextAppearance" />
 
+    <style name="AppTheme.Text.BigScore">
+        <item name="android:textSize">96sp</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+    </style>
+
+    <style name="AppTheme.Text.BigScore.Details">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
     <style name="AppTheme.Text.Heading">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/text_size_large</item>
