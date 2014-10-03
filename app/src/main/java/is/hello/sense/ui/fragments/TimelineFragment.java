@@ -34,6 +34,10 @@ public class TimelineFragment extends InjectionFragment {
     private TextView scoreText;
     private TextView messageText;
 
+    private TextView averageTemperature;
+    private TextView averageHumidity;
+    private TextView averageParticulates;
+
     @Inject ApiService apiService;
     @Inject DateFormatter dateFormatter;
 
@@ -80,6 +84,15 @@ public class TimelineFragment extends InjectionFragment {
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
 
         listView.addHeaderView(headerView, null, false);
+
+
+        View conditionsView = inflater.inflate(R.layout.sub_fragment_average_conditions, listView, false);
+
+        this.averageTemperature = (TextView) conditionsView.findViewById(R.id.fragment_timeline_average_temp);
+        this.averageHumidity = (TextView) conditionsView.findViewById(R.id.fragment_timeline_average_humidity);
+        this.averageParticulates = (TextView) conditionsView.findViewById(R.id.fragment_timeline_average_dust);
+
+        listView.addHeaderView(conditionsView, null, false);
 
         return view;
     }

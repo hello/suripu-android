@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="@dimen/gap_medium">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/gap_small"
+        android:src="@drawable/temperature_dark_icon"
+        android:contentDescription="@string/condition_temperature"/>
+
+    <TextView
+        android:id="@+id/fragment_timeline_average_temp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="@style/AppTheme.Text.Condition"
+        android:gravity="center"
+        android:text="@string/mock_temperature"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/gap_small"
+        android:layout_marginEnd="@dimen/gap_small"
+        android:src="@drawable/humidity_dark_icon"
+        android:contentDescription="@string/condition_humidity"/>
+
+    <TextView
+        android:id="@+id/fragment_timeline_average_humidity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="@style/AppTheme.Text.Condition"
+        android:gravity="center"
+        android:text="@string/mock_humidity"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/gap_small"
+        android:layout_marginEnd="@dimen/gap_small"
+        android:src="@drawable/particle_dark_icon"
+        android:contentDescription="@string/condition_particulates"/>
+
+    <TextView
+        android:id="@+id/fragment_timeline_average_dust"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="@style/AppTheme.Text.Condition"
+        android:gravity="center"
+        android:text="@string/mock_particulates"/>
+
+</LinearLayout>
