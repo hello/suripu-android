@@ -15,14 +15,11 @@ import android.widget.TextView;
 import org.joda.time.DateTime;
 import org.markdownj.MarkdownProcessor;
 
-import java.util.HashMap;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Timeline;
-import is.hello.sense.api.model.TimelineSensor;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -121,8 +118,7 @@ public class TimelineFragment extends InjectionFragment {
             String rawMessage = timeline.getMessage();
             String markdown = MARKDOWN.markdown(rawMessage);
             Spanned html = Html.fromHtml(markdown);
-            int trimmedLenth = TextUtils.getTrimmedLength(html);
-            return html.subSequence(0, trimmedLenth);
+            return html.subSequence(0, TextUtils.getTrimmedLength(html));
         }));
         renderedMessage.subscribe(messageText::setText);
     }
