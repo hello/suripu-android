@@ -3,6 +3,8 @@ package is.hello.sense.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +12,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
+import org.markdownj.MarkdownProcessor;
+
+import java.util.HashMap;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.TimelineSensor;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -28,6 +34,7 @@ import static rx.android.observables.AndroidObservable.bindFragment;
 
 public class TimelineFragment extends InjectionFragment {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
+    private static final MarkdownProcessor MARKDOWN = new MarkdownProcessor();
 
     private PieGraphView scoreGraph;
     private TextView dateText;
@@ -101,18 +108,50 @@ public class TimelineFragment extends InjectionFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Timeline> timeline = bindFragment(this, presenter.timeline).filter(l -> !l.isEmpty())
-                                                                              .map(l -> l.get(0));
-        timeline.subscribe(this::bindData, this::presentError);
-        timeline.map(Timeline::getSegments)
-                .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError);
+        Observable<Timeline> mainTimeline = presenter.timeline.filter(timelines -> !timelines.isEmpty())
+                                                              .map(timelines -> timelines.get(0));
+
+        Observable<Timeline> boundMainTimeline = bindFragment(this, mainTimeline);
+        boundMainTimeline.subscribe(this::bindSummary, this::presentError);
+        boundMainTimeline.map(Timeline::getSegments)
+                         .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError);
+
+        Observable<Spanned> renderedMessage = bindFragment(this, mainTimeline.map(Timeline::getMessage)
+                                                                             .map(MARKDOWN::markdown)
+                                                                             .map(Html::fromHtml));
+        renderedMessage.subscribe(messageText::setText);
+
+        Observable<HashMap<String, TimelineSensor>> averageSensors = bindFragment(this, mainTimeline.map(Timeline::calculateAverageSensorReadings));
+        averageSensors.subscribe(this::bindAverages);
     }
 
-    public void bindData(@NonNull Timeline timeline) {
+    public void bindSummary(@NonNull Timeline timeline) {
         dateText.setText(dateFormatter.formatAsTimelineDate(timeline.getDate()));
         scoreText.setText(Long.toString(timeline.getScore()));
         scoreGraph.showSleepScore(timeline.getScore());
-        messageText.setText(timeline.getMessage());
+    }
+
+    public void bindAverages(@NonNull HashMap<String, TimelineSensor> averages) {
+        TimelineSensor temperature = averages.get(TimelineSensor.NAME_TEMPERATURE);
+        if (temperature != null) {
+            averageTemperature.setText(temperature.getValue() + temperature.getUnit());
+        } else {
+            averageTemperature.setText(R.string.missing_data_placeholder);
+        }
+
+        TimelineSensor humidity = averages.get(TimelineSensor.NAME_HUMIDITY);
+        if (humidity != null) {
+            averageHumidity.setText(humidity.getValue() + humidity.getUnit());
+        } else {
+            averageHumidity.setText(R.string.missing_data_placeholder);
+        }
+
+        TimelineSensor particulates = averages.get(TimelineSensor.NAME_PARTICULATES);
+        if (particulates != null) {
+            averageParticulates.setText(particulates.getValue() + particulates.getUnit());
+        } else {
+            averageParticulates.setText(R.string.missing_data_placeholder);
+        }
     }
 
     public void presentError(Throwable e) {

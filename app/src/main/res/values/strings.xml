@@ -16,13 +16,13 @@
     <string name="format_time">h:mm a</string>
     <string name="format_date_placeholder">Unknown</string>
     <string name="format_date_last_night">Last Night</string>
+
     <string name="event_type_content_description">Event Type</string>
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>
     <string name="condition_humidity">Humidity</string>
     <string name="condition_particulates">Particulates</string>
-    <string name="mock_temperature">64º</string>
-    <string name="mock_humidity">61%</string>
-    <string name="mock_particulates">410</string>
+
+    <string name="missing_data_placeholder">--</string>
 
 </resources>

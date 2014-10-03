@@ -3,21 +3,37 @@ package is.hello.sense.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TimelineSensor extends ApiResponse {
+    public static final String NAME_TEMPERATURE = "temperature";
+    public static final String NAME_HUMIDITY = "humidity";
+    public static final String NAME_PARTICULATES = "particulates";
+
     @JsonProperty("name")
     private String name;
 
     @JsonProperty("value")
-    private String value;
+    private long value;
 
     @JsonProperty("unit")
     private String unit;
 
 
+    void setName(String name) {
+        this.name = name;
+    }
+
+    void setValue(long value) {
+        this.value = value;
+    }
+
+    void setUnit(String unit) {
+        this.unit = unit;
+    }
+
     public String getName() {
         return name;
     }
 
-    public String getValue() {
+    public long getValue() {
         return value;
     }
 

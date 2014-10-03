@@ -86,6 +86,7 @@
     <orderEntry type="library" exported="" name="jackson-databind-2.4.2" level="project" />
     <orderEntry type="library" exported="" name="jackson-datatype-joda-2.4.2" level="project" />
     <orderEntry type="library" exported="" name="support-v4-20.0.0" level="project" />
+    <orderEntry type="library" exported="" name="markdownj-core-0.5" level="project" />
     <orderEntry type="library" exported="" name="dagger-compiler-1.2.2" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="javax.annotation-api-1.2" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
