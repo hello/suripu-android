@@ -4,7 +4,9 @@
     <color name="black">#000000</color>
     <color name="grey">#515151</color>
     <color name="transparent">#00FFFFFF</color>
-    
+
+    <color name="background">#f0f0f0</color>
+
     <color name="background_button_normal">#eaeaea</color>
     <color name="background_button_pressed">#d5d5d5</color>
     <color name="background_button_disabled">#88eaeaea</color>

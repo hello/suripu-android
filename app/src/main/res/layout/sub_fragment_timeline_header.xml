@@ -14,7 +14,7 @@
         android:layout_marginBottom="@dimen/gap_medium"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body"
-        android:text="@string/app_name"/>
+        android:text="@string/format_date_last_night"/>
 
     <is.hello.sense.ui.widget.PieGraphView
         android:id="@+id/fragment_timeline_sleep_score_chart"
@@ -23,7 +23,7 @@
         android:layout_marginBottom="@dimen/gap_medium"
         android:layout_gravity="center"
         app:maxValue="100"
-        app:value="50"
+        app:value="0"
         app:fillColor="@color/sleep_light">
 
         <LinearLayout
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textAppearance="@style/AppTheme.Text.BigScore"
-                android:text="@string/mock_score"/>
+                android:text="@string/missing_data_placeholder"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -53,9 +53,10 @@
 
     <TextView
         android:id="@+id/fragment_timeline_message"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/grand_sleep_summary_width"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body"
-        android:text="@string/app_name"/>
+        android:text="@string/missing_data_placeholder"/>
 
 </LinearLayout>

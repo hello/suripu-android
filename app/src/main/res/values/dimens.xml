@@ -11,6 +11,8 @@
     <dimen name="text_size_large">20sp</dimen>
     <dimen name="text_size_xlarge">30sp</dimen>
 
+    <dimen name="divider_height">1px</dimen> <!-- px is not a typo -->
+
     <dimen name="event_image_width">35dp</dimen>
     <dimen name="event_image_height">35dp</dimen>
 

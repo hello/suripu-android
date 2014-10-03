@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,42 +117,20 @@ public class TimelineFragment extends InjectionFragment {
         boundMainTimeline.map(Timeline::getSegments)
                          .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError);
 
-        Observable<Spanned> renderedMessage = bindFragment(this, mainTimeline.map(Timeline::getMessage)
-                                                                             .map(MARKDOWN::markdown)
-                                                                             .map(Html::fromHtml));
+        Observable<CharSequence> renderedMessage = bindFragment(this, mainTimeline.map(timeline -> {
+            String rawMessage = timeline.getMessage();
+            String markdown = MARKDOWN.markdown(rawMessage);
+            Spanned html = Html.fromHtml(markdown);
+            int trimmedLenth = TextUtils.getTrimmedLength(html);
+            return html.subSequence(0, trimmedLenth);
+        }));
         renderedMessage.subscribe(messageText::setText);
-
-        Observable<HashMap<String, TimelineSensor>> averageSensors = bindFragment(this, mainTimeline.map(Timeline::calculateAverageSensorReadings));
-        averageSensors.subscribe(this::bindAverages);
     }
 
     public void bindSummary(@NonNull Timeline timeline) {
         dateText.setText(dateFormatter.formatAsTimelineDate(timeline.getDate()));
         scoreText.setText(Long.toString(timeline.getScore()));
         scoreGraph.showSleepScore(timeline.getScore());
-    }
-
-    public void bindAverages(@NonNull HashMap<String, TimelineSensor> averages) {
-        TimelineSensor temperature = averages.get(TimelineSensor.NAME_TEMPERATURE);
-        if (temperature != null) {
-            averageTemperature.setText(temperature.getValue() + temperature.getUnit());
-        } else {
-            averageTemperature.setText(R.string.missing_data_placeholder);
-        }
-
-        TimelineSensor humidity = averages.get(TimelineSensor.NAME_HUMIDITY);
-        if (humidity != null) {
-            averageHumidity.setText(humidity.getValue() + humidity.getUnit());
-        } else {
-            averageHumidity.setText(R.string.missing_data_placeholder);
-        }
-
-        TimelineSensor particulates = averages.get(TimelineSensor.NAME_PARTICULATES);
-        if (particulates != null) {
-            averageParticulates.setText(particulates.getValue() + particulates.getUnit());
-        } else {
-            averageParticulates.setText(R.string.missing_data_placeholder);
-        }
     }
 
     public void presentError(Throwable e) {

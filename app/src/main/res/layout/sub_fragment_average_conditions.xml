@@ -5,11 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:padding="@dimen/gap_medium">
+    android:paddingLeft="@dimen/gap_medium"
+    android:paddingRight="@dimen/gap_medium"
+    android:paddingTop="@dimen/divider_height"
+    android:paddingBottom="@dimen/divider_height"
+    android:background="@drawable/background_dividers_vertical">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginBottom="@dimen/gap_small"
         android:layout_marginEnd="@dimen/gap_small"
         android:src="@drawable/temperature_dark_icon"
         android:contentDescription="@string/condition_temperature"/>
@@ -21,7 +27,9 @@
         android:layout_weight="1"
         android:textAppearance="@style/AppTheme.Text.Condition"
         android:gravity="center"
-        android:text="@string/mock_temperature"/>
+        android:text="@string/missing_data_placeholder"/>
+
+    <View style="@style/Divider.Vertical" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -38,7 +46,9 @@
         android:layout_weight="1"
         android:textAppearance="@style/AppTheme.Text.Condition"
         android:gravity="center"
-        android:text="@string/mock_humidity"/>
+        android:text="@string/missing_data_placeholder"/>
+
+    <View style="@style/Divider.Vertical" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -55,6 +65,6 @@
         android:layout_weight="1"
         android:textAppearance="@style/AppTheme.Text.Condition"
         android:gravity="center"
-        android:text="@string/mock_particulates"/>
+        android:text="@string/missing_data_placeholder"/>
 
 </LinearLayout>
