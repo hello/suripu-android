@@ -1,14 +1,19 @@
 package is.hello.sense.ui.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -38,6 +43,7 @@ public class TemporaryOnboardingFragment extends InjectionFragment {
 
         this.email = (EditText) view.findViewById(R.id.fragment_temporary_onboarding_email);
         this.password = (EditText) view.findViewById(R.id.fragment_temporary_onboarding_password);
+        password.setOnEditorActionListener(this::onPasswordEditorAction);
 
         Button signInButton = (Button) view.findViewById(R.id.fragment_temporary_onboarding_sign_in);
         signInButton.setOnClickListener(this::signIn);
@@ -63,5 +69,17 @@ public class TemporaryOnboardingFragment extends InjectionFragment {
             LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getFragmentManager(), error);
         });
+    }
+
+    public boolean onPasswordEditorAction(TextView sender, int actionId, KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_GO || event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(sender.getWindowToken(), 0);
+            signIn(sender);
+
+            return true;
+        }
+
+        return false;
     }
 }

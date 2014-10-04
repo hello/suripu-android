@@ -12,6 +12,13 @@
         android:gravity="center_vertical"
         android:padding="@dimen/activity_margin">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_large"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_launcher"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -35,6 +42,7 @@
             android:inputType="textEmailAddress"
             android:textAppearance="@style/AppTheme.Text.EditText"
             android:nextFocusForward="@+id/fragment_temporary_onboarding_password"
+            android:imeOptions="actionNext|flagNoExtractUi"
             android:hint="@string/label_email"/>
 
         <TextView
@@ -50,6 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/gap_large"
             android:inputType="textPassword"
+            android:imeOptions="actionGo|flagNoExtractUi"
             android:textAppearance="@style/AppTheme.Text.EditText"
             android:hint="@string/label_password"/>
 
