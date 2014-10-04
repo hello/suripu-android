@@ -7,9 +7,8 @@
     android:gravity="center_vertical"
     android:paddingLeft="@dimen/gap_medium"
     android:paddingRight="@dimen/gap_medium"
-    android:paddingTop="@dimen/divider_height"
     android:paddingBottom="@dimen/divider_height"
-    android:background="@drawable/background_dividers_vertical">
+    android:background="@drawable/background_dividers_bottom">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -29,8 +28,6 @@
         android:gravity="center"
         android:text="@string/missing_data_placeholder"/>
 
-    <View style="@style/Divider.Vertical" />
-
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,8 +44,6 @@
         android:textAppearance="@style/AppTheme.Text.Condition"
         android:gravity="center"
         android:text="@string/missing_data_placeholder"/>
-
-    <View style="@style/Divider.Vertical" />
 
     <ImageView
         android:layout_width="wrap_content"
