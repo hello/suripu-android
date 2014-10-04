@@ -23,6 +23,10 @@
         <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
 
+    <style name="AppTheme.Text.Body.Dimmed">
+        <item name="android:textColor">@color/grey</item>
+    </style>
+
     <style name="AppTheme.Text.Condition">
         <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">@dimen/text_size_large</item>

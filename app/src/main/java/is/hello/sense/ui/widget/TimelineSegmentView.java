@@ -24,7 +24,6 @@ public final class TimelineSegmentView extends FrameLayout {
     private HorizontalGraphView graphView;
     private ImageView eventTypeImage;
     private TextView eventType;
-    private TextView message;
     private TextView time;
 
     @Inject DateFormatter dateFormatter;
@@ -54,16 +53,13 @@ public final class TimelineSegmentView extends FrameLayout {
 
         if (segment.getEventType() != null) {
             eventType.setText(segment.getEventType());
-            message.setText(segment.getMessage());
             time.setText(dateFormatter.formatAsTime(new DateTime(segment.getTimestamp())));
 
             eventType.setVisibility(VISIBLE);
             eventTypeImage.setVisibility(VISIBLE);
-            message.setVisibility(VISIBLE);
         } else {
             eventType.setVisibility(GONE);
             eventTypeImage.setVisibility(GONE);
-            message.setVisibility(GONE);
         }
     }
 
@@ -79,7 +75,6 @@ public final class TimelineSegmentView extends FrameLayout {
         this.graphView = (HorizontalGraphView) findViewById(R.id.view_timeline_segment_graph);
         this.eventTypeImage = (ImageView) findViewById(R.id.view_timeline_segment_image_event_type);
         this.eventType = (TextView) findViewById(R.id.view_timeline_segment_event_type);
-        this.message = (TextView) findViewById(R.id.view_timeline_segment_message);
         this.time = (TextView) findViewById(R.id.view_timeline_segment_time);
     }
 }
