@@ -3,6 +3,10 @@ package is.hello.sense.graph;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import org.markdownj.MarkdownProcessor;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiModule;

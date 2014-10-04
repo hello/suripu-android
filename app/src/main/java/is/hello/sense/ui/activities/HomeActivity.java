@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 
 import org.joda.time.DateTime;
 
@@ -26,7 +27,7 @@ public class HomeActivity extends InjectionActivity {
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.activity_home_view_pager);
 
-        this.timelineAdapter = new TimelineAdapter(getSupportFragmentManager(), DateTime.now());
+        this.timelineAdapter = new TimelineAdapter(getSupportFragmentManager(), new DateTime(2014, 9, 22, 12, 0));
         viewPager.setAdapter(timelineAdapter);
 
         if (savedInstanceState == null) {

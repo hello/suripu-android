@@ -1,13 +1,21 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url 'http://download.crashlytics.com/maven' }
     }
     dependencies {
         classpath 'me.tatarka:gradle-retrolambda:2.2.3'
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'crashlytics'
+
+repositories {
+    maven { url 'http://download.crashlytics.com/maven' }
+}
+
 apply plugin: 'retrolambda'
 
 android {
@@ -79,4 +87,5 @@ dependencies {
         exclude group: 'com.squareup.dagger', module: 'dagger'
         exclude group: 'org.hamcrest', module: 'hamcrest-integration'
     }
+    compile 'com.crashlytics.android:crashlytics:1.+'
 }

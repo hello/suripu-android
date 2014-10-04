@@ -47,7 +47,9 @@ public final class SegmentView extends FrameLayout {
     //region Displaying Data
 
     public void displaySegment(@NonNull TimelineSegment segment) {
-        graphView.showSleepScore(segment.getSleepDepth());
+        int sleepScore = segment.getSleepDepth();
+        graphView.setFillColor(getResources().getColor(ColorUtils.colorResForSleepDepth(sleepScore)));
+        graphView.setValue(sleepScore);
 
         if (segment.getEventType() != null) {
             eventType.setText(segment.getEventType());

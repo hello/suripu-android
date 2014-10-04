@@ -3,6 +3,7 @@ package is.hello.sense.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.crashlytics.android.Crashlytics;
 import javax.inject.Inject;
 
 import is.hello.sense.api.sessions.ApiSessionManager;
@@ -16,6 +17,7 @@ public class LaunchActivity extends InjectionActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Crashlytics.start(this);
     }
 
     @Override

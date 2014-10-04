@@ -15,12 +15,12 @@ import is.hello.sense.R;
 public class PieGraphView extends GraphView {
     private final Paint paint = new Paint();
     private final Path piePath = new Path();
-    private final Path clipPath = new Path();
     private final RectF arcRect = new RectF();
     private final RectF clipRect = new RectF();
 
     private float displayScaleFactor;
     private int trackColor;
+    private int centerColor;
 
     public PieGraphView(Context context) {
         super(context);
@@ -37,11 +37,7 @@ public class PieGraphView extends GraphView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
         piePath.reset();
-        clipPath.reset();
-
         paint.reset();
         paint.setAntiAlias(true);
 
@@ -55,17 +51,17 @@ public class PieGraphView extends GraphView {
         float inset = 3f * displayScaleFactor;
         clipRect.set(arcRect);
         clipRect.inset(inset, inset);
-        clipPath.addOval(clipRect, Path.Direction.CW);
 
         canvas.save();
         {
-            canvas.clipPath(clipPath, Region.Op.DIFFERENCE);
-
             paint.setColor(trackColor);
             canvas.drawOval(arcRect, paint);
 
             paint.setColor(fillColor);
             canvas.drawPath(piePath, paint);
+
+            paint.setColor(centerColor);
+            canvas.drawOval(clipRect, paint);
         }
         canvas.restore();
     }
@@ -77,8 +73,17 @@ public class PieGraphView extends GraphView {
 
     public void setTrackColor(int trackColor) {
         this.trackColor = trackColor;
+        postInvalidate();
     }
 
+    public int getCenterColor() {
+        return centerColor;
+    }
+
+    public void setCenterColor(int centerColor) {
+        this.centerColor = centerColor;
+        postInvalidate();
+    }
 
     @Override
     protected void initialize(@Nullable AttributeSet attrs, int defStyleAttr) {
@@ -86,5 +91,6 @@ public class PieGraphView extends GraphView {
 
         this.displayScaleFactor = getResources().getDisplayMetrics().density;
         this.trackColor = getResources().getColor(R.color.timeline_border);
+        this.centerColor = getResources().getColor(R.color.background);
     }
 }

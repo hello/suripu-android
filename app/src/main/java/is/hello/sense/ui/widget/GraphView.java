@@ -1,5 +1,6 @@
 package is.hello.sense.ui.widget;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -8,6 +9,7 @@ import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
 import is.hello.sense.R;
+import is.hello.sense.util.Animation;
 import is.hello.sense.util.ColorUtils;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -35,11 +37,20 @@ public class GraphView extends RelativeLayout {
 
     //region Properties
 
+    protected void assertSaneValue(int value) {
+        if (value < 0 || value > getMaxValue()) {
+            throw new IllegalArgumentException("value " + value + " is out of bounds {0, 100}");
+        }
+    }
+
     public int getMaxValue() {
         return maxValue;
     }
 
     public void setMaxValue(int maxValue) {
+        if (maxValue == this.maxValue)
+            return;
+
         this.maxValue = maxValue;
         postInvalidate();
     }
@@ -49,8 +60,30 @@ public class GraphView extends RelativeLayout {
     }
 
     public void setValue(int value) {
+        if (value == this.value)
+            return;
+
+        assertSaneValue(value);
+
         this.value = value;
         postInvalidate();
+    }
+
+    public @Nullable ValueAnimator animateToNewValue(int newValue) {
+        if (newValue == getValue())
+            return null;
+
+        assertSaneValue(newValue);
+
+        ValueAnimator animator = Animation.applyDefaults(ValueAnimator.ofInt(getValue(), newValue));
+        animator.addUpdateListener(animation -> {
+            int value = (Integer) animation.getAnimatedValue();
+            setValue(value);
+        });
+
+        animator.start();
+
+        return animator;
     }
 
     public int getFillColor() {
@@ -60,15 +93,6 @@ public class GraphView extends RelativeLayout {
     public void setFillColor(int fillColor) {
         this.fillColor = fillColor;
         postInvalidate();
-    }
-
-    public void showSleepScore(int sleepScore) {
-        if (sleepScore < 0 || sleepScore > 100)
-            throw new IllegalArgumentException("sleepScore " + sleepScore + " is out of bounds {0, 100}");
-
-        int fillColor = getResources().getColor(ColorUtils.colorResForSleepDepth(sleepScore));
-        setFillColor(fillColor);
-        setValue(sleepScore);
     }
 
     //endregion
