@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -46,11 +45,8 @@ public class TimelineFragment extends InjectionFragment {
 
     private TimelineSegmentAdapter segmentAdapter;
     private TimelinePresenter presenter;
+    private DateTime timelineDate;
 
-
-    public static TimelineFragment newInstance() {
-        return TimelineFragment.newInstance(new DateTime(2014, 9, 22, 12, 0));
-    }
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
         TimelineFragment fragment = new TimelineFragment();
@@ -65,7 +61,7 @@ public class TimelineFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DateTime timelineDate = (DateTime) getArguments().getSerializable(ARG_DATE);
+        this.timelineDate = (DateTime) getArguments().getSerializable(ARG_DATE);
         this.presenter = new TimelinePresenter(apiService, timelineDate);
         this.segmentAdapter = new TimelineSegmentAdapter(getActivity());
 
@@ -86,6 +82,7 @@ public class TimelineFragment extends InjectionFragment {
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
+        dateText.setText(dateFormatter.formatAsTimelineDate(timelineDate));
 
         listView.addHeaderView(headerView, null, false);
 

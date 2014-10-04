@@ -10,7 +10,6 @@ import android.widget.RelativeLayout;
 
 import is.hello.sense.R;
 import is.hello.sense.util.Animation;
-import is.hello.sense.util.ColorUtils;
 
 @SuppressWarnings("UnusedDeclaration")
 public class GraphView extends RelativeLayout {

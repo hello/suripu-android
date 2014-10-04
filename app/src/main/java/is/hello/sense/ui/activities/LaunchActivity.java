@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.crashlytics.android.Crashlytics;
+
 import javax.inject.Inject;
 
 import is.hello.sense.api.sessions.ApiSessionManager;
