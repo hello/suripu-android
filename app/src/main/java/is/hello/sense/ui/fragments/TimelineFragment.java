@@ -112,7 +112,7 @@ public class TimelineFragment extends InjectionFragment {
                                    .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError));
 
             Observable<CharSequence> renderedMessage = bindFragment(this, presenter.renderedTimelineMessage);
-            track(renderedMessage.subscribe(messageText::setText));
+            track(renderedMessage.subscribe(messageText::setText, error -> {}));
         }
     }
 

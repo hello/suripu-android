@@ -7,6 +7,7 @@ import com.hello.ble.HelloBle;
 import dagger.ObjectGraph;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.graph.SenseAppModule;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class SenseApplication extends Application {
     private static SenseApplication instance = null;
@@ -22,6 +23,8 @@ public class SenseApplication extends Application {
 
         HelloBle.init(this);
         this.graph = ObjectGraph.create(new ApiModule(this), new SenseAppModule(this));
+
+        CalligraphyConfig.initDefault("fonts/Calibre-Regular.otf", R.attr.fontPath);
 
         instance = this;
     }

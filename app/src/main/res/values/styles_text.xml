@@ -4,12 +4,11 @@
 
     <style name="AppTheme.Text.BigScore">
         <item name="android:textSize">96sp</item>
-        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="fontPath">fonts/Calibre-Thin.otf</item>
     </style>
 
     <style name="AppTheme.Text.BigScore.Details">
         <item name="android:textSize">11sp</item>
-        <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/grey</item>
         <item name="android:textAllCaps">true</item>
     </style>
