@@ -12,7 +12,7 @@ import android.util.AttributeSet;
 import is.hello.sense.R;
 
 @SuppressWarnings("UnusedDeclaration")
-public class PieGraphView extends GraphView {
+public final class PieGraphView extends GraphView {
     private final Paint paint = new Paint();
     private final Path piePath = new Path();
     private final RectF arcRect = new RectF();

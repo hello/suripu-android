@@ -19,7 +19,8 @@ import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.util.ColorUtils;
 import is.hello.sense.util.DateFormatter;
 
-public final class SegmentView extends FrameLayout {
+@SuppressWarnings("UnusedDeclaration")
+public final class TimelineSegmentView extends FrameLayout {
     private HorizontalGraphView graphView;
     private ImageView eventTypeImage;
     private TextView eventType;
@@ -28,17 +29,17 @@ public final class SegmentView extends FrameLayout {
 
     @Inject DateFormatter dateFormatter;
 
-    public SegmentView(Context context) {
+    public TimelineSegmentView(Context context) {
         super(context);
         initialize(null, 0);
     }
 
-    public SegmentView(Context context, AttributeSet attrs) {
+    public TimelineSegmentView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialize(attrs, 0);
     }
 
-    public SegmentView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TimelineSegmentView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initialize(attrs, defStyleAttr);
     }
