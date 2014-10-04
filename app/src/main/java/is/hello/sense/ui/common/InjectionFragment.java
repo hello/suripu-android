@@ -27,6 +27,10 @@ public class InjectionFragment extends Fragment {
         subscriptions.clear();
     }
 
+    protected boolean hasSubscriptions() {
+        return !subscriptions.isEmpty();
+    }
+
     protected @NonNull Subscription track(@NonNull Subscription subscription) {
         subscriptions.add(subscription);
         return subscription;

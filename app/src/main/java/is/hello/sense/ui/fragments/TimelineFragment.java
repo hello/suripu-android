@@ -65,6 +65,8 @@ public class TimelineFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        DateTime timelineDate = (DateTime) getArguments().getSerializable(ARG_DATE);
+        this.presenter = new TimelinePresenter(apiService, timelineDate);
         this.segmentAdapter = new TimelineSegmentAdapter(getActivity());
 
         setRetainInstance(true);
@@ -103,14 +105,11 @@ public class TimelineFragment extends InjectionFragment {
     public void onStart() {
         super.onStart();
 
-        if (presenter == null) {
-            DateTime timelineDate = (DateTime) getArguments().getSerializable(ARG_DATE);
-            this.presenter = new TimelinePresenter(apiService, timelineDate);
-
+        if (!hasSubscriptions()) {
             Observable<Timeline> boundMainTimeline = bindFragment(this, presenter.mainTimeline);
             track(boundMainTimeline.subscribe(this::bindSummary, this::presentError));
             track(boundMainTimeline.map(Timeline::getSegments)
-                    .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError));
+                                   .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError));
 
             Observable<CharSequence> renderedMessage = bindFragment(this, presenter.renderedTimelineMessage);
             track(renderedMessage.subscribe(messageText::setText));
