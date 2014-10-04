@@ -27,7 +27,7 @@ public class HomeActivity extends InjectionActivity {
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.activity_home_view_pager);
 
-        this.timelineAdapter = new TimelineAdapter(getSupportFragmentManager(), new DateTime(2014, 9, 22, 12, 0));
+        this.timelineAdapter = new TimelineAdapter(getSupportFragmentManager(), DateTime.now());
         viewPager.setAdapter(timelineAdapter);
 
         if (savedInstanceState == null) {
