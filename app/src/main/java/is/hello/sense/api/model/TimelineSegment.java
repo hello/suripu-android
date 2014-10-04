@@ -26,7 +26,7 @@ public class TimelineSegment extends ApiResponse {
     private int sleepDepth;
 
     @JsonProperty("event_type")
-    private String eventType;
+    private EventType eventType;
 
     @JsonProperty("offset_millis")
     private long offset;
@@ -56,7 +56,7 @@ public class TimelineSegment extends ApiResponse {
         return sleepDepth;
     }
 
-    public String getEventType() {
+    public EventType getEventType() {
         return eventType;
     }
 
@@ -74,5 +74,16 @@ public class TimelineSegment extends ApiResponse {
                 ", sleepDepth=" + sleepDepth +
                 ", offset=" + offset +
                 '}';
+    }
+
+
+    public static enum EventType {
+        MOTION,
+        NOISE,
+        SNORING,
+        SLEEP_TALK,
+        LIGHT,
+        SLEEP_MOTION,
+        SLEEP,
     }
 }

@@ -25,4 +25,12 @@
 
     <string name="missing_data_placeholder">--</string>
 
+    <string name="event_type_motion">Motion</string>
+    <string name="event_type_noise">Noise</string>
+    <string name="event_type_snoring">Snoring</string>
+    <string name="event_type_sleep_talk">Sleep Talk</string>
+    <string name="event_type_light">Light</string>
+    <string name="event_type_sleep_motion">Sleep Motion</string>
+    <string name="event_type_sleep">Sleep</string>
+
 </resources>

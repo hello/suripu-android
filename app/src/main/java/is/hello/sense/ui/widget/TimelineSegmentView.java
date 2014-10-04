@@ -46,13 +46,41 @@ public final class TimelineSegmentView extends FrameLayout {
 
     //region Displaying Data
 
+    public String getNameForEventType(@NonNull TimelineSegment.EventType eventType) {
+        switch (eventType) {
+            case LIGHT:
+                return getContext().getString(R.string.event_type_light);
+
+            case MOTION:
+                return getContext().getString(R.string.event_type_motion);
+
+            case NOISE:
+                return getContext().getString(R.string.event_type_noise);
+
+            case SLEEP_MOTION:
+                return getContext().getString(R.string.event_type_sleep_motion);
+
+            case SLEEP_TALK:
+                return getContext().getString(R.string.event_type_sleep_talk);
+
+            case SNORING:
+                return getContext().getString(R.string.event_type_snoring);
+
+            case SLEEP:
+                return getContext().getString(R.string.event_type_sleep);
+
+            default:
+                return getContext().getString(R.string.missing_data_placeholder);
+        }
+    }
+
     public void displaySegment(@NonNull TimelineSegment segment) {
         int sleepScore = segment.getSleepDepth();
         graphView.setFillColor(getResources().getColor(ColorUtils.colorResForSleepDepth(sleepScore)));
         graphView.setValue(sleepScore);
 
         if (segment.getEventType() != null) {
-            eventType.setText(segment.getEventType());
+            eventType.setText(getNameForEventType(segment.getEventType()));
             time.setText(dateFormatter.formatAsTime(new DateTime(segment.getTimestamp())));
 
             eventType.setVisibility(VISIBLE);
