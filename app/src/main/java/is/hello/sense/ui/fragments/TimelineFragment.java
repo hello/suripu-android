@@ -22,6 +22,7 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
+import is.hello.sense.util.Animation;
 import is.hello.sense.util.ColorUtils;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
@@ -46,6 +47,8 @@ public class TimelineFragment extends InjectionFragment {
     private TimelineSegmentAdapter segmentAdapter;
     private TimelinePresenter presenter;
     private DateTime timelineDate;
+
+    private Observable<Timeline> boundMainTimeline;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -99,18 +102,16 @@ public class TimelineFragment extends InjectionFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        if (!hasSubscriptions()) {
-            Observable<Timeline> boundMainTimeline = bindFragment(this, presenter.mainTimeline);
-            track(boundMainTimeline.subscribe(this::bindSummary, this::presentError));
-            track(boundMainTimeline.map(Timeline::getSegments)
-                                   .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError));
+        this.boundMainTimeline = bindFragment(this, presenter.mainTimeline);
+        track(boundMainTimeline.subscribe(this::bindSummary, this::presentError));
+        track(boundMainTimeline.map(Timeline::getSegments)
+                               .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError));
 
-            Observable<CharSequence> renderedMessage = bindFragment(this, presenter.renderedTimelineMessage);
-            track(renderedMessage.subscribe(messageText::setText, error -> {}));
-        }
+        Observable<CharSequence> renderedMessage = bindFragment(this, presenter.renderedTimelineMessage);
+        track(renderedMessage.subscribe(messageText::setText, error -> messageText.setText(R.string.missing_data_placeholder)));
     }
 
     public void bindSummary(@NonNull Timeline timeline) {
@@ -118,12 +119,14 @@ public class TimelineFragment extends InjectionFragment {
 
         int sleepScore = timeline.getScore();
         scoreGraph.setFillColor(getResources().getColor(ColorUtils.colorResForSleepDepth(sleepScore)));
-        ValueAnimator updateAnimation = scoreGraph.animateToNewValue(sleepScore);
+        ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animation.Properties.createWithDelay(250));
         if (updateAnimation != null) {
             updateAnimation.addUpdateListener(a -> {
                 String score = a.getAnimatedValue().toString();
                 scoreText.setText(score);
             });
+
+            updateAnimation.start();
         }
     }
 
