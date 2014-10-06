@@ -1,5 +1,7 @@
 package is.hello.sense.api.model;
 
+import android.text.TextUtils;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -15,7 +17,7 @@ public class Account extends ApiResponse {
     private String email;
 
     @JsonProperty("tz")
-    private int tzOffsetMillis;
+    private int timeZoneOffset;
 
     @JsonProperty("name")
     private String name;
@@ -32,6 +34,13 @@ public class Account extends ApiResponse {
     @JsonProperty("dob")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.DATE_FORMAT)
     private DateTime birthDate;
+
+    @JsonProperty("password")
+    private String password;
+
+    @JsonProperty("last_modified")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private DateTime lastModified;
 
 
     public String getId() {
@@ -50,12 +59,12 @@ public class Account extends ApiResponse {
         this.email = email;
     }
 
-    public int getTzOffsetMillis() {
-        return tzOffsetMillis;
+    public int getTimeZoneOffset() {
+        return timeZoneOffset;
     }
 
-    public void setTzOffsetMillis(int tzOffsetMillis) {
-        this.tzOffsetMillis = tzOffsetMillis;
+    public void setTimeZoneOffset(int timeZoneOffset) {
+        this.timeZoneOffset = timeZoneOffset;
     }
 
     public String getName() {
@@ -98,17 +107,35 @@ public class Account extends ApiResponse {
         this.birthDate = birthDate;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public DateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(DateTime lastModified) {
+        this.lastModified = lastModified;
+    }
+
     @Override
     public String toString() {
         return "Account{" +
                 "id='" + id + '\'' +
                 ", email='" + email + '\'' +
-                ", tzOffsetMillis=" + tzOffsetMillis +
+                ", timeZoneOffset=" + timeZoneOffset +
                 ", name='" + name + '\'' +
                 ", gender=" + gender +
                 ", height=" + height +
                 ", weight=" + weight +
                 ", birthDate=" + birthDate +
+                ", password=" + !TextUtils.isEmpty(password) +
+                ", lastModified=" + lastModified +
                 '}';
     }
 }

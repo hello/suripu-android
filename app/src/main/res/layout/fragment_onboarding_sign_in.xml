@@ -26,7 +26,7 @@
             android:layout_marginBottom="@dimen/gap_large"
             android:gravity="center"
             android:textAppearance="@style/AppTheme.Text.Heading"
-            android:text="@string/button_sign_in"/>
+            android:text="@string/action_sign_in"/>
 
         <TableLayout
             android:layout_width="match_parent"
@@ -85,7 +85,7 @@
             android:id="@+id/fragment_onboarding_sign_in"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/button_sign_in"/>
+            android:text="@string/action_sign_in"/>
 
     </LinearLayout>
 

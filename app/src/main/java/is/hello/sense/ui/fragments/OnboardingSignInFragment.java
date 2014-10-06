@@ -24,6 +24,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -53,10 +54,10 @@ public class OnboardingSignInFragment extends InjectionFragment {
     }
 
 
-    public void showHomeActivity() {
-        startActivity(new Intent(getActivity(), HomeActivity.class));
-        getActivity().finish();
+    private OnboardingActivity getOnboardingActivity() {
+        return (OnboardingActivity) getActivity();
     }
+
 
     public void signIn(@NonNull View sender) {
         String email = this.email.getText().toString();
@@ -72,7 +73,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         Observable<OAuthSession> request = bindFragment(this, apiService.authorize(credentials));
         request.subscribe(session -> {
             apiSessionManager.setSession(session);
-            showHomeActivity();
+            getOnboardingActivity().showHomeActivity();
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getFragmentManager(), error);

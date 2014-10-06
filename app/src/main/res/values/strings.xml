@@ -4,13 +4,23 @@
     <string name="app_name">Sense</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
     <string name="label_email">Email</string>
     <string name="label_password">Password</string>
-    <string name="button_sign_in">Sign In</string>
+    <string name="label_name">Name</string>
+    <string name="label_gender">Gender</string>
+    <string name="label_height">Height</string>
+    <string name="label_weight">Weight</string>
+    <string name="label_dob">Date of Birth</string>
+
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_change">Change</string>
+    <string name="action_register">Register</string>
 
     <string name="dialog_error_title">An Error Occurred</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
     <string name="dialog_error_extended_message_format">%1$s\n\n%2$s (Status: %3$d)</string>
+    <string name="dialog_error_generic_form_issue">One or more required fields is missing.</string>
     <string name="dialog_loading_message">Loading…</string>
 
     <string name="format_date">MMMM d</string>
@@ -33,13 +43,9 @@
     <string name="event_type_light">Light</string>
     <string name="event_type_sleep_motion">Sleep Motion</string>
     <string name="event_type_sleep">Sleep</string>
-    <string name="dialog_error_generic_form_issue">One or more required fields is missing.</string>
-    <string name="label_name">Name</string>
-    <string name="label_gender">Gender</string>
-    <string name="label_height">Height</string>
-    <string name="label_weight">Weight</string>
-    <string name="label_dob">Date of Birth</string>
-    <string name="action_change">Change</string>
-    <string name="action_register">Register</string>
+
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="gender_other">Other</string>
 
 </resources>
