@@ -33,5 +33,6 @@
     <string name="event_type_light">Light</string>
     <string name="event_type_sleep_motion">Sleep Motion</string>
     <string name="event_type_sleep">Sleep</string>
+    <string name="dialog_error_generic_form_issue">One or more required fields is missing.</string>
 
 </resources>

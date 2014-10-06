@@ -1,10 +1,14 @@
 package is.hello.sense.ui.fragments;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,9 +62,16 @@ public class TemporaryOnboardingFragment extends InjectionFragment {
     }
 
     public void signIn(@NonNull View sender) {
+        String email = this.email.getText().toString();
+        String password = this.password.getText().toString();
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+            ErrorDialogFragment.presentError(getFragmentManager(), new Throwable(getString(R.string.dialog_error_generic_form_issue)));
+            return;
+        }
+
         LoadingDialogFragment.show(getFragmentManager());
 
-        OAuthCredentials credentials = new OAuthCredentials(email.getText().toString(), password.getText().toString());
+        OAuthCredentials credentials = new OAuthCredentials(email, password);
         Observable<OAuthSession> request = bindFragment(this, apiService.authorize(credentials));
         request.subscribe(session -> {
             apiSessionManager.setSession(session);
