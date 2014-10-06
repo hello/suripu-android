@@ -1,10 +1,9 @@
 package is.hello.sense.ui.common;
 
-import android.support.v4.app.FragmentActivity;
-
 import is.hello.sense.SenseApplication;
+import is.hello.sense.ui.activities.SenseActivity;
 
-public class InjectionActivity extends FragmentActivity {
+public class InjectionActivity extends SenseActivity {
     public InjectionActivity() {
         SenseApplication.getInstance().inject(this);
     }

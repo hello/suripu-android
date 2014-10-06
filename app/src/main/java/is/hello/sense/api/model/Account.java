@@ -1,6 +1,13 @@
 package is.hello.sense.api.model;
 
+import android.text.TextUtils;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.joda.time.DateTime;
+
+import is.hello.sense.api.ApiService;
 
 public class Account extends ApiResponse {
     @JsonProperty("id")
@@ -10,7 +17,7 @@ public class Account extends ApiResponse {
     private String email;
 
     @JsonProperty("tz")
-    private long tzOffsetMillis;
+    private int timeZoneOffset;
 
     @JsonProperty("name")
     private String name;
@@ -25,7 +32,15 @@ public class Account extends ApiResponse {
     private Integer weight;
 
     @JsonProperty("dob")
-    private long DOB;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.DATE_FORMAT)
+    private DateTime birthDate;
+
+    @JsonProperty("password")
+    private String password;
+
+    @JsonProperty("last_modified")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private DateTime lastModified;
 
 
     public String getId() {
@@ -44,12 +59,12 @@ public class Account extends ApiResponse {
         this.email = email;
     }
 
-    public long getTzOffsetMillis() {
-        return tzOffsetMillis;
+    public int getTimeZoneOffset() {
+        return timeZoneOffset;
     }
 
-    public void setTzOffsetMillis(long tzOffsetMillis) {
-        this.tzOffsetMillis = tzOffsetMillis;
+    public void setTimeZoneOffset(int timeZoneOffset) {
+        this.timeZoneOffset = timeZoneOffset;
     }
 
     public String getName() {
@@ -84,26 +99,43 @@ public class Account extends ApiResponse {
         this.weight = weight;
     }
 
-    public long getDOB() {
-        return DOB;
+    public DateTime getBirthDate() {
+        return birthDate;
     }
 
-    public void setDOB(long DOB) {
-        this.DOB = DOB;
+    public void setBirthDate(DateTime birthDate) {
+        this.birthDate = birthDate;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public DateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(DateTime lastModified) {
+        this.lastModified = lastModified;
+    }
 
     @Override
     public String toString() {
         return "Account{" +
                 "id='" + id + '\'' +
                 ", email='" + email + '\'' +
-                ", tzOffsetMillis=" + tzOffsetMillis +
+                ", timeZoneOffset=" + timeZoneOffset +
                 ", name='" + name + '\'' +
                 ", gender=" + gender +
                 ", height=" + height +
                 ", weight=" + weight +
-                ", DOB=" + DOB +
+                ", birthDate=" + birthDate +
+                ", password=" + !TextUtils.isEmpty(password) +
+                ", lastModified=" + lastModified +
                 '}';
     }
 }

@@ -19,26 +19,26 @@ import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.util.ColorUtils;
 import is.hello.sense.util.DateFormatter;
 
-public final class SegmentView extends FrameLayout {
+@SuppressWarnings("UnusedDeclaration")
+public final class TimelineSegmentView extends FrameLayout {
     private HorizontalGraphView graphView;
     private ImageView eventTypeImage;
     private TextView eventType;
-    private TextView message;
     private TextView time;
 
     @Inject DateFormatter dateFormatter;
 
-    public SegmentView(Context context) {
+    public TimelineSegmentView(Context context) {
         super(context);
         initialize(null, 0);
     }
 
-    public SegmentView(Context context, AttributeSet attrs) {
+    public TimelineSegmentView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialize(attrs, 0);
     }
 
-    public SegmentView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TimelineSegmentView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initialize(attrs, defStyleAttr);
     }
@@ -46,21 +46,48 @@ public final class SegmentView extends FrameLayout {
 
     //region Displaying Data
 
+    public String getNameForEventType(@NonNull TimelineSegment.EventType eventType) {
+        switch (eventType) {
+            case LIGHT:
+                return getContext().getString(R.string.event_type_light);
+
+            case MOTION:
+                return getContext().getString(R.string.event_type_motion);
+
+            case NOISE:
+                return getContext().getString(R.string.event_type_noise);
+
+            case SLEEP_MOTION:
+                return getContext().getString(R.string.event_type_sleep_motion);
+
+            case SLEEP_TALK:
+                return getContext().getString(R.string.event_type_sleep_talk);
+
+            case SNORING:
+                return getContext().getString(R.string.event_type_snoring);
+
+            case SLEEP:
+                return getContext().getString(R.string.event_type_sleep);
+
+            default:
+                return getContext().getString(R.string.missing_data_placeholder);
+        }
+    }
+
     public void displaySegment(@NonNull TimelineSegment segment) {
-        graphView.showSleepScore(segment.getSleepDepth());
+        int sleepScore = segment.getSleepDepth();
+        graphView.setFillColor(getResources().getColor(ColorUtils.colorResForSleepDepth(sleepScore)));
+        graphView.setValue(sleepScore);
 
         if (segment.getEventType() != null) {
-            eventType.setText(segment.getEventType());
-            message.setText(segment.getMessage());
+            eventType.setText(getNameForEventType(segment.getEventType()));
             time.setText(dateFormatter.formatAsTime(new DateTime(segment.getTimestamp())));
 
             eventType.setVisibility(VISIBLE);
             eventTypeImage.setVisibility(VISIBLE);
-            message.setVisibility(VISIBLE);
         } else {
             eventType.setVisibility(GONE);
             eventTypeImage.setVisibility(GONE);
-            message.setVisibility(GONE);
         }
     }
 
@@ -76,7 +103,6 @@ public final class SegmentView extends FrameLayout {
         this.graphView = (HorizontalGraphView) findViewById(R.id.view_timeline_segment_graph);
         this.eventTypeImage = (ImageView) findViewById(R.id.view_timeline_segment_image_event_type);
         this.eventType = (TextView) findViewById(R.id.view_timeline_segment_event_type);
-        this.message = (TextView) findViewById(R.id.view_timeline_segment_message);
         this.time = (TextView) findViewById(R.id.view_timeline_segment_time);
     }
 }

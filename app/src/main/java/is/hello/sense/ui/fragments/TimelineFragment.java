@@ -1,11 +1,9 @@
 package is.hello.sense.ui.fragments;
 
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Html;
-import android.text.Spanned;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +11,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
-import org.markdownj.MarkdownProcessor;
 
 import javax.inject.Inject;
 
@@ -25,6 +22,7 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
+import is.hello.sense.util.ColorUtils;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
@@ -32,7 +30,6 @@ import static rx.android.observables.AndroidObservable.bindFragment;
 
 public class TimelineFragment extends InjectionFragment {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
-    private static final MarkdownProcessor MARKDOWN = new MarkdownProcessor();
 
     private PieGraphView scoreGraph;
     private TextView dateText;
@@ -48,10 +45,8 @@ public class TimelineFragment extends InjectionFragment {
 
     private TimelineSegmentAdapter segmentAdapter;
     private TimelinePresenter presenter;
+    private DateTime timelineDate;
 
-    public static TimelineFragment newInstance() {
-        return TimelineFragment.newInstance(new DateTime(2014, 9, 22, 12, 0));
-    }
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
         TimelineFragment fragment = new TimelineFragment();
@@ -66,7 +61,7 @@ public class TimelineFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DateTime timelineDate = (DateTime) getArguments().getSerializable(ARG_DATE);
+        this.timelineDate = (DateTime) getArguments().getSerializable(ARG_DATE);
         this.presenter = new TimelinePresenter(apiService, timelineDate);
         this.segmentAdapter = new TimelineSegmentAdapter(getActivity());
 
@@ -87,6 +82,7 @@ public class TimelineFragment extends InjectionFragment {
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
+        dateText.setText(dateFormatter.formatAsTimelineDate(timelineDate));
 
         listView.addHeaderView(headerView, null, false);
 
@@ -103,30 +99,32 @@ public class TimelineFragment extends InjectionFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onStart() {
+        super.onStart();
 
-        Observable<Timeline> mainTimeline = presenter.timeline.filter(timelines -> !timelines.isEmpty())
-                                                              .map(timelines -> timelines.get(0));
+        if (!hasSubscriptions()) {
+            Observable<Timeline> boundMainTimeline = bindFragment(this, presenter.mainTimeline);
+            track(boundMainTimeline.subscribe(this::bindSummary, this::presentError));
+            track(boundMainTimeline.map(Timeline::getSegments)
+                                   .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError));
 
-        Observable<Timeline> boundMainTimeline = bindFragment(this, mainTimeline);
-        boundMainTimeline.subscribe(this::bindSummary, this::presentError);
-        boundMainTimeline.map(Timeline::getSegments)
-                         .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError);
-
-        Observable<CharSequence> renderedMessage = bindFragment(this, mainTimeline.map(timeline -> {
-            String rawMessage = timeline.getMessage();
-            String markdown = MARKDOWN.markdown(rawMessage);
-            Spanned html = Html.fromHtml(markdown);
-            return html.subSequence(0, TextUtils.getTrimmedLength(html));
-        }));
-        renderedMessage.subscribe(messageText::setText);
+            Observable<CharSequence> renderedMessage = bindFragment(this, presenter.renderedTimelineMessage);
+            track(renderedMessage.subscribe(messageText::setText, error -> {}));
+        }
     }
 
     public void bindSummary(@NonNull Timeline timeline) {
         dateText.setText(dateFormatter.formatAsTimelineDate(timeline.getDate()));
-        scoreText.setText(Long.toString(timeline.getScore()));
-        scoreGraph.showSleepScore(timeline.getScore());
+
+        int sleepScore = timeline.getScore();
+        scoreGraph.setFillColor(getResources().getColor(ColorUtils.colorResForSleepDepth(sleepScore)));
+        ValueAnimator updateAnimation = scoreGraph.animateToNewValue(sleepScore);
+        if (updateAnimation != null) {
+            updateAnimation.addUpdateListener(a -> {
+                String score = a.getAnimatedValue().toString();
+                scoreText.setText(score);
+            });
+        }
     }
 
     public void presentError(Throwable e) {

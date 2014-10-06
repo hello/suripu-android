@@ -1,13 +1,21 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url 'http://download.crashlytics.com/maven' }
     }
     dependencies {
         classpath 'me.tatarka:gradle-retrolambda:2.2.3'
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'crashlytics'
+
+repositories {
+    maven { url 'http://download.crashlytics.com/maven' }
+}
+
 apply plugin: 'retrolambda'
 
 android {
@@ -15,11 +23,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
+        def buildNumber = 1
+
         applicationId "is.hello.sense"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode buildNumber
+        versionName "1.0.$buildNumber"
 
         testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
@@ -54,6 +64,8 @@ retrolambda {
 }
 
 dependencies {
+    // Is there anything we don't depend on?
+
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.squareup.dagger:dagger:1.2.2'
 
@@ -70,6 +82,8 @@ dependencies {
 
     compile 'joda-time:joda-time:2.3'
 
+    compile 'uk.co.chrisjenx:calligraphy:1.1.0'
+
     compile 'com.android.support:support-v4:20.0.0'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -79,4 +93,7 @@ dependencies {
         exclude group: 'com.squareup.dagger', module: 'dagger'
         exclude group: 'org.hamcrest', module: 'hamcrest-integration'
     }
+
+    //noinspection GradleDynamicVersion
+    compile 'com.crashlytics.android:crashlytics:1.+'
 }

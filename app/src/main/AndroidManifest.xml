@@ -35,6 +35,7 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar" />
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="f464ccd280d3e5730dcdaa9b64d1d108694ee9a9"/>
 
     </application>
 

@@ -1,5 +1,8 @@
 package is.hello.sense.api.model;
 
+import android.support.annotation.NonNull;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -26,7 +29,7 @@ public class TimelineSegment extends ApiResponse {
     private int sleepDepth;
 
     @JsonProperty("event_type")
-    private String eventType;
+    private EventType eventType;
 
     @JsonProperty("offset_millis")
     private long offset;
@@ -56,7 +59,7 @@ public class TimelineSegment extends ApiResponse {
         return sleepDepth;
     }
 
-    public String getEventType() {
+    public EventType getEventType() {
         return eventType;
     }
 
@@ -74,5 +77,23 @@ public class TimelineSegment extends ApiResponse {
                 ", sleepDepth=" + sleepDepth +
                 ", offset=" + offset +
                 '}';
+    }
+
+
+    public static enum EventType {
+        MOTION,
+        NOISE,
+        SNORING,
+        SLEEP_TALK,
+        LIGHT,
+        SLEEP_MOTION,
+        SLEEP,
+        UNKNOWN;
+
+        @JsonCreator
+        @SuppressWarnings("UnusedDeclaration")
+        public static EventType fromString(@NonNull String value) {
+            return Enums.fromString(value, values(), UNKNOWN);
+        }
     }
 }

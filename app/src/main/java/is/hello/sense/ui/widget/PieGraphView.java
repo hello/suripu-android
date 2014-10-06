@@ -5,18 +5,21 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.graphics.Region;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
+import is.hello.sense.R;
+
 @SuppressWarnings("UnusedDeclaration")
-public class PieGraphView extends GraphView {
+public final class PieGraphView extends GraphView {
     private final Paint paint = new Paint();
     private final Path piePath = new Path();
-    private final Path clipPath = new Path();
     private final RectF arcRect = new RectF();
+    private final RectF clipRect = new RectF();
 
     private float displayScaleFactor;
+    private int trackColor;
+    private int centerColor;
 
     public PieGraphView(Context context) {
         super(context);
@@ -33,10 +36,9 @@ public class PieGraphView extends GraphView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
         piePath.reset();
-        clipPath.reset();
+        paint.reset();
+        paint.setAntiAlias(true);
 
         int width = canvas.getWidth(), height = canvas.getHeight();
         float scale = ((float) value / (float) maxValue);
@@ -46,25 +48,48 @@ public class PieGraphView extends GraphView {
         piePath.arcTo(arcRect, -90f, scale * 360f);
 
         float inset = 3f * displayScaleFactor;
-        arcRect.inset(inset, inset);
-        clipPath.addOval(arcRect, Path.Direction.CW);
-
-        paint.setAntiAlias(true);
-        paint.setColor(fillColor);
+        clipRect.set(arcRect);
+        clipRect.inset(inset, inset);
 
         canvas.save();
         {
-            canvas.clipPath(clipPath, Region.Op.DIFFERENCE);
+            paint.setColor(trackColor);
+            canvas.drawOval(arcRect, paint);
+
+            paint.setColor(fillColor);
             canvas.drawPath(piePath, paint);
+
+            paint.setColor(centerColor);
+            canvas.drawOval(clipRect, paint);
         }
         canvas.restore();
     }
 
+
+    public int getTrackColor() {
+        return trackColor;
+    }
+
+    public void setTrackColor(int trackColor) {
+        this.trackColor = trackColor;
+        postInvalidate();
+    }
+
+    public int getCenterColor() {
+        return centerColor;
+    }
+
+    public void setCenterColor(int centerColor) {
+        this.centerColor = centerColor;
+        postInvalidate();
+    }
 
     @Override
     protected void initialize(@Nullable AttributeSet attrs, int defStyleAttr) {
         super.initialize(attrs, defStyleAttr);
 
         this.displayScaleFactor = getResources().getDisplayMetrics().density;
+        this.trackColor = getResources().getColor(R.color.timeline_border);
+        this.centerColor = getResources().getColor(R.color.background);
     }
 }
