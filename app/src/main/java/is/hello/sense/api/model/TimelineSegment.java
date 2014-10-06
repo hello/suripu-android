@@ -1,5 +1,8 @@
 package is.hello.sense.api.model;
 
+import android.support.annotation.NonNull;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -85,5 +88,12 @@ public class TimelineSegment extends ApiResponse {
         LIGHT,
         SLEEP_MOTION,
         SLEEP,
+        UNKNOWN;
+
+        @JsonCreator
+        @SuppressWarnings("UnusedDeclaration")
+        public static EventType fromString(@NonNull String value) {
+            return Enums.fromString(value, values(), UNKNOWN);
+        }
     }
 }
