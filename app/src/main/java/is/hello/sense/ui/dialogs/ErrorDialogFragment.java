@@ -10,12 +10,18 @@ import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 
 import is.hello.sense.R;
+import retrofit.RetrofitError;
 
 public class ErrorDialogFragment extends DialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();
-    private static final String ARG_THROWABLE = ErrorDialogFragment.class.getName() + ".ARG_THROWABLE";
 
-    private Throwable throwable;
+    private static final String ARG_MESSAGE = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE";
+    private static final String ARG_HAS_REQUEST_INFO = ErrorDialogFragment.class.getName() + ".ARG_HAS_REQUEST_INFO";
+    private static final String ARG_URL = ErrorDialogFragment.class.getName() + ".ARG_URL";
+    private static final String ARG_RESPONSE_STATUS = ErrorDialogFragment.class.getName() + ".ARG_RESPONSE_STATUS";
+    private static final String ARG_RESPONSE_REASON = ErrorDialogFragment.class.getName() + ".ARG_RESPONSE_REASON";
+
+    private static final int RESPONSE_STATUS_UNKNOWN = -1;
 
     public static void presentError(@NonNull FragmentManager fm, @Nullable Throwable e) {
         ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(e);
@@ -26,7 +32,21 @@ public class ErrorDialogFragment extends DialogFragment {
         ErrorDialogFragment fragment = new ErrorDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_THROWABLE, e);
+        if (e != null) {
+            // RetrofitError is not properly Serializable! So we'll grab the things we're interested
+            // out of the Throwable object and pull them out of the arguments on the other side.
+            arguments.putString(ARG_MESSAGE, e.getMessage());
+
+            if (e instanceof RetrofitError) {
+                RetrofitError error = (RetrofitError) e;
+                arguments.putBoolean(ARG_HAS_REQUEST_INFO, true);
+                arguments.putString(ARG_URL, error.getUrl());
+                if (error.getResponse() != null) {
+                    arguments.putInt(ARG_RESPONSE_STATUS, error.getResponse().getStatus());
+                    arguments.putString(ARG_RESPONSE_REASON, error.getResponse().getReason());
+                }
+            }
+        }
         fragment.setArguments(arguments);
 
         return fragment;
@@ -36,8 +56,6 @@ public class ErrorDialogFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.throwable = (Throwable) getArguments().getSerializable(ARG_THROWABLE);
-
         setCancelable(true);
     }
 
@@ -46,13 +64,39 @@ public class ErrorDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         builder.setTitle(R.string.dialog_error_title);
-        if (throwable != null && !TextUtils.isEmpty(throwable.getMessage())) {
-            builder.setMessage(throwable.getMessage());
+        String message = getMessage();
+        if (!TextUtils.isEmpty(message)) {
+            if (hasRequestInfo()) {
+                builder.setMessage(getString(R.string.dialog_error_extended_message_format, message, getResponseReason(), getResponseStatus()));
+            } else {
+                builder.setMessage(message);
+            }
         } else {
             builder.setMessage(R.string.dialog_error_generic_message);
         }
         builder.setPositiveButton(android.R.string.ok, null);
 
         return builder.create();
+    }
+
+
+    private String getMessage() {
+        return getArguments().getString(ARG_MESSAGE);
+    }
+
+    private boolean hasRequestInfo() {
+        return getArguments().getBoolean(ARG_HAS_REQUEST_INFO, false);
+    }
+
+    private String getUrl() {
+        return getArguments().getString(ARG_URL);
+    }
+
+    private String getResponseReason() {
+        return getArguments().getString(ARG_RESPONSE_REASON);
+    }
+
+    private int getResponseStatus() {
+        return getArguments().getInt(ARG_RESPONSE_STATUS, RESPONSE_STATUS_UNKNOWN);
     }
 }
