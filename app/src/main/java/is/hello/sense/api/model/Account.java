@@ -1,6 +1,11 @@
 package is.hello.sense.api.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.joda.time.DateTime;
+
+import is.hello.sense.api.ApiService;
 
 public class Account extends ApiResponse {
     @JsonProperty("id")
@@ -10,7 +15,7 @@ public class Account extends ApiResponse {
     private String email;
 
     @JsonProperty("tz")
-    private long tzOffsetMillis;
+    private int tzOffsetMillis;
 
     @JsonProperty("name")
     private String name;
@@ -25,7 +30,8 @@ public class Account extends ApiResponse {
     private Integer weight;
 
     @JsonProperty("dob")
-    private long DOB;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.DATE_FORMAT)
+    private DateTime birthDate;
 
 
     public String getId() {
@@ -44,11 +50,11 @@ public class Account extends ApiResponse {
         this.email = email;
     }
 
-    public long getTzOffsetMillis() {
+    public int getTzOffsetMillis() {
         return tzOffsetMillis;
     }
 
-    public void setTzOffsetMillis(long tzOffsetMillis) {
+    public void setTzOffsetMillis(int tzOffsetMillis) {
         this.tzOffsetMillis = tzOffsetMillis;
     }
 
@@ -84,14 +90,13 @@ public class Account extends ApiResponse {
         this.weight = weight;
     }
 
-    public long getDOB() {
-        return DOB;
+    public DateTime getBirthDate() {
+        return birthDate;
     }
 
-    public void setDOB(long DOB) {
-        this.DOB = DOB;
+    public void setBirthDate(DateTime birthDate) {
+        this.birthDate = birthDate;
     }
-
 
     @Override
     public String toString() {
@@ -103,7 +108,7 @@ public class Account extends ApiResponse {
                 ", gender=" + gender +
                 ", height=" + height +
                 ", weight=" + weight +
-                ", DOB=" + DOB +
+                ", birthDate=" + birthDate +
                 '}';
     }
 }

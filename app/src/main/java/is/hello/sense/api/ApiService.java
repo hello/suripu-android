@@ -24,6 +24,8 @@ public interface ApiService {
     public static final String CLIENT_SECRET = "99999secret";
     public static final String BASE_URL = "https://dev-api.hello.is/v1";
 
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
+
     //region OAuth
 
     @POST("/oauth2/token")

@@ -1,13 +1,10 @@
 package is.hello.sense.ui.fragments;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -34,7 +31,7 @@ import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.bindFragment;
 
-public class TemporaryOnboardingFragment extends InjectionFragment {
+public class OnboardingSignInFragment extends InjectionFragment {
     @Inject ApiSessionManager apiSessionManager;
     @Inject ApiService apiService;
 
@@ -43,13 +40,13 @@ public class TemporaryOnboardingFragment extends InjectionFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_temporary_onboarding, container, false);
+        View view = inflater.inflate(R.layout.fragment_onboarding_sign_in, container, false);
 
-        this.email = (EditText) view.findViewById(R.id.fragment_temporary_onboarding_email);
-        this.password = (EditText) view.findViewById(R.id.fragment_temporary_onboarding_password);
+        this.email = (EditText) view.findViewById(R.id.fragment_onboarding_email);
+        this.password = (EditText) view.findViewById(R.id.fragment_onboarding_password);
         password.setOnEditorActionListener(this::onPasswordEditorAction);
 
-        Button signInButton = (Button) view.findViewById(R.id.fragment_temporary_onboarding_sign_in);
+        Button signInButton = (Button) view.findViewById(R.id.fragment_onboarding_sign_in);
         signInButton.setOnClickListener(this::signIn);
 
         return view;

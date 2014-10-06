@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionActivity;
-import is.hello.sense.ui.fragments.TemporaryOnboardingFragment;
+import is.hello.sense.ui.fragments.OnboardingSignInFragment;
 
 public class OnboardingActivity extends InjectionActivity {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
@@ -18,7 +18,7 @@ public class OnboardingActivity extends InjectionActivity {
         setContentView(R.layout.activity_onboarding);
 
         if (savedInstanceState == null)
-            showFragment(new TemporaryOnboardingFragment());
+            showFragment(new OnboardingSignInFragment());
     }
 
 

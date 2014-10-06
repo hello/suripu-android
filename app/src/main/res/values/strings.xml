@@ -34,5 +34,12 @@
     <string name="event_type_sleep_motion">Sleep Motion</string>
     <string name="event_type_sleep">Sleep</string>
     <string name="dialog_error_generic_form_issue">One or more required fields is missing.</string>
+    <string name="label_name">Name</string>
+    <string name="label_gender">Gender</string>
+    <string name="label_height">Height</string>
+    <string name="label_weight">Weight</string>
+    <string name="label_dob">Date of Birth</string>
+    <string name="action_change">Change</string>
+    <string name="action_register">Register</string>
 
 </resources>

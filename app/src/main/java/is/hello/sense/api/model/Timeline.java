@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import is.hello.sense.api.ApiService;
+
 public class Timeline extends ApiResponse {
     @JsonProperty("score")
     private int score;
@@ -18,7 +20,7 @@ public class Timeline extends ApiResponse {
     private String message;
 
     @JsonProperty("date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-M-d")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.DATE_FORMAT)
     private DateTime date;
 
     @JsonProperty("segments")

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="@dimen/activity_margin">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_large"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_launcher"
+            android:contentDescription="@string/app_name"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_large"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.Heading"
+            android:text="@string/button_sign_in"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1">
+
+            <TableRow
+                android:layout_marginBottom="@dimen/gap_medium">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/gap_small"
+                    android:gravity="end"
+                    android:textAppearance="@style/AppTheme.Text.FieldLabel"
+                    android:text="@string/label_email" />
+
+                <EditText
+                    android:id="@+id/fragment_onboarding_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:textAppearance="@style/AppTheme.Text.EditText"
+                    android:nextFocusForward="@+id/fragment_onboarding_password"
+                    android:imeOptions="actionNext|flagNoExtractUi"
+                    android:hint="@string/label_email"/>
+
+            </TableRow>
+
+            <TableRow
+                android:layout_marginBottom="@dimen/gap_medium">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/gap_small"
+                    android:gravity="end"
+                    android:textAppearance="@style/AppTheme.Text.FieldLabel"
+                    android:text="@string/label_password" />
+
+                <EditText
+                    android:id="@+id/fragment_onboarding_password"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:imeOptions="actionGo|flagNoExtractUi"
+                    android:textAppearance="@style/AppTheme.Text.EditText"
+                    android:hint="@string/label_password"/>
+
+            </TableRow>
+
+        </TableLayout>
+
+        <Button
+            android:id="@+id/fragment_onboarding_sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_sign_in"/>
+
+    </LinearLayout>
+
+</ScrollView>
