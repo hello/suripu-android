@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.fragments.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.OnboardingSignInFragment;
 
@@ -20,19 +21,32 @@ public class OnboardingActivity extends InjectionActivity {
         setContentView(R.layout.activity_onboarding);
 
         if (savedInstanceState == null)
-            showFragment(new OnboardingRegisterFragment());
+            showIntroductionFragment();
     }
 
 
     private void showFragment(@NonNull Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             transaction.add(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
         } else {
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             transaction.replace(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
         }
         transaction.commit();
+    }
+
+
+    public void showIntroductionFragment() {
+        showFragment(new OnboardingIntroductionFragment());
+    }
+
+    public void showRegistration() {
+        showFragment(new OnboardingRegisterFragment());
+    }
+
+    public void showSignIn() {
+        showFragment(new OnboardingSignInFragment());
     }
 
 
