@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
@@ -68,19 +69,17 @@ public class GraphView extends RelativeLayout {
         postInvalidate();
     }
 
-    public @Nullable ValueAnimator animateToNewValue(int newValue) {
+    public @Nullable ValueAnimator animationForNewValue(int newValue, @NonNull Animation.Properties animationProperties) {
         if (newValue == getValue())
             return null;
 
         assertSaneValue(newValue);
 
-        ValueAnimator animator = Animation.applyDefaults(ValueAnimator.ofInt(getValue(), newValue));
+        ValueAnimator animator = animationProperties.apply(ValueAnimator.ofInt(getValue(), newValue));
         animator.addUpdateListener(animation -> {
             int value = (Integer) animation.getAnimatedValue();
             setValue(value);
         });
-
-        animator.start();
 
         return animator;
     }
