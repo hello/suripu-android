@@ -55,7 +55,7 @@ public class HomeActivity
     public TimelineFragment getFragmentAfterFragment(@NonNull TimelineFragment fragment) {
         return TimelineFragment.newInstance(fragment.getDateTime().plusDays(1));
     }
-    
+
 
     @Override
     public void onWillTransitionToFragment(@NonNull FragmentPageView<TimelineFragment> view, @NonNull TimelineFragment fragment) {

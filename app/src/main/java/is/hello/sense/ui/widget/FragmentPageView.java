@@ -415,7 +415,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                     float velocity = Math.abs(velocityTracker.getXVelocity());
                     long duration = Math.max(150, Math.min(450, (long) (getMeasuredWidth() / velocity) * 1000 / 2));
 
-                    if (Math.abs(viewX) > viewWidth / 3)
+                    if (Math.abs(viewX) > viewWidth / 4 || velocity > 350)
                         completeTransition(currentPosition, duration);
                     else
                         snapBack(currentPosition, duration);
