@@ -261,7 +261,7 @@ public class Animation {
             animationEnded = true;
 
             if (onAnimationCompleted != null)
-                onAnimationCompleted.onAnimationCompleted(animationCanceled);
+                onAnimationCompleted.onAnimationCompleted(!animationCanceled);
         }
 
         @Override

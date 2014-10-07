@@ -29,19 +29,12 @@ public class HomeActivity extends InjectionActivity {
         viewPager.setAdapter(timelineAdapter);
         if (viewPager.getCurrentFragment() == null) {
             TimelineFragment fragment = TimelineFragment.newInstance(DateTime.now().withTimeAtStartOfDay());
-            fragment.setViewPagerTouchListener(viewPager.TOUCH_LISTENER);
             viewPager.setCurrentFragment(fragment);
         }
     }
 
 
     private class TimelineAdapter implements FragmentPageView.Adapter<TimelineFragment> {
-        private boolean isToday(@NonNull DateTime dateTime) {
-            Interval today = new Interval(dateTime.withTimeAtStartOfDay(), Days.ONE);
-            return today.contains(dateTime);
-        }
-
-
         @Override
         public boolean hasFragmentBeforeFragment(@NonNull TimelineFragment fragment) {
             return true;
@@ -49,7 +42,7 @@ public class HomeActivity extends InjectionActivity {
 
         @Override
         public TimelineFragment getFragmentBeforeFragment(@NonNull TimelineFragment fragment) {
-            return TimelineFragment.newInstance(fragment.getDateTime().minusDays(1)).setViewPagerTouchListener(viewPager.TOUCH_LISTENER);
+            return TimelineFragment.newInstance(fragment.getDateTime().minusDays(1));
         }
 
 
@@ -61,7 +54,7 @@ public class HomeActivity extends InjectionActivity {
 
         @Override
         public TimelineFragment getFragmentAfterFragment(@NonNull TimelineFragment fragment) {
-            return TimelineFragment.newInstance(fragment.getDateTime().plusDays(1)).setViewPagerTouchListener(viewPager.TOUCH_LISTENER);
+            return TimelineFragment.newInstance(fragment.getDateTime().plusDays(1));
         }
     }
 }

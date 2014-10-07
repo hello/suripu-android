@@ -43,8 +43,6 @@ public class TimelineFragment extends InjectionFragment {
     private TimelineSegmentAdapter segmentAdapter;
     private TimelinePresenter presenter;
 
-    private View.OnTouchListener viewPagerTouchListener;
-
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
         TimelineFragment fragment = new TimelineFragment();
@@ -80,7 +78,6 @@ public class TimelineFragment extends InjectionFragment {
         this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
         dateText.setText(dateFormatter.formatAsTimelineDate(getDateTime()));
-        dateText.setOnTouchListener(getViewPagerTouchListener());
 
         listView.addHeaderView(headerView, null, false);
 
@@ -123,19 +120,5 @@ public class TimelineFragment extends InjectionFragment {
 
     public DateTime getDateTime() {
         return (DateTime) getArguments().getSerializable(ARG_DATE);
-    }
-
-    public View.OnTouchListener getViewPagerTouchListener() {
-        return viewPagerTouchListener;
-    }
-
-    public TimelineFragment setViewPagerTouchListener(View.OnTouchListener viewPagerTouchListener) {
-        this.viewPagerTouchListener = viewPagerTouchListener;
-
-        if (dateText != null) {
-            dateText.setOnTouchListener(viewPagerTouchListener);
-        }
-
-        return this;
     }
 }

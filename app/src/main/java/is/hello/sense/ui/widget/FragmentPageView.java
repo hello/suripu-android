@@ -1,11 +1,12 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
@@ -18,6 +19,7 @@ import static is.hello.sense.util.Animation.PropertyAnimatorProxy;
 
 @SuppressWarnings("UnusedDeclaration")
 public final class FragmentPageView<TFragment extends Fragment> extends FrameLayout {
+
     private Adapter<TFragment> adapter;
     private FrameLayout view1;
     private FrameLayout view2;
@@ -40,6 +42,15 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         initialize();
     }
 
+    @Override
+    public void saveHierarchyState(SparseArray<Parcelable> container) {
+        super.saveHierarchyState(container);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        super.onRestoreInstanceState(state);
+    }
 
     //region Properties
 
@@ -106,28 +117,12 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private VelocityTracker velocityTracker;
 
     private int viewWidth;
-    private float initialViewX;
     private float lastX, lastY;
     private float viewX;
     private Position currentPosition;
     private boolean hasBeforeView = false, hasAfterView = false;
     private boolean isTrackingTouchEvents = false;
 
-    private boolean isOffScreenViewOverThreshold(Position position) {
-        return Math.abs(getOnScreenView().getX()) > viewWidth / 3;
-    }
-
-    private void updateOffscreenView(Position position, float currentViewX) {
-        switch (position) {
-            case BEFORE:
-                getOffScreenView().setX(currentViewX - viewWidth);
-                break;
-
-            case AFTER:
-                getOffScreenView().setX(currentViewX + viewWidth);
-                break;
-        }
-    }
 
     private void removeOffScreenFragment() {
         Fragment offScreen = getFragmentManager().findFragmentById(getOffScreenView().getId());
@@ -206,36 +201,15 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         offScreenViewAnimator.start();
     }
 
-    public final OnTouchListener TOUCH_LISTENER = (view, event) -> {
+    @Override
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN: {
-                clearAnimation();
-
-                this.lastX = event.getRawX();
-                this.lastY = event.getRawY();
-                this.viewX = getOnScreenView().getX();
-                this.initialViewX = viewX;
-                this.viewWidth = getOnScreenView().getMeasuredWidth();
-
-                this.hasBeforeView = adapter.hasFragmentBeforeFragment(getCurrentFragment());
-                this.hasAfterView = adapter.hasFragmentAfterFragment(getCurrentFragment());
-
-                return true;
-            }
-
-            case MotionEvent.ACTION_OUTSIDE:
             case MotionEvent.ACTION_MOVE: {
-                float x = event.getRawX(), y = event.getRawY();
-                float deltaX = x - lastX;
-                if (!isTrackingTouchEvents && Math.abs(deltaX) > touchSlop) {
-                    if (getOffScreenView().getParent() == null)
-                        addView(getOffScreenView());
-
-                    this.velocityTracker = VelocityTracker.obtain();
-                    this.isTrackingTouchEvents = true;
-                }
-
                 if (isTrackingTouchEvents) {
+                    float x = event.getRawX(),
+                          y = event.getRawY();
+                    float deltaX = x - lastX;
+
                     velocityTracker.addMovement(event);
 
                     if (Math.abs(y - lastY) < touchSlop) {
@@ -245,6 +219,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                             removeOffScreenFragment();
 
                             if ((position == Position.BEFORE && !hasBeforeView) || (position == Position.AFTER && !hasAfterView)) {
+                                this.viewX = 0;
+                                getOnScreenView().setX(0);
+
                                 return true;
                             }
 
@@ -253,7 +230,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                             this.currentPosition = position;
                         }
 
-                        updateOffscreenView(position, newX);
+                        getOffScreenView().setX(position == Position.BEFORE ? newX - viewWidth : newX + viewWidth);
                         getOnScreenView().setX(newX);
 
                         this.viewX = newX;
@@ -276,7 +253,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     float velocity = Math.abs(velocityTracker.getXVelocity());
                     long duration = Math.max(150, Math.min(450, (long) (getMeasuredWidth() / velocity) * 1000 / 2));
 
-                    if (isOffScreenViewOverThreshold(currentPosition))
+                    if (Math.abs(viewX) > viewWidth / 3)
                         completeTransition(currentPosition, duration);
                     else
                         snapBack(currentPosition, duration);
@@ -293,21 +270,61 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         }
 
         return false;
-    };
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                clearAnimation();
+
+                this.lastX = event.getRawX();
+                this.lastY = event.getRawY();
+                this.viewX = getOnScreenView().getX();
+                this.viewWidth = getOnScreenView().getMeasuredWidth();
+
+                this.hasBeforeView = adapter.hasFragmentBeforeFragment(getCurrentFragment());
+                this.hasAfterView = adapter.hasFragmentAfterFragment(getCurrentFragment());
+
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                float x = event.getRawX(), y = event.getRawY();
+                float deltaX = x - lastX;
+                if (!isTrackingTouchEvents && Math.abs(deltaX) > touchSlop) {
+                    if (getOffScreenView().getParent() == null)
+                        addView(getOffScreenView());
+
+                    this.velocityTracker = VelocityTracker.obtain();
+                    this.isTrackingTouchEvents = true;
+
+                    return true;
+                }
+
+                break;
+
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                this.isTrackingTouchEvents = false;
+                break;
+        }
+
+        return false;
+    }
 
     //endregion
 
 
     protected void initialize() {
+        setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
         this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop();
+
         this.view2 = new FrameLayout(getContext());
         view2.setId(R.id.fragment_page_view_off_screen);
 
         this.view1 = new FrameLayout(getContext());
         view1.setId(R.id.fragment_page_view_on_screen);
         addView(view1);
-
-        setOnTouchListener(TOUCH_LISTENER);
     }
 
 
