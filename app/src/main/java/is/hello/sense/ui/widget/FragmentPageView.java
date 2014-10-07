@@ -1,17 +1,18 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.EdgeEffect;
 import android.widget.FrameLayout;
 
 import is.hello.sense.R;
@@ -31,6 +32,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
 
     private int touchSlop;
     private VelocityTracker velocityTracker;
+    private EdgeEffect leftEdgeEffect;
+    private EdgeEffect rightEdgeEffect;
 
     private int viewWidth;
     private float lastX, lastY;
@@ -57,8 +60,12 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     }
 
     protected void initialize() {
+        setWillNotDraw(false);
         setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
         this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop();
+
+        this.leftEdgeEffect = new EdgeEffect(getContext());
+        this.rightEdgeEffect = new EdgeEffect(getContext());
 
         this.view1 = new FrameLayout(getContext());
         view1.setId(R.id.fragment_page_view_on_screen);
@@ -178,6 +185,43 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     //endregion
 
 
+    //region Drawing
+
+    @Override
+    public void draw(@NonNull Canvas canvas) {
+        super.draw(canvas);
+
+        boolean needsInvalidate = false;
+        if (!leftEdgeEffect.isFinished()) {
+            canvas.save();
+            {
+                canvas.rotate(270f);
+                canvas.translate(-getHeight(), 0);
+                leftEdgeEffect.setSize(getHeight(), getWidth());
+                needsInvalidate |= leftEdgeEffect.draw(canvas);
+            }
+            canvas.restore();
+        }
+
+        if (!rightEdgeEffect.isFinished()) {
+            canvas.save();
+            {
+                canvas.rotate(90f);
+                canvas.translate(0, -getWidth());
+                rightEdgeEffect.setSize(getHeight(), getWidth());
+                needsInvalidate |= rightEdgeEffect.draw(canvas);
+            }
+            canvas.restore();
+        }
+
+        if (needsInvalidate)
+            invalidate();
+    }
+
+
+    //endregion
+
+
     //region Events
 
     private void removeOffScreenFragment() {
@@ -279,6 +323,13 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                                 this.viewX = 0;
                                 getOnScreenView().setX(0);
 
+                                if (position == Position.BEFORE) {
+                                    leftEdgeEffect.onPull(-deltaX / viewWidth);
+                                } else {
+                                    rightEdgeEffect.onPull(deltaX / viewWidth);
+                                }
+                                invalidate();
+
                                 return true;
                             }
 
@@ -314,6 +365,22 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                         completeTransition(currentPosition, duration);
                     else
                         snapBack(currentPosition, duration);
+
+                    boolean shouldInvalidate = false;
+                    if (!leftEdgeEffect.isFinished()) {
+                        leftEdgeEffect.onRelease();
+
+                        shouldInvalidate = true;
+                    }
+
+                    if (!rightEdgeEffect.isFinished()) {
+                        rightEdgeEffect.onRelease();
+
+                        shouldInvalidate = true;
+                    }
+
+                    if (shouldInvalidate)
+                        invalidate();
 
                     velocityTracker.recycle();
                     this.velocityTracker = null;
