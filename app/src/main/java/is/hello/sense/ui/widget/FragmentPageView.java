@@ -62,6 +62,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     protected void initialize() {
         setWillNotDraw(false);
         setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
+        setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
         this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop();
 
         this.leftEdgeEffect = new EdgeEffect(getContext());
@@ -191,31 +192,36 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     public void draw(@NonNull Canvas canvas) {
         super.draw(canvas);
 
-        boolean needsInvalidate = false;
-        if (!leftEdgeEffect.isFinished()) {
-            canvas.save();
-            {
-                canvas.rotate(270f);
-                canvas.translate(-getHeight(), 0);
-                leftEdgeEffect.setSize(getHeight(), getWidth());
-                needsInvalidate |= leftEdgeEffect.draw(canvas);
+        if (getOverScrollMode() == OVER_SCROLL_NEVER) {
+            leftEdgeEffect.finish();
+            rightEdgeEffect.finish();
+        } else {
+            boolean needsInvalidate = false;
+            if (!leftEdgeEffect.isFinished()) {
+                canvas.save();
+                {
+                    canvas.rotate(270f);
+                    canvas.translate(-getHeight(), 0);
+                    leftEdgeEffect.setSize(getHeight(), getWidth());
+                    needsInvalidate = leftEdgeEffect.draw(canvas);
+                }
+                canvas.restore();
             }
-            canvas.restore();
-        }
 
-        if (!rightEdgeEffect.isFinished()) {
-            canvas.save();
-            {
-                canvas.rotate(90f);
-                canvas.translate(0, -getWidth());
-                rightEdgeEffect.setSize(getHeight(), getWidth());
-                needsInvalidate |= rightEdgeEffect.draw(canvas);
+            if (!rightEdgeEffect.isFinished()) {
+                canvas.save();
+                {
+                    canvas.rotate(90f);
+                    canvas.translate(0, -getWidth());
+                    rightEdgeEffect.setSize(getHeight(), getWidth());
+                    needsInvalidate |= rightEdgeEffect.draw(canvas);
+                }
+                canvas.restore();
             }
-            canvas.restore();
-        }
 
-        if (needsInvalidate)
-            invalidate();
+            if (needsInvalidate)
+                invalidate();
+        }
     }
 
 
