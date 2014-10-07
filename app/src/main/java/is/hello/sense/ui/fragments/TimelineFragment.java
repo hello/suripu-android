@@ -48,7 +48,7 @@ public class TimelineFragment extends InjectionFragment {
         TimelineFragment fragment = new TimelineFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_DATE, date);
+        arguments.putSerializable(ARG_DATE, date.withTimeAtStartOfDay());
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -95,6 +95,10 @@ public class TimelineFragment extends InjectionFragment {
 
         Observable<CharSequence> renderedMessage = bindFragment(this, presenter.renderedTimelineMessage);
         track(renderedMessage.subscribe(messageText::setText, error -> messageText.setText(R.string.missing_data_placeholder)));
+    }
+
+    public void onTransitionCompleted() {
+        // This is the best place to fire animations.
     }
 
     public void bindSummary(@NonNull Timeline timeline) {

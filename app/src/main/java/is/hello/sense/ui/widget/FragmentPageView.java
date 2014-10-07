@@ -22,13 +22,26 @@ import static is.hello.sense.util.Animation.PropertyAnimatorProxy;
 
 @SuppressWarnings("UnusedDeclaration")
 public final class FragmentPageView<TFragment extends Fragment> extends ViewGroup {
+    //region Property Fields
 
     private Adapter<TFragment> adapter;
+    private OnTransitionObserver<TFragment> onTransitionObserver;
+    private FragmentManager fragmentManager;
+
+    //endregion
+
+
+    //region Views
+
+    /* Do not access these fields directly, use the on- and offScreenView methods */
     private FrameLayout view1;
     private FrameLayout view2;
     private boolean viewsSwapped = false;
 
-    private FragmentManager fragmentManager;
+    //endregion
+
+
+    //region Event Handling
 
     private int touchSlop;
     private VelocityTracker velocityTracker;
@@ -41,6 +54,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     private Position currentPosition;
     private boolean hasBeforeView = false, hasAfterView = false;
     private boolean isTrackingTouchEvents = false;
+
+    //endregion
+
 
     //region Creation
 
@@ -123,6 +139,14 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
         this.adapter = adapter;
     }
 
+    public OnTransitionObserver<TFragment> getOnTransitionObserver() {
+        return onTransitionObserver;
+    }
+
+    public void setOnTransitionObserver(OnTransitionObserver<TFragment> onTransitionObserver) {
+        this.onTransitionObserver = onTransitionObserver;
+    }
+
     public FragmentManager getFragmentManager() {
         return fragmentManager;
     }
@@ -136,18 +160,31 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
         return (TFragment) getFragmentManager().findFragmentById(getOnScreenView().getId());
     }
 
-    public void setCurrentFragment(TFragment currentFragment) {
+    public void setCurrentFragment(TFragment newFragment) {
         assertFragmentManager();
 
-        if (getCurrentFragment() != null) {
+        TFragment currentFragment = getCurrentFragment();
+        if (newFragment != null) {
+            if (getOnTransitionObserver() != null) {
+                getOnTransitionObserver().onWillTransitionToFragment(this, newFragment);
+                post(() -> getOnTransitionObserver().onWillTransitionToFragment(this, newFragment));
+            }
+
+            if (currentFragment != null) {
+                getFragmentManager().beginTransaction()
+                        .replace(getOnScreenView().getId(), newFragment)
+                        .commit();
+            } else {
+                getFragmentManager().beginTransaction()
+                        .add(getOnScreenView().getId(), newFragment)
+                        .commit();
+            }
+        } else if (currentFragment != null) {
             getFragmentManager().beginTransaction()
-                    .replace(getOnScreenView().getId(), currentFragment)
-                    .commit();
-        } else {
-            getFragmentManager().beginTransaction()
-                    .add(getOnScreenView().getId(), currentFragment)
+                    .remove(currentFragment)
                     .commit();
         }
+
     }
 
     //endregion
@@ -230,8 +267,13 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
 
     //region Events
 
+    private TFragment getOffScreenFragment() {
+        //noinspection unchecked
+        return (TFragment) getFragmentManager().findFragmentById(getOffScreenView().getId());
+    }
+
     private void removeOffScreenFragment() {
-        Fragment offScreen = getFragmentManager().findFragmentById(getOffScreenView().getId());
+        TFragment offScreen = getOffScreenFragment();
         if (offScreen != null) {
             getFragmentManager().beginTransaction()
                     .remove(offScreen)
@@ -281,7 +323,13 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
             this.currentPosition = null;
 
             exchangeOnAndOffScreen();
+
+            if (getOnTransitionObserver() != null)
+                getOnTransitionObserver().onDidTransitionToFragment(this, getCurrentFragment());
         });
+
+        if (getOnTransitionObserver() != null)
+            getOnTransitionObserver().onWillTransitionToFragment(this, getOffScreenFragment());
 
         onScreenViewAnimator.start();
         offScreenViewAnimator.start();
@@ -448,6 +496,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
 
         boolean hasFragmentAfterFragment(@NonNull TFragment fragment);
         TFragment getFragmentAfterFragment(@NonNull TFragment fragment);
+    }
+
+    public interface OnTransitionObserver<TFragment extends Fragment> {
+        void onWillTransitionToFragment(@NonNull FragmentPageView<TFragment> view, @NonNull TFragment fragment);
+        void onDidTransitionToFragment(@NonNull FragmentPageView<TFragment> view, @NonNull TFragment fragment);
     }
 
     private static enum Position {
