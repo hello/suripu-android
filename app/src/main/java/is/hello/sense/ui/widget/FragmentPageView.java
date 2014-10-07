@@ -1,15 +1,17 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.AttributeSet;
-import android.util.SparseArray;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import is.hello.sense.R;
@@ -18,7 +20,7 @@ import is.hello.sense.util.Animation;
 import static is.hello.sense.util.Animation.PropertyAnimatorProxy;
 
 @SuppressWarnings("UnusedDeclaration")
-public final class FragmentPageView<TFragment extends Fragment> extends FrameLayout {
+public final class FragmentPageView<TFragment extends Fragment> extends ViewGroup {
 
     private Adapter<TFragment> adapter;
     private FrameLayout view1;
@@ -26,6 +28,18 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private boolean viewsSwapped = false;
 
     private FragmentManager fragmentManager;
+
+    private int touchSlop;
+    private VelocityTracker velocityTracker;
+
+    private int viewWidth;
+    private float lastX, lastY;
+    private float viewX;
+    private Position currentPosition;
+    private boolean hasBeforeView = false, hasAfterView = false;
+    private boolean isTrackingTouchEvents = false;
+
+    //region Creation
 
     public FragmentPageView(Context context) {
         super(context);
@@ -42,15 +56,49 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         initialize();
     }
 
-    @Override
-    public void saveHierarchyState(SparseArray<Parcelable> container) {
-        super.saveHierarchyState(container);
+    protected void initialize() {
+        setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
+        this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop();
+
+        this.view1 = new FrameLayout(getContext());
+        view1.setId(R.id.fragment_page_view_on_screen);
+        addView(view1);
+
+        this.view2 = new FrameLayout(getContext());
+        view2.setId(R.id.fragment_page_view_off_screen);
+        view2.setVisibility(INVISIBLE);
+        addView(view2);
     }
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
+        if (state != null && state instanceof Bundle) {
+            boolean viewsSwapped = ((Bundle) state).getBoolean("viewsSwapped");
+
+            if (viewsSwapped) {
+                this.viewsSwapped = true;
+                getOffScreenView().setVisibility(INVISIBLE);
+                getOnScreenView().setVisibility(VISIBLE);
+            }
+
+            state = ((Bundle) state).getParcelable("instanceState");
+        }
+
         super.onRestoreInstanceState(state);
     }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Bundle savedState = new Bundle();
+
+        savedState.putParcelable("instanceState", super.onSaveInstanceState());
+        savedState.putBoolean("viewsSwapped", viewsSwapped);
+
+        return savedState;
+    }
+
+    //endregion
+
 
     //region Properties
 
@@ -96,6 +144,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
     //endregion
 
+
+    //region Subviews
+
     private FrameLayout getOnScreenView() {
         if (viewsSwapped)
             return view2;
@@ -110,19 +161,24 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             return view2;
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        setMeasuredDimension(getDefaultSize(0, widthMeasureSpec), getDefaultSize(0, heightMeasureSpec));
+
+        getOnScreenView().measure(widthMeasureSpec, heightMeasureSpec);
+        getOffScreenView().measure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        getOnScreenView().layout(left, top, right, bottom);
+        getOffScreenView().layout(left, top, right, bottom);
+    }
+
+    //endregion
+
 
     //region Events
-
-    private int touchSlop;
-    private VelocityTracker velocityTracker;
-
-    private int viewWidth;
-    private float lastX, lastY;
-    private float viewX;
-    private Position currentPosition;
-    private boolean hasBeforeView = false, hasAfterView = false;
-    private boolean isTrackingTouchEvents = false;
-
 
     private void removeOffScreenFragment() {
         Fragment offScreen = getFragmentManager().findFragmentById(getOffScreenView().getId());
@@ -131,6 +187,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     .remove(offScreen)
                     .commit();
         }
+
+        getOffScreenView().setVisibility(INVISIBLE);
     }
 
     private void addOffScreenFragment(Position position) {
@@ -148,16 +206,15 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         getFragmentManager().beginTransaction()
                 .add(getOffScreenView().getId(), newFragment)
                 .commit();
+
+        getOffScreenView().setVisibility(VISIBLE);
     }
 
     private void exchangeOnAndOffScreen() {
         viewsSwapped = !viewsSwapped;
 
         removeOffScreenFragment();
-        removeView(getOffScreenView());
         getOnScreenView().setX(0f);
-
-        requestLayout();
     }
 
     private void completeTransition(Position position, long duration) {
@@ -193,8 +250,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             this.currentPosition = null;
 
             removeOffScreenFragment();
-            removeView(getOffScreenView());
             getOnScreenView().setX(0f);
+            getOffScreenView().setVisibility(INVISIBLE);
         });
 
         onScreenViewAnimator.start();
@@ -292,9 +349,6 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 float x = event.getRawX(), y = event.getRawY();
                 float deltaX = x - lastX;
                 if (!isTrackingTouchEvents && Math.abs(deltaX) > touchSlop) {
-                    if (getOffScreenView().getParent() == null)
-                        addView(getOffScreenView());
-
                     this.velocityTracker = VelocityTracker.obtain();
                     this.isTrackingTouchEvents = true;
 
@@ -313,19 +367,6 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     //endregion
-
-
-    protected void initialize() {
-        setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
-        this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop();
-
-        this.view2 = new FrameLayout(getContext());
-        view2.setId(R.id.fragment_page_view_off_screen);
-
-        this.view1 = new FrameLayout(getContext());
-        view1.setId(R.id.fragment_page_view_on_screen);
-        addView(view1);
-    }
 
 
     public interface Adapter<TFragment extends Fragment> {

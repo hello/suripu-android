@@ -2,6 +2,7 @@ package is.hello.sense.ui.activities;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
