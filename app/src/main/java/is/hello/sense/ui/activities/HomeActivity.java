@@ -27,7 +27,11 @@ public class HomeActivity extends InjectionActivity {
 
         this.timelineAdapter = new TimelineAdapter();
         viewPager.setAdapter(timelineAdapter);
-        viewPager.setCurrentFragment(TimelineFragment.newInstance(DateTime.now()).setViewPagerTouchListener(viewPager.TOUCH_LISTENER));
+        if (viewPager.getCurrentFragment() == null) {
+            TimelineFragment fragment = TimelineFragment.newInstance(DateTime.now().withTimeAtStartOfDay());
+            fragment.setViewPagerTouchListener(viewPager.TOUCH_LISTENER);
+            viewPager.setCurrentFragment(fragment);
+        }
     }
 
 
@@ -51,7 +55,8 @@ public class HomeActivity extends InjectionActivity {
 
         @Override
         public boolean hasFragmentAfterFragment(@NonNull TimelineFragment fragment) {
-            return isToday(fragment.getDateTime());
+            DateTime fragmentTime = fragment.getDateTime();
+            return fragmentTime.isBefore(DateTime.now().withTimeAtStartOfDay());
         }
 
         @Override

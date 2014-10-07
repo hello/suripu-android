@@ -2,6 +2,8 @@ package is.hello.sense.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
