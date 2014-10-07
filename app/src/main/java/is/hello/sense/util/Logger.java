@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import retrofit.RestAdapter;
 
 /**
@@ -14,6 +16,7 @@ public class Logger {
     //region Primitive
 
     public static int println(int priority, @NonNull String tag, @NonNull String message) {
+        Crashlytics.log(priority, tag, message);
         return Log.println(priority, tag, message);
     }
 
