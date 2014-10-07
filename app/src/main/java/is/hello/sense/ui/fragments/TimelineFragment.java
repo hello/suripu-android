@@ -37,18 +37,13 @@ public class TimelineFragment extends InjectionFragment {
     private TextView scoreText;
     private TextView messageText;
 
-    private TextView averageTemperature;
-    private TextView averageHumidity;
-    private TextView averageParticulates;
-
     @Inject ApiService apiService;
     @Inject DateFormatter dateFormatter;
 
     private TimelineSegmentAdapter segmentAdapter;
     private TimelinePresenter presenter;
-    private DateTime timelineDate;
 
-    private Observable<Timeline> boundMainTimeline;
+    private View.OnTouchListener viewPagerTouchListener;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -64,8 +59,7 @@ public class TimelineFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.timelineDate = (DateTime) getArguments().getSerializable(ARG_DATE);
-        this.presenter = new TimelinePresenter(apiService, timelineDate);
+        this.presenter = new TimelinePresenter(apiService, getDateTime());
         this.segmentAdapter = new TimelineSegmentAdapter(getActivity());
 
         setRetainInstance(true);
@@ -85,18 +79,10 @@ public class TimelineFragment extends InjectionFragment {
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
-        dateText.setText(dateFormatter.formatAsTimelineDate(timelineDate));
+        dateText.setText(dateFormatter.formatAsTimelineDate(getDateTime()));
+        dateText.setOnTouchListener(getViewPagerTouchListener());
 
         listView.addHeaderView(headerView, null, false);
-
-
-        View conditionsView = inflater.inflate(R.layout.sub_fragment_average_conditions, listView, false);
-
-        this.averageTemperature = (TextView) conditionsView.findViewById(R.id.fragment_timeline_average_temp);
-        this.averageHumidity = (TextView) conditionsView.findViewById(R.id.fragment_timeline_average_humidity);
-        this.averageParticulates = (TextView) conditionsView.findViewById(R.id.fragment_timeline_average_dust);
-
-        listView.addHeaderView(conditionsView, null, false);
 
         return view;
     }
@@ -105,7 +91,7 @@ public class TimelineFragment extends InjectionFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        this.boundMainTimeline = bindFragment(this, presenter.mainTimeline);
+        Observable<Timeline> boundMainTimeline = bindFragment(this, presenter.mainTimeline);
         track(boundMainTimeline.subscribe(this::bindSummary, this::presentError));
         track(boundMainTimeline.map(Timeline::getSegments)
                                .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError));
@@ -132,5 +118,24 @@ public class TimelineFragment extends InjectionFragment {
 
     public void presentError(Throwable e) {
         ErrorDialogFragment.presentError(getFragmentManager(), e);
+    }
+
+
+    public DateTime getDateTime() {
+        return (DateTime) getArguments().getSerializable(ARG_DATE);
+    }
+
+    public View.OnTouchListener getViewPagerTouchListener() {
+        return viewPagerTouchListener;
+    }
+
+    public TimelineFragment setViewPagerTouchListener(View.OnTouchListener viewPagerTouchListener) {
+        this.viewPagerTouchListener = viewPagerTouchListener;
+
+        if (dateText != null) {
+            dateText.setOnTouchListener(viewPagerTouchListener);
+        }
+
+        return this;
     }
 }
