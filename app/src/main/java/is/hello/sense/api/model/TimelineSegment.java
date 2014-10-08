@@ -1,5 +1,6 @@
 package is.hello.sense.api.model;
 
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -10,6 +11,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.joda.time.DateTime;
 
 import java.util.List;
+
+import is.hello.sense.R;
 
 public class TimelineSegment extends ApiResponse {
     @JsonProperty("id")
@@ -85,19 +88,25 @@ public class TimelineSegment extends ApiResponse {
 
 
     public static enum EventType {
-        MOTION,
-        NOISE,
-        SNORING,
-        SLEEP_TALK,
-        LIGHT,
-        SLEEP_MOTION,
-        SLEEP,
-        UNKNOWN;
+        MOTION(R.drawable.motion_event_icon),
+        NOISE(R.drawable.noise_event_icon),
+        SNORING(R.drawable.noise_event_icon),
+        SLEEP_TALK(R.drawable.noise_event_icon),
+        LIGHT(R.drawable.light_event_icon),
+        SLEEP_MOTION(R.drawable.motion_event_icon),
+        SLEEP(R.drawable.sleep_event_icon),
+        UNKNOWN(R.drawable.motion_event_icon);
 
         @JsonCreator
         @SuppressWarnings("UnusedDeclaration")
         public static EventType fromString(@NonNull String value) {
             return Enums.fromString(value, values(), UNKNOWN);
+        }
+
+        public final @DrawableRes int iconDrawable;
+
+        private EventType(@DrawableRes int iconDrawable) {
+            this.iconDrawable = iconDrawable;
         }
     }
 }

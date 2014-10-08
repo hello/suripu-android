@@ -23,7 +23,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
 import is.hello.sense.util.Animation;
-import is.hello.sense.util.ColorUtils;
+import is.hello.sense.util.Styles;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
@@ -105,7 +105,7 @@ public class TimelineFragment extends InjectionFragment {
         dateText.setText(dateFormatter.formatAsTimelineDate(timeline.getDate()));
 
         int sleepScore = timeline.getScore();
-        scoreGraph.setFillColor(getResources().getColor(ColorUtils.colorResForSleepScore(sleepScore)));
+        scoreGraph.setFillColor(getResources().getColor(Styles.getSleepScoreColorRes(sleepScore)));
         ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animation.Properties.createWithDelay(250));
         if (updateAnimation != null) {
             updateAnimation.addUpdateListener(a -> {
