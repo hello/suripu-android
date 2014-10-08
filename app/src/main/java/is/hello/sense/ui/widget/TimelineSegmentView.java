@@ -84,15 +84,17 @@ public final class TimelineSegmentView extends FrameLayout {
         graphView.setFillColor(getResources().getColor(ColorUtils.colorResForSleepDepth(sleepScore)));
         graphView.setValue(sleepScore);
 
-        time.setText(dateFormatter.formatAsTime(new DateTime(segment.getTimestamp())));
+        time.setText(dateFormatter.formatAsTime(segment.getTimestamp()));
 
         if (segment.getEventType() != null) {
             eventType.setText(getNameForEventType(segment.getEventType()));
             time.setBackgroundResource(R.drawable.background_timestamp_highlighted);
             time.setTextColor(getResources().getColor(R.color.black));
-            int padding = (int) (8f * displayMetrics.density);
-            time.setPaddingRelative(padding, padding, padding, padding);
+            int horizontalPadding = (int) (8f * displayMetrics.density);
+            int verticalPadding = (int) (4f * displayMetrics.density);
+            time.setPaddingRelative(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);
             time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
+            time.setVisibility(VISIBLE);
 
             eventType.setVisibility(VISIBLE);
             eventTypeImage.setVisibility(VISIBLE);
@@ -101,6 +103,7 @@ public final class TimelineSegmentView extends FrameLayout {
             time.setTextColor(getResources().getColor(R.color.grey));
             time.setPaddingRelative(0, 0, 0, 0);
             time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+            time.setVisibility(segment.getTimestamp().getMinuteOfHour() == 0 ? VISIBLE : GONE);
 
             eventType.setVisibility(GONE);
             eventTypeImage.setVisibility(GONE);

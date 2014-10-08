@@ -3,8 +3,11 @@ package is.hello.sense.api.model;
 import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import org.joda.time.DateTime;
 
 import java.util.List;
 
@@ -13,7 +16,8 @@ public class TimelineSegment extends ApiResponse {
     private String id;
 
     @JsonProperty("timestamp")
-    private long timestamp;
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    private DateTime timestamp;
 
     @JsonProperty("duration")
     private long duration;
@@ -39,7 +43,7 @@ public class TimelineSegment extends ApiResponse {
         return id;
     }
 
-    public long getTimestamp() {
+    public DateTime getTimestamp() {
         return timestamp;
     }
 

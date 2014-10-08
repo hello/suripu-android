@@ -15,6 +15,7 @@
 
     <dimen name="event_image_width">35dp</dimen>
     <dimen name="event_image_height">35dp</dimen>
+    <dimen name="event_view_min_height">30dp</dimen>
 
     <dimen name="grand_sleep_summary_width">175dp</dimen>
     <dimen name="grand_sleep_summary_height">175dp</dimen>

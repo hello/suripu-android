@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/gap_medium"
+    android:minHeight="@dimen/event_view_min_height"
     app:value="50"
     app:maxValue="100"
     app:fillColor="@color/sleep_light">
