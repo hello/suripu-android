@@ -105,7 +105,7 @@ public class TimelineFragment extends InjectionFragment {
         dateText.setText(dateFormatter.formatAsTimelineDate(timeline.getDate()));
 
         int sleepScore = timeline.getScore();
-        scoreGraph.setFillColor(getResources().getColor(ColorUtils.colorResForSleepDepth(sleepScore)));
+        scoreGraph.setFillColor(getResources().getColor(ColorUtils.colorResForSleepScore(sleepScore)));
         ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animation.Properties.createWithDelay(250));
         if (updateAnimation != null) {
             updateAnimation.addUpdateListener(a -> {

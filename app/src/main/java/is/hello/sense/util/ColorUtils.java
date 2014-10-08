@@ -15,4 +15,14 @@ public final class ColorUtils {
         else
             return R.color.sleep_intermediate;
     }
+
+    public static @ColorRes int colorResForSleepScore(int sleepScore) {
+        // sleepScore < 45 ? HelloStyleKit.warningSensorColor : (sleepScore < 80 ? HelloStyleKit.alertSensorColor : HelloStyleKit.idealSensorColor);
+        if (sleepScore < 45)
+            return R.color.sensor_warning;
+        else if (sleepScore < 80)
+            return R.color.sensor_alert;
+        else
+            return R.color.sensor_ideal;
+    }
 }
