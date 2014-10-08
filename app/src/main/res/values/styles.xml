@@ -19,7 +19,18 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowAnimationStyle">@style/Animations.SimpleFade</item>
+
         <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="Animations" />
+
+    <style name="Animations.SimpleFade">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowShowAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+        <item name="android:windowHideAnimation">@anim/fade_out</item>
     </style>
 
     <!-- Buttons -->

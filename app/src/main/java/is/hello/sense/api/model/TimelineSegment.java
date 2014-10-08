@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class TimelineSegment extends ApiResponse {
 
     @JsonProperty("timestamp")
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private DateTime timestamp;
+    private LocalDateTime timestamp;
 
     @JsonProperty("duration")
     private long duration;
@@ -47,7 +47,7 @@ public class TimelineSegment extends ApiResponse {
         return id;
     }
 
-    public DateTime getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 

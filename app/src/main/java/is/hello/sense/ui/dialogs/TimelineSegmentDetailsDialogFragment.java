@@ -1,5 +1,6 @@
 package is.hello.sense.ui.dialogs;
 
+import android.animation.AnimatorInflater;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,7 +12,10 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.common.InjectionDialogFragment;
+import is.hello.sense.util.Animation;
 import is.hello.sense.util.DateFormatter;
+
+import static is.hello.sense.util.PropertyAnimatorProxy.animate;
 
 public final class TimelineSegmentDetailsDialogFragment extends InjectionDialogFragment {
     public static final String TAG = TimelineSegmentDetailsDialogFragment.class.getSimpleName();
@@ -21,6 +25,7 @@ public final class TimelineSegmentDetailsDialogFragment extends InjectionDialogF
     @Inject DateFormatter dateFormatter;
 
     private TimelineSegment timelineSegment;
+    private View contentView;
 
     public static TimelineSegmentDetailsDialogFragment newInstance(@NonNull TimelineSegment segment) {
         TimelineSegmentDetailsDialogFragment dialogFragment = new TimelineSegmentDetailsDialogFragment();
@@ -48,6 +53,8 @@ public final class TimelineSegmentDetailsDialogFragment extends InjectionDialogF
         dialog.setContentView(R.layout.dialog_fragment_timeline_segment_details);
         dialog.setCanceledOnTouchOutside(true);
 
+        this.contentView = dialog.findViewById(R.id.dialog_fragment_timeline_segment_details_content);
+
         View background = dialog.findViewById(R.id.dialog_fragment_timeline_segment_details_overlay);
         background.setOnClickListener(unused -> dismiss());
 
@@ -61,5 +68,23 @@ public final class TimelineSegmentDetailsDialogFragment extends InjectionDialogF
         time.setText(dateFormatter.formatAsTime(timelineSegment.getTimestamp()));
 
         return dialog;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        contentView.setScaleX(0.5f);
+        contentView.setScaleY(0.5f);
+        animate(contentView)
+                .setDuration(Animation.DURATION_DEFAULT / 2)
+                .scaleX(1.01f)
+                .scaleY(1.01f)
+                .andThen()
+                .setApplyChangesToView(true)
+                .setDuration(Animation.DURATION_DEFAULT / 2)
+                .scaleX(1f)
+                .scaleY(1f)
+                .start();
     }
 }

@@ -16,9 +16,9 @@ import android.widget.EdgeEffect;
 import android.widget.FrameLayout;
 
 import is.hello.sense.R;
-import is.hello.sense.util.Animation;
 
-import static is.hello.sense.util.Animation.PropertyAnimatorProxy;
+import is.hello.sense.util.Animation;
+import is.hello.sense.util.PropertyAnimatorProxy;
 
 @SuppressWarnings("UnusedDeclaration")
 public final class FragmentPageView<TFragment extends Fragment> extends ViewGroup {
@@ -310,8 +310,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     }
 
     private void completeTransition(Position position, long duration) {
-        PropertyAnimatorProxy onScreenViewAnimator = Animation.animate(getOnScreenView()).setDuration(duration);
-        PropertyAnimatorProxy offScreenViewAnimator = Animation.animate(getOffScreenView()).setDuration(duration);
+        PropertyAnimatorProxy onScreenViewAnimator = PropertyAnimatorProxy.animate(getOnScreenView()).setDuration(duration);
+        PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView()).setDuration(duration);
 
         offScreenViewAnimator.x(0f);
         onScreenViewAnimator.x(position == Position.BEFORE ? viewWidth : -viewWidth);
@@ -336,8 +336,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     }
 
     private void snapBack(Position position, long duration) {
-        PropertyAnimatorProxy onScreenViewAnimator = Animation.animate(getOnScreenView()).setDuration(duration);
-        PropertyAnimatorProxy offScreenViewAnimator = Animation.animate(getOffScreenView()).setDuration(duration);
+        PropertyAnimatorProxy onScreenViewAnimator = PropertyAnimatorProxy.animate(getOnScreenView()).setDuration(duration);
+        PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView()).setDuration(duration);
 
         offScreenViewAnimator.x(position == Position.BEFORE ? -viewWidth : viewWidth);
         onScreenViewAnimator.x(0f);
@@ -413,7 +413,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                     velocityTracker.computeCurrentVelocity(1000);
 
                     float velocity = Math.abs(velocityTracker.getXVelocity());
-                    long duration = Math.max(150, Math.min(450, (long) (getMeasuredWidth() / velocity) * 1000 / 2));
+                    long rawDuration = (long) (getMeasuredWidth() / velocity) * 1000 / 2;
+                    long duration = Math.max(Animation.DURATION_MINIMUM, Math.min(Animation.DURATION_MAXIMUM, rawDuration));
 
                     if (Math.abs(viewX) > viewWidth / 4 || velocity > 350)
                         completeTransition(currentPosition, duration);

@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.joda.time.DateTime;
+import org.joda.time.ReadableInstant;
+import org.joda.time.ReadablePartial;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -26,18 +28,33 @@ import is.hello.sense.R;
         this.timeFormat = DateTimeFormat.forPattern(context.getString(R.string.format_time));
     }
 
-    public @NonNull String formatAsTimelineDate(@Nullable DateTime date) {
+
+    public @NonNull String formatAsTimelineDate(@Nullable ReadableInstant date) {
         return formatAsDate(date);
     }
 
-    public @NonNull String formatAsDate(@Nullable DateTime date) {
+    public @NonNull String formatAsDate(@Nullable ReadablePartial date) {
         if (date != null) {
             return dateFormat.print(date);
         }
         return context.getString(R.string.format_date_placeholder);
     }
 
-    public @NonNull String formatAsTime(@Nullable DateTime date) {
+    public @NonNull String formatAsDate(@Nullable ReadableInstant date) {
+        if (date != null) {
+            return dateFormat.print(date);
+        }
+        return context.getString(R.string.format_date_placeholder);
+    }
+
+    public @NonNull String formatAsTime(@Nullable ReadablePartial date) {
+        if (date != null) {
+            return timeFormat.print(date);
+        }
+        return context.getString(R.string.format_date_placeholder);
+    }
+
+    public @NonNull String formatAsTime(@Nullable ReadableInstant date) {
         if (date != null) {
             return timeFormat.print(date);
         }
