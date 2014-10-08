@@ -29,7 +29,7 @@
         android:layout_centerInParent="true"
         android:background="@drawable/event_icon_container"
         android:scaleType="center"
-        android:src="@drawable/motion_event_icon"
+        android:src="@drawable/fell_asleep_event_icon"
         android:contentDescription="@string/event_type_content_description"/>
 
     <TextView

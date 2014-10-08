@@ -94,7 +94,7 @@ public class TimelineSegment extends ApiResponse {
         SLEEP_TALK(R.drawable.noise_event_icon),
         LIGHT(R.drawable.light_event_icon),
         SLEEP_MOTION(R.drawable.motion_event_icon),
-        SLEEP(R.drawable.sleep_event_icon),
+        SLEEP(R.drawable.fell_asleep_event_icon),
         UNKNOWN(R.drawable.motion_event_icon);
 
         @JsonCreator

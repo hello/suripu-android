@@ -13,8 +13,8 @@
 
     <dimen name="divider_height">1px</dimen> <!-- px is not a typo -->
 
-    <dimen name="event_image_width">35dp</dimen>
-    <dimen name="event_image_height">35dp</dimen>
+    <dimen name="event_image_width">16dp</dimen>
+    <dimen name="event_image_height">16dp</dimen>
     <dimen name="event_view_min_height">30dp</dimen>
 
     <dimen name="grand_sleep_summary_width">175dp</dimen>
