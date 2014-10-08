@@ -18,7 +18,7 @@ public class Logger {
     public static int println(int priority, @NonNull String tag, @NonNull String message) {
         if (Crashlytics.getInstance().isInitialized())
             Crashlytics.log(priority, tag, message);
-        
+
         return Log.println(priority, tag, message);
     }
 

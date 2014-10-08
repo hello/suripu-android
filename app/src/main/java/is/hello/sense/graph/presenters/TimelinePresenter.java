@@ -10,27 +10,32 @@ import org.markdownj.MarkdownProcessor;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Timeline;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
 
-public class TimelinePresenter implements Presenter {
+public class TimelinePresenter extends Presenter {
+    @Inject MarkdownProcessor markdownProcessor;
+    @Inject ApiService service;
+
+    private final DateTime date;
+
     public final ReplaySubject<List<Timeline>> timeline = ReplaySubject.create(1);
     public final Observable<Timeline> mainTimeline = timeline.filter(timelines -> !timelines.isEmpty())
                                                              .map(timelines -> timelines.get(0));
     public final Observable<CharSequence> renderedTimelineMessage = mainTimeline.map(timeline -> {
         String rawMessage = timeline.getMessage();
-        String markdown = new MarkdownProcessor().markdown(rawMessage);
+        String markdown = markdownProcessor.markdown(rawMessage);
         Spanned html = Html.fromHtml(markdown);
         return html.subSequence(0, TextUtils.getTrimmedLength(html));
     });
 
-    private final ApiService service;
-    private final DateTime date;
+    public TimelinePresenter(@NonNull DateTime date) {
+        super();
 
-    public TimelinePresenter(@NonNull ApiService service, @NonNull DateTime date) {
-        this.service = service;
         this.date = date;
 
         update();

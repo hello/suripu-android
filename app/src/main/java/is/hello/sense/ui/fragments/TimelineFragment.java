@@ -16,17 +16,16 @@ import org.joda.time.DateTime;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.Styles;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.common.Styles;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
@@ -40,11 +39,10 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     private TextView scoreText;
     private TextView messageText;
 
-    @Inject ApiService apiService;
     @Inject DateFormatter dateFormatter;
 
     private TimelineSegmentAdapter segmentAdapter;
-    private TimelinePresenter presenter;
+    private TimelinePresenter timelinePresenter;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -60,7 +58,9 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.presenter = new TimelinePresenter(apiService, getDateTime());
+        this.timelinePresenter = new TimelinePresenter(getDateTime());
+        addPresenter(timelinePresenter);
+
         this.segmentAdapter = new TimelineSegmentAdapter(getActivity());
 
         setRetainInstance(true);
@@ -92,12 +92,12 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Timeline> boundMainTimeline = bindFragment(this, presenter.mainTimeline);
+        Observable<Timeline> boundMainTimeline = bindFragment(this, timelinePresenter.mainTimeline);
         track(boundMainTimeline.subscribe(this::bindSummary, this::presentError));
         track(boundMainTimeline.map(Timeline::getSegments)
                                .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError));
 
-        Observable<CharSequence> renderedMessage = bindFragment(this, presenter.renderedTimelineMessage);
+        Observable<CharSequence> renderedMessage = bindFragment(this, timelinePresenter.renderedTimelineMessage);
         track(renderedMessage.subscribe(messageText::setText, error -> messageText.setText(R.string.missing_data_placeholder)));
     }
 
