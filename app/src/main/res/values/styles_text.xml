@@ -22,6 +22,11 @@
         <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
 
+    <style name="AppTheme.Text.Body.Bold">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="fontPath">fonts/Calibre-Medium.otf</item>
+    </style>
+
     <style name="AppTheme.Text.Body.Dimmed">
         <item name="android:textColor">@color/grey</item>
     </style>

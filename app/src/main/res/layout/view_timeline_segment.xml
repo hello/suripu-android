@@ -15,35 +15,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/gap_medium"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        android:layout_centerInParent="true"
         android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
         android:text="@string/mock_time"/>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/view_timeline_segment_image_event_type"
+        android:layout_width="@dimen/event_image_width"
+        android:layout_height="@dimen/event_image_height"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:src="@drawable/event_icon_container"
+        android:contentDescription="@string/event_type_content_description"/>
+
+    <TextView
+        android:id="@+id/view_timeline_segment_event_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_toStartOf="@id/view_timeline_segment_time"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/view_timeline_segment_image_event_type"
-            android:layout_width="@dimen/event_image_width"
-            android:layout_height="@dimen/event_image_height"
-            android:src="@drawable/event_icon_container"
-            android:contentDescription="@string/event_type_content_description"/>
-
-        <TextView
-            android:id="@+id/view_timeline_segment_event_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/gap_medium"
-            android:textAppearance="@style/AppTheme.Text.Body"
-            android:text="@string/mock_event_type"/>
-
-    </LinearLayout>
+        android:layout_toEndOf="@id/view_timeline_segment_image_event_type"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="@dimen/gap_medium"
+        android:textAppearance="@style/AppTheme.Text.Body.Bold"
+        android:text="@string/mock_event_type"/>
 
 </is.hello.sense.ui.widget.HorizontalGraphView>

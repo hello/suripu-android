@@ -4,7 +4,10 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,6 +24,8 @@ import is.hello.sense.util.DateFormatter;
 
 @SuppressWarnings("UnusedDeclaration")
 public final class TimelineSegmentView extends FrameLayout {
+    private DisplayMetrics displayMetrics = new DisplayMetrics();
+
     private HorizontalGraphView graphView;
     private ImageView eventTypeImage;
     private TextView eventType;
@@ -79,13 +84,24 @@ public final class TimelineSegmentView extends FrameLayout {
         graphView.setFillColor(getResources().getColor(ColorUtils.colorResForSleepDepth(sleepScore)));
         graphView.setValue(sleepScore);
 
+        time.setText(dateFormatter.formatAsTime(new DateTime(segment.getTimestamp())));
+
         if (segment.getEventType() != null) {
             eventType.setText(getNameForEventType(segment.getEventType()));
-            time.setText(dateFormatter.formatAsTime(new DateTime(segment.getTimestamp())));
+            time.setBackgroundResource(R.drawable.background_timestamp_highlighted);
+            time.setTextColor(getResources().getColor(R.color.black));
+            int padding = (int) (8f * displayMetrics.density);
+            time.setPaddingRelative(padding, padding, padding, padding);
+            time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
 
             eventType.setVisibility(VISIBLE);
             eventTypeImage.setVisibility(VISIBLE);
         } else {
+            time.setBackground(null);
+            time.setTextColor(getResources().getColor(R.color.grey));
+            time.setPaddingRelative(0, 0, 0, 0);
+            time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+
             eventType.setVisibility(GONE);
             eventTypeImage.setVisibility(GONE);
         }
@@ -93,9 +109,11 @@ public final class TimelineSegmentView extends FrameLayout {
 
     //endregion
 
-
     protected void initialize(@Nullable AttributeSet attributes, int defStyleAttr) {
         SenseApplication.getInstance().inject(this);
+
+        WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(this.displayMetrics);
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
         inflater.inflate(R.layout.view_timeline_segment, this, true);
