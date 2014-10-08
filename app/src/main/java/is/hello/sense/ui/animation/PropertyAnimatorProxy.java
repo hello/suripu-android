@@ -1,4 +1,4 @@
-package is.hello.sense.util;
+package is.hello.sense.ui.animation;
 
 import android.animation.Animator;
 import android.animation.TimeInterpolator;

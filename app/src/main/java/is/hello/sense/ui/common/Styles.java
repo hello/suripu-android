@@ -1,4 +1,4 @@
-package is.hello.sense.util;
+package is.hello.sense.ui.common;
 
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;

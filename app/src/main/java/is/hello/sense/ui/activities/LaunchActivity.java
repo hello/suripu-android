@@ -2,8 +2,6 @@ package is.hello.sense.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -11,16 +9,20 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.util.BuildValues;
 
 
 public class LaunchActivity extends InjectionActivity {
 
     @Inject ApiSessionManager sessionManager;
+    @Inject BuildValues buildValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Crashlytics.start(this);
+
+        if (!buildValues.isDebugBuild())
+            Crashlytics.start(this);
     }
 
     @Override

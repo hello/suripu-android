@@ -25,8 +25,8 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
-import is.hello.sense.util.Animation;
-import is.hello.sense.util.Styles;
+import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.common.Styles;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 

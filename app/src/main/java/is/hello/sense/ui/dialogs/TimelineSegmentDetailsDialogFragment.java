@@ -1,6 +1,5 @@
 package is.hello.sense.ui.dialogs;
 
-import android.animation.AnimatorInflater;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,10 +11,10 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.common.InjectionDialogFragment;
-import is.hello.sense.util.Animation;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.util.DateFormatter;
 
-import static is.hello.sense.util.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public final class TimelineSegmentDetailsDialogFragment extends InjectionDialogFragment {
     public static final String TAG = TimelineSegmentDetailsDialogFragment.class.getSimpleName();

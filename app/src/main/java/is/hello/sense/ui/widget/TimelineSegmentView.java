@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.TimelineSegment;
-import is.hello.sense.util.Styles;
+import is.hello.sense.ui.common.Styles;
 import is.hello.sense.util.DateFormatter;
 
 @SuppressWarnings("UnusedDeclaration")

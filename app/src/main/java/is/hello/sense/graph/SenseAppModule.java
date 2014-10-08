@@ -15,21 +15,23 @@ import is.hello.sense.ui.fragments.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.TimelineSegmentView;
+import is.hello.sense.util.BuildValues;
 
 @Module(
     includes = {ApiModule.class},
     injects = {
+        BuildValues.class,
+
         LaunchActivity.class,
         HomeActivity.class,
-        OnboardingActivity.class,
 
+        OnboardingActivity.class,
         OnboardingSignInFragment.class,
         OnboardingRegisterFragment.class,
+
         TimelineFragment.class,
         TimelineSegmentDetailsDialogFragment.class,
-
         TimelineSegmentAdapter.class,
-
         TimelineSegmentView.class,
     }
 )

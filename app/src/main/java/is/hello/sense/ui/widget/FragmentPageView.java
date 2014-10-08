@@ -16,8 +16,8 @@ import android.widget.EdgeEffect;
 import android.widget.FrameLayout;
 
 import is.hello.sense.R;
-import is.hello.sense.util.Animation;
-import is.hello.sense.util.PropertyAnimatorProxy;
+import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 
 @SuppressWarnings("UnusedDeclaration")
 public final class FragmentPageView<TFragment extends Fragment> extends ViewGroup {
