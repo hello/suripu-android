@@ -6,18 +6,18 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 
 @SuppressWarnings("UnusedDeclaration")
-public final class HorizontalGraphView extends GraphView {
+public final class HorizontalBarGraphView extends GraphView {
     private final Paint paint = new Paint();
 
-    public HorizontalGraphView(Context context) {
+    public HorizontalBarGraphView(Context context) {
         super(context);
     }
 
-    public HorizontalGraphView(Context context, AttributeSet attrs) {
+    public HorizontalBarGraphView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public HorizontalGraphView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public HorizontalBarGraphView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -29,11 +29,11 @@ public final class HorizontalGraphView extends GraphView {
         super.onDraw(canvas);
 
         float width = canvas.getWidth();
-        float height = canvas.getHeight();
-        float barWidth = ((float) value / (float) maxValue) * width;
+        float height = canvas.getHeight() - (topInset + bottomInset);
+        float barWidth = (((float) value / (float) maxValue) * width);
 
         paint.setColor(fillColor);
-        canvas.drawRect(0, 0, barWidth, height, paint);
+        canvas.drawRect(leftInset, topInset, barWidth - rightInset, height, paint);
     }
 
     //endregion

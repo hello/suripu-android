@@ -24,7 +24,7 @@ import is.hello.sense.util.DateFormatter;
 public final class TimelineSegmentView extends FrameLayout {
     private DisplayMetrics displayMetrics = new DisplayMetrics();
 
-    private HorizontalGraphView graphView;
+    private HorizontalBarGraphView graphView;
     private ImageView eventTypeImage;
     private TextView eventType;
     private TextView time;
@@ -78,10 +78,11 @@ public final class TimelineSegmentView extends FrameLayout {
     }
 
     public void displaySegment(@NonNull TimelineSegment segment) {
-        int sleepScore = segment.getSleepDepth();
-        graphView.setFillColor(getResources().getColor(Styles.getSleepDepthColorRes(sleepScore)));
-        graphView.setValue(sleepScore);
+        int sleepDepth = segment.getSleepDepth();
+        graphView.setFillColor(getResources().getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth)));
+        graphView.setValue(sleepDepth);
 
+        eventTypeImage.setBackgroundResource(Styles.getSleepDepthColorRes(sleepDepth));
         time.setText(dateFormatter.formatAsTime(segment.getTimestamp()));
 
         if (segment.getEventType() != null) {
@@ -96,16 +97,16 @@ public final class TimelineSegmentView extends FrameLayout {
             time.setVisibility(VISIBLE);
 
             eventType.setVisibility(VISIBLE);
-            eventTypeImage.setVisibility(VISIBLE);
         } else {
+            eventTypeImage.setImageDrawable(null);
+
             time.setBackground(null);
             time.setTextColor(getResources().getColor(R.color.grey));
             time.setPaddingRelative(0, 0, 0, 0);
             time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
             time.setVisibility(segment.getTimestamp().getMinuteOfHour() == 0 ? VISIBLE : GONE);
 
-            eventType.setVisibility(GONE);
-            eventTypeImage.setVisibility(GONE);
+            eventType.setVisibility(INVISIBLE);
         }
     }
 
@@ -120,7 +121,7 @@ public final class TimelineSegmentView extends FrameLayout {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         inflater.inflate(R.layout.view_timeline_segment, this, true);
 
-        this.graphView = (HorizontalGraphView) findViewById(R.id.view_timeline_segment_graph);
+        this.graphView = (HorizontalBarGraphView) findViewById(R.id.view_timeline_segment_graph);
         this.eventTypeImage = (ImageView) findViewById(R.id.view_timeline_segment_image_event_type);
         this.eventType = (TextView) findViewById(R.id.view_timeline_segment_event_type);
         this.time = (TextView) findViewById(R.id.view_timeline_segment_time);

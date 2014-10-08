@@ -25,4 +25,9 @@
     <color name="sleep_intermediate">#4d95ef</color>
     <color name="sleep_deep">#276ed9</color>
     <color name="sleep_awake">#515acc</color>
+
+    <color name="sleep_light_dimmed">#886aacfb</color>
+    <color name="sleep_intermediate_dimmed">#884d95ef</color>
+    <color name="sleep_deep_dimmed">#88276ed9</color>
+    <color name="sleep_awake_dimmed">#88515acc</color>
 </resources>

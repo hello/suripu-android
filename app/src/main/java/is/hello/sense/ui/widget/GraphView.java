@@ -7,15 +7,21 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import is.hello.sense.R;
 import is.hello.sense.util.Animation;
 
 @SuppressWarnings("UnusedDeclaration")
-public class GraphView extends RelativeLayout {
+public class GraphView extends LinearLayout {
     protected int maxValue = 100;
     protected int value = 60;
+
+    protected int topInset = 0;
+    protected int bottomInset = 0;
+    protected int leftInset = 0;
+    protected int rightInset = 0;
 
     protected int fillColor = Color.GREEN;
 
@@ -93,6 +99,42 @@ public class GraphView extends RelativeLayout {
         postInvalidate();
     }
 
+    public int getTopInset() {
+        return topInset;
+    }
+
+    public void setTopInset(int topInset) {
+        this.topInset = topInset;
+        postInvalidate();
+    }
+
+    public int getBottomInset() {
+        return bottomInset;
+    }
+
+    public void setBottomInset(int bottomInset) {
+        this.bottomInset = bottomInset;
+        postInvalidate();
+    }
+
+    public int getLeftInset() {
+        return leftInset;
+    }
+
+    public void setLeftInset(int leftInset) {
+        this.leftInset = leftInset;
+        postInvalidate();
+    }
+
+    public int getRightInset() {
+        return rightInset;
+    }
+
+    public void setRightInset(int rightInset) {
+        this.rightInset = rightInset;
+        postInvalidate();
+    }
+
     //endregion
 
 
@@ -101,13 +143,13 @@ public class GraphView extends RelativeLayout {
 
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.GraphView, defStyleAttr, 0);
-            int value = styles.getInt(R.styleable.GraphView_value, 50);
-            int maxValue = styles.getInt(R.styleable.GraphView_maxValue, 100);
-            int foregroundColor = styles.getColor(R.styleable.GraphView_fillColor, Color.BLUE);
-
-            setMaxValue(maxValue);
-            setValue(value);
-            setFillColor(foregroundColor);
+            this.value = styles.getInt(R.styleable.GraphView_value, 50);
+            this.maxValue = styles.getInt(R.styleable.GraphView_maxValue, 100);
+            this.fillColor = styles.getColor(R.styleable.GraphView_fillColor, Color.BLUE);
+            this.topInset = (int) styles.getDimension(R.styleable.GraphView_topInset, 0f);
+            this.leftInset = (int) styles.getDimension(R.styleable.GraphView_leftInset, 0f);
+            this.rightInset = (int) styles.getDimension(R.styleable.GraphView_rightInset, 0f);
+            this.bottomInset = (int) styles.getDimension(R.styleable.GraphView_bottomInset, 0f);
         }
     }
 }

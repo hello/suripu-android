@@ -6,5 +6,9 @@
         <attr name="fillColor" format="color" />
         <attr name="maxValue" format="integer" />
         <attr name="value" format="integer" />
+        <attr name="topInset" format="dimension" />
+        <attr name="leftInset" format="dimension" />
+        <attr name="rightInset" format="dimension" />
+        <attr name="bottomInset" format="dimension" />
     </declare-styleable>
 </resources>

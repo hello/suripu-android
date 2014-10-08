@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<is.hello.sense.ui.widget.HorizontalGraphView xmlns:android="http://schemas.android.com/apk/res/android"
+<is.hello.sense.ui.widget.HorizontalBarGraphView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/view_timeline_segment_graph"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/gap_medium"
     android:minHeight="@dimen/event_view_min_height"
+    android:orientation="horizontal"
+    app:leftInset="@dimen/gap_medium"
     app:value="50"
     app:maxValue="100"
     app:fillColor="@color/sleep_light">
 
-    <TextView
-        android:id="@+id/view_timeline_segment_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/gap_medium"
-        android:layout_alignParentEnd="true"
-        android:layout_centerInParent="true"
-        android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
-        android:text="@string/mock_time"/>
-
     <ImageView
         android:id="@+id/view_timeline_segment_image_event_type"
         android:layout_width="@dimen/event_image_width"
-        android:layout_height="@dimen/event_image_height"
-        android:layout_alignParentStart="true"
-        android:layout_centerInParent="true"
-        android:background="@drawable/event_icon_container"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/gap_medium"
+        android:layout_marginRight="@dimen/gap_medium"
+        android:background="@color/sleep_awake"
         android:scaleType="center"
         android:src="@drawable/fell_asleep_event_icon"
         android:contentDescription="@string/event_type_content_description"/>
 
     <TextView
         android:id="@+id/view_timeline_segment_event_type"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@id/view_timeline_segment_time"
-        android:layout_toEndOf="@id/view_timeline_segment_image_event_type"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="@dimen/gap_medium"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Body.Bold"
         android:text="@string/mock_event_type"/>
 
-</is.hello.sense.ui.widget.HorizontalGraphView>
+    <TextView
+        android:id="@+id/view_timeline_segment_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/gap_medium"
+        android:layout_gravity="center_vertical"
+        android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
+        android:text="@string/mock_time"/>
+
+</is.hello.sense.ui.widget.HorizontalBarGraphView>

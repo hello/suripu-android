@@ -1,11 +1,12 @@
 package is.hello.sense.util;
 
 import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 
 import is.hello.sense.R;
 
 public final class Styles {
-    public static @ColorRes int getSleepDepthColorRes(int sleepDepth) {
+    public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth) {
         if (sleepDepth == 0)
             return R.color.sleep_awake;
         else if (sleepDepth == 100)
@@ -16,7 +17,18 @@ public final class Styles {
             return R.color.sleep_intermediate;
     }
 
-    public static @ColorRes int getSleepScoreColorRes(int sleepScore) {
+    public static @ColorRes @DrawableRes int getSleepDepthDimmedColorRes(int sleepDepth) {
+        if (sleepDepth == 0)
+            return R.color.sleep_awake_dimmed;
+        else if (sleepDepth == 100)
+            return R.color.sleep_deep_dimmed;
+        else if (sleepDepth < 60)
+            return R.color.sleep_light_dimmed;
+        else
+            return R.color.sleep_intermediate_dimmed;
+    }
+
+    public static @ColorRes @DrawableRes int getSleepScoreColorRes(int sleepScore) {
         if (sleepScore < 45)
             return R.color.sensor_warning;
         else if (sleepScore < 80)

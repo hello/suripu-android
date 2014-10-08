@@ -22,32 +22,24 @@
         android:layout_height="@dimen/grand_sleep_summary_width"
         android:layout_marginBottom="@dimen/gap_medium"
         android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
         app:maxValue="100"
         app:value="0"
         app:fillColor="@color/sleep_light">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/fragment_timeline_sleep_score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="vertical">
+            android:textAppearance="@style/AppTheme.Text.BigScore"
+            android:text="@string/missing_data_placeholder"/>
 
-            <TextView
-                android:id="@+id/fragment_timeline_sleep_score"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textAppearance="@style/AppTheme.Text.BigScore"
-                android:text="@string/missing_data_placeholder"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textAppearance="@style/AppTheme.Text.BigScore.Details"
-                android:text="@string/sleep_score"/>
-
-        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/AppTheme.Text.BigScore.Details"
+            android:text="@string/sleep_score"/>
 
     </is.hello.sense.ui.widget.PieGraphView>
 
