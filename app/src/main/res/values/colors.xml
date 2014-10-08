@@ -9,12 +9,13 @@
     <color name="background_dim">#66ffffff</color>
     <color name="background_timeline">#eaf0f1</color>
 
+    <color name="border">#e5e7e9</color>
+
     <color name="background_button_normal">#eaeaea</color>
     <color name="background_button_pressed">#d5d5d5</color>
     <color name="background_button_disabled">#88eaeaea</color>
 
-    <color name="timeline_border">#919191</color>
-
+    <color name="sleep_score_empty">#e1e1e1</color>
     <color name="sleep_score_high">#5dcc51</color>
     <color name="sleep_score_average">#f1e57f</color>
     <color name="sleep_score_bad">#cc5651</color>

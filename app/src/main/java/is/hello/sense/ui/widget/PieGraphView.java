@@ -89,7 +89,7 @@ public final class PieGraphView extends GraphView {
         super.initialize(attrs, defStyleAttr);
 
         this.displayScaleFactor = getResources().getDisplayMetrics().density;
-        this.trackColor = getResources().getColor(R.color.timeline_border);
+        this.trackColor = getResources().getColor(R.color.sleep_score_empty);
         this.centerColor = getResources().getColor(R.color.background);
     }
 }

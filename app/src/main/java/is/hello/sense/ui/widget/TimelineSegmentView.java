@@ -61,21 +61,19 @@ public final class TimelineSegmentView extends FrameLayout {
             eventTypeImage.setImageResource(segment.getEventType().iconDrawable);
             eventType.setText(segment.getEventType().nameString);
             time.setBackgroundResource(R.drawable.background_timestamp_highlighted);
-            time.setTextColor(getResources().getColor(R.color.black));
-            int horizontalPadding = (int) (8f * displayMetrics.density);
-            int verticalPadding = (int) (4f * displayMetrics.density);
+            int horizontalPadding = (int) (10f * displayMetrics.density);
+            int verticalPadding = (int) (6f * displayMetrics.density);
             time.setPaddingRelative(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);
-            time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
+            time.setTextAppearance(getContext(), R.style.AppTheme_Text_Body);
             time.setVisibility(VISIBLE);
 
             eventType.setVisibility(VISIBLE);
         } else {
             eventTypeImage.setImageDrawable(null);
 
+            time.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Dimmed);
             time.setBackground(null);
-            time.setTextColor(getResources().getColor(R.color.grey));
             time.setPaddingRelative(0, 0, 0, 0);
-            time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
             time.setVisibility(segment.getTimestamp().getMinuteOfHour() == 0 ? VISIBLE : GONE);
 
             eventType.setVisibility(INVISIBLE);

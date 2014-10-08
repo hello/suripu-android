@@ -36,6 +36,16 @@
         <item name="android:textSize">@dimen/text_size_large</item>
     </style>
 
+    <style name="AppTheme.Text.Timestamp">
+        <item name="android:paddingTop">@dimen/gap_small</item>
+        <item name="android:paddingBottom">@dimen/gap_small</item>
+        <item name="android:paddingLeft">@dimen/gap_medium</item>
+        <item name="android:paddingRight">@dimen/gap_medium</item>
+        <item name="android:background">@drawable/background_timestamp_highlighted</item>
+        <item name="android:textColor">@color/black</item>term
+        <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
+    </style>
+
     <style name="AppTheme.Text.FieldLabel">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
