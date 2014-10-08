@@ -13,6 +13,15 @@
         <item name="android:windowTitleSize">0dp</item>
     </style>
 
+    <style name="AppTheme.Dialog" parent="android:Theme.Holo.Dialog" />
+
+    <style name="AppTheme.Dialog.Details">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
     <!-- Buttons -->
 
     <style name="AppTheme.Button" parent="android:Widget.Holo.Light.Button">

@@ -1,4 +1,6 @@
 package is.hello.sense.api.model;
 
-public class ApiResponse {
+import java.io.Serializable;
+
+public class ApiResponse implements Serializable {
 }

@@ -2,6 +2,7 @@ package is.hello.sense.api.model;
 
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -88,14 +89,14 @@ public class TimelineSegment extends ApiResponse {
 
 
     public static enum EventType {
-        MOTION(R.drawable.motion_event_icon),
-        NOISE(R.drawable.noise_event_icon),
-        SNORING(R.drawable.noise_event_icon),
-        SLEEP_TALK(R.drawable.noise_event_icon),
-        LIGHT(R.drawable.light_event_icon),
-        SLEEP_MOTION(R.drawable.motion_event_icon),
-        SLEEP(R.drawable.fell_asleep_event_icon),
-        UNKNOWN(R.drawable.motion_event_icon);
+        MOTION(R.drawable.motion_event_icon, R.string.event_type_motion),
+        NOISE(R.drawable.noise_event_icon, R.string.event_type_noise),
+        SNORING(R.drawable.noise_event_icon, R.string.event_type_snoring),
+        SLEEP_TALK(R.drawable.noise_event_icon, R.string.event_type_sleep_talk),
+        LIGHT(R.drawable.light_event_icon, R.string.event_type_light),
+        SLEEP_MOTION(R.drawable.motion_event_icon, R.string.event_type_sleep_motion),
+        SLEEP(R.drawable.fell_asleep_event_icon, R.string.event_type_sleep),
+        UNKNOWN(R.drawable.motion_event_icon, R.string.event_type_motion);
 
         @JsonCreator
         @SuppressWarnings("UnusedDeclaration")
@@ -104,9 +105,11 @@ public class TimelineSegment extends ApiResponse {
         }
 
         public final @DrawableRes int iconDrawable;
+        public final @StringRes int nameString;
 
-        private EventType(@DrawableRes int iconDrawable) {
+        private EventType(@DrawableRes int iconDrawable, @StringRes int nameString) {
             this.iconDrawable = iconDrawable;
+            this.nameString = nameString;
         }
     }
 }

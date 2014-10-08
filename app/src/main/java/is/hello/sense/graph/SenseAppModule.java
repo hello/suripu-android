@@ -10,6 +10,7 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
+import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.fragments.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
@@ -25,6 +26,7 @@ import is.hello.sense.ui.widget.TimelineSegmentView;
         OnboardingSignInFragment.class,
         OnboardingRegisterFragment.class,
         TimelineFragment.class,
+        TimelineSegmentDetailsDialogFragment.class,
 
         TimelineSegmentAdapter.class,
 

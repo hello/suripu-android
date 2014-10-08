@@ -49,34 +49,6 @@ public final class TimelineSegmentView extends FrameLayout {
 
     //region Displaying Data
 
-    public String getNameForEventType(@NonNull TimelineSegment.EventType eventType) {
-        switch (eventType) {
-            case LIGHT:
-                return getContext().getString(R.string.event_type_light);
-
-            case MOTION:
-                return getContext().getString(R.string.event_type_motion);
-
-            case NOISE:
-                return getContext().getString(R.string.event_type_noise);
-
-            case SLEEP_MOTION:
-                return getContext().getString(R.string.event_type_sleep_motion);
-
-            case SLEEP_TALK:
-                return getContext().getString(R.string.event_type_sleep_talk);
-
-            case SNORING:
-                return getContext().getString(R.string.event_type_snoring);
-
-            case SLEEP:
-                return getContext().getString(R.string.event_type_sleep);
-
-            default:
-                return getContext().getString(R.string.missing_data_placeholder);
-        }
-    }
-
     public void displaySegment(@NonNull TimelineSegment segment) {
         int sleepDepth = segment.getSleepDepth();
         graphView.setFillColor(getResources().getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth)));
@@ -87,7 +59,7 @@ public final class TimelineSegmentView extends FrameLayout {
 
         if (segment.getEventType() != null) {
             eventTypeImage.setImageResource(segment.getEventType().iconDrawable);
-            eventType.setText(getNameForEventType(segment.getEventType()));
+            eventType.setText(segment.getEventType().nameString);
             time.setBackgroundResource(R.drawable.background_timestamp_highlighted);
             time.setTextColor(getResources().getColor(R.color.black));
             int horizontalPadding = (int) (8f * displayMetrics.density);
