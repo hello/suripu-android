@@ -13,14 +13,19 @@ import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Logger;
+import is.hello.sense.util.Markdown;
+import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static rx.android.observables.AndroidObservable.bindFragment;
 
 public final class TimelineSegmentDetailsDialogFragment extends InjectionDialogFragment {
     public static final String TAG = TimelineSegmentDetailsDialogFragment.class.getSimpleName();
 
     private static final String ARG_SEGMENT = TimelineSegmentDetailsDialogFragment.class.getSimpleName() + ".ARG_SEGMENT";
 
+    @Inject Markdown markdown;
     @Inject DateFormatter dateFormatter;
 
     private TimelineSegment timelineSegment;
@@ -61,7 +66,9 @@ public final class TimelineSegmentDetailsDialogFragment extends InjectionDialogF
         eventType.setText(timelineSegment.getEventType().nameString);
 
         TextView message = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_segment_details_message);
-        message.setText(timelineSegment.getMessage());
+        message.setText(R.string.missing_data_placeholder);
+        Observable<CharSequence> renderedMessage = bindFragment(this, markdown.render(timelineSegment.getMessage()));
+        renderedMessage.subscribe(message::setText, error -> Logger.error(Logger.tagFromClass(TimelineSegmentDetailsDialogFragment.class), "Could not render message markdown", error));
 
         TextView time = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_segment_details_time);
         time.setText(dateFormatter.formatAsTime(timelineSegment.getTimestamp()));

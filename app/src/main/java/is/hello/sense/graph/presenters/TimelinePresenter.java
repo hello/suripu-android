@@ -1,12 +1,8 @@
 package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
-import android.text.Html;
-import android.text.Spanned;
-import android.text.TextUtils;
 
 import org.joda.time.DateTime;
-import org.markdownj.MarkdownProcessor;
 
 import java.util.List;
 
@@ -14,11 +10,12 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.util.Markdown;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
 
 public class TimelinePresenter extends Presenter {
-    @Inject MarkdownProcessor markdownProcessor;
+    @Inject Markdown markdown;
     @Inject ApiService service;
 
     private final DateTime date;
@@ -28,9 +25,7 @@ public class TimelinePresenter extends Presenter {
                                                              .map(timelines -> timelines.get(0));
     public final Observable<CharSequence> renderedTimelineMessage = mainTimeline.map(timeline -> {
         String rawMessage = timeline.getMessage();
-        String markdown = markdownProcessor.markdown(rawMessage);
-        Spanned html = Html.fromHtml(markdown);
-        return html.subSequence(0, TextUtils.getTrimmedLength(html));
+        return markdown.toSpanned(rawMessage);
     });
 
     public TimelinePresenter(@NonNull DateTime date) {

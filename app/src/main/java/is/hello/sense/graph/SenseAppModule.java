@@ -44,18 +44,12 @@ import is.hello.sense.util.BuildValues;
 @SuppressWarnings("UnusedDeclaration")
 public class SenseAppModule {
     private final Context applicationContext;
-    private final MarkdownProcessor markdownProcessor;
 
     public SenseAppModule(@NonNull Context context) {
         this.applicationContext = context;
-        this.markdownProcessor = new MarkdownProcessor();
     }
 
     @Provides Context provideApplicationContext() {
         return applicationContext;
-    }
-
-    @Singleton @Provides MarkdownProcessor provideMarkdownProcessor() {
-        return markdownProcessor;
     }
 }

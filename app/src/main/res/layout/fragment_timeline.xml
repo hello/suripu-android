@@ -6,4 +6,4 @@
     android:layout_height="match_parent"
     android:divider="@null"
     android:dividerHeight="0dp"
-    android:background="@color/background"/>
+    android:background="@color/background_timeline"/>
