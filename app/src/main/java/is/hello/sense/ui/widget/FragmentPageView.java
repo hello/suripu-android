@@ -16,7 +16,6 @@ import android.widget.EdgeEffect;
 import android.widget.FrameLayout;
 
 import is.hello.sense.R;
-
 import is.hello.sense.util.Animation;
 import is.hello.sense.util.PropertyAnimatorProxy;
 
@@ -54,6 +53,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     private Position currentPosition;
     private boolean hasBeforeView = false, hasAfterView = false;
     private boolean isTrackingTouchEvents = false;
+
+    private boolean isAnimating = false;
 
     //endregion
 
@@ -267,6 +268,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
 
     //region Events
 
+    private boolean isPositionValid(Position position) {
+        return (position == Position.BEFORE && hasBeforeView ||
+                position == Position.AFTER && hasAfterView);
+    }
+
     private TFragment getOffScreenFragment() {
         //noinspection unchecked
         return (TFragment) getFragmentManager().findFragmentById(getOffScreenView().getId());
@@ -321,11 +327,15 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                 return;
 
             this.currentPosition = null;
+            velocityTracker.recycle();
+            this.velocityTracker = null;
 
             exchangeOnAndOffScreen();
 
             if (getOnTransitionObserver() != null)
                 getOnTransitionObserver().onDidTransitionToFragment(this, getCurrentFragment());
+
+            this.isAnimating = false;
         });
 
         if (getOnTransitionObserver() != null)
@@ -333,6 +343,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
 
         onScreenViewAnimator.start();
         offScreenViewAnimator.start();
+
+        this.isAnimating = true;
     }
 
     private void snapBack(Position position, long duration) {
@@ -346,14 +358,20 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                 return;
 
             this.currentPosition = null;
+            velocityTracker.recycle();
+            this.velocityTracker = null;
 
             removeOffScreenFragment();
             getOnScreenView().setX(0f);
             getOffScreenView().setVisibility(INVISIBLE);
+
+            this.isAnimating = false;
         });
 
         onScreenViewAnimator.start();
         offScreenViewAnimator.start();
+
+        this.isAnimating = true;
     }
 
     @Override
@@ -373,7 +391,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                         if (position != currentPosition) {
                             removeOffScreenFragment();
 
-                            if ((position == Position.BEFORE && !hasBeforeView) || (position == Position.AFTER && !hasAfterView)) {
+                            if (!isPositionValid(position)) {
                                 this.viewX = 0;
                                 getOnScreenView().setX(0);
 
@@ -416,7 +434,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                     long rawDuration = (long) (getMeasuredWidth() / velocity) * 1000 / 2;
                     long duration = Math.max(Animation.DURATION_MINIMUM, Math.min(Animation.DURATION_MAXIMUM, rawDuration));
 
-                    if (Math.abs(viewX) > viewWidth / 4 || velocity > 350)
+                    if (viewX != 0f && (Math.abs(viewX) > viewWidth / 4 || velocity > 350))
                         completeTransition(currentPosition, duration);
                     else
                         snapBack(currentPosition, duration);
@@ -437,8 +455,6 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                     if (shouldInvalidate)
                         invalidate();
 
-                    velocityTracker.recycle();
-                    this.velocityTracker = null;
                     this.isTrackingTouchEvents = false;
 
                     return true;
@@ -455,19 +471,28 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     public boolean onInterceptTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                clearAnimation();
+                if (isAnimating) {
+                    PropertyAnimatorProxy.stopAnimating(getOnScreenView(), getOffScreenView());
+                    this.isTrackingTouchEvents = true;
+                } else {
+                    this.lastX = event.getRawX();
+                    this.lastY = event.getRawY();
+                    this.viewX = getOnScreenView().getX();
+                    this.viewWidth = getOnScreenView().getMeasuredWidth();
 
-                this.lastX = event.getRawX();
-                this.lastY = event.getRawY();
-                this.viewX = getOnScreenView().getX();
-                this.viewWidth = getOnScreenView().getMeasuredWidth();
-
-                this.hasBeforeView = adapter.hasFragmentBeforeFragment(getCurrentFragment());
-                this.hasAfterView = adapter.hasFragmentAfterFragment(getCurrentFragment());
+                    this.hasBeforeView = adapter.hasFragmentBeforeFragment(getCurrentFragment());
+                    this.hasAfterView = adapter.hasFragmentAfterFragment(getCurrentFragment());
+                }
 
                 break;
 
             case MotionEvent.ACTION_MOVE:
+                if (isAnimating && isTrackingTouchEvents) {
+                    this.isAnimating = false;
+
+                    return true;
+                }
+
                 float x = event.getRawX(), y = event.getRawY();
                 float deltaX = x - lastX;
                 if (!isTrackingTouchEvents && Math.abs(deltaX) > touchSlop) {

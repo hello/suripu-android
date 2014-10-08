@@ -33,9 +33,15 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         this.view = view;
     }
 
-    public static @NonNull
-    PropertyAnimatorProxy animate(@NonNull View forView) {
+    public static @NonNull PropertyAnimatorProxy animate(@NonNull View forView) {
         return new PropertyAnimatorProxy(forView);
+    }
+
+    public static void stopAnimating(@NonNull View... forViews) {
+        for (View forView : forViews) {
+            forView.animate().cancel();
+            forView.clearAnimation();
+        }
     }
 
     //endregion
