@@ -16,7 +16,9 @@ public class Logger {
     //region Primitive
 
     public static int println(int priority, @NonNull String tag, @NonNull String message) {
-        Crashlytics.log(priority, tag, message);
+        if (Crashlytics.getInstance().isInitialized())
+            Crashlytics.log(priority, tag, message);
+        
         return Log.println(priority, tag, message);
     }
 
