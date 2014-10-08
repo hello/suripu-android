@@ -35,7 +35,6 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
 
     private PieGraphView scoreGraph;
-    private TextView dateText;
     private TextView scoreText;
     private TextView messageText;
 
@@ -78,9 +77,10 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         View headerView = inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
 
         this.scoreGraph = (PieGraphView) headerView.findViewById(R.id.fragment_timeline_sleep_score_chart);
-        this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
+
+        TextView dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(getDateTime()));
 
         listView.addHeaderView(headerView, null, false);
@@ -106,8 +106,6 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     }
 
     public void bindSummary(@NonNull Timeline timeline) {
-        dateText.setText(dateFormatter.formatAsTimelineDate(timeline.getDate()));
-
         int sleepScore = timeline.getScore();
         scoreGraph.setFillColor(getResources().getColor(Styles.getSleepScoreColorRes(sleepScore)));
         ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animation.Properties.createWithDelay(250));
