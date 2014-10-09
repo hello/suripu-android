@@ -1,12 +1,16 @@
 package is.hello.sense.graph.presenters;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.joda.time.DateTime;
+import org.joda.time.chrono.ISOChronology;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -20,17 +24,19 @@ import rx.subjects.ReplaySubject;
 
 @Singleton public final class QuestionsPresenter extends Presenter {
     @Inject ApiService apiService;
+    @Inject Context context;
 
     public final ReplaySubject<List<Question>> questions = ReplaySubject.create(1);
     public final ReplaySubject<Question> currentQuestion = ReplaySubject.create(1);
 
+    private SharedPreferences preferences;
     private int offset;
 
 
     //region Lifecycle
 
     public QuestionsPresenter() {
-        update();
+        this.preferences = context.getSharedPreferences(QuestionsPresenter.class.getSimpleName(), 0);
     }
 
     @Override
@@ -56,12 +62,19 @@ import rx.subjects.ReplaySubject;
 
     @Override
     public void update() {
-        String timestamp = DateTime.now().toString("yyyy-MM-dd");
-        apiService.questions(timestamp)
-                  .subscribe(questions -> {
-                      this.questions.onNext(questions);
-                      updateCurrentQuestion();
-                  }, questions::onError);
+        if (getLastUpdated().isBefore(DateTime.now().withTimeAtStartOfDay())) {
+            logEvent("loading today's questions");
+            String timestamp = DateTime.now().toString("yyyy-MM-dd");
+            apiService.questions(timestamp)
+                      .subscribe(questions -> {
+                          this.questions.onNext(questions);
+                          setLastUpdated(DateTime.now());
+                          updateCurrentQuestion();
+                      }, questions::onError);
+        } else {
+            logEvent("questions already updated today");
+            this.questions.onNext(Collections.emptyList());
+        }
     }
 
     public void updateCurrentQuestion() {
@@ -76,6 +89,26 @@ import rx.subjects.ReplaySubject;
     //endregion
 
 
+    //region Last update
+
+    public void setLastUpdated(@NonNull DateTime lastUpdated) {
+        SharedPreferences.Editor transaction = preferences.edit();
+        transaction.putString("lastUpdated", lastUpdated.withTimeAtStartOfDay().toString());
+        transaction.apply();
+    }
+
+    public @NonNull DateTime getLastUpdated() {
+        if (preferences.contains("lastUpdated")) {
+            String timestamp = preferences.getString("lastUpdated", null);
+            return DateTime.parse(timestamp);
+        } else {
+            return new DateTime(0, ISOChronology.getInstance());
+        }
+    }
+
+    //endregion
+
+
     //region Navigating Questions
 
     public int getOffset() {
@@ -85,6 +118,10 @@ import rx.subjects.ReplaySubject;
     public void setOffset(int offset) {
         this.offset = offset;
         updateCurrentQuestion();
+    }
+
+    public void skipQuestion() {
+        nextQuestion();
     }
 
     public void nextQuestion() {

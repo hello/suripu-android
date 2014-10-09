@@ -1,6 +1,7 @@
 package is.hello.sense.ui.animation;
 
 import android.animation.Animator;
+import android.animation.LayoutTransition;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -18,6 +19,8 @@ public class Animation {
         public long duration = DURATION_DEFAULT;
         public Interpolator interpolator = INTERPOLATOR_DEFAULT;
         public long startDelay = 0;
+
+        public static Properties DEFAULT = Properties.create();
 
         public static @NonNull Properties create() {
             return new Properties();
@@ -48,6 +51,19 @@ public class Animation {
             return animator.setDuration(duration)
                            .setInterpolator(interpolator)
                            .setStartDelay(startDelay);
+        }
+
+        public LayoutTransition apply(@NonNull LayoutTransition transition, boolean applyInterpolator) {
+            transition.setDuration(duration);
+            for (int transitionType = LayoutTransition.CHANGE_APPEARING;
+                 transitionType <= LayoutTransition.CHANGING;
+                 transitionType++) {
+                transition.setStartDelay(transitionType, startDelay);
+
+                if (applyInterpolator)
+                    transition.setInterpolator(transitionType, interpolator);
+            }
+            return transition;
         }
 
 

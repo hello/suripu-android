@@ -41,15 +41,8 @@
             android:layout_weight="1"
             android:layout_marginBottom="@dimen/gap_large"
             android:orientation="vertical"
-            android:gravity="center">
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="One"
-                style="@style/AppTheme.Button.Question"/>
-
-        </LinearLayout>
+            android:gravity="center"
+            android:animateLayoutChanges="true" />
 
         <Button
             android:id="@+id/fragment_questions_skip"

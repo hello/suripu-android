@@ -1,9 +1,9 @@
 package is.hello.sense.ui.fragments;
 
+import android.animation.LayoutTransition;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +14,13 @@ import android.widget.TextView;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.bindFragment;
@@ -43,6 +46,10 @@ public class QuestionsFragment extends InjectionFragment {
         this.titleText = (TextView) view.findViewById(R.id.fragment_questions_title);
         this.questionsContainer = (ViewGroup) view.findViewById(R.id.fragment_questions_container);
 
+        LayoutTransition transition = Animation.Properties.DEFAULT.apply(new LayoutTransition(), false);
+        transition.enableTransitionType(LayoutTransition.CHANGING);
+        questionsContainer.setLayoutTransition(transition);
+
         Button skipButton = (Button) view.findViewById(R.id.fragment_questions_skip);
         skipButton.setOnClickListener(this::skipQuestion);
 
@@ -50,40 +57,50 @@ public class QuestionsFragment extends InjectionFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onResume() {
+        super.onResume();
 
-        Observable<Question> question = bindFragment(this, questionsPresenter.currentQuestion);
-        track(question.subscribe(this::bindQuestion, this::presentError));
+        if (!hasSubscriptions()) {
+            Observable<Question> question = bindFragment(this, questionsPresenter.currentQuestion);
+            track(question.subscribe(this::bindQuestion, this::presentError));
+        }
     }
 
-
     public void skipQuestion(@NonNull View sender) {
-        questionsPresenter.nextQuestion();
+        questionsPresenter.skipQuestion();
     }
 
     public void choiceSelected(@NonNull View sender) {
         Question.Choice choice = (Question.Choice) sender.getTag();
-        Log.i("events", "selected choice: " + choice);
-        // questionsPresenter.answerQuestion(choice);
-        questionsPresenter.nextQuestion();
+
+        LoadingDialogFragment.show(getFragmentManager());
+        Observable<ApiResponse> result = bindFragment(this, questionsPresenter.answerQuestion(choice));
+        result.subscribe(unused -> {
+            LoadingDialogFragment.close(getFragmentManager());
+            questionsPresenter.nextQuestion();
+        }, error -> {
+            LoadingDialogFragment.close(getFragmentManager());
+            ErrorDialogFragment.presentError(getFragmentManager(), error);
+        });
     }
 
 
     public void bindQuestion(@Nullable Question question) {
         if (question == null) {
-            // End of questions
+            questionsPresenter.update();
+            getActivity().finish();
         } else {
             titleText.setText(question.getText());
 
             questionsContainer.removeAllViews();
 
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
             View.OnClickListener onClickListener = this::choiceSelected;
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.bottomMargin = (int) getResources().getDimension(R.dimen.gap_medium);
             for (Question.Choice choice : question.getChoices()) {
-                Button choiceButton = new Button(getActivity(), null, R.style.AppTheme_Button_Question);
+                Button choiceButton = (Button) inflater.inflate(R.layout.sub_fragment_button_choice, questionsContainer, false);
                 choiceButton.setText(choice.getText());
                 choiceButton.setTag(choice);
                 choiceButton.setOnClickListener(onClickListener);
@@ -93,6 +110,7 @@ public class QuestionsFragment extends InjectionFragment {
     }
 
     public void presentError(@NonNull Throwable e) {
+        questionsContainer.removeAllViews();
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 }

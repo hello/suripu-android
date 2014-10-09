@@ -14,7 +14,7 @@ import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import rx.Subscription;
 
-public class InjectionFragment extends Fragment implements PresenterContainer {
+public class InjectionFragment extends Fragment implements SubscriptionTracker, PresenterContainer {
     protected ArrayList<Subscription> subscriptions = new ArrayList<>();
     protected ArrayList<Presenter> presenters;
 
@@ -61,11 +61,13 @@ public class InjectionFragment extends Fragment implements PresenterContainer {
         subscriptions.clear();
     }
 
-    protected boolean hasSubscriptions() {
+    @Override
+    public boolean hasSubscriptions() {
         return !subscriptions.isEmpty();
     }
 
-    protected @NonNull Subscription track(@NonNull Subscription subscription) {
+    @Override
+    public @NonNull Subscription track(@NonNull Subscription subscription) {
         subscriptions.add(subscription);
         return subscription;
     }

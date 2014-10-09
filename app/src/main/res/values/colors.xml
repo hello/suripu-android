@@ -16,6 +16,8 @@
     <color name="background_button_pressed">#d5d5d5</color>
     <color name="background_button_disabled">#88eaeaea</color>
 
+    <color name="background_button_transparent_pressed">#33ffffff</color>
+
     <color name="sleep_score_empty">#e1e1e1</color>
     <color name="sleep_score_high">#5dcc51</color>
     <color name="sleep_score_average">#f1e57f</color>

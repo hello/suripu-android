@@ -47,6 +47,7 @@
     </style>
 
     <style name="AppTheme.Button.Borderless.ThinWhite">
+        <item name="android:background">@drawable/button_selector_thinlight</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">@dimen/text_size_large</item>
         <item name="android:textColor">@color/white</item>

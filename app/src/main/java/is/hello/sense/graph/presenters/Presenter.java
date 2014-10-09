@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import is.hello.sense.SenseApplication;
+import is.hello.sense.util.Logger;
 
 public abstract class Presenter {
     private boolean stateRestored = false;
@@ -21,10 +22,12 @@ public abstract class Presenter {
     }
 
     public void onRestoreState(@NonNull Parcelable savedState) {
+        logEvent("onRestoreState(" + savedState + ")");
         this.stateRestored = true;
     }
 
     public @Nullable Parcelable onSaveState() {
+        logEvent("onSaveState()");
         return null;
     }
 
@@ -38,6 +41,15 @@ public abstract class Presenter {
     //region Primitive Methods
 
     public abstract void update();
+
+    //endregion
+
+
+    //region Logging
+
+    protected void logEvent(@NonNull String event) {
+        Logger.debug("presenters", getClass().getSimpleName() + ": " + event);
+    }
 
     //endregion
 }

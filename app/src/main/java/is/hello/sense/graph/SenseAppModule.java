@@ -1,11 +1,9 @@
 package is.hello.sense.graph;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-
-import org.markdownj.MarkdownProcessor;
-
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -49,9 +47,11 @@ import is.hello.sense.util.BuildValues;
 @SuppressWarnings("UnusedDeclaration")
 public class SenseAppModule {
     private final Context applicationContext;
+    private final SharedPreferences sharedPreferences;
 
     public SenseAppModule(@NonNull Context context) {
         this.applicationContext = context;
+        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @Provides Context provideApplicationContext() {

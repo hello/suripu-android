@@ -38,6 +38,7 @@ public class TimelinePresenter extends Presenter {
 
     @Override
     public void update() {
+        logEvent("updating timeline for " + date.toString("yyyy-MM-dd"));
         Observable<List<Timeline>> update = service.timelineForDate(date.year().getAsString(),
                                                                     date.monthOfYear().getAsString(),
                                                                     date.dayOfMonth().getAsString());

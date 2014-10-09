@@ -10,7 +10,7 @@
                 android:dashWidth="1dp"
                 android:width="1dp" />
             <solid
-                android:color="#33FFFFFF" />
+                android:color="@color/background_button_transparent_pressed" />
         </shape>
     </item>
 </layer-list>
