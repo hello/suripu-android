@@ -10,6 +10,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.sense.api.model.ApiException;
+import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.PersistentApiSessionManager;
 import is.hello.sense.util.Logger;
@@ -51,6 +53,15 @@ public class ApiModule {
         builder.setEndpoint(ApiService.BASE_URL);
         builder.setLogLevel(RestAdapter.LogLevel.FULL);
         builder.setLog(Logger.RETROFIT_LOGGER);
+        builder.setErrorHandler(error -> {
+            ErrorResponse errorResponse;
+            try {
+                errorResponse = (ErrorResponse) error.getBodyAs(ErrorResponse.class);
+            } catch (Exception ignored) {
+                errorResponse = null;
+            }
+            return new ApiException(errorResponse, error);
+        });
         builder.setRequestInterceptor(request -> {
             if (sessionManager.hasSession())
                 request.addHeader("Authorization", "Bearer " + sessionManager.getAccessToken());

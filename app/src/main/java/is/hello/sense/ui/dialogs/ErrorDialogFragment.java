@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.ApiException;
 import retrofit.RetrofitError;
 
 public class ErrorDialogFragment extends DialogFragment {
@@ -37,14 +38,13 @@ public class ErrorDialogFragment extends DialogFragment {
             // out of the Throwable object and pull them out of the arguments on the other side.
             arguments.putString(ARG_MESSAGE, e.getMessage());
 
-            if (e instanceof RetrofitError) {
-                RetrofitError error = (RetrofitError) e;
+            if (e instanceof ApiException) {
+                ApiException error = (ApiException) e;
                 arguments.putBoolean(ARG_HAS_REQUEST_INFO, true);
                 arguments.putString(ARG_URL, error.getUrl());
-                if (error.getResponse() != null) {
-                    arguments.putInt(ARG_RESPONSE_STATUS, error.getResponse().getStatus());
-                    arguments.putString(ARG_RESPONSE_REASON, error.getResponse().getReason());
-                }
+                if (error.getStatus() != null)
+                    arguments.putInt(ARG_RESPONSE_STATUS, error.getStatus());
+                arguments.putString(ARG_RESPONSE_REASON, error.getReason());
             }
         }
         fragment.setArguments(arguments);

@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.Timeline;
@@ -70,6 +72,17 @@ public interface ApiService {
     @GET("/room/{sensor}/week")
     Observable<List<SensorHistory>> sensorHistoryForWeek(@Path("sensor") String sensor,
                                                          @Query("timestamp_millis") long timestamp);
+
+    //endregion
+
+
+    //region Questions
+
+    @GET("/questions")
+    Observable<List<Question>> questions(@NonNull @Query("date") String timestamp);
+
+    @POST("/questions")
+    Observable<ApiResponse> answerQuestion(@NonNull @Body Question.Choice answer);
 
     //endregion
 }
