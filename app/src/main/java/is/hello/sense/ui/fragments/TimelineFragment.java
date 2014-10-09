@@ -1,10 +1,14 @@
 package is.hello.sense.ui.fragments;
 
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -19,6 +23,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.graph.presenters.TimelinePresenter;
+import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -79,6 +84,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         this.scoreGraph = (PieGraphView) headerView.findViewById(R.id.fragment_timeline_sleep_score_chart);
         this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
+        scoreGraph.setOnClickListener(this::showDebug);
 
         TextView dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(getDateTime()));
@@ -105,6 +111,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         // This is the best place to fire animations.
     }
 
+
     public void bindSummary(@NonNull Timeline timeline) {
         int sleepScore = timeline.getScore();
         scoreGraph.setFillColor(getResources().getColor(Styles.getSleepScoreColorRes(sleepScore)));
@@ -119,6 +126,10 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         }
     }
 
+    public void presentError(Throwable e) {
+        ErrorDialogFragment.presentError(getFragmentManager(), e);
+    }
+
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -129,9 +140,8 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         }
     }
 
-
-    public void presentError(Throwable e) {
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+    public void showDebug(@NonNull View sender) {
+        startActivity(new Intent(getActivity(), DebugActivity.class));
     }
 
 

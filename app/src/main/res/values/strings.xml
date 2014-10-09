@@ -49,5 +49,6 @@
     <string name="gender_other">Other</string>
     <string name="label_new_question">New Question</string>
     <string name="action_skip_question">Skip This Question</string>
+    <string name="activity_debug">Debug</string>
 
 </resources>

@@ -10,6 +10,7 @@ import dagger.Provides;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
+import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -26,6 +27,7 @@ import is.hello.sense.util.BuildValues;
     includes = {ApiModule.class},
     injects = {
         BuildValues.class,
+        DebugActivity.class,
 
         LaunchActivity.class,
         HomeActivity.class,

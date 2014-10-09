@@ -50,6 +50,17 @@ public class InjectionFragment extends Fragment implements SubscriptionTracker, 
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (presenters != null) {
+            for (Presenter presenter : presenters) {
+                presenter.onContainerDestroyed();
+            }
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
 

@@ -42,6 +42,12 @@
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity
+            android:name=".ui.activities.DebugActivity"
+            android:label="@string/activity_debug"
+            android:parentActivityName=".ui.activities.HomeActivity"
+            android:launchMode="singleTop" />
+
         <meta-data android:name="com.crashlytics.ApiKey" android:value="f464ccd280d3e5730dcdaa9b64d1d108694ee9a9"/>
 
     </application>
