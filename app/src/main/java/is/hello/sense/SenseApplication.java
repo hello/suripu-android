@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.hello.ble.HelloBle;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import dagger.ObjectGraph;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.graph.SenseAppModule;
@@ -21,10 +23,11 @@ public class SenseApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        JodaTimeAndroid.init(this);
         HelloBle.init(this);
-        this.graph = ObjectGraph.create(new ApiModule(this), new SenseAppModule(this));
-
         CalligraphyConfig.initDefault("fonts/Calibre-Regular.otf", R.attr.fontPath);
+
+        this.graph = ObjectGraph.create(new ApiModule(this), new SenseAppModule(this));
 
         instance = this;
     }
