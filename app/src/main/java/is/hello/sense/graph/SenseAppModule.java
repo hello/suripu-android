@@ -10,6 +10,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiModule;
+import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
@@ -18,6 +19,7 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.fragments.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.OnboardingSignInFragment;
+import is.hello.sense.ui.fragments.QuestionsFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.TimelineSegmentView;
 import is.hello.sense.util.BuildValues;
@@ -39,6 +41,9 @@ import is.hello.sense.util.BuildValues;
         TimelineSegmentDetailsDialogFragment.class,
         TimelineSegmentAdapter.class,
         TimelineSegmentView.class,
+
+        QuestionsPresenter.class,
+        QuestionsFragment.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

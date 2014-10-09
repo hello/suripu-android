@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -60,7 +59,7 @@ public final class TimelineSegmentView extends FrameLayout {
         if (segment.getEventType() != null) {
             eventTypeImage.setImageResource(segment.getEventType().iconDrawable);
             eventType.setText(segment.getEventType().nameString);
-            time.setBackgroundResource(R.drawable.background_timestamp_highlighted);
+            time.setBackgroundResource(R.drawable.timestamp_background);
             int horizontalPadding = (int) (10f * displayMetrics.density);
             int verticalPadding = (int) (6f * displayMetrics.density);
             time.setPaddingRelative(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);

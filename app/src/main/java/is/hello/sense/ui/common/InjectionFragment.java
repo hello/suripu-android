@@ -28,6 +28,9 @@ public class InjectionFragment extends Fragment implements PresenterContainer {
 
         if (savedInstanceState != null && presenters != null) {
             for (Presenter presenter : presenters) {
+                if (presenter.isStateRestored())
+                    continue;
+
                 Parcelable savedState = savedInstanceState.getParcelable(presenter.getSavedStateKey());
                 presenter.onRestoreState(savedState);
             }

@@ -7,4 +7,5 @@
     <string name="mock_temperature">64º</string>
     <string name="mock_humidity">61%</string>
     <string name="mock_particulates">410</string>
+    <string name="mock_question_title">How do you feel this morning?</string>
 </resources>

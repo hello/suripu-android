@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/background_questions">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/activity_margin">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_medium"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textAppearance="@style/AppTheme.Text.Heading"
+            android:text="@string/label_new_question"/>
+
+        <View
+            android:layout_marginBottom="@dimen/gap_large"
+            style="@style/Divider.Horizontal.White" />
+
+        <TextView
+            android:id="@+id/fragment_questions_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_large"
+            android:textColor="@color/white"
+            android:textAppearance="@style/AppTheme.Text.QuestionText"
+            android:text="@string/mock_question_title"/>
+
+        <LinearLayout
+            android:id="@+id/fragment_questions_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="@dimen/gap_large"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="One"
+                style="@style/AppTheme.Button.Question"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/fragment_questions_skip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.Button.Borderless.ThinWhite"
+            android:text="@string/action_skip_question"/>
+
+    </LinearLayout>
+
+</ScrollView>

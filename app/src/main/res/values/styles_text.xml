@@ -41,9 +41,15 @@
         <item name="android:paddingBottom">@dimen/gap_small</item>
         <item name="android:paddingLeft">@dimen/gap_medium</item>
         <item name="android:paddingRight">@dimen/gap_medium</item>
-        <item name="android:background">@drawable/background_timestamp_highlighted</item>
+        <item name="android:background">@drawable/timestamp_background</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
+    </style>
+    
+    <style name="AppTheme.Text.QuestionText">
+        <item name="fontPath">fonts/Calibre-Thin.otf</item>
+        <item name="android:textSize">@dimen/text_size_xlarge</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
     </style>
 
     <style name="AppTheme.Text.FieldLabel">

@@ -47,5 +47,7 @@
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
     <string name="gender_other">Other</string>
+    <string name="label_new_question">New Question</string>
+    <string name="action_skip_question">Skip This Question</string>
 
 </resources>

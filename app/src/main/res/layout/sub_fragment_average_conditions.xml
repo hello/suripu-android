@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/gap_medium"
     android:paddingRight="@dimen/gap_medium"
     android:paddingBottom="@dimen/divider_height"
-    android:background="@drawable/background_dividers_bottom">
+    android:background="@drawable/dividers_bottom">
 
     <ImageView
         android:layout_width="wrap_content"
