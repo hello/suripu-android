@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,11 +18,11 @@ import android.widget.TextView;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
-import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -35,6 +34,7 @@ import static rx.android.observables.AndroidObservable.bindFragment;
 public class OnboardingSignInFragment extends InjectionFragment {
     @Inject ApiSessionManager apiSessionManager;
     @Inject ApiService apiService;
+    @Inject ApiEnvironment environment;
 
     private EditText email;
     private EditText password;
@@ -69,7 +69,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
 
         LoadingDialogFragment.show(getFragmentManager());
 
-        OAuthCredentials credentials = new OAuthCredentials(email, password);
+        OAuthCredentials credentials = new OAuthCredentials(environment, email, password);
         Observable<OAuthSession> request = bindFragment(this, apiService.authorize(credentials));
         request.subscribe(session -> {
             apiSessionManager.setSession(session);

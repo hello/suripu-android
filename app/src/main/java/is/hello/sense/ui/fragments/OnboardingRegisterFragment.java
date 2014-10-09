@@ -21,6 +21,7 @@ import java.util.TimeZone;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Gender;
@@ -56,6 +57,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
     @Inject ApiService apiService;
     @Inject ApiSessionManager sessionManager;
+    @Inject ApiEnvironment environment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -201,7 +203,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     }
 
     public void login() {
-        OAuthCredentials credentials = new OAuthCredentials(emailText.getText().toString(), passwordText.getText().toString());
+        OAuthCredentials credentials = new OAuthCredentials(environment, emailText.getText().toString(), passwordText.getText().toString());
         Observable<OAuthSession> observable = bindFragment(this, apiService.authorize(credentials));
         observable.subscribe(session -> {
             sessionManager.setSession(session);

@@ -1,19 +1,20 @@
 package is.hello.sense.api.sessions;
 
+import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 
 import rx.subjects.ReplaySubject;
 
 public abstract class ApiSessionManager {
-    public final ReplaySubject<OAuthSession> currentSession = ReplaySubject.create(1);
+    public static final String ACTION_LOGGED_OUT = ApiSessionManager.class.getName() + ".ACTION_LOGGED_OUT";
 
     //region Abstract
 
     protected abstract void storeOAuthSession(@Nullable OAuthSession session);
     protected abstract @Nullable OAuthSession retrieveOAuthSession();
-    protected void synchronizeState() {
-        currentSession.onNext(retrieveOAuthSession());
-    }
 
     //endregion
 
@@ -22,7 +23,6 @@ public abstract class ApiSessionManager {
 
     public void setSession(@Nullable OAuthSession session) {
         storeOAuthSession(session);
-        synchronizeState();
     }
 
     public @Nullable OAuthSession getSession() {
@@ -43,4 +43,9 @@ public abstract class ApiSessionManager {
     }
 
     //endregion
+
+    public void logOut(@NonNull Context context) {
+        setSession(null);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION_LOGGED_OUT));
+    }
 }

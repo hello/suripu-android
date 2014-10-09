@@ -50,13 +50,19 @@ import is.hello.sense.util.BuildValues;
 public class SenseAppModule {
     private final Context applicationContext;
     private final SharedPreferences sharedPreferences;
+    private final BuildValues buildValues;
 
-    public SenseAppModule(@NonNull Context context) {
+    public SenseAppModule(@NonNull Context context, @NonNull BuildValues buildValues) {
         this.applicationContext = context;
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        this.buildValues = buildValues;
     }
 
     @Provides Context provideApplicationContext() {
         return applicationContext;
+    }
+
+    @Provides BuildValues provideBuildValues() {
+        return buildValues;
     }
 }

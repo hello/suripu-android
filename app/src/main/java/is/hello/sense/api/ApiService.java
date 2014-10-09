@@ -21,11 +21,6 @@ import retrofit.http.Query;
 import rx.Observable;
 
 public interface ApiService {
-    // TODO: Make these dynamic
-    public static final String CLIENT_ID = "android_dev";
-    public static final String CLIENT_SECRET = "99999secret";
-    public static final String BASE_URL = "https://dev-api.hello.is/v1";
-
     public static final String DATE_FORMAT = "yyyy-MM-dd";
 
     //region OAuth

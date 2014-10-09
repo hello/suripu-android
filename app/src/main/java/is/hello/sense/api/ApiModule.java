@@ -25,9 +25,11 @@ import retrofit.converter.JacksonConverter;
 @SuppressWarnings("UnusedDeclaration")
 public class ApiModule {
     private final Context applicationContext;
+    private final ApiEnvironment environment;
 
-    public ApiModule(@NonNull Context applicationContext) {
+    public ApiModule(@NonNull Context applicationContext, @NonNull ApiEnvironment environment) {
         this.applicationContext = applicationContext.getApplicationContext();
+        this.environment = environment;
     }
 
     @Provides @ApiAppContext Context providesApiApplicationContext() {
@@ -50,7 +52,7 @@ public class ApiModule {
         RestAdapter.Builder builder = new RestAdapter.Builder();
         builder.setClient(new AndroidApacheClient());
         builder.setConverter(new JacksonConverter(mapper));
-        builder.setEndpoint(ApiService.BASE_URL);
+        builder.setEndpoint(environment.baseUrl);
         builder.setLogLevel(RestAdapter.LogLevel.FULL);
         builder.setLog(Logger.RETROFIT_LOGGER);
         builder.setErrorHandler(error -> {
@@ -71,5 +73,10 @@ public class ApiModule {
 
     @Singleton @Provides ApiService provideApiService(@NonNull RestAdapter adapter) {
         return adapter.create(ApiService.class);
+    }
+
+    @Provides
+    ApiEnvironment provideEnvironment() {
+        return environment;
     }
 }

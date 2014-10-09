@@ -22,8 +22,6 @@ public class PersistentApiSessionManager extends ApiSessionManager {
     public PersistentApiSessionManager(@NonNull Context context, @NonNull ObjectMapper mapper) {
         this.preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
         this.mapper = mapper;
-
-        synchronizeState();
     }
 
     @Override

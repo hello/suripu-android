@@ -10,12 +10,15 @@ import javax.inject.Singleton;
 
 import is.hello.sense.R;
 
-@Singleton public class BuildValues {
+public class BuildValues {
     public final String type;
+    public final String defaultApiEnvironment;
 
-    @Inject BuildValues(@NonNull Context context) {
+    public BuildValues(@NonNull Context context) {
         this.type = context.getString(R.string.build_type);
         Crashlytics.setString("BuildValues_type", this.type);
+
+        this.defaultApiEnvironment = context.getString(R.string.build_default_api_env);
     }
 
     public boolean isDebugBuild() {

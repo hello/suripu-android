@@ -7,15 +7,6 @@ import junit.framework.TestCase;
 import rx.observables.BlockingObservable;
 
 public class ApiSessionManagerTests extends TestCase {
-    public void testSignal() {
-        OAuthSession testSession = new OAuthSession();
-        TestApiSessionManager testApiSessionManager = new TestApiSessionManager();
-        BlockingObservable<OAuthSession> session = BlockingObservable.from(testApiSessionManager.currentSession);
-        testApiSessionManager.setSession(testSession);
-        OAuthSession signalSession = session.latest().iterator().next();
-        assertTrue(testSession == signalSession);
-    }
-
     public void testFacade() {
         OAuthSession testSession = new OAuthSession();
         TestApiSessionManager testApiSessionManager = new TestApiSessionManager();

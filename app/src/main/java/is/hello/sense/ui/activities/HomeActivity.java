@@ -1,6 +1,7 @@
 package is.hello.sense.ui.activities;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -14,6 +15,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.fragments.TimelineFragment;
@@ -22,6 +24,7 @@ import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static rx.android.observables.AndroidObservable.bindActivity;
+import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends InjectionActivity
@@ -67,6 +70,10 @@ public class HomeActivity
             else
                 showQuestionsButton();
         }, ignored -> newQuestionContainer.setVisibility(View.INVISIBLE)));
+
+        // This is probably not what we want to happen.
+        Observable<Intent> logOut = bindActivity(this, fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT)));
+        track(logOut.subscribe(unused -> finish()));
     }
 
     @Override
