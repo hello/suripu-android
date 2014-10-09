@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.EdgeEffect;
 import android.widget.FrameLayout;
 
@@ -26,6 +27,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     private Adapter<TFragment> adapter;
     private OnTransitionObserver<TFragment> onTransitionObserver;
     private FragmentManager fragmentManager;
+    private Animation.Properties animationProperties = Animation.Properties.create(p -> {
+        p.interpolator = new DecelerateInterpolator();
+        return null;
+    });
 
     //endregion
 
@@ -80,8 +85,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
         setWillNotDraw(false);
         setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
         setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
-        this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop();
 
+        this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop();
         this.leftEdgeEffect = new EdgeEffect(getContext());
         this.rightEdgeEffect = new EdgeEffect(getContext());
 
@@ -316,8 +321,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     }
 
     private void completeTransition(Position position, long duration) {
-        PropertyAnimatorProxy onScreenViewAnimator = PropertyAnimatorProxy.animate(getOnScreenView()).setDuration(duration);
-        PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView()).setDuration(duration);
+        PropertyAnimatorProxy onScreenViewAnimator = animationProperties.toPropertyAnimator(getOnScreenView()).setDuration(duration);
+        PropertyAnimatorProxy offScreenViewAnimator = animationProperties.toPropertyAnimator(getOffScreenView()).setDuration(duration);
 
         offScreenViewAnimator.x(0f);
         onScreenViewAnimator.x(position == Position.BEFORE ? viewWidth : -viewWidth);
@@ -348,8 +353,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     }
 
     private void snapBack(Position position, long duration) {
-        PropertyAnimatorProxy onScreenViewAnimator = PropertyAnimatorProxy.animate(getOnScreenView()).setDuration(duration);
-        PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView()).setDuration(duration);
+        PropertyAnimatorProxy onScreenViewAnimator = animationProperties.toPropertyAnimator(getOnScreenView()).setDuration(duration);
+        PropertyAnimatorProxy offScreenViewAnimator = animationProperties.toPropertyAnimator(getOffScreenView()).setDuration(duration);
 
         offScreenViewAnimator.x(position == Position.BEFORE ? -viewWidth : viewWidth);
         onScreenViewAnimator.x(0f);

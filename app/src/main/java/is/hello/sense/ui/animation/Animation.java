@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
+import rx.functions.Func1;
+
 public class Animation {
     public static final long DURATION_MINIMUM = 150;
     public static final long DURATION_MAXIMUM = 350;
@@ -19,6 +21,12 @@ public class Animation {
 
         public static @NonNull Properties create() {
             return new Properties();
+        }
+
+        public static @NonNull Properties create(@NonNull Func1<Properties, Void> f) {
+            Properties properties = create();
+            f.call(properties);
+            return properties;
         }
 
         public static @NonNull Properties createWithDelay(long delay) {
