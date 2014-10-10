@@ -47,9 +47,11 @@ public class SensorStateView extends FrameLayout {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.SensorStateView, defStyle, 0);
             String title = styles.getString(R.styleable.SensorStateView_title);
             Drawable icon = styles.getDrawable(R.styleable.SensorStateView_icon);
+            boolean wantsReading = styles.getBoolean(R.styleable.SensorStateView_wantsReading, true);
 
             setTitle(title);
             setIconDrawable(icon);
+            setWantsReading(wantsReading);
         }
     }
 
@@ -70,6 +72,17 @@ public class SensorStateView extends FrameLayout {
 
     public CharSequence getTitle() {
         return titleText.getText();
+    }
+
+    public void setWantsReading(boolean wantsReading) {
+        if (wantsReading)
+            readingText.setVisibility(VISIBLE);
+        else
+            readingText.setVisibility(GONE);
+    }
+
+    public boolean getWantsReading() {
+        return readingText.getVisibility() == VISIBLE;
     }
 
     public void setReading(CharSequence reading) {

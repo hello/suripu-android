@@ -54,5 +54,6 @@
     <string name="dialog_message_log_out">Are you sure you want to log out?</string>
     <string name="action_log_out">Log Out</string>
     <string name="title_currently">Currently</string>
+    <string name="action_alarm">Alarm</string>
 
 </resources>

@@ -29,16 +29,12 @@
             app:icon="@drawable/icon_sensor_temperature"
             app:title="@string/condition_temperature" />
 
-        <View style="@style/Divider.Horizontal.Underside" />
-
         <is.hello.sense.ui.widget.SensorStateView
             android:id="@+id/fragment_underside_humidity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:icon="@drawable/icon_sensor_humidity"
             app:title="@string/condition_humidity" />
-
-        <View style="@style/Divider.Horizontal.Underside" />
 
         <is.hello.sense.ui.widget.SensorStateView
             android:id="@+id/fragment_underside_particulates"
@@ -47,7 +43,31 @@
             app:icon="@drawable/icon_sensor_particle"
             app:title="@string/condition_particulates" />
 
-        <View style="@style/Divider.Horizontal.Underside" />
+        <is.hello.sense.ui.widget.SensorStateView
+            android:id="@+id/fragment_underside_alarm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_large"
+            app:icon="@drawable/icon_alarm"
+            app:title="@string/action_alarm"
+            app:wantsReading="false"/>
+
+        <is.hello.sense.ui.widget.SensorStateView
+            android:id="@+id/fragment_underside_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/icon_settings"
+            app:title="@string/action_settings"
+            app:wantsReading="false"/>
+
+        <is.hello.sense.ui.widget.SensorStateView
+            android:id="@+id/fragment_underside_debug"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_large"
+            app:icon="@drawable/icon_debug"
+            app:title="@string/activity_debug"
+            app:wantsReading="false"/>
 
     </LinearLayout>
 

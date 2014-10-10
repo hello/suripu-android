@@ -18,6 +18,7 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
+import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -45,6 +46,9 @@ public class HomeUndersideFragment extends InjectionFragment {
 
         this.particulatesState = (SensorStateView) view.findViewById(R.id.fragment_underside_particulates);
         particulatesState.setOnClickListener(ignored -> showSensorHistory(SensorHistory.SENSOR_NAME_PARTICULATES));
+
+        SensorStateView debug = (SensorStateView) view.findViewById(R.id.fragment_underside_debug);
+        debug.setOnClickListener(ignored -> startActivity(new Intent(getActivity(), DebugActivity.class)));
 
         return view;
     }
