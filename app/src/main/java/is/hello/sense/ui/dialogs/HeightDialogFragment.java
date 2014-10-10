@@ -24,11 +24,11 @@ public class HeightDialogFragment extends DialogFragment {
     private NumberPicker feetPicker;
     private NumberPicker inchesPicker;
 
-    public static HeightDialogFragment newInstance(int heightInInches) {
+    public static HeightDialogFragment newInstance(long heightInInches) {
         HeightDialogFragment heightDialogFragment = new HeightDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putInt(ARG_HEIGHT, heightInInches);
+        arguments.putLong(ARG_HEIGHT, heightInInches);
         heightDialogFragment.setArguments(arguments);
 
         return heightDialogFragment;
@@ -46,15 +46,15 @@ public class HeightDialogFragment extends DialogFragment {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
         layoutParams.weight = 1f;
 
-        int heightInInches = getArguments().getInt(ARG_HEIGHT, 70);
-        int feet = heightInInches / 12;
-        int inches = heightInInches % 12;
+        long heightInInches = getArguments().getLong(ARG_HEIGHT, 70);
+        long feet = heightInInches / 12;
+        long inches = heightInInches % 12;
 
         this.feetPicker = new NumberPicker(getActivity());
         feetPicker.setFormatter(value -> value + "'");
         feetPicker.setMinValue(1);
         feetPicker.setMaxValue(12);
-        feetPicker.setValue(feet);
+        feetPicker.setValue((int) feet);
         feetPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         layout.addView(feetPicker, layoutParams);
 
@@ -63,7 +63,7 @@ public class HeightDialogFragment extends DialogFragment {
         inchesPicker.setFormatter(value -> value + "''");
         inchesPicker.setMinValue(0);
         inchesPicker.setMaxValue(12);
-        inchesPicker.setValue(inches);
+        inchesPicker.setValue((int) inches);
         inchesPicker.setOnScrollListener(this::onInchesPickerScrollStateChanged);
         inchesPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         layout.addView(inchesPicker, layoutParams);

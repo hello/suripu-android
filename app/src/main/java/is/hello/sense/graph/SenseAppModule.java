@@ -69,9 +69,9 @@ public class SenseAppModule {
         return applicationContext;
     }
 
-    /*@Provides SharedPreferences provideSharedPreferences() {
+    @Provides SharedPreferences provideSharedPreferences() {
         return sharedPreferences;
-    }*/
+    }
 
     @Provides BuildValues provideBuildValues() {
         return buildValues;

@@ -143,28 +143,28 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
 
     public void showHeightSelector(@NonNull View sender) {
-        int height = Units.centimetersToInches(newAccount.getHeight());
+        long height = Units.centimetersToInches(newAccount.getHeight());
         HeightDialogFragment heightDialogFragment = HeightDialogFragment.newInstance(height);
         heightDialogFragment.setTargetFragment(this, PICK_HEIGHT_REQUEST_CODE);
         heightDialogFragment.show(getFragmentManager(), HeightDialogFragment.TAG);
     }
 
     private void updateHeightSelector() {
-        int height = Units.centimetersToInches(newAccount.getHeight());
-        int feet = height / 12;
-        int inches = height % 12;
+        long height = Units.centimetersToInches(newAccount.getHeight());
+        long feet = height / 12;
+        long inches = height % 12;
         heightButton.setText(feet + "' " + inches + "''");
     }
 
     public void showWeightSelector(@NonNull View sender) {
-        int currentWeight = Units.gramsToPounds(newAccount.getWeight());
+        long currentWeight = Units.gramsToPounds(newAccount.getWeight());
         WeightDialogFragment weightDialogFragment = WeightDialogFragment.newInstance(currentWeight);
         weightDialogFragment.setTargetFragment(this, PICK_WEIGHT_REQUEST_CODE);
         weightDialogFragment.show(getFragmentManager(), WeightDialogFragment.TAG);
     }
 
     private void updateWeightSelector() {
-        weightButton.setText(Integer.toString(Units.gramsToPounds(newAccount.getWeight())));
+        weightButton.setText(Long.toString(Units.gramsToPounds(newAccount.getWeight())));
     }
 
     public void showDateOfBirthSelector(@NonNull View sender) {

@@ -21,11 +21,11 @@ public class WeightDialogFragment extends DialogFragment {
     public static final String RESULT_WEIGHT = WeightDialogFragment.class.getName() + ".RESULT_WEIGHT";
     private NumberPicker numberPicker;
 
-    public static WeightDialogFragment newInstance(int weight) {
+    public static WeightDialogFragment newInstance(long weight) {
         WeightDialogFragment dialogFragment = new WeightDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putInt(ARG_WEIGHT, weight);
+        arguments.putLong(ARG_WEIGHT, weight);
         dialogFragment.setArguments(arguments);
 
         return dialogFragment;
@@ -39,7 +39,7 @@ public class WeightDialogFragment extends DialogFragment {
         this.numberPicker = new NumberPicker(getActivity());
         numberPicker.setMinValue(20);
         numberPicker.setMaxValue(500);
-        numberPicker.setValue(getWeight());
+        numberPicker.setValue((int) getWeight());
         numberPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         builder.setView(numberPicker);
 
@@ -58,7 +58,7 @@ public class WeightDialogFragment extends DialogFragment {
         }
     }
 
-    private int getWeight() {
-        return getArguments().getInt(ARG_WEIGHT, DEFAULT_WEIGHT);
+    private long getWeight() {
+        return getArguments().getLong(ARG_WEIGHT, DEFAULT_WEIGHT);
     }
 }

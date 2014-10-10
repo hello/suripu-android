@@ -66,4 +66,11 @@
     <string name="label_units_and_time">Units and Time</string>
     <string name="label_devices">Devices</string>
 
+    <string name="unit_fmt">%1$d%2$s</string>
+    <string name="unit_suffix_mass_metric">g</string>
+    <string name="unit_suffix_distance_metric">cm</string>
+    <string name="unit_suffix_temperature_metric">ºC</string>
+    <string name="unit_suffix_mass_us">lbs</string>
+    <string name="unit_suffix_distance_us">in</string>
+    <string name="unit_suffix_temperature_us">ºF</string>
 </resources>

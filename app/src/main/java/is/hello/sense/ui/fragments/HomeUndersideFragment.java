@@ -24,12 +24,14 @@ import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SensorStateView;
+import is.hello.sense.util.UnitFormatter;
 import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.bindFragment;
 
 public class HomeUndersideFragment extends InjectionFragment {
     @Inject CurrentConditionsPresenter currentConditionsPresenter;
+    @Inject UnitFormatter unitsFormatter;
 
     private SensorStateView temperatureState;
     private SensorStateView humidityState;
@@ -78,7 +80,8 @@ public class HomeUndersideFragment extends InjectionFragment {
     private void displayCondition(@Nullable SensorState condition,
                                   @NonNull SensorStateView view,
                                   @DrawableRes int iconRes,
-                                  @StringRes int titleRes) {
+                                  @StringRes int titleRes,
+                                  @NonNull UnitFormatter.Formatter formatter) {
         view.setIconDrawable(getResources().getDrawable(iconRes));
         view.setTitle(getString(titleRes));
 
@@ -86,15 +89,29 @@ public class HomeUndersideFragment extends InjectionFragment {
             view.setReading(getString(R.string.missing_data_placeholder));
             view.displayCondition(Condition.UNKNOWN);
         } else {
-            view.setReading(Integer.toString(condition.getValue()));
+            view.setReading(formatter.format(condition.getValue()));
             view.displayCondition(condition.getCondition());
         }
     }
 
     public void bindConditions(@NonNull RoomConditions conditions) {
-        displayCondition(conditions.getTemperature(), temperatureState, R.drawable.icon_sensor_temperature, R.string.condition_temperature);
-        displayCondition(conditions.getHumidity(), humidityState, R.drawable.icon_sensor_humidity, R.string.condition_humidity);
-        displayCondition(conditions.getParticulates(), particulatesState, R.drawable.icon_sensor_particle, R.string.condition_particulates);
+        displayCondition(conditions.getTemperature(),
+                temperatureState,
+                R.drawable.icon_sensor_temperature,
+                R.string.condition_temperature,
+                unitsFormatter::formatTemperature);
+
+        displayCondition(conditions.getHumidity(),
+                humidityState,
+                R.drawable.icon_sensor_humidity,
+                R.string.condition_humidity,
+                unitsFormatter::formatPercentage);
+
+        displayCondition(conditions.getParticulates(),
+                particulatesState,
+                R.drawable.icon_sensor_particle,
+                R.string.condition_particulates,
+                unitsFormatter::raw);
     }
 
     public void presentError(@NonNull Throwable e) {

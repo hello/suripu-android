@@ -26,10 +26,10 @@ public class Account extends ApiResponse {
     private Gender gender;
 
     @JsonProperty("height")
-    private Integer height;
+    private Long height;
 
     @JsonProperty("weight")
-    private Integer weight;
+    private Long weight;
 
     @JsonProperty("dob")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.DATE_FORMAT)
@@ -83,19 +83,19 @@ public class Account extends ApiResponse {
         this.gender = gender;
     }
 
-    public Integer getHeight() {
+    public Long getHeight() {
         return height;
     }
 
-    public void setHeight(Integer height) {
+    public void setHeight(Long height) {
         this.height = height;
     }
 
-    public Integer getWeight() {
+    public Long getWeight() {
         return weight;
     }
 
-    public void setWeight(Integer weight) {
+    public void setWeight(Long weight) {
         this.weight = weight;
     }
 

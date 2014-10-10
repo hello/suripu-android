@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SensorState extends ApiResponse {
     @JsonProperty("value")
-    private int value;
+    private long value;
 
     @JsonProperty("message")
     private String message;
@@ -19,7 +19,7 @@ public class SensorState extends ApiResponse {
     private long lastUpdated;
 
 
-    public int getValue() {
+    public long getValue() {
         return value;
     }
 
