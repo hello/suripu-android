@@ -68,6 +68,7 @@ public final class TimelineSegmentView extends FrameLayout {
             time.setTextAppearance(getContext(), R.style.AppTheme_Text_Body);
             time.setVisibility(VISIBLE);
 
+            eventTypeImage.setVisibility(VISIBLE);
             eventType.setVisibility(VISIBLE);
         } else {
             eventTypeImage.setImageDrawable(null);
@@ -77,6 +78,7 @@ public final class TimelineSegmentView extends FrameLayout {
             time.setPaddingRelative(0, 0, 0, 0);
             time.setVisibility(segment.getTimestamp().getMinuteOfHour() == 0 ? VISIBLE : GONE);
 
+            eventTypeImage.setVisibility(INVISIBLE);
             eventType.setVisibility(INVISIBLE);
         }
     }
