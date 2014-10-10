@@ -124,8 +124,10 @@ public class SlidingLayersView extends FrameLayout {
                 .setDuration(duration)
                 .setApplyChangesToView(true)
                 .setOnAnimationCompleted(finished -> {
-                    if (finished)
+                    if (finished) {
                         this.isOpen = true;
+                        this.listView = null;
+                    }
                 })
                 .start();
     }
@@ -138,6 +140,7 @@ public class SlidingLayersView extends FrameLayout {
                 .setOnAnimationCompleted(finished -> {
                     if (finished) {
                         this.isOpen = false;
+                        this.listView = null;
 
                         if (onInteractionListener != null)
                             onInteractionListener.onUserDidPushUpTopView();
@@ -202,9 +205,7 @@ public class SlidingLayersView extends FrameLayout {
             case MotionEvent.ACTION_DOWN: {
                 this.lastEventX = event.getX();
                 this.lastEventY = event.getY();
-
-                if (listView == null)
-                    this.listView = findFirstViewIn(ListView.class, this);
+                this.listView = findFirstViewIn(ListView.class, this);
 
                 this.topView = getChildAt(1);
                 this.topViewY = topView.getY();
