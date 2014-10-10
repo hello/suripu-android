@@ -438,7 +438,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                 if (isTrackingTouchEvents) {
                     velocityTracker.computeCurrentVelocity(1000);
                     float velocity = Math.abs(velocityTracker.getXVelocity());
-                    long duration = Animation.durationFromVelocityTracker(velocityTracker, getMeasuredWidth());
+                    long duration = Animation.calculateDuration(velocity, getMeasuredWidth());
 
                     if (viewX != 0f && (Math.abs(viewX) > viewWidth / 4 || velocity > Constants.OPEN_VELOCITY_THRESHOLD))
                         completeTransition(currentPosition, duration);

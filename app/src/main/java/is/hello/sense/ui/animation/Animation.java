@@ -3,9 +3,8 @@ package is.hello.sense.ui.animation;
 import android.animation.Animator;
 import android.animation.LayoutTransition;
 import android.support.annotation.NonNull;
-import android.view.VelocityTracker;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import rx.functions.Func1;
@@ -14,12 +13,9 @@ public class Animation {
     public static final long DURATION_MINIMUM = 150;
     public static final long DURATION_MAXIMUM = 350;
     public static final long DURATION_DEFAULT = 250;
-    public static final Interpolator INTERPOLATOR_DEFAULT = new AccelerateDecelerateInterpolator();
+    public static final Interpolator INTERPOLATOR_DEFAULT = new DecelerateInterpolator();
 
-    public static long durationFromVelocityTracker(@NonNull VelocityTracker velocityTracker, float totalArea) {
-        velocityTracker.computeCurrentVelocity(1000);
-
-        float velocity = Math.abs(velocityTracker.getXVelocity());
+    public static long calculateDuration(float velocity, float totalArea) {
         long rawDuration = (long) (totalArea / velocity) * 1000 / 2;
         return Math.max(Animation.DURATION_MINIMUM, Math.min(Animation.DURATION_MAXIMUM, rawDuration));
     }

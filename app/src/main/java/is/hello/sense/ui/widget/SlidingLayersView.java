@@ -179,8 +179,8 @@ public class SlidingLayersView extends FrameLayout {
                     animateClosed(Animation.DURATION_DEFAULT);
                 } else {
                     velocityTracker.computeCurrentVelocity(1000);
-                    float velocity = Math.abs(velocityTracker.getXVelocity());
-                    long duration = Animation.durationFromVelocityTracker(velocityTracker, getMeasuredWidth());
+                    float velocity = Math.abs(velocityTracker.getYVelocity());
+                    long duration = Animation.calculateDuration(velocity, getMeasuredHeight());
                     if (shouldSnapOpen(velocity))
                         animateOpen(duration);
                     else
