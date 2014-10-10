@@ -12,6 +12,9 @@ public class SensorState extends ApiResponse {
     @JsonProperty("condition")
     private Condition condition;
 
+    @JsonProperty("unit")
+    private String unit;
+
     @JsonProperty("last_updated_utc")
     private long lastUpdated;
 
@@ -32,6 +35,9 @@ public class SensorState extends ApiResponse {
         return lastUpdated;
     }
 
+    public String getUnit() {
+        return unit;
+    }
 
     @Override
     public String toString() {
@@ -39,6 +45,7 @@ public class SensorState extends ApiResponse {
                 "value=" + value +
                 ", message='" + message + '\'' +
                 ", condition=" + condition +
+                ", unit=" + unit +
                 ", lastUpdated=" + lastUpdated +
                 '}';
     }

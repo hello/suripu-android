@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiModule;
+import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.DebugActivity;
@@ -47,6 +48,7 @@ import is.hello.sense.util.BuildValues;
         QuestionsFragment.class,
 
         HomeUndersideFragment.class,
+        CurrentConditionsPresenter.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -64,6 +66,10 @@ public class SenseAppModule {
     @Provides Context provideApplicationContext() {
         return applicationContext;
     }
+
+    /*@Provides SharedPreferences provideSharedPreferences() {
+        return sharedPreferences;
+    }*/
 
     @Provides BuildValues provideBuildValues() {
         return buildValues;

@@ -12,6 +12,9 @@
     <color name="background_underside">#e2e4e3</color>
 
     <color name="border">#e5e7e9</color>
+    <color name="border_underside">#d8d9db</color>
+
+    <color name="text_underside">#565961</color>
 
     <color name="background_button_normal">#eaeaea</color>
     <color name="background_button_pressed">#d5d5d5</color>
@@ -27,6 +30,7 @@
     <color name="sensor_alert">#f47b1f</color>
     <color name="sensor_warning">#f43821</color>
     <color name="sensor_ideal">#44d774</color>
+    <color name="sensor_unknown">#565961</color>
 
     <color name="sleep_light">#6aacfb</color>
     <color name="sleep_intermediate">#4d95ef</color>

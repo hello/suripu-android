@@ -3,6 +3,10 @@ package is.hello.sense.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SensorHistory extends ApiResponse {
+    public static final String SENSOR_NAME_TEMPERATURE = "temperature";
+    public static final String SENSOR_NAME_HUMIDITY = "humidity";
+    public static final String SENSOR_NAME_PARTICULATES = "particulates";
+
     @JsonProperty("value")
     private double value;
 

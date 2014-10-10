@@ -79,6 +79,10 @@
         <item name="android:background">@color/white</item>
     </style>
 
+    <style name="Divider.Horizontal.Underside">
+        <item name="android:background">@color/border_underside</item>
+    </style>
+
     <style name="Divider.Vertical">
         <item name="android:layout_width">@dimen/divider_height</item>
         <item name="android:layout_height">match_parent</item>

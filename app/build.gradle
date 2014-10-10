@@ -22,7 +22,7 @@ apply plugin: 'retrolambda'
 
 def generateVersionCode() {
     def now = new Date()
-    def formatter = new SimpleDateFormat("yyMMddhh")
+    def formatter = new SimpleDateFormat("yyMMddHH")
     Integer.parseInt(formatter.format(now))
 }
 

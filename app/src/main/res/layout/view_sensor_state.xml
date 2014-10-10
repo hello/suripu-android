@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:background="?android:selectableItemBackground"
+    android:descendantFocusability="blocksDescendants">
+
+    <TextView
+        android:id="@+id/view_sensor_state_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="@dimen/activity_margin"
+        android:drawableStart="@drawable/icon_sensor_temperature"
+        android:drawablePadding="@dimen/activity_margin"
+        android:singleLine="true"
+        android:textSize="@dimen/text_size_large"
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:textColor="@color/text_underside"
+        android:text="@string/condition_temperature"/>
+
+    <TextView
+        android:id="@+id/view_sensor_state_reading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:minWidth="40dp"
+        android:gravity="center"
+        android:paddingLeft="@dimen/gap_medium"
+        android:paddingRight="@dimen/gap_medium"
+        android:paddingTop="@dimen/gap_tiny"
+        android:paddingBottom="@dimen/gap_tiny"
+        android:singleLine="true"
+        android:textSize="@dimen/text_size_large"
+        android:textAppearance="@style/AppTheme.Text.Body.Bold"
+        android:textColor="@color/sensor_unknown"
+        android:text="@string/missing_data_placeholder"
+        android:background="@drawable/condition_background"/>
+
+</LinearLayout>

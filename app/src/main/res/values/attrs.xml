@@ -11,4 +11,9 @@
         <attr name="rightInset" format="dimension" />
         <attr name="bottomInset" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="SensorStateView">
+        <attr name="title" format="string" />
+        <attr name="icon" format="integer" />
+    </declare-styleable>
 </resources>

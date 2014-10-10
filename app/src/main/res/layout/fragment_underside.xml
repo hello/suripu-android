@@ -1,19 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:background="@color/background_underside">
 
-    <TextView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:padding="@dimen/activity_margin"
-        android:gravity="center"
-        android:textColor="#3d3d3d"
-        android:textAppearance="@style/AppTheme.Text.Title"
-        android:text="@string/title_currently"/>
+        android:layout_height="wrap_content">
 
-</LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_medium"
+            android:padding="@dimen/activity_margin"
+            android:gravity="center"
+            android:textColor="#3d3d3d"
+            android:textAppearance="@style/AppTheme.Text.Title"
+            android:text="@string/title_currently"/>
+
+        <is.hello.sense.ui.widget.SensorStateView
+            android:id="@+id/fragment_underside_temperature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/icon_sensor_temperature"
+            app:title="@string/condition_temperature" />
+
+        <View style="@style/Divider.Horizontal.Underside" />
+
+        <is.hello.sense.ui.widget.SensorStateView
+            android:id="@+id/fragment_underside_humidity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/icon_sensor_humidity"
+            app:title="@string/condition_humidity" />
+
+        <View style="@style/Divider.Horizontal.Underside" />
+
+        <is.hello.sense.ui.widget.SensorStateView
+            android:id="@+id/fragment_underside_particulates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/icon_sensor_particle"
+            app:title="@string/condition_particulates" />
+
+        <View style="@style/Divider.Horizontal.Underside" />
+
+    </LinearLayout>
+
+</ScrollView>
