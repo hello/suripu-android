@@ -20,6 +20,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.hockeyapp.android.FeedbackManager;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -69,6 +71,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
 
     private void addActions() {
         debugItems.add(new DebugItem("Environment", currentEnvironment.toString(), this::changeEnvironment));
+        debugItems.add(new DebugItem("Feedback", null, this::sendFeedback));
         debugItems.add(new DebugItem(getString(R.string.action_log_out), null, this::clearSession));
     }
 
@@ -101,6 +104,11 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
             launchOnBoarding();
         });
         builder.create().show();
+    }
+
+    public void sendFeedback() {
+        FeedbackManager.register(this, Constants.HOCKEY_APP_ID, null);
+        FeedbackManager.showFeedbackActivity(this);
     }
 
     public void launchOnBoarding() {

@@ -9,4 +9,6 @@ public final class Constants {
      * it be completed regardless of relative position.
      */
     public static final float OPEN_VELOCITY_THRESHOLD = 350f;
+
+    public static final String HOCKEY_APP_ID = "805427569ce2035dcda0b99e4d984256";
 }

@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import net.hockeyapp.android.UpdateManager;
+
 import org.joda.time.DateTime;
 
 import java.util.List;
@@ -23,6 +25,8 @@ import is.hello.sense.ui.fragments.HomeUndersideFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.util.BuildValues;
+import is.hello.sense.util.Constants;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -33,6 +37,7 @@ public class HomeActivity
         extends InjectionActivity
         implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener {
     @Inject QuestionsPresenter questionsPresenter;
+    @Inject BuildValues buildValues;
 
     private ViewGroup homeContainer;
     private ViewGroup newQuestionContainer;
@@ -85,10 +90,14 @@ public class HomeActivity
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
 
         questionsPresenter.update();
+
+        if (!buildValues.isDebugBuild()) {
+            UpdateManager.register(this, Constants.HOCKEY_APP_ID);
+        }
     }
 
     //endregion
