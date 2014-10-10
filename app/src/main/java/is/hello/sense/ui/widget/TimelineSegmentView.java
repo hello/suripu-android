@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -24,6 +25,7 @@ public final class TimelineSegmentView extends FrameLayout {
     private DisplayMetrics displayMetrics = new DisplayMetrics();
 
     private HorizontalBarGraphView graphView;
+    private View stripe;
     private ImageView eventTypeImage;
     private TextView eventType;
     private TextView time;
@@ -53,7 +55,7 @@ public final class TimelineSegmentView extends FrameLayout {
         graphView.setFillColor(getResources().getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth)));
         graphView.setValue(sleepDepth);
 
-        eventTypeImage.setBackgroundResource(Styles.getSleepDepthColorRes(sleepDepth));
+        stripe.setBackgroundResource(Styles.getSleepDepthColorRes(sleepDepth));
         time.setText(dateFormatter.formatAsTime(segment.getTimestamp()));
 
         if (segment.getEventType() != null) {
@@ -91,6 +93,7 @@ public final class TimelineSegmentView extends FrameLayout {
         inflater.inflate(R.layout.view_timeline_segment, this, true);
 
         this.graphView = (HorizontalBarGraphView) findViewById(R.id.view_timeline_segment_graph);
+        this.stripe = findViewById(R.id.view_timeline_segment_event_stripe);
         this.eventTypeImage = (ImageView) findViewById(R.id.view_timeline_segment_image_event_type);
         this.eventType = (TextView) findViewById(R.id.view_timeline_segment_event_type);
         this.time = (TextView) findViewById(R.id.view_timeline_segment_time);

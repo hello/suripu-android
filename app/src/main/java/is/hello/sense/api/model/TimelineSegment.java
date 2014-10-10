@@ -89,14 +89,14 @@ public class TimelineSegment extends ApiResponse {
 
 
     public static enum EventType {
-        MOTION(R.drawable.motion_event_icon, R.string.event_type_motion),
-        NOISE(R.drawable.noise_event_icon, R.string.event_type_noise),
-        SNORING(R.drawable.noise_event_icon, R.string.event_type_snoring),
-        SLEEP_TALK(R.drawable.noise_event_icon, R.string.event_type_sleep_talk),
-        LIGHT(R.drawable.light_event_icon, R.string.event_type_light),
-        SLEEP_MOTION(R.drawable.motion_event_icon, R.string.event_type_sleep_motion),
-        SLEEP(R.drawable.fell_asleep_event_icon, R.string.event_type_sleep),
-        UNKNOWN(R.drawable.motion_event_icon, R.string.event_type_motion);
+        MOTION(R.drawable.movement_medium, R.string.event_type_motion),
+        NOISE(R.drawable.sound_medium, R.string.event_type_noise),
+        SNORING(R.drawable.sound_medium, R.string.event_type_snoring),
+        SLEEP_TALK(R.drawable.sound_medium, R.string.event_type_sleep_talk),
+        LIGHT(R.drawable.light_medium, R.string.event_type_light),
+        SLEEP_MOTION(R.drawable.movement_medium, R.string.event_type_sleep_motion),
+        SLEEP(R.drawable.asleep, R.string.event_type_sleep),
+        UNKNOWN(R.drawable.phone_medium, R.string.event_type_motion);
 
         @JsonCreator
         @SuppressWarnings("UnusedDeclaration")
