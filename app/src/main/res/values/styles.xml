@@ -1,21 +1,22 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+    <style name="AppTheme" parent="android:Theme.Holo.Light">
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:actionBarStyle">@style/TransparentActionBar</item>
         <item name="android:windowBackground">@color/background</item>
+
         <item name="android:buttonStyle">@style/AppTheme.Button</item>
         <item name="android:editTextStyle">@style/AppTheme.Text.EditText</item>
+
+        <item name="android:listDivider">@color/border</item>
+        <item name="android:dividerHeight">@dimen/divider_height</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTitleSize">0dp</item>
-    </style>
-
-    <style name="AppTheme.TransparentActionBar">
-        <item name="android:actionBarStyle">@style/TransparentActionBar</item>
     </style>
     
     <style name="TransparentActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
