@@ -86,7 +86,10 @@ public class HomeActivity
 
         // This is probably not what we want to happen.
         Observable<Intent> logOut = bindActivity(this, fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT)));
-        track(logOut.subscribe(unused -> finish()));
+        track(logOut.subscribe(unused -> {
+            startActivity(new Intent(this, OnboardingActivity.class));
+            finish();
+        }));
     }
 
     @Override

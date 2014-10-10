@@ -46,6 +46,6 @@ public abstract class ApiSessionManager {
 
     public void logOut(@NonNull Context context) {
         setSession(null);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION_LOGGED_OUT));
+        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(new Intent(ACTION_LOGGED_OUT));
     }
 }

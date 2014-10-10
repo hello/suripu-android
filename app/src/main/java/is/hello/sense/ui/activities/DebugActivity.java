@@ -3,7 +3,6 @@ package is.hello.sense.ui.activities;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -67,7 +66,6 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     private void addActions() {
         debugItems.addItem("Environment", currentEnvironment.toString(), this::changeEnvironment);
         debugItems.addItem("Feedback", null, this::sendFeedback);
-        debugItems.addItem(getString(R.string.action_log_out), null, this::clearSession);
     }
 
 
@@ -83,32 +81,16 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
             internalPreferences.edit()
                     .putString(Constants.INTERNAL_PREF_API_ENV_NAME, newEnvironment.toString())
                     .apply();
-            launchOnBoarding();
+
+            sessionManager.logOut(this);
         });
         builder.setCancelable(true);
-        builder.create().show();
-    }
-
-    public void clearSession() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.dialog_title_log_out);
-        builder.setMessage(R.string.dialog_message_log_out);
-        builder.setNegativeButton(android.R.string.cancel, null);
-        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-            sessionManager.logOut(this);
-            launchOnBoarding();
-        });
         builder.create().show();
     }
 
     public void sendFeedback() {
         FeedbackManager.register(this, Constants.HOCKEY_APP_ID, null);
         FeedbackManager.showFeedbackActivity(this);
-    }
-
-    public void launchOnBoarding() {
-        startActivity(new Intent(this, OnboardingActivity.class));
-        finish();
     }
 
 
