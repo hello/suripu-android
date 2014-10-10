@@ -32,6 +32,7 @@ public class OnboardingActivity extends InjectionActivity {
         } else {
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             transaction.replace(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
+            transaction.addToBackStack(fragment.getClass().getSimpleName());
         }
         transaction.commit();
     }

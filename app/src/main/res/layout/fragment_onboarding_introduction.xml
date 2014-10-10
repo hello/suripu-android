@@ -3,44 +3,43 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="@color/background_questions">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/activity_margin"
-        android:orientation="vertical"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_large"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_launcher"
-            android:contentDescription="@string/app_name"/>
+        android:padding="@dimen/gap_xlarge"
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_large"
-            android:gravity="center"
-            android:textAppearance="@style/AppTheme.Text.Heading"
-            android:text="@string/app_name"/>
-
-        <Button
-            android:id="@+id/fragment_onboarding_introduction_register"
-            android:layout_marginBottom="@dimen/gap_medium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/action_register"/>
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:textColor="@color/white"
+            android:textAppearance="@style/AppTheme.Text.Instructional"
+            android:text="@string/title_introduction"/>
 
         <Button
             android:id="@+id/fragment_onboarding_introduction_sign_in"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/action_sign_in"/>
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:text="@string/action_log_in"
+            style="@style/AppTheme.Button.Rounded"/>
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/fragment_onboarding_introduction_register"
+            android:layout_marginBottom="@dimen/gap_large"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@id/fragment_onboarding_introduction_sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_register"
+            style="@style/AppTheme.Button.Rounded"/>
+
+    </RelativeLayout>
 
 </ScrollView>

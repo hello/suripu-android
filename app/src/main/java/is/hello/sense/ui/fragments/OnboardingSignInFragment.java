@@ -47,9 +47,6 @@ public class OnboardingSignInFragment extends InjectionFragment {
         this.password = (EditText) view.findViewById(R.id.fragment_onboarding_password);
         password.setOnEditorActionListener(this::onPasswordEditorAction);
 
-        Button signInButton = (Button) view.findViewById(R.id.fragment_onboarding_sign_in);
-        signInButton.setOnClickListener(this::signIn);
-
         return view;
     }
 

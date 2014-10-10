@@ -50,7 +50,7 @@
         <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
     </style>
     
-    <style name="AppTheme.Text.QuestionText">
+    <style name="AppTheme.Text.Instructional">
         <item name="fontPath">fonts/Calibre-Thin.otf</item>
         <item name="android:textSize">@dimen/text_size_xlarge</item>
         <item name="android:lineSpacingMultiplier">1.2</item>
@@ -58,10 +58,6 @@
 
     <style name="AppTheme.Text.FieldLabel">
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
-    </style>
-
-    <style name="AppTheme.Text.EditText">
         <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
 

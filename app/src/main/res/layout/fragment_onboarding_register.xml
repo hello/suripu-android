@@ -4,73 +4,52 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="@color/background_onboarding">
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/activity_margin"
-        android:gravity="center"
+        android:padding="@dimen/gap_xlarge"
         android:stretchColumns="1">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_large"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_launcher"
-            android:contentDescription="@string/app_name"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_large"
-            android:gravity="center"
-            android:textAppearance="@style/AppTheme.Text.Heading"
-            android:text="@string/action_register"/>
+            android:layout_marginBottom="@dimen/gap_xlarge"
+            android:textAppearance="@style/AppTheme.Text.Instructional"
+            android:text="@string/title_register"/>
 
         <TableRow
             android:layout_marginBottom="@dimen/gap_medium">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/gap_small"
-                android:layout_gravity="center_vertical"
-                android:gravity="end"
-                android:textAppearance="@style/AppTheme.Text.FieldLabel"
-                android:text="@string/label_name" />
 
             <EditText
                 android:id="@+id/fragment_onboarding_register_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
+                style="@style/AppTheme.Text.EditText.Onboarding"
                 android:inputType="textPersonName"
-                android:textAppearance="@style/AppTheme.Text.EditText"
                 android:nextFocusForward="@+id/fragment_onboarding_register_email"
                 android:imeOptions="actionNext|flagNoExtractUi"
-                android:hint="@string/label_name"/>
+                android:hint="@string/label_name">
+
+                <requestFocus />
+
+            </EditText>
 
         </TableRow>
 
         <TableRow
             android:layout_marginBottom="@dimen/gap_medium">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/gap_small"
-                android:layout_gravity="center_vertical"
-                android:gravity="end"
-                android:textAppearance="@style/AppTheme.Text.FieldLabel"
-                android:text="@string/label_email" />
-
             <EditText
                 android:id="@+id/fragment_onboarding_register_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
+                style="@style/AppTheme.Text.EditText.Onboarding"
                 android:inputType="textEmailAddress"
-                android:textAppearance="@style/AppTheme.Text.EditText"
                 android:nextFocusForward="@+id/fragment_onboarding_register_password"
                 android:imeOptions="actionNext|flagNoExtractUi"
                 android:hint="@string/label_email"/>
@@ -78,24 +57,16 @@
         </TableRow>
 
         <TableRow
-            android:layout_marginBottom="@dimen/gap_medium">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/gap_small"
-                android:layout_gravity="center_vertical"
-                android:gravity="end"
-                android:textAppearance="@style/AppTheme.Text.FieldLabel"
-                android:text="@string/label_password" />
+            android:layout_marginBottom="@dimen/gap_xlarge">
 
             <EditText
                 android:id="@+id/fragment_onboarding_register_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
+                style="@style/AppTheme.Text.EditText.Onboarding"
                 android:inputType="textPassword"
                 android:imeOptions="actionDone|flagNoExtractUi"
-                android:textAppearance="@style/AppTheme.Text.EditText"
                 android:hint="@string/label_password"/>
 
         </TableRow>
@@ -135,7 +106,9 @@
                 android:id="@+id/fragment_onboarding_register_height"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/action_change"/>
+                android:text="@string/action_change"
+                android:gravity="start"
+                style="@style/AppTheme.Button.Borderless.Onboarding"/>
 
         </TableRow>
 
@@ -155,12 +128,14 @@
                 android:id="@+id/fragment_onboarding_register_weight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/action_change"/>
+                android:text="@string/action_change"
+                android:gravity="start"
+                style="@style/AppTheme.Button.Borderless.Onboarding"/>
 
         </TableRow>
 
         <TableRow
-            android:layout_marginBottom="@dimen/gap_medium">
+            android:layout_marginBottom="@dimen/gap_xlarge">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -175,7 +150,9 @@
                 android:id="@+id/fragment_onboarding_register_dob"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/action_change"/>
+                android:text="@string/action_change"
+                android:gravity="start"
+                style="@style/AppTheme.Button.Borderless.Onboarding"/>
 
         </TableRow>
 
@@ -183,7 +160,9 @@
             android:id="@+id/fragment_onboarding_register_action"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/action_register"/>
+            android:text="@string/action_register"
+            android:textStyle="bold"
+            style="@style/AppTheme.Button.Borderless.Onboarding"/>
 
     </TableLayout>
 

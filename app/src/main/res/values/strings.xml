@@ -2,8 +2,8 @@
 <resources>
 
     <string name="app_name">Sense</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="activity_debug">Debug</string>
 
     <string name="label_email">Email</string>
     <string name="label_password">Password</string>
@@ -13,9 +13,9 @@
     <string name="label_weight">Weight</string>
     <string name="label_dob">Date of Birth</string>
 
-    <string name="action_sign_in">Sign In</string>
+    <string name="action_log_in">Log in</string>
     <string name="action_change">Change</string>
-    <string name="action_register">Register</string>
+    <string name="action_register">Sign Up</string>
 
     <string name="dialog_error_title">An Error Occurred</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
@@ -49,11 +49,17 @@
     <string name="gender_other">Other</string>
     <string name="label_new_question">New Question</string>
     <string name="action_skip_question">Skip This Question</string>
-    <string name="activity_debug">Debug</string>
+
     <string name="dialog_title_log_out">Log Out</string>
     <string name="dialog_message_log_out">Are you sure you want to log out?</string>
     <string name="action_log_out">Log Out</string>
-    <string name="title_currently">Currently</string>
+
     <string name="action_alarm">Alarm</string>
+
+    <string name="action_forgot_password">Forgot Password</string>
+
+    <string name="title_currently">Currently</string>
+    <string name="title_register">Introduce yourself.</string>
+    <string name="title_introduction">Let\'s get started.</string>
 
 </resources>

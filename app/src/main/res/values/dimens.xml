@@ -5,6 +5,7 @@
     <dimen name="gap_small">6dp</dimen>
     <dimen name="gap_medium">10dp</dimen>
     <dimen name="gap_large">20dp</dimen>
+    <dimen name="gap_xlarge">40dp</dimen>
 
     <dimen name="text_size_small">11sp</dimen>
     <dimen name="text_size_medium">15sp</dimen>
@@ -13,6 +14,7 @@
 
     <dimen name="shadow_height">5dp</dimen>
     <dimen name="divider_height">1px</dimen> <!-- px is not a typo -->
+    <dimen name="divider_height_edit_text">2dp</dimen>
 
     <dimen name="event_image_width">23dp</dimen>
     <dimen name="event_image_height">23dp</dimen>

@@ -5,12 +5,21 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:buttonStyle">@style/AppTheme.Button</item>
+        <item name="android:editTextStyle">@style/AppTheme.Text.EditText</item>
     </style>
 
-    <style name="AppTheme.NoActionBar" parent="AppTheme">
+    <style name="AppTheme.NoActionBar">
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTitleSize">0dp</item>
+    </style>
+
+    <style name="AppTheme.TransparentActionBar">
+        <item name="android:actionBarStyle">@style/TransparentActionBar</item>
+    </style>
+    
+    <style name="TransparentActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
+        <item name="android:background">@color/transparent</item>
     </style>
 
     <style name="AppTheme.Dialog" parent="android:Theme.Holo.Dialog" />
@@ -42,8 +51,13 @@
     </style>
 
     <style name="AppTheme.Button.Borderless">
+        <item name="android:textStyle">normal</item>
         <item name="android:padding">@dimen/gap_medium</item>
         <item name="android:background">@null</item>
+    </style>
+
+    <style name="AppTheme.Button.Borderless.Onboarding">
+        <item name="android:textColor">@color/light_accent</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.ThinWhite">
@@ -55,7 +69,7 @@
         <item name="fontPath">fonts/Calibre-Thin.otf</item>
     </style>
 
-    <style name="AppTheme.Button.Question">
+    <style name="AppTheme.Button.Rounded">
         <item name="android:background">@drawable/button_selector_question</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">@dimen/text_size_large</item>
@@ -86,6 +100,24 @@
     <style name="Divider.Vertical">
         <item name="android:layout_width">@dimen/divider_height</item>
         <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <!-- EditText -->
+
+    <style name="AppTheme.Text.EditText" parent="android:Widget.Holo.Light.EditText">
+        <item name="android:paddingTop">@dimen/gap_medium</item>
+        <item name="android:paddingBottom">@dimen/gap_medium</item>
+        <item name="android:paddingLeft">@dimen/gap_tiny</item>
+        <item name="android:paddingRight">@dimen/gap_tiny</item>
+
+        <item name="android:background">@drawable/edit_text_selector</item>
+
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="AppTheme.Text.EditText.Onboarding">
+        <item name="android:textSize">@dimen/text_size_large</item>
     </style>
 
 </resources>
