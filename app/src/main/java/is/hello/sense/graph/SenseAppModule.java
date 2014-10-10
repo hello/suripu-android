@@ -16,6 +16,7 @@ import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
+import is.hello.sense.ui.fragments.HomeUndersideFragment;
 import is.hello.sense.ui.fragments.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.QuestionsFragment;
@@ -44,6 +45,8 @@ import is.hello.sense.util.BuildValues;
 
         QuestionsPresenter.class,
         QuestionsFragment.class,
+
+        HomeUndersideFragment.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

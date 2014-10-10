@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,8 +19,10 @@ import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.fragments.HomeUndersideFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
+import is.hello.sense.ui.widget.SlidingLayersView;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -28,7 +31,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends InjectionActivity
-        implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment> {
+        implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener {
     @Inject QuestionsPresenter questionsPresenter;
 
     private ViewGroup homeContainer;
@@ -57,6 +60,10 @@ public class HomeActivity
             TimelineFragment fragment = TimelineFragment.newInstance(DateTime.now());
             viewPager.setCurrentFragment(fragment);
         }
+
+
+        SlidingLayersView slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
+        slidingLayersView.setOnInteractionListener(this);
     }
 
     @Override
@@ -160,6 +167,33 @@ public class HomeActivity
         startActivity(new Intent(this, QuestionsActivity.class));
         hideQuestionsButton();
     }
+
+    //endregion
+
+
+    //region Sliding Layers
+
+    @Override
+    public void onUserWillPullDownTopView() {
+        if (getSupportFragmentManager().findFragmentById(R.id.activity_home_underside_container) == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.activity_home_underside_container, new HomeUndersideFragment())
+                    .commit();
+        }
+    }
+
+    @Override
+    public void onUserDidPushUpTopView() {
+        Fragment underside = getSupportFragmentManager().findFragmentById(R.id.activity_home_underside_container);
+        if (underside != null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(underside)
+                    .commit();
+        }
+    }
+
 
     //endregion
 }

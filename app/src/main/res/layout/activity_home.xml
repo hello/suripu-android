@@ -5,10 +5,22 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-    <is.hello.sense.ui.widget.FragmentPageView
-        android:id="@+id/activity_home_view_pager"
+    <is.hello.sense.ui.widget.SlidingLayersView
+        android:id="@+id/activity_home_sliding_layers"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/activity_home_underside_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <is.hello.sense.ui.widget.FragmentPageView
+            android:id="@+id/activity_home_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </is.hello.sense.ui.widget.SlidingLayersView>
 
     <FrameLayout
         android:id="@+id/activity_home_new_question"

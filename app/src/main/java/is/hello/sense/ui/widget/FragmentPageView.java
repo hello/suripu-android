@@ -19,8 +19,8 @@ import android.widget.FrameLayout;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+import is.hello.sense.util.Constants;
 
-@SuppressWarnings("UnusedDeclaration")
 public final class FragmentPageView<TFragment extends Fragment> extends ViewGroup {
     //region Property Fields
 
@@ -53,7 +53,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     private EdgeEffect rightEdgeEffect;
 
     private int viewWidth;
-    private float lastX, lastY;
+    private float lastEventX, lastEventY;
     private float viewX;
     private Position currentPosition;
     private boolean hasBeforeView = false, hasAfterView = false;
@@ -66,16 +66,19 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
 
     //region Creation
 
+    @SuppressWarnings("UnusedDeclaration")
     public FragmentPageView(Context context) {
         super(context);
         initialize();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public FragmentPageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialize();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public FragmentPageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initialize();
@@ -386,11 +389,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                 if (isTrackingTouchEvents) {
                     float x = event.getRawX(),
                           y = event.getRawY();
-                    float deltaX = x - lastX;
+                    float deltaX = x - lastEventX;
 
                     velocityTracker.addMovement(event);
 
-                    if (Math.abs(y - lastY) < touchSlop) {
+                    if (Math.abs(y - lastEventY) < touchSlop) {
                         float newX = viewX + deltaX;
                         Position position = newX > 0.0 ? Position.BEFORE : Position.AFTER;
                         if (position != currentPosition) {
@@ -421,8 +424,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                         this.viewX = newX;
                     }
 
-                    this.lastX = x;
-                    this.lastY = y;
+                    this.lastEventX = x;
+                    this.lastEventY = y;
 
                     return true;
                 }
@@ -434,12 +437,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
             case MotionEvent.ACTION_UP: {
                 if (isTrackingTouchEvents) {
                     velocityTracker.computeCurrentVelocity(1000);
-
                     float velocity = Math.abs(velocityTracker.getXVelocity());
-                    long rawDuration = (long) (getMeasuredWidth() / velocity) * 1000 / 2;
-                    long duration = Math.max(Animation.DURATION_MINIMUM, Math.min(Animation.DURATION_MAXIMUM, rawDuration));
+                    long duration = Animation.durationFromVelocityTracker(velocityTracker, getMeasuredWidth());
 
-                    if (viewX != 0f && (Math.abs(viewX) > viewWidth / 4 || velocity > 350))
+                    if (viewX != 0f && (Math.abs(viewX) > viewWidth / 4 || velocity > Constants.OPEN_VELOCITY_THRESHOLD))
                         completeTransition(currentPosition, duration);
                     else
                         snapBack(currentPosition, duration);
@@ -480,8 +481,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                     PropertyAnimatorProxy.stopAnimating(getOnScreenView(), getOffScreenView());
                     this.isTrackingTouchEvents = true;
                 } else {
-                    this.lastX = event.getRawX();
-                    this.lastY = event.getRawY();
+                    this.lastEventX = event.getRawX();
+                    this.lastEventY = event.getRawY();
                     this.viewX = getOnScreenView().getX();
                     this.viewWidth = getOnScreenView().getMeasuredWidth();
 
@@ -499,7 +500,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                 }
 
                 float x = event.getRawX(), y = event.getRawY();
-                float deltaX = x - lastX;
+                float deltaX = x - lastEventX;
                 if (!isTrackingTouchEvents && Math.abs(deltaX) > touchSlop) {
                     this.velocityTracker = VelocityTracker.obtain();
                     this.isTrackingTouchEvents = true;

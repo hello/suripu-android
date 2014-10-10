@@ -77,6 +77,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setAdapter(segmentAdapter);
         listView.setOnItemClickListener(this);
+        listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
 
 
         View headerView = inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);

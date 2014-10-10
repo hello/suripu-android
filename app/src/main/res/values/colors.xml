@@ -9,6 +9,7 @@
     <color name="background_dim">#66ffffff</color>
     <color name="background_timeline">#eaf0f1</color>
     <color name="background_questions">#476fd6</color>
+    <color name="background_underside">#e2e4e3</color>
 
     <color name="border">#e5e7e9</color>
 
