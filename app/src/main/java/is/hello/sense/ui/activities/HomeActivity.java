@@ -36,6 +36,7 @@ public class HomeActivity
 
     private ViewGroup homeContainer;
     private ViewGroup newQuestionContainer;
+    private SlidingLayersView slidingLayersView;
 
     //region Lifecycle
 
@@ -62,7 +63,7 @@ public class HomeActivity
         }
 
 
-        SlidingLayersView slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
+        this.slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
         slidingLayersView.setOnInteractionListener(this);
     }
 
@@ -91,6 +92,15 @@ public class HomeActivity
     }
 
     //endregion
+
+    @Override
+    public void onBackPressed() {
+        if(slidingLayersView.isOpen()) {
+            slidingLayersView.close();
+        } else {
+            super.onBackPressed();
+        }
+    }
 
 
     //region Fragment Adapter

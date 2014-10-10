@@ -1,6 +1,8 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -32,6 +34,9 @@ public class SlidingLayersView extends FrameLayout {
 
     private OnInteractionListener onInteractionListener;
 
+
+    //region Lifecycle
+
     @SuppressWarnings("UnusedDeclaration")
     public SlidingLayersView(Context context) {
         super(context);
@@ -57,11 +62,47 @@ public class SlidingLayersView extends FrameLayout {
         this.topViewOpenHeight = (int) (getResources().getDisplayMetrics().density * 60f);
     }
 
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (state instanceof Bundle) {
+            Bundle savedState = (Bundle) state;
+            this.isOpen = savedState.getBoolean("isOpen");
+            state = savedState.getParcelable("savedState");
+
+            requestLayout();
+        }
+        super.onRestoreInstanceState(state);
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Bundle savedState = new Bundle();
+        savedState.putBoolean("isOpen", isOpen());
+        savedState.putParcelable("savedState", super.onSaveInstanceState());
+        return savedState;
+    }
+
+    //endregion
+
 
     //region Properties
 
     public boolean isOpen() {
         return isOpen;
+    }
+
+    public void open() {
+        if (isOpen)
+            return;
+
+        animateOpen(Animation.DURATION_DEFAULT);
+    }
+
+    public void close() {
+        if (!isOpen())
+            return;
+
+        animateClosed(Animation.DURATION_DEFAULT);
     }
 
     public OnInteractionListener getOnInteractionListener() {
@@ -70,6 +111,20 @@ public class SlidingLayersView extends FrameLayout {
 
     public void setOnInteractionListener(OnInteractionListener onInteractionListener) {
         this.onInteractionListener = onInteractionListener;
+    }
+
+    //endregion
+
+
+    //region Layout
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        if (isOpen && getChildAt(1).getY() == 0f) {
+            getChildAt(1).setY(getMeasuredHeight() - topViewOpenHeight);
+        }
     }
 
     //endregion
@@ -118,7 +173,7 @@ public class SlidingLayersView extends FrameLayout {
             return (topViewY > 0f && (topViewY > topViewOpenHeight || velocity > Constants.OPEN_VELOCITY_THRESHOLD));
     }
 
-    public void animateOpen(long duration) {
+    private void animateOpen(long duration) {
         PropertyAnimatorProxy.animate(topView)
                 .y(getMeasuredHeight() - topViewOpenHeight)
                 .setDuration(duration)
@@ -132,7 +187,7 @@ public class SlidingLayersView extends FrameLayout {
                 .start();
     }
 
-    public void animateClosed(long duration) {
+    private void animateClosed(long duration) {
         PropertyAnimatorProxy.animate(topView)
                 .y(0f)
                 .setDuration(duration)
