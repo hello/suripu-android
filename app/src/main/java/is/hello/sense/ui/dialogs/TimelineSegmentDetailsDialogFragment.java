@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -88,6 +89,7 @@ public final class TimelineSegmentDetailsDialogFragment extends InjectionDialogF
         contentView.setScaleY(0.5f);
         animate(contentView)
                 .setDuration(Animation.DURATION_DEFAULT / 2)
+                .setInterpolator(new AccelerateInterpolator())
                 .scaleX(1.01f)
                 .scaleY(1.01f)
                 .andThen()
