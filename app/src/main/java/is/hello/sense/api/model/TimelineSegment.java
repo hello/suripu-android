@@ -96,7 +96,9 @@ public class TimelineSegment extends ApiResponse {
         LIGHT(R.drawable.light_medium, R.string.event_type_light),
         SLEEP_MOTION(R.drawable.movement_medium, R.string.event_type_sleep_motion),
         SLEEP(R.drawable.asleep, R.string.event_type_sleep),
-        UNKNOWN(R.drawable.phone_medium, R.string.event_type_motion);
+        SUNSET(R.drawable.sunset, R.string.event_type_sunset),
+        SUNRISE(R.drawable.sunrise, R.string.event_type_sunrise),
+        UNKNOWN(R.drawable.movement_medium, R.string.event_type_unknown);
 
         @JsonCreator
         @SuppressWarnings("UnusedDeclaration")

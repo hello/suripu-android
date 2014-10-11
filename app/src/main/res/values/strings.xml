@@ -43,6 +43,9 @@
     <string name="event_type_light">Light</string>
     <string name="event_type_sleep_motion">Sleep Motion</string>
     <string name="event_type_sleep">Sleep</string>
+    <string name="event_type_sunset">Sunset</string>
+    <string name="event_type_sunrise">Sunrise</string>
+    <string name="event_type_unknown">Other</string>
 
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
