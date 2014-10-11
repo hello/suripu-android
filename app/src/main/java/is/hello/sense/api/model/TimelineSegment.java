@@ -106,11 +106,11 @@ public class TimelineSegment extends ApiResponse {
             return Enums.fromString(value, values(), UNKNOWN);
         }
 
-        public final @DrawableRes int iconDrawable;
+        public final @DrawableRes int iconRes;
         public final @StringRes int nameString;
 
-        private EventType(@DrawableRes int iconDrawable, @StringRes int nameString) {
-            this.iconDrawable = iconDrawable;
+        private EventType(@DrawableRes int iconRes, @StringRes int nameString) {
+            this.iconRes = iconRes;
             this.nameString = nameString;
         }
     }

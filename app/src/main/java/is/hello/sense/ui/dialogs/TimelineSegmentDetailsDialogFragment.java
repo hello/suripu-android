@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import javax.inject.Inject;
@@ -61,6 +62,9 @@ public final class TimelineSegmentDetailsDialogFragment extends InjectionDialogF
 
         View background = dialog.findViewById(R.id.dialog_fragment_timeline_segment_details_overlay);
         background.setOnClickListener(unused -> dismiss());
+
+        ImageView icon = (ImageView) dialog.findViewById(R.id.dialog_fragment_timeline_segment_details_icon);
+        icon.setImageResource(timelineSegment.getEventType().iconRes);
 
         TextView eventType = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_segment_details_event);
         eventType.setText(timelineSegment.getEventType().nameString);

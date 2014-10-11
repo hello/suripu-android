@@ -59,7 +59,7 @@ public final class TimelineSegmentView extends FrameLayout {
         time.setText(dateFormatter.formatAsTime(segment.getTimestamp()));
 
         if (segment.getEventType() != null) {
-            eventTypeImage.setImageResource(segment.getEventType().iconDrawable);
+            eventTypeImage.setImageResource(segment.getEventType().iconRes);
             eventType.setText(segment.getEventType().nameString);
             time.setBackgroundResource(R.drawable.timestamp_background);
             int horizontalPadding = (int) (10f * displayMetrics.density);

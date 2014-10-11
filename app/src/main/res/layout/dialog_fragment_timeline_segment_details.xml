@@ -11,12 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="@dimen/activity_margin"
+        android:layout_margin="@dimen/gap_medium"
         android:padding="@dimen/activity_margin"
         android:background="@drawable/dialog_background_details">
 
         <TextView
             android:id="@+id/dialog_fragment_timeline_segment_details_time"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -25,13 +26,26 @@
             android:text="@string/mock_time"
             style="@style/AppTheme.Text.Timestamp"/>
 
+        <ImageView
+            android:id="@+id/dialog_fragment_timeline_segment_details_icon"
+            android:layout_width="@dimen/event_image_width"
+            android:layout_height="@dimen/event_image_height"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/gap_medium"
+            android:scaleType="center"
+            android:src="@drawable/asleep"
+            android:contentDescription="@string/event_type_content_description"
+            android:background="@drawable/event_background"/>
+
         <TextView
             android:id="@+id/dialog_fragment_timeline_segment_details_event"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/gap_small"
             android:layout_alignParentTop="true"
             android:layout_alignBaseline="@id/dialog_fragment_timeline_segment_details_time"
+            android:layout_toEndOf="@id/dialog_fragment_timeline_segment_details_icon"
             android:layout_toStartOf="@id/dialog_fragment_timeline_segment_details_time"
             android:textAppearance="@style/AppTheme.Text.Body.Bold"
             android:textSize="18sp"
@@ -39,9 +53,11 @@
 
         <TextView
             android:id="@+id/dialog_fragment_timeline_segment_details_message"
+            
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/dialog_fragment_timeline_segment_details_time"
+            android:layout_toEndOf="@id/dialog_fragment_timeline_segment_details_icon"
             android:textAppearance="@style/AppTheme.Text.Body"
             android:text="@string/mock_event_message"/>
 
