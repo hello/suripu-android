@@ -10,16 +10,24 @@ import dagger.Provides;
 import is.hello.sense.api.ApiAppContext;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
+import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenterTests;
+import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenterTests;
+import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
 
 @Module(
     library = true,
     injects = {
         TimelinePresenterTests.class,
+        TimelinePresenter.class,
+
         QuestionsPresenterTests.class,
-        CurrentConditionsPresenterTests.class
+        QuestionsPresenter.class,
+
+        CurrentConditionsPresenterTests.class,
+        CurrentConditionsPresenter.class,
     }
 )
 public final class TestModule {
