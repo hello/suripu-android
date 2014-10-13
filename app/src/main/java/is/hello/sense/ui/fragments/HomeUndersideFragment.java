@@ -24,7 +24,7 @@ import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SensorStateView;
-import is.hello.sense.util.UnitFormatter;
+import is.hello.sense.units.UnitFormatter;
 import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.bindFragment;
@@ -111,7 +111,7 @@ public class HomeUndersideFragment extends InjectionFragment {
                 particulatesState,
                 R.drawable.icon_sensor_particle,
                 R.string.condition_particulates,
-                unitsFormatter::raw);
+                unitsFormatter::formatRaw);
     }
 
     public void presentError(@NonNull Throwable e) {

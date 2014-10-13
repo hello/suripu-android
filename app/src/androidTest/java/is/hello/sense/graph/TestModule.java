@@ -1,6 +1,8 @@
 package is.hello.sense.graph;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +21,7 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenterTests;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
+import is.hello.sense.units.UnitFormatterTests;
 
 @Module(
     library = true,
@@ -31,18 +34,26 @@ import is.hello.sense.graph.presenters.TimelinePresenterTests;
 
         CurrentConditionsPresenterTests.class,
         CurrentConditionsPresenter.class,
+
+        UnitFormatterTests.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
 public final class TestModule {
     private final Context applicationContext;
+    private final SharedPreferences sharedPreferences;
 
     public TestModule(@NonNull Context applicationContext) {
         this.applicationContext = applicationContext;
+        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     }
 
     @Provides Context provideApplicationContext() {
         return applicationContext;
+    }
+
+    @Provides SharedPreferences provideSharedPreferences() {
+        return sharedPreferences;
     }
 
     @Provides @ApiAppContext Context providesApiApplicationContext() {

@@ -1,22 +1,19 @@
-package is.hello.sense.util;
+package is.hello.sense.units;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import is.hello.sense.R;
+import is.hello.sense.util.Constants;
 
 @Singleton public final class UnitFormatter implements SharedPreferences.OnSharedPreferenceChangeListener {
-    private final Context context;
     private final SharedPreferences sharedPreferences;
 
-    private Units.System unitSystem;
+    private UnitSystem unitSystem;
 
-    @Inject public UnitFormatter(@NonNull Context context, @NonNull SharedPreferences sharedPreferences) {
-        this.context = context.getApplicationContext();
+    @Inject public UnitFormatter(@NonNull SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
 
         reloadUnitSystem();
@@ -27,8 +24,8 @@ import is.hello.sense.R;
     //region System Changes
 
     private void reloadUnitSystem() {
-        String systemName = sharedPreferences.getString(Constants.GLOBAL_PREF_UNIT_SYSTEM, "US_CUSTOMARY");
-        this.unitSystem = Units.System.fromString(systemName);
+        String systemName = sharedPreferences.getString(Constants.GLOBAL_PREF_UNIT_SYSTEM, UnitSystem.DEFAULT_UNIT_SYSTEM);
+        this.unitSystem = UnitSystem.createUnitSystemWithName(systemName);
     }
 
     @Override
@@ -41,23 +38,27 @@ import is.hello.sense.R;
 
     //region Formatting
 
+    public String assemble(long value, String unit) {
+        return value + unit;
+    }
+
     public String formatMass(long mass) {
-        return context.getString(R.string.unit_fmt, unitSystem.convertMass(mass), context.getString(unitSystem.massSuffixRes));
+        return assemble(unitSystem.convertGrams(mass), unitSystem.getMassSuffix());
     }
 
     public String formatTemperature(long temperature) {
-        return context.getString(R.string.unit_fmt, unitSystem.convertTemperature(temperature), context.getString(unitSystem.temperatureSuffixRes));
+        return assemble(unitSystem.convertDegreesCelsius(temperature), unitSystem.getTemperatureSuffix());
     }
 
     public String formatDistance(long distance) {
-        return context.getString(R.string.unit_fmt, unitSystem.convertDistance(distance), context.getString(unitSystem.distanceSuffixRes));
+        return assemble(unitSystem.convertCentimeters(distance), unitSystem.getDistanceSuffix());
     }
 
     public String formatPercentage(long percentage) {
-        return context.getString(R.string.unit_fmt, percentage, "%");
+        return percentage + "%";
     }
 
-    public String raw(long value) {
+    public String formatRaw(long value) {
         return Long.toString(value);
     }
 

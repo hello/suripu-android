@@ -35,7 +35,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.HeightDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.WeightDialogFragment;
-import is.hello.sense.util.Units;
+import is.hello.sense.units.UnitOperations;
 import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.bindFragment;
@@ -63,8 +63,8 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        newAccount.setWeight(Units.poundsToGrams(120));
-        newAccount.setHeight(Units.inchesToCentimeters(70));
+        newAccount.setWeight(UnitOperations.poundsToGrams(120));
+        newAccount.setHeight(UnitOperations.inchesToCentimeters(70));
         newAccount.setTimeZoneOffset(TimeZone.getDefault().getRawOffset());
         newAccount.setBirthDate(DateTime.now());
 
@@ -127,11 +127,11 @@ public class OnboardingRegisterFragment extends InjectionFragment {
             updateDateOfBirthSelector();
         } else if (requestCode == PICK_WEIGHT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             int value = data.getIntExtra(WeightDialogFragment.RESULT_WEIGHT, 120);
-            newAccount.setWeight(Units.poundsToGrams(value));
+            newAccount.setWeight(UnitOperations.poundsToGrams(value));
             updateWeightSelector();
         } else if (requestCode == PICK_HEIGHT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             int value = data.getIntExtra(HeightDialogFragment.RESULT_HEIGHT, 70);
-            newAccount.setHeight(Units.inchesToCentimeters(value));
+            newAccount.setHeight(UnitOperations.inchesToCentimeters(value));
 
             updateHeightSelector();
         }
@@ -143,28 +143,28 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
 
     public void showHeightSelector(@NonNull View sender) {
-        long height = Units.centimetersToInches(newAccount.getHeight());
+        long height = UnitOperations.centimetersToInches(newAccount.getHeight());
         HeightDialogFragment heightDialogFragment = HeightDialogFragment.newInstance(height);
         heightDialogFragment.setTargetFragment(this, PICK_HEIGHT_REQUEST_CODE);
         heightDialogFragment.show(getFragmentManager(), HeightDialogFragment.TAG);
     }
 
     private void updateHeightSelector() {
-        long height = Units.centimetersToInches(newAccount.getHeight());
+        long height = UnitOperations.centimetersToInches(newAccount.getHeight());
         long feet = height / 12;
         long inches = height % 12;
         heightButton.setText(feet + "' " + inches + "''");
     }
 
     public void showWeightSelector(@NonNull View sender) {
-        long currentWeight = Units.gramsToPounds(newAccount.getWeight());
+        long currentWeight = UnitOperations.gramsToPounds(newAccount.getWeight());
         WeightDialogFragment weightDialogFragment = WeightDialogFragment.newInstance(currentWeight);
         weightDialogFragment.setTargetFragment(this, PICK_WEIGHT_REQUEST_CODE);
         weightDialogFragment.show(getFragmentManager(), WeightDialogFragment.TAG);
     }
 
     private void updateWeightSelector() {
-        weightButton.setText(Long.toString(Units.gramsToPounds(newAccount.getWeight())));
+        weightButton.setText(Long.toString(UnitOperations.gramsToPounds(newAccount.getWeight())));
     }
 
     public void showDateOfBirthSelector(@NonNull View sender) {
