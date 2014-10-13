@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
@@ -304,7 +303,6 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     }
 
     private void removeOffScreenFragment() {
-        Log.i("events", "removeOffScreenFragment");
         TFragment offScreen = getOffScreenFragment();
         if (offScreen != null) {
             getFragmentManager().beginTransaction()
@@ -316,8 +314,6 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     }
 
     private void addOffScreenFragment(Position position) {
-        Log.i("events", "addOffScreenFragment");
-
         TFragment newFragment = null;
         switch (position) {
             case BEFORE:
