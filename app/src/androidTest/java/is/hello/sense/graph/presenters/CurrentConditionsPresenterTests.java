@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import is.hello.sense.graph.InjectionTestCase;
 
 public class CurrentConditionsPresenterTests extends InjectionTestCase {
-    @Inject CurrentConditionsPresenter currentConditionsPresenter;
+    @Inject CurrentConditionsPresenter presenter;
 
     public void testUpdate() {
         fail();

@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 public final class SyncObserver<T> implements Observer<T> {
@@ -20,47 +21,55 @@ public final class SyncObserver<T> implements Observer<T> {
     private Throwable error;
     private ArrayList<T> results = new ArrayList<>();
 
-    public SyncObserver(@NonNull WaitingFor waitingFor) {
+    private int ignoreCount = 0;
+    private Subscription subscription;
+
+    private SyncObserver(@NonNull WaitingFor waitingFor) {
         this.waitingFor = waitingFor;
     }
 
     public static <T> SyncObserver<T> subscribe(@NonNull WaitingFor waitingFor, @NonNull Observable<T> observable) {
         SyncObserver<T> observer = new SyncObserver<>(waitingFor);
-        observable.subscribeOn(Schedulers.io()).subscribe(observer);
+        observer.subscription = observable.subscribeOn(Schedulers.io()).subscribe(observer);
         return observer;
     }
 
 
-    private void signal() {
-        latch.countDown();
-    }
-
     @Override
     public void onCompleted() {
-        if (waitingFor == WaitingFor.COMPLETED)
-            signal();
+        if (waitingFor == WaitingFor.COMPLETED && (ignoreCount-- <= 0))
+            latch.countDown();
     }
 
     @Override
     public void onError(Throwable e) {
         this.error = e;
-        signal();
+        latch.countDown();
     }
 
     @Override
     public void onNext(T t) {
         results.add(t);
-        if (waitingFor == WaitingFor.NEXT)
-            signal();
+        if (waitingFor == WaitingFor.NEXT && (ignoreCount-- <= 0))
+            latch.countDown();
     }
 
+
+    public SyncObserver<T> ignore(int amount) {
+        this.ignoreCount = amount;
+        return this;
+    }
 
     public boolean await() throws InterruptedException {
         return await(STANDARD_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
     public boolean await(long timeout, TimeUnit unit) throws InterruptedException {
-        return latch.await(timeout, unit);
+        boolean result = latch.await(timeout, unit);
+        if (subscription != null && !subscription.isUnsubscribed()) {
+            subscription.unsubscribe();
+        }
+        return result;
     }
 
 
@@ -70,6 +79,22 @@ public final class SyncObserver<T> implements Observer<T> {
 
     public @NonNull ArrayList<T> getResults() {
         return results;
+    }
+
+    public @Nullable T getSingle() {
+        if (results.size() > 1)
+            throw new IllegalStateException("getSingle called with multiple results");
+        else if (results.isEmpty())
+            return null;
+        else
+            return results.get(0);
+    }
+
+    public @Nullable T getLast() {
+        if (results.isEmpty())
+            return null;
+        else
+            return results.get(results.size() - 1);
     }
 
 

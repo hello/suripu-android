@@ -1,0 +1,19 @@
+[
+    {
+        "choices": [
+            {
+                "id": 123456789,
+                "question_id": 123,
+                "text": "HOT"
+            },
+            {
+                "id": 987654321,
+                "question_id": 123,
+                "text": "COLD"
+            }
+        ],
+        "id": 123,
+        "text": "tim bart, do you sleep better when it is hot or cold?",
+        "type": "CHOICE"
+    }
+]

@@ -12,33 +12,30 @@ import is.hello.sense.util.SyncObserver;
 import rx.Observable;
 
 public class TimelinePresenterTests extends InjectionTestCase {
-    @Inject TimelinePresenter timelinePresenter;
+    @Inject TimelinePresenter presenter;
 
     public void testUpdate() throws Exception {
-        Observable<List<Timeline>> fullTimeline = timelinePresenter.timeline;
-        timelinePresenter.setDate(DateTime.now());
+        Observable<List<Timeline>> fullTimeline = presenter.timeline;
+        presenter.setDate(DateTime.now());
 
         SyncObserver<List<Timeline>> allObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, fullTimeline);
         allObserver.await();
 
         assertNull(allObserver.getError());
-        assertFalse(allObserver.getResults().isEmpty());
-        assertEquals(1, allObserver.getResults().size());
+        assertNotNull(allObserver.getSingle());
 
 
-        SyncObserver<Timeline> mainObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, timelinePresenter.mainTimeline);
+        SyncObserver<Timeline> mainObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.mainTimeline);
         mainObserver.await();
 
         assertNull(mainObserver.getError());
-        assertFalse(mainObserver.getResults().isEmpty());
-        assertNotNull(mainObserver.getResults().get(0));
+        assertNotNull(mainObserver.getSingle());
 
 
-        SyncObserver<CharSequence> messageObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, timelinePresenter.renderedTimelineMessage);
+        SyncObserver<CharSequence> messageObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.renderedTimelineMessage);
         messageObserver.await();
 
         assertNull(messageObserver.getError());
-        assertFalse(messageObserver.getResults().isEmpty());
-        assertNotNull(messageObserver.getResults().get(0));
+        assertNotNull(messageObserver.getSingle());
     }
 }

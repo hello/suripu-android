@@ -106,7 +106,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<List<Question>> questions(@NonNull @Query("date") String timestamp) {
-        return unimplemented();
+        return loadResponse("questions", new TypeReference<List<Question>>() {});
     }
 
     @Override
