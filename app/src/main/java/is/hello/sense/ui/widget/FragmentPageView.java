@@ -287,12 +287,24 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                 position == Position.AFTER && hasAfterView);
     }
 
+    private boolean shouldCompleteTransition(float rawViewX, float rawVelocity) {
+        if (rawViewX == 0f)
+            return false;
+
+        if (rawViewX < 0f) {
+            return (Math.abs(rawViewX) > viewWidth / 4 || rawVelocity < -Constants.OPEN_VELOCITY_THRESHOLD);
+        } else {
+            return (Math.abs(rawViewX) > viewWidth / 4 || rawVelocity > Constants.OPEN_VELOCITY_THRESHOLD);
+        }
+    }
+
     private TFragment getOffScreenFragment() {
         //noinspection unchecked
         return (TFragment) getFragmentManager().findFragmentById(getOffScreenView().getId());
     }
 
     private void removeOffScreenFragment() {
+        Log.i("events", "removeOffScreenFragment");
         TFragment offScreen = getOffScreenFragment();
         if (offScreen != null) {
             getFragmentManager().beginTransaction()
@@ -304,6 +316,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
     }
 
     private void addOffScreenFragment(Position position) {
+        Log.i("events", "addOffScreenFragment");
+
         TFragment newFragment = null;
         switch (position) {
             case BEFORE:
@@ -405,29 +419,29 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                         if (position != currentPosition) {
                             removeOffScreenFragment();
 
-                            if (!isPositionValid(position)) {
-                                this.viewX = 0;
-                                getOnScreenView().setX(0);
-
-                                if (position == Position.BEFORE) {
-                                    leftEdgeEffect.onPull(-deltaX / viewWidth);
-                                } else {
-                                    rightEdgeEffect.onPull(deltaX / viewWidth);
-                                }
-                                invalidate();
-
-                                return true;
+                            if (isPositionValid(position)) {
+                                addOffScreenFragment(position);
                             }
-
-                            addOffScreenFragment(position);
 
                             this.currentPosition = position;
                         }
 
-                        getOffScreenView().setX(position == Position.BEFORE ? newX - viewWidth : newX + viewWidth);
-                        getOnScreenView().setX(newX);
+                        if (isPositionValid(position)) {
+                            getOffScreenView().setX(position == Position.BEFORE ? newX - viewWidth : newX + viewWidth);
+                            getOnScreenView().setX(newX);
 
-                        this.viewX = newX;
+                            this.viewX = newX;
+                        } else {
+                            this.viewX = 0;
+                            getOnScreenView().setX(0);
+
+                            if (position == Position.BEFORE) {
+                                leftEdgeEffect.onPull(-deltaX / viewWidth);
+                            } else {
+                                rightEdgeEffect.onPull(deltaX / viewWidth);
+                            }
+                            invalidate();
+                        }
                     }
 
                     this.lastEventX = x;
@@ -443,10 +457,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
             case MotionEvent.ACTION_UP: {
                 if (isTrackingTouchEvents) {
                     velocityTracker.computeCurrentVelocity(1000);
-                    float velocity = Math.abs(velocityTracker.getXVelocity());
+                    float rawVelocity = velocityTracker.getXVelocity();
+                    float velocity = Math.abs(rawVelocity);
                     long duration = Animation.calculateDuration(velocity, getMeasuredWidth());
 
-                    if (viewX != 0f && (Math.abs(viewX) > viewWidth / 4 || velocity > Constants.OPEN_VELOCITY_THRESHOLD))
+                    if (shouldCompleteTransition(viewX, rawVelocity))
                         completeTransition(currentPosition, duration);
                     else
                         snapBack(currentPosition, duration);
