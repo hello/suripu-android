@@ -39,8 +39,20 @@ android {
 
         testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
-    buildTypes {
+    signingConfigs {
         release {
+            storeFile file("../../Hello-Android.keystore")
+            storePassword "hellogoodbye"
+            keyAlias "suripu"
+            keyPassword "hellogoodbye"
+        }
+    }
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+        }
+        release {
+            signingConfig signingConfigs.release
 
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
