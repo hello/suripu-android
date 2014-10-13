@@ -1,0 +1,23 @@
+{
+    "humidity": {
+        "condition": "IDEAL",
+        "last_updated_utc": 1413235620000,
+        "message": "",
+        "unit": "%",
+        "value": 33
+    },
+    "particulates": {
+        "condition": "IDEAL",
+        "last_updated_utc": 1413235620000,
+        "message": "",
+        "unit": "ppm",
+        "value": 0
+    },
+    "temperature": {
+        "condition": "IDEAL",
+        "last_updated_utc": 1413235620000,
+        "message": "",
+        "unit": "c",
+        "value": 26
+    }
+}

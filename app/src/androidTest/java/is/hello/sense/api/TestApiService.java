@@ -89,7 +89,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<RoomConditions> currentRoomConditions() {
-        return unimplemented();
+        return loadResponse("current_conditions", new TypeReference<RoomConditions>() {});
     }
 
     @Override
