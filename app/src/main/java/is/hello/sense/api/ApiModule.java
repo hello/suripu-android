@@ -14,6 +14,7 @@ import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.PersistentApiSessionManager;
+import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
 import retrofit.RestAdapter;
 import retrofit.android.AndroidApacheClient;
@@ -26,10 +27,14 @@ import retrofit.converter.JacksonConverter;
 public class ApiModule {
     private final Context applicationContext;
     private final ApiEnvironment environment;
+    private final BuildValues buildValues;
 
-    public ApiModule(@NonNull Context applicationContext, @NonNull ApiEnvironment environment) {
+    public ApiModule(@NonNull Context applicationContext,
+                     @NonNull ApiEnvironment environment,
+                     @NonNull BuildValues buildValues) {
         this.applicationContext = applicationContext.getApplicationContext();
         this.environment = environment;
+        this.buildValues = buildValues;
     }
 
     @Provides @ApiAppContext Context providesApiApplicationContext() {
@@ -48,12 +53,16 @@ public class ApiModule {
     }
 
     @Singleton @Provides RestAdapter provideRestAdapter(@NonNull ObjectMapper mapper,
-                                                        @NonNull final ApiSessionManager sessionManager) {
+                                                        @NonNull ApiSessionManager sessionManager,
+                                                        @NonNull BuildValues buildValues) {
         RestAdapter.Builder builder = new RestAdapter.Builder();
         builder.setClient(new AndroidApacheClient());
         builder.setConverter(new JacksonConverter(mapper));
         builder.setEndpoint(environment.baseUrl);
-        builder.setLogLevel(RestAdapter.LogLevel.FULL);
+        if (buildValues.isDebugBuild())
+            builder.setLogLevel(RestAdapter.LogLevel.FULL);
+        else
+            builder.setLogLevel(RestAdapter.LogLevel.BASIC);
         builder.setLog(Logger.RETROFIT_LOGGER);
         builder.setErrorHandler(error -> {
             ErrorResponse errorResponse;
@@ -77,5 +86,9 @@ public class ApiModule {
 
     @Provides ApiEnvironment provideEnvironment() {
         return environment;
+    }
+
+    @Provides BuildValues provideBuildValues() {
+        return buildValues;
     }
 }

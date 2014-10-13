@@ -50,7 +50,7 @@ public class SenseApplication extends Application {
     }
 
     public void buildGraph() {
-        this.graph = ObjectGraph.create(new ApiModule(this, getApiEnvironment()), new SenseAppModule(this, buildValues));
+        this.graph = ObjectGraph.create(new ApiModule(this, getApiEnvironment(), buildValues), new SenseAppModule(this));
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_BUILT_GRAPH));
     }
 
