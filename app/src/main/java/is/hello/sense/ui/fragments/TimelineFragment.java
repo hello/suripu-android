@@ -58,6 +58,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         super.onCreate(savedInstanceState);
 
         this.timelinePresenter = new TimelinePresenter(getDateTime());
+        timelinePresenter.update();
         addPresenter(timelinePresenter);
 
         this.segmentAdapter = new TimelineSegmentAdapter(getActivity());

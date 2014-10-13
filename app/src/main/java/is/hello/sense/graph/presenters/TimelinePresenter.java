@@ -32,8 +32,6 @@ public class TimelinePresenter extends Presenter {
         super();
 
         this.date = date;
-
-        update();
     }
 
     @Override

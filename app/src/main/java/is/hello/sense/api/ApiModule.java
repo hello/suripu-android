@@ -75,8 +75,7 @@ public class ApiModule {
         return adapter.create(ApiService.class);
     }
 
-    @Provides
-    ApiEnvironment provideEnvironment() {
+    @Provides ApiEnvironment provideEnvironment() {
         return environment;
     }
 }
