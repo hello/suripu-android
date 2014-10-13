@@ -126,19 +126,19 @@ public class HomeActivity
 
     @Override
     public TimelineFragment getFragmentBeforeFragment(@NonNull TimelineFragment fragment) {
-        return TimelineFragment.newInstance(fragment.getDateTime().minusDays(1));
+        return TimelineFragment.newInstance(fragment.getDate().minusDays(1));
     }
 
 
     @Override
     public boolean hasFragmentAfterFragment(@NonNull TimelineFragment fragment) {
-        DateTime fragmentTime = fragment.getDateTime();
+        DateTime fragmentTime = fragment.getDate();
         return fragmentTime.isBefore(DateTime.now().withTimeAtStartOfDay());
     }
 
     @Override
     public TimelineFragment getFragmentAfterFragment(@NonNull TimelineFragment fragment) {
-        return TimelineFragment.newInstance(fragment.getDateTime().plusDays(1));
+        return TimelineFragment.newInstance(fragment.getDate().plusDays(1));
     }
 
 

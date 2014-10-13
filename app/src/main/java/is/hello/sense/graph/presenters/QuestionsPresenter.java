@@ -29,8 +29,7 @@ import rx.subjects.ReplaySubject;
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 @Singleton public final class QuestionsPresenter extends Presenter {
-    @Inject ApiService apiService;
-    @Inject Context context;
+    private final ApiService apiService;
 
     public final ReplaySubject<List<Question>> questions = ReplaySubject.create(1);
     public final ReplaySubject<Question> currentQuestion = ReplaySubject.create(1);
@@ -43,7 +42,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     //region Lifecycle
 
-    public QuestionsPresenter() {
+    @Inject public QuestionsPresenter(@NonNull ApiService apiService, @NonNull Context context) {
+        this.apiService = apiService;
         this.preferences = context.getSharedPreferences(QuestionsPresenter.class.getSimpleName(), 0);
 
         Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));

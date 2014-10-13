@@ -1,7 +1,5 @@
 package is.hello.sense.graph.presenters;
 
-import android.support.annotation.NonNull;
-
 import org.joda.time.DateTime;
 
 import java.util.List;
@@ -18,7 +16,7 @@ public class TimelinePresenter extends Presenter {
     @Inject Markdown markdown;
     @Inject ApiService service;
 
-    private final DateTime date;
+    private DateTime date;
 
     public final ReplaySubject<List<Timeline>> timeline = ReplaySubject.create(1);
     public final Observable<Timeline> mainTimeline = timeline.filter(timelines -> !timelines.isEmpty())
@@ -28,18 +26,24 @@ public class TimelinePresenter extends Presenter {
         return markdown.toSpanned(rawMessage);
     });
 
-    public TimelinePresenter(@NonNull DateTime date) {
-        super();
-
-        this.date = date;
-    }
-
     @Override
     public void update() {
-        logEvent("updating timeline for " + date.toString("yyyy-MM-dd"));
-        Observable<List<Timeline>> update = service.timelineForDate(date.year().getAsString(),
-                                                                    date.monthOfYear().getAsString(),
-                                                                    date.dayOfMonth().getAsString());
-        update.subscribe(timeline::onNext, timeline::onError);
+        if (getDate() != null) {
+            logEvent("updating timeline for " + date.toString("yyyy-MM-dd"));
+            Observable<List<Timeline>> update = service.timelineForDate(date.year().getAsString(),
+                                                                        date.monthOfYear().getAsString(),
+                                                                        date.dayOfMonth().getAsString());
+            update.subscribe(timeline::onNext, timeline::onError);
+        }
+    }
+
+
+    public DateTime getDate() {
+        return date;
+    }
+
+    public void setDate(DateTime date) {
+        this.date = date;
+        update();
     }
 }

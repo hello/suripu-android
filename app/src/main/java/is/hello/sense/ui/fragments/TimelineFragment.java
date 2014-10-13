@@ -39,9 +39,9 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     private TextView messageText;
 
     @Inject DateFormatter dateFormatter;
+    @Inject TimelinePresenter timelinePresenter;
 
     private TimelineSegmentAdapter segmentAdapter;
-    private TimelinePresenter timelinePresenter;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -57,8 +57,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.timelinePresenter = new TimelinePresenter(getDateTime());
-        timelinePresenter.update();
+        timelinePresenter.setDate(getDate());
         addPresenter(timelinePresenter);
 
         this.segmentAdapter = new TimelineSegmentAdapter(getActivity());
@@ -83,7 +82,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
 
         TextView dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
-        dateText.setText(dateFormatter.formatAsTimelineDate(getDateTime()));
+        dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
 
         listView.addHeaderView(headerView, null, false);
 
@@ -137,7 +136,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     }
 
 
-    public DateTime getDateTime() {
+    public DateTime getDate() {
         return (DateTime) getArguments().getSerializable(ARG_DATE);
     }
 }

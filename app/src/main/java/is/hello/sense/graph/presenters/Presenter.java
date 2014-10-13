@@ -13,7 +13,6 @@ public abstract class Presenter {
     //region Lifecycle
 
     public Presenter() {
-        SenseApplication.getInstance().inject(this);
     }
 
     /**
