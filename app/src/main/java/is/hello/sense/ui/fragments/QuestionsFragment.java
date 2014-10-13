@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -87,7 +89,7 @@ public class QuestionsFragment extends InjectionFragment {
 
     public void bindQuestion(@Nullable Question question) {
         if (question == null) {
-            questionsPresenter.update();
+            questionsPresenter.questionsAcknowledged();
             getActivity().finish();
         } else {
             titleText.setText(question.getText());

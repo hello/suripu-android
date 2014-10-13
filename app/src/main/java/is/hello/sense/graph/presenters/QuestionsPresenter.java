@@ -32,6 +32,8 @@ import rx.subjects.ReplaySubject;
     private SharedPreferences preferences;
     private int offset;
 
+    private DateTime lastUpdated;
+
 
     //region Lifecycle
 
@@ -62,13 +64,18 @@ import rx.subjects.ReplaySubject;
 
     @Override
     public void update() {
-        if (getLastUpdated().isBefore(DateTime.now().withTimeAtStartOfDay())) {
+        if (lastUpdated != null && !lastUpdated.isAfter(lastUpdated.plusMinutes(2))) {
+            logEvent("redundant update requested, ignoring.");
+            return;
+        }
+
+        if (getLastAcknowledged().isBefore(DateTime.now().withTimeAtStartOfDay())) {
             logEvent("loading today's questions");
             String timestamp = DateTime.now().toString("yyyy-MM-dd");
             apiService.questions(timestamp)
                       .subscribe(questions -> {
                           this.questions.onNext(questions);
-                          setLastUpdated(DateTime.now());
+                          this.lastUpdated = DateTime.now();
                           updateCurrentQuestion();
                       }, questions::onError);
         } else {
@@ -91,19 +98,25 @@ import rx.subjects.ReplaySubject;
 
     //region Last update
 
-    public void setLastUpdated(@NonNull DateTime lastUpdated) {
+    public void setLastAcknowledged(@NonNull DateTime lastUpdated) {
         SharedPreferences.Editor transaction = preferences.edit();
-        transaction.putString("lastUpdated", lastUpdated.withTimeAtStartOfDay().toString());
+        transaction.putString("last_acknowledged", lastUpdated.withTimeAtStartOfDay().toString());
         transaction.apply();
     }
 
-    public @NonNull DateTime getLastUpdated() {
-        if (preferences.contains("lastUpdated")) {
-            String timestamp = preferences.getString("lastUpdated", null);
+    public @NonNull DateTime getLastAcknowledged() {
+        if (preferences.contains("last_acknowledged")) {
+            String timestamp = preferences.getString("last_acknowledged", null);
             return DateTime.parse(timestamp);
         } else {
             return new DateTime(0, ISOChronology.getInstance());
         }
+    }
+
+    public void questionsAcknowledged() {
+        this.lastUpdated = null;
+        setLastAcknowledged(DateTime.now());
+        update();
     }
 
     //endregion
