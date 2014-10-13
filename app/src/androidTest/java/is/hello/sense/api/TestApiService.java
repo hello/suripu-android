@@ -1,7 +1,14 @@
 package is.hello.sense.api;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
@@ -12,12 +19,42 @@ import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
+import is.hello.sense.util.Logger;
 import retrofit.http.Body;
 import retrofit.http.Path;
 import retrofit.http.Query;
 import rx.Observable;
 
 public final class TestApiService implements ApiService {
+    private final Context context;
+    private final ObjectMapper objectMapper;
+
+    public TestApiService(@NonNull Context context, @NonNull ObjectMapper objectMapper) {
+        this.context = context;
+        this.objectMapper = objectMapper;
+    }
+
+
+    private <T> Observable<T> loadResponse(@NonNull String filename, TypeReference<T> responseType) {
+        AssetManager assetManager = context.getAssets();
+        InputStream stream = null;
+        try {
+            stream = assetManager.open(filename + ".json");
+            T response = objectMapper.readValue(stream, responseType);
+            return Observable.just(response);
+        } catch (IOException e) {
+            return Observable.error(e);
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    Logger.warn(TestApiService.class.getSimpleName(), "Could not close response input stream.", e);
+                }
+            }
+        }
+    }
+
     private <T> Observable<T> unimplemented() {
         return Observable.error(new IllegalAccessException("unimplemented method in TestApiService"));
     }
@@ -44,8 +81,10 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<List<Timeline>> timelineForDate(@NonNull @Path("year") String year, @NonNull @Path("month") String month, @NonNull @Path("day") String day) {
-        return unimplemented();
+    public Observable<List<Timeline>> timelineForDate(@NonNull @Path("year") String year,
+                                                      @NonNull @Path("month") String month,
+                                                      @NonNull @Path("day") String day) {
+        return loadResponse("timeline", new TypeReference<List<Timeline>>() {});
     }
 
     @Override
@@ -54,12 +93,14 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<List<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor, @Query("timestamp_millis") long timestamp) {
+    public Observable<List<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor,
+                                                               @Query("timestamp_millis") long timestamp) {
         return unimplemented();
     }
 
     @Override
-    public Observable<List<SensorHistory>> sensorHistoryForWeek(@Path("sensor") String sensor, @Query("timestamp_millis") long timestamp) {
+    public Observable<List<SensorHistory>> sensorHistoryForWeek(@Path("sensor") String sensor,
+                                                                @Query("timestamp_millis") long timestamp) {
         return unimplemented();
     }
 

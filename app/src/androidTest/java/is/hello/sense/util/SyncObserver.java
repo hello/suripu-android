@@ -12,7 +12,7 @@ import rx.Observer;
 import rx.schedulers.Schedulers;
 
 public final class SyncObserver<T> implements Observer<T> {
-    public static final long STANDARD_TIMEOUT = 500;
+    public static final long STANDARD_TIMEOUT = 750;
 
     private final CountDownLatch latch = new CountDownLatch(1);
     private final WaitingFor waitingFor;
@@ -24,37 +24,39 @@ public final class SyncObserver<T> implements Observer<T> {
         this.waitingFor = waitingFor;
     }
 
-    public static <T> SyncObserver<T> waitOn(@NonNull WaitingFor waitingFor, @NonNull Observable<T> observable) {
+    public static <T> SyncObserver<T> subscribe(@NonNull WaitingFor waitingFor, @NonNull Observable<T> observable) {
         SyncObserver<T> observer = new SyncObserver<>(waitingFor);
         observable.subscribeOn(Schedulers.io()).subscribe(observer);
         return observer;
     }
 
 
+    private void signal() {
+        latch.countDown();
+    }
+
     @Override
     public void onCompleted() {
         if (waitingFor == WaitingFor.COMPLETED)
-            latch.countDown();
+            signal();
     }
 
     @Override
     public void onError(Throwable e) {
         this.error = e;
-        latch.countDown();
+        signal();
     }
 
     @Override
     public void onNext(T t) {
         results.add(t);
         if (waitingFor == WaitingFor.NEXT)
-            latch.countDown();
+            signal();
     }
 
 
     public boolean await() throws InterruptedException {
-        latch.await();
-        return true;
-        //return await(STANDARD_TIMEOUT, TimeUnit.MILLISECONDS);
+        return await(STANDARD_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
     public boolean await(long timeout, TimeUnit unit) throws InterruptedException {

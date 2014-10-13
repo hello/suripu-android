@@ -3,6 +3,9 @@ package is.hello.sense.graph;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -30,6 +33,7 @@ import is.hello.sense.graph.presenters.TimelinePresenterTests;
         CurrentConditionsPresenter.class,
     }
 )
+@SuppressWarnings("UnusedDeclaration")
 public final class TestModule {
     private final Context applicationContext;
 
@@ -45,7 +49,13 @@ public final class TestModule {
         return applicationContext;
     }
 
-    @Singleton @Provides ApiService provideApiService() {
-        return new TestApiService();
+    @Singleton @Provides ObjectMapper provideObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JodaModule());
+        return mapper;
+    }
+
+    @Singleton @Provides ApiService provideApiService(@NonNull @ApiAppContext Context context, @NonNull ObjectMapper objectMapper) {
+        return new TestApiService(context, objectMapper);
     }
 }
