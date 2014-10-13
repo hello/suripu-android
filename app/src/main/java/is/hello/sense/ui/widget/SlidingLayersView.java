@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -18,7 +19,7 @@ import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.util.Constants;
 
-public class SlidingLayersView extends FrameLayout {
+public class SlidingLayersView extends FrameLayout implements GestureInterceptingView {
     private int touchSlop;
     private int topViewOpenHeight;
     private float lastEventX, lastEventY;
@@ -33,6 +34,8 @@ public class SlidingLayersView extends FrameLayout {
     private boolean isOpen = false;
 
     private OnInteractionListener onInteractionListener;
+
+    private GestureInterceptingView gestureInterceptingChild;
 
 
     //region Lifecycle
@@ -111,6 +114,19 @@ public class SlidingLayersView extends FrameLayout {
 
     public void setOnInteractionListener(OnInteractionListener onInteractionListener) {
         this.onInteractionListener = onInteractionListener;
+    }
+
+    public GestureInterceptingView getGestureInterceptingChild() {
+        return gestureInterceptingChild;
+    }
+
+    public void setGestureInterceptingChild(GestureInterceptingView gestureInterceptingChild) {
+        this.gestureInterceptingChild = gestureInterceptingChild;
+    }
+
+    @Override
+    public boolean hasActiveGesture() {
+        return isTrackingTouchEvents;
     }
 
     //endregion
@@ -229,6 +245,7 @@ public class SlidingLayersView extends FrameLayout {
                 break;
             }
 
+            case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
                 if (velocityTracker == null) {
                     animateClosed(Animation.DURATION_DEFAULT);
@@ -276,6 +293,9 @@ public class SlidingLayersView extends FrameLayout {
             }
 
             case MotionEvent.ACTION_MOVE: {
+                if (gestureInterceptingChild != null && gestureInterceptingChild.hasActiveGesture())
+                    return false;
+
                 float x = event.getX(), y = event.getY();
                 float deltaX = x - lastEventX;
                 float deltaY = y - lastEventY;

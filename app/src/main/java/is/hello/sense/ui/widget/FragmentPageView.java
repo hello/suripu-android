@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
@@ -21,7 +22,7 @@ import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.util.Constants;
 
-public final class FragmentPageView<TFragment extends Fragment> extends ViewGroup {
+public final class FragmentPageView<TFragment extends Fragment> extends ViewGroup implements GestureInterceptingView {
     //region Property Fields
 
     private Adapter<TFragment> adapter;
@@ -194,6 +195,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
                     .commit();
         }
 
+    }
+
+    @Override
+    public boolean hasActiveGesture() {
+        return isTrackingTouchEvents;
     }
 
     //endregion
@@ -501,7 +507,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
 
                 float x = event.getRawX(), y = event.getRawY();
                 float deltaX = x - lastEventX;
-                if (!isTrackingTouchEvents && Math.abs(deltaX) > touchSlop) {
+                float deltaY = y - lastEventY;
+                if (!isTrackingTouchEvents && Math.abs(deltaX) > touchSlop && Math.abs(deltaX) > Math.abs(deltaY)) {
                     this.velocityTracker = VelocityTracker.obtain();
                     this.isTrackingTouchEvents = true;
 
