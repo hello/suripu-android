@@ -62,11 +62,11 @@ public interface ApiService {
 
     @GET("/room/{sensor}/day")
     Observable<List<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor,
-                                                        @Query("timestamp_millis") long timestamp);
+                                                        @Query("from") long timestamp);
 
     @GET("/room/{sensor}/week")
     Observable<List<SensorHistory>> sensorHistoryForWeek(@Path("sensor") String sensor,
-                                                         @Query("timestamp_millis") long timestamp);
+                                                         @Query("from") long timestamp);
 
     //endregion
 
