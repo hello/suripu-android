@@ -1,6 +1,8 @@
 package is.hello.sense.graph.presenters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -19,8 +21,12 @@ import javax.inject.Singleton;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Question;
+import is.hello.sense.api.sessions.ApiSessionManager;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.ReplaySubject;
+
+import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 @Singleton public final class QuestionsPresenter extends Presenter {
     @Inject ApiService apiService;
@@ -39,6 +45,17 @@ import rx.subjects.ReplaySubject;
 
     public QuestionsPresenter() {
         this.preferences = context.getSharedPreferences(QuestionsPresenter.class.getSimpleName(), 0);
+
+        Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        logOutSignal.subscribe(this::onUserLoggedOut);
+    }
+
+    public void onUserLoggedOut(@NonNull Intent intent) {
+        this.lastUpdated = null;
+        setLastAcknowledged(null);
+
+        questions.onNext(Collections.emptyList());
+        currentQuestion.onNext(null);
     }
 
     @Override
@@ -62,14 +79,18 @@ import rx.subjects.ReplaySubject;
 
     //region Updating
 
+    public boolean isUpdateTooSoon() {
+        return lastUpdated != null && !lastUpdated.isAfter(lastUpdated.plusMinutes(2));
+    }
+
     @Override
     public void update() {
-        if (lastUpdated != null && !lastUpdated.isAfter(lastUpdated.plusMinutes(2))) {
+        if (isUpdateTooSoon()) {
             logEvent("redundant update requested, ignoring.");
             return;
         }
 
-        if (getLastAcknowledged().isBefore(DateTime.now().withTimeAtStartOfDay())) {
+        if (isLastAcknowledgedBeforeToday()) {
             logEvent("loading today's questions");
             String timestamp = DateTime.now().toString("yyyy-MM-dd");
             apiService.questions(timestamp)
@@ -98,9 +119,17 @@ import rx.subjects.ReplaySubject;
 
     //region Last update
 
-    public void setLastAcknowledged(@NonNull DateTime lastUpdated) {
+    public boolean isLastAcknowledgedBeforeToday() {
+        return getLastAcknowledged().isBefore(DateTime.now().withTimeAtStartOfDay());
+    }
+
+    public void setLastAcknowledged(@Nullable DateTime lastUpdated) {
         SharedPreferences.Editor transaction = preferences.edit();
-        transaction.putString("last_acknowledged", lastUpdated.withTimeAtStartOfDay().toString());
+        if (lastUpdated != null) {
+            transaction.putString("last_acknowledged", lastUpdated.withTimeAtStartOfDay().toString());
+        } else {
+            transaction.remove("last_acknowledged");
+        }
         transaction.apply();
     }
 

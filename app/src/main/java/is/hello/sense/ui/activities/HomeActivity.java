@@ -28,6 +28,7 @@ import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static rx.android.observables.AndroidObservable.bindActivity;
@@ -80,7 +81,7 @@ public class HomeActivity
         track(noQuestions.subscribe(none -> {
             if (none)
                 hideQuestionsButton();
-            else
+            else if (!slidingLayersView.isOpen())
                 showQuestionsButton();
         }, ignored -> newQuestionContainer.setVisibility(View.INVISIBLE)));
 
@@ -203,6 +204,8 @@ public class HomeActivity
                     .add(R.id.activity_home_underside_container, new HomeUndersideFragment())
                     .commit();
         }
+
+        hideQuestionsButton();
     }
 
     @Override
@@ -214,6 +217,14 @@ public class HomeActivity
                     .remove(underside)
                     .commit();
         }
+
+        questionsPresenter.questions
+                .take(1)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(qs -> {
+                    if (!qs.isEmpty())
+                        showQuestionsButton();
+                }, unused -> hideQuestionsButton());
     }
 
 
