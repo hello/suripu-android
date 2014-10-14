@@ -32,7 +32,7 @@ public class CurrentConditionsPresenterTests extends InjectionTestCase {
         assertNull(humidity.getError());
         assertNotNull(humidity.getSingle());
 
-        
+
         SyncObserver<SensorState> particulates = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.particulates);
         particulates.await();
 
