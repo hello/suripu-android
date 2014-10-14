@@ -24,7 +24,8 @@
     <string name="dialog_loading_message">Loading…</string>
 
     <string name="format_date">MMMM d</string>
-    <string name="format_time">h:mm a</string>
+    <string name="format_time_12_hr">h:mm a</string>
+    <string name="format_time_24_hr">H:mm</string>
     <string name="format_date_placeholder">Unknown</string>
     <string name="format_date_last_night">Last Night</string>
 

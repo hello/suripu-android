@@ -44,7 +44,7 @@
         android:textAppearance="@style/AppTheme.Text.Body.Bold"
         android:text="@string/mock_event_type"/>
 
-    <TextView
+    <is.hello.sense.ui.widget.TimestampTextView
         android:id="@+id/view_timeline_segment_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

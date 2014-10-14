@@ -31,8 +31,9 @@ public class DateFormatterTests extends InstrumentationTestCase {
     }
 
     public void testFormatAsTime() {
-        assertNotNull(formatter.formatAsTime((ReadableInstant) null));
-        assertNotNull(formatter.formatAsTime((ReadablePartial) null));
-        assertEquals("10:30 AM", formatter.formatAsTime(TEST_TIME));
+        assertNotNull(formatter.formatAsTime((ReadableInstant) null, false));
+        assertNotNull(formatter.formatAsTime((ReadablePartial) null, false));
+        assertEquals("10:30 AM", formatter.formatAsTime(TEST_TIME, false));
+        assertEquals("10:30", formatter.formatAsTime(TEST_TIME, true));
     }
 }

@@ -15,7 +15,7 @@
         android:padding="@dimen/activity_margin"
         android:background="@drawable/dialog_background_details">
 
-        <TextView
+        <is.hello.sense.ui.widget.TimestampTextView
             android:id="@+id/dialog_fragment_timeline_segment_details_time"
 
             android:layout_width="wrap_content"

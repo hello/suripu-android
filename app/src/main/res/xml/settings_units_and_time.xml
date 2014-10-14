@@ -8,4 +8,9 @@
         android:entries="@array/setting_entry_titles_units"
         android:entryValues="@array/setting_entries_units"
         android:defaultValue="@string/setting_default_units" />
+
+    <SwitchPreference
+        android:key="use_24_time"
+        android:title="@string/setting_title_use_24_time"
+        android:defaultValue="false" />
 </PreferenceScreen>

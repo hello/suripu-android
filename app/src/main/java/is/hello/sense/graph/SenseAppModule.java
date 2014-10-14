@@ -1,8 +1,6 @@
 package is.hello.sense.graph;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import dagger.Module;
@@ -17,13 +15,13 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SettingsActivity;
-import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.fragments.HomeUndersideFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.QuestionsFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
+import is.hello.sense.ui.widget.TimestampTextView;
 import is.hello.sense.ui.widget.TimelineSegmentView;
 import is.hello.sense.util.BuildValues;
 
@@ -33,6 +31,7 @@ import is.hello.sense.util.BuildValues;
         BuildValues.class,
         DebugActivity.class,
         PreferencesPresenter.class,
+        TimestampTextView.class,
 
         LaunchActivity.class,
         HomeActivity.class,
@@ -44,7 +43,6 @@ import is.hello.sense.util.BuildValues;
         TimelineFragment.class,
         TimelinePresenter.class,
         TimelineSegmentDetailsDialogFragment.class,
-        TimelineSegmentAdapter.class,
         TimelineSegmentView.class,
 
         QuestionsPresenter.class,

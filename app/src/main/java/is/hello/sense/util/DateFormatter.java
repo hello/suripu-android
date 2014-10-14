@@ -21,13 +21,15 @@ import is.hello.sense.R;
     private final Context context;
 
     private final DateTimeFormatter dateFormat;
-    private final DateTimeFormatter timeFormat;
+    private final DateTimeFormatter timeFormat12Hour;
+    private final DateTimeFormatter timeFormat24Hour;
 
     @Inject public DateFormatter(@NonNull Context context) {
         this.context = context.getApplicationContext();
 
         this.dateFormat = DateTimeFormat.forPattern(context.getString(R.string.format_date));
-        this.timeFormat = DateTimeFormat.forPattern(context.getString(R.string.format_time));
+        this.timeFormat12Hour = DateTimeFormat.forPattern(context.getString(R.string.format_time_12_hr));
+        this.timeFormat24Hour = DateTimeFormat.forPattern(context.getString(R.string.format_time_24_hr));
     }
 
     public static boolean isToday(@NonNull ReadableInstant instant) {
@@ -56,16 +58,22 @@ import is.hello.sense.R;
         return context.getString(R.string.format_date_placeholder);
     }
 
-    public @NonNull String formatAsTime(@Nullable ReadablePartial date) {
+    public @NonNull String formatAsTime(@Nullable ReadablePartial date, boolean use24Time) {
         if (date != null) {
-            return timeFormat.print(date);
+            if (use24Time)
+                return timeFormat24Hour.print(date);
+            else
+                return timeFormat12Hour.print(date);
         }
         return context.getString(R.string.format_date_placeholder);
     }
 
-    public @NonNull String formatAsTime(@Nullable ReadableInstant date) {
+    public @NonNull String formatAsTime(@Nullable ReadableInstant date, boolean use24Time) {
         if (date != null) {
-            return timeFormat.print(date);
+            if (use24Time)
+                return timeFormat24Hour.print(date);
+            else
+                return timeFormat12Hour.print(date);
         }
         return context.getString(R.string.format_date_placeholder);
     }

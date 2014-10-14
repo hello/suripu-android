@@ -4,10 +4,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
@@ -15,7 +12,6 @@ import android.widget.ArrayAdapter;
 
 import java.util.List;
 
-import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.widget.TimelineSegmentView;
 
@@ -24,17 +20,21 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
     private final int itemHeight;
 
+    //region Lifecycle
+
     public TimelineSegmentAdapter(@NonNull Context context) {
         super(context, android.R.layout.simple_list_item_1);
 
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
         windowManager.getDefaultDisplay().getSize(size);
-
         this.itemHeight = size.y / NUMBER_HOURS_ON_SCREEN;
-
-        SenseApplication.getInstance().inject(this);
     }
+
+    //endregion
+
+
+    //region Bindings
 
     public void bindSegments(@Nullable List<TimelineSegment> segments) {
         clear();
@@ -44,7 +44,8 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         }
     }
 
-    public void handleError(@NonNull Throwable error) {
+    @SuppressWarnings("UnusedParameters")
+    public void handleError(@NonNull Throwable ignored) {
         clear();
     }
 

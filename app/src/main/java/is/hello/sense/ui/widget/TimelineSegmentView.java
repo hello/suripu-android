@@ -28,9 +28,7 @@ public final class TimelineSegmentView extends FrameLayout {
     private View stripe;
     private ImageView eventTypeImage;
     private TextView eventType;
-    private TextView time;
-
-    @Inject DateFormatter dateFormatter;
+    private TimestampTextView time;
 
     public TimelineSegmentView(Context context) {
         super(context);
@@ -56,7 +54,7 @@ public final class TimelineSegmentView extends FrameLayout {
         graphView.setValue(sleepDepth);
 
         stripe.setBackgroundResource(Styles.getSleepDepthColorRes(sleepDepth));
-        time.setText(dateFormatter.formatAsTime(segment.getTimestamp()));
+        time.setDateTime(segment.getTimestamp());
 
         if (segment.getEventType() != null) {
             eventTypeImage.setImageResource(segment.getEventType().iconRes);
@@ -86,8 +84,6 @@ public final class TimelineSegmentView extends FrameLayout {
     //endregion
 
     protected void initialize(@Nullable AttributeSet attributes, int defStyleAttr) {
-        SenseApplication.getInstance().inject(this);
-
         WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(this.displayMetrics);
 
@@ -98,6 +94,6 @@ public final class TimelineSegmentView extends FrameLayout {
         this.stripe = findViewById(R.id.view_timeline_segment_event_stripe);
         this.eventTypeImage = (ImageView) findViewById(R.id.view_timeline_segment_image_event_type);
         this.eventType = (TextView) findViewById(R.id.view_timeline_segment_event_type);
-        this.time = (TextView) findViewById(R.id.view_timeline_segment_time);
+        this.time = (TimestampTextView) findViewById(R.id.view_timeline_segment_time);
     }
 }

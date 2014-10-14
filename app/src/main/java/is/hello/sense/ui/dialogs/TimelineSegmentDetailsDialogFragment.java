@@ -12,9 +12,9 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
-import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.util.DateFormatter;
+import is.hello.sense.ui.common.InjectionDialogFragment;
+import is.hello.sense.ui.widget.TimestampTextView;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import rx.Observable;
@@ -28,7 +28,6 @@ public final class TimelineSegmentDetailsDialogFragment extends InjectionDialogF
     private static final String ARG_SEGMENT = TimelineSegmentDetailsDialogFragment.class.getSimpleName() + ".ARG_SEGMENT";
 
     @Inject Markdown markdown;
-    @Inject DateFormatter dateFormatter;
 
     private TimelineSegment timelineSegment;
     private View contentView;
@@ -75,8 +74,8 @@ public final class TimelineSegmentDetailsDialogFragment extends InjectionDialogF
         Observable<CharSequence> renderedMessage = bindFragment(this, markdown.render(timelineSegment.getMessage()));
         renderedMessage.subscribe(message::setText, error -> Logger.error(Logger.tagFromClass(TimelineSegmentDetailsDialogFragment.class), "Could not render message markdown", error));
 
-        TextView time = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_segment_details_time);
-        time.setText(dateFormatter.formatAsTime(timelineSegment.getTimestamp()));
+        TimestampTextView time = (TimestampTextView) dialog.findViewById(R.id.dialog_fragment_timeline_segment_details_time);
+        time.setDateTime(timelineSegment.getTimestamp());
 
         return dialog;
     }
