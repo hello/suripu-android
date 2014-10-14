@@ -25,6 +25,10 @@ public class Timeline extends ApiResponse {
     @JsonDeserialize(contentAs = TimelineSegment.class)
     private List<TimelineSegment> segments;
 
+    @JsonProperty("insights")
+    @JsonDeserialize(contentAs = Insight.class)
+    private List<Insight> insights;
+
 
     public int getScore() {
         return score;
@@ -42,6 +46,9 @@ public class Timeline extends ApiResponse {
         return segments;
     }
 
+    public List<Insight> getInsights() {
+        return insights;
+    }
 
     @Override
     public String toString() {
@@ -50,6 +57,7 @@ public class Timeline extends ApiResponse {
                 ", message='" + message + '\'' +
                 ", date='" + date + '\'' +
                 ", segments=" + segments +
+                ", insights=" + insights +
                 '}';
     }
 }

@@ -3,6 +3,7 @@ package is.hello.sense.api;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
@@ -48,6 +49,9 @@ public class ApiModule {
 
     @Singleton @Provides ObjectMapper provideObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
+        if (!buildValues.isDebugBuild()) {
+            mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        }
         mapper.registerModule(new JodaModule());
         return mapper;
     }
