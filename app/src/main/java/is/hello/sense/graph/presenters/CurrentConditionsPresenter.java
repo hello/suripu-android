@@ -5,9 +5,6 @@ import javax.inject.Singleton;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.RoomConditions;
-import is.hello.sense.api.model.SensorState;
-import is.hello.sense.functional.Functions;
-import rx.Observable;
 import rx.subjects.ReplaySubject;
 
 @Singleton public class CurrentConditionsPresenter extends Presenter {

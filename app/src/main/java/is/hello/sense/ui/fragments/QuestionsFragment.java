@@ -11,8 +11,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.joda.time.DateTime;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;

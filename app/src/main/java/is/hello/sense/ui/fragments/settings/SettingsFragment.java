@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.annotation.XmlRes;
 
-import is.hello.sense.ui.activities.SettingsActivity;
-
 public class SettingsFragment extends PreferenceFragment {
     private static final String ARG_XML_RES = SettingsFragment.class.getName() + ".ARG_XML_RES";
 

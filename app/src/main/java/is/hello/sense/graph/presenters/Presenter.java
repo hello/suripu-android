@@ -4,7 +4,6 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import is.hello.sense.SenseApplication;
 import is.hello.sense.util.Logger;
 
 public abstract class Presenter {

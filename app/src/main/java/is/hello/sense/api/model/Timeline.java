@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import org.joda.time.DateTime;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import is.hello.sense.api.ApiService;
 

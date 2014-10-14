@@ -11,7 +11,6 @@ import android.text.TextUtils;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
-import retrofit.RetrofitError;
 
 public class ErrorDialogFragment extends DialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();

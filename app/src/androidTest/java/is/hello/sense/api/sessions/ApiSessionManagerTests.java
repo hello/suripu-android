@@ -4,8 +4,6 @@ import android.support.annotation.Nullable;
 
 import junit.framework.TestCase;
 
-import rx.observables.BlockingObservable;
-
 public class ApiSessionManagerTests extends TestCase {
     public void testFacade() {
         OAuthSession testSession = new OAuthSession();

@@ -17,7 +17,6 @@ import net.hockeyapp.android.FeedbackManager;
 
 import javax.inject.Inject;
 
-import is.hello.sense.R;
 import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.adapter.StaticItemAdapter;

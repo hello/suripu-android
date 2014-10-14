@@ -12,13 +12,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import javax.inject.Inject;
-
 import is.hello.sense.R;
-import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.common.Styles;
-import is.hello.sense.util.DateFormatter;
 
 @SuppressWarnings("UnusedDeclaration")
 public final class TimelineSegmentView extends FrameLayout {

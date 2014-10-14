@@ -23,7 +23,6 @@ import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.ReplaySubject;
 
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;

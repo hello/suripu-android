@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
-import rx.subjects.ReplaySubject;
-
 public abstract class ApiSessionManager {
     public static final String ACTION_LOGGED_OUT = ApiSessionManager.class.getName() + ".ACTION_LOGGED_OUT";
 

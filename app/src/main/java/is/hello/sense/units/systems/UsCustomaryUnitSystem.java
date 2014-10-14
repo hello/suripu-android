@@ -2,8 +2,8 @@ package is.hello.sense.units.systems;
 
 import android.support.annotation.NonNull;
 
-import is.hello.sense.units.UnitSystem;
 import is.hello.sense.units.UnitOperations;
+import is.hello.sense.units.UnitSystem;
 
 public class UsCustomaryUnitSystem extends UnitSystem {
     public static final String NAME = "UsCustomary";
