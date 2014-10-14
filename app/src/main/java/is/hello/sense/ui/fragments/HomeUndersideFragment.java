@@ -17,6 +17,7 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
@@ -63,8 +64,14 @@ public class HomeUndersideFragment extends InjectionFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<RoomConditions> currentConditions = bindFragment(this, currentConditionsPresenter.currentConditions);
-        track(currentConditions.subscribe(this::bindConditions, this::presentError));
+        Observable<SensorState> temperature = bindFragment(this, currentConditionsPresenter.temperature);
+        track(temperature.subscribe(this::bindTemperature, this::presentError));
+
+        Observable<SensorState> humidity = bindFragment(this, currentConditionsPresenter.humidity);
+        track(humidity.subscribe(this::bindHumidity, Functions::ignoreError));
+
+        Observable<SensorState> particulates = bindFragment(this, currentConditionsPresenter.particulates);
+        track(particulates.subscribe(this::bindParticulates, Functions::ignoreError));
     }
 
     @Override
@@ -79,13 +86,8 @@ public class HomeUndersideFragment extends InjectionFragment {
 
     private void displayCondition(@Nullable SensorState condition,
                                   @NonNull SensorStateView view,
-                                  @DrawableRes int iconRes,
-                                  @StringRes int titleRes,
                                   @NonNull UnitFormatter.Formatter formatter) {
-        view.setIconDrawable(getResources().getDrawable(iconRes));
-        view.setTitle(getString(titleRes));
-
-        if (condition == null) {
+        if (condition == null || condition.getValue() == null) {
             view.setReading(getString(R.string.missing_data_placeholder));
             view.displayCondition(Condition.UNKNOWN);
         } else {
@@ -94,24 +96,16 @@ public class HomeUndersideFragment extends InjectionFragment {
         }
     }
 
-    public void bindConditions(@NonNull RoomConditions conditions) {
-        displayCondition(conditions.getTemperature(),
-                temperatureState,
-                R.drawable.icon_sensor_temperature,
-                R.string.condition_temperature,
-                unitsFormatter::formatTemperature);
+    public void bindTemperature(@Nullable SensorState condition) {
+        displayCondition(condition, temperatureState, unitsFormatter::formatTemperature);
+    }
 
-        displayCondition(conditions.getHumidity(),
-                humidityState,
-                R.drawable.icon_sensor_humidity,
-                R.string.condition_humidity,
-                unitsFormatter::formatPercentage);
+    public void bindHumidity(@Nullable SensorState condition) {
+        displayCondition(condition, temperatureState, unitsFormatter::formatPercentage);
+    }
 
-        displayCondition(conditions.getParticulates(),
-                particulatesState,
-                R.drawable.icon_sensor_particle,
-                R.string.condition_particulates,
-                unitsFormatter::formatRaw);
+    public void bindParticulates(@Nullable SensorState condition) {
+        displayCondition(condition, temperatureState, unitsFormatter::formatRaw);
     }
 
     public void presentError(@NonNull Throwable e) {

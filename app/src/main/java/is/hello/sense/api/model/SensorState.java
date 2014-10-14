@@ -2,9 +2,11 @@ package is.hello.sense.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.joda.time.DateTime;
+
 public class SensorState extends ApiResponse {
     @JsonProperty("value")
-    private long value;
+    private Long value;
 
     @JsonProperty("message")
     private String message;
@@ -16,10 +18,10 @@ public class SensorState extends ApiResponse {
     private String unit;
 
     @JsonProperty("last_updated_utc")
-    private long lastUpdated;
+    private DateTime lastUpdated;
 
 
-    public long getValue() {
+    public Long getValue() {
         return value;
     }
 
@@ -31,7 +33,7 @@ public class SensorState extends ApiResponse {
         return condition;
     }
 
-    public long getLastUpdated() {
+    public DateTime getLastUpdated() {
         return lastUpdated;
     }
 
