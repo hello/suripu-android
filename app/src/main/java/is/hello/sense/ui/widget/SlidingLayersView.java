@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
+import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.util.Constants;
@@ -23,6 +25,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     private int topViewOpenHeight;
     private float lastEventX, lastEventY;
 
+    private FrameLayout topViewContainer;
     private View topView;
     private float topViewY;
     private ListView listView;
@@ -31,10 +34,9 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     private boolean isTrackingTouchEvents = false;
 
     private boolean isOpen = false;
-
     private OnInteractionListener onInteractionListener;
-
     private GestureInterceptingView gestureInterceptingChild;
+    private int shadowHeight;
 
 
     //region Lifecycle
@@ -62,6 +64,13 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         // to be lower than standard in order for the swipe gesture to work.
         this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop() / 2;
         this.topViewOpenHeight = (int) (getResources().getDisplayMetrics().density * 60f);
+
+        this.topViewContainer = new FrameLayout(getContext());
+
+        this.shadowHeight = getResources().getDimensionPixelSize(R.dimen.shadow_height);
+        View topShadowView = new View(getContext());
+        topShadowView.setBackgroundResource(R.drawable.gradient_top_layer_shadow);
+        topViewContainer.addView(topShadowView, new LayoutParams(LayoutParams.MATCH_PARENT, shadowHeight, Gravity.TOP));
     }
 
     @Override
@@ -131,13 +140,44 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     //endregion
 
 
-    //region Layout
+    //region Layout & Drawing
+
+
+    @Override
+    public void addView(@NonNull View child, int index, ViewGroup.LayoutParams params) {
+        int normalizedIndex = index < 0 ? getChildCount() : index;
+
+        if (normalizedIndex > 1)
+            throw new IllegalStateException("too many children for " + getClass().getSimpleName());
+
+        if (normalizedIndex == 1) {
+            LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.TOP);
+            layoutParams.setMargins(0, shadowHeight, 0, 0);
+            topViewContainer.addView(child, layoutParams);
+            child = topViewContainer;
+            LayoutParams containerLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            containerLayoutParams.topMargin = -shadowHeight;
+            params = containerLayoutParams;
+        }
+
+        super.addView(child, index, params);
+    }
+
+    @Override
+    public void removeView(@NonNull View view) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeViewAt(int index) {
+        throw new UnsupportedOperationException();
+    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        if (isOpen && getChildAt(1).getY() == 0f) {
+        if (isOpen && getChildAt(1).getY() < topViewOpenHeight) {
             getChildAt(1).setY(getMeasuredHeight() - topViewOpenHeight);
         }
     }
@@ -204,7 +244,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
     private void animateClosed(long duration) {
         PropertyAnimatorProxy.animate(topView)
-                .y(0f)
+                .y(-shadowHeight)
                 .setDuration(duration)
                 .setApplyChangesToView(true)
                 .setOnAnimationCompleted(finished -> {
@@ -232,7 +272,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
                     float y = event.getY();
                     float deltaY = y - lastEventY;
-                    float newY = Math.max(0f, topViewY + deltaY);
+                    float newY = Math.max(-shadowHeight, topViewY + deltaY);
 
                     topView.setY(topViewY);
                     topViewY = newY;

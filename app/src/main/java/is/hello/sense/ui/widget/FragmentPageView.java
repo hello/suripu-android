@@ -21,7 +21,7 @@ import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.util.Constants;
 
-public final class FragmentPageView<TFragment extends Fragment> extends ViewGroup implements GestureInterceptingView {
+public final class FragmentPageView<TFragment extends Fragment> extends FrameLayout implements GestureInterceptingView {
     //region Property Fields
 
     private Adapter<TFragment> adapter;
@@ -218,20 +218,6 @@ public final class FragmentPageView<TFragment extends Fragment> extends ViewGrou
             return view1;
         else
             return view2;
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(getDefaultSize(0, widthMeasureSpec), getDefaultSize(0, heightMeasureSpec));
-
-        getOnScreenView().measure(widthMeasureSpec, heightMeasureSpec);
-        getOffScreenView().measure(widthMeasureSpec, heightMeasureSpec);
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        getOnScreenView().layout(left, top, right, bottom);
-        getOffScreenView().layout(left, top, right, bottom);
     }
 
     //endregion
