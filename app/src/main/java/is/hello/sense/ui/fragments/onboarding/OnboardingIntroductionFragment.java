@@ -1,4 +1,4 @@
-package is.hello.sense.ui.fragments;
+package is.hello.sense.ui.fragments.onboarding;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

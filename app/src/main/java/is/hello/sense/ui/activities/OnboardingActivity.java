@@ -8,9 +8,9 @@ import android.support.v4.app.FragmentTransaction;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionActivity;
-import is.hello.sense.ui.fragments.OnboardingIntroductionFragment;
-import is.hello.sense.ui.fragments.OnboardingRegisterFragment;
-import is.hello.sense.ui.fragments.OnboardingSignInFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 
 public class OnboardingActivity extends InjectionActivity {
     private static final String FRAGMENT_TAG = "OnboardingFragment";

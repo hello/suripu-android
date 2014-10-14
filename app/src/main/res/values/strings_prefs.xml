@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="setting_title_units">Units</string>
+
+    <string-array name="setting_entries_units">
+        <item>UsCustomary</item>
+        <item>Metric</item>
+    </string-array>
+    <string-array name="setting_entry_titles_units">
+        <item>Imperial</item>
+        <item>Metric</item>
+    </string-array>
+    <string name="setting_default_units">UsCustomary</string>
+</resources>

@@ -6,7 +6,7 @@ import is.hello.sense.units.UnitSystem;
 import is.hello.sense.units.UnitOperations;
 
 public class UsCustomaryUnitSystem extends UnitSystem {
-    public static final String NAME = "US Customary";
+    public static final String NAME = "UsCustomary";
 
     @NonNull
     @Override

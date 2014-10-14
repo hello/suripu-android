@@ -1,39 +1,25 @@
 package is.hello.sense.units;
 
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.util.Constants;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
-@Singleton public final class UnitFormatter implements SharedPreferences.OnSharedPreferenceChangeListener {
-    private final SharedPreferences sharedPreferences;
-
+@Singleton
+public final class UnitFormatter {
     private UnitSystem unitSystem;
 
-    @Inject public UnitFormatter(@NonNull SharedPreferences sharedPreferences) {
-        this.sharedPreferences = sharedPreferences;
-
-        reloadUnitSystem();
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    @Inject
+    public UnitFormatter(@NonNull PreferencesPresenter preferencesPresenter) {
+        Observable<String> unitSystemName = preferencesPresenter.observableString(Constants.GLOBAL_PREF_UNIT_SYSTEM, UnitSystem.DEFAULT_UNIT_SYSTEM);
+        unitSystemName.subscribeOn(AndroidSchedulers.mainThread())
+                      .subscribe(name -> this.unitSystem = UnitSystem.createUnitSystemWithName(name));
     }
-
-
-    //region System Changes
-
-    private void reloadUnitSystem() {
-        String systemName = sharedPreferences.getString(Constants.GLOBAL_PREF_UNIT_SYSTEM, UnitSystem.DEFAULT_UNIT_SYSTEM);
-        this.unitSystem = UnitSystem.createUnitSystemWithName(systemName);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        reloadUnitSystem();
-    }
-
-    //endregion
 
 
     //region Formatting

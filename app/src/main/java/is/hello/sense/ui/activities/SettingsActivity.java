@@ -1,11 +1,12 @@
 package is.hello.sense.ui.activities;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.app.ListFragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.ListFragment;
+import android.support.annotation.XmlRes;
 import android.view.View;
 import android.widget.ListView;
 
@@ -15,6 +16,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.fragments.settings.SettingsFragment;
 
 public class SettingsActivity extends InjectionActivity {
     @Inject ApiSessionManager sessionManager;
@@ -29,19 +31,38 @@ public class SettingsActivity extends InjectionActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     private void showFragment(@NonNull Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        if (getSupportFragmentManager().findFragmentById(R.id.activity_settings_container) == null) {
-            transaction.add(R.id.activity_settings_container, fragment);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        String tag = fragment.getClass().getSimpleName();
+        if (getFragmentManager().findFragmentById(R.id.activity_settings_container) == null) {
+            transaction.add(R.id.activity_settings_container, fragment, tag);
         } else {
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            transaction.replace(R.id.activity_settings_container, fragment);
-            transaction.addToBackStack(fragment.getClass().getSimpleName());
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.replace(R.id.activity_settings_container, fragment, tag);
+            transaction.addToBackStack(null);
         }
         transaction.commit();
     }
 
+    private void showSettings(@XmlRes int prefsRes) {
+        showFragment(SettingsFragment.newInstance(prefsRes));
+    }
+
+
+    //region Root Settings
+
+    public void showUnitsAndTime() {
+        showSettings(R.xml.settings_units_and_time);
+    }
 
     public static class RootSettingsFragment extends ListFragment {
         private StaticItemAdapter adapter;
@@ -53,7 +74,7 @@ public class SettingsActivity extends InjectionActivity {
             this.adapter = new StaticItemAdapter(getActivity());
             adapter.addItem(getString(R.string.label_my_info), null);
             adapter.addItem(getString(R.string.label_account), null);
-            adapter.addItem(getString(R.string.label_units_and_time), null);
+            adapter.addItem(getString(R.string.label_units_and_time), null, getSettingsActivity()::showUnitsAndTime);
             adapter.addItem(getString(R.string.label_devices), null);
             adapter.addItem(getString(R.string.action_log_out), null, this::logOut);
             setListAdapter(adapter);
@@ -89,4 +110,6 @@ public class SettingsActivity extends InjectionActivity {
 
         //endregion
     }
+
+    //endregion
 }

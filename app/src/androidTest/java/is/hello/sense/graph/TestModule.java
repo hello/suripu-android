@@ -17,6 +17,8 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenterTests;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.graph.presenters.PreferencesPresenterTests;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenterTests;
 import is.hello.sense.graph.presenters.TimelinePresenter;
@@ -34,6 +36,9 @@ import is.hello.sense.units.UnitFormatterTests;
 
         CurrentConditionsPresenterTests.class,
         CurrentConditionsPresenter.class,
+
+        PreferencesPresenter.class,
+        PreferencesPresenterTests.class,
 
         UnitFormatterTests.class,
     }

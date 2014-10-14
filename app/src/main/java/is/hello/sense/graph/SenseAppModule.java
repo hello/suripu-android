@@ -9,6 +9,7 @@ import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.DebugActivity;
@@ -19,8 +20,8 @@ import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.fragments.HomeUndersideFragment;
-import is.hello.sense.ui.fragments.OnboardingRegisterFragment;
-import is.hello.sense.ui.fragments.OnboardingSignInFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.QuestionsFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.TimelineSegmentView;
@@ -31,6 +32,7 @@ import is.hello.sense.util.BuildValues;
     injects = {
         BuildValues.class,
         DebugActivity.class,
+        PreferencesPresenter.class,
 
         LaunchActivity.class,
         HomeActivity.class,

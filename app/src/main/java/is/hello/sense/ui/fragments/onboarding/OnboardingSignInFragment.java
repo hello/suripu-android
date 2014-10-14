@@ -1,4 +1,4 @@
-package is.hello.sense.ui.fragments;
+package is.hello.sense.ui.fragments.onboarding;
 
 import android.content.Context;
 import android.os.Bundle;
