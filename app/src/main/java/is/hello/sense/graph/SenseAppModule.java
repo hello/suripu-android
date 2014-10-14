@@ -58,18 +58,12 @@ import is.hello.sense.util.BuildValues;
 @SuppressWarnings("UnusedDeclaration")
 public class SenseAppModule {
     private final Context applicationContext;
-    private final SharedPreferences sharedPreferences;
 
     public SenseAppModule(@NonNull Context context) {
         this.applicationContext = context;
-        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @Provides Context provideApplicationContext() {
         return applicationContext;
-    }
-
-    @Provides SharedPreferences provideSharedPreferences() {
-        return sharedPreferences;
     }
 }

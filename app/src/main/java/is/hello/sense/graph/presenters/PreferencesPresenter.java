@@ -14,28 +14,36 @@ import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
 @Singleton public class PreferencesPresenter extends Presenter {
-    private final SharedPreferences preferences;
+    private final SharedPreferences sharedPreferences;
 
     public @Inject PreferencesPresenter(@NonNull Context applicationContext) {
-        this.preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     }
 
     @Override
     public void update() {}
 
 
+    public @NonNull SharedPreferences getSharedPreferences() {
+        return sharedPreferences;
+    }
+
+    public SharedPreferences.Editor edit() {
+        return getSharedPreferences().edit();
+    }
+
     public Observable<String> observableString(@NonNull String key, @Nullable String defaultValue) {
         return Observable.create((Observable.OnSubscribe<String>) s -> {
             SharedPreferences.OnSharedPreferenceChangeListener changeListener = (prefs, changedKey) -> {
                 if (changedKey.equals(key))
-                    s.onNext(preferences.getString(key, defaultValue));
+                    s.onNext(sharedPreferences.getString(key, defaultValue));
             };
 
-            Subscription subscription = Subscriptions.create(() -> preferences.unregisterOnSharedPreferenceChangeListener(changeListener));
+            Subscription subscription = Subscriptions.create(() -> sharedPreferences.unregisterOnSharedPreferenceChangeListener(changeListener));
             s.add(subscription);
 
-            preferences.registerOnSharedPreferenceChangeListener(changeListener);
-            s.onNext(preferences.getString(key, defaultValue));
+            sharedPreferences.registerOnSharedPreferenceChangeListener(changeListener);
+            s.onNext(sharedPreferences.getString(key, defaultValue));
         });
     }
 
@@ -43,14 +51,14 @@ import rx.subscriptions.Subscriptions;
         return Observable.create((Observable.OnSubscribe<Boolean>) s -> {
             SharedPreferences.OnSharedPreferenceChangeListener changeListener = (prefs, changedKey) -> {
                 if (changedKey.equals(key))
-                    s.onNext(preferences.getBoolean(key, defaultValue));
+                    s.onNext(sharedPreferences.getBoolean(key, defaultValue));
             };
 
-            Subscription subscription = Subscriptions.create(() -> preferences.unregisterOnSharedPreferenceChangeListener(changeListener));
+            Subscription subscription = Subscriptions.create(() -> sharedPreferences.unregisterOnSharedPreferenceChangeListener(changeListener));
             s.add(subscription);
 
-            preferences.registerOnSharedPreferenceChangeListener(changeListener);
-            s.onNext(preferences.getBoolean(key, defaultValue));
+            sharedPreferences.registerOnSharedPreferenceChangeListener(changeListener);
+            s.onNext(sharedPreferences.getBoolean(key, defaultValue));
         });
     }
 }
