@@ -6,6 +6,8 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +28,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SensorStateView;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.units.UnitSystem;
 import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.bindFragment;
@@ -64,14 +67,8 @@ public class HomeUndersideFragment extends InjectionFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<SensorState> temperature = bindFragment(this, currentConditionsPresenter.temperature);
-        track(temperature.subscribe(this::bindTemperature, this::presentError));
-
-        Observable<SensorState> humidity = bindFragment(this, currentConditionsPresenter.humidity);
-        track(humidity.subscribe(this::bindHumidity, Functions::ignoreError));
-
-        Observable<SensorState> particulates = bindFragment(this, currentConditionsPresenter.particulates);
-        track(particulates.subscribe(this::bindParticulates, Functions::ignoreError));
+        Observable<Pair<RoomConditions, UnitSystem>> forDisplay = Observable.combineLatest(currentConditionsPresenter.currentConditions, unitsFormatter.unitSystem, Pair::new);
+        track(bindFragment(this, forDisplay).subscribe(this::bindConditions, this::presentError));
     }
 
     @Override
@@ -86,26 +83,26 @@ public class HomeUndersideFragment extends InjectionFragment {
 
     private void displayCondition(@Nullable SensorState condition,
                                   @NonNull SensorStateView view,
-                                  @NonNull UnitFormatter.Formatter formatter) {
+                                  @Nullable UnitFormatter.Formatter formatter) {
         if (condition == null || condition.getValue() == null) {
             view.setReading(getString(R.string.missing_data_placeholder));
             view.displayCondition(Condition.UNKNOWN);
         } else {
-            view.setReading(formatter.format(condition.getValue()));
+            if (formatter != null)
+                view.setReading(formatter.format(condition.getValue()));
+            else
+                view.setReading(condition.getValue() + condition.getUnit());
             view.displayCondition(condition.getCondition());
         }
     }
 
-    public void bindTemperature(@Nullable SensorState condition) {
-        displayCondition(condition, temperatureState, unitsFormatter::formatTemperature);
-    }
+    public void bindConditions(@NonNull Pair<RoomConditions, UnitSystem> pair) {
+        RoomConditions conditions = pair.first;
+        UnitSystem unitSystem = pair.second;
 
-    public void bindHumidity(@Nullable SensorState condition) {
-        displayCondition(condition, temperatureState, unitsFormatter::formatPercentage);
-    }
-
-    public void bindParticulates(@Nullable SensorState condition) {
-        displayCondition(condition, temperatureState, unitsFormatter::formatRaw);
+        displayCondition(conditions.getTemperature(), temperatureState, unitSystem::formatTemperature);
+        displayCondition(conditions.getHumidity(), humidityState, null);
+        displayCondition(conditions.getParticulates(), particulatesState, null);
     }
 
     public void presentError(@NonNull Throwable e) {

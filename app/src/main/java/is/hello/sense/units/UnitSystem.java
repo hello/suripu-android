@@ -40,12 +40,37 @@ public abstract class UnitSystem {
 
     //endregion
 
-    public abstract @NonNull String getMassSuffix();
-    public abstract long convertGrams(long mass);
+    //region Primitives
 
-    public abstract @NonNull String getDistanceSuffix();
-    public abstract long convertCentimeters(long distance);
+    protected abstract @NonNull String getMassSuffix();
+    protected abstract long convertGrams(long mass);
 
-    public abstract @NonNull String getTemperatureSuffix();
-    public abstract long convertDegreesCelsius(long temperature);
+    protected abstract @NonNull String getDistanceSuffix();
+    protected abstract long convertCentimeters(long distance);
+
+    protected abstract @NonNull String getTemperatureSuffix();
+    protected abstract long convertDegreesCelsius(long temperature);
+
+    //endregion
+
+
+    //region Formatting
+
+    protected String assemble(long value, String unit) {
+        return value + unit;
+    }
+
+    public String formatMass(long mass) {
+        return assemble(convertGrams(mass), getMassSuffix());
+    }
+
+    public String formatTemperature(long temperature) {
+        return assemble(convertDegreesCelsius(temperature), getTemperatureSuffix());
+    }
+
+    public String formatDistance(long distance) {
+        return assemble(convertCentimeters(distance), getDistanceSuffix());
+    }
+
+    //endregion
 }

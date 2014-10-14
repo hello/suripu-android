@@ -1,48 +1,49 @@
 package is.hello.sense.units;
 
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 
 import javax.inject.Inject;
 
 import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.SyncObserver;
 
 public class UnitFormatterTests extends InjectionTestCase {
     @Inject UnitFormatter formatter;
-    @Inject SharedPreferences sharedPreferences;
+    @Inject PreferencesPresenter preferences;
+
+    private UnitSystem unitSystem;
 
     @SuppressLint("CommitPrefEdits")
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        sharedPreferences.edit()
-                .remove(Constants.GLOBAL_PREF_UNIT_SYSTEM)
-                .commit();
+        preferences.edit()
+                   .remove(Constants.GLOBAL_PREF_UNIT_SYSTEM)
+                   .commit();
+
+        SyncObserver<UnitSystem> unitSystemObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, formatter.unitSystem);
+        unitSystemObserver.await();
+        this.unitSystem = unitSystemObserver.getSingle();
     }
 
     public void testFormatMass() throws Exception {
-        String formattedMass = formatter.formatMass(2500);
+        String formattedMass = unitSystem.formatMass(2500);
         assertNotNull(formattedMass);
         assertEquals("6 lbs", formattedMass);
     }
 
     public void testFormatTemperature() throws Exception {
-        String formattedTemperature = formatter.formatTemperature(4);
+        String formattedTemperature = unitSystem.formatTemperature(4);
         assertNotNull(formattedTemperature);
         assertEquals("39ºF", formattedTemperature);
     }
 
     public void testFormatDistance() throws Exception {
-        String formattedDistance = formatter.formatDistance(250);
+        String formattedDistance = unitSystem.formatDistance(250);
         assertNotNull(formattedDistance);
         assertEquals("98 in", formattedDistance);
-    }
-
-    public void testRaw() throws Exception {
-        String formattedRaw = formatter.formatRaw(2500);
-        assertNotNull(formattedRaw);
-        assertEquals("2500", formattedRaw);
     }
 }

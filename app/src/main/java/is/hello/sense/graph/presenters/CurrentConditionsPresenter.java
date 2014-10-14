@@ -15,13 +15,6 @@ import rx.subjects.ReplaySubject;
 
     public final ReplaySubject<RoomConditions> currentConditions = ReplaySubject.create(1);
 
-    public final Observable<SensorState> temperature = currentConditions.filter(Functions::isNotNull)
-                                                                        .map(RoomConditions::getTemperature);
-    public final Observable<SensorState> humidity = currentConditions.filter(Functions::isNotNull)
-                                                                     .map(RoomConditions::getHumidity);
-    public final Observable<SensorState> particulates = currentConditions.filter(Functions::isNotNull)
-                                                                         .map(RoomConditions::getParticulates);
-
     @Override
     public void update() {
         apiService.currentRoomConditions().subscribe(currentConditions::onNext, currentConditions::onError);

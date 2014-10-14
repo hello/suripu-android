@@ -17,26 +17,5 @@ public class CurrentConditionsPresenterTests extends InjectionTestCase {
 
         assertNull(conditions.getError());
         assertNotNull(conditions.getSingle());
-
-
-        SyncObserver<SensorState> temperature = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.temperature);
-        temperature.await();
-
-        assertNull(temperature.getError());
-        assertNotNull(temperature.getSingle());
-
-
-        SyncObserver<SensorState> humidity = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.humidity);
-        humidity.await();
-
-        assertNull(humidity.getError());
-        assertNotNull(humidity.getSingle());
-
-
-        SyncObserver<SensorState> particulates = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.particulates);
-        particulates.await();
-
-        assertNull(particulates.getError());
-        assertNotNull(particulates.getSingle());
     }
 }

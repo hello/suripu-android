@@ -66,4 +66,70 @@ public class PreferencesPresenterTests extends InjectionTestCase {
         assertNotNull(testObserver2.getSingle());
         assertEquals(false, (boolean) testObserver2.getSingle());
     }
+
+    public void testObservableInteger() throws Exception {
+        Observable<Integer> test = presenter.observableInteger(TEST_KEY, 10);
+        SyncObserver<Integer> testObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, test);
+        testObserver.await();
+
+        assertNull(testObserver.getError());
+        assertNotNull(testObserver.getSingle());
+        assertEquals(10, (int) testObserver.getSingle());
+
+
+        presenter.edit()
+                .putInt(TEST_KEY, 99)
+                .commit();
+
+        SyncObserver<Integer> testObserver2 = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, test);
+        testObserver2.await();
+
+        assertNull(testObserver2.getError());
+        assertNotNull(testObserver2.getSingle());
+        assertEquals(99, (int) testObserver2.getSingle());
+    }
+
+    public void testObservableLong() throws Exception {
+        Observable<Long> test = presenter.observableLong(TEST_KEY, 10);
+        SyncObserver<Long> testObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, test);
+        testObserver.await();
+
+        assertNull(testObserver.getError());
+        assertNotNull(testObserver.getSingle());
+        assertEquals(10, (long) testObserver.getSingle());
+
+
+        presenter.edit()
+                .putLong(TEST_KEY, 99)
+                .commit();
+
+        SyncObserver<Long> testObserver2 = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, test);
+        testObserver2.await();
+
+        assertNull(testObserver2.getError());
+        assertNotNull(testObserver2.getSingle());
+        assertEquals(99, (long) testObserver2.getSingle());
+    }
+
+    public void testObservableFloat() throws Exception {
+        Observable<Float> test = presenter.observableFloat(TEST_KEY, 4f);
+        SyncObserver<Float> testObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, test);
+        testObserver.await();
+
+        assertNull(testObserver.getError());
+        assertNotNull(testObserver.getSingle());
+        assertEquals(4f, testObserver.getSingle());
+
+
+        presenter.edit()
+                .putFloat(TEST_KEY, 8f)
+                .commit();
+
+        SyncObserver<Float> testObserver2 = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, test);
+        testObserver2.await();
+
+        assertNull(testObserver2.getError());
+        assertNotNull(testObserver2.getSingle());
+        assertEquals(8f, testObserver2.getSingle());
+    }
 }
