@@ -161,12 +161,11 @@ public class HomeActivity
         if (newQuestionContainer.getVisibility() == View.VISIBLE)
             return;
 
-        newQuestionContainer.setVisibility(View.VISIBLE);
-
         int containerHeight = homeContainer.getMeasuredHeight();
         int buttonHeight = newQuestionContainer.getMeasuredHeight();
 
         newQuestionContainer.setY((float) containerHeight);
+        newQuestionContainer.setVisibility(View.VISIBLE);
 
         animate(newQuestionContainer)
                 .y(containerHeight - buttonHeight)
