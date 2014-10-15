@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
+import is.hello.sense.api.model.SensorState;
+import is.hello.sense.units.UnitFormatter;
 
 public class SensorStateView extends FrameLayout {
     private TextView titleText;
@@ -93,6 +95,21 @@ public class SensorStateView extends FrameLayout {
 
     public void displayCondition(Condition readingCondition) {
         readingText.setTextColor(getResources().getColor(readingCondition.colorRes));
+    }
+
+    public void displayReading(@Nullable SensorState reading, @Nullable UnitFormatter.Formatter formatter) {
+        if (reading == null) {
+            readingText.setText(R.string.missing_data_placeholder);
+            displayCondition(Condition.UNKNOWN);
+        } else {
+            String formattedValue = reading.getFormattedValue(formatter);
+            if (formattedValue != null)
+                readingText.setText(formattedValue);
+            else
+                readingText.setText(R.string.missing_data_placeholder);
+
+            displayCondition(reading.getCondition());
+        }
     }
 
     //endregion

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/fragment_sensor_history_reading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_margin"
+        android:layout_marginRight="@dimen/activity_margin"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.BigScore"
+        android:text="@string/missing_data_placeholder"/>
+
+    <TextView
+        android:id="@+id/fragment_sensor_history_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_margin"
+        android:layout_marginRight="@dimen/activity_margin"
+        android:layout_marginBottom="@dimen/activity_margin"
+        android:textAppearance="@style/AppTheme.Text.BigScore.Details"
+        android:text="@string/missing_data_placeholder"/>
+
+    <is.hello.sense.ui.widget.LineGraphView
+        android:id="@+id/fragment_sensor_history_graph"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/activity_margin"
+        android:layout_marginBottom="@dimen/activity_margin"
+        app:horizontalLines="7" />
+
+</LinearLayout>

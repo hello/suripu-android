@@ -12,10 +12,8 @@ import android.view.ViewGroup;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorHistory;
-import is.hello.sense.api.model.SensorState;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
@@ -77,28 +75,13 @@ public class HomeUndersideFragment extends InjectionFragment {
 
     //region Displaying Data
 
-    private void displayCondition(@Nullable SensorState condition,
-                                  @NonNull SensorStateView view,
-                                  @Nullable UnitFormatter.Formatter formatter) {
-        if (condition == null || condition.getValue() == null) {
-            view.setReading(getString(R.string.missing_data_placeholder));
-            view.displayCondition(Condition.UNKNOWN);
-        } else {
-            if (formatter != null)
-                view.setReading(formatter.format(condition.getValue()));
-            else
-                view.setReading(condition.getValue() + condition.getUnit());
-            view.displayCondition(condition.getCondition());
-        }
-    }
-
     public void bindConditions(@NonNull Pair<RoomConditions, UnitSystem> pair) {
         RoomConditions conditions = pair.first;
         UnitSystem unitSystem = pair.second;
 
-        displayCondition(conditions.getTemperature(), temperatureState, unitSystem::formatTemperature);
-        displayCondition(conditions.getHumidity(), humidityState, null);
-        displayCondition(conditions.getParticulates(), particulatesState, null);
+        temperatureState.displayReading(conditions.getTemperature(), unitSystem::formatTemperature);
+        humidityState.displayReading(conditions.getHumidity(), null);
+        particulatesState.displayReading(conditions.getParticulates(), null);
     }
 
     public void presentError(@NonNull Throwable e) {

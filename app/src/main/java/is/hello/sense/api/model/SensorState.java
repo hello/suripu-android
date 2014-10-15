@@ -1,8 +1,13 @@
 package is.hello.sense.api.model;
 
+import android.support.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
+
+import is.hello.sense.R;
+import is.hello.sense.units.UnitFormatter;
 
 public class SensorState extends ApiResponse {
     @JsonProperty("value")
@@ -39,6 +44,16 @@ public class SensorState extends ApiResponse {
 
     public String getUnit() {
         return unit;
+    }
+
+    public @Nullable String getFormattedValue(@Nullable UnitFormatter.Formatter formatter) {
+        if (getValue() == null) {
+            return null;
+        } else if (formatter != null) {
+            return formatter.format(getValue());
+        } else {
+            return getValue() + getUnit();
+        }
     }
 
     @Override
