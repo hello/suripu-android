@@ -7,6 +7,10 @@ import android.support.annotation.NonNull;
 import android.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.Transformation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 
 import net.hockeyapp.android.UpdateManager;
@@ -82,7 +86,7 @@ public class HomeActivity
         track(noQuestions.subscribe(none -> {
             if (none)
                 hideQuestionsButton();
-            else if (!slidingLayersView.isOpen())
+            else
                 showQuestionsButton();
         }, ignored -> newQuestionContainer.setVisibility(View.INVISIBLE)));
 
@@ -170,6 +174,11 @@ public class HomeActivity
         animate(newQuestionContainer)
                 .y(containerHeight - buttonHeight)
                 .setApplyChangesToView(true)
+                .setOnAnimationCompleted(finished -> {
+                    ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) slidingLayersView.getLayoutParams();
+                    layoutParams.bottomMargin = buttonHeight;
+                    slidingLayersView.getParent().requestLayout();
+                })
                 .start();
     }
 
@@ -179,6 +188,10 @@ public class HomeActivity
 
         int containerHeight = homeContainer.getMeasuredHeight();
         int buttonHeight = newQuestionContainer.getMeasuredHeight();
+
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) slidingLayersView.getLayoutParams();
+        layoutParams.bottomMargin = 0;
+        slidingLayersView.getParent().requestLayout();
 
         animate(newQuestionContainer)
                 .y(containerHeight + buttonHeight)
@@ -204,8 +217,6 @@ public class HomeActivity
                     .add(R.id.activity_home_underside_container, new HomeUndersideFragment())
                     .commit();
         }
-
-        hideQuestionsButton();
     }
 
     @Override
@@ -217,14 +228,6 @@ public class HomeActivity
                     .remove(underside)
                     .commit();
         }
-
-        questionsPresenter.questions
-                .take(1)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(qs -> {
-                    if (!qs.isEmpty())
-                        showQuestionsButton();
-                }, unused -> hideQuestionsButton());
     }
 
 
