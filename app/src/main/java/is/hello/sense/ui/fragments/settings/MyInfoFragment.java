@@ -84,7 +84,7 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
         UnitSystem unitSystem = forAccount.second;
 
         birthdayItem.setValue(dateFormatter.formatAsBirthDate(account.getBirthDate()));
-        genderItem.setValue(account.getGender().toString());
+        genderItem.setValue(getString(account.getGender().nameRes));
         heightItem.setValue(unitSystem.formatHeight(account.getHeight()));
         weightItem.setValue(unitSystem.formatMass(account.getWeight()));
     }

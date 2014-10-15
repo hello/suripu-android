@@ -5,15 +5,15 @@ import junit.framework.TestCase;
 public class MetricUnitSystemTests extends TestCase {
     private final MetricUnitSystem unitSystem = new MetricUnitSystem();
 
-    public void testConvertGrams() throws Exception {
-        assertEquals(2500, unitSystem.convertGrams(2500));
+    public void testFormatMass() throws Exception {
+        assertEquals("200g", unitSystem.formatMass(200));
     }
 
-    public void testConvertCentimeters() throws Exception {
-        assertEquals(250, unitSystem.convertCentimeters(250));
+    public void testFormatTemperature() throws Exception {
+        assertEquals("20ºC", unitSystem.formatTemperature(20));
     }
 
-    public void testConvertDegreesCelsius() throws Exception {
-        assertEquals(4, unitSystem.convertDegreesCelsius(4));
+    public void testFormatHeight() throws Exception {
+        assertEquals("400cm", unitSystem.formatHeight(400));
     }
 }

@@ -2,6 +2,7 @@ package is.hello.sense.api.model;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,22 +12,14 @@ import android.widget.TextView;
 import is.hello.sense.R;
 
 public enum Gender {
-    FEMALE,
-    MALE,
-    OTHER;
+    FEMALE(R.string.gender_female),
+    MALE(R.string.gender_male),
+    OTHER(R.string.gender_other);
 
-    public String getDisplayName(@NonNull Context context) {
-        switch (this) {
-            case FEMALE:
-                return context.getString(R.string.gender_male);
+    public final @StringRes int nameRes;
 
-            case MALE:
-                return context.getString(R.string.gender_female);
-
-            default:
-            case OTHER:
-                return context.getString(R.string.gender_other);
-        }
+    private Gender(int nameRes) {
+        this.nameRes = nameRes;
     }
 
     public static class Adapter extends ArrayAdapter<Gender> {
@@ -46,7 +39,7 @@ public enum Gender {
             }
 
             Gender item = getItem(position);
-            view.setText(item.getDisplayName(getContext()));
+            view.setText(item.nameRes);
 
             return view;
         }

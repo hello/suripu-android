@@ -67,7 +67,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Account> getAccount() {
-        return unimplemented();
+        return loadResponse("account", new TypeReference<Account>() {});
     }
 
     @Override
