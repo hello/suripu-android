@@ -45,7 +45,7 @@ public abstract class UnitSystem {
     protected abstract @NonNull String getMassSuffix();
     protected abstract long convertGrams(long mass);
 
-    protected abstract @NonNull String getDistanceSuffix();
+    protected abstract @NonNull String getHeightSuffix();
     protected abstract long convertCentimeters(long distance);
 
     protected abstract @NonNull String getTemperatureSuffix();
@@ -68,8 +68,8 @@ public abstract class UnitSystem {
         return assemble(convertDegreesCelsius(temperature), getTemperatureSuffix());
     }
 
-    public String formatDistance(long distance) {
-        return assemble(convertCentimeters(distance), getDistanceSuffix());
+    public String formatHeight(long distance) {
+        return assemble(convertCentimeters(distance), getHeightSuffix());
     }
 
     //endregion

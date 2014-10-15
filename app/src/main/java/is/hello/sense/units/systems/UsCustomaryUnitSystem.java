@@ -21,8 +21,8 @@ public class UsCustomaryUnitSystem extends UnitSystem {
 
     @NonNull
     @Override
-    public String getDistanceSuffix() {
-        return " in";
+    public String getHeightSuffix() {
+        return "";
     }
 
     @Override

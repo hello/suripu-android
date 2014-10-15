@@ -4,8 +4,6 @@ import android.test.InstrumentationTestCase;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
-import org.joda.time.ReadableInstant;
-import org.joda.time.ReadablePartial;
 
 public class DateFormatterTests extends InstrumentationTestCase {
     private static final LocalDateTime LOCAL_TEST_TIME = new LocalDateTime(2014, 10, 1, 10, 30, 0);
@@ -23,16 +21,21 @@ public class DateFormatterTests extends InstrumentationTestCase {
         assertNotNull(formatter.formatAsTimelineDate(null));
     }
 
+    public void testFormatAsBirthDate() {
+        assertNotNull(formatter.formatAsBirthDate(null));
+        assertEquals("10/01/14", formatter.formatAsBirthDate(TEST_TIME));
+    }
+
     public void testFormatAsDate() {
-        assertNotNull(formatter.formatAsDate((ReadableInstant) null));
-        assertNotNull(formatter.formatAsDate((ReadablePartial) null));
+        assertNotNull(formatter.formatAsDate((DateTime) null));
+        assertNotNull(formatter.formatAsDate((LocalDateTime) null));
         assertEquals("October 1", formatter.formatAsDate(TEST_TIME));
         assertEquals("October 1", formatter.formatAsDate(LOCAL_TEST_TIME));
     }
 
     public void testFormatAsTime() {
-        assertNotNull(formatter.formatAsTime((ReadableInstant) null, false));
-        assertNotNull(formatter.formatAsTime((ReadablePartial) null, false));
+        assertNotNull(formatter.formatAsTime((DateTime) null, false));
+        assertNotNull(formatter.formatAsTime((LocalDateTime) null, false));
         assertEquals("10:30 AM", formatter.formatAsTime(TEST_TIME, false));
         assertEquals("10:30", formatter.formatAsTime(TEST_TIME, true));
     }

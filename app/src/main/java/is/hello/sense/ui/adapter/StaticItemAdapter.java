@@ -20,12 +20,16 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
         this.layoutInflater = LayoutInflater.from(context);
     }
 
-    public void addItem(@NonNull String title, @Nullable String value, @Nullable Runnable action) {
-        add(new Item(title, value, action));
+    public Item addItem(@NonNull String title, @Nullable String value, @Nullable Runnable action) {
+        Item item = new Item(title, value, action);
+        add(item);
+        return item;
     }
 
-    public void addItem(@NonNull String title, @Nullable String value) {
-        add(new Item(title, value, null));
+    public Item addItem(@NonNull String title, @Nullable String value) {
+        Item item = new Item(title, value, null);
+        add(item);
+        return item;
     }
 
     @Override
@@ -55,10 +59,10 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     }
 
 
-    public static class Item {
-        public final String title;
-        public final String value;
-        public final Runnable action;
+    public class Item {
+        private String title;
+        private String value;
+        private Runnable action;
 
         public Item(@NonNull String title, @Nullable String value, @Nullable Runnable action) {
             this.title = title;
@@ -68,6 +72,33 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
 
         public Item(@NonNull String title, @Nullable String value) {
             this(title, value, null);
+        }
+
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+            notifyDataSetChanged();
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+            notifyDataSetChanged();
+        }
+
+        public Runnable getAction() {
+            return action;
+        }
+
+        public void setAction(Runnable action) {
+            this.action = action;
         }
     }
 }

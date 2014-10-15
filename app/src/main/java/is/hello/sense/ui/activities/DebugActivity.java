@@ -96,12 +96,12 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         StaticItemAdapter.Item item = debugItems.getItem(position);
-        if (item.action != null) {
-            item.action.run();
+        if (item.getAction() != null) {
+            item.getAction().run();
         } else {
-            String value = item.title + ": " + item.value;
+            String value = item.getTitle() + ": " + item.getValue();
             ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-            clipboardManager.setPrimaryClip(ClipData.newPlainText(item.title, value));
+            clipboardManager.setPrimaryClip(ClipData.newPlainText(item.getTitle(), value));
             Toast.makeText(getApplicationContext(), "Copied to Clipboard", Toast.LENGTH_SHORT).show();
         }
     }

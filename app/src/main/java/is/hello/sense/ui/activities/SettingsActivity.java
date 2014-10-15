@@ -80,8 +80,8 @@ public class SettingsActivity extends InjectionActivity {
         @Override
         public void onListItemClick(ListView l, View v, int position, long id) {
             StaticItemAdapter.Item item = adapter.getItem(position);
-            if (item.action != null) {
-                item.action.run();
+            if (item.getAction() != null) {
+                item.getAction().run();
             }
         }
 

@@ -42,7 +42,7 @@ public class UnitFormatterTests extends InjectionTestCase {
     }
 
     public void testFormatDistance() throws Exception {
-        String formattedDistance = unitSystem.formatDistance(250);
+        String formattedDistance = unitSystem.formatHeight(250);
         assertNotNull(formattedDistance);
         assertEquals("98 in", formattedDistance);
     }

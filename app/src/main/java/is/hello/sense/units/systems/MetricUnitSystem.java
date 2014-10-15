@@ -20,7 +20,7 @@ public class MetricUnitSystem extends UnitSystem {
 
     @NonNull
     @Override
-    public String getDistanceSuffix() {
+    public String getHeightSuffix() {
         return "cm";
     }
 
