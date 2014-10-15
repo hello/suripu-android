@@ -2,6 +2,7 @@ package is.hello.sense.api;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +31,15 @@ public class ApiModule {
     private final ApiEnvironment environment;
     private final BuildValues buildValues;
 
+    public static ObjectMapper createConfiguredObjectMapper(@Nullable BuildValues buildValues) {
+        ObjectMapper mapper = new ObjectMapper();
+        if (buildValues == null || !buildValues.isDebugBuild()) {
+            mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        }
+        mapper.registerModule(new JodaModule());
+        return mapper;
+    }
+
     public ApiModule(@NonNull Context applicationContext,
                      @NonNull ApiEnvironment environment,
                      @NonNull BuildValues buildValues) {
@@ -48,12 +58,7 @@ public class ApiModule {
     }
 
     @Singleton @Provides ObjectMapper provideObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        if (!buildValues.isDebugBuild()) {
-            mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        }
-        mapper.registerModule(new JodaModule());
-        return mapper;
+        return createConfiguredObjectMapper(buildValues);
     }
 
     @Singleton @Provides RestAdapter provideRestAdapter(@NonNull ObjectMapper mapper,

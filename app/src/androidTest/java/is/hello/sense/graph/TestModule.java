@@ -13,6 +13,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiAppContext;
+import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
 import is.hello.sense.graph.presenters.AccountPresenter;
@@ -71,9 +72,7 @@ public final class TestModule {
     }
 
     @Singleton @Provides ObjectMapper provideObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JodaModule());
-        return mapper;
+        return ApiModule.createConfiguredObjectMapper(null);
     }
 
     @Singleton @Provides ApiService provideApiService(@NonNull @ApiAppContext Context context, @NonNull ObjectMapper objectMapper) {
