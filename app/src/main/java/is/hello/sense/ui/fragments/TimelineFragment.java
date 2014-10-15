@@ -8,14 +8,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.graph.presenters.TimelinePresenter;
@@ -37,11 +41,13 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     private PieGraphView scoreGraph;
     private TextView scoreText;
     private TextView messageText;
+    private LinearLayout insightsContainer;
 
     @Inject DateFormatter dateFormatter;
     @Inject TimelinePresenter timelinePresenter;
 
     private TimelineSegmentAdapter segmentAdapter;
+    private ListView listView;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -69,7 +75,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        listView = (ListView) view.findViewById(android.R.id.list);
         listView.setAdapter(segmentAdapter);
         listView.setOnItemClickListener(this);
         listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
@@ -94,7 +100,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         super.onViewCreated(view, savedInstanceState);
 
         Observable<Timeline> boundMainTimeline = bindFragment(this, timelinePresenter.mainTimeline);
-        track(boundMainTimeline.subscribe(this::bindSummary, this::presentError));
+        track(boundMainTimeline.subscribe(this::bindTimeline, this::presentError));
         track(boundMainTimeline.map(Timeline::getSegments)
                                .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError));
 
@@ -107,8 +113,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     }
 
 
-    public void bindSummary(@NonNull Timeline timeline) {
-        int sleepScore = timeline.getScore();
+    public void showSleepScore(int sleepScore) {
         scoreGraph.setFillColor(getResources().getColor(Styles.getSleepScoreColorRes(sleepScore)));
         ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animation.Properties.createWithDelay(250));
         if (updateAnimation != null) {
@@ -118,6 +123,35 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
             });
 
             updateAnimation.start();
+        }
+    }
+
+    public void showInsights(@NonNull List<Insight> insights) {
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+
+        if (insightsContainer != null) {
+            int childCount = insightsContainer.getChildCount();
+            if (childCount > 2) {
+                insightsContainer.removeViews(2, childCount - 2);
+            }
+        } else {
+            this.insightsContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_before_sleep, listView, false);
+            listView.addFooterView(insightsContainer, null, false);
+        }
+
+        for (Insight insight : insights) {
+            TextView insightText = (TextView) inflater.inflate(R.layout.item_before_sleep, insightsContainer, false);
+            insightText.setCompoundDrawablesRelativeWithIntrinsicBounds(insight.getIconResource(), 0, 0, 0);
+            insightText.setText(insight.getMessage());
+            insightsContainer.addView(insightText);
+        }
+    }
+
+    public void bindTimeline(@NonNull Timeline timeline) {
+        showSleepScore(timeline.getScore());
+
+        if (timeline.getInsights() != null && !timeline.getInsights().isEmpty()) {
+            showInsights(timeline.getInsights());
         }
     }
 
