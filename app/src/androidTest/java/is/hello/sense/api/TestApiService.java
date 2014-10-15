@@ -77,7 +77,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Account> updateAccount(@Body Account account) {
-        return unimplemented();
+        return Observable.just(account);
     }
 
     @Override

@@ -3,6 +3,7 @@ package is.hello.sense.api.model;
 import android.text.TextUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
@@ -10,7 +11,7 @@ import org.joda.time.DateTime;
 import is.hello.sense.api.ApiService;
 
 public class Account extends ApiResponse {
-    @JsonProperty("id")
+    @JsonIgnore
     private String id;
 
     @JsonProperty("email")
@@ -39,14 +40,16 @@ public class Account extends ApiResponse {
     private String password;
 
     @JsonProperty("last_modified")
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private DateTime lastModified;
 
 
+    @JsonIgnore
     public String getId() {
         return id;
     }
 
+    @JsonProperty("id")
     public void setId(String id) {
         this.id = id;
     }
