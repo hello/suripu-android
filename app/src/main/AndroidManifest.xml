@@ -49,17 +49,20 @@
             android:name=".ui.activities.DebugActivity"
             android:label="@string/activity_debug"
             android:parentActivityName=".ui.activities.HomeActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.Underside" />
 
         <activity
             android:name=".ui.activities.SensorHistoryActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".ui.activities.HomeActivity" />
+            android:parentActivityName=".ui.activities.HomeActivity"
+            android:theme="@style/AppTheme.Underside" />
 
         <activity
             android:name=".ui.activities.SettingsActivity"
             android:label="@string/action_settings"
-            android:parentActivityName=".ui.activities.HomeActivity" />
+            android:parentActivityName=".ui.activities.HomeActivity"
+            android:theme="@style/AppTheme.Underside" />
 
         <activity
             android:name="net.hockeyapp.android.UpdateActivity" />

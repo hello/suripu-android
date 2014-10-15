@@ -1,6 +1,6 @@
 package is.hello.sense.ui.common;
 
-import android.support.v4.app.DialogFragment;
+import android.app.DialogFragment;
 
 import is.hello.sense.SenseApplication;
 

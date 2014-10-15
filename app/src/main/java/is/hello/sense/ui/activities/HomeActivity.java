@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -60,7 +60,7 @@ public class HomeActivity
 
         // noinspection unchecked
         FragmentPageView<TimelineFragment> viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
-        viewPager.setFragmentManager(getSupportFragmentManager());
+        viewPager.setFragmentManager(getFragmentManager());
         viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
         if (viewPager.getCurrentFragment() == null) {
@@ -198,8 +198,8 @@ public class HomeActivity
 
     @Override
     public void onUserWillPullDownTopView() {
-        if (getSupportFragmentManager().findFragmentById(R.id.activity_home_underside_container) == null) {
-            getSupportFragmentManager()
+        if (getFragmentManager().findFragmentById(R.id.activity_home_underside_container) == null) {
+            getFragmentManager()
                     .beginTransaction()
                     .add(R.id.activity_home_underside_container, new HomeUndersideFragment())
                     .commit();
@@ -210,9 +210,9 @@ public class HomeActivity
 
     @Override
     public void onUserDidPushUpTopView() {
-        Fragment underside = getSupportFragmentManager().findFragmentById(R.id.activity_home_underside_container);
+        Fragment underside = getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
         if (underside != null) {
-            getSupportFragmentManager()
+            getFragmentManager()
                     .beginTransaction()
                     .remove(underside)
                     .commit();

@@ -21,6 +21,7 @@ import is.hello.sense.ui.fragments.QuestionsFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
+import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.widget.TimelineSegmentView;
 import is.hello.sense.ui.widget.TimestampTextView;
 import is.hello.sense.util.BuildValues;
@@ -51,6 +52,7 @@ import is.hello.sense.util.BuildValues;
         HomeUndersideFragment.class,
         CurrentConditionsPresenter.class,
         SettingsActivity.class,
+        MyInfoFragment.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

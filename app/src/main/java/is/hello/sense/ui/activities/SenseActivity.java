@@ -1,11 +1,11 @@
 package is.hello.sense.ui.activities;
 
+import android.app.Activity;
 import android.content.Context;
-import android.support.v4.app.FragmentActivity;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class SenseActivity extends FragmentActivity {
+public class SenseActivity extends Activity {
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(new CalligraphyContextWrapper(newBase));
