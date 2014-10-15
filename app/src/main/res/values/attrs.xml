@@ -17,4 +17,14 @@
         <attr name="icon" format="integer" />
         <attr name="wantsReading" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="LineGraphView">
+        <attr name="verticalLines" format="integer" />
+        <attr name="horizontalLines" format="integer" />
+        <attr name="gridColor" format="color" />
+        <attr name="topLineColor" format="color" />
+        <attr name="markerColor" format="color" />
+        <attr name="fill" format="integer" />
+        <attr name="markerSize" format="float" />
+    </declare-styleable>
 </resources>
