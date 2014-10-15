@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiModule;
+import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
@@ -53,6 +54,7 @@ import is.hello.sense.util.BuildValues;
         CurrentConditionsPresenter.class,
         SettingsActivity.class,
         MyInfoFragment.class,
+        AccountPresenter.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

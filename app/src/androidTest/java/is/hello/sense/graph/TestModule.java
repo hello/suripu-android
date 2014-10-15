@@ -15,6 +15,8 @@ import dagger.Provides;
 import is.hello.sense.api.ApiAppContext;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
+import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.graph.presenters.AccountPresenterTests;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenterTests;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -39,6 +41,9 @@ import is.hello.sense.units.UnitFormatterTests;
 
         PreferencesPresenter.class,
         PreferencesPresenterTests.class,
+
+        AccountPresenter.class,
+        AccountPresenterTests.class,
 
         UnitFormatterTests.class,
     }
