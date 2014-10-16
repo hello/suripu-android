@@ -4,7 +4,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
@@ -28,13 +26,10 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.LineGraphView;
 import is.hello.sense.units.UnitFormatter;
-import is.hello.sense.units.UnitSystem;
-import rx.Observable;
 
 public class SensorHistoryFragment extends InjectionFragment {
     @Inject CurrentConditionsPresenter conditionsPresenter;
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
-    @Inject UnitFormatter unitsFormatter;
 
     private TextView readingText;
     private TextView messageText;
@@ -84,8 +79,7 @@ public class SensorHistoryFragment extends InjectionFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Pair<RoomConditions, UnitSystem>> currentConditions = Observable.combineLatest(conditionsPresenter.currentConditions, unitsFormatter.unitSystem, Pair::new);
-        bindAndSubscribe(currentConditions, this::bindConditions, this::presentError);
+        bindAndSubscribe(conditionsPresenter.currentConditions, this::bindConditions, this::presentError);
         bindAndSubscribe(sensorHistoryPresenter.history, adapter::bindData, adapter::bindError);
     }
 
@@ -94,14 +88,11 @@ public class SensorHistoryFragment extends InjectionFragment {
         return (SensorHistoryActivity) getActivity();
     }
 
-
-    public void bindConditions(@NonNull Pair<RoomConditions, UnitSystem> pair) {
-        RoomConditions conditions = pair.first;
-        UnitSystem unitSystem = pair.second;
-
-        SensorState condition = conditions.getSensorStateWithName(getSensorHistoryActivity().getSensor());
+    public void bindConditions(@NonNull CurrentConditionsPresenter.Result result) {
+        SensorState condition = result.conditions.getSensorStateWithName(getSensorHistoryActivity().getSensor());
         if (condition != null) {
-            UnitFormatter.Formatter formatter = SensorHistory.SENSOR_NAME_TEMPERATURE.equals(getSensorHistoryActivity().getSensor()) ? unitSystem::formatTemperature : null;
+            boolean isTemperature = SensorHistory.SENSOR_NAME_TEMPERATURE.equals(getSensorHistoryActivity().getSensor());
+            UnitFormatter.Formatter formatter = isTemperature ? result.units::formatTemperature : null;
             String formattedValue = condition.getFormattedValue(formatter);
             if (formattedValue != null)
                 readingText.setText(formattedValue);

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import android.view.ViewGroup;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.ui.activities.DebugActivity;
@@ -21,13 +19,9 @@ import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SensorStateView;
-import is.hello.sense.units.UnitFormatter;
-import is.hello.sense.units.UnitSystem;
-import rx.Observable;
 
 public class HomeUndersideFragment extends InjectionFragment {
     @Inject CurrentConditionsPresenter currentConditionsPresenter;
-    @Inject UnitFormatter unitsFormatter;
 
     private SensorStateView temperatureState;
     private SensorStateView humidityState;
@@ -59,8 +53,7 @@ public class HomeUndersideFragment extends InjectionFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Pair<RoomConditions, UnitSystem>> forDisplay = Observable.combineLatest(currentConditionsPresenter.currentConditions, unitsFormatter.unitSystem, Pair::new);
-        bindAndSubscribe(forDisplay, this::bindConditions, this::presentError);
+        bindAndSubscribe(currentConditionsPresenter.currentConditions, this::bindConditions, this::presentError);
     }
 
     @Override
@@ -73,13 +66,10 @@ public class HomeUndersideFragment extends InjectionFragment {
 
     //region Displaying Data
 
-    public void bindConditions(@NonNull Pair<RoomConditions, UnitSystem> pair) {
-        RoomConditions conditions = pair.first;
-        UnitSystem unitSystem = pair.second;
-
-        temperatureState.displayReading(conditions.getTemperature(), unitSystem::formatTemperature);
-        humidityState.displayReading(conditions.getHumidity(), null);
-        particulatesState.displayReading(conditions.getParticulates(), null);
+    public void bindConditions(@NonNull CurrentConditionsPresenter.Result result) {
+        temperatureState.displayReading(result.conditions.getTemperature(), result.units::formatTemperature);
+        humidityState.displayReading(result.conditions.getHumidity(), null);
+        particulatesState.displayReading(result.conditions.getParticulates(), null);
     }
 
     public void presentError(@NonNull Throwable e) {

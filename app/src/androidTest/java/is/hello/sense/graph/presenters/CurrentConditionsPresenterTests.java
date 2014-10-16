@@ -10,11 +10,13 @@ public class CurrentConditionsPresenterTests extends InjectionTestCase {
     @Inject CurrentConditionsPresenter presenter;
 
     public void testUpdate() throws Exception {
-        SyncObserver<RoomConditions> conditions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.currentConditions);
+        SyncObserver<CurrentConditionsPresenter.Result> conditions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.currentConditions);
         presenter.update();
         conditions.await();
 
         assertNull(conditions.getError());
         assertNotNull(conditions.getSingle());
+        assertNotNull(conditions.getSingle().conditions);
+        assertNotNull(conditions.getSingle().units);
     }
 }
