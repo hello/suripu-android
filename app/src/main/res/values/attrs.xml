@@ -26,5 +26,6 @@
         <attr name="markerColor" format="color" />
         <attr name="fill" format="integer" />
         <attr name="markerSize" format="float" />
+        <attr name="wantsMarkers" format="boolean" />
     </declare-styleable>
 </resources>

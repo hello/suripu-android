@@ -8,7 +8,7 @@ public class SensorHistory extends ApiResponse {
     public static final String SENSOR_NAME_PARTICULATES = "particulates";
 
     @JsonProperty("value")
-    private double value;
+    private float value;
 
     @JsonProperty("datetime")
     private long time;
@@ -17,7 +17,7 @@ public class SensorHistory extends ApiResponse {
     private long offset;
 
 
-    public double getValue() {
+    public float getValue() {
         return value;
     }
 

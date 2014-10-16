@@ -9,6 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -36,6 +40,8 @@ public class SensorHistoryFragment extends InjectionFragment {
     private TextView messageText;
     private LineGraphView graphView;
 
+    private GraphAdapter adapter = new GraphAdapter();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +61,7 @@ public class SensorHistoryFragment extends InjectionFragment {
         this.readingText = (TextView) view.findViewById(R.id.fragment_sensor_history_reading);
         this.messageText = (TextView) view.findViewById(R.id.fragment_sensor_history_message);
         this.graphView = (LineGraphView) view.findViewById(R.id.fragment_sensor_history_graph);
+        graphView.setAdapter(adapter);
 
         return view;
     }
@@ -65,6 +72,9 @@ public class SensorHistoryFragment extends InjectionFragment {
 
         Observable<Pair<RoomConditions, UnitSystem>> currentConditions = Observable.combineLatest(conditionsPresenter.currentConditions, unitsFormatter.unitSystem, Pair::new);
         track(bindFragment(this, currentConditions).subscribe(this::bindConditions, this::presentError));
+
+        Observable<List<SensorHistory>> history = bindFragment(this, historyPresenter.history);
+        track(history.subscribe(this::bindHistory, this::presentError));
     }
 
 
@@ -85,12 +95,62 @@ public class SensorHistoryFragment extends InjectionFragment {
                 readingText.setText(formattedValue);
             else
                 readingText.setText(R.string.missing_data_placeholder);
-            
+
             messageText.setText(condition.getMessage());
         }
     }
 
+    public void bindHistory(@NonNull List<SensorHistory> history) {
+        adapter.displayHistory(history);
+    }
+
     public void presentError(@NonNull Throwable e) {
         ErrorDialogFragment.presentError(getFragmentManager(), e);
+    }
+
+
+    private class GraphAdapter implements LineGraphView.Adapter {
+        private final int DEFAULT_MAX = 100;
+
+        private final ArrayList<SensorHistory> history = new ArrayList<>();
+
+        private int maxY = DEFAULT_MAX;
+
+        public void displayHistory(@NonNull List<SensorHistory> history) {
+            this.history.clear();
+            this.history.addAll(history);
+            if (history.isEmpty()) {
+                this.maxY = DEFAULT_MAX;
+            } else {
+                SensorHistory peakSensor = Collections.max(history, (l, r) -> Float.compare(l.getValue(), r.getValue()));
+                this.maxY = Math.max((int) peakSensor.getValue(), DEFAULT_MAX);
+            }
+            graphView.reloadData();
+        }
+
+        @Override
+        public int getMaxX() {
+            return history.size();
+        }
+
+        @Override
+        public int getMaxY() {
+            return maxY;
+        }
+
+        @Override
+        public int getPointCount() {
+            return history.size();
+        }
+
+        @Override
+        public float getPointX(int position) {
+            return position;
+        }
+
+        @Override
+        public float getPointY(int position) {
+            return history.get(position).getValue();
+        }
     }
 }
