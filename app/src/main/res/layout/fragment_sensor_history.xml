@@ -26,12 +26,17 @@
         android:textAppearance="@style/AppTheme.Text.BigScore.Details"
         android:text="@string/missing_data_placeholder"/>
 
-    <is.hello.sense.ui.widget.LineGraphView
-        android:id="@+id/fragment_sensor_history_graph"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/fragment_sensor_history_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/activity_margin"
-        android:layout_marginBottom="@dimen/activity_margin"
-        app:horizontalLines="7" />
+        android:layout_marginBottom="@dimen/activity_margin">
+
+        <android.support.v4.view.PagerTitleStrip
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </android.support.v4.view.ViewPager>
 
 </LinearLayout>
