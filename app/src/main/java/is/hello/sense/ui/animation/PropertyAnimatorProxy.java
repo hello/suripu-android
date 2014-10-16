@@ -29,7 +29,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
 
     //region Creation
 
-    public PropertyAnimatorProxy(View view) {
+    public PropertyAnimatorProxy(@NonNull View view) {
         this.view = view;
     }
 
@@ -37,7 +37,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         return new PropertyAnimatorProxy(forView);
     }
 
-    public static void stopAnimating(@NonNull View... forViews) {
+    public static void stop(@NonNull View... forViews) {
         for (View forView : forViews) {
             forView.animate().cancel();
             forView.clearAnimation();

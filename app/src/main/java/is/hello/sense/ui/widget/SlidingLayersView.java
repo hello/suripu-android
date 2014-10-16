@@ -321,7 +321,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 this.topView = getChildAt(1);
                 this.topViewY = topView.getY();
 
-                PropertyAnimatorProxy.stopAnimating(topView);
+                PropertyAnimatorProxy.stop(topView);
 
                 if (isOpen && lastEventY >= getMeasuredHeight() - topViewOpenHeight) {
                     isTrackingTouchEvents = true;

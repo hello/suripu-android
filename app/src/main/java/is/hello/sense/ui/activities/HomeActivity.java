@@ -76,8 +76,6 @@ public class HomeActivity
         this.slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
         slidingLayersView.setOnInteractionListener(this);
         slidingLayersView.setGestureInterceptingChild(viewPager);
-
-        startActivity(new Intent(this, QuestionsActivity.class));
     }
 
     @Override

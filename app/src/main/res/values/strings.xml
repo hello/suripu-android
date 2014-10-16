@@ -73,4 +73,6 @@
     <string name="title_before_you_slept">Before You Slept</string>
     <string name="title_time_frame_24_hrs">Last 24 Hours</string>
     <string name="title_time_frame_week">Last Week</string>
+
+    <string name="title_thank_you">Thank You</string>
 </resources>

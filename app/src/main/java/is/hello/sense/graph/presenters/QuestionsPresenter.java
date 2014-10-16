@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.joda.time.DateTime;
 import org.joda.time.chrono.ISOChronology;
@@ -101,6 +102,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         } else {
             logEvent("questions already updated today");
             this.questions.onNext(Collections.emptyList());
+            this.currentQuestion.onNext(null);
         }
     }
 
@@ -110,7 +112,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                 currentQuestion.onNext(questions.get(offset));
             else
                 currentQuestion.onNext(null);
-        }, currentQuestion::onError);
+        });
     }
 
     //endregion

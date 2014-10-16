@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EdgeEffect;
 import android.widget.FrameLayout;
@@ -481,7 +480,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (isAnimating) {
-                    PropertyAnimatorProxy.stopAnimating(getOnScreenView(), getOffScreenView());
+                    PropertyAnimatorProxy.stop(getOnScreenView(), getOffScreenView());
                     this.isTrackingTouchEvents = true;
                 } else {
                     this.lastEventX = event.getRawX();
