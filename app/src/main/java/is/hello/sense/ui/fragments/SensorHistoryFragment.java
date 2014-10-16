@@ -29,10 +29,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.LineGraphView;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
-import is.hello.sense.util.DateFormatter;
 import rx.Observable;
-
-import static rx.android.observables.AndroidObservable.bindFragment;
 
 public class SensorHistoryFragment extends InjectionFragment {
     @Inject CurrentConditionsPresenter conditionsPresenter;
@@ -88,10 +85,8 @@ public class SensorHistoryFragment extends InjectionFragment {
         super.onViewCreated(view, savedInstanceState);
 
         Observable<Pair<RoomConditions, UnitSystem>> currentConditions = Observable.combineLatest(conditionsPresenter.currentConditions, unitsFormatter.unitSystem, Pair::new);
-        track(bindFragment(this, currentConditions).subscribe(this::bindConditions, this::presentError));
-
-        Observable<List<SensorHistory>> history = bindFragment(this, sensorHistoryPresenter.history);
-        track(history.subscribe(adapter::bindData, adapter::bindError));
+        bindAndSubscribe(currentConditions, this::bindConditions, this::presentError);
+        bindAndSubscribe(sensorHistoryPresenter.history, adapter::bindData, adapter::bindError);
     }
 
 

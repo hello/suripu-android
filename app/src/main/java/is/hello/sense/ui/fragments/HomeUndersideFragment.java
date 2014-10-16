@@ -25,8 +25,6 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import rx.Observable;
 
-import static rx.android.observables.AndroidObservable.bindFragment;
-
 public class HomeUndersideFragment extends InjectionFragment {
     @Inject CurrentConditionsPresenter currentConditionsPresenter;
     @Inject UnitFormatter unitsFormatter;
@@ -62,7 +60,7 @@ public class HomeUndersideFragment extends InjectionFragment {
         super.onViewCreated(view, savedInstanceState);
 
         Observable<Pair<RoomConditions, UnitSystem>> forDisplay = Observable.combineLatest(currentConditionsPresenter.currentConditions, unitsFormatter.unitSystem, Pair::new);
-        track(bindFragment(this, forDisplay).subscribe(this::bindConditions, this::presentError));
+        bindAndSubscribe(forDisplay, this::bindConditions, this::presentError);
     }
 
     @Override

@@ -33,8 +33,6 @@ import is.hello.sense.ui.widget.PieGraphView;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
-import static rx.android.observables.AndroidObservable.bindFragment;
-
 public class TimelineFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
 
@@ -99,13 +97,14 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Timeline> boundMainTimeline = bindFragment(this, timelinePresenter.mainTimeline);
-        track(boundMainTimeline.subscribe(this::bindTimeline, this::presentError));
-        track(boundMainTimeline.map(Timeline::getSegments)
-                               .subscribe(segmentAdapter::bindSegments, segmentAdapter::handleError));
+        Observable<Timeline> boundMainTimeline = bind(timelinePresenter.mainTimeline);
+        subscribe(boundMainTimeline, this::bindTimeline, this::presentError);
 
-        Observable<CharSequence> renderedMessage = bindFragment(this, timelinePresenter.renderedTimelineMessage);
-        track(renderedMessage.subscribe(messageText::setText, error -> messageText.setText(R.string.missing_data_placeholder)));
+        Observable<List<TimelineSegment>> segments = boundMainTimeline.map(Timeline::getSegments);
+        subscribe(segments, segmentAdapter::bindSegments, segmentAdapter::handleError);
+
+        Observable<CharSequence> renderedMessage = timelinePresenter.renderedTimelineMessage;
+        bindAndSubscribe(renderedMessage, messageText::setText, error -> messageText.setText(R.string.missing_data_placeholder));
     }
 
     public void onTransitionCompleted() {

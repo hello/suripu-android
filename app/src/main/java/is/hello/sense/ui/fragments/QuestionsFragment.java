@@ -61,8 +61,7 @@ public class QuestionsFragment extends InjectionFragment {
         super.onResume();
 
         if (!hasSubscriptions()) {
-            Observable<Question> question = bindFragment(this, questionsPresenter.currentQuestion);
-            track(question.subscribe(this::bindQuestion, this::presentError));
+            bindAndSubscribe(questionsPresenter.currentQuestion, this::bindQuestion, this::presentError);
         }
     }
 

@@ -12,9 +12,12 @@ import java.util.List;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
+import rx.Observable;
 import rx.Subscription;
+import rx.android.observables.AndroidObservable;
+import rx.functions.Action1;
 
-public class InjectionFragment extends Fragment implements SubscriptionTracker, PresenterContainer {
+public class InjectionFragment extends Fragment implements ObservableContainer, PresenterContainer {
     protected ArrayList<Subscription> subscriptions = new ArrayList<>();
     protected ArrayList<Presenter> presenters;
 
@@ -81,6 +84,21 @@ public class InjectionFragment extends Fragment implements SubscriptionTracker, 
     public @NonNull Subscription track(@NonNull Subscription subscription) {
         subscriptions.add(subscription);
         return subscription;
+    }
+
+    @Override
+    public @NonNull <T> Observable<T> bind(@NonNull Observable<T> toBind) {
+        return AndroidObservable.bindFragment(this, toBind);
+    }
+
+    @Override
+    public @NonNull <T> Subscription subscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
+        return track(toSubscribe.subscribe(onNext, onError));
+    }
+
+    @Override
+    public @NonNull <T> Subscription bindAndSubscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
+        return subscribe(bind(toSubscribe), onNext, onError);
     }
 
 
