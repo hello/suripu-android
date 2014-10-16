@@ -91,6 +91,10 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         return this;
     }
 
+    public PropertyAnimatorProxy scale(float value) {
+        return scaleX(value).scaleY(value);
+    }
+
     public PropertyAnimatorProxy y(float value) {
         properties.put("y", value);
         return this;
@@ -120,6 +124,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         ViewPropertyAnimator animator = view.animate();
         animator.setDuration(duration);
         animator.setInterpolator(interpolator);
+        animator.setStartDelay(startDelay);
         animator.setListener(this);
 
         for (Map.Entry<String, Float> property : properties.entrySet()) {

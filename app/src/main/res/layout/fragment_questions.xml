@@ -31,8 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/gap_large"
             android:textColor="@color/white"
-            android:textAppearance="@style/AppTheme.Text.Instructional"
-            android:text="@string/mock_question_title"/>
+            android:textAppearance="@style/AppTheme.Text.Instructional"/>
 
         <LinearLayout
             android:id="@+id/fragment_questions_container"
@@ -41,8 +40,7 @@
             android:layout_weight="1"
             android:layout_marginBottom="@dimen/gap_large"
             android:orientation="vertical"
-            android:gravity="center"
-            android:animateLayoutChanges="true" />
+            android:gravity="center" />
 
         <Button
             android:id="@+id/fragment_questions_skip"

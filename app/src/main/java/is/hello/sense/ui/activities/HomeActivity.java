@@ -76,6 +76,8 @@ public class HomeActivity
         this.slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
         slidingLayersView.setOnInteractionListener(this);
         slidingLayersView.setGestureInterceptingChild(viewPager);
+
+        startActivity(new Intent(this, QuestionsActivity.class));
     }
 
     @Override
@@ -92,7 +94,7 @@ public class HomeActivity
 
         // This is probably not what we want to happen.
         Observable<Intent> logOut = bindActivity(this, fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT)));
-        track(logOut.subscribe(unused -> {
+        track(logOut.subscribe(ignored -> {
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
         }));

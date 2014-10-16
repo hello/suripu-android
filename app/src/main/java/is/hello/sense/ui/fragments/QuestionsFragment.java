@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments;
 
-import android.animation.LayoutTransition;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import javax.inject.Inject;
@@ -17,19 +17,22 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
-import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import rx.Observable;
 
-import static rx.android.observables.AndroidObservable.bindFragment;
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class QuestionsFragment extends InjectionFragment {
+    private static final long DELAY_INCREMENT = 20;
+
     @Inject QuestionsPresenter questionsPresenter;
 
     private TextView titleText;
     private ViewGroup questionsContainer;
+
+    private ProgressBar loadingIndicator;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,12 +49,10 @@ public class QuestionsFragment extends InjectionFragment {
         this.titleText = (TextView) view.findViewById(R.id.fragment_questions_title);
         this.questionsContainer = (ViewGroup) view.findViewById(R.id.fragment_questions_container);
 
-        LayoutTransition transition = Animation.Properties.DEFAULT.apply(new LayoutTransition(), false);
-        transition.enableTransitionType(LayoutTransition.CHANGING);
-        questionsContainer.setLayoutTransition(transition);
-
         Button skipButton = (Button) view.findViewById(R.id.fragment_questions_skip);
         skipButton.setOnClickListener(this::skipQuestion);
+
+        this.loadingIndicator = new ProgressBar(getActivity(), null, android.R.style.Widget_Holo_Light_ProgressBar_Small_Inverse);
 
         return view;
     }
@@ -70,19 +71,43 @@ public class QuestionsFragment extends InjectionFragment {
     }
 
     public void choiceSelected(@NonNull View sender) {
-        Question.Choice choice = (Question.Choice) sender.getTag();
-
-        LoadingDialogFragment.show(getFragmentManager());
-        Observable<ApiResponse> result = bindFragment(this, questionsPresenter.answerQuestion(choice));
-        result.subscribe(unused -> {
-            LoadingDialogFragment.close(getFragmentManager());
-            questionsPresenter.nextQuestion();
-        }, error -> {
-            LoadingDialogFragment.close(getFragmentManager());
-            ErrorDialogFragment.presentError(getFragmentManager(), error);
+        clearQuestions(true, () -> {
+            Question.Choice choice = (Question.Choice) sender.getTag();
+            Observable<ApiResponse> result = bind(questionsPresenter.answerQuestion(choice));
+            result.subscribe(unused -> questionsPresenter.nextQuestion(),
+                             error -> ErrorDialogFragment.presentError(getFragmentManager(), error));
         });
     }
 
+    
+    public void clearQuestions(boolean animate, @Nullable Runnable onCompletion) {
+        if (animate) {
+            long delay = 0;
+            for (int index = 0, count = questionsContainer.getChildCount(); index < count; index++) {
+                View child = questionsContainer.getChildAt(index);
+                boolean isLast = (index == count - 1);
+
+                PropertyAnimatorProxy animator = animate(child);
+                animator.scale(0.5f);
+                animator.alpha(0f);
+                if (isLast) {
+                    animator.setOnAnimationCompleted(finished -> {
+                        if (finished && onCompletion != null)
+                            onCompletion.run();
+                    });
+                }
+                animator.setStartDelay(delay);
+                animator.start();
+
+                delay += DELAY_INCREMENT;
+            }
+        } else {
+            questionsContainer.removeAllViews();
+
+            if (onCompletion != null)
+                onCompletion.run();
+        }
+    }
 
     public void bindQuestion(@Nullable Question question) {
         if (question == null) {
@@ -91,19 +116,32 @@ public class QuestionsFragment extends InjectionFragment {
         } else {
             titleText.setText(question.getText());
 
-            questionsContainer.removeAllViews();
+            clearQuestions(false, null);
 
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             View.OnClickListener onClickListener = this::choiceSelected;
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.bottomMargin = (int) getResources().getDimension(R.dimen.gap_medium);
+            long delay = 0;
             for (Question.Choice choice : question.getChoices()) {
                 Button choiceButton = (Button) inflater.inflate(R.layout.sub_fragment_button_choice, questionsContainer, false);
                 choiceButton.setText(choice.getText());
                 choiceButton.setTag(choice);
                 choiceButton.setOnClickListener(onClickListener);
                 questionsContainer.addView(choiceButton, layoutParams);
+
+                choiceButton.setScaleX(0.5f);
+                choiceButton.setScaleY(0.5f);
+                choiceButton.setAlpha(0f);
+                animate(choiceButton)
+                        .scale(1f)
+                        .alpha(1f)
+                        .setStartDelay(delay)
+                        .setApplyChangesToView(true)
+                        .start();
+
+                delay += DELAY_INCREMENT;
             }
         }
     }
