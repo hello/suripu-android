@@ -26,17 +26,34 @@
         android:textAppearance="@style/AppTheme.Text.BigScore.Details"
         android:text="@string/missing_data_placeholder"/>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/fragment_sensor_history_view_pager"
+    <LinearLayout
+        android:id="@+id/fragment_sensor_history_mode_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/activity_margin"
-        android:layout_marginBottom="@dimen/activity_margin">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <android.support.v4.view.PagerTitleStrip
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/title_time_frame_week"
+            android:textOff="@string/title_time_frame_week"
+            style="@style/AppTheme.Button.Borderless"/>
 
-    </android.support.v4.view.ViewPager>
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/title_time_frame_24_hrs"
+            android:textOff="@string/title_time_frame_24_hrs"
+            style="@style/AppTheme.Button.Borderless"/>
+
+    </LinearLayout>
+
+    <is.hello.sense.ui.widget.LineGraphView
+        android:id="@+id/fragment_sensor_history_graph"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:horizontalLines="7" />
 
 </LinearLayout>

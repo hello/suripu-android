@@ -10,7 +10,6 @@ import is.hello.sense.ui.widget.LineGraphView;
 
 public class SensorHistoryActivity extends SenseActivity {
     public static final String EXTRA_SENSOR = SensorHistoryActivity.class.getName() + ".EXTRA_SENSOR";
-    public static final String EXTRA_MODE = SensorHistoryActivity.class.getName() + ".EXTRA_MODE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,9 +20,5 @@ public class SensorHistoryActivity extends SenseActivity {
 
     public String getSensor() {
         return getIntent().getStringExtra(EXTRA_SENSOR);
-    }
-
-    public int getMode() {
-        return getIntent().getIntExtra(EXTRA_MODE, SensorHistoryPresenter.MODE_WEEK);
     }
 }

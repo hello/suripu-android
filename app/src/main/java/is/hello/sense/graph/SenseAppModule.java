@@ -21,7 +21,6 @@ import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.fragments.HomeUndersideFragment;
 import is.hello.sense.ui.fragments.QuestionsFragment;
 import is.hello.sense.ui.fragments.SensorHistoryFragment;
-import is.hello.sense.ui.fragments.SensorHistoryGraphFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
@@ -57,7 +56,6 @@ import is.hello.sense.util.BuildValues;
         CurrentConditionsPresenter.class,
         SensorHistoryFragment.class,
         SensorHistoryPresenter.class,
-        SensorHistoryGraphFragment.class,
 
         SettingsActivity.class,
         MyInfoFragment.class,

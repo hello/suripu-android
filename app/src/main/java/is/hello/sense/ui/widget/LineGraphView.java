@@ -187,10 +187,10 @@ public final class LineGraphView extends View {
 
     public void setAdapter(Adapter adapter) {
         this.adapter = adapter;
-        reloadData();
+        notifyDataChanged();
     }
 
-    public void reloadData() {
+    public void notifyDataChanged() {
         if (adapter != null) {
             this.cachedMaxX = adapter.getMaxX();
             this.cachedMaxY = adapter.getMaxY();

@@ -18,7 +18,7 @@ public class TimelinePresenter extends Presenter {
 
     private DateTime date;
 
-    public final ReplaySubject<List<Timeline>> timeline = ReplaySubject.create(1);
+    public final ReplaySubject<List<Timeline>> timeline = ReplaySubject.createWithSize(1);
     public final Observable<Timeline> mainTimeline = timeline.filter(timelines -> !timelines.isEmpty())
                                                              .map(timelines -> timelines.get(0));
     public final Observable<CharSequence> renderedTimelineMessage = mainTimeline.map(timeline -> {

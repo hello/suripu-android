@@ -30,8 +30,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 @Singleton public final class QuestionsPresenter extends Presenter {
     private final ApiService apiService;
 
-    public final ReplaySubject<List<Question>> questions = ReplaySubject.create(1);
-    public final ReplaySubject<Question> currentQuestion = ReplaySubject.create(1);
+    public final ReplaySubject<List<Question>> questions = ReplaySubject.createWithSize(1);
+    public final ReplaySubject<Question> currentQuestion = ReplaySubject.createWithSize(1);
 
     private SharedPreferences preferences;
     private int offset;

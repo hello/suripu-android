@@ -1,9 +1,5 @@
 package is.hello.sense.graph.presenters;
 
-import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.util.List;
@@ -24,7 +20,7 @@ public class SensorHistoryPresenter extends Presenter {
     private String sensorName;
     private int mode;
 
-    public final ReplaySubject<List<SensorHistory>> history = ReplaySubject.create(1);
+    public final ReplaySubject<List<SensorHistory>> history = ReplaySubject.createWithSize(1);
 
     @Override
     public void update() {

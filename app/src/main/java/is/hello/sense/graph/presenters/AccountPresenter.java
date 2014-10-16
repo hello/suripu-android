@@ -15,7 +15,7 @@ import rx.subjects.ReplaySubject;
 public class AccountPresenter extends Presenter {
     @Inject ApiService apiService;
 
-    public final ReplaySubject<Account> account = ReplaySubject.create(1);
+    public final ReplaySubject<Account> account = ReplaySubject.createWithSize(1);
 
     @Override
     public @Nullable Parcelable onSaveState() {

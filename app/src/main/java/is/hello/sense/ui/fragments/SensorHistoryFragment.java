@@ -1,17 +1,19 @@
 package is.hello.sense.ui.fragments;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.ToggleButton;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -24,6 +26,7 @@ import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.widget.LineGraphView;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import rx.Observable;
@@ -33,15 +36,22 @@ import static rx.android.observables.AndroidObservable.bindFragment;
 public class SensorHistoryFragment extends InjectionFragment {
     @Inject CurrentConditionsPresenter conditionsPresenter;
     @Inject UnitFormatter unitsFormatter;
+    @Inject SensorHistoryPresenter sensorHistoryPresenter;
 
     private TextView readingText;
     private TextView messageText;
+    private LineGraphView graphView;
+    private GraphAdapter adapter = new GraphAdapter();
+    private ViewGroup historyModeContainer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        sensorHistoryPresenter.setSensorName(getSensorHistoryActivity().getSensor());
+        addPresenter(sensorHistoryPresenter);
         addPresenter(conditionsPresenter);
+
         setRetainInstance(true);
     }
 
@@ -52,9 +62,19 @@ public class SensorHistoryFragment extends InjectionFragment {
 
         this.readingText = (TextView) view.findViewById(R.id.fragment_sensor_history_reading);
         this.messageText = (TextView) view.findViewById(R.id.fragment_sensor_history_message);
+        this.graphView = (LineGraphView) view.findViewById(R.id.fragment_sensor_history_graph);
+        graphView.setAdapter(adapter);
 
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.fragment_sensor_history_view_pager);
-        viewPager.setAdapter(new FragmentAdapter(getChildFragmentManager()));
+        this.historyModeContainer = (ViewGroup) view.findViewById(R.id.fragment_sensor_history_mode_container);
+        View.OnClickListener checkedListener = this::onModeToggleChanged;
+        for (int i = 0, count = historyModeContainer.getChildCount(); i < count; i++) {
+            ToggleButton modeButton = (ToggleButton) historyModeContainer.getChildAt(i);
+            boolean selected = (i == sensorHistoryPresenter.getMode());
+            modeButton.setTag(i);
+            modeButton.setOnClickListener(checkedListener);
+            modeButton.setChecked(selected);
+            modeButton.setTypeface(modeButton.getTypeface(), selected ? Typeface.BOLD : Typeface.NORMAL);
+        }
 
         return view;
     }
@@ -65,6 +85,9 @@ public class SensorHistoryFragment extends InjectionFragment {
 
         Observable<Pair<RoomConditions, UnitSystem>> currentConditions = Observable.combineLatest(conditionsPresenter.currentConditions, unitsFormatter.unitSystem, Pair::new);
         track(bindFragment(this, currentConditions).subscribe(this::bindConditions, this::presentError));
+
+        Observable<List<SensorHistory>> history = bindFragment(this, sensorHistoryPresenter.history);
+        track(history.subscribe(adapter::bindData, adapter::bindError));
     }
 
 
@@ -95,47 +118,72 @@ public class SensorHistoryFragment extends InjectionFragment {
     }
 
 
-    private class FragmentAdapter extends FragmentPagerAdapter {
-        private FragmentAdapter(FragmentManager fm) {
-            super(fm);
+    public void onModeToggleChanged(@NonNull View button) {
+        sensorHistoryPresenter.setMode((Integer) button.getTag());
+
+        for (int i = 0, count = historyModeContainer.getChildCount(); i < count; i++) {
+            ToggleButton modeButton = (ToggleButton) historyModeContainer.getChildAt(i);
+            boolean selected = (i == sensorHistoryPresenter.getMode());
+            modeButton.setChecked(selected);
+            modeButton.setTypeface(modeButton.getTypeface(), selected ? Typeface.BOLD : Typeface.NORMAL);
         }
+    }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "24 Hours";
 
-                case 1:
-                    return "Last Week";
+    private class GraphAdapter implements LineGraphView.Adapter {
+        private final List<SensorHistory> data = new ArrayList<>();
+        private int maxY = 100;
 
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
 
-        @Override
-        public Fragment getItem(int position) {
-            int mode;
-            switch (position) {
-                case 0:
-                    mode = SensorHistoryPresenter.MODE_DAY;
-                    break;
+        public void bindData(@NonNull List<SensorHistory> history) {
+            this.data.clear();
+            this.data.addAll(history);
 
-                case 1:
-                    mode = SensorHistoryPresenter.MODE_WEEK;
-                    break;
-
-                default:
-                    throw new IllegalArgumentException();
+            if (history.isEmpty()) {
+                this.maxY = 100;
+            } else {
+                SensorHistory peak = Collections.max(history, (l, r) -> Float.compare(l.getValue(), r.getValue()));
+                this.maxY = Math.max(100, (int) peak.getValue());
             }
 
-            return SensorHistoryGraphFragment.newInstance(getSensorHistoryActivity().getSensor(), mode);
+            graphView.notifyDataChanged();
+        }
+
+        @SuppressWarnings("UnusedParameters")
+        public void bindError(@NonNull Throwable ignored) {
+            this.data.clear();
+            graphView.notifyDataChanged();
+        }
+
+
+        @Override
+        public int getMaxX() {
+            return data.size();
         }
 
         @Override
-        public int getCount() {
-            return 2;
+        public int getMaxY() {
+            return maxY;
+        }
+
+        @Override
+        public int getPointCount() {
+            return data.size();
+        }
+
+        @Override
+        public float getPointX(int position) {
+            return position;
+        }
+
+        @Override
+        public float getPointY(int position) {
+            return data.get(position).getValue();
+        }
+
+        @Override
+        public boolean wantsMarkerAt(int position) {
+            return false;
         }
     }
 }

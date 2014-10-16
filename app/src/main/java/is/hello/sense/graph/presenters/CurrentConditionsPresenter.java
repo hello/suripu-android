@@ -19,7 +19,7 @@ import rx.subjects.ReplaySubject;
 @Singleton public class CurrentConditionsPresenter extends Presenter {
     @Inject ApiService apiService;
 
-    public final ReplaySubject<RoomConditions> currentConditions = ReplaySubject.create(1);
+    public final ReplaySubject<RoomConditions> currentConditions = ReplaySubject.createWithSize(1);
 
     @Override
     public void update() {

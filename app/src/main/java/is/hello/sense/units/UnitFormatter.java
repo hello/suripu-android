@@ -13,7 +13,7 @@ import rx.subjects.ReplaySubject;
 
 @Singleton
 public final class UnitFormatter {
-    public final ReplaySubject<UnitSystem> unitSystem = ReplaySubject.create(1);
+    public final ReplaySubject<UnitSystem> unitSystem = ReplaySubject.createWithSize(1);
 
     @Inject public UnitFormatter(@NonNull PreferencesPresenter preferencesPresenter) {
         Observable<String> unitSystemName = preferencesPresenter.observableString(Constants.GLOBAL_PREF_UNIT_SYSTEM,
