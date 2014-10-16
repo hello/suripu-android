@@ -4,7 +4,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,20 +29,22 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.LineGraphView;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
+import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.bindFragment;
 
 public class SensorHistoryFragment extends InjectionFragment {
     @Inject CurrentConditionsPresenter conditionsPresenter;
-    @Inject UnitFormatter unitsFormatter;
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
+    @Inject UnitFormatter unitsFormatter;
 
     private TextView readingText;
     private TextView messageText;
     private LineGraphView graphView;
     private GraphAdapter adapter = new GraphAdapter();
     private ViewGroup historyModeContainer;
+    private ViewGroup annotationsContainer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,8 @@ public class SensorHistoryFragment extends InjectionFragment {
             modeButton.setChecked(selected);
             modeButton.setTypeface(modeButton.getTypeface(), selected ? Typeface.BOLD : Typeface.NORMAL);
         }
+
+        this.annotationsContainer = (ViewGroup) view.findViewById(R.id.fragment_sensor_history_graph_annotations);
 
         return view;
     }
@@ -150,7 +153,18 @@ public class SensorHistoryFragment extends InjectionFragment {
                 SensorHistory peak = Collections.max(history, (l, r) -> Float.compare(l.getValue(), r.getValue()));
                 this.peakY = Math.max(100, (int) peak.getValue());
                 this.sectionCount = 7;
-                this.pointCount = data.size() / sectionCount;
+                this.pointCount = data.size() / 8;
+            }
+
+            for (int section = 0, count = annotationsContainer.getChildCount(); section < count; section++) {
+                TextView annotation = (TextView) annotationsContainer.getChildAt(section);
+                if (section < sectionCount) {
+                    CharSequence sectionTitle = getSectionTitle(section);
+                    CharSequence sectionRepresentativeValue = getFormattedMagnitudeAt(section, getSectionPointCount(section) / 2);
+                    annotation.setText(sectionTitle + "\n" + sectionRepresentativeValue);
+                } else {
+                    annotation.setText(R.string.missing_data_placeholder);
+                }
             }
 
             graphView.notifyDataChanged();
@@ -163,30 +177,43 @@ public class SensorHistoryFragment extends InjectionFragment {
         }
 
 
+        private int calculateIndex(int section, int position) {
+            return (section * pointCount) + position;
+        }
+
         @Override
         public int getSectionCount() {
             return sectionCount;
         }
 
+        public @NonNull CharSequence getSectionTitle(int section) {
+            SensorHistory representativeSample = data.get(calculateIndex(section, 0));
+            if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_DAY)
+                return representativeSample.getTime().toString("h a");
+            else
+                return representativeSample.getTime().toString("EE");
+        }
+
         @Override
-        public int getPeakY() {
+        public int getPeakMagnitude() {
             return peakY;
         }
 
         @Override
-        public int getPointCount(int section) {
+        public int getSectionPointCount(int section) {
             return pointCount;
         }
 
         @Override
-        public float getPointX(int section, int position) {
-            return position;
+        public float getMagnitudeAt(int section, int position) {
+            return data.get(calculateIndex(section, position)).getValue();
         }
 
+        @NonNull
         @Override
-        public float getPointY(int section, int position) {
-            int index = (section * pointCount) + position;
-            return data.get(index).getValue();
+        public CharSequence getFormattedMagnitudeAt(int section, int position) {
+            SensorHistory point = data.get(calculateIndex(section, position));
+            return Long.toString(point.getValue());
         }
 
         @Override

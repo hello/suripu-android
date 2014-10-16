@@ -2,26 +2,28 @@ package is.hello.sense.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.joda.time.LocalDateTime;
+
 public class SensorHistory extends ApiResponse {
     public static final String SENSOR_NAME_TEMPERATURE = "temperature";
     public static final String SENSOR_NAME_HUMIDITY = "humidity";
     public static final String SENSOR_NAME_PARTICULATES = "particulates";
 
     @JsonProperty("value")
-    private float value;
+    private long value;
 
     @JsonProperty("datetime")
-    private long time;
+    private LocalDateTime time;
 
     @JsonProperty("offset_millis")
     private long offset;
 
 
-    public float getValue() {
+    public long getValue() {
         return value;
     }
 
-    public long getTime() {
+    public LocalDateTime getTime() {
         return time;
     }
 

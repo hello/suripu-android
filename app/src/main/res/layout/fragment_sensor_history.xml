@@ -50,10 +50,77 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/fragment_sensor_history_graph_annotations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.Body.Bold"
+            android:text="@string/missing_data_placeholder" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.Body.Bold"
+            android:text="@string/missing_data_placeholder" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.Body.Bold"
+            android:text="@string/missing_data_placeholder" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.Body.Bold"
+            android:text="@string/missing_data_placeholder" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.Body.Bold"
+            android:text="@string/missing_data_placeholder" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.Body.Bold"
+            android:text="@string/missing_data_placeholder" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.Body.Bold"
+            android:text="@string/missing_data_placeholder" />
+
+    </LinearLayout>
+
     <is.hello.sense.ui.widget.LineGraphView
         android:id="@+id/fragment_sensor_history_graph"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/activity_margin"
         app:horizontalLines="7" />
 
 </LinearLayout>
