@@ -23,7 +23,7 @@ public final class LineGraphView extends View {
     private Drawable fillDrawable;
     private boolean wantsMarkers = true;
 
-    private float cachedMaxX = 0f, cachedMaxY = 0f;
+    private float cachedPeakY = 0f, cachedTotalX = 0f;
     private float topLineHeight;
 
     private final Paint gridPaint = new Paint();
@@ -95,12 +95,12 @@ public final class LineGraphView extends View {
 
     //region Drawing
 
-    private float calculateXOffsetOfPoint(float segmentWidth, int position) {
-        return segmentWidth * adapter.getPointX(position);
+    private float absoluteSegmentX(float sectionWidth, float segmentWidth, int section, int position) {
+        return (sectionWidth * section) + (segmentWidth * position);
     }
 
-    private float calculateYOffsetOfPoint(float height, int position) {
-        return height - (height * (adapter.getPointY(position) / this.cachedMaxY));
+    private float absoluteSegmentY(float height, int section, int position) {
+        return height - (height * (adapter.getPointY(section, position) / this.cachedPeakY));
     }
 
     @Override
@@ -132,31 +132,36 @@ public final class LineGraphView extends View {
             }
         }
 
-        if (adapter != null && adapter.getPointCount() > 0) {
-            int pointCount = adapter.getPointCount();
-            float firstPointY = calculateYOffsetOfPoint(height, 0);
-            float segmentWidth = width / cachedMaxX;
+        if (adapter != null && adapter.getSectionCount() > 0) {
+            int sections = adapter.getSectionCount();
+            float segmentWidth = width / cachedTotalX;
+            float sectionWidth = width / sections;
             float halfPointMarkerArea = pointMarkerSize / 2;
 
+            float firstPointY = absoluteSegmentY(height, 0, 0);
             fillPath.moveTo(minX, firstPointY);
             topLinePath.moveTo(minX, firstPointY);
 
-            for (int position = 0; position < pointCount; position++) {
-                float segmentX = calculateXOffsetOfPoint(segmentWidth, position);
-                float segmentY = calculateYOffsetOfPoint(height, position);
+            for (int section = 0; section < sections; section++) {
+                int pointCount = adapter.getPointCount(section);
 
-                topLinePath.lineTo(segmentX, segmentY);
-                fillPath.lineTo(segmentX, segmentY - topLineHeight / 2f);
+                for (int position = 0; position < pointCount; position++) {
+                    float segmentX = absoluteSegmentX(sectionWidth, segmentWidth, section, position);
+                    float segmentY = absoluteSegmentY(height, section, position);
 
-                if (wantsMarkers && adapter.wantsMarkerAt(position)) {
-                    markerRect.set(segmentX - halfPointMarkerArea, segmentY - halfPointMarkerArea,
-                                   segmentX + halfPointMarkerArea, segmentY + halfPointMarkerArea);
-                    markersPath.addOval(markerRect, Path.Direction.CW);
+                    topLinePath.lineTo(segmentX, segmentY);
+                    fillPath.lineTo(segmentX, segmentY - topLineHeight / 2f);
+
+                    if (wantsMarkers && adapter.wantsMarkerAt(section, position)) {
+                        markerRect.set(segmentX - halfPointMarkerArea, segmentY - halfPointMarkerArea,
+                                segmentX + halfPointMarkerArea, segmentY + halfPointMarkerArea);
+                        markersPath.addOval(markerRect, Path.Direction.CW);
+                    }
                 }
             }
 
-            fillPath.lineTo(calculateXOffsetOfPoint(segmentWidth, pointCount - 1), height);
-            fillPath.lineTo(calculateXOffsetOfPoint(segmentWidth, 0), height);
+            fillPath.lineTo(width, height);
+            fillPath.lineTo(minX, height);
 
             if (fillDrawable != null) {
                 canvas.save();
@@ -192,8 +197,11 @@ public final class LineGraphView extends View {
 
     public void notifyDataChanged() {
         if (adapter != null) {
-            this.cachedMaxX = adapter.getMaxX();
-            this.cachedMaxY = adapter.getMaxY();
+            this.cachedPeakY = adapter.getPeakY();
+            this.cachedTotalX = 0f;
+            for (int section = 0, sections = adapter.getSectionCount(); section < sections; section++) {
+                cachedTotalX += adapter.getPointCount(section);
+            }
         }
 
         postInvalidate();
@@ -236,12 +244,12 @@ public final class LineGraphView extends View {
 
 
     public interface Adapter {
-        int getMaxX();
-        int getMaxY();
+        int getPeakY();
+        int getSectionCount();
 
-        int getPointCount();
-        float getPointX(int position);
-        float getPointY(int position);
-        boolean wantsMarkerAt(int position);
+        int getPointCount(int section);
+        float getPointX(int section, int position);
+        float getPointY(int section, int position);
+        boolean wantsMarkerAt(int section, int position);
     }
 }

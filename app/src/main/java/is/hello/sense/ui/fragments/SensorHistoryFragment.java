@@ -4,6 +4,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -132,7 +133,9 @@ public class SensorHistoryFragment extends InjectionFragment {
 
     private class GraphAdapter implements LineGraphView.Adapter {
         private final List<SensorHistory> data = new ArrayList<>();
-        private int maxY = 100;
+        private int peakY = 100;
+        private int sectionCount = 0;
+        private int pointCount = 0;
 
 
         public void bindData(@NonNull List<SensorHistory> history) {
@@ -140,10 +143,14 @@ public class SensorHistoryFragment extends InjectionFragment {
             this.data.addAll(history);
 
             if (history.isEmpty()) {
-                this.maxY = 100;
+                this.peakY = 100;
+                this.sectionCount = 0;
+                this.pointCount = 0;
             } else {
                 SensorHistory peak = Collections.max(history, (l, r) -> Float.compare(l.getValue(), r.getValue()));
-                this.maxY = Math.max(100, (int) peak.getValue());
+                this.peakY = Math.max(100, (int) peak.getValue());
+                this.sectionCount = 7;
+                this.pointCount = data.size() / sectionCount;
             }
 
             graphView.notifyDataChanged();
@@ -157,33 +164,34 @@ public class SensorHistoryFragment extends InjectionFragment {
 
 
         @Override
-        public int getMaxX() {
-            return data.size();
+        public int getSectionCount() {
+            return sectionCount;
         }
 
         @Override
-        public int getMaxY() {
-            return maxY;
+        public int getPeakY() {
+            return peakY;
         }
 
         @Override
-        public int getPointCount() {
-            return data.size();
+        public int getPointCount(int section) {
+            return pointCount;
         }
 
         @Override
-        public float getPointX(int position) {
+        public float getPointX(int section, int position) {
             return position;
         }
 
         @Override
-        public float getPointY(int position) {
-            return data.get(position).getValue();
+        public float getPointY(int section, int position) {
+            int index = (section * pointCount) + position;
+            return data.get(index).getValue();
         }
 
         @Override
-        public boolean wantsMarkerAt(int position) {
-            return false;
+        public boolean wantsMarkerAt(int section, int position) {
+            return (position == pointCount / 2);
         }
     }
 }
