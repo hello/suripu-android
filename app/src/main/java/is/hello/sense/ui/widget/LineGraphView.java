@@ -21,7 +21,7 @@ public final class LineGraphView extends View {
     private int numberOfHorizontalLines = 0;
     private float pointMarkerSize;
     private Drawable fillDrawable;
-    private boolean wantsMarkers = false;
+    private boolean wantsMarkers = true;
 
     private float cachedMaxX = 0f, cachedMaxY = 0f;
     private float topLineHeight;
@@ -82,7 +82,7 @@ public final class LineGraphView extends View {
 
             this.numberOfVerticalLines = styles.getInt(R.styleable.LineGraphView_verticalLines, 0);
             this.numberOfHorizontalLines = styles.getInt(R.styleable.LineGraphView_horizontalLines, 0);
-            this.wantsMarkers = styles.getBoolean(R.styleable.LineGraphView_wantsMarkers, false);
+            this.wantsMarkers = styles.getBoolean(R.styleable.LineGraphView_wantsMarkers, true);
         } else {
             topLinePaint.setColor(Color.GRAY);
             gridPaint.setColor(Color.LTGRAY);
@@ -148,7 +148,7 @@ public final class LineGraphView extends View {
                 topLinePath.lineTo(segmentX, segmentY);
                 fillPath.lineTo(segmentX, segmentY - topLineHeight / 2f);
 
-                if (wantsMarkers) {
+                if (wantsMarkers && adapter.wantsMarkerAt(position)) {
                     markerRect.set(segmentX - halfPointMarkerArea, segmentY - halfPointMarkerArea,
                                    segmentX + halfPointMarkerArea, segmentY + halfPointMarkerArea);
                     markersPath.addOval(markerRect, Path.Direction.CW);
@@ -242,5 +242,6 @@ public final class LineGraphView extends View {
         int getPointCount();
         float getPointX(int position);
         float getPointY(int position);
+        boolean wantsMarkerAt(int position);
     }
 }

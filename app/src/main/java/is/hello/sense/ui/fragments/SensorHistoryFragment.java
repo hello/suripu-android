@@ -152,5 +152,10 @@ public class SensorHistoryFragment extends InjectionFragment {
         public float getPointY(int position) {
             return history.get(position).getValue();
         }
+
+        @Override
+        public boolean wantsMarkerAt(int position) {
+            return (position % 15) == 0;
+        }
     }
 }
