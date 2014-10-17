@@ -40,6 +40,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         setContentView(listView);
 
         this.debugItems = new StaticItemAdapter(this);
+        debugItems.setValueMaxLength(30);
         listView.setAdapter(debugItems);
         listView.setOnItemClickListener(this);
 
@@ -58,6 +59,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         }
         debugItems.addItem("Build Type", buildValues.type);
         debugItems.addItem("Access Token", sessionManager.getAccessToken());
+        debugItems.addItem("GCM ID", getSharedPreferences(Constants.NOTIFICATION_PREFS, 0).getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, "<none>"));
         debugItems.addItem("Host", currentEnvironment.baseUrl);
         debugItems.addItem("Client ID", currentEnvironment.clientId);
     }

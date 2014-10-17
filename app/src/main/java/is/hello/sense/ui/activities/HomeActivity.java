@@ -3,14 +3,12 @@ package is.hello.sense.ui.activities;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.LayoutAnimationController;
-import android.view.animation.Transformation;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 
 import net.hockeyapp.android.UpdateManager;
@@ -24,7 +22,9 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
+import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
+import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.fragments.HomeUndersideFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
@@ -32,8 +32,8 @@ import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.Logger;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static rx.android.observables.AndroidObservable.bindActivity;
@@ -42,6 +42,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 public class HomeActivity
         extends InjectionActivity
         implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener {
+    public static final String EXTRA_IS_NOTIFICATION = HomeActivity.class.getName() + ".EXTRA_IS_NOTIFICATION";
+
     @Inject QuestionsPresenter questionsPresenter;
     @Inject BuildValues buildValues;
 
@@ -79,8 +81,14 @@ public class HomeActivity
         slidingLayersView.setGestureInterceptingChild(viewPager);
 
 
-        if (NotificationRegistration.shouldRegister(this)) {
-            new NotificationRegistration(this).register();
+        if (savedInstanceState == null) {
+            if (getIntent().getBooleanExtra(EXTRA_IS_NOTIFICATION, false)) {
+                onNotificationIntent(getIntent());
+            }
+
+            if (NotificationRegistration.shouldRegister(this)) {
+                new NotificationRegistration(this).register();
+            }
         }
     }
 
@@ -112,6 +120,24 @@ public class HomeActivity
 
         if (!buildValues.isDebugBuild()) {
             UpdateManager.register(this, Constants.HOCKEY_APP_ID);
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.getBooleanExtra(EXTRA_IS_NOTIFICATION, false)) {
+            onNotificationIntent(intent);
+        }
+    }
+
+    protected void onNotificationIntent(@NonNull Intent intent) {
+        Logger.info(HomeActivity.class.getSimpleName(), "HomeActivity received notification");
+
+        NotificationType type = NotificationType.fromString(intent.getStringExtra(NotificationReceiver.EXTRA_TYPE));
+        if (type == NotificationType.QUESTION && intent.hasExtra(NotificationReceiver.EXTRA_QUESTION_ID)) {
+            showQuestions(newQuestionContainer);
         }
     }
 

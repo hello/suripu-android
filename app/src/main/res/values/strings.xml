@@ -76,4 +76,7 @@
     <string name="title_time_frame_week">Last Week</string>
 
     <string name="title_thank_you">Thank You</string>
+
+    <string name="notification_type_message">Sense</string>
+    <string name="notification_type_question">New Question</string>
 </resources>

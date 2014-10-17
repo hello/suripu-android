@@ -22,9 +22,6 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 public final class NotificationRegistration {
-    private static final String PREF_APP_VERSION = "app_version";
-    private static final String PREF_REGISTRATION_ID = "registration_id";
-
     private final Activity activity;
     @Inject ApiService apiService;
 
@@ -52,8 +49,8 @@ public final class NotificationRegistration {
         SharedPreferences preferences = getNotificationPreferences(context);
         int versionCode = getPackageVersionCode(context);
         return (Boolean.parseBoolean(context.getString(R.string.build_gcm_enabled)) &&
-                preferences.getInt(PREF_APP_VERSION, -1) != versionCode ||
-                preferences.getString(PREF_REGISTRATION_ID, null) == null);
+                preferences.getInt(Constants.NOTIFICATION_PREF_APP_VERSION, -1) != versionCode ||
+                preferences.getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, null) == null);
     }
 
     public NotificationRegistration(@NonNull Activity activity) {
@@ -86,8 +83,8 @@ public final class NotificationRegistration {
         SharedPreferences preferences = getNotificationPreferences(activity);
         int versionCode = getPackageVersionCode(activity);
         preferences.edit()
-                .putString(PREF_REGISTRATION_ID, registrationId)
-                .putInt(PREF_APP_VERSION, versionCode)
+                .putString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, registrationId)
+                .putInt(Constants.NOTIFICATION_PREF_APP_VERSION, versionCode)
                 .apply();
     }
 

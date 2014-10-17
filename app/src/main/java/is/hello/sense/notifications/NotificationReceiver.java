@@ -1,0 +1,79 @@
+package is.hello.sense.notifications;
+
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+
+import is.hello.sense.R;
+import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.util.Logger;
+
+public class NotificationReceiver extends BroadcastReceiver {
+    public static final String EXTRA_TYPE = "type";
+    public static final String EXTRA_MESSAGE = "message";
+    public static final String EXTRA_QUESTION_ID = "question_id";
+
+    private int notificationId = 0;
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
+        String messageType = gcm.getMessageType(intent);
+        switch (messageType) {
+            case GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR:
+                onMessageSendError(context, intent);
+                break;
+
+            case GoogleCloudMessaging.MESSAGE_TYPE_DELETED:
+                onMessageDeleted(context, intent);
+                break;
+
+            case GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE:
+                onMessageReceived(context, intent);
+                break;
+
+            default:
+                Logger.warn(NotificationReceiver.class.getSimpleName(), "Unrecognized message type: " + messageType);
+                break;
+        }
+    }
+
+    public void onMessageSendError(@NonNull Context context, @NonNull Intent intent) {
+        Logger.error(NotificationReceiver.class.getSimpleName(), "Message send error for: " + intent);
+    }
+
+    public void onMessageDeleted(@NonNull Context context, @NonNull Intent intent) {
+        Logger.info(NotificationReceiver.class.getSimpleName(), "Notification was deleted on server: " + intent);
+    }
+
+    public void onMessageReceived(@NonNull Context context, @NonNull Intent intent) {
+        Logger.info(NotificationReceiver.class.getSimpleName(), "Received message: " + intent.getExtras());
+        String message = intent.getStringExtra(EXTRA_MESSAGE);
+        if (!TextUtils.isEmpty(message)) {
+            NotificationType type = NotificationType.fromString(intent.getStringExtra(EXTRA_TYPE));
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification.Builder builder = new Notification.Builder(context);
+            builder.setSmallIcon(R.drawable.ic_launcher);
+            builder.setContentTitle(context.getString(type.titleRes));
+            builder.setStyle(new Notification.BigTextStyle().bigText(message));
+            builder.setContentText(message);
+
+            Intent activityIntent = new Intent(context, HomeActivity.class);
+            activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            activityIntent.putExtras(intent.getExtras());
+            activityIntent.putExtra(HomeActivity.EXTRA_IS_NOTIFICATION, true);
+            builder.setContentIntent(PendingIntent.getActivity(context, 0, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+            builder.setAutoCancel(true);
+
+            notificationManager.notify(notificationId++, builder.build());
+        }
+    }
+}

@@ -13,6 +13,7 @@ import is.hello.sense.R;
 
 public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     private final LayoutInflater layoutInflater;
+    private int valueMaxLength = Integer.MAX_VALUE;
 
     public StaticItemAdapter(Context context) {
         super(context, R.layout.item_underside_horizontal);
@@ -32,6 +33,15 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
         return item;
     }
 
+    public int getValueMaxLength() {
+        return valueMaxLength;
+    }
+
+    public void setValueMaxLength(int valueMaxLength) {
+        this.valueMaxLength = valueMaxLength;
+        notifyDataSetChanged();
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
@@ -43,7 +53,10 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
         Item item = getItem(position);
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.title.setText(item.title);
-        holder.detail.setText(item.value);
+        if (item.value != null && item.value.length() > getValueMaxLength())
+            holder.detail.setText(item.value.substring(0, getValueMaxLength()) + "…");
+        else
+            holder.detail.setText(item.value);
 
         return view;
     }
