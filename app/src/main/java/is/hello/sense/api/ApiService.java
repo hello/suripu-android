@@ -6,6 +6,7 @@ import java.util.List;
 
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorHistory;
@@ -41,6 +42,9 @@ public interface ApiService {
 
     @PUT("/account")
     Observable<Account> updateAccount(@Body Account account);
+
+    @POST("/notifications/registration")
+    Observable<ApiResponse> registerForNotifications(@Body PushRegistration registration);
 
     //endregion
 
