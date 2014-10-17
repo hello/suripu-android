@@ -1,6 +1,9 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -19,6 +22,7 @@ import is.hello.sense.ui.common.Styles;
 @SuppressWarnings("UnusedDeclaration")
 public final class TimelineSegmentView extends FrameLayout {
     private DisplayMetrics displayMetrics = new DisplayMetrics();
+    private int stripeCornerRadius;
 
     private HorizontalBarGraphView graphView;
     private View stripe;
@@ -44,12 +48,34 @@ public final class TimelineSegmentView extends FrameLayout {
 
     //region Displaying Data
 
-    public void displaySegment(@NonNull TimelineSegment segment) {
+    public @NonNull Drawable createRoundedDrawable(int color, float[] radii) {
+        RoundRectShape shape = new RoundRectShape(radii, null, null);
+        ShapeDrawable drawable = new ShapeDrawable(shape);
+        drawable.getPaint().setColor(color);
+        return drawable;
+    }
+
+    public void displaySegment(@NonNull TimelineSegment segment, @NonNull Position position) {
         int sleepDepth = segment.getSleepDepth();
         graphView.setFillColor(getResources().getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth)));
         graphView.setValue(sleepDepth);
 
-        stripe.setBackgroundResource(Styles.getSleepDepthColorRes(sleepDepth));
+        int colorRes = Styles.getSleepDepthColorRes(sleepDepth);
+        if (position == Position.FIRST) {
+            float[] radii = {
+                    stripeCornerRadius, stripeCornerRadius, stripeCornerRadius, stripeCornerRadius,
+                    0f, 0f, 0f, 0f,
+            };
+            stripe.setBackground(createRoundedDrawable(getResources().getColor(colorRes), radii));
+        } else if (position == Position.LAST) {
+            float[] radii = {
+                    0f, 0f, 0f, 0f,
+                    stripeCornerRadius, stripeCornerRadius, stripeCornerRadius, stripeCornerRadius,
+            };
+            stripe.setBackground(createRoundedDrawable(getResources().getColor(colorRes), radii));
+        } else {
+            stripe.setBackgroundResource(colorRes);
+        }
         time.setDateTime(segment.getTimestamp());
 
         if (segment.getEventType() != null) {
@@ -83,6 +109,8 @@ public final class TimelineSegmentView extends FrameLayout {
         WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(this.displayMetrics);
 
+        this.stripeCornerRadius = getResources().getDimensionPixelOffset(R.dimen.timeline_stripe_corner_radius);
+
         LayoutInflater inflater = LayoutInflater.from(getContext());
         inflater.inflate(R.layout.view_timeline_segment, this, true);
 
@@ -91,5 +119,12 @@ public final class TimelineSegmentView extends FrameLayout {
         this.eventTypeImage = (ImageView) findViewById(R.id.view_timeline_segment_image_event_type);
         this.eventType = (TextView) findViewById(R.id.view_timeline_segment_event_type);
         this.time = (TimestampTextView) findViewById(R.id.view_timeline_segment_time);
+    }
+
+
+    public static enum Position {
+        FIRST,
+        MIDDLE,
+        LAST,
     }
 }

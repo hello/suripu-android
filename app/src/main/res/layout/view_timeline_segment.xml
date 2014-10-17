@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:minHeight="@dimen/event_view_min_height"
     android:orientation="horizontal"
-    app:leftInset="@dimen/gap_medium"
+    app:leftInset="24dp"
     app:value="50"
     app:maxValue="100"
     app:fillColor="@color/sleep_light">

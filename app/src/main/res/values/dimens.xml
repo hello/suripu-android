@@ -22,4 +22,6 @@
 
     <dimen name="grand_sleep_summary_width">175dp</dimen>
     <dimen name="grand_sleep_summary_height">175dp</dimen>
+
+    <dimen name="timeline_stripe_corner_radius">13dp</dimen>
 </resources>

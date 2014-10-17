@@ -47,6 +47,7 @@
     <string name="event_type_sleep">Sleep</string>
     <string name="event_type_sunset">Sunset</string>
     <string name="event_type_sunrise">Sunrise</string>
+    <string name="event_type_partner_motion">Partner Moved</string>
     <string name="event_type_unknown">Other</string>
 
     <string name="gender_male">Male</string>

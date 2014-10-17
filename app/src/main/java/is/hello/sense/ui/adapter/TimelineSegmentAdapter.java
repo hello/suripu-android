@@ -60,8 +60,14 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
             view = new TimelineSegmentView(getContext());
         }
 
+        TimelineSegmentView.Position segmentPosition = TimelineSegmentView.Position.MIDDLE;
+        if (position == 0)
+            segmentPosition = TimelineSegmentView.Position.FIRST;
+        else if (position == getCount() - 1)
+            segmentPosition = TimelineSegmentView.Position.LAST;
+
         TimelineSegment segment = getItem(position);
-        view.displaySegment(segment);
+        view.displaySegment(segment, segmentPosition);
         view.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, calculateHeight(segment)));
 
         return view;

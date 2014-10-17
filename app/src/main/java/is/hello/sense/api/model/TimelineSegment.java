@@ -2,7 +2,9 @@ package is.hello.sense.api.model;
 
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -98,12 +100,16 @@ public class TimelineSegment extends ApiResponse {
         SLEEP(R.drawable.asleep, R.string.event_type_sleep),
         SUNSET(R.drawable.sunset, R.string.event_type_sunset),
         SUNRISE(R.drawable.sunrise, R.string.event_type_sunrise),
+        PARTNER_MOTION(R.drawable.movement_medium, R.string.event_type_partner_motion),
         UNKNOWN(R.drawable.movement_medium, R.string.event_type_unknown);
 
         @JsonCreator
         @SuppressWarnings("UnusedDeclaration")
-        public static EventType fromString(@NonNull String value) {
-            return Enums.fromString(value, values(), UNKNOWN);
+        public static @Nullable EventType fromString(@NonNull String value) {
+            if (TextUtils.isEmpty(value))
+                return null;
+            else
+                return Enums.fromString(value, values(), UNKNOWN);
         }
 
         public final @DrawableRes int iconRes;
