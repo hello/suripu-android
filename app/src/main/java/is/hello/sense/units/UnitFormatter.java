@@ -25,6 +25,6 @@ public final class UnitFormatter {
 
 
     public interface Formatter {
-        String format(long value);
+        String format(Float value);
     }
 }

@@ -11,7 +11,7 @@ import is.hello.sense.units.UnitFormatter;
 
 public class SensorState extends ApiResponse {
     @JsonProperty("value")
-    private Long value;
+    private Float value;
 
     @JsonProperty("message")
     private String message;
@@ -26,7 +26,7 @@ public class SensorState extends ApiResponse {
     private DateTime lastUpdated;
 
 
-    public Long getValue() {
+    public Float getValue() {
         return value;
     }
 

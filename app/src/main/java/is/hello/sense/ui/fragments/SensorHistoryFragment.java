@@ -89,10 +89,16 @@ public class SensorHistoryFragment extends InjectionFragment {
     }
 
     public void bindConditions(@NonNull CurrentConditionsPresenter.Result result) {
-        SensorState condition = result.conditions.getSensorStateWithName(getSensorHistoryActivity().getSensor());
+        String sensor = getSensorHistoryActivity().getSensor();
+        SensorState condition = result.conditions.getSensorStateWithName(sensor);
         if (condition != null) {
-            boolean isTemperature = SensorHistory.SENSOR_NAME_TEMPERATURE.equals(getSensorHistoryActivity().getSensor());
-            UnitFormatter.Formatter formatter = isTemperature ? result.units::formatTemperature : null;
+            UnitFormatter.Formatter formatter = null;
+            if (SensorHistory.SENSOR_NAME_TEMPERATURE.equals(sensor)) {
+                formatter = result.units::formatTemperature;
+            } else if (SensorHistory.SENSOR_NAME_PARTICULATES.equals(sensor)) {
+                formatter = result.units::formatParticulates;
+            }
+
             String formattedValue = condition.getFormattedValue(formatter);
             if (formattedValue != null)
                 readingText.setText(formattedValue);
@@ -199,7 +205,7 @@ public class SensorHistoryFragment extends InjectionFragment {
         @Override
         public CharSequence getFormattedMagnitudeAt(int section, int position) {
             SensorHistory point = data.get(calculateIndex(section, position));
-            return Long.toString(point.getValue());
+            return Float.toString(point.getValue());
         }
 
         @Override

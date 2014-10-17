@@ -69,7 +69,7 @@ public class HomeUndersideFragment extends InjectionFragment {
     public void bindConditions(@NonNull CurrentConditionsPresenter.Result result) {
         temperatureState.displayReading(result.conditions.getTemperature(), result.units::formatTemperature);
         humidityState.displayReading(result.conditions.getHumidity(), null);
-        particulatesState.displayReading(result.conditions.getParticulates(), null);
+        particulatesState.displayReading(result.conditions.getParticulates(), result.units::formatParticulates);
     }
 
     public void presentError(@NonNull Throwable e) {

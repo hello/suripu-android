@@ -121,7 +121,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ApiResponse> skipQuestion(@NonNull @Path("id") String questionId) {
+    public Observable<ApiResponse> skipQuestion(@Path("id") long questionId) {
         return unimplemented();
     }
 }

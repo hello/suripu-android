@@ -7,18 +7,18 @@ public class UsCustomaryUnitSystem extends UnitSystem {
     public static final String NAME = "UsCustomary";
 
     @Override
-    public String formatMass(long mass) {
-        return UnitOperations.gramsToPounds(mass) + " lbs";
+    public String formatMass(float mass) {
+        return UnitOperations.gramsToPounds((long) mass) + " lbs";
     }
 
     @Override
-    public String formatTemperature(long temperature) {
-        return UnitOperations.celsiusToFahrenheit(temperature) + "ºF";
+    public String formatTemperature(float temperature) {
+        return UnitOperations.celsiusToFahrenheit((long) temperature) + "ºF";
     }
 
     @Override
-    public String formatHeight(long distance) {
-        long totalInches = UnitOperations.centimetersToInches(distance);
+    public String formatHeight(float distance) {
+        long totalInches = UnitOperations.centimetersToInches((long) distance);
         long feet = totalInches / 12;
         long remainingInches = totalInches % 12;
         if (remainingInches > 0) {

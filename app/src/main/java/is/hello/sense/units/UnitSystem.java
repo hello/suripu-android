@@ -11,7 +11,7 @@ import is.hello.sense.units.systems.UsCustomaryUnitSystem;
 /**
  * An object that converts raw SI units to human readable values.
  */
-public abstract class UnitSystem {
+public class UnitSystem {
     //region Systems
 
     private static final LinkedHashMap<String, Class<? extends UnitSystem>> UNIT_SYSTEMS = new LinkedHashMap<>();
@@ -43,9 +43,21 @@ public abstract class UnitSystem {
 
     //region Formatting
 
-    abstract public String formatMass(long mass);
-    abstract public String formatTemperature(long temperature);
-    abstract public String formatHeight(long distance);
+    public String formatMass(float mass) {
+        return (long) (Math.round(mass)) + "g";
+    }
+
+    public String formatTemperature(float temperature) {
+        return (long) (Math.round(temperature)) + "ºC";
+    }
+
+    public String formatHeight(float distance) {
+        return (long) (Math.round(distance)) + "cm";
+    }
+
+    public String formatParticulates(float particulates) {
+        return String.format("%.3fµg/m³", particulates);
+    }
 
     //endregion
 }
