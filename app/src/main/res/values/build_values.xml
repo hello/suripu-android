@@ -2,5 +2,6 @@
 <resources>
     <string name="build_type">main</string>
     <string name="build_default_api_env">STAGING</string>
-    <string name="build_gcm_id">AIzaSyAPMNUL49je3R_J-NB6H9zljo-ANI-akuE</string>
+    <string name="build_gcm_id">88512303154</string>
+    <string name="build_gcm_enabled">true</string>
 </resources>

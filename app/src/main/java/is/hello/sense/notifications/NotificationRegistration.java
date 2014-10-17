@@ -4,15 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-
-import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -22,6 +18,8 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 public final class NotificationRegistration {
     private static final String PREF_APP_VERSION = "app_version";
@@ -53,7 +51,8 @@ public final class NotificationRegistration {
     public static boolean shouldRegister(@NonNull Context context) {
         SharedPreferences preferences = getNotificationPreferences(context);
         int versionCode = getPackageVersionCode(context);
-        return (preferences.getInt(PREF_APP_VERSION, -1) != versionCode ||
+        return (Boolean.parseBoolean(context.getString(R.string.build_gcm_enabled)) &&
+                preferences.getInt(PREF_APP_VERSION, -1) != versionCode ||
                 preferences.getString(PREF_REGISTRATION_ID, null) == null);
     }
 
@@ -66,7 +65,8 @@ public final class NotificationRegistration {
         if (!checkPlayServices())
             return;
 
-        registerInBackground();
+        registerWithGCM().subscribe(this::registerWithBackend,
+                e -> Logger.error(NotificationRegistration.class.getSimpleName(), "Could not register with GCM.", e));
     }
 
     private boolean checkPlayServices() {
@@ -91,39 +91,30 @@ public final class NotificationRegistration {
                 .apply();
     }
 
-    private void registerInBackground() {
-        GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(activity);
-        String senderId = activity.getString(R.string.build_gcm_id);
+    private Observable<String> registerWithGCM() {
+        return Observable.create((Observable.OnSubscribe<String>) subscriber -> {
+            GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(activity);
+            String senderId = activity.getString(R.string.build_gcm_id);
 
-        Logger.info(NotificationRegistration.class.getSimpleName(), "Registering for notifications.");
+            Logger.info(NotificationRegistration.class.getSimpleName(), "Registering for notifications.");
 
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... voids) {
-                try {
-                    String registrationId = gcm.register(senderId);
-                    saveRegistrationId(registrationId);
-                    return registrationId;
-                } catch (IOException e) {
-                    Logger.error(NotificationRegistration.class.getSimpleName(), "Could not register for GCM.", e);
-                    return null;
-                }
+            try {
+                String registrationId = gcm.register(senderId);
+                saveRegistrationId(registrationId);
+                Logger.info(NotificationRegistration.class.getSimpleName(), "Registered with GCM: " + registrationId);
+
+                subscriber.onNext(registrationId);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
             }
-
-            @Override
-            protected void onPostExecute(String registrationId) {
-                if (!TextUtils.isEmpty(registrationId)) {
-                    Logger.info(NotificationRegistration.class.getSimpleName(), "Registered with GCM: " + registrationId);
-                    registerWithBackend(registrationId);
-                }
-            }
-        }.execute();
+        }).subscribeOn(Schedulers.newThread());
     }
 
     private void registerWithBackend(@NonNull String registrationId) {
         PushRegistration registration = new PushRegistration(getPackageVersionName(activity), registrationId);
         apiService.registerForNotifications(registration)
-                  .subscribe(ignored -> Logger.info(NotificationRegistration.class.getSimpleName(), "Registered with backend for notifications."),
-                             error -> Logger.error(NotificationRegistration.class.getSimpleName(), "Could not register with backend for notifications.", error));
+                .subscribe(ignored -> Logger.info(NotificationRegistration.class.getSimpleName(), "Registered with backend."),
+                        e -> Logger.error(NotificationRegistration.class.getSimpleName(), "Could not register with API.", e));
     }
 }
