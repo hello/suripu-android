@@ -23,6 +23,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
 
@@ -163,10 +164,6 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         updateCurrentQuestion();
     }
 
-    public void skipQuestion() {
-        nextQuestion();
-    }
-
     public void nextQuestion() {
         setOffset(getOffset() + 1);
     }
@@ -178,6 +175,11 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     public Observable<ApiResponse> answerQuestion(@NonNull Question.Choice answer) {
         return apiService.answerQuestion(answer);
+    }
+
+    public void skipQuestion() {
+        currentQuestion.take(1).subscribe(question -> apiService.skipQuestion(question.getId()), Functions::ignoreError);
+        nextQuestion();
     }
 
     //endregion

@@ -83,5 +83,8 @@ public interface ApiService {
     @POST("/questions")
     Observable<ApiResponse> answerQuestion(@NonNull @Body Question.Choice answer);
 
+    @PUT("/questions/:id/skip")
+    Observable<ApiResponse> skipQuestion(@Path("id") long questionId);
+
     //endregion
 }

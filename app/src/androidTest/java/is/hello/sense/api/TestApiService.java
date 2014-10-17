@@ -13,6 +13,7 @@ import java.util.List;
 
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorHistory;
@@ -81,6 +82,11 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
+    public Observable<ApiResponse> registerForNotifications(@Body PushRegistration registration) {
+        return unimplemented();
+    }
+
+    @Override
     public Observable<List<Timeline>> timelineForDate(@NonNull @Path("year") String year,
                                                       @NonNull @Path("month") String month,
                                                       @NonNull @Path("day") String day) {
@@ -111,6 +117,11 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ApiResponse> answerQuestion(@NonNull @Body Question.Choice answer) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<ApiResponse> skipQuestion(@NonNull @Path("id") String questionId) {
         return unimplemented();
     }
 }
