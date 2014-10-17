@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
+import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.fragments.HomeUndersideFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
@@ -76,6 +77,11 @@ public class HomeActivity
         this.slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
         slidingLayersView.setOnInteractionListener(this);
         slidingLayersView.setGestureInterceptingChild(viewPager);
+
+
+        if (NotificationRegistration.shouldRegister(this)) {
+            new NotificationRegistration(this).register();
+        }
     }
 
     @Override

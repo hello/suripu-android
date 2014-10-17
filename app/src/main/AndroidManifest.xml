@@ -70,6 +70,17 @@
             android:parentActivityName=".ui.activities.HomeActivity"
             android:theme="@style/AppTheme.Underside" />
 
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+
+        <receiver
+            android:name=".notifications.NotificationsReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="is.hello.sense" />
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name="net.hockeyapp.android.UpdateActivity" />
         

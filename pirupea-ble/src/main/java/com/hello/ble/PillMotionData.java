@@ -2,7 +2,6 @@ package com.hello.ble;
 
 import android.util.Log;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.LittleEndianDataInputStream;
 
 import org.joda.time.DateTime;
@@ -106,6 +105,6 @@ public class PillMotionData {
         }
 
 
-        return ImmutableList.<PillMotionData>copyOf(list);
+        return list;
     }
 }

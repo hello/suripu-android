@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Created by pangwu on 7/1/14.
  */
@@ -49,7 +47,9 @@ public class Pill extends HelloBleDevice {
 
     public Pill(final Context context, final BluetoothDevice pillDevice) {
         super(context, pillDevice);
-        checkNotNull(context);
+
+        if (context == null)
+            throw new IllegalArgumentException();
 
         this.bleTimeDataHandler = new TimeDataHandler(this);
         this.motionPacketHandler = new MotionDataHandler(this);
@@ -586,7 +586,8 @@ public class Pill extends HelloBleDevice {
 
 
     public static boolean discover(final String address, final BleOperationCallback<Pill> onDiscoverCompleted, final int maxScanTime) {
-        checkNotNull(onDiscoverCompleted);
+        if (onDiscoverCompleted == null)
+            throw new IllegalArgumentException();
 
         final Context context = HelloBle.getApplicationContext();
         final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -634,7 +635,8 @@ public class Pill extends HelloBleDevice {
     }
 
     public static boolean discover(final BleOperationCallback<Set<Pill>> onDiscoverCompleted, final int maxScanTime) {
-        checkNotNull(onDiscoverCompleted);
+        if (onDiscoverCompleted == null)
+            throw new IllegalArgumentException();
 
         final Context context = HelloBle.getApplicationContext();
         final BluetoothManager bluetoothManager =

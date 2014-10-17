@@ -6,8 +6,6 @@ import com.hello.ble.devices.HelloBleDevice;
 
 import java.util.UUID;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Created by pangwu on 7/14/14.
  */
@@ -18,7 +16,8 @@ public abstract class HelloDataHandler<T> {
     private HelloBleDevice sender;
 
     public HelloDataHandler(final HelloBleDevice sender) {
-        checkNotNull(sender);
+        if (sender == null)
+            throw new IllegalArgumentException();
         this.sender = sender;
     }
 

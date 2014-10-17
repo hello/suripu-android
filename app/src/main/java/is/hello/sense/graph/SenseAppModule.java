@@ -12,6 +12,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
+import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
@@ -36,6 +37,7 @@ import is.hello.sense.util.BuildValues;
         DebugActivity.class,
         PreferencesPresenter.class,
         TimestampTextView.class,
+        NotificationRegistration.class,
 
         LaunchActivity.class,
         HomeActivity.class,

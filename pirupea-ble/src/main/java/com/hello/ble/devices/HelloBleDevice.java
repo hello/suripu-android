@@ -8,15 +8,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
-import com.google.common.base.Objects;
 import com.hello.ble.BleOperationCallback;
 import com.hello.ble.BleOperationCallback.OperationFailReason;
 import com.hello.ble.HelloBle;
 import com.hello.ble.stack.HelloGattLayer;
 
 import java.lang.reflect.Method;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created by pangwu on 7/31/14.
@@ -82,7 +79,9 @@ public abstract class HelloBleDevice {
     }
 
     public void connect(final BleOperationCallback<Void> connectedCallback, final boolean autoBond) {
-        checkNotNull(this.bluetoothDevice);
+        if (this.bluetoothDevice == null)
+            throw new IllegalArgumentException();
+
         if (isConnected()) {
             return;
         }
@@ -100,7 +99,9 @@ public abstract class HelloBleDevice {
     }
 
     public void connect() {
-        checkNotNull(this.bluetoothDevice);
+        if (this.bluetoothDevice == null)
+            throw new IllegalArgumentException();
+
         if (this.gattLayer == null) {
             if (connectedCallback != null) {
                 connectedCallback.onFailed(this, OperationFailReason.GATT_NOT_INITIALIZED, 0);
@@ -113,7 +114,9 @@ public abstract class HelloBleDevice {
     }
 
     public void connect(boolean autoBond) {
-        checkNotNull(this.bluetoothDevice);
+        if (this.bluetoothDevice == null)
+            throw new IllegalArgumentException();
+
         if (isConnected()) {
             return;
         }
@@ -182,12 +185,16 @@ public abstract class HelloBleDevice {
     }
 
     public String getAddress() {
-        checkNotNull(this.bluetoothDevice);
+        if (this.bluetoothDevice == null)
+            throw new IllegalArgumentException();
+
         return this.bluetoothDevice.getAddress();
     }
 
     public String getName() {
-        checkNotNull(this.bluetoothDevice);
+        if (this.bluetoothDevice == null)
+            throw new IllegalArgumentException();
+
         return this.bluetoothDevice.getName();
     }
 
@@ -212,7 +219,7 @@ public abstract class HelloBleDevice {
         }
 
         final HelloBleDevice convertedObject = (HelloBleDevice) other;
-        return Objects.equal(this.getAddress(), convertedObject.getAddress());
+        return getAddress().equals(convertedObject.getAddress());
     }
 
     public void pair(final BleOperationCallback<Void> pairedCallback) {
@@ -252,7 +259,6 @@ public abstract class HelloBleDevice {
 
     public boolean isConnected() {
         if (this.gattLayer != null) {
-            int status = this.gattLayer.getConnectionStatus();
             return this.gattLayer.getConnectionStatus() == BluetoothProfile.STATE_CONNECTED;
         } else {
             return false;

@@ -22,8 +22,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Created by pangwu on 8/6/14.
  */
@@ -48,8 +46,9 @@ public class Morpheus extends HelloBleDevice {
 
     public Morpheus(final Context context, final BluetoothDevice bluetoothDevice) {
         super(context, bluetoothDevice);
-        checkNotNull(context);
 
+        if (context == null)
+            throw new IllegalArgumentException();
 
         this.commandResponsePacketHandler = new MorpheusResponseDataHandler(this);
         this.protobufCommandResponseHandler = new MorpheusProtobufResponseDataHandler(this);
@@ -150,8 +149,8 @@ public class Morpheus extends HelloBleDevice {
 
 
     public static boolean discover(final String address, final BleOperationCallback<Morpheus> onDiscoverCompleted, final int maxScanTime) {
-        //checkNotNull(context);
-        checkNotNull(onDiscoverCompleted);
+        if (onDiscoverCompleted == null)
+            throw new IllegalArgumentException();
 
         final Context context = HelloBle.getApplicationContext();
         final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -199,7 +198,8 @@ public class Morpheus extends HelloBleDevice {
     }
 
     public static boolean discover(final BleOperationCallback<Set<Morpheus>> onDiscoverCompleted, final int maxScanTime) {
-        checkNotNull(onDiscoverCompleted);
+        if (onDiscoverCompleted == null)
+            throw new IllegalArgumentException();
 
         final Context context = HelloBle.getApplicationContext();
         final BluetoothManager bluetoothManager =

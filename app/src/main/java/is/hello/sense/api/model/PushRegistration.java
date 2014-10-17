@@ -1,5 +1,8 @@
 package is.hello.sense.api.model;
 
+import android.os.Build;
+import android.support.annotation.NonNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public final class PushRegistration extends ApiResponse {
@@ -18,9 +21,9 @@ public final class PushRegistration extends ApiResponse {
     public final String deviceToken;
 
 
-    public PushRegistration(String version, String appVersion, String deviceToken) {
+    public PushRegistration(@NonNull String appVersion, @NonNull String deviceToken) {
         this.os = OS_ANDROID;
-        this.version = version;
+        this.version = Build.VERSION.RELEASE;
         this.appVersion = appVersion;
         this.deviceToken = deviceToken;
     }

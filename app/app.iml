@@ -83,6 +83,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="support-v13-20.0.0" level="project" />
     <orderEntry type="library" exported="" name="HockeySDK-3.0.2" level="project" />
+    <orderEntry type="library" exported="" name="guava-15.0" level="project" />
     <orderEntry type="library" exported="" name="dagger-1.2.2" level="project" />
     <orderEntry type="library" exported="" name="jackson-core-2.4.2" level="project" />
     <orderEntry type="library" exported="" name="jackson-databind-2.4.2" level="project" />
@@ -92,13 +93,11 @@
     <orderEntry type="library" exported="" name="markdownj-core-0.5" level="project" />
     <orderEntry type="library" exported="" name="dagger-compiler-1.2.2" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="javax.annotation-api-1.2" level="project" />
-    <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-library-1.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="espresso-1.1-r3" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.6.1" level="project" />
     <orderEntry type="library" exported="" name="protobuf-java-2.5.0" level="project" />
     <orderEntry type="library" exported="" name="android.joda-2.4.1" level="project" />
-    <orderEntry type="library" exported="" name="commons-codec-1.9" level="project" />
     <orderEntry type="library" exported="" name="rxjava-core-0.20.4" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-20.0.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-annotations-2.4.2" level="project" />
