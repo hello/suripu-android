@@ -84,7 +84,7 @@ public class QuestionsFragment extends InjectionFragment {
         super.onResume();
 
         if (!hasSubscriptions()) {
-            bindAndSubscribe(questionsPresenter.currentQuestion, this::bindQuestion, this::presentError);
+            bindAndSubscribe(questionsPresenter.currentQuestion, this::bindQuestion, this::questionUnavailable);
         }
     }
 
@@ -229,7 +229,7 @@ public class QuestionsFragment extends InjectionFragment {
         }
     }
 
-    public void presentError(@NonNull Throwable e) {
+    public void questionUnavailable(@NonNull Throwable e) {
         choicesContainer.removeAllViews();
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }

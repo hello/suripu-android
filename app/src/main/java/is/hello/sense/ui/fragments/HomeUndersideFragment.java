@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.ui.activities.DebugActivity;
@@ -19,9 +20,12 @@ import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SensorStateView;
+import is.hello.sense.util.BuildValues;
+import is.hello.sense.util.Logger;
 
 public class HomeUndersideFragment extends InjectionFragment {
     @Inject CurrentConditionsPresenter currentConditionsPresenter;
+    @Inject BuildValues buildValues;
 
     private SensorStateView temperatureState;
     private SensorStateView humidityState;
@@ -53,7 +57,7 @@ public class HomeUndersideFragment extends InjectionFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(currentConditionsPresenter.currentConditions, this::bindConditions, this::presentError);
+        bindAndSubscribe(currentConditionsPresenter.currentConditions, this::bindConditions, this::conditionsUnavailable);
     }
 
     @Override
@@ -72,8 +76,14 @@ public class HomeUndersideFragment extends InjectionFragment {
         particulatesState.displayReading(result.conditions.getParticulates(), result.units::formatParticulates);
     }
 
-    public void presentError(@NonNull Throwable e) {
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+    public void conditionsUnavailable(@NonNull Throwable e) {
+        if (buildValues.isDebugBuild()) {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        } else {
+            Logger.error(HomeUndersideFragment.class.getSimpleName(), "Could not load conditions", e);
+            temperatureState.displayCondition(Condition.UNKNOWN);
+            temperatureState.setReading(getString(R.string.missing_data_placeholder));
+        }
     }
 
     //endregion

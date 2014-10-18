@@ -22,6 +22,7 @@
     <string name="dialog_error_extended_message_format">%1$s\n\n%2$s (Status: %3$d)</string>
     <string name="dialog_error_generic_form_issue">One or more required fields is missing.</string>
     <string name="dialog_loading_message">Loading…</string>
+    <string name="timeline_error_message">Could not load timeline</string>
 
     <string name="format_date">MMMM d</string>
     <string name="format_birth_date">MM/dd/yy</string>

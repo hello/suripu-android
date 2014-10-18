@@ -27,7 +27,6 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.Styles;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
 import is.hello.sense.util.DateFormatter;
@@ -98,7 +97,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         super.onViewCreated(view, savedInstanceState);
 
         Observable<Timeline> boundMainTimeline = bind(timelinePresenter.mainTimeline);
-        subscribe(boundMainTimeline, this::bindTimeline, this::presentError);
+        subscribe(boundMainTimeline, this::bindTimeline, this::timelineUnavailable);
 
         Observable<List<TimelineSegment>> segments = boundMainTimeline.map(Timeline::getSegments);
         subscribe(segments, segmentAdapter::bindSegments, segmentAdapter::handleError);
@@ -154,8 +153,15 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         }
     }
 
-    public void presentError(Throwable e) {
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+    public void timelineUnavailable(@Nullable Throwable e) {
+        scoreGraph.setValue(0);
+        scoreText.setText(R.string.missing_data_placeholder);
+
+        if (e != null) {
+            messageText.setText(getString(R.string.timeline_error_message, e.getMessage()));
+        } else {
+            messageText.setText(R.string.missing_data_placeholder);
+        }
     }
 
 

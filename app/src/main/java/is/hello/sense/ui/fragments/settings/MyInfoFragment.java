@@ -87,7 +87,7 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
         Observable<Pair<Account, UnitSystem>> forAccount = Observable.combineLatest(accountPresenter.account,
                 unitFormatter.unitSystem,
                 Pair::new);
-        track(bindFragment(this, forAccount).subscribe(this::bindAccount, this::presentError));
+        track(bindFragment(this, forAccount).subscribe(this::bindAccount, this::accountUnavailable));
     }
 
 
@@ -170,8 +170,7 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
         this.currentAccount = account;
     }
 
-    public void presentError(@NonNull Throwable e) {
-        LoadingDialogFragment.close(getFragmentManager());
+    public void accountUnavailable(@NonNull Throwable e) {
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 }
