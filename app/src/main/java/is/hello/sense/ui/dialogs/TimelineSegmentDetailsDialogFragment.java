@@ -72,7 +72,7 @@ public final class TimelineSegmentDetailsDialogFragment extends InjectionDialogF
         TextView message = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_segment_details_message);
         message.setText(R.string.missing_data_placeholder);
         Observable<CharSequence> renderedMessage = bindFragment(this, markdown.render(timelineSegment.getMessage()));
-        renderedMessage.subscribe(message::setText, error -> Logger.error(Logger.tagFromClass(TimelineSegmentDetailsDialogFragment.class), "Could not render message markdown", error));
+        renderedMessage.subscribe(message::setText, error -> Logger.error(TimelineSegmentDetailsDialogFragment.class.getSimpleName(), "Could not render message markdown", error));
 
         TimestampTextView time = (TimestampTextView) dialog.findViewById(R.id.dialog_fragment_timeline_segment_details_time);
         time.setDateTime(timelineSegment.getTimestamp());

@@ -75,10 +75,6 @@ public class Logger {
 
     //region Utils
 
-    public static String tagFromClass(@NonNull Class<?> clazz) {
-        return clazz.getSimpleName();
-    }
-
     public static final RestAdapter.Log RETROFIT_LOGGER = message -> Logger.debug("Retrofit", message);
 
     //endregion

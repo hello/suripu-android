@@ -55,7 +55,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
             debugItems.addItem("App Version", packageInfo.versionName);
             debugItems.addItem("Build Number", Integer.toString(packageInfo.versionCode));
         } catch (PackageManager.NameNotFoundException e) {
-            Logger.debug(Logger.tagFromClass(DebugActivity.class), "Could not look up app version", e);
+            Logger.debug(DebugActivity.class.getSimpleName(), "Could not look up app version", e);
         }
         debugItems.addItem("Build Type", buildValues.type);
         debugItems.addItem("Access Token", sessionManager.getAccessToken());

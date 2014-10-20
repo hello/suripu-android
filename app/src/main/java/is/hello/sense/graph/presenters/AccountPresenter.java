@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.util.Logger;
 import rx.observables.BlockingObservable;
 import rx.subjects.ReplaySubject;
 
@@ -19,11 +20,16 @@ public class AccountPresenter extends Presenter {
 
     @Override
     public @Nullable Parcelable onSaveState() {
-        BlockingObservable<Account> accountObservable = BlockingObservable.from(account);
-        Account account = accountObservable.single();
-        Bundle savedState = new Bundle();
-        savedState.putSerializable("account", account);
-        return savedState;
+        try {
+            BlockingObservable<Account> accountObservable = BlockingObservable.from(account);
+            Account account = accountObservable.single();
+            Bundle savedState = new Bundle();
+            savedState.putSerializable("account", account);
+            return savedState;
+        } catch (Exception e) {
+            Logger.error(AccountPresenter.class.getSimpleName(), "Could not resolve account for onSaveState, ignoring.", e);
+            return null;
+        }
     }
 
     @Override

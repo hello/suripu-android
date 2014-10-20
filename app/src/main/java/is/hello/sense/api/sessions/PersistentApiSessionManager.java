@@ -47,7 +47,7 @@ public class PersistentApiSessionManager extends ApiSessionManager {
             try {
                 return mapper.readValue(serializedValue, OAuthSession.class);
             } catch (IOException e) {
-                Logger.error(Logger.tagFromClass(PersistentApiSessionManager.class), "Could not deserialize persisted session", e);
+                Logger.error(PersistentApiSessionManager.class.getSimpleName(), "Could not deserialize persisted session", e);
             }
         }
 
