@@ -113,7 +113,7 @@
     <orderEntry type="library" exported="" scope="TEST" name="guava-16.0" level="project" />
     <orderEntry type="library" exported="" name="rxjava-android-0.20.4" level="project" />
     <orderEntry type="library" exported="" name="javawriter-2.5.0" level="project" />
-    <orderEntry type="module" module-name="pirupea-ble" exported="" />
+    <orderEntry type="module" module-name="ble" exported="" />
   </component>
 </module>
 

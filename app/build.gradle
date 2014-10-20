@@ -111,7 +111,7 @@ dependencies {
     compile 'com.google.android.gms:play-services:5.2.08'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':pirupea-ble')
+    compile project(':ble-android:ble')
 
     androidTestCompile ('com.jakewharton.espresso:espresso:1.1-r3') {
         exclude group: 'com.squareup.dagger', module: 'dagger'
