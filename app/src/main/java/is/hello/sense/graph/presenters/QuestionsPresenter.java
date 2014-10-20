@@ -48,7 +48,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         this.preferences = context.getSharedPreferences(QuestionsPresenter.class.getSimpleName(), 0);
 
         Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
-        logOutSignal.subscribe(this::onUserLoggedOut);
+        logOutSignal.subscribe(this::onUserLoggedOut, Functions::ignoreError);
     }
 
     public void onUserLoggedOut(@NonNull Intent intent) {
@@ -113,7 +113,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                 currentQuestion.onNext(questions.get(offset));
             else
                 currentQuestion.onNext(null);
-        });
+        }, currentQuestion::onError);
     }
 
     //endregion
