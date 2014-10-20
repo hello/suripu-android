@@ -1,9 +1,16 @@
 suripu-android
 ==============
 
-It's Sense for Android.
+It's Sense.app, for Android.
 
 Building
 ========
 
-In order to build the app, you will need to have the <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">JDK 8</a> installed due to the app using RetroLambda. All other dependencies should be resolved by Android Studio and the gradle build system. You should also install the Crashlytics IntelliJ plugin if you intend on creating release builds.
+The app requires the [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) for lambda-support. You will need to clone the Android BLE stack into the same directory as your clone of the suripu-android project, like so:
+
+	git clone git@github.com:hello/suripu-android.git
+	git clone git@github.com:hello/ble-android.git
+
+If you intend on creating release builds, you should install the Crashlytics IntelliJ plugin and log in so that your builds and their Proguard info is registered with the service.
+
+All other app dependencies are satisifed through the gradle build system, and Android Studio.
