@@ -19,8 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/gap_medium"
             android:gravity="center"
-            android:textColor="@color/white"
-            android:textAppearance="@style/AppTheme.Text.Heading"
+            android:textAppearance="@style/AppTheme.Text.Heading.White"
             android:text="@string/label_new_question"/>
 
         <View
@@ -33,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/gap_large"
             android:textColor="@color/white"
-            android:textAppearance="@style/AppTheme.Text.Instructional"/>
+            android:textAppearance="@style/AppTheme.Text.Subheading.White"/>
 
         <LinearLayout
             android:id="@+id/fragment_questions_choices"

@@ -19,7 +19,7 @@
             android:padding="@dimen/activity_margin"
             android:gravity="center"
             android:textColor="#3d3d3d"
-            android:textAppearance="@style/AppTheme.Text.Title"
+            android:textAppearance="@style/AppTheme.Text.ScreenTitle"
             android:text="@string/title_currently"/>
 
         <is.hello.sense.ui.widget.SensorStateView

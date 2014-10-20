@@ -6,9 +6,11 @@
             <corners
                 android:radius="60dp" />
             <stroke
-                android:color="@color/white"
-                android:dashWidth="1dp"
-                android:width="1dp" />
+                android:color="@color/light_accent"
+                android:dashWidth="@dimen/button_rounded_border_width"
+                android:width="@dimen/button_rounded_border_width" />
+            <solid
+                android:color="@color/background_button_dark_pressed" />
         </shape>
     </item>
 </layer-list>

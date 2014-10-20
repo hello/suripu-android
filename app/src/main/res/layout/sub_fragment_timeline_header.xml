@@ -16,7 +16,7 @@
         android:gravity="center"
         android:textColor="#323c47"
         android:textAllCaps="true"
-        android:textAppearance="@style/AppTheme.Text.Title"
+        android:textAppearance="@style/AppTheme.Text.ScreenTitle"
         android:text="@string/format_date_last_night"/>
 
     <is.hello.sense.ui.widget.PieGraphView

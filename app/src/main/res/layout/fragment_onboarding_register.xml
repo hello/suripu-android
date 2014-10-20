@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/gap_xlarge"
-            android:textAppearance="@style/AppTheme.Text.Instructional"
+            android:textAppearance="@style/AppTheme.Text.Heading"
             android:text="@string/title_register"/>
 
         <TableRow
@@ -161,7 +161,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/action_register"
-            android:textStyle="bold"
             style="@style/AppTheme.Button.Borderless.Onboarding"/>
 
     </TableLayout>
