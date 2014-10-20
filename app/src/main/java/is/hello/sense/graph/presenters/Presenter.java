@@ -50,13 +50,6 @@ public abstract class Presenter {
     //endregion
 
 
-    //region Primitive Methods
-
-    public abstract void update();
-
-    //endregion
-
-
     //region Logging
 
     protected void logEvent(@NonNull String event) {

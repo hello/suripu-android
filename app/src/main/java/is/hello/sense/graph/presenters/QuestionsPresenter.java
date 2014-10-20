@@ -84,7 +84,6 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return lastUpdated != null && !lastUpdated.isAfter(lastUpdated.plusMinutes(2));
     }
 
-    @Override
     public void update() {
         if (isUpdateTooSoon()) {
             logEvent("redundant update requested, ignoring.");

@@ -18,7 +18,6 @@ import rx.subjects.ReplaySubject;
 
     public final ReplaySubject<Result> currentConditions = ReplaySubject.createWithSize(1);
 
-    @Override
     public void update() {
         Observable<Result> result = Observable.combineLatest(apiService.currentRoomConditions(),
                                                              unitFormatter.unitSystem,

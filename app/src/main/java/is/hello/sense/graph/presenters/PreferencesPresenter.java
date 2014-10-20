@@ -31,7 +31,6 @@ import rx.subscriptions.Subscriptions;
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     }
 
-    @Override
     public void update() {}
 
 

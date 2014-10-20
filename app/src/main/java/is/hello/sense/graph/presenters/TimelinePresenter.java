@@ -26,7 +26,6 @@ public class TimelinePresenter extends Presenter {
         return markdown.toSpanned(rawMessage);
     });
 
-    @Override
     public void update() {
         if (getDate() != null) {
             logEvent("updating timeline for " + date.toString("yyyy-MM-dd"));

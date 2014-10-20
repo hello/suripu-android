@@ -22,7 +22,6 @@ public class SensorHistoryPresenter extends Presenter {
 
     public final ReplaySubject<List<SensorHistory>> history = ReplaySubject.createWithSize(1);
 
-    @Override
     public void update() {
         if (!TextUtils.isEmpty(getSensorName())) {
             Observable<List<SensorHistory>> newHistory;

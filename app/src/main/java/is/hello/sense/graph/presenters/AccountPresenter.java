@@ -43,7 +43,6 @@ public class AccountPresenter extends Presenter {
         }
     }
 
-    @Override
     public void update() {
         apiService.getAccount().subscribe(account::onNext, account::onError);
     }
