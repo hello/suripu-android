@@ -23,7 +23,7 @@ public class OnboardingActivity extends InjectionActivity {
         setContentView(R.layout.activity_onboarding);
 
         if (savedInstanceState == null)
-            showSignIn();
+            showFragment(new OnboardingPairSenseFragment());
     }
 
 

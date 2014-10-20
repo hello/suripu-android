@@ -44,10 +44,10 @@ public class OnboardingStaticStepFragment extends Fragment {
         ViewGroup subcontainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_static_step_container);
         inflater.inflate(getArguments().getInt(ARG_SUB_LAYOUT_ID), subcontainer, true);
 
-        Button next = (Button) view.findViewById(R.id.fragment_onboarding_static_step_continue);
+        Button next = (Button) view.findViewById(R.id.fragment_onboarding_step_continue);
         next.setOnClickListener(this::next);
 
-        Button help = (Button) view.findViewById(R.id.fragment_onboarding_static_step_help);
+        Button help = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
         help.setOnClickListener(this::next);
 
         return view;
