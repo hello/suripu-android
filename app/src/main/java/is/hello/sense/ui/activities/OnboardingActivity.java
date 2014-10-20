@@ -9,8 +9,10 @@ import android.app.FragmentTransaction;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
 
 public class OnboardingActivity extends InjectionActivity {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
@@ -21,11 +23,11 @@ public class OnboardingActivity extends InjectionActivity {
         setContentView(R.layout.activity_onboarding);
 
         if (savedInstanceState == null)
-            showIntroductionFragment();
+            showSignIn();
     }
 
 
-    private void showFragment(@NonNull Fragment fragment) {
+    public void showFragment(@NonNull Fragment fragment) {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             transaction.add(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
@@ -50,6 +52,9 @@ public class OnboardingActivity extends InjectionActivity {
         showFragment(new OnboardingSignInFragment());
     }
 
+    public void showSetupSense() {
+        showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_setup_sense, OnboardingPairSenseFragment.class, null));
+    }
 
     public void showHomeActivity() {
         startActivity(new Intent(this, HomeActivity.class));

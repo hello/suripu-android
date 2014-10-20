@@ -209,7 +209,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
             sessionManager.setSession(session);
             LoadingDialogFragment.close(getFragmentManager());
 
-            getOnboardingActivity().showHomeActivity();
+            getOnboardingActivity().showSetupSense();
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getFragmentManager(), error);

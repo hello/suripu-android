@@ -4,8 +4,8 @@
     <dimen name="gap_tiny">3dp</dimen>
     <dimen name="gap_small">6dp</dimen>
     <dimen name="gap_medium">10dp</dimen>
-    <dimen name="gap_large">20dp</dimen>
-    <dimen name="gap_xlarge">40dp</dimen>
+    <dimen name="gap_large">25dp</dimen>
+    <dimen name="gap_xlarge">50dp</dimen>
 
     <dimen name="text_size_small">11sp</dimen>
     <dimen name="text_size_medium">15sp</dimen>

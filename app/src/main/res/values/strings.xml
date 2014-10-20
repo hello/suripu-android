@@ -80,4 +80,8 @@
 
     <string name="notification_type_message">Sense</string>
     <string name="notification_type_question">New Question</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_onboarding_help">I\'m having trouble</string>
+    <string name="title_setup_sense">Setting up Sense</string>
+    <string name="info_setup_sense">Plug in Sense next to your bed. Sense will glow purple to tell you it is on, and ready to be paired with your mobile device.</string>
 </resources>

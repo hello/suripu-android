@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/fragment_onboarding_static_step_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/fragment_onboarding_static_step_continue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_large"
+        android:layout_marginLeft="@dimen/gap_xlarge"
+        android:layout_marginRight="@dimen/gap_xlarge"
+        android:text="@string/action_continue"
+        style="@style/AppTheme.Button.Rounded" />
+
+    <Button
+        android:id="@+id/fragment_onboarding_static_step_help"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginLeft="@dimen/gap_xlarge"
+        android:layout_marginRight="@dimen/gap_xlarge"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:text="@string/action_onboarding_help"
+        style="@style/AppTheme.Button.Borderless.Onboarding" />
+
+</LinearLayout>
