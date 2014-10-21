@@ -347,7 +347,7 @@ public final class LineGraphView extends FrameLayout {
                         .scaleX(0.5f)
                         .scaleY(0.5f)
                         .setApplyChangesToView(true)
-                        .setOnAnimationCompleted(finished -> highlightedValueText.setVisibility(INVISIBLE))
+                        .addOnAnimationCompleted(finished -> highlightedValueText.setVisibility(INVISIBLE))
                         .start();
                 break;
         }

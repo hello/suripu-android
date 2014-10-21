@@ -129,7 +129,7 @@ public class QuestionsFragment extends InjectionFragment {
                 animator.alpha(0f);
                 animator.setApplyChangesToView(true);
                 if (isLast) {
-                    animator.setOnAnimationCompleted(finished -> {
+                    animator.addOnAnimationCompleted(finished -> {
                         if (finished) {
                             this.hasClearedAllViews = true;
 
@@ -154,7 +154,7 @@ public class QuestionsFragment extends InjectionFragment {
         animate(titleText)
                 .alpha(1f)
                 .setApplyChangesToView(true)
-                .setOnAnimationCompleted(finished -> {
+                .addOnAnimationCompleted(finished -> {
                     if (finished) {
                         dismissHandler.sendEmptyMessageDelayed(0, DISMISS_DELAY);
                     }
@@ -174,7 +174,7 @@ public class QuestionsFragment extends InjectionFragment {
                 animator.scale(0.5f);
                 animator.alpha(0f);
                 if (isLast) {
-                    animator.setOnAnimationCompleted(finished -> {
+                    animator.addOnAnimationCompleted(finished -> {
                         if (finished && onCompletion != null) {
                             onCompletion.run();
                         }

@@ -331,7 +331,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         offScreenViewAnimator.x(0f);
         onScreenViewAnimator.x(position == Position.BEFORE ? viewWidth : -viewWidth);
 
-        onScreenViewAnimator.setOnAnimationCompleted(finished -> {
+        onScreenViewAnimator.addOnAnimationCompleted(finished -> {
             if (!finished)
                 return;
 
@@ -362,7 +362,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
         offScreenViewAnimator.x(position == Position.BEFORE ? -viewWidth : viewWidth);
         onScreenViewAnimator.x(0f);
-        onScreenViewAnimator.setOnAnimationCompleted(finished -> {
+        onScreenViewAnimator.addOnAnimationCompleted(finished -> {
             if (!finished)
                 return;
 

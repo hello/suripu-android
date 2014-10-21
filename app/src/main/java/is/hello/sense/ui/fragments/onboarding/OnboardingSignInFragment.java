@@ -78,7 +78,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
     }
 
     public boolean onPasswordEditorAction(TextView sender, int actionId, KeyEvent event) {
-        if (actionId == EditorInfo.IME_ACTION_GO || event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+        if (actionId == EditorInfo.IME_ACTION_GO || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
             InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(sender.getWindowToken(), 0);
             signIn(sender);

@@ -67,7 +67,7 @@
 
     <string name="title_currently">Currently</string>
     <string name="title_register">Introduce yourself.</string>
-    <string name="title_introduction">Let\'s get started.</string>
+    <string name="title_introduction">Meet Sense</string>
     <string name="label_my_info">My Info</string>
     <string name="label_account">Account</string>
     <string name="label_units_and_time">Units and Time</string>
@@ -100,4 +100,9 @@
     <string name="title_welcome">Well done.</string>
     <string name="info_welcome">Your Sense is successfully set up. Take a moment to learn a bit more about how Sense will help you to know more, and sleep better.</string>
     <string name="action_skip">Skip</string>
+    <string name="info_introduction">A simple system that tracks your sleep, monitors the surroundings in your bedroom and reinvents the alarm, so you can sleep better.</string>
+    <string name="action_play_video">Play</string>
+    <string name="action_get_started">Get Started</string>
+    <string name="action_buy_sense">I don\'t have a sense</string>
+    <string name="welcome">Welcome</string>
 </resources>

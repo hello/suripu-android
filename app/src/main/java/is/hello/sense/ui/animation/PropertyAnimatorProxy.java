@@ -6,13 +6,15 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("UnusedDeclaration")
 public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private final View view;
     private final HashMap<String, Float> properties = new HashMap<>();
+    private final List<OnAnimationCompleted> onAnimationCompletedListeners = new ArrayList<>();
     private PropertyAnimatorProxy previousInChain;
 
     private boolean animationStarted = false;
@@ -23,8 +25,8 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private long startDelay = 0;
     private TimeInterpolator interpolator = Animation.INTERPOLATOR_DEFAULT;
     private boolean applyChangesToView = false;
+    private Runnable onAnimationWillStart;
     private Runnable onAnimationStarted;
-    private OnAnimationCompleted onAnimationCompleted;
 
 
     //region Creation
@@ -54,17 +56,9 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         return this;
     }
 
-    public long getDuration() {
-        return duration;
-    }
-
     public PropertyAnimatorProxy setStartDelay(long startDelay) {
         this.startDelay = startDelay;
         return this;
-    }
-
-    public long getStartDelay() {
-        return startDelay;
     }
 
     public PropertyAnimatorProxy setInterpolator(TimeInterpolator interpolator) {
@@ -121,6 +115,9 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     }
 
     private void buildAndStart() {
+        if (onAnimationWillStart != null)
+            onAnimationWillStart.run();
+
         ViewPropertyAnimator animator = view.animate();
         animator.setDuration(duration);
         animator.setInterpolator(interpolator);
@@ -167,11 +164,26 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         }
     }
 
+    public PropertyAnimatorProxy fadeIn() {
+        return setOnAnimationWillStart(() -> {
+            view.setAlpha(0f);
+            view.setVisibility(View.VISIBLE);
+        }).alpha(1f).setApplyChangesToView(true);
+    }
+
+    public PropertyAnimatorProxy fadeOut(int targetVisibility) {
+        return alpha(0f).addOnAnimationCompleted(finished -> {
+            if (finished)
+                view.setVisibility(targetVisibility);
+        });
+    }
+
     public void start() {
-        if (previousInChain != null)
+        if (previousInChain != null) {
             previousInChain.start();
-        else
+        } else {
             buildAndStart();
+        }
     }
 
     public void cancel() {
@@ -187,26 +199,19 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         return view;
     }
 
-    public Runnable getOnAnimationStarted() {
-        return onAnimationStarted;
+    public PropertyAnimatorProxy setOnAnimationWillStart(Runnable onAnimationWillStart) {
+        this.onAnimationWillStart = onAnimationWillStart;
+        return this;
     }
 
-    public PropertyAnimatorProxy setOnAnimationStarted(Runnable onAnimationStarted) {
+    public PropertyAnimatorProxy setOnAnimationStarted(@NonNull Runnable onAnimationStarted) {
         this.onAnimationStarted = onAnimationStarted;
         return this;
     }
 
-    public OnAnimationCompleted getOnAnimationCompleted() {
-        return onAnimationCompleted;
-    }
-
-    public PropertyAnimatorProxy setOnAnimationCompleted(OnAnimationCompleted onAnimationCompleted) {
-        this.onAnimationCompleted = onAnimationCompleted;
+    public PropertyAnimatorProxy addOnAnimationCompleted(@NonNull OnAnimationCompleted onAnimationCompleted) {
+        this.onAnimationCompletedListeners.add(onAnimationCompleted);
         return this;
-    }
-
-    public boolean isApplyChangesToView() {
-        return applyChangesToView;
     }
 
     public PropertyAnimatorProxy setApplyChangesToView(boolean applyChangesToView) {
@@ -278,8 +283,8 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
             }
         }
 
-        if (onAnimationCompleted != null)
-            onAnimationCompleted.onAnimationCompleted(!animationCanceled);
+        for (OnAnimationCompleted listener : onAnimationCompletedListeners)
+            listener.onAnimationCompleted(!animationCanceled);
     }
 
     @Override
@@ -300,7 +305,9 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
 
     public PropertyAnimatorProxy andThen() {
         PropertyAnimatorProxy nextAnimation = animate(getView());
-        setOnAnimationCompleted(finished -> {
+        nextAnimation.setDuration(duration);
+        nextAnimation.setInterpolator(interpolator);
+        addOnAnimationCompleted(finished -> {
             if (finished)
                 nextAnimation.buildAndStart();
         });

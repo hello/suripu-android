@@ -47,7 +47,7 @@
             android:id="@+id/fragment_questions_skip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/AppTheme.Button.Borderless.ThinWhite"
+            style="@style/AppTheme.Button.Borderless.White.Thin"
             android:text="@string/action_skip_question"/>
 
     </LinearLayout>

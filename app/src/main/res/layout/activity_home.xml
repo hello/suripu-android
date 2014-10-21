@@ -36,7 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/label_new_question"
-            style="@style/AppTheme.Button.Borderless.ThinWhite"/>
+            style="@style/AppTheme.Button.Borderless.White.Thin"/>
 
     </FrameLayout>
 

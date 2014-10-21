@@ -67,15 +67,18 @@
         <item name="android:background">@null</item>
     </style>
 
+    <style name="AppTheme.Button.Borderless.White">
+        <item name="android:background">@drawable/button_selector_thinlight</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
     <style name="AppTheme.Button.Borderless.Onboarding">
         <item name="android:textColor">@color/light_accent</item>
     </style>
 
-    <style name="AppTheme.Button.Borderless.ThinWhite">
-        <item name="android:background">@drawable/button_selector_thinlight</item>
-        <item name="android:textStyle">normal</item>
+    <style name="AppTheme.Button.Borderless.White.Thin">
         <item name="android:textSize">@dimen/text_size_large</item>
-        <item name="android:textColor">@color/white</item>
         <item name="android:textAllCaps">true</item>
         <item name="fontPath">fonts/Calibre-Thin.otf</item>
     </style>

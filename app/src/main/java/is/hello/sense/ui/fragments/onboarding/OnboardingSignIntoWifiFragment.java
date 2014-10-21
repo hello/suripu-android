@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -103,6 +105,8 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
     public boolean onPasswordEditorAction(TextView sender, int actionId, KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_GO || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(sender.getWindowToken(), 0);
             sendWifiCredentials();
 
             return true;

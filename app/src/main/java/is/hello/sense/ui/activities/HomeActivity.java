@@ -213,7 +213,7 @@ public class HomeActivity
         animate(newQuestionContainer)
                 .y(containerHeight - buttonHeight)
                 .setApplyChangesToView(true)
-                .setOnAnimationCompleted(finished -> {
+                .addOnAnimationCompleted(finished -> {
                     ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) slidingLayersView.getLayoutParams();
                     layoutParams.bottomMargin = buttonHeight;
                     slidingLayersView.getParent().requestLayout();
@@ -234,7 +234,7 @@ public class HomeActivity
 
         animate(newQuestionContainer)
                 .y(containerHeight + buttonHeight)
-                .setOnAnimationCompleted(finished -> newQuestionContainer.setVisibility(View.INVISIBLE))
+                .addOnAnimationCompleted(finished -> newQuestionContainer.setVisibility(View.INVISIBLE))
                 .start();
     }
 

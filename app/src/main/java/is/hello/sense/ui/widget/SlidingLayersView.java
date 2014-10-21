@@ -233,7 +233,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 .y(getMeasuredHeight() - topViewOpenHeight)
                 .setDuration(duration)
                 .setApplyChangesToView(true)
-                .setOnAnimationCompleted(finished -> {
+                .addOnAnimationCompleted(finished -> {
                     if (finished) {
                         this.isOpen = true;
                         this.listView = null;
@@ -247,7 +247,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 .y(-shadowHeight)
                 .setDuration(duration)
                 .setApplyChangesToView(true)
-                .setOnAnimationCompleted(finished -> {
+                .addOnAnimationCompleted(finished -> {
                     if (finished) {
                         this.isOpen = false;
                         this.listView = null;
