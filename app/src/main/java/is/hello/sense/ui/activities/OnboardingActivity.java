@@ -27,7 +27,7 @@ public class OnboardingActivity extends InjectionActivity {
         setContentView(R.layout.activity_onboarding);
 
         if (savedInstanceState == null)
-            showFragment(new OnboardingPairSenseFragment());
+            showSetupWifi();
     }
 
 

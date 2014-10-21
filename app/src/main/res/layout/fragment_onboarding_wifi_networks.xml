@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/gap_xlarge"
+    android:paddingLeft="@dimen/gap_large"
+    android:paddingRight="@dimen/gap_large">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:textAppearance="@style/AppTheme.Text.Heading"
+        android:text="@string/title_choose_wifi_network"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:text="@string/info_choose_wifi_network"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:id="@+id/fragment_onboarding_wifi_networks_turn_on"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="@string/action_turn_on_wifi"
+            style="@style/AppTheme.Button.Rounded"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/fragment_onboarding_step_help"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:text="@string/action_onboarding_help"
+        style="@style/AppTheme.Button.Borderless.Onboarding" />
+
+</LinearLayout>

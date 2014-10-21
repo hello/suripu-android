@@ -109,11 +109,11 @@ public final class LineGraphView extends FrameLayout {
         highlightedValueText.setMinimumWidth((int) (50f * density));
         highlightedValueText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         highlightedValueText.setBackgroundResource(R.drawable.timestamp_background);
-        int padding = getResources().getDimensionPixelSize(R.dimen.gap_medium);
+        int padding = getResources().getDimensionPixelSize(R.dimen.gap_small);
         highlightedValueText.setPadding(padding, padding, padding, padding);
         highlightedValueText.setVisibility(INVISIBLE);
         LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.END);
-        int margin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
+        int margin = getResources().getDimensionPixelSize(R.dimen.gap_small);
         layoutParams.setMargins(margin, margin, margin, margin);
         addView(highlightedValueText, layoutParams);
 

@@ -63,7 +63,7 @@
     <style name="AppTheme.Button.Borderless">
         <item name="android:textStyle">normal</item>
         <item name="fontPath">fonts/Calibre-Light.otf</item>
-        <item name="android:padding">@dimen/gap_medium</item>
+        <item name="android:padding">@dimen/gap_small</item>
         <item name="android:background">@null</item>
     </style>
 
@@ -121,8 +121,8 @@
     <!-- EditText -->
 
     <style name="AppTheme.Text.EditText" parent="android:Widget.Holo.Light.EditText">
-        <item name="android:paddingTop">@dimen/gap_medium</item>
-        <item name="android:paddingBottom">@dimen/gap_medium</item>
+        <item name="android:paddingTop">@dimen/gap_small</item>
+        <item name="android:paddingBottom">@dimen/gap_small</item>
         <item name="android:paddingLeft">@dimen/gap_tiny</item>
         <item name="android:paddingRight">@dimen/gap_tiny</item>
 

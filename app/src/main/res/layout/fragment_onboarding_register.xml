@@ -21,7 +21,7 @@
             android:text="@string/title_register"/>
 
         <TableRow
-            android:layout_marginBottom="@dimen/gap_medium">
+            android:layout_marginBottom="@dimen/gap_small">
 
             <EditText
                 android:id="@+id/fragment_onboarding_register_name"
@@ -41,7 +41,7 @@
         </TableRow>
 
         <TableRow
-            android:layout_marginBottom="@dimen/gap_medium">
+            android:layout_marginBottom="@dimen/gap_small">
 
             <EditText
                 android:id="@+id/fragment_onboarding_register_email"
@@ -72,12 +72,12 @@
         </TableRow>
 
         <TableRow
-            android:layout_marginBottom="@dimen/gap_medium">
+            android:layout_marginBottom="@dimen/gap_small">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/gap_small"
+                android:layout_marginEnd="@dimen/gap_xsmall"
                 android:layout_gravity="center_vertical"
                 android:gravity="end"
                 android:textAppearance="@style/AppTheme.Text.FieldLabel"
@@ -91,12 +91,12 @@
         </TableRow>
 
         <TableRow
-            android:layout_marginBottom="@dimen/gap_medium">
+            android:layout_marginBottom="@dimen/gap_small">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/gap_small"
+                android:layout_marginEnd="@dimen/gap_xsmall"
                 android:layout_gravity="center_vertical"
                 android:gravity="end"
                 android:textAppearance="@style/AppTheme.Text.FieldLabel"
@@ -113,12 +113,12 @@
         </TableRow>
 
         <TableRow
-            android:layout_marginBottom="@dimen/gap_medium">
+            android:layout_marginBottom="@dimen/gap_small">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/gap_small"
+                android:layout_marginEnd="@dimen/gap_xsmall"
                 android:layout_gravity="center_vertical"
                 android:gravity="end"
                 android:textAppearance="@style/AppTheme.Text.FieldLabel"
@@ -140,7 +140,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/gap_small"
+                android:layout_marginEnd="@dimen/gap_xsmall"
                 android:layout_gravity="center_vertical"
                 android:gravity="end"
                 android:textAppearance="@style/AppTheme.Text.FieldLabel"

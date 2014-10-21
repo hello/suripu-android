@@ -2,8 +2,9 @@
     <dimen name="activity_margin">16dp</dimen>
 
     <dimen name="gap_tiny">3dp</dimen>
-    <dimen name="gap_small">6dp</dimen>
-    <dimen name="gap_medium">10dp</dimen>
+    <dimen name="gap_xsmall">6dp</dimen>
+    <dimen name="gap_small">10dp</dimen>
+    <dimen name="gap_medium">15dp</dimen>
     <dimen name="gap_large">25dp</dimen>
     <dimen name="gap_xlarge">50dp</dimen>
 

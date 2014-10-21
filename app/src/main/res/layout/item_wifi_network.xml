@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/gap_medium"
+    android:paddingBottom="@dimen/gap_medium">
+
+    <TextView
+        android:id="@+id/item_wifi_network_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:text="@string/app_name"/>
+
+    <ImageView
+        android:id="@+id/item_wifi_network_locked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/gap_small"
+        android:src="@drawable/wifi_network_lock"
+        android:contentDescription="@string/wifi_network_secured"/>
+
+    <ImageView
+        android:id="@+id/item_wifi_network_scanned"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/gap_small"
+        android:src="@drawable/wifi_network"
+        android:contentDescription="@string/wifi_network_was_scanned"/>
+
+</LinearLayout>

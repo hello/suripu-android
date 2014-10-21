@@ -205,7 +205,7 @@ public class QuestionsFragment extends InjectionFragment {
             View.OnClickListener onClickListener = this::choiceSelected;
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.bottomMargin = (int) getResources().getDimension(R.dimen.gap_medium);
+            layoutParams.bottomMargin = (int) getResources().getDimension(R.dimen.gap_small);
             long delay = 0;
             for (Question.Choice choice : question.getChoices()) {
                 Button choiceButton = (Button) inflater.inflate(R.layout.sub_fragment_button_choice, choicesContainer, false);

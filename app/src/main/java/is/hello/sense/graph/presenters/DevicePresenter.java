@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.common.primitives.Ints;
 import com.hello.ble.devices.Morpheus;
 
 import java.util.Collections;
@@ -57,7 +58,7 @@ import rx.android.schedulers.AndroidSchedulers;
         if (devices.isEmpty()) {
             return null;
         } else {
-            return Collections.max(devices, (l, r) -> Integer.compare(l.getScanTimeRssi(), r.getScanTimeRssi()));
+            return Collections.max(devices, (l, r) -> Ints.compare(l.getScanTimeRssi(), r.getScanTimeRssi()));
         }
     }
 
