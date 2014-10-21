@@ -1,18 +1,13 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -21,6 +16,7 @@ import is.hello.sense.graph.presenters.DevicePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.util.EditorActionHandler;
 
 public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private static final String ARG_SCAN_RESULT = OnboardingSignIntoWifiFragment.class.getName() + ".ARG_SCAN_RESULT";
@@ -58,7 +54,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
         this.networkName = (EditText) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_network);
         this.networkPassword = (EditText) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_password);
-        networkPassword.setOnEditorActionListener(this::onPasswordEditorAction);
+        networkPassword.setOnEditorActionListener(new EditorActionHandler(this::sendWifiCredentials));
 
         if (network != null) {
             this.networkName.setText(network.SSID);
@@ -100,18 +96,5 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     public void presentError(Throwable e) {
         ((OnboardingActivity) getActivity()).finishBlockingWork();
         ErrorDialogFragment.presentError(getFragmentManager(), e);
-    }
-
-
-    public boolean onPasswordEditorAction(TextView sender, int actionId, KeyEvent event) {
-        if (actionId == EditorInfo.IME_ACTION_GO || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(sender.getWindowToken(), 0);
-            sendWifiCredentials();
-
-            return true;
-        }
-
-        return false;
     }
 }

@@ -1,18 +1,12 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -26,6 +20,7 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.util.EditorActionHandler;
 import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.bindFragment;
@@ -44,7 +39,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
 
         this.email = (EditText) view.findViewById(R.id.fragment_onboarding_email);
         this.password = (EditText) view.findViewById(R.id.fragment_onboarding_password);
-        password.setOnEditorActionListener(this::onPasswordEditorAction);
+        password.setOnEditorActionListener(new EditorActionHandler(this::signIn));
 
         return view;
     }
@@ -55,7 +50,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
     }
 
 
-    public void signIn(@NonNull View sender) {
+    public void signIn() {
         String email = this.email.getText().toString();
         String password = this.password.getText().toString();
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
@@ -63,29 +58,17 @@ public class OnboardingSignInFragment extends InjectionFragment {
             return;
         }
 
-        LoadingDialogFragment.show(getFragmentManager());
+        getOnboardingActivity().beginBlockingWork(R.string.dialog_loading_message);
 
         OAuthCredentials credentials = new OAuthCredentials(environment, email, password);
         Observable<OAuthSession> request = bindFragment(this, apiService.authorize(credentials));
         request.subscribe(session -> {
-            LoadingDialogFragment.close(getFragmentManager());
+            getOnboardingActivity().finishBlockingWork();
             apiSessionManager.setSession(session);
             getOnboardingActivity().showSetupSense();
         }, error -> {
-            LoadingDialogFragment.close(getFragmentManager());
+            getOnboardingActivity().finishBlockingWork();
             ErrorDialogFragment.presentError(getFragmentManager(), error);
         });
-    }
-
-    public boolean onPasswordEditorAction(TextView sender, int actionId, KeyEvent event) {
-        if (actionId == EditorInfo.IME_ACTION_GO || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(sender.getWindowToken(), 0);
-            signIn(sender);
-
-            return true;
-        }
-
-        return false;
     }
 }

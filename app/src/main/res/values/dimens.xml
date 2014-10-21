@@ -15,7 +15,7 @@
 
     <dimen name="shadow_height">5dp</dimen>
     <dimen name="divider_height">1px</dimen> <!-- px is not a typo -->
-    <dimen name="divider_height_edit_text">2dp</dimen>
+    <dimen name="divider_height_edit_text">1dp</dimen>
     <dimen name="button_rounded_border_width">2dp</dimen>
 
     <dimen name="event_image_width">23dp</dimen>
