@@ -98,7 +98,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
             getOnboardingActivity().finishBlockingWork();
 
             sessionManager.setSession(session);
-            getOnboardingActivity().showSetupSense();
+            getOnboardingActivity().showBirthday(newAccount);
         }, error -> {
             getOnboardingActivity().finishBlockingWork();
             ErrorDialogFragment.presentError(getFragmentManager(), error);

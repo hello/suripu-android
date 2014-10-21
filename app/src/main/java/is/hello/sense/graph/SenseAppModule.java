@@ -27,6 +27,7 @@ import is.hello.sense.ui.fragments.SensorHistoryFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
@@ -49,6 +50,7 @@ import is.hello.sense.util.BuildValues;
 
         OnboardingSignInFragment.class,
         OnboardingRegisterFragment.class,
+        OnboardingRegisterWeightFragment.class,
         OnboardingPairSenseFragment.class,
         DevicePresenter.class,
         OnboardingWifiNetworkFragment.class,

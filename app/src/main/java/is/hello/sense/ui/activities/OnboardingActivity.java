@@ -14,9 +14,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Account;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
@@ -101,12 +106,28 @@ public class OnboardingActivity extends SenseActivity {
         showFragment(new OnboardingIntroductionFragment());
     }
 
+    public void showSignIn() {
+        showFragment(new OnboardingSignInFragment());
+    }
+
     public void showRegistration() {
         showFragment(new OnboardingRegisterFragment());
     }
 
-    public void showSignIn() {
-        showFragment(new OnboardingSignInFragment());
+    public void showBirthday(@NonNull Account account) {
+        showFragment(OnboardingRegisterBirthdayFragment.newInstance(account));
+    }
+
+    public void showGender(@NonNull Account account) {
+        showFragment(OnboardingRegisterGenderFragment.newInstance(account));
+    }
+
+    public void showHeight(@NonNull Account account) {
+        showFragment(OnboardingRegisterHeightFragment.newInstance(account));
+    }
+
+    public void showWeight(@NonNull Account account) {
+        showFragment(OnboardingRegisterWeightFragment.newInstance(account));
     }
 
     public void showSetupSense() {
