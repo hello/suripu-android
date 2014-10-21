@@ -1,7 +1,9 @@
 package is.hello.sense.ui.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -10,6 +12,7 @@ import javax.inject.Inject;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.util.BuildValues;
+import is.hello.sense.util.Constants;
 
 
 public class LaunchActivity extends InjectionActivity {
@@ -42,7 +45,8 @@ public class LaunchActivity extends InjectionActivity {
     }
 
     private void bounce() {
-        if (sessionManager.hasSession()) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (sessionManager.hasSession() && sharedPreferences.getBoolean(Constants.GLOBAL_PREF_ONBOARDING_COMPLETED, false)) {
             showHomeActivity();
         } else {
             showOnboardingActivity();

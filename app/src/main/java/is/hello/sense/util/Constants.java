@@ -11,6 +11,8 @@ public final class Constants {
     public static final String GLOBAL_PREF_UNIT_SYSTEM = "unit_system_name";
     public static final String GLOBAL_PREF_USE_24_TIME = "use_24_time";
     public static final String GLOBAL_PREF_PAIRED_DEVICE_ADDRESS = "paired_device_address";
+    public static final String GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT = "last_onboarding_check_point";
+    public static final String GLOBAL_PREF_ONBOARDING_COMPLETED = "onboarding_completed";
 
     /**
      * The point at which a gesture's velocity dictates that
@@ -23,4 +25,9 @@ public final class Constants {
     public static final int BLE_SET_WIFI_TIMEOUT_MS = 60000; // firmware suggestion
 
     public static final String HOCKEY_APP_ID = "805427569ce2035dcda0b99e4d984256";
+
+    public static final int ONBOARDING_CHECKPOINT_NONE = 0;
+    public static final int ONBOARDING_CHECKPOINT_ACCOUNT = 1;
+    public static final int ONBOARDING_CHECKPOINT_SENSE = 2;
+    public static final int ONBOARDING_CHECKPOINT_PILL = 3;
 }

@@ -3,7 +3,9 @@ package is.hello.sense.ui.activities;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,6 +107,13 @@ public class HomeActivity
         // This is probably not what we want to happen.
         Observable<Intent> logOut = bindActivity(this, fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT)));
         track(logOut.subscribe(ignored -> {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            sharedPreferences
+                    .edit()
+                    .putBoolean(Constants.GLOBAL_PREF_ONBOARDING_COMPLETED, false)
+                    .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE)
+                    .apply();
+
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
         }));

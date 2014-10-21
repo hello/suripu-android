@@ -1,8 +1,10 @@
 package is.hello.sense.ui.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -10,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
@@ -20,18 +21,41 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingTaskFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWelcomeFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
+import is.hello.sense.util.Constants;
 
-public class OnboardingActivity extends InjectionActivity {
+public class OnboardingActivity extends SenseActivity {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
     private static final String BLOCKING_WORK_TAG = "BlockingWorkFragment";
+
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 
-        if (savedInstanceState == null)
-            showIntroductionFragment();
+        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (savedInstanceState == null) {
+            int lastCheckpoint = sharedPreferences.getInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
+            switch (lastCheckpoint) {
+                case Constants.ONBOARDING_CHECKPOINT_NONE:
+                    showIntroductionFragment();
+                    break;
+
+                case Constants.ONBOARDING_CHECKPOINT_ACCOUNT:
+                    showSetupSense();
+                    break;
+
+                case Constants.ONBOARDING_CHECKPOINT_SENSE:
+                    showSetupPill();
+                    break;
+
+                case Constants.ONBOARDING_CHECKPOINT_PILL:
+                    showHomeActivity();
+                    break;
+            }
+        }
     }
 
 
@@ -63,6 +87,11 @@ public class OnboardingActivity extends InjectionActivity {
     }
 
     public void showSetupSense() {
+        sharedPreferences
+                .edit()
+                .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_ACCOUNT)
+                .apply();
+
         showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_setup_sense, OnboardingPairSenseFragment.class, null));
     }
 
@@ -74,7 +103,21 @@ public class OnboardingActivity extends InjectionActivity {
         showFragment(OnboardingSignIntoWifiFragment.newInstance(network));
     }
 
+    public void showSetupPill() {
+        sharedPreferences
+                .edit()
+                .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_SENSE)
+                .apply();
+
+        showWelcome();
+    }
+
     public void showWelcome() {
+        sharedPreferences
+                .edit()
+                .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_PILL)
+                .apply();
+
         showFragment(new OnboardingWelcomeFragment());
     }
 
@@ -111,6 +154,11 @@ public class OnboardingActivity extends InjectionActivity {
 
 
     public void showHomeActivity() {
+        sharedPreferences
+                .edit()
+                .putBoolean(Constants.GLOBAL_PREF_ONBOARDING_COMPLETED, true)
+                .apply();
+
         startActivity(new Intent(this, HomeActivity.class));
         finish();
     }

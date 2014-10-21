@@ -47,7 +47,6 @@ import is.hello.sense.util.BuildValues;
         LaunchActivity.class,
         HomeActivity.class,
 
-        OnboardingActivity.class,
         OnboardingSignInFragment.class,
         OnboardingRegisterFragment.class,
         OnboardingPairSenseFragment.class,

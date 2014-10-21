@@ -75,6 +75,8 @@ import rx.android.schedulers.AndroidSchedulers;
     }
 
     public Observable<Void> sendWifiCredentials(String bssid, String ssid, String password) {
+        logEvent("sendWifiCredentials()");
+
         return Observable.create((Observable.OnSubscribe<Void>) s -> pairedDevice.setWIFIConnection(bssid, ssid, password, new BleObserverCallback<>(s)))
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
