@@ -13,6 +13,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
+import is.hello.sense.graph.presenters.WifiNetworkPresenter;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HomeActivity;
@@ -27,6 +28,7 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.widget.TimelineSegmentView;
 import is.hello.sense.ui.widget.TimestampTextView;
@@ -49,6 +51,8 @@ import is.hello.sense.util.BuildValues;
         OnboardingRegisterFragment.class,
         OnboardingPairSenseFragment.class,
         DevicePresenter.class,
+        OnboardingWifiNetworkFragment.class,
+        WifiNetworkPresenter.class,
 
         TimelineFragment.class,
         TimelinePresenter.class,

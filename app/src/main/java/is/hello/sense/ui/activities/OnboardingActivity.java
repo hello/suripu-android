@@ -15,7 +15,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingTaskFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingWifiFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 
 public class OnboardingActivity extends InjectionActivity {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
@@ -61,7 +61,7 @@ public class OnboardingActivity extends InjectionActivity {
     }
 
     public void showSetupWifi() {
-        showFragment(new OnboardingWifiFragment());
+        showFragment(new OnboardingWifiNetworkFragment());
     }
 
     public void beginBlockingWork(@StringRes int titleResId) {
