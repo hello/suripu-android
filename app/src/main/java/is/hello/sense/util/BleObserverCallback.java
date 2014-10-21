@@ -17,6 +17,7 @@ public class BleObserverCallback<T> implements BleOperationCallback<T> {
     @Override
     public void onCompleted(HelloBleDevice sender, T data) {
         observer.onNext(data);
+        observer.onCompleted();
     }
 
     @Override

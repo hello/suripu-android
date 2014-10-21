@@ -87,4 +87,5 @@
     <string name="info_setup_sense">Plug in Sense next to your bed. Sense will glow purple to tell you it is on, and ready to be paired with your mobile device.</string>
     <string name="title_pair_sense">Pairing with Sense</string>
     <string name="info_pair_sense">Now we\'ll pair your mobile device with Sense. Make sure sense is glowing purple, then tap continue.</string>
+    <string name="title_pairing">Pairing</string>
 </resources>

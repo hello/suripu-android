@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.support.annotation.StringRes;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -13,9 +14,12 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingTaskFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingWifiFragment;
 
 public class OnboardingActivity extends InjectionActivity {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
+    private static final String BLOCKING_WORK_TAG = "BlockingWorkFragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +59,35 @@ public class OnboardingActivity extends InjectionActivity {
     public void showSetupSense() {
         showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_setup_sense, OnboardingPairSenseFragment.class, null));
     }
+
+    public void showSetupWifi() {
+        showFragment(new OnboardingWifiFragment());
+    }
+
+    public void beginBlockingWork(@StringRes int titleResId) {
+        if (getFragmentManager().findFragmentByTag(BLOCKING_WORK_TAG) != null)
+            return;
+
+        OnboardingTaskFragment fragment = OnboardingTaskFragment.newInstance(titleResId);
+        getFragmentManager()
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .add(R.id.activity_onboarding_container, fragment, BLOCKING_WORK_TAG)
+                .commit();
+    }
+
+    public void finishBlockingWork() {
+        Fragment fragment = getFragmentManager().findFragmentByTag(BLOCKING_WORK_TAG);
+        if (fragment == null)
+            return;
+
+        getFragmentManager()
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                .remove(fragment)
+                .commit();
+    }
+
 
     public void showHomeActivity() {
         startActivity(new Intent(this, HomeActivity.class));

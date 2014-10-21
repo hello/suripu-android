@@ -6,20 +6,28 @@ import android.support.annotation.Nullable;
 
 import com.hello.ble.devices.Morpheus;
 
+import java.util.Collections;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.util.BleObserverCallback;
 import is.hello.sense.util.Constants;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class DevicePresenter extends Presenter {
+@Singleton public class DevicePresenter extends Presenter {
     private final PreferencesPresenter preferencesPresenter;
+    private final ApiSessionManager apiSessionManager;
 
-    @Inject public DevicePresenter(@NonNull PreferencesPresenter preferencesPresenter) {
+    private Morpheus pairedDevice;
+
+    @Inject public DevicePresenter(@NonNull PreferencesPresenter preferencesPresenter,
+                                   @NonNull ApiSessionManager apiSessionManager) {
         this.preferencesPresenter = preferencesPresenter;
+        this.apiSessionManager = apiSessionManager;
     }
 
 
@@ -35,6 +43,7 @@ public class DevicePresenter extends Presenter {
         editor.apply();
     }
 
+
     public Observable<Set<Morpheus>> scanForDevices() {
         logEvent("scanForDevices()");
 
@@ -43,18 +52,36 @@ public class DevicePresenter extends Presenter {
     }
 
     public @Nullable Morpheus bestDeviceForPairing(@NonNull Set<Morpheus> devices) {
-        // TODO: use RSSI to determine this.
-        if (devices.isEmpty())
+        logEvent("bestDeviceForPairing(" + devices + ")");
+
+        if (devices.isEmpty()) {
             return null;
-        else
-            return devices.iterator().next();
+        } else {
+            return Collections.max(devices, (l, r) -> Integer.compare(l.getRssi(), r.getRssi()));
+        }
     }
 
     public Observable<Void> pairWithDevice(@NonNull Morpheus device) {
-        logEvent("scanForDevices(" + device + ")");
+        logEvent("pairWithDevice(" + device + ")");
 
         return Observable.create((Observable.OnSubscribe<Void>) s -> device.connect(new BleObserverCallback<>(s), true))
-                         .doOnNext(ignored -> setPairedDeviceAddress(device.getAddress()))
+                         .doOnNext(ignored -> {
+                             logEvent("pairedWithDevice(" + device + ")");
+                             setPairedDeviceAddress(device.getAddress());
+                             this.pairedDevice = device;
+                         })
+                         .subscribeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Void> sendWifiCredentials(String bssid, String ssid, String password) {
+        return Observable.create((Observable.OnSubscribe<Void>) s -> pairedDevice.setWIFIConnection(bssid, ssid, password, new BleObserverCallback<>(s)))
+                         .subscribeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Void> linkAccount() {
+        logEvent("linkAccount()");
+
+        return Observable.create((Observable.OnSubscribe<Void>) s -> pairedDevice.linkAccount(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s)))
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 }
