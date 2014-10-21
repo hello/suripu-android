@@ -24,7 +24,6 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 
 import static rx.android.observables.AndroidObservable.fromBroadcast;
 
@@ -100,16 +99,17 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
 
     public void pairWith(@Nullable Morpheus device) {
         if (device != null) {
-            devicePresenter.pairWithDevice(device)
-                           .observeOn(AndroidSchedulers.mainThread())
-                           .subscribe(ignored -> finishedPairing(), this::pairingFailed);
+            bindAndSubscribe(devicePresenter.pairWithDevice(device), ignored -> finishedPairing(), this::pairingFailed);
         } else {
             ErrorDialogFragment.presentError(getFragmentManager(), new Exception("Could not find any devices."));
         }
     }
 
     public void pairingFailed(Throwable e) {
-        ((OnboardingActivity) getActivity()).finishBlockingWork();
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        OnboardingActivity onboardingActivity = (OnboardingActivity) getActivity();
+        if (onboardingActivity != null) {
+            onboardingActivity.finishBlockingWork();
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
     }
 }

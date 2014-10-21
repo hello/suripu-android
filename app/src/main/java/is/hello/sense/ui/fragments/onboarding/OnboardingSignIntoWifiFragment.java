@@ -19,7 +19,6 @@ import is.hello.sense.graph.presenters.DevicePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import rx.android.schedulers.AndroidSchedulers;
 
 public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private static final String ARG_SCAN_RESULT = OnboardingSignIntoWifiFragment.class.getName() + ".ARG_SCAN_RESULT";
@@ -56,13 +55,13 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_sign_into_wifi, container, false);
 
         this.networkName = (EditText) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_network);
+        this.networkPassword = (EditText) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_password);
+        networkPassword.setOnEditorActionListener(this::onPasswordEditorAction);
+
         if (network != null) {
             this.networkName.setText(network.SSID);
             this.networkPassword.requestFocus();
         }
-
-        this.networkPassword = (EditText) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_password);
-        networkPassword.setOnEditorActionListener(this::onPasswordEditorAction);
 
         return view;
     }
@@ -88,15 +87,11 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
         beginSettingWifi();
 
-        devicePresenter.sendWifiCredentials(networkName, networkName, password)
-                       .observeOn(AndroidSchedulers.mainThread())
-                       .subscribe(ignored -> sendAccessToken(), this::presentError);
+        bindAndSubscribe(devicePresenter.sendWifiCredentials(networkName, networkName, password), ignored -> sendAccessToken(), this::presentError);
     }
 
     private void sendAccessToken() {
-        devicePresenter.linkAccount()
-                       .observeOn(AndroidSchedulers.mainThread())
-                       .subscribe(ignored -> finishedSettingWifi(), this::presentError);
+        bindAndSubscribe(devicePresenter.linkAccount(), ignored -> finishedSettingWifi(), this::presentError);
     }
 
 
@@ -107,7 +102,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
 
     public boolean onPasswordEditorAction(TextView sender, int actionId, KeyEvent event) {
-        if (actionId == EditorInfo.IME_ACTION_GO || event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+        if (actionId == EditorInfo.IME_ACTION_GO || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
             sendWifiCredentials();
 
             return true;
