@@ -68,6 +68,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         OAuthCredentials credentials = new OAuthCredentials(environment, email, password);
         Observable<OAuthSession> request = bindFragment(this, apiService.authorize(credentials));
         request.subscribe(session -> {
+            LoadingDialogFragment.close(getFragmentManager());
             apiSessionManager.setSession(session);
             getOnboardingActivity().showSetupSense();
         }, error -> {
