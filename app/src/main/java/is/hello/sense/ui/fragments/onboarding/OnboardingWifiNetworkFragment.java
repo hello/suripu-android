@@ -4,7 +4,6 @@ import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +19,10 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.WifiNetworkPresenter;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
 public class OnboardingWifiNetworkFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     @Inject WifiNetworkPresenter networkPresenter;
@@ -75,26 +76,25 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        ScanResult scanResult = (ScanResult) adapterView.getItemAtPosition(position);
-        if (scanResult == null) {
-            Log.i("events", "other");
-        } else {
-            Log.i("events", "network: " + scanResult);
-        }
+        ScanResult network = (ScanResult) adapterView.getItemAtPosition(position);
+        ((OnboardingActivity) getActivity()).showSignIntoWifiNetwork(network);
     }
 
 
     public void bindScanResults(@NonNull List<ScanResult> scanResults) {
         networkAdapter.clear();
-        networkAdapter.addAll(scanResults);
+        if (scanResults.isEmpty() && !networkPresenter.isWifiNetworkScanningAvailable()) {
+            listView.setVisibility(View.GONE);
+            turnOnWifiButton.setVisibility(View.VISIBLE);
+        } else {
+            networkAdapter.addAll(scanResults);
 
-        listView.setVisibility(View.VISIBLE);
-        turnOnWifiButton.setVisibility(View.GONE);
+            listView.setVisibility(View.VISIBLE);
+            turnOnWifiButton.setVisibility(View.GONE);
+        }
     }
 
     public void scanResultsUnavailable(Throwable e) {
-        networkAdapter.clear();
-        listView.setVisibility(View.GONE);
-        turnOnWifiButton.setVisibility(View.VISIBLE);
+        ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 }

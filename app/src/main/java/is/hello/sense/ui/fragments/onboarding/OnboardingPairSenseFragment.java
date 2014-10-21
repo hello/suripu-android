@@ -82,7 +82,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     private void finishedPairing() {
         OnboardingActivity activity = (OnboardingActivity) getActivity();
         activity.finishBlockingWork();
-        activity.showSetupWifi();
+        activity.showSelectWifiNetwork();
     }
 
 

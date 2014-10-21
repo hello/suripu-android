@@ -39,7 +39,12 @@ public class WifiNetworkPresenter extends Presenter {
     @Inject
     public WifiNetworkPresenter(@NonNull Context context) {
         this.wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        Observable<Intent> stateChanged = fromBroadcast(context, new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
+
+        IntentFilter stateChangeFilter = new IntentFilter();
+        stateChangeFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        stateChangeFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+
+        Observable<Intent> stateChanged = fromBroadcast(context, stateChangeFilter);
         this.wifiStateChangedSubscription = stateChanged.subscribe(ignored -> update());
     }
 
@@ -61,8 +66,15 @@ public class WifiNetworkPresenter extends Presenter {
         if (isWifiNetworkScanningAvailable()) {
             logEvent("update() - processing available networks");
             Observable.OnSubscribe<List<ScanResult>> onSubscribe = s -> {
+                List<ScanResult> rawResults = wifiManager.getScanResults();
+                if (rawResults == null || rawResults.isEmpty()) {
+                    s.onNext(Collections.<ScanResult>emptyList());
+                    s.onCompleted();
+                    return;
+                }
+
                 HashMap<String, ScanResult> results = new HashMap<>();
-                for (ScanResult result : wifiManager.getScanResults()) {
+                for (ScanResult result : rawResults) {
                     if (result.frequency < 2400 || result.frequency > 2499) {
                         continue;
                     }
@@ -86,7 +98,7 @@ public class WifiNetworkPresenter extends Presenter {
                       .subscribe(networksInRange::onNext, networksInRange::onError);
         } else {
             logEvent("update() - networks unavailable");
-            networksInRange.onError(new WifiScanUnavailable());
+            networksInRange.onNext(Collections.emptyList());
         }
     }
 
@@ -105,7 +117,4 @@ public class WifiNetworkPresenter extends Presenter {
 
         return SECURITY_OPEN;
     }
-
-
-    public static class WifiScanUnavailable extends Exception {}
 }

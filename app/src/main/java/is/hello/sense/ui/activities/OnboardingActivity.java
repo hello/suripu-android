@@ -1,10 +1,12 @@
 package is.hello.sense.ui.activities;
 
 import android.content.Intent;
+import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import is.hello.sense.R;
@@ -13,6 +15,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingTaskFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
@@ -27,7 +30,7 @@ public class OnboardingActivity extends InjectionActivity {
         setContentView(R.layout.activity_onboarding);
 
         if (savedInstanceState == null)
-            showSetupWifi();
+            showSelectWifiNetwork();
     }
 
 
@@ -60,8 +63,12 @@ public class OnboardingActivity extends InjectionActivity {
         showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_setup_sense, OnboardingPairSenseFragment.class, null));
     }
 
-    public void showSetupWifi() {
+    public void showSelectWifiNetwork() {
         showFragment(new OnboardingWifiNetworkFragment());
+    }
+
+    public void showSignIntoWifiNetwork(@Nullable ScanResult network) {
+        showFragment(OnboardingSignIntoWifiFragment.newInstance(network));
     }
 
     public void beginBlockingWork(@StringRes int titleResId) {
