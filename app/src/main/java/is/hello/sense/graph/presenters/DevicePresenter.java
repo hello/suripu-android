@@ -57,7 +57,7 @@ import rx.android.schedulers.AndroidSchedulers;
         if (devices.isEmpty()) {
             return null;
         } else {
-            return Collections.max(devices, (l, r) -> Integer.compare(l.getRssi(), r.getRssi()));
+            return Collections.max(devices, (l, r) -> Integer.compare(l.getScanTimeRssi(), r.getScanTimeRssi()));
         }
     }
 
