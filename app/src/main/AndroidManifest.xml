@@ -43,7 +43,7 @@
             android:name=".ui.activities.OnboardingActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.Onboarding" />
 
         <activity
             android:name=".ui.activities.QuestionsActivity"

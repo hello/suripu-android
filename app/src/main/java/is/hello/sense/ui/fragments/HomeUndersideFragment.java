@@ -48,7 +48,11 @@ public class HomeUndersideFragment extends InjectionFragment {
         settings.setOnClickListener(ignored -> startActivity(new Intent(getActivity(), SettingsActivity.class)));
 
         SensorStateView debug = (SensorStateView) view.findViewById(R.id.fragment_underside_debug);
-        debug.setOnClickListener(ignored -> startActivity(new Intent(getActivity(), DebugActivity.class)));
+        if (buildValues.debugEnabled) {
+            debug.setOnClickListener(ignored -> startActivity(new Intent(getActivity(), DebugActivity.class)));
+        } else {
+            view.setVisibility(View.GONE);
+        }
 
         return view;
     }

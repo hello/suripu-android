@@ -10,6 +10,8 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
@@ -33,6 +35,10 @@ public class OnboardingActivity extends SenseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
+
+        //noinspection ConstantConditions
+        getActionBar().setDisplayShowTitleEnabled(false);
+        getActionBar().setDisplayShowHomeEnabled(false);
 
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -58,6 +64,23 @@ public class OnboardingActivity extends SenseActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (Boolean.parseBoolean(getString(R.string.build_debug_enabled))) {
+            getMenuInflater().inflate(R.menu.onboarding_debug, menu);
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_debug) {
+            startActivity(new Intent(this, DebugActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public void showFragment(@NonNull Fragment fragment) {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();

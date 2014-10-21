@@ -10,12 +10,14 @@ import is.hello.sense.R;
 public class BuildValues {
     public final String type;
     public final String defaultApiEnvironment;
+    public final boolean debugEnabled;
 
     public BuildValues(@NonNull Context context) {
         this.type = context.getString(R.string.build_type);
         Crashlytics.setString("BuildValues_type", this.type);
 
         this.defaultApiEnvironment = context.getString(R.string.build_default_api_env);
+        this.debugEnabled = Boolean.parseBoolean(context.getString(R.string.build_debug_enabled));
     }
 
     public boolean isDebugBuild() {
