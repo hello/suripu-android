@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/gap_xlarge"
+    android:paddingLeft="@dimen/gap_large"
+    android:paddingRight="@dimen/gap_large"
+    android:background="@color/background_onboarding">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:textAppearance="@style/AppTheme.Text.Heading"
+        android:text="@string/title_choose_wifi_network"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:text="@string/info_sign_into_wifi"/>
+
+    <EditText
+        android:id="@+id/fragment_onboarding_sign_into_wifi_network"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:nextFocusForward="@+id/fragment_onboarding_sign_into_wifi_password"
+        android:imeOptions="actionNext|flagNoExtractUi"
+        android:hint="@string/label_network_name">
+
+        <requestFocus />
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/fragment_onboarding_sign_into_wifi_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:imeOptions="actionSend|flagNoExtractUi"
+        android:hint="@string/label_password"/>
+
+    <Button
+        android:id="@+id/fragment_onboarding_step_help"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:text="@string/action_onboarding_help"
+        style="@style/AppTheme.Button.Borderless.Onboarding" />
+
+</LinearLayout>

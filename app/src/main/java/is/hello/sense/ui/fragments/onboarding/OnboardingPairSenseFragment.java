@@ -109,7 +109,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     }
 
     public void pairingFailed(Throwable e) {
-        finishedPairing();
+        ((OnboardingActivity) getActivity()).finishBlockingWork();
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 }

@@ -18,6 +18,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingTaskFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingWelcomeFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 
 public class OnboardingActivity extends InjectionActivity {
@@ -47,6 +48,8 @@ public class OnboardingActivity extends InjectionActivity {
     }
 
 
+    //region Steps
+
     public void showIntroductionFragment() {
         showFragment(new OnboardingIntroductionFragment());
     }
@@ -71,6 +74,15 @@ public class OnboardingActivity extends InjectionActivity {
         showFragment(OnboardingSignIntoWifiFragment.newInstance(network));
     }
 
+    public void showWelcome() {
+        showFragment(new OnboardingWelcomeFragment());
+    }
+
+    //endregion
+
+
+    //region Presenting Blocking Work
+
     public void beginBlockingWork(@StringRes int titleResId) {
         if (getFragmentManager().findFragmentByTag(BLOCKING_WORK_TAG) != null)
             return;
@@ -94,6 +106,8 @@ public class OnboardingActivity extends InjectionActivity {
                 .remove(fragment)
                 .commit();
     }
+
+    //endregion
 
 
     public void showHomeActivity() {

@@ -88,10 +88,16 @@
     <string name="title_pair_sense">Pairing with Sense</string>
     <string name="info_pair_sense">Now we\'ll pair your mobile device with Sense. Make sure sense is glowing purple, then tap continue.</string>
     <string name="title_pairing">Pairing</string>
+    <string name="title_connecting_network">Connecting</string>
     <string name="wifi_network_secured">Secured Network</string>
     <string name="wifi_network_was_scanned">Scanned</string>
     <string name="title_choose_wifi_network">Connecting Sense to Wifi</string>
     <string name="info_choose_wifi_network">Please select your WiFi network from the list below:</string>
+    <string name="info_sign_into_wifi">Enter your Wifi credentials:</string>
     <string name="wifi_other_network">Other</string>
     <string name="action_turn_on_wifi">Turn On Wifi</string>
+    <string name="label_network_name">Network Name</string>
+    <string name="title_welcome">Well done.</string>
+    <string name="info_welcome">Your Sense is successfully set up. Take a moment to learn a bit more about how Sense will help you to know more, and sleep better.</string>
+    <string name="action_skip">Skip</string>
 </resources>

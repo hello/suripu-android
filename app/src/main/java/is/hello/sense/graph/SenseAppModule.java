@@ -28,6 +28,7 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.widget.TimelineSegmentView;
@@ -53,6 +54,7 @@ import is.hello.sense.util.BuildValues;
         DevicePresenter.class,
         OnboardingWifiNetworkFragment.class,
         WifiNetworkPresenter.class,
+        OnboardingSignIntoWifiFragment.class,
 
         TimelineFragment.class,
         TimelinePresenter.class,
