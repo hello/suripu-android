@@ -105,4 +105,6 @@
     <string name="action_get_started">Get Started</string>
     <string name="action_buy_sense">I don\'t have a sense</string>
     <string name="welcome">Welcome</string>
+    <string name="title_register_birthday">When is your birthday?</string>
+    <string name="action_next">Next</string>
 </resources>

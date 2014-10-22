@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/gap_xlarge"
+    android:paddingBottom="@dimen/gap_xlarge"
+    android:paddingLeft="@dimen/gap_large"
+    android:paddingRight="@dimen/gap_large">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textAppearance="@style/AppTheme.Text.Heading"
+        android:text="@string/title_register_birthday"/>
+
+    <DatePicker
+        android:id="@+id/fragment_onboarding_register_birthday_picker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:calendarViewShown="false"
+        android:spinnersShown="true"
+        android:layout_centerInParent="true"
+        style="@android:style/Widget.Holo.DatePicker"/>
+
+    <Button
+        android:id="@+id/fragment_onboarding_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="@string/action_next"
+        style="@style/AppTheme.Button.Rounded"/>
+
+</RelativeLayout>
