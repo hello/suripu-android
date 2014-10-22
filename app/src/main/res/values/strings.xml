@@ -116,4 +116,11 @@
     <string name="default_inches">8</string>
     <string name="default_weight">130</string>
     <string name="label_pounds">lbs</string>
+    <string name="title_onboarding_which_pill">First one here?</string>
+    <string name="info_onboarding_which_pill">Are you setting up the first Sleep Pill, or the second Sleep Pill?</string>
+    <string name="title_not_sure">I am not sure</string>
+    <string name="action_2nd_sleep_pill">Second Sleep Pill</string>
+    <string name="action_1st_sleep_pill">First Sleep Pill</string>
+    <string name="title_setup_second_pill">Add a second Sleep Pill</string>
+    <string name="info_setup_second_pill"><![CDATA[To connect a second sleep pill, Sense needs to be put into pairing mode.\n\nAsk the owner of the first sleeping pill to stand next to Sense and open the Sense app, then go to Settings &gt; Devices &gt; Sense and tap \'Put Sense into Pairing Mode\'.\n\nSense will glow purple when it is in pairing mode.]]></string>
 </resources>

@@ -65,7 +65,7 @@ import rx.android.schedulers.AndroidSchedulers;
     public Observable<Void> pairWithDevice(@NonNull Morpheus device) {
         logEvent("pairWithDevice(" + device + ")");
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.connect(new BleObserverCallback<>(s), true))
+        return Observable.create((Observable.OnSubscribe<Void>) s -> device.connect(new BleObserverCallback<>(s)))
                          .doOnNext(ignored -> {
                              logEvent("pairedWithDevice(" + device + ")");
                              setPairedDeviceAddress(device.getAddress());

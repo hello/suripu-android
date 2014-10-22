@@ -27,6 +27,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingTaskFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWelcomeFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingWhichPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.util.Constants;
 
@@ -59,7 +60,7 @@ public class OnboardingActivity extends SenseActivity {
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_QUESTIONS:
-                    showSetupSense();
+                    showWhichPill();
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_SENSE:
@@ -139,13 +140,23 @@ public class OnboardingActivity extends SenseActivity {
         showFragment(OnboardingRegisterWeightFragment.newInstance(account));
     }
 
-    public void showSetupSense() {
+    public void showWhichPill() {
         sharedPreferences
                 .edit()
                 .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS)
                 .apply();
 
-        showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_setup_sense, OnboardingPairSenseFragment.class, null));
+        showFragment(new OnboardingWhichPillFragment());
+    }
+
+    public void showSetupSense(boolean secondPill) {
+        if (secondPill) {
+            Bundle arguments = new Bundle();
+            arguments.putBoolean(OnboardingPairSenseFragment.ARG_IS_SECOND_USER, true);
+            showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_2nd_user_setup_sense, OnboardingPairSenseFragment.class, arguments));
+        } else {
+            showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_1st_user_setup_sense, OnboardingPairSenseFragment.class, null));
+        }
     }
 
     public void showSelectWifiNetwork() {

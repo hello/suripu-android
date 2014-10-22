@@ -28,8 +28,11 @@ import rx.Observable;
 import static rx.android.observables.AndroidObservable.fromBroadcast;
 
 public class OnboardingPairSenseFragment extends InjectionFragment {
+    public static final String ARG_IS_SECOND_USER = OnboardingPairSenseFragment.class.getName() + ".ARG_IS_SECOND_USER";
+
     @Inject DevicePresenter devicePresenter;
 
+    private boolean isSecondUser = false;
     private BluetoothAdapter bluetoothAdapter;
 
     private Button nextButton;
@@ -38,6 +41,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        this.isSecondUser = getArguments().getBoolean(ARG_IS_SECOND_USER, false);
         this.bluetoothAdapter = ((BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 
         setRetainInstance(true);
@@ -81,7 +85,11 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     private void finishedPairing() {
         OnboardingActivity activity = (OnboardingActivity) getActivity();
         activity.finishBlockingWork();
-        activity.showSelectWifiNetwork();
+        if (isSecondUser) {
+            activity.showSetupPill();
+        } else {
+            activity.showSelectWifiNetwork();
+        }
     }
 
 

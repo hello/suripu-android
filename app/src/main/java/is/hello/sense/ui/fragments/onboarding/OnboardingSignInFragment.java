@@ -64,7 +64,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         request.subscribe(session -> {
             getOnboardingActivity().finishBlockingWork();
             apiSessionManager.setSession(session);
-            getOnboardingActivity().showSetupSense();
+            getOnboardingActivity().showWhichPill();
         }, error -> {
             getOnboardingActivity().finishBlockingWork();
             ErrorDialogFragment.presentError(getFragmentManager(), error);

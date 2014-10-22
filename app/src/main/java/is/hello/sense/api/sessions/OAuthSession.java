@@ -17,6 +17,9 @@ public class OAuthSession extends ApiResponse {
     @JsonProperty("token_type")
     private String tokenType;
 
+    @JsonProperty("account_id")
+    private String accountId;
+
 
     public String getAccessToken() {
         return accessToken;
@@ -34,6 +37,9 @@ public class OAuthSession extends ApiResponse {
         return tokenType;
     }
 
+    public String getAccountId() {
+        return accountId;
+    }
 
     @Override
     public String toString() {
@@ -42,6 +48,7 @@ public class OAuthSession extends ApiResponse {
                 ", expiresIn=" + expiresIn +
                 ", refreshToken='" + refreshToken + '\'' +
                 ", tokenType='" + tokenType + '\'' +
+                ", accountId='" + accountId + '\'' +
                 '}';
     }
 }
