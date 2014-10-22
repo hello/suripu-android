@@ -26,6 +26,8 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenterTests;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
+import is.hello.sense.graph.presenters.WifiNetworkPresenter;
+import is.hello.sense.graph.presenters.WifiNetworkPresenterTests;
 import is.hello.sense.units.UnitFormatterTests;
 
 @Module(
@@ -45,6 +47,9 @@ import is.hello.sense.units.UnitFormatterTests;
 
         AccountPresenter.class,
         AccountPresenterTests.class,
+
+        WifiNetworkPresenter.class,
+        WifiNetworkPresenterTests.class,
 
         UnitFormatterTests.class,
     }
