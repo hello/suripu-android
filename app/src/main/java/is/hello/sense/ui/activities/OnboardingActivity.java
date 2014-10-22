@@ -86,9 +86,22 @@ public class OnboardingActivity extends SenseActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem skipItem = menu.findItem(R.id.action_skip);
+        int lastCheckpoint = sharedPreferences.getInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
+        skipItem.setEnabled(lastCheckpoint > Constants.ONBOARDING_CHECKPOINT_ACCOUNT);
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_debug) {
             startActivity(new Intent(this, DebugActivity.class));
+            return true;
+        } else if (item.getItemId() == R.id.action_skip) {
+            showHomeActivity();
+
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -3,6 +3,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/action_skip"
+        android:title="@string/action_skip"
+        android:showAsAction="never" />
+
+    <item
         android:id="@+id/action_debug"
         android:title="@string/activity_debug"
         android:showAsAction="never"/>
