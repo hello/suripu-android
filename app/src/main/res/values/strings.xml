@@ -107,4 +107,5 @@
     <string name="welcome">Welcome</string>
     <string name="title_register_birthday">When is your birthday?</string>
     <string name="action_next">Next</string>
+    <string name="title_register_gender">Are you male or female?</string>
 </resources>

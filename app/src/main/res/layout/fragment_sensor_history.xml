@@ -26,8 +26,8 @@
         android:textAppearance="@style/AppTheme.Text.BigScore.Details"
         android:text="@string/missing_data_placeholder"/>
 
-    <LinearLayout
-        android:id="@+id/fragment_sensor_history_mode_container"
+    <is.hello.sense.ui.widget.SelectorLinearLayout
+        android:id="@+id/fragment_sensor_history_mode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -48,7 +48,7 @@
             android:textOff="@string/title_time_frame_24_hrs"
             style="@style/AppTheme.Button.Borderless"/>
 
-    </LinearLayout>
+    </is.hello.sense.ui.widget.SelectorLinearLayout>
 
     <LinearLayout
         android:id="@+id/fragment_sensor_history_graph_annotations"

@@ -26,6 +26,17 @@ public class OnboardingRegisterHeightFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.account = (Account) getArguments().getSerializable(ARG_ACCOUNT);
+        if (savedInstanceState != null) {
+            this.account = (Account) savedInstanceState.getSerializable(ARG_ACCOUNT);
+        } else {
+            this.account = (Account) getArguments().getSerializable(ARG_ACCOUNT);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(ARG_ACCOUNT, account);
     }
 }

@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments;
 
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.google.common.primitives.Floats;
 
@@ -27,11 +25,12 @@ import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.LineGraphView;
+import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
 
-public class SensorHistoryFragment extends InjectionFragment {
+public class SensorHistoryFragment extends InjectionFragment implements SelectorLinearLayout.OnSelectionChangedListener {
     @Inject CurrentConditionsPresenter conditionsPresenter;
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
     @Inject BuildValues buildValues;
@@ -40,7 +39,6 @@ public class SensorHistoryFragment extends InjectionFragment {
     private TextView messageText;
     private LineGraphView graphView;
     private GraphAdapter adapter = new GraphAdapter();
-    private ViewGroup historyModeContainer;
     private ViewGroup annotationsContainer;
 
     @Override
@@ -64,16 +62,8 @@ public class SensorHistoryFragment extends InjectionFragment {
         this.graphView = (LineGraphView) view.findViewById(R.id.fragment_sensor_history_graph);
         graphView.setAdapter(adapter);
 
-        this.historyModeContainer = (ViewGroup) view.findViewById(R.id.fragment_sensor_history_mode_container);
-        View.OnClickListener checkedListener = this::onModeToggleChanged;
-        for (int i = 0, count = historyModeContainer.getChildCount(); i < count; i++) {
-            ToggleButton modeButton = (ToggleButton) historyModeContainer.getChildAt(i);
-            boolean selected = (i == sensorHistoryPresenter.getMode());
-            modeButton.setTag(i);
-            modeButton.setOnClickListener(checkedListener);
-            modeButton.setChecked(selected);
-            modeButton.setTypeface(modeButton.getTypeface(), selected ? Typeface.BOLD : Typeface.NORMAL);
-        }
+        SelectorLinearLayout historyMode = (SelectorLinearLayout) view.findViewById(R.id.fragment_sensor_history_mode);
+        historyMode.setOnSelectionChangedListener(this);
 
         this.annotationsContainer = (ViewGroup) view.findViewById(R.id.fragment_sensor_history_graph_annotations);
 
@@ -125,15 +115,9 @@ public class SensorHistoryFragment extends InjectionFragment {
     }
 
 
-    public void onModeToggleChanged(@NonNull View button) {
-        sensorHistoryPresenter.setMode((Integer) button.getTag());
-
-        for (int i = 0, count = historyModeContainer.getChildCount(); i < count; i++) {
-            ToggleButton modeButton = (ToggleButton) historyModeContainer.getChildAt(i);
-            boolean selected = (i == sensorHistoryPresenter.getMode());
-            modeButton.setChecked(selected);
-            modeButton.setTypeface(modeButton.getTypeface(), selected ? Typeface.BOLD : Typeface.NORMAL);
-        }
+    @Override
+    public void onSelectionChanged(int newSelectionIndex) {
+        sensorHistoryPresenter.setMode(newSelectionIndex);
     }
 
 
