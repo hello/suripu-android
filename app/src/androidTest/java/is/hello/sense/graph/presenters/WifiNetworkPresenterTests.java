@@ -1,29 +1,14 @@
 package is.hello.sense.graph.presenters;
 
-import android.net.wifi.ScanResult;
+import junit.framework.TestCase;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+public class WifiNetworkPresenterTests extends TestCase {
+    // TODO: Devise plan for testing wifi manager dependent code.
 
-import javax.inject.Inject;
-
-import is.hello.sense.graph.InjectionTestCase;
-
-public class WifiNetworkPresenterTests extends InjectionTestCase {
-    @Inject WifiNetworkPresenter wifiNetworkPresenter;
-
-    public void testGetScanResultSecurity() throws Exception {
-        ScanResult securedScanResult = newScanResult();
-    }
-
-
-    private ScanResult newScanResult() {
-        try {
-            Constructor<ScanResult> constructor = ScanResult.class.getConstructor();
-            constructor.setAccessible(true);
-            return constructor.newInstance();
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    public void testGetSecurityFromCapabilities() throws Exception {
+        assertEquals(WifiNetworkPresenter.SECURITY_EAP, WifiNetworkPresenter.getSecurityFromCapabilities("[" + WifiNetworkPresenter.SECURITY_EAP + "]"));
+        assertEquals(WifiNetworkPresenter.SECURITY_PSK, WifiNetworkPresenter.getSecurityFromCapabilities("[" + WifiNetworkPresenter.SECURITY_PSK + "]"));
+        assertEquals(WifiNetworkPresenter.SECURITY_WEP, WifiNetworkPresenter.getSecurityFromCapabilities("[" + WifiNetworkPresenter.SECURITY_WEP + "]"));
+        assertEquals(WifiNetworkPresenter.SECURITY_OPEN, WifiNetworkPresenter.getSecurityFromCapabilities("[]"));
     }
 }

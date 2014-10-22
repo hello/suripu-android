@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import org.joda.time.DateTime;
 import org.joda.time.chrono.ISOChronology;
@@ -48,7 +47,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         this.preferences = context.getSharedPreferences(QuestionsPresenter.class.getSimpleName(), 0);
 
         Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
-        logOutSignal.subscribe(this::onUserLoggedOut, Functions::ignoreError);
+        logOutSignal.subscribe(this::onUserLoggedOut, Functions.IGNORE_ERROR);
     }
 
     public void onUserLoggedOut(@NonNull Intent intent) {
@@ -177,7 +176,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     public void skipQuestion() {
-        currentQuestion.take(1).subscribe(question -> apiService.skipQuestion(question.getId()), Functions::ignoreError);
+        currentQuestion.take(1).subscribe(question -> apiService.skipQuestion(question.getId()), Functions.IGNORE_ERROR);
         nextQuestion();
     }
 

@@ -34,7 +34,7 @@ public class WifiNetworkAdapter extends ArrayAdapter<ScanResult> {
         ScanResult item = getItem(position);
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.name.setText(item.SSID);
-        if (WifiNetworkPresenter.SECURITY_OPEN.equals(WifiNetworkPresenter.getScanResultSecurity(item))) {
+        if (WifiNetworkPresenter.SECURITY_OPEN.equals(WifiNetworkPresenter.getSecurityFromCapabilities(item.capabilities))) {
             holder.locked.setVisibility(View.GONE);
         } else {
             holder.locked.setVisibility(View.VISIBLE);

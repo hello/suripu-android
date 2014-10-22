@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -45,7 +46,7 @@ public class WifiNetworkPresenter extends Presenter {
         stateChangeFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
 
         Observable<Intent> stateChanged = fromBroadcast(context, stateChangeFilter);
-        this.wifiStateChangedSubscription = stateChanged.subscribe(ignored -> update());
+        this.wifiStateChangedSubscription = stateChanged.subscribe(ignored -> update(), Functions.LOG_ERROR);
     }
 
     @Override
@@ -107,8 +108,7 @@ public class WifiNetworkPresenter extends Presenter {
         activity.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
     }
 
-    public static @NonNull String getScanResultSecurity(@NonNull ScanResult scanResult) {
-        String capabilities = scanResult.capabilities;
+    public static @NonNull String getSecurityFromCapabilities(@NonNull String capabilities) {
         String[] securityModes = {SECURITY_EAP, SECURITY_PSK, SECURITY_WEP};
         for (String mode : securityModes) {
             if (capabilities.contains(mode))

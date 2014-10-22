@@ -63,7 +63,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         super.onViewCreated(view, savedInstanceState);
 
         Observable<Intent> bluetoothStateChanged = fromBroadcast(getActivity(), new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-        subscribe(bluetoothStateChanged, ignored -> updateNextButton(), Functions::ignoreError);
+        subscribe(bluetoothStateChanged, ignored -> updateNextButton(), Functions.IGNORE_ERROR);
     }
 
 
