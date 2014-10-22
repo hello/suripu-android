@@ -127,6 +127,8 @@
     <string name="info_intro_sleep_pill">Clip your Sleep Pill to the pillow-case you sleep on.</string>
     <string name="title_onboarding_sleep_pill_color">Personalize your Sleep Pill</string>
     <string name="info_onboarding_sleep_pill_color">Choose an LED color for your Sleep Pill so you know which one is yours.</string>
+    <string name="title_pair_pill">Pairing your Sleep Pill</string>
+    <string name="info_pair_pill">Gently shake your Sleep Pill for three seconds. When your Sleep Pill lights up green, tap continue.</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

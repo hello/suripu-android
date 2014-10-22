@@ -11,6 +11,7 @@ public final class Constants {
     public static final String GLOBAL_PREF_UNIT_SYSTEM = "unit_system_name";
     public static final String GLOBAL_PREF_USE_24_TIME = "use_24_time";
     public static final String GLOBAL_PREF_PAIRED_DEVICE_ADDRESS = "paired_device_address";
+    public static final String GLOBAL_PREF_PAIRED_PILL_ID = "paired_pill_id";
     public static final String GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT = "last_onboarding_check_point";
     public static final String GLOBAL_PREF_ONBOARDING_COMPLETED = "onboarding_completed";
 

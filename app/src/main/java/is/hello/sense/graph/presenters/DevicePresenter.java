@@ -44,6 +44,18 @@ import rx.android.schedulers.AndroidSchedulers;
         editor.apply();
     }
 
+    public void setPairedPillId(@Nullable String pillId) {
+        logEvent("saving paired pill id: " + pillId);
+
+        SharedPreferences.Editor editor = preferencesPresenter.edit();
+        if (pillId != null) {
+            editor.putString(Constants.GLOBAL_PREF_PAIRED_PILL_ID, pillId);
+        } else {
+            editor.remove(Constants.GLOBAL_PREF_PAIRED_PILL_ID);
+        }
+        editor.apply();
+    }
+
 
     public Observable<Set<Morpheus>> scanForDevices() {
         logEvent("scanForDevices()");
@@ -85,6 +97,17 @@ import rx.android.schedulers.AndroidSchedulers;
         logEvent("linkAccount()");
 
         return Observable.create((Observable.OnSubscribe<Void>) s -> pairedDevice.linkAccount(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s)))
+                         .subscribeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<String> linkPill() {
+        logEvent("linkPill()");
+
+        return Observable.create((Observable.OnSubscribe<String>) s -> pairedDevice.pairPill(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s)))
+                         .doOnNext(pillId -> {
+                             logEvent("linkedWithPill(" + pillId+ ")");
+                             setPairedPillId(pillId);
+                         })
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 }

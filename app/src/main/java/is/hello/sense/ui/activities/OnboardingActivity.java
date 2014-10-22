@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
@@ -178,6 +179,7 @@ public class OnboardingActivity extends SenseActivity {
     }
 
     public void showPairPill(int selectedColorIndex) {
+        showFragment(OnboardingPairPillFragment.newInstance(selectedColorIndex));
     }
 
     public void showWelcome() {
