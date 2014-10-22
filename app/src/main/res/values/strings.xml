@@ -123,4 +123,6 @@
     <string name="action_1st_sleep_pill">First Sleep Pill</string>
     <string name="title_setup_second_pill">Add a second Sleep Pill</string>
     <string name="info_setup_second_pill"><![CDATA[To connect a second sleep pill, Sense needs to be put into pairing mode.\n\nAsk the owner of the first sleeping pill to stand next to Sense and open the Sense app, then go to Settings &gt; Devices &gt; Sense and tap \'Put Sense into Pairing Mode\'.\n\nSense will glow purple when it is in pairing mode.]]></string>
+    <string name="title_intro_sleep_pill">Introducing Sleep Pill</string>
+    <string name="info_intro_sleep_pill">Clip your Sleep Pill to the pillow-case you sleep on.</string>
 </resources>

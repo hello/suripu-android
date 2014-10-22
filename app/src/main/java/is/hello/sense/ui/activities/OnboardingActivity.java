@@ -48,6 +48,9 @@ public class OnboardingActivity extends SenseActivity {
 
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        showSetupPill();
+        if(0==0)return;
+
         if (savedInstanceState == null) {
             int lastCheckpoint = sharedPreferences.getInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
             switch (lastCheckpoint) {
@@ -168,12 +171,12 @@ public class OnboardingActivity extends SenseActivity {
     }
 
     public void showSetupPill() {
-        sharedPreferences
+        /*sharedPreferences
                 .edit()
                 .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_SENSE)
-                .apply();
+                .apply();*/
 
-        showWelcome();
+        showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_pill_intro, OnboardingWelcomeFragment.class, null));
     }
 
     public void showWelcome() {
