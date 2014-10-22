@@ -14,6 +14,9 @@ public class Account extends ApiResponse {
     @JsonIgnore
     private String id;
 
+    @JsonIgnore
+    private String accountId;
+
     @JsonProperty("email")
     private String email;
 
@@ -52,6 +55,16 @@ public class Account extends ApiResponse {
     @JsonProperty("id")
     public void setId(String id) {
         this.id = id;
+    }
+
+    @JsonIgnore
+    public String getAccountId() {
+        return accountId;
+    }
+
+    @JsonProperty("account_id")
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
     }
 
     public String getEmail() {
@@ -130,6 +143,7 @@ public class Account extends ApiResponse {
     public String toString() {
         return "Account{" +
                 "id='" + id + '\'' +
+                ", accountId='" + accountId + '\'' +
                 ", email='" + email + '\'' +
                 ", timeZoneOffset=" + timeZoneOffset +
                 ", name='" + name + '\'' +
