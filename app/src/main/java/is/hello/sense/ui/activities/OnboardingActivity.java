@@ -13,8 +13,13 @@ import android.support.annotation.StringRes;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
@@ -33,9 +38,11 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingWhichPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.util.Constants;
 
-public class OnboardingActivity extends SenseActivity {
+public class OnboardingActivity extends InjectionActivity {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
     private static final String BLOCKING_WORK_TAG = "BlockingWorkFragment";
+
+    @Inject ApiService apiService;
 
     private SharedPreferences sharedPreferences;
 
@@ -50,7 +57,7 @@ public class OnboardingActivity extends SenseActivity {
 
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (savedInstanceState == null) {
+        if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             int lastCheckpoint = sharedPreferences.getInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
             switch (lastCheckpoint) {
                 case Constants.ONBOARDING_CHECKPOINT_NONE:
@@ -58,7 +65,14 @@ public class OnboardingActivity extends SenseActivity {
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_ACCOUNT:
-                    showBirthday(new Account());
+                    beginBlockingWork(R.string.dialog_loading_message);
+                    bindAndSubscribe(apiService.getAccount(), account -> {
+                        finishBlockingWork();
+                        showBirthday(account);
+                    }, e -> {
+                        finishBlockingWork();
+                        ErrorDialogFragment.presentError(getFragmentManager(), e);
+                    });
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_QUESTIONS:
