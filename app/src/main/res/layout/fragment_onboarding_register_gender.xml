@@ -32,7 +32,7 @@
             android:drawablePadding="@dimen/gap_medium"
             android:textOn="@string/gender_female"
             android:textOff="@string/gender_female"
-            style="@style/AppTheme.Button.Borderless.Toggle"/>
+            style="@style/AppTheme.Button.Borderless"/>
 
         <ToggleButton
             android:layout_width="wrap_content"
@@ -41,7 +41,7 @@
             android:drawablePadding="@dimen/gap_medium"
             android:textOn="@string/gender_male"
             android:textOff="@string/gender_male"
-            style="@style/AppTheme.Button.Borderless.Toggle"/>
+            style="@style/AppTheme.Button.Borderless"/>
 
     </is.hello.sense.ui.widget.SelectorLinearLayout>
 

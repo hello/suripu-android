@@ -13,6 +13,7 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
 
     private int selectedIndex = NOTHING_SELECTED;
     private OnSelectionChangedListener onSelectionChangedListener;
+    private ButtonStyler buttonStyler;
 
     @SuppressWarnings("UnusedDeclaration")
     public SelectorLinearLayout(Context context) {
@@ -56,7 +57,12 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
     private void synchronizeButtonStates() {
         for (int index = 0, count = getChildCount(); index < count; index++) {
             ToggleButton button = (ToggleButton) getChildAt(index);
-            button.setChecked(index == selectedIndex);
+            boolean isSelected = (index == selectedIndex);
+            if (buttonStyler != null) {
+                buttonStyler.styleButton(button, isSelected);
+            } else {
+                button.setChecked(isSelected);
+            }
         }
     }
 
@@ -78,7 +84,16 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
         this.onSelectionChangedListener = onSelectionChangedListener;
     }
 
+    public void setButtonStyler(ButtonStyler buttonStyler) {
+        this.buttonStyler = buttonStyler;
+    }
+
+
     public interface OnSelectionChangedListener {
         void onSelectionChanged(int newSelectionIndex);
+    }
+
+    public static interface ButtonStyler {
+        void styleButton(ToggleButton button, boolean checked);
     }
 }
