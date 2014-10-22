@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -84,20 +85,20 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         getOnboardingActivity().beginBlockingWork(R.string.dialog_loading_message);
 
         Observable<Account> observable = bindFragment(this, apiService.createAccount(newAccount));
-        observable.subscribe(unused -> login(), error -> {
+        observable.subscribe(this::login, error -> {
             getOnboardingActivity().finishBlockingWork();
             ErrorDialogFragment.presentError(getFragmentManager(), error);
         });
     }
 
-    public void login() {
+    public void login(@NonNull Account createdAccount) {
         OAuthCredentials credentials = new OAuthCredentials(environment, emailText.getText().toString(), passwordText.getText().toString());
         Observable<OAuthSession> observable = bindFragment(this, apiService.authorize(credentials));
         observable.subscribe(session -> {
             getOnboardingActivity().finishBlockingWork();
 
             sessionManager.setSession(session);
-            getOnboardingActivity().showBirthday(newAccount);
+            getOnboardingActivity().showBirthday(createdAccount);
         }, error -> {
             getOnboardingActivity().finishBlockingWork();
             ErrorDialogFragment.presentError(getFragmentManager(), error);

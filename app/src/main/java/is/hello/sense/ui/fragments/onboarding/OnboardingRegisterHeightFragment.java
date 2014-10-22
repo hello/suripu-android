@@ -83,7 +83,7 @@ public class OnboardingRegisterHeightFragment extends Fragment {
         try {
             int feet = Integer.parseInt(feetText.getText().toString());
             int inches = TextUtils.isEmpty(inchesText.getText()) ? 0 : Integer.parseInt(inchesText.getText().toString());
-            int totalInches = (feet / 12) + inches;
+            int totalInches = (feet * 12) + inches;
             account.setHeight(UnitOperations.inchesToCentimeters(totalInches));
             ((OnboardingActivity) getActivity()).showWeight(account);
         } catch (NumberFormatException e) {

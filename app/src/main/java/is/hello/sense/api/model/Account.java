@@ -4,17 +4,19 @@ import android.text.TextUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
 
 import is.hello.sense.api.ApiService;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Account extends ApiResponse {
     @JsonIgnore
     private String id;
 
-    @JsonIgnore
+    @JsonProperty("account_id")
     private String accountId;
 
     @JsonProperty("email")
@@ -57,12 +59,10 @@ public class Account extends ApiResponse {
         this.id = id;
     }
 
-    @JsonIgnore
     public String getAccountId() {
         return accountId;
     }
 
-    @JsonProperty("account_id")
     public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
