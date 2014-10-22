@@ -24,6 +24,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSleepPillColorFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingTaskFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWelcomeFragment;
@@ -47,9 +48,6 @@ public class OnboardingActivity extends SenseActivity {
         getActionBar().setDisplayShowHomeEnabled(false);
 
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        showSetupPill();
-        if(0==0)return;
 
         if (savedInstanceState == null) {
             int lastCheckpoint = sharedPreferences.getInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
@@ -171,12 +169,15 @@ public class OnboardingActivity extends SenseActivity {
     }
 
     public void showSetupPill() {
-        /*sharedPreferences
+        sharedPreferences
                 .edit()
                 .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_SENSE)
-                .apply();*/
+                .apply();
 
-        showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_pill_intro, OnboardingWelcomeFragment.class, null));
+        showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_pill_intro, OnboardingSleepPillColorFragment.class, null));
+    }
+
+    public void showPairPill(int selectedColorIndex) {
     }
 
     public void showWelcome() {
