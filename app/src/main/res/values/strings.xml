@@ -110,4 +110,8 @@
     <string name="title_register_gender">Are you male or female?</string>
     <string name="title_register_weight">How much do you weigh?</string>
     <string name="title_register_height">How tall are you?</string>
+    <string name="label_feet">Feet</string>
+    <string name="label_inches">Inches</string>
+    <string name="default_feet">5</string>
+    <string name="default_inches">8</string>
 </resources>
