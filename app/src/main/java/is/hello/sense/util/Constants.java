@@ -28,6 +28,7 @@ public final class Constants {
 
     public static final int ONBOARDING_CHECKPOINT_NONE = 0;
     public static final int ONBOARDING_CHECKPOINT_ACCOUNT = 1;
-    public static final int ONBOARDING_CHECKPOINT_SENSE = 2;
-    public static final int ONBOARDING_CHECKPOINT_PILL = 3;
+    public static final int ONBOARDING_CHECKPOINT_QUESTIONS = 2;
+    public static final int ONBOARDING_CHECKPOINT_SENSE = 3;
+    public static final int ONBOARDING_CHECKPOINT_PILL = 4;
 }

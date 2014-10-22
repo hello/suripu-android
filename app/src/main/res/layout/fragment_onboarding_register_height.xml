@@ -29,15 +29,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/gap_medium"
-            android:minWidth="40dp"
             android:nextFocusForward="@+id/fragment_onboarding_register_height_inches"
             android:imeOptions="actionNext|flagNoExtractUi"
-            android:inputType="number"
-            android:gravity="center"
             android:hint="@string/default_feet"
             android:text="@string/default_feet"
-            android:selectAllOnFocus="true"
-            style="@style/AppTheme.Text.EditText.Onboarding">
+            style="@style/AppTheme.Text.EditText.Onboarding.Metric">
 
             <requestFocus />
 
@@ -54,14 +50,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/gap_medium"
-            android:minWidth="40dp"
             android:imeOptions="actionGo|flagNoExtractUi"
-            android:inputType="number"
-            android:gravity="center"
             android:hint="@string/default_inches"
             android:text="@string/default_inches"
-            android:selectAllOnFocus="true"
-            style="@style/AppTheme.Text.EditText.Onboarding"/>
+            style="@style/AppTheme.Text.EditText.Onboarding.Metric"/>
 
         <TextView
             android:layout_width="wrap_content"

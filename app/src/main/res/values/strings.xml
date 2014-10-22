@@ -114,4 +114,6 @@
     <string name="label_inches">Inches</string>
     <string name="default_feet">5</string>
     <string name="default_inches">8</string>
+    <string name="default_weight">130</string>
+    <string name="label_pounds">lbs</string>
 </resources>

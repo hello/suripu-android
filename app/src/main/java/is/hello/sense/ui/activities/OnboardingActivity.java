@@ -55,6 +55,10 @@ public class OnboardingActivity extends SenseActivity {
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_ACCOUNT:
+                    showBirthday(new Account());
+                    break;
+
+                case Constants.ONBOARDING_CHECKPOINT_QUESTIONS:
                     showSetupSense();
                     break;
 
@@ -115,6 +119,11 @@ public class OnboardingActivity extends SenseActivity {
     }
 
     public void showBirthday(@NonNull Account account) {
+        sharedPreferences
+                .edit()
+                .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_ACCOUNT)
+                .apply();
+
         showFragment(OnboardingRegisterBirthdayFragment.newInstance(account));
     }
 
@@ -133,7 +142,7 @@ public class OnboardingActivity extends SenseActivity {
     public void showSetupSense() {
         sharedPreferences
                 .edit()
-                .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_ACCOUNT)
+                .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS)
                 .apply();
 
         showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_setup_sense, OnboardingPairSenseFragment.class, null));

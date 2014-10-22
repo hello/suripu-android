@@ -16,7 +16,29 @@
         android:textAppearance="@style/AppTheme.Text.Heading"
         android:text="@string/title_register_weight"/>
 
+    <EditText
+        android:id="@+id/fragment_onboarding_register_weight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/gap_medium"
+        android:layout_centerInParent="true"
+        android:nextFocusForward="@+id/fragment_onboarding_register_height_inches"
+        android:imeOptions="actionGo|flagNoExtractUi"
+        android:hint="@string/default_weight"
+        android:text="@string/default_weight"
+        style="@style/AppTheme.Text.EditText.Onboarding.Metric">
 
+        <requestFocus />
+
+    </EditText>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_toEndOf="@id/fragment_onboarding_register_weight"
+        android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
+        android:text="@string/label_pounds"/>
 
     <Button
         android:id="@+id/fragment_onboarding_next"
