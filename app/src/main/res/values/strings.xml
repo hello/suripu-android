@@ -108,4 +108,6 @@
     <string name="title_register_birthday">When is your birthday?</string>
     <string name="action_next">Next</string>
     <string name="title_register_gender">Are you male or female?</string>
+    <string name="title_register_weight">How much do you weigh?</string>
+    <string name="title_register_height">How tall are you?</string>
 </resources>

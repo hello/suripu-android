@@ -47,9 +47,6 @@ public class OnboardingActivity extends SenseActivity {
 
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        showBirthday(new Account());
-        if (0 == 0) return;
-
         if (savedInstanceState == null) {
             int lastCheckpoint = sharedPreferences.getInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
             switch (lastCheckpoint) {

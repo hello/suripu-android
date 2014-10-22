@@ -2,12 +2,20 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 import javax.inject.Inject;
 
+import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
 public class OnboardingRegisterWeightFragment extends InjectionFragment {
     private static final String ARG_ACCOUNT = OnboardingRegisterWeightFragment.class.getName() + ".ARG_ACCOUNT";
@@ -27,6 +35,18 @@ public class OnboardingRegisterWeightFragment extends InjectionFragment {
     }
 
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_onboarding_register_weight, container, false);
+
+        Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
+        nextButton.setOnClickListener(this::next);
+
+        return view;
+    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,5 +63,18 @@ public class OnboardingRegisterWeightFragment extends InjectionFragment {
         super.onSaveInstanceState(outState);
 
         outState.putSerializable(ARG_ACCOUNT, account);
+    }
+
+
+    public void next(@NonNull View sender) {
+        OnboardingActivity activity = (OnboardingActivity) getActivity();
+        activity.beginBlockingWork(R.string.dialog_loading_message);
+        bindAndSubscribe(apiService.updateAccount(account), ignored -> {
+            activity.finishBlockingWork();
+            activity.showSetupSense();
+        }, e -> {
+            activity.finishBlockingWork();
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        });
     }
 }
