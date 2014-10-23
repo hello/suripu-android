@@ -17,6 +17,14 @@
     <string name="action_change">Change</string>
     <string name="action_register">Sign Up</string>
 
+    <string name="device_sense">Sense</string>
+    <string name="device_pill">Pill</string>
+    <string name="device_unknown">Other</string>
+
+    <string name="device_state_normal">Normal</string>
+    <string name="device_state_low_battery">Low Battery</string>
+    <string name="device_state_unknown">Unknown</string>
+
     <string name="dialog_error_title">An Error Occurred</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
     <string name="dialog_error_extended_message_format">%1$s\n\n%2$s (Status: %3$d)</string>

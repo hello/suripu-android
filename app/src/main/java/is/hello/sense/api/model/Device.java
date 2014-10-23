@@ -1,11 +1,15 @@
 package is.hello.sense.api.model;
 
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
+
+import is.hello.sense.R;
 
 public class Device extends ApiResponse {
     @JsonProperty("type")
@@ -59,9 +63,19 @@ public class Device extends ApiResponse {
 
 
     public static enum Type {
-        PILL,
-        SENSE,
-        OTHER;
+        PILL(R.drawable.pill_icon, R.string.device_pill),
+        SENSE(R.drawable.sense_icon, R.string.device_sense),
+        OTHER(R.drawable.sense_icon, R.string.device_unknown);
+
+
+        public final @DrawableRes int iconRes;
+        public final @StringRes int nameRes;
+
+        private Type(@DrawableRes int iconRes, @StringRes int nameRes) {
+            this.iconRes = iconRes;
+            this.nameRes = nameRes;
+        }
+
 
         @JsonCreator
         public static Type fromString(@NonNull String string) {
@@ -70,9 +84,15 @@ public class Device extends ApiResponse {
     }
 
     public static enum State {
-        NORMAL,
-        LOW_BATTERY,
-        UNKNOWN;
+        NORMAL(R.string.device_state_normal),
+        LOW_BATTERY(R.string.device_state_low_battery),
+        UNKNOWN(R.string.device_state_unknown);
+
+        public final @StringRes int nameRes;
+
+        private State(@StringRes int nameRes) {
+            this.nameRes = nameRes;
+        }
 
         @JsonCreator
         public static State fromString(@NonNull String string) {

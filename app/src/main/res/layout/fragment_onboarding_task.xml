@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_onboarding">
 
-    <ProgressBar
+    <is.hello.sense.ui.widget.TintedProgressBar
         android:id="@+id/fragment_onboarding_task_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

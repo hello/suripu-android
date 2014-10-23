@@ -38,7 +38,6 @@ public class OnboardingTaskFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_task, container, false);
 
         ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.fragment_onboarding_task_progress_bar);
-        progressBar.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.light_accent), PorterDuff.Mode.SRC_IN);
 
         TextView title = (TextView) view.findViewById(R.id.fragment_onboarding_task_title);
         title.setText(getArguments().getInt(ARG_TITLE_RES_ID));

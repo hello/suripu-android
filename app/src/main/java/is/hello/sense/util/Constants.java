@@ -6,7 +6,7 @@ public final class Constants {
 
     public static final String NOTIFICATION_PREFS = "notification_prefs";
     public static final String NOTIFICATION_PREF_REGISTRATION_ID = "registration_id";
-    public static final String NOTIFICATION_PREF_APP_VERSION = "app_version";
+    public static final String NOTIFICATION_PREF_APP_VERSION = "app_version_code";
 
     public static final String GLOBAL_PREF_UNIT_SYSTEM = "unit_system_name";
     public static final String GLOBAL_PREF_USE_24_TIME = "use_24_time";

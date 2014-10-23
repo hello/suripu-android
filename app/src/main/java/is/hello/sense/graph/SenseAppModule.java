@@ -7,6 +7,7 @@ import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -62,6 +63,7 @@ import is.hello.sense.util.BuildValues;
         OnboardingPairPillFragment.class,
 
         DevicesFragment.class,
+        DevicesPresenter.class,
 
         TimelineFragment.class,
         TimelinePresenter.class,
