@@ -17,6 +17,8 @@ import rx.Observable;
  *     each of its child presenters, saving the results into its own saved state.</li>
  *     <li>If the container has a finite lifecycle, it should inform its child presenters
  *     by calling {@see Presenter.onContainerDestroyed} when it has been destroyed.</li>
+ *     <li>If the container has an onTrimMemory callback, it should inform its child
+ *     presenters of this by calling {@see Presenter.onTrimMemory}.</li>
  * </ol>
  * @see is.hello.sense.ui.common.InjectionFragment
  */
