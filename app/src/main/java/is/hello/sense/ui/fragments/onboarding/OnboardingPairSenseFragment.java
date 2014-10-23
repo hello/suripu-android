@@ -41,7 +41,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.isSecondUser = getArguments().getBoolean(ARG_IS_SECOND_USER, false);
+        this.isSecondUser = (getArguments() != null && getArguments().getBoolean(ARG_IS_SECOND_USER, false));
         this.bluetoothAdapter = ((BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 
         setRetainInstance(true);

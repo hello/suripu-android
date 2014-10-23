@@ -72,7 +72,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private void finishedSettingWifi() {
         OnboardingActivity activity = (OnboardingActivity) getActivity();
         activity.finishBlockingWork();
-        activity.showWelcome(); //TODO: Sense pairing starts here.
+        activity.showSetupPill();
     }
 
     private void sendWifiCredentials() {

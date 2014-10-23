@@ -50,7 +50,7 @@ import is.hello.sense.util.BuildValues;
         LaunchActivity.class,
         HomeActivity.class,
 
-        InjectionActivity.class,
+        OnboardingActivity.class,
         OnboardingSignInFragment.class,
         OnboardingRegisterFragment.class,
         OnboardingRegisterWeightFragment.class,
