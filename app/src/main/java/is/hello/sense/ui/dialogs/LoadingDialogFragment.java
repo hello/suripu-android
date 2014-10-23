@@ -1,11 +1,10 @@
 package is.hello.sense.ui.dialogs;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
 
@@ -32,10 +31,10 @@ public class LoadingDialogFragment extends DialogFragment {
 
     @Override
     public @NonNull Dialog onCreateDialog(Bundle savedInstanceState) {
-        ProgressDialog dialog = new ProgressDialog(getActivity());
+        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_Details);
 
-        dialog.setIndeterminate(true);
-        dialog.setMessage(getString(R.string.dialog_loading_message));
+        dialog.setContentView(R.layout.fragment_dialog_loading);
+        dialog.setCanceledOnTouchOutside(false);
 
         return dialog;
     }

@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.hello.ble.devices.Morpheus;
@@ -17,10 +18,11 @@ import is.hello.sense.api.model.Device;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
-public class DeviceDetailsFragment extends InjectionFragment {
+public class DeviceDetailsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     private static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
 
     @Inject DateFormatter dateFormatter;
@@ -65,6 +67,7 @@ public class DeviceDetailsFragment extends InjectionFragment {
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
 
         return view;
     }
@@ -84,18 +87,31 @@ public class DeviceDetailsFragment extends InjectionFragment {
     }
 
 
-    public void bindHardwareDevice(@NonNull Morpheus device) {
-        int rssi = device.getScanTimeRssi();
-        String strength;
-        if (rssi <= -30) {
-            strength = getString(R.string.signal_strong);
-        } else if (rssi <= -50) {
-            strength = getString(R.string.signal_good);
-        } else {
-            strength = getString(R.string.signal_weak);
-        }
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        StaticItemAdapter.Item item = (StaticItemAdapter.Item) adapterView.getItemAtPosition(position);
+        if (item.getAction() != null)
+            item.getAction().run();
+    }
 
-        signalStrengthItem.setValue(strength);
+
+    public void bindHardwareDevice(@Nullable Morpheus device) {
+        if (device != null) {
+            int rssi = device.getScanTimeRssi();
+            String strength;
+            if (rssi <= -30) {
+                strength = getString(R.string.signal_strong);
+            } else if (rssi <= -50) {
+                strength = getString(R.string.signal_good);
+            } else {
+                strength = getString(R.string.signal_weak);
+            }
+
+            signalStrengthItem.setValue(strength);
+        } else {
+            Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.");
+            signalStrengthItem.setValue(getString(R.string.missing_data_placeholder));
+        }
     }
 
     public void hardwareDeviceUnavailable(Throwable e) {
@@ -105,6 +121,7 @@ public class DeviceDetailsFragment extends InjectionFragment {
 
 
     public void putIntoPairingMode() {
+        LoadingDialogFragment.show(getFragmentManager());
     }
 
     public void factoryReset() {
