@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.hello.ble.BleOperationCallback;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -16,7 +18,11 @@ import is.hello.sense.graph.presenters.DevicePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.util.BleObserverCallback;
 import is.hello.sense.util.EditorActionHandler;
+
+import static com.hello.ble.BleOperationCallback.*;
+import static is.hello.sense.util.BleObserverCallback.BluetoothError;
 
 public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private static final String ARG_SCAN_RESULT = OnboardingSignIntoWifiFragment.class.getName() + ".ARG_SCAN_RESULT";
@@ -95,6 +101,13 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
     public void presentError(Throwable e) {
         ((OnboardingActivity) getActivity()).finishBlockingWork();
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        if (e instanceof BluetoothError && ((BluetoothError) e).failureReason == OperationFailReason.NETWORK_COULD_NOT_CONNECT) {
+            networkPassword.requestFocus();
+
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_bad_wifi_credentials));
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
     }
 }

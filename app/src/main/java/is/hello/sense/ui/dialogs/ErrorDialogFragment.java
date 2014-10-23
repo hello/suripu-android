@@ -51,6 +51,16 @@ public class ErrorDialogFragment extends DialogFragment {
         return fragment;
     }
 
+    public static ErrorDialogFragment newInstance(@NonNull String message) {
+        ErrorDialogFragment fragment = new ErrorDialogFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putString(ARG_MESSAGE, message);
+        fragment.setArguments(arguments);
+
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
