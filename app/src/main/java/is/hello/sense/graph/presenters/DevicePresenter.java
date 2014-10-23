@@ -110,4 +110,11 @@ import rx.android.schedulers.AndroidSchedulers;
                          })
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
+
+    public void clearDevice() {
+        if (pairedDevice != null) {
+            pairedDevice.disconnect();
+            this.pairedDevice = null;
+        }
+    }
 }

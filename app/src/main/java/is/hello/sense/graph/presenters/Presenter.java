@@ -24,6 +24,10 @@ public abstract class Presenter {
         logEvent("onContainerDestroyed()");
     }
 
+    public void onTrimMemory(int level) {
+        logEvent("onTrimMemory(" + level + ")");
+    }
+
     //endregion
 
 

@@ -58,6 +58,8 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     }
 
     private void finishedPairing() {
+        devicePresenter.clearDevice();
+
         OnboardingActivity activity = (OnboardingActivity) getActivity();
         activity.finishBlockingWork();
         activity.showWelcome();
