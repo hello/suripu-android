@@ -18,7 +18,6 @@ import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SensorStateView;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
@@ -81,13 +80,9 @@ public class HomeUndersideFragment extends InjectionFragment {
     }
 
     public void conditionsUnavailable(@NonNull Throwable e) {
-        if (buildValues.isDebugBuild()) {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
-        } else {
-            Logger.error(HomeUndersideFragment.class.getSimpleName(), "Could not load conditions", e);
-            temperatureState.displayCondition(Condition.UNKNOWN);
-            temperatureState.setReading(getString(R.string.missing_data_placeholder));
-        }
+        Logger.error(HomeUndersideFragment.class.getSimpleName(), "Could not load conditions", e);
+        temperatureState.displayCondition(Condition.UNKNOWN);
+        temperatureState.setReading(getString(R.string.missing_data_placeholder));
     }
 
     //endregion

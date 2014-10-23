@@ -23,17 +23,14 @@ import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.LineGraphView;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.units.UnitFormatter;
-import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
 
 public class SensorHistoryFragment extends InjectionFragment implements SelectorLinearLayout.OnSelectionChangedListener {
     @Inject CurrentConditionsPresenter conditionsPresenter;
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
-    @Inject BuildValues buildValues;
 
     private TextView readingText;
     private TextView messageText;
@@ -105,13 +102,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     }
 
     public void conditionUnavailable(@NonNull Throwable e) {
-        if (buildValues.isDebugBuild()) {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
-        } else {
-            Logger.error(SensorHistoryFragment.class.getSimpleName(), "Could not load conditions", e);
-            readingText.setText(R.string.missing_data_placeholder);
-            messageText.setText(R.string.missing_data_placeholder);
-        }
+        Logger.error(SensorHistoryFragment.class.getSimpleName(), "Could not load conditions", e);
+        readingText.setText(R.string.missing_data_placeholder);
+        messageText.setText(R.string.missing_data_placeholder);
     }
 
 
