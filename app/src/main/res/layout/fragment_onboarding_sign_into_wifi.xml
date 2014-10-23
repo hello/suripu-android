@@ -40,7 +40,7 @@
         android:id="@+id/fragment_onboarding_sign_into_wifi_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
+        android:inputType="textVisiblePassword"
         android:imeOptions="actionSend|flagNoExtractUi"
         android:hint="@string/label_password"/>
 
