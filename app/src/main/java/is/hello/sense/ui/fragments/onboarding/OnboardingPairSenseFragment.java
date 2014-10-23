@@ -107,7 +107,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
 
     public void pairWith(@Nullable Morpheus device) {
         if (device != null) {
-            bindAndSubscribe(hardwarePresenter.pairWithDevice(device), ignored -> finishedPairing(), this::pairingFailed);
+            bindAndSubscribe(hardwarePresenter.connectToDevice(device), ignored -> finishedPairing(), this::pairingFailed);
         } else {
             ErrorDialogFragment.presentError(getFragmentManager(), new Exception("Could not find any devices."));
         }

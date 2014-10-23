@@ -25,6 +25,7 @@ import rx.android.schedulers.AndroidSchedulers;
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
 
+    private Observable<Morpheus> repairingTask;
     private Morpheus pairedDevice;
 
     @Inject public HardwarePresenter(@NonNull PreferencesPresenter preferencesPresenter,
@@ -85,21 +86,27 @@ import rx.android.schedulers.AndroidSchedulers;
             return Observable.just(pairedDevice);
         }
 
+        if (repairingTask != null) {
+            return repairingTask;
+        }
+
         String deviceAddress = preferencesPresenter.getSharedPreferences().getString(Constants.GLOBAL_PREF_PAIRED_DEVICE_ADDRESS, null);
         if (TextUtils.isEmpty(deviceAddress)) {
             return Observable.error(new Exception(""));
         } else {
-            return Observable.create((Observable.OnSubscribe<Morpheus>) s -> Morpheus.discover(deviceAddress, new BleObserverCallback<>(s), Constants.BLE_SCAN_TIMEOUT_MS))
-                             .doOnNext(device -> {
-                                 logEvent("rediscoveredDevice(" + device + ")");
-                                 this.pairedDevice = device;
-                             })
-                             .subscribeOn(AndroidSchedulers.mainThread());
+            this.repairingTask = Observable.create((Observable.OnSubscribe<Morpheus>) s -> Morpheus.discover(deviceAddress, new BleObserverCallback<>(s), Constants.BLE_SCAN_TIMEOUT_MS))
+                    .doOnNext(device -> {
+                        logEvent("rediscoveredDevice(" + device + ")");
+                        this.pairedDevice = device;
+                        this.repairingTask = null;
+                    })
+                    .subscribeOn(AndroidSchedulers.mainThread());
+            return repairingTask;
         }
     }
 
-    public Observable<Void> pairWithDevice(@NonNull Morpheus device) {
-        logEvent("pairWithDevice(" + device + ")");
+    public Observable<Void> connectToDevice(@NonNull Morpheus device) {
+        logEvent("connectToDevice(" + device + ")");
 
         if (device.isConnected() && device.getBondState() != BluetoothDevice.BOND_NONE) {
             logEvent("already paired with device " + device);
@@ -142,8 +149,14 @@ import rx.android.schedulers.AndroidSchedulers;
     }
 
     public void clearDevice() {
+        logEvent("clearDevice()");
+
         if (pairedDevice != null) {
-            pairedDevice.disconnect();
+            if (pairedDevice.isConnected()) {
+                logEvent("disconnect from paired device");
+                pairedDevice.disconnect();
+            }
+
             this.pairedDevice = null;
         }
     }
