@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
@@ -67,7 +68,9 @@ public class DevicesFragment extends InjectionFragment implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-
+        Device device = (Device) adapterView.getItemAtPosition(position);
+        DeviceDetailsFragment fragment = DeviceDetailsFragment.newInstance(device);
+        ((SettingsActivity) getActivity()).showFragment(fragment);
     }
 
 

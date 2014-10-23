@@ -42,7 +42,7 @@ public class SettingsActivity extends InjectionActivity {
         }
     }
 
-    private void showFragment(@NonNull Fragment fragment) {
+    public void showFragment(@NonNull Fragment fragment) {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         String tag = fragment.getClass().getSimpleName();
         if (getFragmentManager().findFragmentById(R.id.activity_settings_container) == null) {
