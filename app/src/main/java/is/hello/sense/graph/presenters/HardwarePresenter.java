@@ -19,14 +19,14 @@ import is.hello.sense.util.Constants;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-@Singleton public class DevicePresenter extends Presenter {
+@Singleton public class HardwarePresenter extends Presenter {
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
 
     private Morpheus pairedDevice;
 
-    @Inject public DevicePresenter(@NonNull PreferencesPresenter preferencesPresenter,
-                                   @NonNull ApiSessionManager apiSessionManager) {
+    @Inject public HardwarePresenter(@NonNull PreferencesPresenter preferencesPresenter,
+                                     @NonNull ApiSessionManager apiSessionManager) {
         this.preferencesPresenter = preferencesPresenter;
         this.apiSessionManager = apiSessionManager;
     }

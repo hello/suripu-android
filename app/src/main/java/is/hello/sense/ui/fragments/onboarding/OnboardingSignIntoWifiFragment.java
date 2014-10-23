@@ -9,16 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.hello.ble.BleOperationCallback;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.DevicePresenter;
+import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.util.BleObserverCallback;
 import is.hello.sense.util.EditorActionHandler;
 
 import static com.hello.ble.BleOperationCallback.*;
@@ -27,7 +24,7 @@ import static is.hello.sense.util.BleObserverCallback.BluetoothError;
 public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private static final String ARG_SCAN_RESULT = OnboardingSignIntoWifiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
-    @Inject DevicePresenter devicePresenter;
+    @Inject HardwarePresenter hardwarePresenter;
 
     private EditText networkName;
     private EditText networkPassword;
@@ -91,11 +88,11 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
         beginSettingWifi();
 
-        bindAndSubscribe(devicePresenter.sendWifiCredentials(networkName, networkName, password), ignored -> sendAccessToken(), this::presentError);
+        bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, password), ignored -> sendAccessToken(), this::presentError);
     }
 
     private void sendAccessToken() {
-        bindAndSubscribe(devicePresenter.linkAccount(), ignored -> finishedSettingWifi(), this::presentError);
+        bindAndSubscribe(hardwarePresenter.linkAccount(), ignored -> finishedSettingWifi(), this::presentError);
     }
 
 

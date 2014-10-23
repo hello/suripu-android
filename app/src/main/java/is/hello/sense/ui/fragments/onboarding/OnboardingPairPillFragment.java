@@ -11,7 +11,7 @@ import android.widget.Button;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.DevicePresenter;
+import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -19,7 +19,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 public class OnboardingPairPillFragment extends InjectionFragment {
     private static final String ARG_COLOR_INDEX = OnboardingPairPillFragment.class.getName() + ".ARG_COLOR_INDEX";
 
-    @Inject DevicePresenter devicePresenter;
+    @Inject HardwarePresenter hardwarePresenter;
 
     public static OnboardingPairPillFragment newInstance(int colorIndex) {
         OnboardingPairPillFragment fragment = new OnboardingPairPillFragment();
@@ -58,7 +58,7 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     }
 
     private void finishedPairing() {
-        devicePresenter.clearDevice();
+        hardwarePresenter.clearDevice();
 
         OnboardingActivity activity = (OnboardingActivity) getActivity();
         activity.finishBlockingWork();
@@ -69,7 +69,7 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     public void next(@NonNull View sender) {
         beginPairing();
 
-        bindAndSubscribe(devicePresenter.linkPill(), ignored -> finishedPairing(), e -> {
+        bindAndSubscribe(hardwarePresenter.linkPill(), ignored -> finishedPairing(), e -> {
             OnboardingActivity onboardingActivity = (OnboardingActivity) getActivity();
             if (onboardingActivity != null) {
                 onboardingActivity.finishBlockingWork();

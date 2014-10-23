@@ -7,7 +7,7 @@ import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.DevicePresenter;
+import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
@@ -20,7 +20,6 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SettingsActivity;
-import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.fragments.HomeUndersideFragment;
 import is.hello.sense.ui.fragments.QuestionsFragment;
@@ -55,7 +54,7 @@ import is.hello.sense.util.BuildValues;
         OnboardingRegisterFragment.class,
         OnboardingRegisterWeightFragment.class,
         OnboardingPairSenseFragment.class,
-        DevicePresenter.class,
+        HardwarePresenter.class,
         OnboardingWifiNetworkFragment.class,
         WifiNetworkPresenter.class,
         OnboardingSignIntoWifiFragment.class,

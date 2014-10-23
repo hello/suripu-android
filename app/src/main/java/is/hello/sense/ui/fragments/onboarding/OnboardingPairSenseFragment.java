@@ -19,7 +19,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.DevicePresenter;
+import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -30,7 +30,7 @@ import static rx.android.observables.AndroidObservable.fromBroadcast;
 public class OnboardingPairSenseFragment extends InjectionFragment {
     public static final String ARG_IS_SECOND_USER = OnboardingPairSenseFragment.class.getName() + ".ARG_IS_SECOND_USER";
 
-    @Inject DevicePresenter devicePresenter;
+    @Inject HardwarePresenter hardwarePresenter;
 
     private boolean isSecondUser = false;
     private BluetoothAdapter bluetoothAdapter;
@@ -97,8 +97,8 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         if (bluetoothAdapter.isEnabled()) {
             beginPairing();
 
-            Observable<Morpheus> device = devicePresenter.scanForDevices()
-                                                         .map(devicePresenter::bestDeviceForPairing);
+            Observable<Morpheus> device = hardwarePresenter.scanForDevices()
+                                                         .map(hardwarePresenter::bestDeviceForPairing);
             subscribe(device, this::pairWith, this::pairingFailed);
         } else {
             startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
@@ -107,7 +107,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
 
     public void pairWith(@Nullable Morpheus device) {
         if (device != null) {
-            bindAndSubscribe(devicePresenter.pairWithDevice(device), ignored -> finishedPairing(), this::pairingFailed);
+            bindAndSubscribe(hardwarePresenter.pairWithDevice(device), ignored -> finishedPairing(), this::pairingFailed);
         } else {
             ErrorDialogFragment.presentError(getFragmentManager(), new Exception("Could not find any devices."));
         }
