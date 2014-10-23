@@ -16,6 +16,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.fragments.settings.DevicesFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.fragments.settings.SettingsFragment;
 
@@ -72,7 +73,7 @@ public class SettingsActivity extends InjectionActivity {
             adapter.addItem(getString(R.string.label_my_info), null, () -> getSettingsActivity().showFragment(new MyInfoFragment()));
             adapter.addItem(getString(R.string.label_account), null);
             adapter.addItem(getString(R.string.label_units_and_time), null, () -> getSettingsActivity().showSettings(R.xml.settings_units_and_time));
-            adapter.addItem(getString(R.string.label_devices), null);
+            adapter.addItem(getString(R.string.label_devices), null, () -> getSettingsActivity().showFragment(new DevicesFragment()));
             adapter.addItem(getString(R.string.action_log_out), null, this::logOut);
             setListAdapter(adapter);
         }
