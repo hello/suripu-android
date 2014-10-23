@@ -165,6 +165,13 @@ import rx.android.schedulers.AndroidSchedulers;
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 
+    public Observable<Void> factoryReset() {
+        logEvent("factoryReset()");
+
+        return Observable.create((Observable.OnSubscribe<Void>) s -> device.factoryReset(new BleObserverCallback<>(s)))
+                         .subscribeOn(AndroidSchedulers.mainThread());
+    }
+
     public void clearDevice() {
         logEvent("clearDevice()");
 

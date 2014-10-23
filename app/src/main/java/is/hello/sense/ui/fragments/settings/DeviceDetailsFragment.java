@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.settings;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -119,6 +120,11 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         signalStrengthItem.setValue(getString(R.string.missing_data_placeholder));
     }
 
+    public void presentError(Throwable e) {
+        LoadingDialogFragment.close(getFragmentManager());
+        ErrorDialogFragment.presentError(getFragmentManager(), e);
+    }
+
 
     @SuppressWarnings("CodeBlock2Expr")
     public void putIntoPairingMode() {
@@ -127,18 +133,27 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
         LoadingDialogFragment.show(getFragmentManager());
 
-        Action1<Throwable> onErrors = e -> {
-            LoadingDialogFragment.close(getFragmentManager());
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
-        };
-
         bindAndSubscribe(hardwarePresenter.connectToDevice(hardwarePresenter.getDevice()), ignored -> {
             bindAndSubscribe(hardwarePresenter.putIntoPairingMode(), ignored1 -> {
                 LoadingDialogFragment.close(getFragmentManager());
-            }, onErrors);
-        }, onErrors);
+            }, this::presentError);
+        }, this::presentError);
     }
 
+    @SuppressWarnings("CodeBlock2Expr")
     public void factoryReset() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.dialog_title_factory_reset);
+        builder.setMessage(R.string.dialog_messsage_factory_reset);
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.setPositiveButton(R.string.action_factory_reset, (d, which) -> {
+            LoadingDialogFragment.show(getFragmentManager());
+            bindAndSubscribe(hardwarePresenter.connectToDevice(hardwarePresenter.getDevice()), ignored -> {
+                bindAndSubscribe(hardwarePresenter.factoryReset(), ignored1 -> {
+                    LoadingDialogFragment.close(getFragmentManager());
+                }, this::presentError);
+            }, this::presentError);
+        });
+        builder.create().show();
     }
 }

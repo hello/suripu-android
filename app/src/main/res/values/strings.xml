@@ -146,6 +146,8 @@
     <string name="signal_weak">Weak</string>
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
     <string name="action_factory_reset">Factory Reset</string>
+    <string name="dialog_title_factory_reset">Perform factory reset?</string>
+    <string name="dialog_messsage_factory_reset">A factory reset cannot be undone.</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
