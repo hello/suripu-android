@@ -26,7 +26,7 @@ import rx.android.schedulers.AndroidSchedulers;
     private final ApiSessionManager apiSessionManager;
 
     private Observable<Morpheus> repairingTask;
-    private Morpheus pairedDevice;
+    private Morpheus device;
 
     @Inject public HardwarePresenter(@NonNull PreferencesPresenter preferencesPresenter,
                                      @NonNull ApiSessionManager apiSessionManager) {
@@ -60,6 +60,10 @@ import rx.android.schedulers.AndroidSchedulers;
     }
 
 
+    public Morpheus getDevice() {
+        return device;
+    }
+
     public Observable<Set<Morpheus>> scanForDevices() {
         logEvent("scanForDevices()");
 
@@ -80,10 +84,10 @@ import rx.android.schedulers.AndroidSchedulers;
     public Observable<Morpheus> rediscoverDevice() {
         logEvent("rediscoverDevice()");
 
-        if (pairedDevice != null) {
-            logEvent("device already rediscovered " + pairedDevice);
+        if (device != null) {
+            logEvent("device already rediscovered " + device);
 
-            return Observable.just(pairedDevice);
+            return Observable.just(device);
         }
 
         if (repairingTask != null) {
@@ -95,10 +99,16 @@ import rx.android.schedulers.AndroidSchedulers;
             return Observable.error(new Exception(""));
         } else {
             this.repairingTask = Observable.create((Observable.OnSubscribe<Morpheus>) s -> Morpheus.discover(deviceAddress, new BleObserverCallback<>(s), Constants.BLE_SCAN_TIMEOUT_MS))
-                    .doOnNext(device -> {
-                        logEvent("rediscoveredDevice(" + device + ")");
-                        this.pairedDevice = device;
-                        this.repairingTask = null;
+                    .flatMap(device -> {
+                        if (device != null) {
+                            logEvent("rediscoveredDevice(" + device + ")");
+                            this.device = device;
+                            this.repairingTask = null;
+
+                            return Observable.just(device);
+                        } else {
+                            return Observable.error(new Exception("Could not rediscover device."));
+                        }
                     })
                     .subscribeOn(AndroidSchedulers.mainThread());
             return repairingTask;
@@ -118,7 +128,7 @@ import rx.android.schedulers.AndroidSchedulers;
                          .doOnNext(ignored -> {
                              logEvent("pairedWithDevice(" + device + ")");
                              setPairedDeviceAddress(device.getAddress());
-                             this.pairedDevice = device;
+                             this.device = device;
                          })
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
@@ -126,21 +136,21 @@ import rx.android.schedulers.AndroidSchedulers;
     public Observable<Void> sendWifiCredentials(String bssid, String ssid, String password) {
         logEvent("sendWifiCredentials()");
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> pairedDevice.setWIFIConnection(bssid, ssid, password, new BleObserverCallback<>(s)))
+        return Observable.create((Observable.OnSubscribe<Void>) s -> device.setWIFIConnection(bssid, ssid, password, new BleObserverCallback<>(s)))
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<Void> linkAccount() {
         logEvent("linkAccount()");
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> pairedDevice.linkAccount(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s)))
+        return Observable.create((Observable.OnSubscribe<Void>) s -> device.linkAccount(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s)))
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<String> linkPill() {
         logEvent("linkPill()");
 
-        return Observable.create((Observable.OnSubscribe<String>) s -> pairedDevice.pairPill(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s)))
+        return Observable.create((Observable.OnSubscribe<String>) s -> device.pairPill(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s)))
                          .doOnNext(pillId -> {
                              logEvent("linkedWithPill(" + pillId+ ")");
                              setPairedPillId(pillId);
@@ -148,16 +158,23 @@ import rx.android.schedulers.AndroidSchedulers;
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 
+    public Observable<Void> putIntoPairingMode() {
+        logEvent("putIntoPairingMode()");
+
+        return Observable.create((Observable.OnSubscribe<Void>) s -> device.switchToPairingMode(new BleObserverCallback<>(s)))
+                         .subscribeOn(AndroidSchedulers.mainThread());
+    }
+
     public void clearDevice() {
         logEvent("clearDevice()");
 
-        if (pairedDevice != null) {
-            if (pairedDevice.isConnected()) {
+        if (device != null) {
+            if (device.isConnected()) {
                 logEvent("disconnect from paired device");
-                pairedDevice.disconnect();
+                device.disconnect();
             }
 
-            this.pairedDevice = null;
+            this.device = null;
         }
     }
 }

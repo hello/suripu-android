@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.hello.ble.devices.Morpheus;
 
@@ -18,9 +19,11 @@ import is.hello.sense.api.model.Device;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
+import rx.functions.Action1;
 
 public class DeviceDetailsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     private static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
@@ -95,33 +98,45 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     }
 
 
-    public void bindHardwareDevice(@Nullable Morpheus device) {
-        if (device != null) {
-            int rssi = device.getScanTimeRssi();
-            String strength;
-            if (rssi <= -30) {
-                strength = getString(R.string.signal_strong);
-            } else if (rssi <= -50) {
-                strength = getString(R.string.signal_good);
-            } else {
-                strength = getString(R.string.signal_weak);
-            }
-
-            signalStrengthItem.setValue(strength);
+    public void bindHardwareDevice(@NonNull Morpheus device) {
+        int rssi = device.getScanTimeRssi();
+        String strength;
+        if (rssi <= -30) {
+            strength = getString(R.string.signal_strong);
+        } else if (rssi <= -50) {
+            strength = getString(R.string.signal_good);
         } else {
-            Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.");
-            signalStrengthItem.setValue(getString(R.string.missing_data_placeholder));
+            strength = getString(R.string.signal_weak);
         }
+
+        signalStrengthItem.setValue(strength);
     }
 
     public void hardwareDeviceUnavailable(Throwable e) {
+        LoadingDialogFragment.close(getFragmentManager());
+
         Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
         signalStrengthItem.setValue(getString(R.string.missing_data_placeholder));
     }
 
 
+    @SuppressWarnings("CodeBlock2Expr")
     public void putIntoPairingMode() {
+        if (hardwarePresenter.getDevice() == null)
+            return;
+
         LoadingDialogFragment.show(getFragmentManager());
+
+        Action1<Throwable> onErrors = e -> {
+            LoadingDialogFragment.close(getFragmentManager());
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        };
+
+        bindAndSubscribe(hardwarePresenter.connectToDevice(hardwarePresenter.getDevice()), ignored -> {
+            bindAndSubscribe(hardwarePresenter.putIntoPairingMode(), ignored1 -> {
+                LoadingDialogFragment.close(getFragmentManager());
+            }, onErrors);
+        }, onErrors);
     }
 
     public void factoryReset() {
