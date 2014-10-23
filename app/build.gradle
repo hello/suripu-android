@@ -50,12 +50,14 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
+            runProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
         release {
             signingConfig signingConfigs.release
 
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            runProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
     }
     compileOptions {
