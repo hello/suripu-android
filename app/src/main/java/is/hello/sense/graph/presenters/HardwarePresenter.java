@@ -1,8 +1,10 @@
 package is.hello.sense.graph.presenters;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.google.common.primitives.Ints;
 import com.hello.ble.devices.Morpheus;
@@ -74,8 +76,36 @@ import rx.android.schedulers.AndroidSchedulers;
         }
     }
 
+    public Observable<Morpheus> rediscoverDevice() {
+        logEvent("rediscoverDevice()");
+
+        if (pairedDevice != null) {
+            logEvent("device already rediscovered " + pairedDevice);
+
+            return Observable.just(pairedDevice);
+        }
+
+        String deviceAddress = preferencesPresenter.getSharedPreferences().getString(Constants.GLOBAL_PREF_PAIRED_DEVICE_ADDRESS, null);
+        if (TextUtils.isEmpty(deviceAddress)) {
+            return Observable.error(new Exception(""));
+        } else {
+            return Observable.create((Observable.OnSubscribe<Morpheus>) s -> Morpheus.discover(deviceAddress, new BleObserverCallback<>(s), Constants.BLE_SCAN_TIMEOUT_MS))
+                             .doOnNext(device -> {
+                                 logEvent("rediscoveredDevice(" + device + ")");
+                                 this.pairedDevice = device;
+                             })
+                             .subscribeOn(AndroidSchedulers.mainThread());
+        }
+    }
+
     public Observable<Void> pairWithDevice(@NonNull Morpheus device) {
         logEvent("pairWithDevice(" + device + ")");
+
+        if (device.isConnected() && device.getBondState() != BluetoothDevice.BOND_NONE) {
+            logEvent("already paired with device " + device);
+
+            return Observable.just(null);
+        }
 
         return Observable.create((Observable.OnSubscribe<Void>) s -> device.connect(new BleObserverCallback<>(s)))
                          .doOnNext(ignored -> {

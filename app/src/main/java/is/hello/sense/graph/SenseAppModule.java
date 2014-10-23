@@ -33,6 +33,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
+import is.hello.sense.ui.fragments.settings.DeviceDetailsFragment;
 import is.hello.sense.ui.fragments.settings.DevicesFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.widget.TimelineSegmentView;
@@ -64,6 +65,7 @@ import is.hello.sense.util.BuildValues;
 
         DevicesFragment.class,
         DevicesPresenter.class,
+        DeviceDetailsFragment.class,
 
         TimelineFragment.class,
         TimelinePresenter.class,
