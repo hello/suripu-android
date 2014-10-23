@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.common.primitives.Floats;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -130,7 +128,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 this.sectionCount = 0;
                 this.pointCount = 0;
             } else {
-                SensorHistory peak = Collections.max(history, (l, r) -> Floats.compare(l.getValue(), r.getValue()));
+                SensorHistory peak = Collections.max(history, (l, r) -> Float.compare(l.getValue(), r.getValue()));
                 this.peakY = Math.max(100, (int) peak.getValue());
                 this.sectionCount = 7;
                 this.pointCount = data.size() / 8;
