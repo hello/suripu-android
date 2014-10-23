@@ -50,7 +50,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
-            runProguard true
+            runProguard false // when we hit the 0xffff method limit, switch this to true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
         release {
