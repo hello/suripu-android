@@ -6,6 +6,7 @@ import java.util.List;
 
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
@@ -14,6 +15,7 @@ import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.PUT;
@@ -85,6 +87,20 @@ public interface ApiService {
 
     @PUT("/questions/:id/skip")
     Observable<ApiResponse> skipQuestion(@Path("id") long questionId);
+
+    //endregion
+
+
+    //region Devices
+
+    @GET("/devices")
+    Observable<List<Device>> registeredDevices();
+
+    @DELETE("/devices/pill/{id}")
+    Observable<ApiResponse> unregisterPill(@Path("id") @NonNull String pillId);
+
+    @DELETE("/devices/sense/{id}")
+    Observable<ApiResponse> unregisterSense(@Path("id") @NonNull String senseId);
 
     //endregion
 }

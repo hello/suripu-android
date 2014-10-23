@@ -13,6 +13,7 @@ import java.util.List;
 
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
@@ -122,6 +123,21 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ApiResponse> skipQuestion(@Path("id") long questionId) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<List<Device>> registeredDevices() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<ApiResponse> unregisterPill(@Path("id") @NonNull String pillId) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<ApiResponse> unregisterSense(@Path("id") @NonNull String senseId) {
         return unimplemented();
     }
 }
