@@ -60,7 +60,7 @@ public class OnboardingStaticStepFragment extends Fragment {
             Class<Fragment> fragmentClass = (Class<Fragment>) Class.forName(getArguments().getString(ARG_NEXT_CLASS));
             Fragment fragment = fragmentClass.newInstance();
             fragment.setArguments(getArguments().getParcelable(ARG_ARGUMENTS));
-            ((OnboardingActivity) getActivity()).showFragment(fragment);
+            ((OnboardingActivity) getActivity()).showFragment(fragment, true);
         } catch (ClassNotFoundException | java.lang.InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Could not resolve next step fragment class", e);
         }

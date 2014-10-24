@@ -1,6 +1,8 @@
 package is.hello.sense.ui.activities;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.wifi.ScanResult;
@@ -117,101 +119,112 @@ public class OnboardingActivity extends InjectionActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void showFragment(@NonNull Fragment fragment) {
+    public void showFragment(@NonNull Fragment fragment, boolean addToBackStack) {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             transaction.add(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
         } else {
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             transaction.replace(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
-            transaction.addToBackStack(fragment.getClass().getSimpleName());
+            if (addToBackStack)
+                transaction.addToBackStack(fragment.getClass().getSimpleName());
         }
         transaction.commit();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.dialog_title_confirm_leave_onboarding);
+            builder.setMessage(R.string.dialog_message_confirm_leave_onboarding);
+            builder.setPositiveButton(android.R.string.ok, (dialog, which) -> super.onBackPressed());
+            builder.setNegativeButton(android.R.string.cancel, null);
+            builder.create().show();
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     //region Steps
 
+    public void passedCheckPoint(int checkPoint) {
+        preferences
+                .edit()
+                .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, checkPoint)
+                .apply();
+
+        getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
+
     public void showIntroductionFragment() {
-        showFragment(new OnboardingIntroductionFragment());
+        showFragment(new OnboardingIntroductionFragment(), true);
     }
 
     public void showSignIn() {
-        showFragment(new OnboardingSignInFragment());
+        showFragment(new OnboardingSignInFragment(), true);
     }
 
     public void showRegistration() {
-        showFragment(new OnboardingRegisterFragment());
+        showFragment(new OnboardingRegisterFragment(), true);
     }
 
     public void showBirthday(@NonNull Account account) {
-        preferences
-                .edit()
-                .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_ACCOUNT)
-                .apply();
+        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_ACCOUNT);
 
-        showFragment(OnboardingRegisterBirthdayFragment.newInstance(account));
+        showFragment(OnboardingRegisterBirthdayFragment.newInstance(account), false);
     }
 
     public void showGender(@NonNull Account account) {
-        showFragment(OnboardingRegisterGenderFragment.newInstance(account));
+        showFragment(OnboardingRegisterGenderFragment.newInstance(account), true);
     }
 
     public void showHeight(@NonNull Account account) {
-        showFragment(OnboardingRegisterHeightFragment.newInstance(account));
+        showFragment(OnboardingRegisterHeightFragment.newInstance(account), true);
     }
 
     public void showWeight(@NonNull Account account) {
-        showFragment(OnboardingRegisterWeightFragment.newInstance(account));
+        showFragment(OnboardingRegisterWeightFragment.newInstance(account), true);
     }
 
     public void showWhichPill() {
-        preferences
-                .edit()
-                .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS)
-                .apply();
+        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
 
-        showFragment(new OnboardingWhichPillFragment());
+        showFragment(new OnboardingWhichPillFragment(), false);
     }
 
     public void showSetupSense(boolean secondPill) {
         if (secondPill) {
             Bundle arguments = new Bundle();
             arguments.putBoolean(OnboardingPairSenseFragment.ARG_IS_SECOND_USER, true);
-            showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_2nd_user_setup_sense, OnboardingPairSenseFragment.class, arguments));
+            showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_2nd_user_setup_sense, OnboardingPairSenseFragment.class, arguments), true);
         } else {
-            showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_1st_user_setup_sense, OnboardingPairSenseFragment.class, null));
+            showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_1st_user_setup_sense, OnboardingPairSenseFragment.class, null), true);
         }
     }
 
     public void showSelectWifiNetwork() {
-        showFragment(new OnboardingWifiNetworkFragment());
+        showFragment(new OnboardingWifiNetworkFragment(), true);
     }
 
     public void showSignIntoWifiNetwork(@Nullable ScanResult network) {
-        showFragment(OnboardingSignIntoWifiFragment.newInstance(network));
+        showFragment(OnboardingSignIntoWifiFragment.newInstance(network), true);
     }
 
     public void showSetupPill() {
-        preferences
-                .edit()
-                .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_SENSE)
-                .apply();
+        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SENSE);
 
-        showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_pill_intro, OnboardingSleepPillColorFragment.class, null));
+        showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_pill_intro, OnboardingSleepPillColorFragment.class, null), false);
     }
 
     public void showPairPill(int selectedColorIndex) {
-        showFragment(OnboardingPairPillFragment.newInstance(selectedColorIndex));
+        showFragment(OnboardingPairPillFragment.newInstance(selectedColorIndex), true);
     }
 
     public void showWelcome() {
-        preferences
-                .edit()
-                .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_PILL)
-                .apply();
+        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
 
-        showFragment(new OnboardingWelcomeFragment());
+        showFragment(new OnboardingWelcomeFragment(), false);
     }
 
     //endregion

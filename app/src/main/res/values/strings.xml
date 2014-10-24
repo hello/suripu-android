@@ -148,6 +148,8 @@
     <string name="action_factory_reset">Factory Reset</string>
     <string name="dialog_title_factory_reset">Perform factory reset?</string>
     <string name="dialog_messsage_factory_reset">A factory reset cannot be undone.</string>
+    <string name="dialog_title_confirm_leave_onboarding">Leave On Boarding?</string>
+    <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
