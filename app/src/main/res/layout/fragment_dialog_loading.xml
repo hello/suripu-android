@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_dialog_loading_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_dim">
 
     <is.hello.sense.ui.widget.TintedProgressBar
+        android:id="@+id/fragment_dialog_loading_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         style="@android:style/Widget.Holo.Light.ProgressBar.Large"/>
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/fragment_dialog_loading_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/fragment_dialog_loading_bar"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Heading"/>
+
+</RelativeLayout>

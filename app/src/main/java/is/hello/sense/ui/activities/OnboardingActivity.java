@@ -21,6 +21,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingGettingStartedFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
@@ -34,7 +35,6 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSleepPillColorFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingTaskFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWelcomeFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWhichPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
@@ -43,7 +43,6 @@ import is.hello.sense.util.Constants;
 
 public class OnboardingActivity extends InjectionActivity {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
-    private static final String BLOCKING_WORK_TAG = "BlockingWorkFragment";
 
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferences;
@@ -252,27 +251,12 @@ public class OnboardingActivity extends InjectionActivity {
     //region Presenting Blocking Work
 
     public void beginBlockingWork(@StringRes int titleResId) {
-        if (getFragmentManager().findFragmentByTag(BLOCKING_WORK_TAG) != null)
-            return;
-
-        OnboardingTaskFragment fragment = OnboardingTaskFragment.newInstance(titleResId);
-        getFragmentManager()
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .add(R.id.activity_onboarding_container, fragment, BLOCKING_WORK_TAG)
-                .commit();
+        LoadingDialogFragment dialogFragment = LoadingDialogFragment.newInstance(getString(titleResId), true);
+        dialogFragment.show(getFragmentManager(), LoadingDialogFragment.TAG);
     }
 
     public void finishBlockingWork() {
-        Fragment fragment = getFragmentManager().findFragmentByTag(BLOCKING_WORK_TAG);
-        if (fragment == null)
-            return;
-
-        getFragmentManager()
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                .remove(fragment)
-                .commit();
+        LoadingDialogFragment.close(getFragmentManager());
     }
 
     //endregion
