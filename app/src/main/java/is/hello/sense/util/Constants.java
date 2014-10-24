@@ -21,7 +21,7 @@ public final class Constants {
      */
     public static final float OPEN_VELOCITY_THRESHOLD = 350f;
 
-    public static final int BLE_DEFAULT_TIMEOUT_MS = 200000;
+    public static final int BLE_DEFAULT_TIMEOUT_MS = 20000;
     public static final int BLE_SCAN_TIMEOUT_MS = 10000;
     public static final int BLE_SET_WIFI_TIMEOUT_MS = 60000; // firmware suggestion
 
