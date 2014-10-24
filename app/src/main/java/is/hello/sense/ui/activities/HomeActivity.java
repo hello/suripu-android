@@ -91,6 +91,9 @@ public class HomeActivity
                 new NotificationRegistration(this).register();
             }
         }
+
+        if (!buildValues.isDebugBuild() && buildValues.debugScreenEnabled)
+            UpdateManager.register(this, getString(R.string.build_hockey_id));
     }
 
     @Override
