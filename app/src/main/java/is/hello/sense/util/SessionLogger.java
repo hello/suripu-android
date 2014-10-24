@@ -53,11 +53,15 @@ public final class SessionLogger {
             return;
 
         handler.post(() -> {
-            int messagesWrittenSnapshot = messagesWritten.incrementAndGet();
-            printWriter.printf("%s %s/%s: %s\n", DateTime.now(), priorityToString(priority), tag, message);
-            if (priority == Log.ERROR || messagesWrittenSnapshot > ROLLOVER) {
-                messagesWritten.set(0);
-                printWriter.flush();
+            try {
+                int messagesWrittenSnapshot = messagesWritten.incrementAndGet();
+                printWriter.printf("%s %s/%s: %s\n", DateTime.now(), priorityToString(priority), tag, message);
+                if (priority == Log.ERROR || messagesWrittenSnapshot > ROLLOVER) {
+                    messagesWritten.set(0);
+                    printWriter.flush();
+                }
+            } catch (Exception e) {
+                Log.wtf(SessionLogger.class.getSimpleName(), "Internal error.", e);
             }
         });
     }
