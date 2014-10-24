@@ -3,6 +3,7 @@ package is.hello.sense.units;
 import android.support.annotation.NonNull;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import is.hello.sense.units.systems.MetricUnitSystem;
@@ -16,7 +17,6 @@ public class UnitSystem {
 
     private static final LinkedHashMap<String, Class<? extends UnitSystem>> UNIT_SYSTEMS = new LinkedHashMap<>();
 
-    public static final String DEFAULT_UNIT_SYSTEM = UsCustomaryUnitSystem.NAME;
     public static Map<String, Class<? extends UnitSystem>> getUnitSystems() {
         if (UNIT_SYSTEMS.isEmpty()) {
             UNIT_SYSTEMS.put(MetricUnitSystem.NAME, MetricUnitSystem.class);
@@ -24,6 +24,15 @@ public class UnitSystem {
         }
 
         return UNIT_SYSTEMS;
+    }
+
+    public static @NonNull String getDefaultUnitSystem(@NonNull Locale locale) {
+        String countryCode = locale.getCountry();
+        if ("US".equals(countryCode) || "LR".equals(countryCode) || "MM".equals(countryCode)) {
+            return UsCustomaryUnitSystem.NAME;
+        } else {
+            return MetricUnitSystem.NAME;
+        }
     }
 
     public static @NonNull UnitSystem createUnitSystemWithName(@NonNull String name) {

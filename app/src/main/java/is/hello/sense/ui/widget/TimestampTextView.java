@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -50,7 +51,8 @@ public final class TimestampTextView extends TextView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        Observable<Boolean> use24HourTime = preferencesPresenter.observableBoolean(PreferencesPresenter.USE_24_TIME, false)
+        boolean defaultValue = DateFormat.is24HourFormat(getContext());
+        Observable<Boolean> use24HourTime = preferencesPresenter.observableBoolean(PreferencesPresenter.USE_24_TIME, defaultValue)
                                                                 .subscribeOn(AndroidSchedulers.mainThread());
         this.subscription = use24HourTime.subscribe(this::setUse24HourTime);
     }
