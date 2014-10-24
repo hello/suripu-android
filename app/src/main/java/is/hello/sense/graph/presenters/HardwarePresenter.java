@@ -2,6 +2,8 @@ package is.hello.sense.graph.presenters;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -24,6 +26,7 @@ import rx.android.schedulers.AndroidSchedulers;
 @Singleton public class HardwarePresenter extends Presenter {
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
+    private final Handler timeoutHandler;
 
     private Observable<Morpheus> repairingTask;
     private Morpheus device;
@@ -32,6 +35,7 @@ import rx.android.schedulers.AndroidSchedulers;
                                      @NonNull ApiSessionManager apiSessionManager) {
         this.preferencesPresenter = preferencesPresenter;
         this.apiSessionManager = apiSessionManager;
+        this.timeoutHandler = new Handler(Looper.getMainLooper());
     }
 
 
@@ -67,7 +71,7 @@ import rx.android.schedulers.AndroidSchedulers;
     public Observable<Set<Morpheus>> scanForDevices() {
         logEvent("scanForDevices()");
 
-        return Observable.create((Observable.OnSubscribe<Set<Morpheus>>) s -> Morpheus.discover(new BleObserverCallback<>(s), Constants.BLE_SCAN_TIMEOUT_MS))
+        return Observable.create((Observable.OnSubscribe<Set<Morpheus>>) s -> Morpheus.discover(new BleObserverCallback<>(s, timeoutHandler, BleObserverCallback.NO_TIMEOUT), Constants.BLE_SCAN_TIMEOUT_MS))
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 
@@ -98,7 +102,7 @@ import rx.android.schedulers.AndroidSchedulers;
         if (TextUtils.isEmpty(deviceAddress)) {
             return Observable.error(new Exception(""));
         } else {
-            this.repairingTask = Observable.create((Observable.OnSubscribe<Morpheus>) s -> Morpheus.discover(deviceAddress, new BleObserverCallback<>(s), Constants.BLE_SCAN_TIMEOUT_MS))
+            this.repairingTask = Observable.create((Observable.OnSubscribe<Morpheus>) s -> Morpheus.discover(deviceAddress, new BleObserverCallback<>(s, timeoutHandler, BleObserverCallback.NO_TIMEOUT), Constants.BLE_SCAN_TIMEOUT_MS))
                     .flatMap(device -> {
                         if (device != null) {
                             logEvent("rediscoveredDevice(" + device + ")");
@@ -124,7 +128,7 @@ import rx.android.schedulers.AndroidSchedulers;
             return Observable.just(null);
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.connect(new BleObserverCallback<>(s)))
+        return Observable.create((Observable.OnSubscribe<Void>) s -> device.connect(new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
                          .doOnNext(ignored -> {
                              logEvent("pairedWithDevice(" + device + ")");
                              setPairedDeviceAddress(device.getAddress());
@@ -136,21 +140,21 @@ import rx.android.schedulers.AndroidSchedulers;
     public Observable<Void> sendWifiCredentials(String bssid, String ssid, String password) {
         logEvent("sendWifiCredentials()");
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.setWIFIConnection(bssid, ssid, password, new BleObserverCallback<>(s)))
+        return Observable.create((Observable.OnSubscribe<Void>) s -> device.setWIFIConnection(bssid, ssid, password, new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_SET_WIFI_TIMEOUT_MS)))
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<Void> linkAccount() {
         logEvent("linkAccount()");
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.linkAccount(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s)))
+        return Observable.create((Observable.OnSubscribe<Void>) s -> device.linkAccount(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<String> linkPill() {
         logEvent("linkPill()");
 
-        return Observable.create((Observable.OnSubscribe<String>) s -> device.pairPill(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s)))
+        return Observable.create((Observable.OnSubscribe<String>) s -> device.pairPill(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
                          .doOnNext(pillId -> {
                              logEvent("linkedWithPill(" + pillId+ ")");
                              setPairedPillId(pillId);
@@ -161,14 +165,14 @@ import rx.android.schedulers.AndroidSchedulers;
     public Observable<Void> putIntoPairingMode() {
         logEvent("putIntoPairingMode()");
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.switchToPairingMode(new BleObserverCallback<>(s)))
+        return Observable.create((Observable.OnSubscribe<Void>) s -> device.switchToPairingMode(new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<Void> factoryReset() {
         logEvent("factoryReset()");
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.factoryReset(new BleObserverCallback<>(s)))
+        return Observable.create((Observable.OnSubscribe<Void>) s -> device.factoryReset(new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 
