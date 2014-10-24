@@ -92,9 +92,9 @@
     <string name="action_turn_on_ble">Turn on Bluetooth</string>
     <string name="action_onboarding_help">I\'m having trouble</string>
     <string name="title_setup_sense">Setting up Sense</string>
-    <string name="info_setup_sense">Plug in Sense next to your bed. Sense will glow purple to tell you it is on, and ready to be paired with your mobile device.</string>
+    <string name="info_setup_sense">Plug in Sense next to your bed. Sense will glow blue to tell you it is on, and ready to be paired with your mobile device.</string>
     <string name="title_pair_sense">Pairing with Sense</string>
-    <string name="info_pair_sense">Now we\'ll pair your mobile device with Sense. Make sure sense is glowing purple, then tap continue.</string>
+    <string name="info_pair_sense">Now we\'ll pair your mobile device with Sense. Make sure sense is blue, then tap continue.</string>
     <string name="title_pairing">Pairing</string>
     <string name="title_connecting_network">Connecting</string>
     <string name="wifi_network_secured">Secured Network</string>
@@ -130,7 +130,7 @@
     <string name="action_2nd_sleep_pill">Second Sleep Pill</string>
     <string name="action_1st_sleep_pill">First Sleep Pill</string>
     <string name="title_setup_second_pill">Add a second Sleep Pill</string>
-    <string name="info_setup_second_pill"><![CDATA[To connect a second sleep pill, Sense needs to be put into pairing mode.\n\nAsk the owner of the first sleeping pill to stand next to Sense and open the Sense app, then go to Settings &gt; Devices &gt; Sense and tap \'Put Sense into Pairing Mode\'.\n\nSense will glow purple when it is in pairing mode.]]></string>
+    <string name="info_setup_second_pill"><![CDATA[To connect a second sleep pill, Sense needs to be put into pairing mode.\n\nAsk the owner of the first sleeping pill to stand next to Sense and open the Sense app, then go to Settings &gt; Devices &gt; Sense and tap \'Put Sense into Pairing Mode\'.\n\nSense will glow blue when it is in pairing mode.]]></string>
     <string name="title_intro_sleep_pill">Introducing Sleep Pill</string>
     <string name="info_intro_sleep_pill">Clip your Sleep Pill to the pillow-case you sleep on.</string>
     <string name="title_onboarding_sleep_pill_color">Personalize your Sleep Pill</string>
@@ -150,6 +150,10 @@
     <string name="dialog_messsage_factory_reset">A factory reset cannot be undone.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave On Boarding?</string>
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
+    <string name="title_onboarding_getting_started">Getting Started</string>
+    <string name="info_onboarding_getting_started">Are you using Sense with one Sleep Pill, or two Sleep Pills?</string>
+    <string name="title_two_pills">Two Sleep Pills</string>
+    <string name="title_one_pill">One Sleep Pill</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

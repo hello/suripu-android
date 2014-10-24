@@ -21,6 +21,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingGettingStartedFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
@@ -75,7 +76,7 @@ public class OnboardingActivity extends InjectionActivity {
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_QUESTIONS:
-                    showWhichPill();
+                    showGettingStarted();
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_SENSE:
@@ -188,10 +189,14 @@ public class OnboardingActivity extends InjectionActivity {
         showFragment(OnboardingRegisterWeightFragment.newInstance(account), true);
     }
 
-    public void showWhichPill() {
+    public void showGettingStarted() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
 
-        showFragment(new OnboardingWhichPillFragment(), false);
+        showFragment(new OnboardingGettingStartedFragment(), false);
+    }
+
+    public void showWhichPill() {
+        showFragment(new OnboardingWhichPillFragment(), true);
     }
 
     public void showSetupSense(boolean secondPill) {

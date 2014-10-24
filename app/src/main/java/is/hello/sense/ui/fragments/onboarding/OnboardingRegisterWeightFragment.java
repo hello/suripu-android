@@ -94,7 +94,7 @@ public class OnboardingRegisterWeightFragment extends InjectionFragment {
             activity.beginBlockingWork(R.string.dialog_loading_message);
             bindAndSubscribe(apiService.updateAccount(account), ignored -> {
                 activity.finishBlockingWork();
-                activity.showWhichPill();
+                activity.showGettingStarted();
             }, e -> {
                 activity.finishBlockingWork();
                 ErrorDialogFragment.presentError(getFragmentManager(), e);
