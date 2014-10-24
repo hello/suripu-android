@@ -6,4 +6,5 @@
     <string name="build_gcm_enabled">true</string>
     <string name="build_debug_enabled">true</string>
     <string name="build_hockey_id">805427569ce2035dcda0b99e4d984256</string>
+    <string name="build_amplitude_api_key">b353e69e990cfce15a9557287ce7fbf8</string>
 </resources>

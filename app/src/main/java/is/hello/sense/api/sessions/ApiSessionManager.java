@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.amplitude.api.Amplitude;
+
 public abstract class ApiSessionManager {
     public static final String ACTION_LOGGED_OUT = ApiSessionManager.class.getName() + ".ACTION_LOGGED_OUT";
 
@@ -21,6 +23,9 @@ public abstract class ApiSessionManager {
 
     public void setSession(@Nullable OAuthSession session) {
         storeOAuthSession(session);
+        if (session != null) {
+            Amplitude.setUserId(session.getAccountId());
+        }
     }
 
     public @Nullable OAuthSession getSession() {
