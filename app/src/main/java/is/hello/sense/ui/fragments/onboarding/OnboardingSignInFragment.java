@@ -19,6 +19,7 @@ import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 import rx.Observable;
 
@@ -31,6 +32,15 @@ public class OnboardingSignInFragment extends InjectionFragment {
 
     private EditText email;
     private EditText password;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            Analytics.event(Analytics.EVENT_SIGN_IN_START, null);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,6 +75,8 @@ public class OnboardingSignInFragment extends InjectionFragment {
             getOnboardingActivity().finishBlockingWork();
             apiSessionManager.setSession(session);
             getOnboardingActivity().showWhichPill();
+
+            Analytics.event(Analytics.EVENT_SIGNED_IN, null);
         }, error -> {
             getOnboardingActivity().finishBlockingWork();
             ErrorDialogFragment.presentError(getFragmentManager(), error);

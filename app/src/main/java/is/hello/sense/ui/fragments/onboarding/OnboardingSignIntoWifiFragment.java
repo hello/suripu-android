@@ -16,6 +16,7 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 
 import static com.hello.ble.BleOperationCallback.OperationFailReason;
@@ -46,6 +47,8 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         super.onCreate(savedInstanceState);
 
         this.network = getArguments().getParcelable(ARG_SCAN_RESULT);
+
+        Analytics.event(Analytics.EVENT_ONBOARDING_SETUP_WIFI, null);
 
         setRetainInstance(true);
     }

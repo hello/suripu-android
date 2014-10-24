@@ -197,9 +197,16 @@ public class OnboardingActivity extends InjectionActivity {
         if (secondPill) {
             Bundle arguments = new Bundle();
             arguments.putBoolean(OnboardingPairSenseFragment.ARG_IS_SECOND_USER, true);
-            showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_2nd_user_setup_sense, OnboardingPairSenseFragment.class, arguments), true);
+            OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
+            builder.setLayout(R.layout.sub_fragment_onboarding_2nd_user_setup_sense);
+            builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
+            builder.setNextFragmentArguments(arguments);
+            showFragment(builder.build(), true);
         } else {
-            showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_1st_user_setup_sense, OnboardingPairSenseFragment.class, null), true);
+            OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
+            builder.setLayout(R.layout.sub_fragment_onboarding_1st_user_setup_sense);
+            builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
+            showFragment(builder.build(), true);
         }
     }
 
@@ -214,7 +221,10 @@ public class OnboardingActivity extends InjectionActivity {
     public void showSetupPill() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SENSE);
 
-        showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_pill_intro, OnboardingSleepPillColorFragment.class, null), false);
+        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
+        builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
+        builder.setNextFragmentClass(OnboardingSleepPillColorFragment.class);
+        showFragment(builder.build(), true);
     }
 
     public void showPairPill(int selectedColorIndex) {

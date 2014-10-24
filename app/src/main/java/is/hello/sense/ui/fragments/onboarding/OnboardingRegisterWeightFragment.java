@@ -18,6 +18,7 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.units.UnitOperations;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
 
@@ -72,6 +73,7 @@ public class OnboardingRegisterWeightFragment extends InjectionFragment {
             this.account = (Account) savedInstanceState.getSerializable(ARG_ACCOUNT);
         } else {
             this.account = (Account) getArguments().getSerializable(ARG_ACCOUNT);
+            Analytics.event(Analytics.EVENT_ONBOARDING_WEIGHT, null);
         }
     }
 

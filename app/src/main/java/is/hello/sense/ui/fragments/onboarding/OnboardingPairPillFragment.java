@@ -15,6 +15,7 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.util.Analytics;
 
 public class OnboardingPairPillFragment extends InjectionFragment {
     private static final String ARG_COLOR_INDEX = OnboardingPairPillFragment.class.getName() + ".ARG_COLOR_INDEX";
@@ -34,6 +35,8 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Analytics.event(Analytics.EVENT_ONBOARDING_PAIR_PILL, null);
 
         setRetainInstance(true);
     }

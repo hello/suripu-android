@@ -12,28 +12,21 @@ import android.widget.Button;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.util.Analytics;
 
 public class OnboardingStaticStepFragment extends Fragment {
     private static final String ARG_SUB_LAYOUT_ID = OnboardingStaticStepFragment.class.getName() + ".ARG_SUB_LAYOUT_ID";
     private static final String ARG_NEXT_CLASS = OnboardingStaticStepFragment.class.getName() + ".ARG_NEXT_CLASS";
     private static final String ARG_ARGUMENTS = OnboardingStaticStepFragment.class.getName() + ".ARG_ARGUMENTS";
+    private static final String ARG_ANALYTICS_EVENT = OnboardingStaticStepFragment.class.getName() + ".ARG_ANALYTICS_EVENT";
 
-    public static Bundle getStaticArguments(@LayoutRes int sublayoutResId,
-                                            @NonNull Class<? extends Fragment> fragmentClass,
-                                            @Nullable Bundle fragmentArguments) {
-        Bundle arguments = new Bundle();
-        arguments.putInt(ARG_SUB_LAYOUT_ID, sublayoutResId);
-        arguments.putString(ARG_NEXT_CLASS, fragmentClass.getName());
-        arguments.putParcelable(ARG_ARGUMENTS, fragmentArguments);
-        return arguments;
-    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    public static OnboardingStaticStepFragment newInstance(@LayoutRes int sublayoutResId,
-                                                           @NonNull Class<? extends Fragment> fragmentClass,
-                                                           @Nullable Bundle fragmentArguments) {
-        OnboardingStaticStepFragment fragment = new OnboardingStaticStepFragment();
-        fragment.setArguments(getStaticArguments(sublayoutResId, fragmentClass, fragmentArguments));
-        return fragment;
+        if (savedInstanceState == null && getArguments().containsKey(ARG_ANALYTICS_EVENT)) {
+            Analytics.event(getArguments().getString(ARG_ANALYTICS_EVENT), null);
+        }
     }
 
     @Nullable
@@ -63,6 +56,37 @@ public class OnboardingStaticStepFragment extends Fragment {
             ((OnboardingActivity) getActivity()).showFragment(fragment, true);
         } catch (ClassNotFoundException | java.lang.InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Could not resolve next step fragment class", e);
+        }
+    }
+
+
+    public static class Builder {
+        public final Bundle arguments = new Bundle();
+
+        public Builder setLayout(@LayoutRes int layout) {
+            arguments.putInt(ARG_SUB_LAYOUT_ID, layout);
+            return this;
+        }
+
+        public Builder setNextFragmentClass(@NonNull Class<? extends Fragment> nextClass) {
+            arguments.putString(ARG_NEXT_CLASS, nextClass.getName());
+            return this;
+        }
+
+        public Builder setNextFragmentArguments(@NonNull Bundle arguments) {
+            arguments.putParcelable(ARG_ARGUMENTS, arguments);
+            return this;
+        }
+
+        public Builder setAnalyticsEvent(@NonNull String event) {
+            arguments.putString(ARG_ANALYTICS_EVENT, event);
+            return this;
+        }
+
+        public @NonNull OnboardingStaticStepFragment build() {
+            OnboardingStaticStepFragment fragment = new OnboardingStaticStepFragment();
+            fragment.setArguments(arguments);
+            return fragment;
         }
     }
 }

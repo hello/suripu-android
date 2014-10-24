@@ -15,6 +15,7 @@ import org.joda.time.DateTime;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.util.Analytics;
 
 public class OnboardingRegisterBirthdayFragment extends Fragment {
     private static final String ARG_ACCOUNT = OnboardingRegisterBirthdayFragment.class.getName() + ".ARG_ACCOUNT";
@@ -40,6 +41,8 @@ public class OnboardingRegisterBirthdayFragment extends Fragment {
             this.account = (Account) savedInstanceState.getSerializable(ARG_ACCOUNT);
         } else {
             this.account = (Account) getArguments().getSerializable(ARG_ACCOUNT);
+
+            Analytics.event(Analytics.EVENT_ONBOARDING_BIRTHDAY, null);
         }
     }
 

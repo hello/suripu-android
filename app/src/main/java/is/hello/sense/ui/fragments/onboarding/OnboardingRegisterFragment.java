@@ -24,6 +24,7 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.units.UnitOperations;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 import rx.Observable;
 
@@ -99,6 +100,8 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
             sessionManager.setSession(session);
             getOnboardingActivity().showBirthday(createdAccount);
+
+            Analytics.event(Analytics.EVENT_SIGNED_IN, null);
         }, error -> {
             getOnboardingActivity().finishBlockingWork();
             ErrorDialogFragment.presentError(getFragmentManager(), error);

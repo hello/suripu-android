@@ -23,6 +23,7 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.util.Analytics;
 import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.fromBroadcast;
@@ -43,6 +44,8 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
 
         this.isSecondUser = (getArguments() != null && getArguments().getBoolean(ARG_IS_SECOND_USER, false));
         this.bluetoothAdapter = ((BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+
+        Analytics.event(Analytics.EVENT_ONBOARDING_PAIR_SENSE, null);
 
         setRetainInstance(true);
     }

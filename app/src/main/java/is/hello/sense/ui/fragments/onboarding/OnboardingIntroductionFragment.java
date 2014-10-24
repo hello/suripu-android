@@ -17,6 +17,7 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.util.Analytics;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
@@ -27,6 +28,15 @@ public class OnboardingIntroductionFragment extends Fragment {
     private ImageView play;
     private ViewGroup accountActions;
     private ViewGroup getStartedActions;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            Analytics.event(Analytics.EVENT_ONBOARDING_START, null);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -61,7 +71,6 @@ public class OnboardingIntroductionFragment extends Fragment {
 
         return view;
     }
-
 
     private OnboardingActivity getOnboardingActivity() {
         return (OnboardingActivity) getActivity();

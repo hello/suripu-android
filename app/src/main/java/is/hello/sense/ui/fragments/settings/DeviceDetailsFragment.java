@@ -21,6 +21,7 @@ import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
@@ -126,6 +127,8 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
     @SuppressWarnings("CodeBlock2Expr")
     public void putIntoPairingMode() {
+        Analytics.event(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE));
+
         if (hardwarePresenter.getDevice() == null)
             return;
 
@@ -140,6 +143,8 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
     @SuppressWarnings("CodeBlock2Expr")
     public void factoryReset() {
+        Analytics.event(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_FACTORY_RESTORE));
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.dialog_title_factory_reset);
         builder.setMessage(R.string.dialog_messsage_factory_reset);

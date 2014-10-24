@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.amplitude.api.Amplitude;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Analytics {
@@ -54,11 +55,6 @@ public class Analytics {
     public static final String EVENT_ONBOARDING_WEIGHT = "Onboarding Weight";
 
     /**
-     * User lands on Location screen
-     */
-    public static final String EVENT_ONBOARDING_LOCATION = "Onboarding Location";
-
-    /**
      * When user lands on Getting Started Screen
      */
     public static final String EVENT_ONBOARDING_SETUP_START = "Onboarding Setup Start";
@@ -72,11 +68,6 @@ public class Analytics {
      * When user lands on the "Add a second Sleep Pill" screen
      */
     public static final String EVENT_ONBOARDING_ADD_PILL = "Onboarding Add Pill";
-
-    /**
-     * When user lands on the No BLE screen
-     */
-    public static final String EVENT_ONBOARDING_NO_BLE = "Onboarding No BLE";
 
     /**
      * When user lands on the Setting up Sense screen
@@ -151,10 +142,29 @@ public class Analytics {
     public static final String PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE = "enable pairing mode";
 
 
+    public static @NonNull JSONObject createProperties(@NonNull Object... pairs) {
+        if ((pairs.length % 2) != 0)
+            throw new IllegalArgumentException("even number of arguments required");
+
+        JSONObject properties = new JSONObject();
+        try {
+            for (int i = 0; i < pairs.length; i += 2) {
+                properties.put(pairs[i].toString(), pairs[i + 1]);
+            }
+        } catch (JSONException ignored) {
+        }
+        return properties;
+    }
+
     public static void event(@NonNull String event, @Nullable JSONObject properties) {
         if (properties != null)
             Amplitude.logEvent(event, properties);
         else
             Amplitude.logEvent(event);
+    }
+
+    public static void error(@NonNull String message, int code) {
+        event(EVENT_ERROR, createProperties(PROP_ERROR_MESSAGE, message,
+                                            PROP_ERROR_CODE, code));
     }
 }

@@ -11,6 +11,7 @@ import android.text.TextUtils;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.util.Analytics;
 
 public class ErrorDialogFragment extends DialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();
@@ -88,6 +89,12 @@ public class ErrorDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Analytics.error(getMessage(), getResponseStatus());
+    }
 
     private String getMessage() {
         return getArguments().getString(ARG_MESSAGE);

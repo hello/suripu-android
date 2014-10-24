@@ -19,6 +19,7 @@ import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.fragments.settings.DevicesFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.fragments.settings.SettingsFragment;
+import is.hello.sense.util.Analytics;
 
 public class SettingsActivity extends InjectionActivity {
     @Inject ApiSessionManager sessionManager;
@@ -102,6 +103,8 @@ public class SettingsActivity extends InjectionActivity {
                 SettingsActivity activity = getSettingsActivity();
                 activity.sessionManager.logOut(activity);
                 activity.finish();
+
+                Analytics.event(Analytics.EVENT_SIGNED_OUT, null);
             });
             builder.create().show();
         }

@@ -29,6 +29,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.Styles;
 import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
@@ -172,6 +173,8 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
             TimelineSegmentDetailsDialogFragment dialogFragment = TimelineSegmentDetailsDialogFragment.newInstance(segment);
             dialogFragment.show(getFragmentManager(), TimelineSegmentDetailsDialogFragment.TAG);
         }
+
+        Analytics.event(Analytics.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.PROP_TIMELINE_ACTION, Analytics.PROP_TIMELINE_ACTION_TAP_EVENT));
     }
 
 

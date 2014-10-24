@@ -15,6 +15,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Gender;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.util.Analytics;
 
 public class OnboardingRegisterGenderFragment extends Fragment implements SelectorLinearLayout.OnSelectionChangedListener, SelectorLinearLayout.ButtonStyler {
     private static final String ARG_ACCOUNT = OnboardingRegisterGenderFragment.class.getName() + ".ARG_ACCOUNT";
@@ -40,6 +41,7 @@ public class OnboardingRegisterGenderFragment extends Fragment implements Select
             this.account = (Account) savedInstanceState.getSerializable(ARG_ACCOUNT);
         } else {
             this.account = (Account) getArguments().getSerializable(ARG_ACCOUNT);
+            Analytics.event(Analytics.EVENT_ONBOARDING_GENDER, null);
         }
     }
 
