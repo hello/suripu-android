@@ -47,7 +47,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         this.preferences = context.getSharedPreferences(QuestionsPresenter.class.getSimpleName(), 0);
 
         Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
-        logOutSignal.subscribe(this::onUserLoggedOut, Functions.IGNORE_ERROR);
+        logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
     }
 
     public void onUserLoggedOut(@NonNull Intent intent) {
@@ -176,7 +176,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     public void skipQuestion() {
-        currentQuestion.take(1).subscribe(question -> apiService.skipQuestion(question.getId()), Functions.IGNORE_ERROR);
+        currentQuestion.take(1).subscribe(question -> apiService.skipQuestion(question.getId()), Functions.LOG_ERROR);
         nextQuestion();
     }
 
