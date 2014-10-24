@@ -3,9 +3,7 @@ package is.hello.sense.ui.activities;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +19,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
@@ -45,6 +44,7 @@ public class HomeActivity
     public static final String EXTRA_IS_NOTIFICATION = HomeActivity.class.getName() + ".EXTRA_IS_NOTIFICATION";
 
     @Inject QuestionsPresenter questionsPresenter;
+    @Inject PreferencesPresenter preferences;
     @Inject BuildValues buildValues;
 
     private ViewGroup homeContainer;
@@ -107,11 +107,10 @@ public class HomeActivity
         // This is probably not what we want to happen.
         Observable<Intent> logOut = bindActivity(this, fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT)));
         track(logOut.subscribe(ignored -> {
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-            sharedPreferences
+            preferences
                     .edit()
-                    .putBoolean(Constants.GLOBAL_PREF_ONBOARDING_COMPLETED, false)
-                    .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE)
+                    .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)
+                    .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE)
                     .apply();
 
             startActivity(new Intent(this, OnboardingActivity.class));
@@ -126,7 +125,7 @@ public class HomeActivity
         questionsPresenter.update();
 
         if (!buildValues.isDebugBuild()) {
-            UpdateManager.register(this, Constants.HOCKEY_APP_ID);
+            UpdateManager.register(this, buildValues.hockeyId);
         }
     }
 

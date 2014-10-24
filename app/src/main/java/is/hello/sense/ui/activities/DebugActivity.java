@@ -90,7 +90,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     }
 
     public void sendFeedback() {
-        FeedbackManager.register(this, Constants.HOCKEY_APP_ID, null);
+        FeedbackManager.register(this, buildValues.hockeyId, null);
         FeedbackManager.showFeedbackActivity(this);
     }
 

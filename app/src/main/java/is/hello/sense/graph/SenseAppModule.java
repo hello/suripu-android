@@ -1,15 +1,17 @@
 package is.hello.sense.graph;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
@@ -95,5 +97,9 @@ public class SenseAppModule {
 
     @Provides Context provideApplicationContext() {
         return applicationContext;
+    }
+
+    @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(applicationContext);
     }
 }

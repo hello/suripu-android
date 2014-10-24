@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Fragment;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;

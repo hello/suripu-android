@@ -9,10 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import org.joda.time.DateTime;
-
-import java.util.TimeZone;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;

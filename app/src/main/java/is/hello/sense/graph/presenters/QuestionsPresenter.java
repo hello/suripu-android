@@ -34,7 +34,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     public final ReplaySubject<List<Question>> questions = ReplaySubject.createWithSize(1);
     public final ReplaySubject<Question> currentQuestion = ReplaySubject.createWithSize(1);
 
-    private SharedPreferences preferences;
+    private PreferencesPresenter preferences;
     private int offset;
 
     private DateTime lastUpdated;
@@ -42,9 +42,11 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     //region Lifecycle
 
-    @Inject public QuestionsPresenter(@NonNull ApiService apiService, @NonNull Context context) {
+    @Inject public QuestionsPresenter(@NonNull ApiService apiService,
+                                      @NonNull Context context,
+                                      @NonNull PreferencesPresenter preferences) {
         this.apiService = apiService;
-        this.preferences = context.getSharedPreferences(QuestionsPresenter.class.getSimpleName(), 0);
+        this.preferences = preferences;
 
         Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
@@ -126,16 +128,16 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     public void setLastAcknowledged(@Nullable DateTime lastUpdated) {
         SharedPreferences.Editor transaction = preferences.edit();
         if (lastUpdated != null) {
-            transaction.putString("last_acknowledged", lastUpdated.withTimeAtStartOfDay().toString());
+            transaction.putString(PreferencesPresenter.QUESTIONS_LAST_ACKNOWLEDGED, lastUpdated.withTimeAtStartOfDay().toString());
         } else {
-            transaction.remove("last_acknowledged");
+            transaction.remove(PreferencesPresenter.QUESTIONS_LAST_ACKNOWLEDGED);
         }
         transaction.apply();
     }
 
     public @NonNull DateTime getLastAcknowledged() {
-        if (preferences.contains("last_acknowledged")) {
-            String timestamp = preferences.getString("last_acknowledged", null);
+        if (preferences.contains(PreferencesPresenter.QUESTIONS_LAST_ACKNOWLEDGED)) {
+            String timestamp = preferences.getString(PreferencesPresenter.QUESTIONS_LAST_ACKNOWLEDGED, null);
             return DateTime.parse(timestamp);
         } else {
             return new DateTime(0, ISOChronology.getInstance());

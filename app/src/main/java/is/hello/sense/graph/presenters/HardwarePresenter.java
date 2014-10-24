@@ -44,9 +44,9 @@ import rx.android.schedulers.AndroidSchedulers;
 
         SharedPreferences.Editor editor = preferencesPresenter.edit();
         if (address != null) {
-            editor.putString(Constants.GLOBAL_PREF_PAIRED_DEVICE_ADDRESS, address);
+            editor.putString(PreferencesPresenter.PAIRED_DEVICE_ADDRESS, address);
         } else {
-            editor.remove(Constants.GLOBAL_PREF_PAIRED_DEVICE_ADDRESS);
+            editor.remove(PreferencesPresenter.PAIRED_DEVICE_ADDRESS);
         }
         editor.apply();
     }
@@ -56,9 +56,9 @@ import rx.android.schedulers.AndroidSchedulers;
 
         SharedPreferences.Editor editor = preferencesPresenter.edit();
         if (pillId != null) {
-            editor.putString(Constants.GLOBAL_PREF_PAIRED_PILL_ID, pillId);
+            editor.putString(PreferencesPresenter.PAIRED_PILL_ID, pillId);
         } else {
-            editor.remove(Constants.GLOBAL_PREF_PAIRED_PILL_ID);
+            editor.remove(PreferencesPresenter.PAIRED_PILL_ID);
         }
         editor.apply();
     }
@@ -98,7 +98,7 @@ import rx.android.schedulers.AndroidSchedulers;
             return repairingTask;
         }
 
-        String deviceAddress = preferencesPresenter.getSharedPreferences().getString(Constants.GLOBAL_PREF_PAIRED_DEVICE_ADDRESS, null);
+        String deviceAddress = preferencesPresenter.getString(PreferencesPresenter.PAIRED_DEVICE_ADDRESS, null);
         if (TextUtils.isEmpty(deviceAddress)) {
             return Observable.error(new Exception(""));
         } else {

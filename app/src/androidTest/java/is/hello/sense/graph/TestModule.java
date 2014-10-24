@@ -57,19 +57,13 @@ import is.hello.sense.units.UnitFormatterTests;
 @SuppressWarnings("UnusedDeclaration")
 public final class TestModule {
     private final Context applicationContext;
-    private final SharedPreferences sharedPreferences;
 
     public TestModule(@NonNull Context applicationContext) {
         this.applicationContext = applicationContext;
-        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     }
 
     @Provides Context provideApplicationContext() {
         return applicationContext;
-    }
-
-    @Provides SharedPreferences provideSharedPreferences() {
-        return sharedPreferences;
     }
 
     @Provides @ApiAppContext Context providesApiApplicationContext() {
@@ -78,6 +72,10 @@ public final class TestModule {
 
     @Singleton @Provides ObjectMapper provideObjectMapper() {
         return ApiModule.createConfiguredObjectMapper(null);
+    }
+
+    @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {
+        return applicationContext.getSharedPreferences("test_suite_preferences", Context.MODE_PRIVATE);
     }
 
     @Singleton @Provides ApiService provideApiService(@NonNull @ApiAppContext Context context, @NonNull ObjectMapper objectMapper) {

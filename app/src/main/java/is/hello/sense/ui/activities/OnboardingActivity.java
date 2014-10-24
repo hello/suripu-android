@@ -1,13 +1,11 @@
 package is.hello.sense.ui.activities;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.wifi.ScanResult;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.net.wifi.ScanResult;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.Menu;
@@ -18,6 +16,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
@@ -43,8 +42,7 @@ public class OnboardingActivity extends InjectionActivity {
     private static final String BLOCKING_WORK_TAG = "BlockingWorkFragment";
 
     @Inject ApiService apiService;
-
-    private SharedPreferences sharedPreferences;
+    @Inject PreferencesPresenter preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +53,8 @@ public class OnboardingActivity extends InjectionActivity {
         getActionBar().setDisplayShowTitleEnabled(false);
         getActionBar().setDisplayShowHomeEnabled(false);
 
-        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
-            int lastCheckpoint = sharedPreferences.getInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
+            int lastCheckpoint = preferences.getInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
             switch (lastCheckpoint) {
                 case Constants.ONBOARDING_CHECKPOINT_NONE:
                     showIntroductionFragment();
@@ -102,7 +98,7 @@ public class OnboardingActivity extends InjectionActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem skipItem = menu.findItem(R.id.action_skip);
-        int lastCheckpoint = sharedPreferences.getInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
+        int lastCheckpoint = preferences.getInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
         skipItem.setEnabled(lastCheckpoint > Constants.ONBOARDING_CHECKPOINT_ACCOUNT);
 
         return true;
@@ -149,9 +145,9 @@ public class OnboardingActivity extends InjectionActivity {
     }
 
     public void showBirthday(@NonNull Account account) {
-        sharedPreferences
+        preferences
                 .edit()
-                .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_ACCOUNT)
+                .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_ACCOUNT)
                 .apply();
 
         showFragment(OnboardingRegisterBirthdayFragment.newInstance(account));
@@ -170,9 +166,9 @@ public class OnboardingActivity extends InjectionActivity {
     }
 
     public void showWhichPill() {
-        sharedPreferences
+        preferences
                 .edit()
-                .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS)
+                .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS)
                 .apply();
 
         showFragment(new OnboardingWhichPillFragment());
@@ -197,9 +193,9 @@ public class OnboardingActivity extends InjectionActivity {
     }
 
     public void showSetupPill() {
-        sharedPreferences
+        preferences
                 .edit()
-                .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_SENSE)
+                .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_SENSE)
                 .apply();
 
         showFragment(OnboardingStaticStepFragment.newInstance(R.layout.sub_fragment_onboarding_pill_intro, OnboardingSleepPillColorFragment.class, null));
@@ -210,9 +206,9 @@ public class OnboardingActivity extends InjectionActivity {
     }
 
     public void showWelcome() {
-        sharedPreferences
+        preferences
                 .edit()
-                .putInt(Constants.GLOBAL_PREF_LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_PILL)
+                .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_PILL)
                 .apply();
 
         showFragment(new OnboardingWelcomeFragment());
@@ -251,9 +247,9 @@ public class OnboardingActivity extends InjectionActivity {
 
 
     public void showHomeActivity() {
-        sharedPreferences
+        preferences
                 .edit()
-                .putBoolean(Constants.GLOBAL_PREF_ONBOARDING_COMPLETED, true)
+                .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, true)
                 .apply();
 
         startActivity(new Intent(this, HomeActivity.class));

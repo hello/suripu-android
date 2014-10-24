@@ -18,7 +18,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.EditorActionHandler;
 
-import static com.hello.ble.BleOperationCallback.*;
+import static com.hello.ble.BleOperationCallback.OperationFailReason;
 import static is.hello.sense.util.BleObserverCallback.BluetoothError;
 
 public class OnboardingSignIntoWifiFragment extends InjectionFragment {

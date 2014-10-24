@@ -4,8 +4,6 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import rx.Observable;
-
 /**
  * Describes an object that contains one or more child presenter objects.
  * <p/>

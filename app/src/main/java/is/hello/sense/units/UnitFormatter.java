@@ -6,7 +6,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.util.Constants;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.ReplaySubject;
@@ -16,7 +15,7 @@ public final class UnitFormatter {
     public final ReplaySubject<UnitSystem> unitSystem = ReplaySubject.createWithSize(1);
 
     @Inject public UnitFormatter(@NonNull PreferencesPresenter preferencesPresenter) {
-        Observable<String> unitSystemName = preferencesPresenter.observableString(Constants.GLOBAL_PREF_UNIT_SYSTEM,
+        Observable<String> unitSystemName = preferencesPresenter.observableString(PreferencesPresenter.UNIT_SYSTEM,
                                                                                   UnitSystem.DEFAULT_UNIT_SYSTEM);
         unitSystemName.map(UnitSystem::createUnitSystemWithName)
                       .subscribeOn(AndroidSchedulers.mainThread())

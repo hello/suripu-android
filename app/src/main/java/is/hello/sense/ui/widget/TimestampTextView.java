@@ -11,7 +11,6 @@ import javax.inject.Inject;
 
 import is.hello.sense.SenseApplication;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 import rx.Subscription;
@@ -51,7 +50,7 @@ public final class TimestampTextView extends TextView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        Observable<Boolean> use24HourTime = preferencesPresenter.observableBoolean(Constants.GLOBAL_PREF_USE_24_TIME, false)
+        Observable<Boolean> use24HourTime = preferencesPresenter.observableBoolean(PreferencesPresenter.USE_24_TIME, false)
                                                                 .subscribeOn(AndroidSchedulers.mainThread());
         this.subscription = use24HourTime.subscribe(this::setUse24HourTime);
     }

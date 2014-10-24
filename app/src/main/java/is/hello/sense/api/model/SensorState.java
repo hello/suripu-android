@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
 
-import is.hello.sense.R;
 import is.hello.sense.units.UnitFormatter;
 
 public class SensorState extends ApiResponse {

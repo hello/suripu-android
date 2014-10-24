@@ -1,10 +1,10 @@
 package is.hello.sense.ui.common;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.List;
