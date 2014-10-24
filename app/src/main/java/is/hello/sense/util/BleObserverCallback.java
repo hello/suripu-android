@@ -43,7 +43,8 @@ public class BleObserverCallback<T> implements BleOperationCallback<T> {
             return;
         }
 
-        timeoutHandler.removeCallbacks(onTimeout);
+        if (timeoutHandler != null)
+            timeoutHandler.removeCallbacks(onTimeout);
 
         observer.onNext(data);
         observer.onCompleted();
@@ -56,7 +57,8 @@ public class BleObserverCallback<T> implements BleOperationCallback<T> {
             return;
         }
 
-        timeoutHandler.removeCallbacks(onTimeout);
+        if (timeoutHandler != null)
+            timeoutHandler.removeCallbacks(onTimeout);
 
         observer.onError(new BluetoothError(reason, errorCode));
     }
