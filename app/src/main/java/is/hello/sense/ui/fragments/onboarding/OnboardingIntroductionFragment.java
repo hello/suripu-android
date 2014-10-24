@@ -55,6 +55,7 @@ public class OnboardingIntroductionFragment extends Fragment {
 
 
         this.play = (ImageView) view.findViewById(R.id.fragment_onboarding_intro_play);
+        play.setOnClickListener(ignored -> Analytics.event(Analytics.EVENT_PLAY_VIDEO, null));
 
 
         this.accountActions = (ViewGroup) view.findViewById(R.id.fragment_onboarding_intro_account_actions);
