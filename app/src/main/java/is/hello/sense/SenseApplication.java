@@ -15,6 +15,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.graph.SenseAppModule;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.SessionLogger;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class SenseApplication extends Application {
@@ -32,11 +33,15 @@ public class SenseApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        this.buildValues = new BuildValues(this);
+
         JodaTimeAndroid.init(this);
         HelloBle.init(this);
         CalligraphyConfig.initDefault("fonts/Calibre-Regular.otf", R.attr.fontPath);
+        if (buildValues.debugScreenEnabled) {
+            SessionLogger.init(this);
+        }
 
-        this.buildValues = new BuildValues(this);
         buildGraph();
 
         instance = this;

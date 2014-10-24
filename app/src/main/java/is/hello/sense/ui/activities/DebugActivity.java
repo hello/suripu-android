@@ -3,9 +3,11 @@ package is.hello.sense.ui.activities;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,17 +15,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import net.hockeyapp.android.FeedbackManager;
+import java.io.File;
 
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.SessionLogger;
 
 public class DebugActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject ApiSessionManager sessionManager;
@@ -66,7 +70,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
 
     private void addActions() {
         debugItems.addItem("Environment", currentEnvironment.toString(), this::changeEnvironment);
-        debugItems.addItem("Feedback", null, this::sendFeedback);
+        debugItems.addItem("Share Log", null, this::sendLog);
     }
 
 
@@ -89,9 +93,13 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         builder.create().show();
     }
 
-    public void sendFeedback() {
-        FeedbackManager.register(this, buildValues.hockeyId, null);
-        FeedbackManager.showFeedbackActivity(this);
+    public void sendLog() {
+        bindAndSubscribe(SessionLogger.flush(), ignored -> {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(SessionLogger.getLogFilePath(this))));
+            intent.setType("text/plain");
+            startActivity(Intent.createChooser(intent, "Share Log"));
+        }, Functions.LOG_ERROR);
     }
 
 
