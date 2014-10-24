@@ -64,7 +64,7 @@ raw_response = `curl -X POST \
 abort "-- Upload Failed".red if last_command_failed?
 puts "-- Upload Completed".green
 
+response = JSON::parse(raw_response)
 config_url = response["config_url"]
 puts "-> Opening <#{config_url}>".blue
-response = JSON::parse(raw_response)
 system "open '#{config_url}'"
