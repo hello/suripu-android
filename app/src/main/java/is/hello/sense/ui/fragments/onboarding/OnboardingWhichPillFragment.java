@@ -12,8 +12,18 @@ import android.widget.Button;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.util.Analytics;
 
 public class OnboardingWhichPillFragment extends Fragment {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            Analytics.event(Analytics.EVENT_ONBOARDING_SETUP_TWO_PILL, null);
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

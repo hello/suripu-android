@@ -37,6 +37,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingTaskFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWelcomeFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWhichPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
 public class OnboardingActivity extends InjectionActivity {
@@ -201,11 +202,13 @@ public class OnboardingActivity extends InjectionActivity {
             builder.setLayout(R.layout.sub_fragment_onboarding_2nd_user_setup_sense);
             builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
             builder.setNextFragmentArguments(arguments);
+            builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_ADD_PILL);
             showFragment(builder.build(), true);
         } else {
             OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
             builder.setLayout(R.layout.sub_fragment_onboarding_1st_user_setup_sense);
             builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
+            builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_SETUP);
             showFragment(builder.build(), true);
         }
     }
@@ -224,6 +227,7 @@ public class OnboardingActivity extends InjectionActivity {
         OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
         builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
         builder.setNextFragmentClass(OnboardingSleepPillColorFragment.class);
+        builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SETUP_PILL);
         showFragment(builder.build(), true);
     }
 
