@@ -1,0 +1,70 @@
+#!/usr/bin/ruby
+
+require 'json'
+require 'colorize'
+require 'optparse'
+
+if ENV["HELLO_DEPLOY_HOCKEY_TOKEN"].nil?
+  puts "! You must provide 'HELLO_DEPLOY_HOCKEY_TOKEN' in your ENV".red.bold
+  puts "-> Generate an API token at https://rink.hockeyapp.net/manage/auth_tokens".green
+  exit
+end
+
+options = OpenStruct.new
+options.clean = false
+options.tests = false
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename $0} [options]".green
+
+  opts.on("-t", "--[no-]tests", "Run test suite before uploading") do |t|
+    options.tests = t
+  end
+  
+  opts.on("-k", "--[no-]clean", "Clean the project before building") do |k|
+    options.clean = k
+  end
+  
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+
+end.parse!
+
+def last_command_failed?
+  $?.to_i != 0
+end
+
+if options.clean
+  puts "-> Cleaning".blue
+  system "./gradlew clean"
+  abort "-- Cleaning Failed".red if last_command_failed?
+  puts "-- Clean Completed".green
+end
+
+if options.test
+  puts "-> Building & Running Tests".blue
+  system "./gradlew connectedCheck"
+  abort "-- Tests Failed".red if last_command_failed?
+  puts "-- Tests Passed".green
+end
+
+puts "-> Assembling Release Build".blue
+system "./gradlew assembleRelease"
+abort "-- Build Failed".red if last_command_failed?
+puts "-- Build Completed".green
+
+puts "-> Uploading to HockeyApp".blue
+raw_response = `curl -X POST \
+  -F "status=1" \
+  -F "notify=0" \
+  -F "ipa=@app/build/outputs/apk/app-release.apk" \
+  -H "X-HockeyAppToken: 515446b7e7c640fe96f42bda64d55eb2" \
+  https://rink.hockeyapp.net/api/2/apps/805427569ce2035dcda0b99e4d984256/app_versions/upload`
+abort "-- Upload Failed".red if last_command_failed?
+puts "-- Upload Completed".green
+
+config_url = response["config_url"]
+puts "-> Opening <#{config_url}>".blue
+response = JSON::parse(raw_response)
+system "open '#{config_url}'"
