@@ -161,6 +161,8 @@ public class Analytics {
             Amplitude.logEvent(event, properties);
         else
             Amplitude.logEvent(event);
+
+        Logger.info(Analytics.class.getSimpleName(), event + ": " + properties);
     }
 
     public static void error(@NonNull String message, int code) {
