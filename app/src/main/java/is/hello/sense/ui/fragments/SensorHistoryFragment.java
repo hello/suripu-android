@@ -78,24 +78,29 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         return (SensorHistoryActivity) getActivity();
     }
 
-    public void bindConditions(@NonNull CurrentConditionsPresenter.Result result) {
-        String sensor = getSensorHistoryActivity().getSensor();
-        SensorState condition = result.conditions.getSensorStateWithName(sensor);
-        if (condition != null) {
-            UnitFormatter.Formatter formatter = null;
-            if (SensorHistory.SENSOR_NAME_TEMPERATURE.equals(sensor)) {
-                formatter = result.units::formatTemperature;
-            } else if (SensorHistory.SENSOR_NAME_PARTICULATES.equals(sensor)) {
-                formatter = result.units::formatParticulates;
+    public void bindConditions(@Nullable CurrentConditionsPresenter.Result result) {
+        if (result == null) {
+            readingText.setText(R.string.missing_data_placeholder);
+            messageText.setText(R.string.missing_data_placeholder);
+        } else {
+            String sensor = getSensorHistoryActivity().getSensor();
+            SensorState condition = result.conditions.getSensorStateWithName(sensor);
+            if (condition != null) {
+                UnitFormatter.Formatter formatter = null;
+                if (SensorHistory.SENSOR_NAME_TEMPERATURE.equals(sensor)) {
+                    formatter = result.units::formatTemperature;
+                } else if (SensorHistory.SENSOR_NAME_PARTICULATES.equals(sensor)) {
+                    formatter = result.units::formatParticulates;
+                }
+
+                String formattedValue = condition.getFormattedValue(formatter);
+                if (formattedValue != null)
+                    readingText.setText(formattedValue);
+                else
+                    readingText.setText(R.string.missing_data_placeholder);
+
+                messageText.setText(condition.getMessage());
             }
-
-            String formattedValue = condition.getFormattedValue(formatter);
-            if (formattedValue != null)
-                readingText.setText(formattedValue);
-            else
-                readingText.setText(R.string.missing_data_placeholder);
-
-            messageText.setText(condition.getMessage());
         }
     }
 

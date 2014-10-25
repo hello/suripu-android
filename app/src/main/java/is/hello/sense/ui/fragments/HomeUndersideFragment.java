@@ -73,16 +73,34 @@ public class HomeUndersideFragment extends InjectionFragment {
 
     //region Displaying Data
 
-    public void bindConditions(@NonNull CurrentConditionsPresenter.Result result) {
-        temperatureState.displayReading(result.conditions.getTemperature(), result.units::formatTemperature);
-        humidityState.displayReading(result.conditions.getHumidity(), null);
-        particulatesState.displayReading(result.conditions.getParticulates(), result.units::formatParticulates);
+    public void bindConditions(@Nullable CurrentConditionsPresenter.Result result) {
+        if (result == null) {
+            temperatureState.displayCondition(Condition.UNKNOWN);
+            temperatureState.setReading(getString(R.string.missing_data_placeholder));
+
+            humidityState.displayCondition(Condition.UNKNOWN);
+            humidityState.setReading(getString(R.string.missing_data_placeholder));
+
+            particulatesState.displayCondition(Condition.UNKNOWN);
+            particulatesState.setReading(getString(R.string.missing_data_placeholder));
+        } else {
+            temperatureState.displayReading(result.conditions.getTemperature(), result.units::formatTemperature);
+            humidityState.displayReading(result.conditions.getHumidity(), null);
+            particulatesState.displayReading(result.conditions.getParticulates(), result.units::formatParticulates);
+        }
     }
 
     public void conditionsUnavailable(@NonNull Throwable e) {
         Logger.error(HomeUndersideFragment.class.getSimpleName(), "Could not load conditions", e);
+
         temperatureState.displayCondition(Condition.UNKNOWN);
         temperatureState.setReading(getString(R.string.missing_data_placeholder));
+
+        humidityState.displayCondition(Condition.UNKNOWN);
+        humidityState.setReading(getString(R.string.missing_data_placeholder));
+
+        particulatesState.displayCondition(Condition.UNKNOWN);
+        particulatesState.setReading(getString(R.string.missing_data_placeholder));
     }
 
     //endregion

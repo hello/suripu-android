@@ -22,7 +22,7 @@ import rx.subjects.ReplaySubject;
         Observable<Result> result = Observable.combineLatest(apiService.currentRoomConditions(),
                                                              unitFormatter.unitSystem,
                                                              Result::new);
-        result.subscribe(currentConditions::onNext, currentConditions::onError);
+        result.subscribe(currentConditions::onNext, e -> currentConditions.onNext(null));
     }
 
     public static final class Result {
