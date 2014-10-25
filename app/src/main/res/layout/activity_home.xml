@@ -16,28 +16,27 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <is.hello.sense.ui.widget.FragmentPageView
-            android:id="@+id/activity_home_view_pager"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+            <is.hello.sense.ui.widget.FragmentPageView
+                android:id="@+id/activity_home_view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <Button
+                android:id="@+id/activity_home_new_question_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_new_question"
+                android:layout_gravity="bottom"
+                android:background="@color/background_questions"
+                style="@style/AppTheme.Button.Borderless.White.Thin"
+                android:visibility="invisible"/>
+
+        </FrameLayout>
 
     </is.hello.sense.ui.widget.SlidingLayersView>
-
-    <FrameLayout
-        android:id="@+id/activity_home_new_question"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/background_questions"
-        android:visibility="invisible">
-
-        <Button
-            android:id="@+id/activity_home_new_question_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/label_new_question"
-            style="@style/AppTheme.Button.Borderless.White.Thin"/>
-
-    </FrameLayout>
 
 </RelativeLayout>

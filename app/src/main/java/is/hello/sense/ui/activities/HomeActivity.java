@@ -49,8 +49,9 @@ public class HomeActivity
     @Inject BuildValues buildValues;
 
     private ViewGroup homeContainer;
-    private ViewGroup newQuestionContainer;
     private SlidingLayersView slidingLayersView;
+    private Button newQuestionButton;
+    private FragmentPageView<TimelineFragment> viewPager;
 
     //region Lifecycle
 
@@ -60,14 +61,13 @@ public class HomeActivity
         setContentView(R.layout.activity_home);
 
         this.homeContainer = (ViewGroup) findViewById(R.id.activity_home_container);
-        this.newQuestionContainer = (ViewGroup) findViewById(R.id.activity_home_new_question);
 
-        Button newQuestionButton = (Button) newQuestionContainer.findViewById(R.id.activity_home_new_question_button);
+        this.newQuestionButton = (Button) findViewById(R.id.activity_home_new_question_button);
         newQuestionButton.setOnClickListener(this::showQuestions);
 
 
         // noinspection unchecked
-        FragmentPageView<TimelineFragment> viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
+        this.viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
         viewPager.setFragmentManager(getFragmentManager());
         viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
@@ -106,7 +106,7 @@ public class HomeActivity
                 hideQuestionsButton();
             else
                 showQuestionsButton();
-        }, ignored -> newQuestionContainer.setVisibility(View.INVISIBLE)));
+        }, ignored -> newQuestionButton.setVisibility(View.INVISIBLE)));
 
         // This is probably not what we want to happen.
         Observable<Intent> logOut = bindActivity(this, fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT)));
@@ -147,7 +147,7 @@ public class HomeActivity
 
         NotificationType type = NotificationType.fromString(intent.getStringExtra(NotificationReceiver.EXTRA_TYPE));
         if (type == NotificationType.QUESTION && intent.hasExtra(NotificationReceiver.EXTRA_QUESTION_ID)) {
-            showQuestions(newQuestionContainer);
+            showQuestions(newQuestionButton);
         }
     }
 
@@ -205,20 +205,20 @@ public class HomeActivity
     //region Questions
 
     public void showQuestionsButton() {
-        if (newQuestionContainer.getVisibility() == View.VISIBLE)
+        if (newQuestionButton.getVisibility() == View.VISIBLE)
             return;
 
         int containerHeight = homeContainer.getMeasuredHeight();
-        int buttonHeight = newQuestionContainer.getMeasuredHeight();
+        int buttonHeight = newQuestionButton.getMeasuredHeight();
 
-        newQuestionContainer.setY((float) containerHeight);
-        newQuestionContainer.setVisibility(View.VISIBLE);
+        newQuestionButton.setY((float) containerHeight);
+        newQuestionButton.setVisibility(View.VISIBLE);
 
-        animate(newQuestionContainer)
+        animate(newQuestionButton)
                 .y(containerHeight - buttonHeight)
                 .setApplyChangesToView(true)
                 .addOnAnimationCompleted(finished -> {
-                    ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) slidingLayersView.getLayoutParams();
+                    ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) viewPager.getLayoutParams();
                     layoutParams.bottomMargin = buttonHeight;
                     slidingLayersView.getParent().requestLayout();
                 })
@@ -226,19 +226,19 @@ public class HomeActivity
     }
 
     public void hideQuestionsButton() {
-        if (newQuestionContainer.getVisibility() == View.INVISIBLE)
+        if (newQuestionButton.getVisibility() == View.INVISIBLE)
             return;
 
         int containerHeight = homeContainer.getMeasuredHeight();
-        int buttonHeight = newQuestionContainer.getMeasuredHeight();
+        int buttonHeight = newQuestionButton.getMeasuredHeight();
 
-        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) slidingLayersView.getLayoutParams();
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) viewPager.getLayoutParams();
         layoutParams.bottomMargin = 0;
-        slidingLayersView.getParent().requestLayout();
+        viewPager.getParent().requestLayout();
 
-        animate(newQuestionContainer)
+        animate(newQuestionButton)
                 .y(containerHeight + buttonHeight)
-                .addOnAnimationCompleted(finished -> newQuestionContainer.setVisibility(View.INVISIBLE))
+                .addOnAnimationCompleted(finished -> newQuestionButton.setVisibility(View.INVISIBLE))
                 .start();
     }
 
