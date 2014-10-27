@@ -8,8 +8,8 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorHistory;
+import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
-import rx.subjects.ReplaySubject;
 
 public class SensorHistoryPresenter extends Presenter {
     public static final int MODE_WEEK = 0;
@@ -20,7 +20,7 @@ public class SensorHistoryPresenter extends Presenter {
     private String sensorName;
     private int mode;
 
-    public final ReplaySubject<List<SensorHistory>> history = ReplaySubject.createWithSize(1);
+    public final PresenterSubject<List<SensorHistory>> history = PresenterSubject.create();
 
     public void update() {
         if (!TextUtils.isEmpty(getSensorName())) {
@@ -30,7 +30,7 @@ public class SensorHistoryPresenter extends Presenter {
             } else {
                 newHistory = apiService.sensorHistoryForWeek(getSensorName(), System.currentTimeMillis());
             }
-            newHistory.subscribe(history::onNext, history::onError);
+            newHistory.subscribe(history);
         }
     }
 

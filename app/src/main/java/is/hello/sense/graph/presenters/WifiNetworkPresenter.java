@@ -19,10 +19,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
-import rx.subjects.ReplaySubject;
 
 import static rx.android.observables.AndroidObservable.fromBroadcast;
 
@@ -35,7 +35,7 @@ public class WifiNetworkPresenter extends Presenter {
     private final WifiManager wifiManager;
     private final Subscription wifiStateChangedSubscription;
 
-    public final ReplaySubject<List<ScanResult>> networksInRange = ReplaySubject.createWithSize(1);
+    public final PresenterSubject<List<ScanResult>> networksInRange = PresenterSubject.create();
 
     @Inject
     public WifiNetworkPresenter(@NonNull Context context) {
