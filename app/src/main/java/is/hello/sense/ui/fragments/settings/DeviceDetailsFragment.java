@@ -31,7 +31,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     @Inject DateFormatter dateFormatter;
     @Inject HardwarePresenter hardwarePresenter;
 
-    private StaticItemAdapter.Item signalStrengthItem;
+    private @Nullable StaticItemAdapter.Item signalStrengthItem;
     private StaticItemAdapter adapter;
 
     public static DeviceDetailsFragment newInstance(@NonNull Device device) {
@@ -109,14 +109,19 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             strength = getString(R.string.signal_weak);
         }
 
-        signalStrengthItem.setValue(strength);
+        if (signalStrengthItem != null) {
+            signalStrengthItem.setValue(strength);
+        }
     }
 
     public void hardwareDeviceUnavailable(Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
         Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
-        signalStrengthItem.setValue(getString(R.string.missing_data_placeholder));
+
+        if (signalStrengthItem != null) {
+            signalStrengthItem.setValue(getString(R.string.missing_data_placeholder));
+        }
     }
 
     public void presentError(Throwable e) {
