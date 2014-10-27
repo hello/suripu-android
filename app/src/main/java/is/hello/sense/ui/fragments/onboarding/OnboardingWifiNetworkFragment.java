@@ -23,6 +23,7 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.util.Analytics;
 
 public class OnboardingWifiNetworkFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     @Inject WifiNetworkPresenter networkPresenter;
@@ -37,6 +38,8 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
         networkPresenter.update();
         addPresenter(networkPresenter);
+
+        Analytics.event(Analytics.EVENT_ONBOARDING_SETUP_WIFI, null);
 
         setRetainInstance(true);
     }
