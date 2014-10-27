@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.common.primitives.Ints;
+import com.hello.ble.BleOperationCallback;
+import com.hello.ble.devices.HelloBleDevice;
 import com.hello.ble.devices.Morpheus;
 
 import java.util.Collections;
@@ -135,6 +137,26 @@ import rx.android.schedulers.AndroidSchedulers;
                              this.device = device;
                          })
                          .subscribeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Void> reconnect() {
+        logEvent("reconnect()");
+
+        return Observable.create((Observable.OnSubscribe<Void>) s -> {
+            device.setDisconnectedCallback(new BleOperationCallback<Integer>() {
+                @Override
+                public void onCompleted(HelloBleDevice sender, Integer data) {
+                    device.connect(new BleObserverCallback<>(s, timeoutHandler, BleObserverCallback.NO_TIMEOUT));
+                }
+
+                @Override
+                public void onFailed(HelloBleDevice sender, OperationFailReason reason, int errorCode) {
+                    logEvent("reconnect failed " + reason + " (" + errorCode + ")");
+                    s.onError(new BleObserverCallback.BluetoothError(reason, errorCode));
+                }
+            });
+            device.disconnect();
+        }).subscribeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<Void> sendWifiCredentials(String bssid, String ssid, String password) {

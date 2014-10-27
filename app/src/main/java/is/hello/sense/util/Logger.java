@@ -15,11 +15,11 @@ import retrofit.RestAdapter;
 public class Logger {
     //region Primitive
 
-    public static int println(int priority, @NonNull String tag, @NonNull String message) {
+    public static void println(int priority, @NonNull String tag, @NonNull String message) {
         if (Crashlytics.getInstance().isInitialized())
             Crashlytics.log(priority, tag, message);
         SessionLogger.println(priority, tag, message);
-        return Log.println(priority, tag, message);
+        Log.println(priority, tag, message);
     }
 
     public static String formatMessage(@NonNull String message, @Nullable Throwable e) {
@@ -35,39 +35,39 @@ public class Logger {
 
     //region Printing
 
-    public static int debug(@NonNull String tag, @NonNull String message, @Nullable Throwable e) {
-        return println(Log.DEBUG, tag, formatMessage(message, e));
+    public static void debug(@NonNull String tag, @NonNull String message, @Nullable Throwable e) {
+        println(Log.DEBUG, tag, formatMessage(message, e));
     }
 
-    public static int debug(@NonNull String tag, @NonNull String message) {
-        return debug(tag, message, null);
-    }
-
-
-    public static int info(@NonNull String tag, @NonNull String message, @Nullable Throwable e) {
-        return println(Log.INFO, tag, formatMessage(message, e));
-    }
-
-    public static int info(@NonNull String tag, @NonNull String message) {
-        return info(tag, message, null);
+    public static void debug(@NonNull String tag, @NonNull String message) {
+        debug(tag, message, null);
     }
 
 
-    public static int warn(@NonNull String tag, @NonNull String message, @Nullable Throwable e) {
-        return println(Log.WARN, tag, formatMessage(message, e));
+    public static void info(@NonNull String tag, @NonNull String message, @Nullable Throwable e) {
+        println(Log.INFO, tag, formatMessage(message, e));
     }
 
-    public static int warn(@NonNull String tag, @NonNull String message) {
-        return warn(tag, message, null);
+    public static void info(@NonNull String tag, @NonNull String message) {
+        info(tag, message, null);
     }
 
 
-    public static int error(@NonNull String tag, @NonNull String message, @Nullable Throwable e) {
-        return println(Log.ERROR, tag, formatMessage(message, e));
+    public static void warn(@NonNull String tag, @NonNull String message, @Nullable Throwable e) {
+        println(Log.WARN, tag, formatMessage(message, e));
     }
 
-    public static int error(@NonNull String tag, @NonNull String message) {
-        return error(tag, message, null);
+    public static void warn(@NonNull String tag, @NonNull String message) {
+        warn(tag, message, null);
+    }
+
+
+    public static void error(@NonNull String tag, @NonNull String message, @Nullable Throwable e) {
+        println(Log.ERROR, tag, formatMessage(message, e));
+    }
+
+    public static void error(@NonNull String tag, @NonNull String message) {
+        error(tag, message, null);
     }
 
     //endregion

@@ -1,5 +1,6 @@
 package is.hello.sense.ui.dialogs;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -84,6 +85,11 @@ public class ErrorDialogFragment extends DialogFragment {
         } else {
             builder.setMessage(R.string.dialog_error_generic_message);
         }
+
+        if (getTargetFragment() != null) {
+            builder.setNeutralButton(R.string.action_retry, (button, which) -> getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null));
+        }
+
         builder.setPositiveButton(android.R.string.ok, null);
 
         return builder.create();
