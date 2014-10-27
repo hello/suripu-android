@@ -9,16 +9,16 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
-import rx.subjects.ReplaySubject;
 
 public class DevicesPresenter extends Presenter {
     @Inject ApiService apiService;
 
-    public final ReplaySubject<List<Device>> devices = ReplaySubject.createWithSize(1);
+    public final PresenterSubject<List<Device>> devices = PresenterSubject.create();
 
     public void update() {
-        apiService.registeredDevices().subscribe(devices::onNext, devices::onError);
+        apiService.registeredDevices().subscribe(devices);
     }
 
     public Observable<ApiResponse> unregisterDevice(@NonNull Device device) {
