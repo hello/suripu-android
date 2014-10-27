@@ -15,6 +15,7 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
+import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.WifiNetworkPresenter;
 import is.hello.sense.notifications.NotificationRegistration;
@@ -81,6 +82,7 @@ import is.hello.sense.util.BuildValues;
         CurrentConditionsPresenter.class,
         SensorHistoryFragment.class,
         SensorHistoryPresenter.class,
+        SmartAlarmPresenter.class,
 
         SettingsActivity.class,
         MyInfoFragment.class,

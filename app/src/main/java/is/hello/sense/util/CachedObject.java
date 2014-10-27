@@ -12,13 +12,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 
 import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-public class CachedObject<T extends Serializable> {
+public class CachedObject<T> {
     private final TypeReference<T> valueType;
     private final File objectFile;
     private final ObjectMapper objectMapper;

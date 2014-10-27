@@ -29,6 +29,7 @@ import is.hello.sense.graph.presenters.TimelinePresenterTests;
 import is.hello.sense.graph.presenters.WifiNetworkPresenter;
 import is.hello.sense.graph.presenters.WifiNetworkPresenterTests;
 import is.hello.sense.units.UnitFormatterTests;
+import is.hello.sense.util.CachedObjectTests;
 
 @Module(
     library = true,
@@ -50,6 +51,8 @@ import is.hello.sense.units.UnitFormatterTests;
 
         WifiNetworkPresenter.class,
         WifiNetworkPresenterTests.class,
+
+        CachedObjectTests.class,
 
         UnitFormatterTests.class,
     }
