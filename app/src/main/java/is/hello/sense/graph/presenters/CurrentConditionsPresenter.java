@@ -7,22 +7,22 @@ import javax.inject.Singleton;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.RoomConditions;
+import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import rx.Observable;
-import rx.subjects.ReplaySubject;
 
 @Singleton public class CurrentConditionsPresenter extends Presenter {
     @Inject ApiService apiService;
     @Inject UnitFormatter unitFormatter;
 
-    public final ReplaySubject<Result> currentConditions = ReplaySubject.createWithSize(1);
+    public final PresenterSubject<Result> currentConditions = PresenterSubject.create();
 
     public void update() {
         Observable<Result> result = Observable.combineLatest(apiService.currentRoomConditions(),
                                                              unitFormatter.unitSystem,
                                                              Result::new);
-        result.subscribe(currentConditions::onNext, e -> currentConditions.onNext(null));
+        result.subscribe(currentConditions);
     }
 
     public static final class Result {

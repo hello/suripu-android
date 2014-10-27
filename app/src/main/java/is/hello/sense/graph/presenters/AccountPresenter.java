@@ -9,14 +9,14 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Logger;
 import rx.observables.BlockingObservable;
-import rx.subjects.ReplaySubject;
 
 public class AccountPresenter extends Presenter {
     @Inject ApiService apiService;
 
-    public final ReplaySubject<Account> account = ReplaySubject.createWithSize(1);
+    public final PresenterSubject<Account> account = PresenterSubject.create();
 
     @Override
     public @Nullable Parcelable onSaveState() {
@@ -44,11 +44,11 @@ public class AccountPresenter extends Presenter {
     }
 
     public void update() {
-        apiService.getAccount().subscribe(account::onNext, account::onError);
+        apiService.getAccount().subscribe(account);
     }
 
 
     public void saveAccount(@NonNull Account updatedAccount) {
-        apiService.updateAccount(updatedAccount).subscribe(account::onNext, account::onError);
+        apiService.updateAccount(updatedAccount).subscribe(account);
     }
 }

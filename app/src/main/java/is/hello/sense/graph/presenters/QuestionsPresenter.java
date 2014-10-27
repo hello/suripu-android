@@ -23,16 +23,16 @@ import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
-import rx.subjects.ReplaySubject;
 
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 @Singleton public final class QuestionsPresenter extends Presenter {
     private final ApiService apiService;
 
-    public final ReplaySubject<List<Question>> questions = ReplaySubject.createWithSize(1);
-    public final ReplaySubject<Question> currentQuestion = ReplaySubject.createWithSize(1);
+    public final PresenterSubject<List<Question>> questions = PresenterSubject.create();
+    public final PresenterSubject<Question> currentQuestion = PresenterSubject.create();
 
     private PreferencesPresenter preferences;
     private int offset;

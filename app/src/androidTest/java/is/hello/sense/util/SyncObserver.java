@@ -15,8 +15,8 @@ import rx.schedulers.Schedulers;
 public final class SyncObserver<T> implements Observer<T> {
     public static final long STANDARD_TIMEOUT = 750;
 
-    private final CountDownLatch latch = new CountDownLatch(1);
     private final WaitingFor waitingFor;
+    private CountDownLatch latch = new CountDownLatch(1);
 
     private Throwable error;
     private ArrayList<T> results = new ArrayList<>();
@@ -29,9 +29,7 @@ public final class SyncObserver<T> implements Observer<T> {
     }
 
     public static <T> SyncObserver<T> subscribe(@NonNull WaitingFor waitingFor, @NonNull Observable<T> observable) {
-        SyncObserver<T> observer = new SyncObserver<>(waitingFor);
-        observer.subscription = observable.subscribeOn(Schedulers.io()).subscribe(observer);
-        return observer;
+        return new SyncObserver<T>(waitingFor).subscribeTo(observable);
     }
 
 
@@ -55,10 +53,25 @@ public final class SyncObserver<T> implements Observer<T> {
     }
 
 
+    public SyncObserver<T> subscribeTo(@NonNull Observable<T> observable) {
+        this.subscription = observable.subscribeOn(Schedulers.computation()).subscribe(this);
+        return this;
+    }
+
     public SyncObserver<T> ignore(int amount) {
         this.ignoreCount = amount;
         return this;
     }
+
+    public SyncObserver<T> reset() {
+        this.latch = new CountDownLatch(1);
+        this.error = null;
+        this.ignoreCount = 0;
+        results.clear();
+
+        return this;
+    }
+
 
     public boolean await() throws InterruptedException {
         return await(STANDARD_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -68,6 +81,7 @@ public final class SyncObserver<T> implements Observer<T> {
         boolean result = latch.await(timeout, unit);
         if (subscription != null && !subscription.isUnsubscribed()) {
             subscription.unsubscribe();
+            this.subscription = null;
         }
         return result;
     }
