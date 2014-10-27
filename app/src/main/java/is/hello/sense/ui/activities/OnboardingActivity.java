@@ -19,6 +19,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -41,7 +42,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
-public class OnboardingActivity extends InjectionActivity {
+public class OnboardingActivity extends InjectionActivity implements FragmentNavigation {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
 
     @Inject ApiService apiService;
@@ -120,16 +121,21 @@ public class OnboardingActivity extends InjectionActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void showFragment(@NonNull Fragment fragment, boolean addToBackStack) {
+    @Override
+    public void showFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             transaction.add(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
         } else {
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             transaction.replace(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
-            if (addToBackStack)
-                transaction.addToBackStack(fragment.getClass().getSimpleName());
         }
+
+        if (wantsBackStackEntry) {
+            transaction.setBreadCrumbTitle(title);
+            transaction.addToBackStack(fragment.getClass().getSimpleName());
+        }
+
         transaction.commit();
     }
 
@@ -159,43 +165,43 @@ public class OnboardingActivity extends InjectionActivity {
     }
 
     public void showIntroductionFragment() {
-        showFragment(new OnboardingIntroductionFragment(), true);
+        showFragment(new OnboardingIntroductionFragment(), null, true);
     }
 
     public void showSignIn() {
-        showFragment(new OnboardingSignInFragment(), true);
+        showFragment(new OnboardingSignInFragment(), null, true);
     }
 
     public void showRegistration() {
-        showFragment(new OnboardingRegisterFragment(), true);
+        showFragment(new OnboardingRegisterFragment(), null, true);
     }
 
     public void showBirthday(@NonNull Account account) {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_ACCOUNT);
 
-        showFragment(OnboardingRegisterBirthdayFragment.newInstance(account), false);
+        showFragment(OnboardingRegisterBirthdayFragment.newInstance(account), null, false);
     }
 
     public void showGender(@NonNull Account account) {
-        showFragment(OnboardingRegisterGenderFragment.newInstance(account), true);
+        showFragment(OnboardingRegisterGenderFragment.newInstance(account), null, true);
     }
 
     public void showHeight(@NonNull Account account) {
-        showFragment(OnboardingRegisterHeightFragment.newInstance(account), true);
+        showFragment(OnboardingRegisterHeightFragment.newInstance(account), null, true);
     }
 
     public void showWeight(@NonNull Account account) {
-        showFragment(OnboardingRegisterWeightFragment.newInstance(account), true);
+        showFragment(OnboardingRegisterWeightFragment.newInstance(account), null, true);
     }
 
     public void showGettingStarted() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
 
-        showFragment(new OnboardingGettingStartedFragment(), false);
+        showFragment(new OnboardingGettingStartedFragment(), null, false);
     }
 
     public void showWhichPill() {
-        showFragment(new OnboardingWhichPillFragment(), true);
+        showFragment(new OnboardingWhichPillFragment(), null, true);
     }
 
     public void showSetupSense(boolean secondPill) {
@@ -207,22 +213,22 @@ public class OnboardingActivity extends InjectionActivity {
             builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
             builder.setNextFragmentArguments(arguments);
             builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_ADD_PILL);
-            showFragment(builder.build(), true);
+            showFragment(builder.build(), null, true);
         } else {
             OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
             builder.setLayout(R.layout.sub_fragment_onboarding_1st_user_setup_sense);
             builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
             builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_SETUP);
-            showFragment(builder.build(), true);
+            showFragment(builder.build(), null, true);
         }
     }
 
     public void showSelectWifiNetwork() {
-        showFragment(new OnboardingWifiNetworkFragment(), true);
+        showFragment(new OnboardingWifiNetworkFragment(), null, true);
     }
 
     public void showSignIntoWifiNetwork(@Nullable ScanResult network) {
-        showFragment(OnboardingSignIntoWifiFragment.newInstance(network), true);
+        showFragment(OnboardingSignIntoWifiFragment.newInstance(network), null, true);
     }
 
     public void showSetupPill() {
@@ -232,17 +238,17 @@ public class OnboardingActivity extends InjectionActivity {
         builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
         builder.setNextFragmentClass(OnboardingSleepPillColorFragment.class);
         builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SETUP_PILL);
-        showFragment(builder.build(), true);
+        showFragment(builder.build(), null, true);
     }
 
     public void showPairPill(int selectedColorIndex) {
-        showFragment(OnboardingPairPillFragment.newInstance(selectedColorIndex), true);
+        showFragment(OnboardingPairPillFragment.newInstance(selectedColorIndex), null, true);
     }
 
     public void showWelcome() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
 
-        showFragment(new OnboardingWelcomeFragment(), false);
+        showFragment(new OnboardingWelcomeFragment(), null, false);
     }
 
     //endregion
