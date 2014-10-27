@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -111,7 +112,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         if (device != null) {
             bindAndSubscribe(hardwarePresenter.connectToDevice(device), ignored -> finishedPairing(), this::pairingFailed);
         } else {
-            ErrorDialogFragment.presentError(getFragmentManager(), new Exception("Could not find any devices."));
+            pairingFailed(new Exception("Could not find any devices."));
         }
     }
 
