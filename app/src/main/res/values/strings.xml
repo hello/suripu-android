@@ -138,6 +138,8 @@
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
     <string name="info_pair_pill">Gently shake your Sleep Pill for three seconds. When your Sleep Pill lights up green, tap continue.</string>
     <string name="error_bad_wifi_credentials">The wifi network credentials you entered are incorrect.</string>
+    <string name="error_wifi_out_of_range">The wifi network you selected could not be found by Sense.</string>
+    <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the wifi network you selected.</string>
     <string name="title_device_last_seen">Last Seen</string>
     <string name="title_device_signal_strength">Signal Strength</string>
     <string name="title_device_firmware_version">Firmware Version</string>
@@ -154,6 +156,7 @@
     <string name="info_onboarding_getting_started">Are you using Sense with one Sleep Pill, or two Sleep Pills?</string>
     <string name="title_two_pills">Two Sleep Pills</string>
     <string name="title_one_pill">One Sleep Pill</string>
+    <string name="action_retry">Retry</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
