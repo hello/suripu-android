@@ -2,6 +2,8 @@
   <dictionary name="km">
     <words>
       <w>onboarding</w>
+      <w>protobuf</w>
+      <w>rssi</w>
       <w>timeline</w>
       <w>timelines</w>
     </words>
