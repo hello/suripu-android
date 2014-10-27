@@ -19,7 +19,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Insight;
+import is.hello.sense.api.model.PreSleepInsight;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.graph.presenters.TimelinePresenter;
@@ -125,7 +125,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         }
     }
 
-    public void showInsights(@NonNull List<Insight> insights) {
+    public void showInsights(@NonNull List<PreSleepInsight> preSleepInsights) {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         if (insightsContainer != null) {
@@ -138,10 +138,10 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
             listView.addFooterView(insightsContainer, null, false);
         }
 
-        for (Insight insight : insights) {
+        for (PreSleepInsight preSleepInsight : preSleepInsights) {
             TextView insightText = (TextView) inflater.inflate(R.layout.item_before_sleep, insightsContainer, false);
-            insightText.setCompoundDrawablesRelativeWithIntrinsicBounds(insight.getIconResource(), 0, 0, 0);
-            insightText.setText(insight.getMessage());
+            insightText.setCompoundDrawablesRelativeWithIntrinsicBounds(preSleepInsight.getIconResource(), 0, 0, 0);
+            insightText.setText(preSleepInsight.getMessage());
             insightsContainer.addView(insightText);
         }
     }
@@ -149,8 +149,8 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     public void bindTimeline(@NonNull Timeline timeline) {
         showSleepScore(timeline.getScore());
 
-        if (timeline.getInsights() != null && !timeline.getInsights().isEmpty()) {
-            showInsights(timeline.getInsights());
+        if (timeline.getPreSleepInsights() != null && !timeline.getPreSleepInsights().isEmpty()) {
+            showInsights(timeline.getPreSleepInsights());
         }
     }
 

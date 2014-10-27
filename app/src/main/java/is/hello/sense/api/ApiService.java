@@ -7,6 +7,7 @@ import java.util.List;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
@@ -58,6 +59,9 @@ public interface ApiService {
     Observable<List<Timeline>> timelineForDate(@NonNull @Path("year") String year,
                                                @NonNull @Path("month") String month,
                                                @NonNull @Path("day") String day);
+
+    @GET("/insights")
+    Observable<List<Insight>> currentInsights();
 
     //endregion
 

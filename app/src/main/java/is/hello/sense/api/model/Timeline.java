@@ -26,8 +26,8 @@ public class Timeline extends ApiResponse {
     private List<TimelineSegment> segments;
 
     @JsonProperty("insights")
-    @JsonDeserialize(contentAs = Insight.class)
-    private List<Insight> insights;
+    @JsonDeserialize(contentAs = PreSleepInsight.class)
+    private List<PreSleepInsight> preSleepInsights;
 
 
     public int getScore() {
@@ -46,8 +46,8 @@ public class Timeline extends ApiResponse {
         return segments;
     }
 
-    public List<Insight> getInsights() {
-        return insights;
+    public List<PreSleepInsight> getPreSleepInsights() {
+        return preSleepInsights;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class Timeline extends ApiResponse {
                 ", message='" + message + '\'' +
                 ", date='" + date + '\'' +
                 ", segments=" + segments +
-                ", insights=" + insights +
+                ", insights=" + preSleepInsights +
                 '}';
     }
 }
