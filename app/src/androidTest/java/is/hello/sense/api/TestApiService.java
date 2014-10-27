@@ -18,6 +18,7 @@ import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorHistory;
+import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
@@ -138,6 +139,16 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ApiResponse> unregisterSense(@Path("id") @NonNull String senseId) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<List<SmartAlarm>> smartAlarms() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<ApiResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp, @NonNull @Body List<SmartAlarm> alarms) {
         return unimplemented();
     }
 }
