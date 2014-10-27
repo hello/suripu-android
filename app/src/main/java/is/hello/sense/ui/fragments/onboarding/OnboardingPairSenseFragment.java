@@ -100,9 +100,8 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         if (bluetoothAdapter.isEnabled()) {
             beginPairing();
 
-            Observable<Morpheus> device = hardwarePresenter.scanForDevices()
-                                                         .map(hardwarePresenter::bestDeviceForPairing);
-            subscribe(device, this::pairWith, this::pairingFailed);
+            Observable<Morpheus> device = hardwarePresenter.scanForDevices().map(hardwarePresenter::bestDeviceForPairing);
+            bindAndSubscribe(device, this::pairWith, this::pairingFailed);
         } else {
             startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
         }
