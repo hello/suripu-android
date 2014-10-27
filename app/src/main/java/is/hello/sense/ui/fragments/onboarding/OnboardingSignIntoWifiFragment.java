@@ -39,6 +39,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private ScanResult network;
 
     private boolean hasConnectedToNetwork = false;
+    private boolean hasTriedReconnect = false;
 
     public static OnboardingSignIntoWifiFragment newInstance(@Nullable ScanResult network) {
         OnboardingSignIntoWifiFragment fragment = new OnboardingSignIntoWifiFragment();
@@ -133,6 +134,11 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     }
 
 
+    private void tryDeviceReconnect() {
+        this.hasTriedReconnect = true;
+        bindAndSubscribe(hardwarePresenter.reconnect(), ignored -> sendWifiCredentials(), this::presentError);
+    }
+
     public void presentError(Throwable e) {
         ErrorDialogFragment dialogFragment = null;
         if (e instanceof BluetoothError) {
@@ -159,8 +165,11 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
                 }
 
                 dialogFragment = ErrorDialogFragment.newInstance(message);
-            } else if (bluetoothError.failureReason == OperationFailReason.GATT_ERROR) {
-                // TODO: Implicit reconnect here.
+            } else if (bluetoothError.failureReason == OperationFailReason.GATT_ERROR &&
+                       bluetoothError.errorCode == 133 &&
+                       !hasTriedReconnect) {
+                tryDeviceReconnect();
+                return;
             }
         }
 

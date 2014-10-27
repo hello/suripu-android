@@ -251,8 +251,10 @@ public class OnboardingActivity extends InjectionActivity {
     //region Presenting Blocking Work
 
     public void beginBlockingWork(@StringRes int titleResId) {
-        LoadingDialogFragment dialogFragment = LoadingDialogFragment.newInstance(getString(titleResId), true);
-        dialogFragment.show(getFragmentManager(), LoadingDialogFragment.TAG);
+        if (getFragmentManager().findFragmentByTag(LoadingDialogFragment.TAG) != null) {
+            LoadingDialogFragment dialogFragment = LoadingDialogFragment.newInstance(getString(titleResId), true);
+            dialogFragment.show(getFragmentManager(), LoadingDialogFragment.TAG);
+        }
     }
 
     public void finishBlockingWork() {
