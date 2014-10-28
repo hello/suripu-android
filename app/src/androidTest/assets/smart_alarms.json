@@ -1,0 +1,19 @@
+[
+    {
+        "day_of_month": 0,
+        "day_of_week": [
+            1
+        ],
+        "editable": true,
+        "enabled": true,
+        "hour": 7,
+        "minute": 30,
+        "month": 0,
+        "repeated": true,
+        "sound": {
+            "id": 0,
+            "name": null
+        },
+        "year": 0
+    }
+]

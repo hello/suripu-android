@@ -150,11 +150,12 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<List<SmartAlarm>> smartAlarms() {
-        return unimplemented();
+        return loadResponse("smart_alarms", new TypeReference<List<SmartAlarm>>() {});
     }
 
     @Override
-    public Observable<ApiResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp, @NonNull @Body List<SmartAlarm> alarms) {
-        return unimplemented();
+    public Observable<ApiResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp,
+                                                   @NonNull @Body List<SmartAlarm> alarms) {
+        return Observable.just(new ApiResponse());
     }
 }

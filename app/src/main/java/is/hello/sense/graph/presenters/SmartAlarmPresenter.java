@@ -45,10 +45,29 @@ public class SmartAlarmPresenter extends Presenter {
         }
     }
 
+
+    public @Nullable Observable<List<SmartAlarm>> retrieveCache() {
+        if (alarmCache != null) {
+            return alarmCache.get();
+        } else {
+            return null;
+        }
+    }
+
+    public @Nullable Observable<List<SmartAlarm>> saveCache(@Nullable List<SmartAlarm> alarms) {
+        if (alarmCache != null) {
+            return alarmCache.set(alarms);
+        } else {
+            return null;
+        }
+    }
+
+
     public void update() {
         logEvent("update()");
 
-        Subscription cacheSubscription = alarmCache != null ? alarmCache.get().subscribe(alarms) : null;
+        Observable<List<SmartAlarm>> cache = retrieveCache();
+        Subscription cacheSubscription = cache != null ? cache.subscribe(alarms) : null;
         apiService.smartAlarms().subscribe(alarms -> {
             if (cacheSubscription != null && !cacheSubscription.isUnsubscribed())
                 cacheSubscription.unsubscribe();
@@ -67,11 +86,9 @@ public class SmartAlarmPresenter extends Presenter {
     }
 
     public Observable<ApiResponse> save(@NonNull List<SmartAlarm> alarms) {
-        if (alarmCache != null) {
-            return apiService.saveSmartAlarms(System.currentTimeMillis(), alarms)
-                             .doOnCompleted(() -> alarmCache.set(alarms));
-        } else {
-            return Observable.error(new FileNotFoundException());
-        }
+        logEvent("save()");
+
+        return apiService.saveSmartAlarms(System.currentTimeMillis(), alarms)
+                         .doOnCompleted(() -> saveCache(alarms));
     }
 }

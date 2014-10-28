@@ -2,12 +2,14 @@ package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.LocalTime;
 
 import java.util.Set;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SmartAlarm extends ApiResponse {
     @JsonProperty("hour")
     private int hourOfDay;

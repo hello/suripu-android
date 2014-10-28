@@ -3,6 +3,7 @@ package is.hello.sense.graph;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -104,5 +105,11 @@ public final class TestModule {
 
     @Singleton @Provides ApiService provideApiService(@NonNull @ApiAppContext Context context, @NonNull ObjectMapper objectMapper) {
         return new TestApiService(context, objectMapper);
+    }
+
+    @Provides SmartAlarmPresenter provideSmartAlarmPresenter(@NonNull ApiService apiService,
+                                                             @CacheDirectoryFile @Nullable File cacheDirectory,
+                                                             @NonNull ObjectMapper objectMapper) {
+        return new SmartAlarmPresenterTests.StubedSmartAlarmPresenter(apiService, cacheDirectory, objectMapper);
     }
 }
