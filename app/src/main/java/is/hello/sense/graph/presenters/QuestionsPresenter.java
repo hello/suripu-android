@@ -76,6 +76,20 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return savedState;
     }
 
+    @Override
+    protected void onReloadForgottenData() {
+        update();
+    }
+
+    @Override
+    protected boolean onForgetDataForLowMemory() {
+        questions.forget();
+        currentQuestion.forget();
+        this.lastUpdated = null;
+
+        return true;
+    }
+
     //endregion
 
 

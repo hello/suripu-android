@@ -17,6 +17,17 @@ public class DevicesPresenter extends Presenter {
 
     public final PresenterSubject<List<Device>> devices = PresenterSubject.create();
 
+    @Override
+    protected void onReloadForgottenData() {
+        update();
+    }
+
+    @Override
+    protected boolean onForgetDataForLowMemory() {
+        devices.forget();
+        return true;
+    }
+
     public void update() {
         apiService.registeredDevices().subscribe(devices);
     }

@@ -134,6 +134,13 @@ public class HomeActivity
     }
 
     @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+
+        questionsPresenter.onTrimMemory(level);
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 

@@ -45,6 +45,16 @@ public class SmartAlarmPresenter extends Presenter {
         }
     }
 
+    @Override
+    protected void onReloadForgottenData() {
+        update();
+    }
+
+    @Override
+    protected boolean onForgetDataForLowMemory() {
+        alarms.forget();
+        return true;
+    }
 
     public @Nullable Observable<List<SmartAlarm>> retrieveCache() {
         if (alarmCache != null) {

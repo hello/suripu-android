@@ -18,6 +18,17 @@ import rx.Observable;
 
     public final PresenterSubject<Result> currentConditions = PresenterSubject.create();
 
+    @Override
+    protected void onReloadForgottenData() {
+        update();
+    }
+
+    @Override
+    protected boolean onForgetDataForLowMemory() {
+        currentConditions.forget();
+        return true;
+    }
+
     public void update() {
         Observable<Result> result = Observable.combineLatest(apiService.currentRoomConditions(),
                                                              unitFormatter.unitSystem,

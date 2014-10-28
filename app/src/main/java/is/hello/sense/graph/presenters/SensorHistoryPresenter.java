@@ -1,5 +1,9 @@
 package is.hello.sense.graph.presenters;
 
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.util.List;
@@ -21,6 +25,38 @@ public class SensorHistoryPresenter extends Presenter {
     private int mode;
 
     public final PresenterSubject<List<SensorHistory>> history = PresenterSubject.create();
+
+    @Override
+    public void onRestoreState(@NonNull Parcelable savedState) {
+        super.onRestoreState(savedState);
+
+        if (savedState instanceof Bundle) {
+            Bundle state = ((Bundle) savedState);
+            this.mode = state.getInt("mode");
+            this.sensorName = state.getString("sensorName");
+            update();
+        }
+    }
+
+    @Nullable
+    @Override
+    public Parcelable onSaveState() {
+        Bundle state = new Bundle();
+        state.putString("sensorName", sensorName);
+        state.putInt("mode", mode);
+        return state;
+    }
+
+    @Override
+    protected void onReloadForgottenData() {
+        update();
+    }
+
+    @Override
+    protected boolean onForgetDataForLowMemory() {
+        history.forget();
+        return true;
+    }
 
     public void update() {
         if (!TextUtils.isEmpty(getSensorName())) {
