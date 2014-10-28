@@ -20,14 +20,16 @@ import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
+import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.InsightDialogFragment;
 import is.hello.sense.ui.widget.SensorStateView;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 
-public class HomeUndersideFragment extends InjectionFragment {
+public class HomeUndersideFragment extends InjectionFragment implements ViewPagerAdapter.OnItemViewClickedListener {
     @Inject InsightsPresenter insightsPresenter;
     @Inject CurrentConditionsPresenter currentConditionsPresenter;
     @Inject Markdown markdown;
@@ -55,6 +57,7 @@ public class HomeUndersideFragment extends InjectionFragment {
 
         ViewPager insightsPager = (ViewPager) view.findViewById(R.id.fragment_underside_insights);
         this.insightsAdapter = new InsightsAdapter(getActivity(), markdown, view.findViewById(R.id.fragment_underside_insights_loading));
+        insightsAdapter.onItemViewClickedListener = this;
         insightsPager.setClipToPadding(false);
         int padding = getResources().getDimensionPixelSize(R.dimen.gap_small) * 2;
         insightsPager.setPadding(padding, 0, padding, 0);
@@ -141,5 +144,11 @@ public class HomeUndersideFragment extends InjectionFragment {
         Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
         intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensor);
         startActivity(intent);
+    }
+
+    @Override
+    public void onItemViewClicked(@NonNull View view, int position) {
+        InsightDialogFragment dialogFragment = InsightDialogFragment.newInstance(insightsAdapter.getItem(position));
+        dialogFragment.show(getFragmentManager(), InsightDialogFragment.TAG);
     }
 }

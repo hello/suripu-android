@@ -3,6 +3,7 @@ package is.hello.sense.ui.adapter;
 import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class ViewPagerAdapter<T> extends PagerAdapter {
+public abstract class ViewPagerAdapter<T> extends PagerAdapter implements View.OnClickListener {
     private final LayoutInflater inflater;
     private final @LayoutRes int layoutRes;
     private final List<T> data = new ArrayList<>();
@@ -30,6 +31,8 @@ public abstract class ViewPagerAdapter<T> extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         View view = inflater.inflate(layoutRes, container, false);
         configureView(view, position);
+        view.setTag(position);
+        view.setOnClickListener(this);
         container.addView(view, 0);
         return view;
     }
@@ -73,6 +76,25 @@ public abstract class ViewPagerAdapter<T> extends PagerAdapter {
     public void clear() {
         data.clear();
         notifyDataSetChanged();
+    }
+
+    //endregion
+
+
+    //region Click Support
+
+    public @Nullable OnItemViewClickedListener onItemViewClickedListener;
+
+    @Override
+    public void onClick(@NonNull View view) {
+        int position = (Integer) view.getTag();
+        if (onItemViewClickedListener != null) {
+            onItemViewClickedListener.onItemViewClicked(view, position);
+        }
+    }
+
+    public interface OnItemViewClickedListener {
+        void onItemViewClicked(@NonNull View view, int position);
     }
 
     //endregion
