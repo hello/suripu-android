@@ -90,6 +90,11 @@ public class Analytics {
     public static final String EVENT_ONBOARDING_WIFI_PASSWORD = "Onboarding WiFi Password";
 
     /**
+     * When the user explicitly rescans for wifi networks.
+     */
+    public static final String EVENT_ONBOARDING_WIFI_SCAN = "Onboarding WiFi Scan";
+
+    /**
      * When user lands on the "Introducing Sleep Pill" screen
      */
     public static final String EVENT_ONBOARDING_SETUP_PILL = "Onboarding Setup Pill";

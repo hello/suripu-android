@@ -64,7 +64,10 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_onboarding_wifi_networks_refresh_container);
         swipeRefreshLayout.setColorSchemeResources(R.color.sleep_light, R.color.sleep_intermediate, R.color.sleep_deep, R.color.sleep_awake);
-        swipeRefreshLayout.setOnRefreshListener(this::rescan);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            Analytics.event(Analytics.EVENT_ONBOARDING_WIFI_SCAN, null);
+            rescan();
+        });
 
         Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
         helpButton.setOnClickListener(v -> Toast.makeText(v.getContext().getApplicationContext(), "Hang in there...", Toast.LENGTH_SHORT).show());
