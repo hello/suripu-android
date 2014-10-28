@@ -158,6 +158,7 @@
     <string name="title_two_pills">Two Sleep Pills</string>
     <string name="title_one_pill">One Sleep Pill</string>
     <string name="action_retry">Retry</string>
+    <string name="action_share">Share</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
