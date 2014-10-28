@@ -2,6 +2,7 @@ package is.hello.sense.util;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.test.FlakyTest;
 
 import junit.framework.TestCase;
 
@@ -13,6 +14,7 @@ public class BleObserverCallbackTests extends TestCase {
     // with all of its fields nulled/zeroed out. So that means
     // that the `what` for observer callback posts is `0`.
 
+    @FlakyTest
     public void testNonTimeout() throws Exception {
         RecordingObserver<Void> observer = new RecordingObserver<>();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -29,6 +31,7 @@ public class BleObserverCallbackTests extends TestCase {
         assertFalse(observerCallback.timedOut);
     }
 
+    @FlakyTest
     public void testTimeout() throws Exception {
         RecordingObserver<Void> observer = new RecordingObserver<>();
         Handler handler = new Handler(Looper.getMainLooper());

@@ -63,7 +63,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         // ListView eats some vertical motion events, so our touch slop has
         // to be lower than standard in order for the swipe gesture to work.
         this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop() / 2;
-        this.topViewOpenHeight = (int) (getResources().getDisplayMetrics().density * 60f);
+        this.topViewOpenHeight = getResources().getDimensionPixelSize(R.dimen.sliding_layers_open_height);
 
         this.topViewContainer = new FrameLayout(getContext());
 
@@ -150,7 +150,16 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         if (normalizedIndex > 1)
             throw new IllegalStateException("too many children for " + getClass().getSimpleName());
 
-        if (normalizedIndex == 1) {
+        if (normalizedIndex == 0) {
+            MarginLayoutParams marginLayoutParams;
+            if (params instanceof MarginLayoutParams) {
+                marginLayoutParams = (MarginLayoutParams) params;
+            } else {
+                marginLayoutParams = new MarginLayoutParams(params);
+            }
+            marginLayoutParams.bottomMargin = topViewOpenHeight - shadowHeight;
+            params = marginLayoutParams;
+        } else if (normalizedIndex == 1) {
             LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.TOP);
             layoutParams.setMargins(0, shadowHeight, 0, 0);
             topViewContainer.addView(child, layoutParams);

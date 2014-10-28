@@ -18,6 +18,8 @@
     <dimen name="divider_height_edit_text">1dp</dimen>
     <dimen name="button_rounded_border_width">2dp</dimen>
 
+    <dimen name="sliding_layers_open_height">60dp</dimen>
+
     <dimen name="pill_color_size">19dp</dimen>
 
     <dimen name="event_image_width">23dp</dimen>
