@@ -14,6 +14,7 @@ import java.util.List;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
@@ -93,6 +94,11 @@ public final class TestApiService implements ApiService {
                                                       @NonNull @Path("month") String month,
                                                       @NonNull @Path("day") String day) {
         return loadResponse("timeline", new TypeReference<List<Timeline>>() {});
+    }
+
+    @Override
+    public Observable<List<Insight>> currentInsights() {
+        return unimplemented();
     }
 
     @Override

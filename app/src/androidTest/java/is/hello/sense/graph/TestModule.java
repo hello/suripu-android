@@ -24,6 +24,8 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenterTests;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenterTests;
+import is.hello.sense.graph.presenters.SmartAlarmPresenter;
+import is.hello.sense.graph.presenters.SmartAlarmPresenterTests;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
 import is.hello.sense.graph.presenters.WifiNetworkPresenter;
@@ -52,6 +54,8 @@ import is.hello.sense.util.CachedObjectTests;
         WifiNetworkPresenter.class,
         WifiNetworkPresenterTests.class,
 
+        SmartAlarmPresenter.class,
+        SmartAlarmPresenterTests.class,
         CachedObjectTests.class,
 
         UnitFormatterTests.class,

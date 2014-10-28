@@ -1,11 +1,13 @@
 package is.hello.sense.util;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.inject.Inject;
 
 import is.hello.sense.graph.InjectionTestCase;
+import rx.Observable;
 
 public class CachedObjectTests extends InjectionTestCase {
     private static final String FILENAME = "Suripu-Unit-Test";
@@ -18,26 +20,53 @@ public class CachedObjectTests extends InjectionTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        this.cachedObject = new CachedObject<>(getInstrumentation().getContext(),
-                                               FILENAME,
+        this.cachedObject = new CachedObject<>(CachedObject.getCacheFile(getInstrumentation().getContext(), FILENAME),
                                                new TypeReference<Name>() {},
                                                objectMapper);
     }
 
 
     public void testGet() throws Exception {
-        fail();
+        Name name = new Name("John", "Smith");
+        Observable<Name> setObservable = cachedObject.set(name);
+        SyncObserver<Name> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, setObservable);
+        observer.await();
+
+        assertNull(observer.getError());
+        assertEquals(name, observer.getSingle());
+
+
+        Observable<Name> getObservable = cachedObject.get();
+        observer.reset().subscribeTo(getObservable);
+        observer.await();
+
+        assertNull(observer.getError());
+        assertEquals(name, observer.getSingle());
     }
 
     public void testSet() throws Exception {
-        fail();
+        Name name = new Name("John", "Smith");
+        Observable<Name> setObservable = cachedObject.set(name);
+        SyncObserver<Name> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, setObservable);
+        observer.await();
+
+        assertNull(observer.getError());
+        assertEquals(name, observer.getSingle());
     }
 
 
-    private static class Name {
-        public String firstName;
-        public String lastName;
+    public static class Name {
+        @JsonProperty("first_name")
+        public final String firstName;
 
+        @JsonProperty("last_name")
+        public final String lastName;
+
+        public Name(@JsonProperty("first_name") String firstName,
+                    @JsonProperty("last_name") String lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
 
         @Override
         public boolean equals(Object o) {

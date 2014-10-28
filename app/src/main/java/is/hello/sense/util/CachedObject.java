@@ -22,12 +22,16 @@ public class CachedObject<T> {
     private final File objectFile;
     private final ObjectMapper objectMapper;
 
-    public CachedObject(@NonNull Context context,
-                        @NonNull String filename,
+    public static @NonNull File getCacheFile(@NonNull Context context,
+                                             @NonNull String filename) {
+        return new File(context.getExternalCacheDir().getAbsolutePath() + File.separator + filename);
+    }
+
+    public CachedObject(@NonNull File objectFile,
                         @NonNull TypeReference<T> valueType,
                         @NonNull ObjectMapper objectMapper) {
         this.valueType = valueType;
-        this.objectFile = new File(context.getCacheDir().getAbsolutePath() + File.separator + filename);
+        this.objectFile = objectFile;
         this.objectMapper = objectMapper;
     }
 

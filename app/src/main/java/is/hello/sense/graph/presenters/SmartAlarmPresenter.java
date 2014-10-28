@@ -34,8 +34,7 @@ public class SmartAlarmPresenter extends Presenter {
     public SmartAlarmPresenter() {
         super();
 
-        this.alarmCache = new CachedObject<>(applicationContext,
-                                             CACHE_FILENAME,
+        this.alarmCache = new CachedObject<>(CachedObject.getCacheFile(applicationContext, CACHE_FILENAME),
                                              new TypeReference<List<SmartAlarm>>() {},
                                              objectMapper);
     }
