@@ -22,6 +22,26 @@
             android:textAppearance="@style/AppTheme.Text.ScreenTitle"
             android:text="@string/title_currently"/>
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_large">
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/fragment_underside_insights"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/insights_height"
+                android:animateLayoutChanges="true"/>
+
+            <is.hello.sense.ui.widget.TintedProgressBar
+                android:id="@+id/fragment_underside_insights_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                style="@android:style/Widget.Holo.Light.ProgressBar"/>
+
+        </FrameLayout>
+
         <is.hello.sense.ui.widget.SensorStateView
             android:id="@+id/fragment_underside_temperature"
             android:layout_width="match_parent"

@@ -26,6 +26,13 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="AppTheme.Text.Microheading">
+        <item name="fontPath">fonts/Calibre-Bold.otf</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/light_accent</item>
+    </style>
+
 
     <style name="AppTheme.Text.ScreenTitle">
         <item name="android:textSize">@dimen/text_size_large</item>

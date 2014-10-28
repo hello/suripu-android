@@ -22,6 +22,9 @@
 
     <dimen name="pill_color_size">19dp</dimen>
 
+    <dimen name="insights_corner_radius">2dp</dimen>
+    <dimen name="insights_height">100dp</dimen>
+
     <dimen name="event_image_width">23dp</dimen>
     <dimen name="event_image_height">23dp</dimen>
     <dimen name="event_view_min_height">30dp</dimen>

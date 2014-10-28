@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/insights_height"
+    android:padding="@dimen/gap_medium"
+    android:background="@drawable/insight_background"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/item_insight_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:textAppearance="@style/AppTheme.Text.Microheading"
+        android:text="@string/app_name"/>
+
+    <TextView
+        android:id="@+id/item_insight_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:textColor="@color/text_underside"
+        android:text="@string/mock_event_message"
+        android:ellipsize="end"
+        android:maxLines="3"/>
+
+</LinearLayout>

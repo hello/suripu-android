@@ -12,6 +12,7 @@
     <color name="background_questions">#476fd6</color>
     <color name="background_underside">#e2e4e3</color>
     <color name="background_onboarding">@color/white</color>
+    <color name="background_insight">@color/white</color>
 
     <color name="border">#e5e7e9</color>
     <color name="border_underside">#d8d9db</color>
