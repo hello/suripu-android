@@ -16,6 +16,7 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
+import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.activities.SettingsActivity;
@@ -104,6 +105,14 @@ public class HomeUndersideFragment extends InjectionFragment implements ViewPage
         currentConditionsPresenter.update();
     }
 
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+
+        if (level >= Presenter.BASE_TRIM_LEVEL) {
+            insightsAdapter.clear();
+        }
+    }
 
     //region Displaying Data
 

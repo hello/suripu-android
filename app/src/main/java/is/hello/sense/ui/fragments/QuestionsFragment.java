@@ -18,13 +18,11 @@ import android.widget.TextView;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
@@ -109,9 +107,9 @@ public class QuestionsFragment extends InjectionFragment {
     public void choiceSelected(@NonNull View sender) {
         clearQuestions(true, () -> {
             Question.Choice choice = (Question.Choice) sender.getTag();
-            Observable<ApiResponse> result = bind(questionsPresenter.answerQuestion(choice));
-            result.subscribe(unused -> questionsPresenter.nextQuestion(),
-                             error -> ErrorDialogFragment.presentError(getFragmentManager(), error));
+            bindAndSubscribe(questionsPresenter.answerQuestion(choice),
+                    unused -> questionsPresenter.nextQuestion(),
+                    error -> ErrorDialogFragment.presentError(getFragmentManager(), error));
         });
     }
 

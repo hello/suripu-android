@@ -8,6 +8,12 @@ import android.support.annotation.Nullable;
 import is.hello.sense.util.Logger;
 
 public abstract class Presenter {
+    /**
+     * The first level at which Presenters will begin
+     * quietly forgetting data which can be recreated.
+     */
+    public static final int BASE_TRIM_LEVEL = ComponentCallbacks2.TRIM_MEMORY_BACKGROUND;
+
     private boolean stateRestored = false;
     protected boolean forgotDataForLowMemory = false;
 
@@ -49,7 +55,7 @@ public abstract class Presenter {
      */
     public void onTrimMemory(int level) {
         logEvent("onTrimMemory(" + level + ")");
-        if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) {
+        if (level >= BASE_TRIM_LEVEL) {
             this.forgotDataForLowMemory = onForgetDataForLowMemory();
         }
     }

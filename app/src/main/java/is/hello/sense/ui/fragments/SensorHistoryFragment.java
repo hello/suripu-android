@@ -18,6 +18,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
+import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -73,6 +74,15 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         bindAndSubscribe(sensorHistoryPresenter.history, adapter::bindData, adapter::bindError);
     }
 
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+
+        if (level >= Presenter.BASE_TRIM_LEVEL) {
+            adapter.clear();
+        }
+    }
+
 
     public SensorHistoryActivity getSensorHistoryActivity() {
         return (SensorHistoryActivity) getActivity();
@@ -123,6 +133,11 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         private int sectionCount = 0;
         private int pointCount = 0;
 
+
+        public void clear() {
+            this.data.clear();
+            graphView.notifyDataChanged();
+        }
 
         public void bindData(@NonNull List<SensorHistory> history) {
             this.data.clear();
