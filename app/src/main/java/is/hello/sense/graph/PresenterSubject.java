@@ -58,6 +58,26 @@ public final class PresenterSubject<T> extends Subject<T, T> {
         subscriptionManager.next(value);
     }
 
+    /**
+     * Causes the subject to clear its references to
+     * the most recent error/value pushed through it.
+     * <p/>
+     * This method <em>does not</em> inform subscribers
+     * of the state being cleared. If you want to clear
+     * the state <em>and</em> inform subscribers, you
+     * should call {@see onNext} with null. (This requires
+     * your subscribers accept null as a valid value.)
+     * <p/>
+     * Since most volatile state in the app is stored
+     * exclusively inside of PresenterSubject objects,
+     * calling this method is an ideal response to
+     * increasing memory pressure.
+     */
+    public void forget() {
+        subscriptionManager.value = null;
+        subscriptionManager.error = null;
+    }
+
     //endregion
 
 
