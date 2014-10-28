@@ -4,6 +4,7 @@ import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +14,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hello.ble.protobuf.MorpheusBle;
+
 import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.WifiNetworkPresenter;
+import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -26,18 +29,16 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingWifiNetworkFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
-    @Inject WifiNetworkPresenter networkPresenter;
+    @Inject HardwarePresenter hardwarePresenter;
 
     private WifiNetworkAdapter networkAdapter;
-    private ListView listView;
-    private Button turnOnWifiButton;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        networkPresenter.update();
-        addPresenter(networkPresenter);
+        addPresenter(hardwarePresenter);
 
         Analytics.event(Analytics.EVENT_ONBOARDING_SETUP_WIFI, null);
 
@@ -49,7 +50,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_wifi_networks, container, false);
 
-        listView = (ListView) view.findViewById(android.R.id.list);
+        ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
         View wifiView = inflater.inflate(R.layout.item_wifi_network, listView, false);
@@ -61,8 +62,9 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
         listView.setAdapter(networkAdapter);
 
-        this.turnOnWifiButton = (Button) view.findViewById(R.id.fragment_onboarding_wifi_networks_turn_on);
-        turnOnWifiButton.setOnClickListener(v -> networkPresenter.showWifiSettingsFrom(getActivity()));
+        this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_onboarding_wifi_networks_refresh_container);
+        swipeRefreshLayout.setColorSchemeResources(R.color.sleep_light, R.color.sleep_intermediate, R.color.sleep_deep, R.color.sleep_awake);
+        swipeRefreshLayout.setOnRefreshListener(this::rescan);
 
         Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
         helpButton.setOnClickListener(v -> Toast.makeText(v.getContext().getApplicationContext(), "Hang in there...", Toast.LENGTH_SHORT).show());
@@ -74,30 +76,35 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(networkPresenter.networksInRange, this::bindScanResults, this::scanResultsUnavailable);
+        rescan();
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         ScanResult network = (ScanResult) adapterView.getItemAtPosition(position);
-        ((OnboardingActivity) getActivity()).showSignIntoWifiNetwork(network);
+        getOnboardingActivity().showSignIntoWifiNetwork(network);
     }
 
 
-    public void bindScanResults(@NonNull List<ScanResult> scanResults) {
-        networkAdapter.clear();
-        if (scanResults.isEmpty() && !networkPresenter.isWifiNetworkScanningAvailable()) {
-            listView.setVisibility(View.GONE);
-            turnOnWifiButton.setVisibility(View.VISIBLE);
-        } else {
-            networkAdapter.addAll(scanResults);
+    public void rescan() {
+        swipeRefreshLayout.setRefreshing(true);
+        bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), this::bindScanResults, this::scanResultsUnavailable);
+    }
 
-            listView.setVisibility(View.VISIBLE);
-            turnOnWifiButton.setVisibility(View.GONE);
-        }
+    public void bindScanResults(@NonNull List<MorpheusBle.wifi_endpoint> scanResults) {
+        networkAdapter.clear();
+        networkAdapter.addAll(scanResults);
+
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     public void scanResultsUnavailable(Throwable e) {
+        swipeRefreshLayout.setRefreshing(false);
         ErrorDialogFragment.presentError(getFragmentManager(), e);
+    }
+
+
+    private OnboardingActivity getOnboardingActivity() {
+        return (OnboardingActivity) getActivity();
     }
 }

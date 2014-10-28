@@ -21,7 +21,6 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
-import is.hello.sense.graph.presenters.WifiNetworkPresenter;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HomeActivity;
@@ -66,7 +65,6 @@ import is.hello.sense.util.BuildValues;
         OnboardingPairSenseFragment.class,
         HardwarePresenter.class,
         OnboardingWifiNetworkFragment.class,
-        WifiNetworkPresenter.class,
         OnboardingSignIntoWifiFragment.class,
         OnboardingPairPillFragment.class,
 

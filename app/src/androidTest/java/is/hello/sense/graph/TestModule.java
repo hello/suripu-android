@@ -31,8 +31,6 @@ import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenterTests;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
-import is.hello.sense.graph.presenters.WifiNetworkPresenter;
-import is.hello.sense.graph.presenters.WifiNetworkPresenterTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.CachedObjectTests;
 
@@ -55,9 +53,6 @@ import static junit.framework.Assert.assertNotNull;
 
         AccountPresenter.class,
         AccountPresenterTests.class,
-
-        WifiNetworkPresenter.class,
-        WifiNetworkPresenterTests.class,
 
         SmartAlarmPresenter.class,
         SmartAlarmPresenterTests.class,

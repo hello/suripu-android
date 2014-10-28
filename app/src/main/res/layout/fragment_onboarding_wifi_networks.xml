@@ -22,7 +22,8 @@
         android:textAppearance="@style/AppTheme.Text.Subheading"
         android:text="@string/info_choose_wifi_network"/>
 
-    <FrameLayout
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/fragment_onboarding_wifi_networks_refresh_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -32,16 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-        <Button
-            android:id="@+id/fragment_onboarding_wifi_networks_turn_on"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:text="@string/action_turn_on_wifi"
-            style="@style/AppTheme.Button.Rounded"
-            android:visibility="gone" />
-
-    </FrameLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <Button
         android:id="@+id/fragment_onboarding_step_help"

@@ -1,7 +1,6 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
-import android.net.wifi.ScanResult;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,10 +9,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import is.hello.sense.R;
-import is.hello.sense.graph.presenters.WifiNetworkPresenter;
+import com.hello.ble.protobuf.MorpheusBle;
 
-public class WifiNetworkAdapter extends ArrayAdapter<ScanResult> {
+import is.hello.sense.R;
+
+public class WifiNetworkAdapter extends ArrayAdapter<MorpheusBle.wifi_endpoint> {
     private final LayoutInflater inflater;
 
     public WifiNetworkAdapter(Context context) {
@@ -31,10 +31,10 @@ public class WifiNetworkAdapter extends ArrayAdapter<ScanResult> {
             view.setTag(new ViewHolder(view));
         }
 
-        ScanResult item = getItem(position);
+        MorpheusBle.wifi_endpoint item = getItem(position);
         ViewHolder holder = (ViewHolder) view.getTag();
-        holder.name.setText(item.SSID);
-        if (WifiNetworkPresenter.SECURITY_OPEN.equals(WifiNetworkPresenter.getSecurityFromCapabilities(item.capabilities))) {
+        holder.name.setText(item.getSsid());
+        if (item.getSecurityType() == MorpheusBle.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN) {
             holder.locked.setVisibility(View.GONE);
         } else {
             holder.locked.setVisibility(View.VISIBLE);

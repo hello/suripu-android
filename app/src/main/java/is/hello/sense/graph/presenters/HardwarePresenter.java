@@ -12,8 +12,10 @@ import com.google.common.primitives.Ints;
 import com.hello.ble.BleOperationCallback;
 import com.hello.ble.devices.HelloBleDevice;
 import com.hello.ble.devices.Morpheus;
+import com.hello.ble.protobuf.MorpheusBle;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -157,6 +159,11 @@ import rx.android.schedulers.AndroidSchedulers;
             });
             device.disconnect();
         }).subscribeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks() {
+        return Observable.create((Observable.OnSubscribe<List<MorpheusBle.wifi_endpoint>>) s -> device.scanSupportedWIFIAP(new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_SET_WIFI_TIMEOUT_MS)))
+                         .subscribeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<Void> sendWifiCredentials(String bssid, String ssid, String password) {
