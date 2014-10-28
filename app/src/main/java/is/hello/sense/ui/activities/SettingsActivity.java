@@ -2,12 +2,15 @@ package is.hello.sense.ui.activities;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.annotation.XmlRes;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
@@ -23,7 +26,7 @@ import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.fragments.settings.SettingsFragment;
 import is.hello.sense.util.Analytics;
 
-public class SettingsActivity extends InjectionActivity implements FragmentNavigation {
+public class SettingsActivity extends InjectionActivity implements FragmentNavigation, FragmentManager.OnBackStackChangedListener {
     @Inject ApiSessionManager sessionManager;
 
     @Override
@@ -31,9 +34,28 @@ public class SettingsActivity extends InjectionActivity implements FragmentNavig
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        getFragmentManager().addOnBackStackChangedListener(this);
+
         if (savedInstanceState == null) {
-            showFragment(new RootSettingsFragment(), null, false);
+            showFragment(new RootSettingsFragment(), getString(R.string.action_settings), false);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home && getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        getFragmentManager().removeOnBackStackChangedListener(this);
     }
 
     @Override
@@ -66,8 +88,21 @@ public class SettingsActivity extends InjectionActivity implements FragmentNavig
         transaction.commit();
     }
 
-    private void showSettings(@XmlRes int prefsRes) {
-        showFragment(SettingsFragment.newInstance(prefsRes), null, true);
+    private void showSettings(@XmlRes int prefsRes, @StringRes int titleRes) {
+        showFragment(SettingsFragment.newInstance(prefsRes), getString(titleRes), true);
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        int entryCount = getFragmentManager().getBackStackEntryCount();
+        if (entryCount > 0) {
+            FragmentManager.BackStackEntry entry = getFragmentManager().getBackStackEntryAt(entryCount - 1);
+            //noinspection ConstantConditions
+            getActionBar().setTitle(entry.getBreadCrumbTitle());
+        } else {
+            //noinspection ConstantConditions
+            getActionBar().setTitle(R.string.action_settings);
+        }
     }
 
 
@@ -81,10 +116,10 @@ public class SettingsActivity extends InjectionActivity implements FragmentNavig
             super.onCreate(savedInstanceState);
 
             this.adapter = new StaticItemAdapter(getActivity());
-            adapter.addItem(getString(R.string.label_my_info), null, () -> getSettingsActivity().showFragment(new MyInfoFragment(), null, true));
+            adapter.addItem(getString(R.string.label_my_info), null, () -> getSettingsActivity().showFragment(new MyInfoFragment(), getString(R.string.label_my_info), true));
             adapter.addItem(getString(R.string.label_account), null);
-            adapter.addItem(getString(R.string.label_units_and_time), null, () -> getSettingsActivity().showSettings(R.xml.settings_units_and_time));
-            adapter.addItem(getString(R.string.label_devices), null, () -> getSettingsActivity().showFragment(new DevicesFragment(), null, true));
+            adapter.addItem(getString(R.string.label_units_and_time), null, () -> getSettingsActivity().showSettings(R.xml.settings_units_and_time, R.string.label_units_and_time));
+            adapter.addItem(getString(R.string.label_devices), null, () -> getSettingsActivity().showFragment(new DevicesFragment(), getString(R.string.label_devices), true));
             adapter.addItem(getString(R.string.action_log_out), null, this::logOut);
             setListAdapter(adapter);
         }
