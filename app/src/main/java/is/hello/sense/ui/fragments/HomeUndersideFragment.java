@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import javax.inject.Inject;
 
@@ -76,7 +77,7 @@ public class HomeUndersideFragment extends InjectionFragment implements ViewPage
         this.particulatesState = (SensorStateView) view.findViewById(R.id.fragment_underside_particulates);
         particulatesState.setOnClickListener(ignored -> showSensorHistory(SensorHistory.SENSOR_NAME_PARTICULATES));
 
-        SensorStateView settings = (SensorStateView) view.findViewById(R.id.fragment_underside_settings);
+        ImageButton settings = (ImageButton) view.findViewById(R.id.fragment_underside_settings);
         settings.setOnClickListener(ignored -> startActivity(new Intent(getActivity(), SettingsActivity.class)));
 
         SensorStateView debug = (SensorStateView) view.findViewById(R.id.fragment_underside_debug);

@@ -7,24 +7,37 @@
     android:fillViewport="true"
     android:background="@color/background_underside">
 
-    <LinearLayout
+    <RelativeLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
+            android:id="@+id/fragment_underside_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/underside_title_height"
             android:layout_marginBottom="@dimen/gap_small"
-            android:padding="@dimen/activity_margin"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
             android:gravity="center"
             android:textColor="#3d3d3d"
             android:textAppearance="@style/AppTheme.Text.ScreenTitle"
-            android:text="@string/title_currently"/>
+            android:text="@string/app_name"/>
+
+        <ImageButton
+            android:id="@+id/fragment_underside_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/underside_title_height"
+            android:layout_alignParentEnd="true"
+            android:scaleType="center"
+            android:src="@drawable/icon_settings"
+            android:contentDescription="@string/action_settings"/>
 
         <FrameLayout
+            android:id="@+id/fragment_underside_insights_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/fragment_underside_title"
             android:layout_marginBottom="@dimen/gap_large">
 
             <android.support.v4.view.ViewPager
@@ -46,6 +59,7 @@
             android:id="@+id/fragment_underside_temperature"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/fragment_underside_insights_container"
             app:icon="@drawable/icon_sensor_temperature"
             app:title="@string/condition_temperature" />
 
@@ -53,6 +67,7 @@
             android:id="@+id/fragment_underside_humidity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/fragment_underside_temperature"
             app:icon="@drawable/icon_sensor_humidity"
             app:title="@string/condition_humidity" />
 
@@ -60,6 +75,7 @@
             android:id="@+id/fragment_underside_particulates"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/fragment_underside_humidity"
             app:icon="@drawable/icon_sensor_particle"
             app:title="@string/condition_particulates" />
 
@@ -67,17 +83,19 @@
             android:id="@+id/fragment_underside_alarm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/fragment_underside_particulates"
             android:layout_marginTop="@dimen/gap_large"
             app:icon="@drawable/icon_alarm"
             app:title="@string/action_alarm"
             app:wantsReading="false"/>
 
         <is.hello.sense.ui.widget.SensorStateView
-            android:id="@+id/fragment_underside_settings"
+            android:id="@+id/fragment_underside_trends"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:icon="@drawable/icon_settings"
-            app:title="@string/action_settings"
+            android:layout_below="@id/fragment_underside_alarm"
+            app:icon="@drawable/icon_sensor_particle"
+            app:title="@string/action_insights"
             app:wantsReading="false"/>
 
         <is.hello.sense.ui.widget.SensorStateView
@@ -85,10 +103,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/gap_large"
+            android:layout_below="@id/fragment_underside_trends"
             app:icon="@drawable/icon_debug"
             app:title="@string/activity_debug"
             app:wantsReading="false"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </ScrollView>
