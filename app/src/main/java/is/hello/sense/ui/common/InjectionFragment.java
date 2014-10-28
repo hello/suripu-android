@@ -53,6 +53,17 @@ public class InjectionFragment extends Fragment implements ObservableContainer, 
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        if (presenters != null) {
+            for (Presenter presenter : presenters) {
+                presenter.onContainerResumed();
+            }
+        }
+    }
+
+    @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
 

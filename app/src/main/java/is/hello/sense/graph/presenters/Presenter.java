@@ -24,6 +24,22 @@ public abstract class Presenter {
         logEvent("onContainerDestroyed()");
     }
 
+    /**
+     * Informs the presenter that its containing Fragment/Activity has been resumed.
+     * <p/>
+     * This callback is intended to be used to undo the effects of {@see onTrimMemory} being called.
+     */
+    public void onContainerResumed() {
+        logEvent("onContainerResumed()");
+    }
+
+    /**
+     * Informs the presenter that it should trim resources in response to different conditions.
+     * <p/>
+     * {@see onContainerResumed} is the intended point for the presenter to rebuild
+     * any resources destroyed in response to memory pressure.
+     * @see android.content.ComponentCallbacks2
+     */
     public void onTrimMemory(int level) {
         logEvent("onTrimMemory(" + level + ")");
     }

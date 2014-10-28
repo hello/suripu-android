@@ -15,6 +15,8 @@ import java.util.List;
  *     each of its child presenters, saving the results into its own saved state.</li>
  *     <li>If the container has a finite lifecycle, it should inform its child presenters
  *     by calling {@see Presenter.onContainerDestroyed} when it has been destroyed.</li>
+ *     <li>If the container has a background/foreground lifecycle, it should inform its
+ *     child presenters by calling {@see Presenter.onContainerResumed}.</li>
  *     <li>If the container has an onTrimMemory callback, it should inform its child
  *     presenters of this by calling {@see Presenter.onTrimMemory}.</li>
  * </ol>
