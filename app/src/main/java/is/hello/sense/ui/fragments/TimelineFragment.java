@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -100,7 +101,12 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         Observable<Timeline> boundMainTimeline = bind(timelinePresenter.mainTimeline);
         subscribe(boundMainTimeline, this::bindTimeline, this::timelineUnavailable);
 
-        Observable<List<TimelineSegment>> segments = boundMainTimeline.map(Timeline::getSegments);
+        Observable<List<TimelineSegment>> segments = boundMainTimeline.map(timeline -> {
+            if (timeline != null)
+                return timeline.getSegments();
+            else
+                return Collections.emptyList();
+        });
         subscribe(segments, segmentAdapter::bindSegments, segmentAdapter::handleError);
 
         Observable<CharSequence> renderedMessage = timelinePresenter.renderedTimelineMessage;
@@ -146,11 +152,15 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         }
     }
 
-    public void bindTimeline(@NonNull Timeline timeline) {
-        showSleepScore(timeline.getScore());
+    public void bindTimeline(@Nullable Timeline timeline) {
+        if (timeline != null) {
+            showSleepScore(timeline.getScore());
 
-        if (timeline.getPreSleepInsights() != null && !timeline.getPreSleepInsights().isEmpty()) {
-            showInsights(timeline.getPreSleepInsights());
+            if (timeline.getPreSleepInsights() != null && !timeline.getPreSleepInsights().isEmpty()) {
+                showInsights(timeline.getPreSleepInsights());
+            }
+        } else {
+            showInsights(Collections.emptyList());
         }
     }
 

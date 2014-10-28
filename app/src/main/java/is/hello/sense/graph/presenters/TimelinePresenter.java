@@ -2,6 +2,7 @@ package is.hello.sense.graph.presenters;
 
 import org.joda.time.DateTime;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -19,12 +20,31 @@ public class TimelinePresenter extends Presenter {
     private DateTime date;
 
     public final PresenterSubject<List<Timeline>> timeline = PresenterSubject.create();
-    public final Observable<Timeline> mainTimeline = timeline.filter(timelines -> !timelines.isEmpty())
-                                                             .map(timelines -> timelines.get(0));
-    public final Observable<CharSequence> renderedTimelineMessage = mainTimeline.map(timeline -> {
-        String rawMessage = timeline.getMessage();
-        return markdown.toSpanned(rawMessage);
+    public final Observable<Timeline> mainTimeline = timeline.map(timelines -> {
+        if (timelines.isEmpty())
+            return null;
+        else
+            return timelines.get(0);
     });
+    public final Observable<CharSequence> renderedTimelineMessage = mainTimeline.map(timeline -> {
+        if (timeline != null) {
+            String rawMessage = timeline.getMessage();
+            return markdown.toSpanned(rawMessage);
+        } else {
+            return "";
+        }
+    });
+
+    @Override
+    protected void onReloadForgottenData() {
+        update();
+    }
+
+    @Override
+    protected boolean onForgetDataForLowMemory() {
+        timeline.onNext(Collections.emptyList());
+        return true;
+    }
 
     public void update() {
         if (getDate() != null) {
