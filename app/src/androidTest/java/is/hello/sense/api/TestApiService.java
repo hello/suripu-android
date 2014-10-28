@@ -98,7 +98,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<List<Insight>> currentInsights() {
-        return unimplemented();
+        return loadResponse("insights", new TypeReference<List<Insight>>() {});
     }
 
     @Override

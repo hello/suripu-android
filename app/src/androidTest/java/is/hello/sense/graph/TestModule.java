@@ -23,6 +23,8 @@ import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenterTests;
+import is.hello.sense.graph.presenters.InsightsPresenter;
+import is.hello.sense.graph.presenters.InsightsPresenterTests;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenterTests;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
@@ -47,6 +49,9 @@ import static junit.framework.Assert.assertNotNull;
 
         CurrentConditionsPresenterTests.class,
         CurrentConditionsPresenter.class,
+
+        InsightsPresenter.class,
+        InsightsPresenterTests.class,
 
         PreferencesPresenter.class,
         PreferencesPresenterTests.class,

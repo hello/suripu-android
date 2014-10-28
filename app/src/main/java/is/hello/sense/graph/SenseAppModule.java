@@ -16,6 +16,7 @@ import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
@@ -81,6 +82,7 @@ import is.hello.sense.util.BuildValues;
         QuestionsFragment.class,
 
         HomeUndersideFragment.class,
+        InsightsPresenter.class,
         CurrentConditionsPresenter.class,
         SensorHistoryFragment.class,
         SensorHistoryPresenter.class,
