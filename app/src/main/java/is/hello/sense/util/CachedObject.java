@@ -22,9 +22,9 @@ public class CachedObject<T> {
     private final File objectFile;
     private final ObjectMapper objectMapper;
 
-    public static @NonNull File getCacheFile(@NonNull Context context,
-                                             @NonNull String filename) {
-        return new File(context.getExternalCacheDir().getAbsolutePath() + File.separator + filename);
+    public static @NonNull File getFile(@NonNull File cacheDirectory,
+                                        @NonNull String filename) {
+        return new File(cacheDirectory.getAbsolutePath() + File.separator + filename);
     }
 
     public CachedObject(@NonNull File objectFile,

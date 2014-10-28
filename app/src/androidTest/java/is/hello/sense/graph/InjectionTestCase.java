@@ -12,7 +12,8 @@ public class InjectionTestCase extends InstrumentationTestCase {
         super.setUp();
 
         if (objectGraph == null) {
-            this.objectGraph = ObjectGraph.create(new TestModule(getInstrumentation().getContext()));
+            this.objectGraph = ObjectGraph.create(new TestModule(getInstrumentation().getContext(),
+                                                                 getInstrumentation().getTargetContext()));
             objectGraph.inject(this);
         }
     }

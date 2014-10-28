@@ -2,11 +2,11 @@ package is.hello.sense.graph;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
+
+import java.io.File;
 
 import javax.inject.Singleton;
 
@@ -16,6 +16,8 @@ import is.hello.sense.api.ApiAppContext;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
+import is.hello.sense.graph.annotations.CacheDirectoryFile;
+import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
@@ -32,6 +34,8 @@ import is.hello.sense.graph.presenters.WifiNetworkPresenter;
 import is.hello.sense.graph.presenters.WifiNetworkPresenterTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.CachedObjectTests;
+
+import static junit.framework.Assert.assertNotNull;
 
 @Module(
     library = true,
@@ -64,9 +68,11 @@ import is.hello.sense.util.CachedObjectTests;
 @SuppressWarnings("UnusedDeclaration")
 public final class TestModule {
     private final Context applicationContext;
+    private final Context targetContext;
 
-    public TestModule(@NonNull Context applicationContext) {
+    public TestModule(@NonNull Context applicationContext, @NonNull Context targetContext) {
         this.applicationContext = applicationContext;
+        this.targetContext = targetContext;
     }
 
     @Provides Context provideApplicationContext() {
@@ -79,6 +85,17 @@ public final class TestModule {
 
     @Singleton @Provides ObjectMapper provideObjectMapper() {
         return ApiModule.createConfiguredObjectMapper(null);
+    }
+
+    @Provides @CacheDirectoryFile File provideCacheDirectoryFile() {
+        File cacheFile = targetContext.getExternalCacheDir();
+        if (cacheFile == null) {
+            cacheFile = targetContext.getCacheDir();
+        }
+
+        assertNotNull(cacheFile);
+
+        return cacheFile;
     }
 
     @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {

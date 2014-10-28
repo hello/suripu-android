@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
+
 import javax.inject.Inject;
 
 import is.hello.sense.graph.InjectionTestCase;
@@ -20,7 +22,9 @@ public class CachedObjectTests extends InjectionTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        this.cachedObject = new CachedObject<>(CachedObject.getCacheFile(getInstrumentation().getContext(), FILENAME),
+        File cacheDirectory = getInstrumentation().getTargetContext().getCacheDir();
+        assertNotNull(cacheDirectory);
+        this.cachedObject = new CachedObject<>(CachedObject.getFile(cacheDirectory, FILENAME),
                                                new TypeReference<Name>() {},
                                                objectMapper);
     }

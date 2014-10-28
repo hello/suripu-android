@@ -11,7 +11,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import is.hello.sense.graph.GlobalSharedPreferences;
+import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Func2;
