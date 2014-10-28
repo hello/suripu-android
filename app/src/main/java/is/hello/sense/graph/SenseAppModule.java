@@ -33,6 +33,7 @@ import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.fragments.HomeUndersideFragment;
 import is.hello.sense.ui.fragments.QuestionsFragment;
 import is.hello.sense.ui.fragments.SensorHistoryFragment;
+import is.hello.sense.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
@@ -88,9 +89,11 @@ import is.hello.sense.util.BuildValues;
         CurrentConditionsPresenter.class,
         SensorHistoryFragment.class,
         SensorHistoryPresenter.class,
+
+        SmartAlarmListFragment.class,
         SmartAlarmPresenter.class,
 
-        SettingsActivity.class,
+        SettingsActivity.RootSettingsFragment.class,
         MyInfoFragment.class,
         AccountPresenter.class,
     }
