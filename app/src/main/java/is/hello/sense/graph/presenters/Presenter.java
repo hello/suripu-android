@@ -1,5 +1,6 @@
 package is.hello.sense.graph.presenters;
 
+import android.content.ComponentCallbacks2;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,6 +9,7 @@ import is.hello.sense.util.Logger;
 
 public abstract class Presenter {
     private boolean stateRestored = false;
+    protected boolean forgotDataForLowMemory = false;
 
     //region Lifecycle
 
@@ -31,6 +33,11 @@ public abstract class Presenter {
      */
     public void onContainerResumed() {
         logEvent("onContainerResumed()");
+        if (forgotDataForLowMemory) {
+            onReloadForgottenData();
+        }
+
+        this.forgotDataForLowMemory = false;
     }
 
     /**
@@ -42,6 +49,24 @@ public abstract class Presenter {
      */
     public void onTrimMemory(int level) {
         logEvent("onTrimMemory(" + level + ")");
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) {
+            this.forgotDataForLowMemory = onForgetDataForLowMemory();
+        }
+    }
+
+    /**
+     * Convenience method that informs presenter subclasses when to reload forgotten data.
+     */
+    protected void onReloadForgottenData() {
+
+    }
+
+    /**
+     * Convenience method called when the presenter receives a background memory warning.
+     * @return  true if the data was forgotten; false otherwise. Default value is false.
+     */
+    protected boolean onForgetDataForLowMemory() {
+        return false;
     }
 
     //endregion
