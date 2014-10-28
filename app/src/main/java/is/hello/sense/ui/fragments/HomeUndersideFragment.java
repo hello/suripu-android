@@ -21,6 +21,7 @@ import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.activities.SettingsActivity;
+import is.hello.sense.ui.activities.SmartAlarmActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.animation.Animation;
@@ -79,6 +80,9 @@ public class HomeUndersideFragment extends InjectionFragment implements ViewPage
 
         ImageButton settings = (ImageButton) view.findViewById(R.id.fragment_underside_settings);
         settings.setOnClickListener(ignored -> startActivity(new Intent(getActivity(), SettingsActivity.class)));
+
+        SensorStateView alarm = (SensorStateView) view.findViewById(R.id.fragment_underside_alarm);
+        alarm.setOnClickListener(ignored -> startActivity(new Intent(getActivity(), SmartAlarmActivity.class)));
 
         SensorStateView debug = (SensorStateView) view.findViewById(R.id.fragment_underside_debug);
         if (buildValues.debugScreenEnabled) {
