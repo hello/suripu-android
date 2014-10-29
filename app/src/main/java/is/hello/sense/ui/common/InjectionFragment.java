@@ -12,14 +12,18 @@ import java.util.List;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
+import is.hello.sense.util.ResumeScheduler;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.observables.AndroidObservable;
 import rx.functions.Action1;
 
-public class InjectionFragment extends Fragment implements ObservableContainer, PresenterContainer {
+public class InjectionFragment extends Fragment implements ObservableContainer, PresenterContainer, ResumeScheduler.Resumable {
     protected ArrayList<Subscription> subscriptions = new ArrayList<>();
     protected ArrayList<Presenter> presenters;
+
+    protected ArrayList<Runnable> onResumeRunnables = new ArrayList<>();
+    protected ResumeScheduler observeScheduler = new ResumeScheduler(this);
 
     public InjectionFragment() {
         SenseApplication.getInstance().inject(this);
@@ -55,6 +59,11 @@ public class InjectionFragment extends Fragment implements ObservableContainer, 
     @Override
     public void onResume() {
         super.onResume();
+
+        for (Runnable runnable : onResumeRunnables) {
+            runnable.run();
+        }
+        onResumeRunnables.clear();
 
         if (presenters != null) {
             for (Presenter presenter : presenters) {
@@ -98,6 +107,20 @@ public class InjectionFragment extends Fragment implements ObservableContainer, 
     }
 
     @Override
+    public void postOnResume(@NonNull Runnable runnable) {
+        if (isResumed()) {
+            runnable.run();
+        } else {
+            onResumeRunnables.add(runnable);
+        }
+    }
+
+    @Override
+    public void cancelPostOnResume(@NonNull Runnable runnable) {
+        onResumeRunnables.remove(runnable);
+    }
+
+    @Override
     public boolean hasSubscriptions() {
         return !subscriptions.isEmpty();
     }
@@ -110,7 +133,8 @@ public class InjectionFragment extends Fragment implements ObservableContainer, 
 
     @Override
     public @NonNull <T> Observable<T> bind(@NonNull Observable<T> toBind) {
-        return AndroidObservable.bindFragment(this, toBind);
+        return AndroidObservable.bindFragment(this, toBind)
+                                .observeOn(observeScheduler);
     }
 
     @Override
@@ -142,4 +166,6 @@ public class InjectionFragment extends Fragment implements ObservableContainer, 
 
         return presenters;
     }
+
+
 }
