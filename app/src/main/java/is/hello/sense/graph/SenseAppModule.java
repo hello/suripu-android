@@ -63,7 +63,6 @@ import is.hello.sense.util.BuildValues;
         OnboardingActivity.class,
         OnboardingSignInFragment.class,
         OnboardingRegisterFragment.class,
-        OnboardingRegisterWeightFragment.class,
         OnboardingPairSenseFragment.class,
         HardwarePresenter.class,
         OnboardingWifiNetworkFragment.class,
