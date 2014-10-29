@@ -1,5 +1,7 @@
 package is.hello.sense.ui.fragments.settings;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import org.joda.time.DateTimeUtils;
+import org.joda.time.DateTimeZone;
+
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 
@@ -21,6 +28,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.dialogs.TimeZoneDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
@@ -33,6 +41,8 @@ import rx.Observable;
 import static rx.android.observables.AndroidObservable.bindFragment;
 
 public class MyInfoFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
+    private static final int REQUEST_CODE_TIME_ZONE = 0x19;
+
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject UnitFormatter unitFormatter;
@@ -41,6 +51,7 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
     private StaticItemAdapter.Item genderItem;
     private StaticItemAdapter.Item heightItem;
     private StaticItemAdapter.Item weightItem;
+    private StaticItemAdapter.Item timeZoneItem;
 
     private Account currentAccount;
 
@@ -62,10 +73,12 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
         listView.setOnItemClickListener(this);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
-        this.birthdayItem = adapter.addItem(getString(R.string.label_dob), getString(R.string.missing_data_placeholder), this::changeBirthDate);
-        this.genderItem = adapter.addItem(getString(R.string.label_gender), getString(R.string.missing_data_placeholder), this::changeGender);
-        this.heightItem = adapter.addItem(getString(R.string.label_height), getString(R.string.missing_data_placeholder), this::changeHeight);
-        this.weightItem = adapter.addItem(getString(R.string.label_weight), getString(R.string.missing_data_placeholder), this::changeWeight);
+        String placeholder = getString(R.string.missing_data_placeholder);
+        this.birthdayItem = adapter.addItem(getString(R.string.label_dob), placeholder, this::changeBirthDate);
+        this.genderItem = adapter.addItem(getString(R.string.label_gender), placeholder, this::changeGender);
+        this.heightItem = adapter.addItem(getString(R.string.label_height), placeholder, this::changeHeight);
+        this.weightItem = adapter.addItem(getString(R.string.label_weight), placeholder, this::changeWeight);
+        this.timeZoneItem = adapter.addItem(getString(R.string.label_time_zone), placeholder, this::changeTimeZone);
         listView.setAdapter(adapter);
 
         return view;
@@ -81,6 +94,20 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
         track(bindFragment(this, forAccount).subscribe(this::bindAccount, this::accountUnavailable));
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_TIME_ZONE && resultCode == Activity.RESULT_OK) {
+            String timeZoneId = data.getStringExtra(TimeZoneDialogFragment.RESULT_TIMEZONE_ID);
+            DateTimeZone timeZone = DateTimeZone.forID(timeZoneId);
+            int offset = timeZone.getOffset(DateTimeUtils.currentTimeMillis());
+            currentAccount.setTimeZoneOffset(offset);
+
+            LoadingDialogFragment.show(getFragmentManager());
+            accountPresenter.saveAccount(currentAccount);
+        }
+    }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -121,6 +148,12 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
         getNavigationContainer().showFragment(fragment, getString(R.string.label_dob), true);
     }
 
+    public void changeTimeZone() {
+        TimeZoneDialogFragment dialogFragment = new TimeZoneDialogFragment();
+        dialogFragment.setTargetFragment(this, REQUEST_CODE_TIME_ZONE);
+        dialogFragment.show(getFragmentManager(), TimeZoneDialogFragment.TAG);
+    }
+
     @NonNull
     @Override
     public Account getAccount() {
@@ -146,6 +179,7 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
         genderItem.setValue(getString(account.getGender().nameRes));
         heightItem.setValue(unitSystem.formatHeight(account.getHeight()));
         weightItem.setValue(unitSystem.formatMass(account.getWeight()));
+        timeZoneItem.setValue(DateTimeZone.forOffsetMillis(account.getTimeZoneOffset()).getName(DateTimeUtils.currentTimeMillis()));
 
         this.currentAccount = account;
     }

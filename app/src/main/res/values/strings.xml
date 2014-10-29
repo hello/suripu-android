@@ -160,6 +160,7 @@
     <string name="action_retry">Retry</string>
     <string name="action_share">Share</string>
     <string name="action_insights">Insights</string>
+    <string name="label_time_zone">Time Zone</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
