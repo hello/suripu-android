@@ -2,7 +2,6 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -36,16 +35,16 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private EditText networkName;
     private EditText networkPassword;
 
-    private ScanResult network;
+    private MorpheusBle.wifi_endpoint network;
 
     private boolean hasConnectedToNetwork = false;
     private boolean hasTriedReconnect = false;
 
-    public static OnboardingSignIntoWifiFragment newInstance(@Nullable ScanResult network) {
+    public static OnboardingSignIntoWifiFragment newInstance(@Nullable MorpheusBle.wifi_endpoint network) {
         OnboardingSignIntoWifiFragment fragment = new OnboardingSignIntoWifiFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putParcelable(ARG_SCAN_RESULT, network);
+        arguments.putSerializable(ARG_SCAN_RESULT, network);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -55,7 +54,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.network = getArguments().getParcelable(ARG_SCAN_RESULT);
+        this.network = (MorpheusBle.wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
         if (savedInstanceState != null) {
             this.hasConnectedToNetwork = savedInstanceState.getBoolean("hasConnectedToNetwork", false);
         }
@@ -75,7 +74,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         networkPassword.setOnEditorActionListener(new EditorActionHandler(this::sendWifiCredentials));
 
         if (network != null) {
-            this.networkName.setText(network.SSID);
+            this.networkName.setText(network.getSsid());
             this.networkPassword.requestFocus();
         }
 

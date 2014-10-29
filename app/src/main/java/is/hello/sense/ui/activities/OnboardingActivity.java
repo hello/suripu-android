@@ -5,13 +5,14 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.hello.ble.protobuf.MorpheusBle;
 
 import javax.inject.Inject;
 
@@ -227,7 +228,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(new OnboardingWifiNetworkFragment(), null, true);
     }
 
-    public void showSignIntoWifiNetwork(@Nullable ScanResult network) {
+    public void showSignIntoWifiNetwork(@Nullable MorpheusBle.wifi_endpoint network) {
         showFragment(OnboardingSignIntoWifiFragment.newInstance(network), null, true);
     }
 

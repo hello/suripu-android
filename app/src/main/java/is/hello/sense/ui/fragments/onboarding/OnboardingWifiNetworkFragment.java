@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -84,7 +83,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        ScanResult network = (ScanResult) adapterView.getItemAtPosition(position);
+        MorpheusBle.wifi_endpoint network = (MorpheusBle.wifi_endpoint) adapterView.getItemAtPosition(position);
         getOnboardingActivity().showSignIntoWifiNetwork(network);
     }
 
