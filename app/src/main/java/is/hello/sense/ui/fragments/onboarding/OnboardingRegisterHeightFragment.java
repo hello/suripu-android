@@ -1,8 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -13,38 +11,24 @@ import android.widget.EditText;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
 
-public class OnboardingRegisterHeightFragment extends Fragment {
-    private static final String ARG_ACCOUNT = OnboardingRegisterHeightFragment.class.getName() + ".ARG_ACCOUNT";
-
+public class OnboardingRegisterHeightFragment extends AccountEditingFragment {
     private Account account;
     private EditText feetText;
     private EditText inchesText;
-
-    public static OnboardingRegisterHeightFragment newInstance(@NonNull Account account) {
-        OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_ACCOUNT, account);
-        fragment.setArguments(arguments);
-
-        return fragment;
-    }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            this.account = (Account) savedInstanceState.getSerializable(ARG_ACCOUNT);
-        } else {
-            this.account = (Account) getArguments().getSerializable(ARG_ACCOUNT);
+        this.account = getContainer().getAccount();
+
+        if (savedInstanceState == null) {
             Analytics.event(Analytics.EVENT_ONBOARDING_HEIGHT, null);
         }
     }
@@ -67,17 +51,18 @@ public class OnboardingRegisterHeightFragment extends Fragment {
             }
         });
 
+        if (account.getHeight() != null) {
+            long totalInches = UnitOperations.centimetersToInches(account.getHeight());
+            long feet = totalInches / 12;
+            long inches = totalInches % 12;
+            feetText.setText(Long.toString(feet));
+            inchesText.setText(Long.toString(inches));
+        }
+
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
         nextButton.setOnClickListener(ignored -> next());
 
         return view;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putSerializable(ARG_ACCOUNT, account);
     }
 
 
@@ -87,7 +72,7 @@ public class OnboardingRegisterHeightFragment extends Fragment {
             int inches = TextUtils.isEmpty(inchesText.getText()) ? 0 : Integer.parseInt(inchesText.getText().toString());
             int totalInches = (feet * 12) + inches;
             account.setHeight(UnitOperations.inchesToCentimeters(totalInches));
-            ((OnboardingActivity) getActivity()).showWeight(account);
+            getContainer().onAccountUpdated(this);
         } catch (NumberFormatException e) {
             Logger.warn(OnboardingRegisterHeightFragment.class.getSimpleName(), "Invalid input fed to height fragment, ignoring.", e);
         }

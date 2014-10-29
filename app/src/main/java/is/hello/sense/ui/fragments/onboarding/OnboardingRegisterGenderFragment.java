@@ -1,8 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,34 +11,20 @@ import android.widget.ToggleButton;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Gender;
-import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingRegisterGenderFragment extends Fragment implements SelectorLinearLayout.OnSelectionChangedListener, SelectorLinearLayout.ButtonStyler {
-    private static final String ARG_ACCOUNT = OnboardingRegisterGenderFragment.class.getName() + ".ARG_ACCOUNT";
-
+public class OnboardingRegisterGenderFragment extends AccountEditingFragment implements SelectorLinearLayout.OnSelectionChangedListener, SelectorLinearLayout.ButtonStyler {
     private Account account;
-
-    public static OnboardingRegisterGenderFragment newInstance(@NonNull Account account) {
-        OnboardingRegisterGenderFragment fragment = new OnboardingRegisterGenderFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_ACCOUNT, account);
-        fragment.setArguments(arguments);
-
-        return fragment;
-    }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            this.account = (Account) savedInstanceState.getSerializable(ARG_ACCOUNT);
-        } else {
-            this.account = (Account) getArguments().getSerializable(ARG_ACCOUNT);
+        this.account = getContainer().getAccount();
+
+        if (savedInstanceState == null) {
             Analytics.event(Analytics.EVENT_ONBOARDING_GENDER, null);
         }
     }
@@ -53,28 +37,23 @@ public class OnboardingRegisterGenderFragment extends Fragment implements Select
         SelectorLinearLayout genderMode = (SelectorLinearLayout) view.findViewById(R.id.fragment_onboarding_register_gender_mode);
         genderMode.setButtonStyler(this);
         genderMode.setOnSelectionChangedListener(this);
+        if (account.getGender() != null) {
+            if (account.getGender() == Gender.OTHER)
+                genderMode.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
+            else
+                genderMode.setSelectedIndex(account.getGender().ordinal());
+        }
 
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
-        nextButton.setOnClickListener(ignored -> ((OnboardingActivity) getActivity()).showHeight(account));
+        nextButton.setOnClickListener(ignored -> getContainer().onAccountUpdated(this));
 
         return view;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putSerializable(ARG_ACCOUNT, account);
     }
 
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        if (newSelectionIndex == 0) {
-            account.setGender(Gender.FEMALE);
-        } else if (newSelectionIndex == 1) {
-            account.setGender(Gender.MALE);
-        }
+        account.setGender(Gender.values()[newSelectionIndex]);
     }
 
     @Override

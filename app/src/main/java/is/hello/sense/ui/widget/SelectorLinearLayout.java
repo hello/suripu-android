@@ -9,9 +9,9 @@ import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
 public class SelectorLinearLayout extends LinearLayout implements View.OnClickListener {
-    public static final int NOTHING_SELECTED = -1;
+    public static final int EMPTY_SELECTION = -1;
 
-    private int selectedIndex = NOTHING_SELECTED;
+    private int selectedIndex = EMPTY_SELECTION;
     private OnSelectionChangedListener onSelectionChangedListener;
     private ButtonStyler buttonStyler;
 
