@@ -170,7 +170,7 @@
     <string name="day_saturday">Saturday</string>
     <string name="day_sunday">Sunday</string>
     <string name="day_separator">, </string>
-    <string name="days_repeat_prefix"><![CDATA[Repeat on ]]></string>
+    <string name="days_repeat_prefix">"Repeat on "</string>
     <string name="never">Never</string>
 
     <string-array name="sleep_pill_color_names">
