@@ -15,12 +15,16 @@ import com.hello.ble.protobuf.MorpheusBle;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
+import is.hello.sense.util.Logger;
 
 import static com.hello.ble.BleOperationCallback.OperationFailReason;
 import static is.hello.sense.util.BleObserverCallback.BluetoothError;
@@ -30,6 +34,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
     private static final int ERROR_REQUEST_CODE = 0x30;
 
+    @Inject ApiService apiService;
     @Inject HardwarePresenter hardwarePresenter;
 
     private EditText networkName;
@@ -102,6 +107,9 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     }
 
     private void finishedSettingWifi() {
+        apiService.updateTimeZone(SenseTimeZone.fromDefault())
+                  .subscribe(ignored -> Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated."), Functions.LOG_ERROR);
+
         OnboardingActivity activity = (OnboardingActivity) getActivity();
         activity.finishBlockingWork();
         activity.showSetupPill();

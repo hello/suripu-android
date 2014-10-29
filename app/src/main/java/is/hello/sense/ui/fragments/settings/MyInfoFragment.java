@@ -15,12 +15,12 @@ import android.widget.ListView;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 
-import java.util.TimeZone;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.AccountEditingFragment;
@@ -36,6 +36,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.bindFragment;
@@ -106,6 +107,9 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
 
             LoadingDialogFragment.show(getFragmentManager());
             accountPresenter.saveAccount(currentAccount);
+            accountPresenter.updateTimeZone(SenseTimeZone.fromDateTimeZone(timeZone))
+                            .subscribe(ignored -> Logger.info(MyInfoFragment.class.getSimpleName(), "Updated time zone"),
+                                    Functions.LOG_ERROR);
         }
     }
 

@@ -11,6 +11,7 @@ import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
+import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
@@ -49,6 +50,9 @@ public interface ApiService {
 
     @POST("/notifications/registration")
     Observable<ApiResponse> registerForNotifications(@Body PushRegistration registration);
+
+    @POST("/timezone")
+    Observable<ApiResponse> updateTimeZone(@NonNull @Body SenseTimeZone senseTimeZone);
 
     //endregion
 
