@@ -257,7 +257,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     //region Presenting Blocking Work
 
     public void beginBlockingWork(@StringRes int titleResId) {
-        if (getFragmentManager().findFragmentByTag(LoadingDialogFragment.TAG) != null) {
+        if (getFragmentManager().findFragmentByTag(LoadingDialogFragment.TAG) == null) {
             LoadingDialogFragment dialogFragment = LoadingDialogFragment.newInstance(getString(titleResId), true);
             dialogFragment.show(getFragmentManager(), LoadingDialogFragment.TAG);
         }
