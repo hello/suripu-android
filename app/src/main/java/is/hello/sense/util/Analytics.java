@@ -95,6 +95,13 @@ public class Analytics {
     public static final String EVENT_ONBOARDING_WIFI_SCAN = "Onboarding WiFi Scan";
 
     /**
+     * When the Sense wifi scan completes.
+     */
+    public static final String EVENT_ONBOARDING_WIFI_SCAN_COMPLETED = "Onboarding Wifi Scan Completed";
+    public static final String PROP_DURATION = "duration"; //in seconds
+    public static final String PROP_FAILED = "failed";
+
+    /**
      * When user lands on the "Introducing Sleep Pill" screen
      */
     public static final String EVENT_ONBOARDING_SETUP_PILL = "Onboarding Setup Pill";

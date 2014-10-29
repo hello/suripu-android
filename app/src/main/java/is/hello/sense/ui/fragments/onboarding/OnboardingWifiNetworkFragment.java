@@ -15,12 +15,9 @@ import android.widget.Toast;
 
 import com.hello.ble.protobuf.MorpheusBle;
 
+import org.json.JSONObject;
+
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -37,6 +34,9 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
     private WifiNetworkAdapter networkAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private View otherNetworkView;
+
+    private long scanStarted = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,11 +57,12 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        View wifiView = inflater.inflate(R.layout.item_wifi_network, listView, false);
-        wifiView.findViewById(R.id.item_wifi_network_locked).setVisibility(View.GONE);
-        wifiView.findViewById(R.id.item_wifi_network_scanned).setVisibility(View.GONE);
-        ((TextView) wifiView.findViewById(R.id.item_wifi_network_name)).setText(R.string.wifi_other_network);
-        listView.addFooterView(wifiView, null, true);
+        this.otherNetworkView = inflater.inflate(R.layout.item_wifi_network, listView, false);
+        otherNetworkView.findViewById(R.id.item_wifi_network_locked).setVisibility(View.GONE);
+        otherNetworkView.findViewById(R.id.item_wifi_network_scanned).setVisibility(View.GONE);
+        ((TextView) otherNetworkView.findViewById(R.id.item_wifi_network_name)).setText(R.string.wifi_other_network);
+        otherNetworkView.setVisibility(View.GONE);
+        listView.addFooterView(otherNetworkView, null, true);
 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
         listView.setAdapter(networkAdapter);
@@ -70,7 +71,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         swipeRefreshLayout.setColorSchemeResources(R.color.sleep_light, R.color.sleep_intermediate, R.color.sleep_deep, R.color.sleep_awake);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             Analytics.event(Analytics.EVENT_ONBOARDING_WIFI_SCAN, null);
-            rescan(false);
+            rescanRepeating();
         });
 
         Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
@@ -83,7 +84,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rescan(true);
+        rescanRepeating();
     }
 
     @Override
@@ -93,35 +94,35 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     }
 
 
-    public void rescan(boolean withSecondScan) {
+    public void rescanRepeating() {
         swipeRefreshLayout.setRefreshing(true);
-        bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), firstResults -> {
-            bindScanResults(firstResults);
-            if (withSecondScan) {
-                bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), secondResults -> {
-                    Map<String, MorpheusBle.wifi_endpoint> combinedResults = new HashMap<>();
-                    for (MorpheusBle.wifi_endpoint result : firstResults)
-                        combinedResults.put(result.getSsid(), result);
-                    for (MorpheusBle.wifi_endpoint result : secondResults)
-                        combinedResults.put(result.getSsid(), result);
-                    bindScanResults(combinedResults.values());
+        otherNetworkView.setVisibility(View.GONE);
+        networkAdapter.clear();
 
-                    swipeRefreshLayout.setRefreshing(false);
-                }, this::scanResultsUnavailable);
-            } else {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        }, this::scanResultsUnavailable);
+        this.scanStarted = System.currentTimeMillis();
+        bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), this::bindScanResults, this::scanResultsUnavailable);
     }
 
     public void bindScanResults(@NonNull Collection<MorpheusBle.wifi_endpoint> scanResults) {
         networkAdapter.clear();
         networkAdapter.addAll(scanResults);
+        otherNetworkView.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setRefreshing(false);
+        trackScanFinished(true);
     }
 
     public void scanResultsUnavailable(Throwable e) {
         swipeRefreshLayout.setRefreshing(false);
         ErrorDialogFragment.presentError(getFragmentManager(), e);
+        trackScanFinished(false);
+    }
+
+    private void trackScanFinished(boolean succeeded) {
+        long scanFinished = System.currentTimeMillis();
+        long duration = (scanFinished - scanStarted) / 1000;
+        JSONObject properties = Analytics.createProperties(Analytics.PROP_FAILED, !succeeded,
+                                                           Analytics.PROP_DURATION, duration);
+        Analytics.event(Analytics.EVENT_ONBOARDING_WIFI_SCAN_COMPLETED, properties);
     }
 
 
