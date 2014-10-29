@@ -15,7 +15,12 @@ import android.widget.Toast;
 
 import com.hello.ble.protobuf.MorpheusBle;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -65,7 +70,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         swipeRefreshLayout.setColorSchemeResources(R.color.sleep_light, R.color.sleep_intermediate, R.color.sleep_deep, R.color.sleep_awake);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             Analytics.event(Analytics.EVENT_ONBOARDING_WIFI_SCAN, null);
-            rescan();
+            rescan(false);
         });
 
         Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
@@ -78,7 +83,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rescan();
+        rescan(true);
     }
 
     @Override
@@ -88,16 +93,30 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     }
 
 
-    public void rescan() {
+    public void rescan(boolean withSecondScan) {
         swipeRefreshLayout.setRefreshing(true);
-        bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), this::bindScanResults, this::scanResultsUnavailable);
+        bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), firstResults -> {
+            bindScanResults(firstResults);
+            if (withSecondScan) {
+                bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), secondResults -> {
+                    Map<String, MorpheusBle.wifi_endpoint> combinedResults = new HashMap<>();
+                    for (MorpheusBle.wifi_endpoint result : firstResults)
+                        combinedResults.put(result.getSsid(), result);
+                    for (MorpheusBle.wifi_endpoint result : secondResults)
+                        combinedResults.put(result.getSsid(), result);
+                    bindScanResults(combinedResults.values());
+
+                    swipeRefreshLayout.setRefreshing(false);
+                }, this::scanResultsUnavailable);
+            } else {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }, this::scanResultsUnavailable);
     }
 
-    public void bindScanResults(@NonNull List<MorpheusBle.wifi_endpoint> scanResults) {
+    public void bindScanResults(@NonNull Collection<MorpheusBle.wifi_endpoint> scanResults) {
         networkAdapter.clear();
         networkAdapter.addAll(scanResults);
-
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     public void scanResultsUnavailable(Throwable e) {

@@ -26,6 +26,7 @@ import is.hello.sense.util.BleObserverCallback;
 import is.hello.sense.util.Constants;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @Singleton public class HardwarePresenter extends Presenter {
     private final PreferencesPresenter preferencesPresenter;
