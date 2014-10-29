@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Interval;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -41,14 +42,6 @@ import is.hello.sense.R;
         }
     }
 
-    public @NonNull String formatAsDate(@Nullable LocalDateTime date) {
-        if (date != null) {
-            return date.toString(context.getString(R.string.format_date));
-        } else {
-            return context.getString(R.string.format_date_placeholder);
-        }
-    }
-
     public @NonNull String formatAsDate(@Nullable DateTime date) {
         if (date != null) {
             return date.toString(context.getString(R.string.format_date));
@@ -67,12 +60,12 @@ import is.hello.sense.R;
         return context.getString(R.string.format_date_placeholder);
     }
 
-    public @NonNull String formatAsTime(@Nullable DateTime date, boolean use24Time) {
-        if (date != null) {
+    public @NonNull String formatAsTime(@Nullable LocalTime time, boolean use24Time) {
+        if (time != null) {
             if (use24Time)
-                return date.toString(context.getString(R.string.format_time_24_hr));
+                return time.toString(context.getString(R.string.format_time_24_hr));
             else
-                return date.toString(context.getString(R.string.format_time_12_hr));
+                return time.toString(context.getString(R.string.format_time_12_hr));
         }
         return context.getString(R.string.format_date_placeholder);
     }

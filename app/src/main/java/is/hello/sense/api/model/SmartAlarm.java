@@ -1,13 +1,20 @@
 package is.hello.sense.api.model;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalTime;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+
+import is.hello.sense.R;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SmartAlarm extends ApiResponse {
@@ -76,6 +83,46 @@ public class SmartAlarm extends ApiResponse {
      */
     public void setDaysOfWeek(Set<Integer> daysOfWeek) {
         this.daysOfWeek = daysOfWeek;
+    }
+
+    public static @NonNull String nameForDayOfWeek(@NonNull Context context, int dayOfWeek) {
+        switch (dayOfWeek) {
+            case DateTimeConstants.MONDAY:
+                return context.getString(R.string.day_monday);
+
+            case DateTimeConstants.TUESDAY:
+                return context.getString(R.string.day_tuesday);
+
+            case DateTimeConstants.WEDNESDAY:
+                return context.getString(R.string.day_wednesday);
+
+            case DateTimeConstants.THURSDAY:
+                return context.getString(R.string.day_thursday);
+
+            case DateTimeConstants.FRIDAY:
+                return context.getString(R.string.day_friday);
+
+            case DateTimeConstants.SATURDAY:
+                return context.getString(R.string.day_saturday);
+
+            case DateTimeConstants.SUNDAY:
+                return context.getString(R.string.day_sunday);
+
+            default:
+                throw new IllegalArgumentException("Unknown day of week " + dayOfWeek);
+        }
+    }
+
+    public @NonNull String getDaysOfWeekSummary(@NonNull Context context) {
+        if (daysOfWeek == null || daysOfWeek.isEmpty())
+            return context.getString(R.string.never);
+
+        List<String> days = new ArrayList<>();
+        for (Integer dayOfWeek : daysOfWeek) {
+            days.add(nameForDayOfWeek(context, dayOfWeek));
+        }
+
+        return context.getString(R.string.days_repeat_prefix) + TextUtils.join(context.getString(R.string.day_separator), days);
     }
 
 
