@@ -12,36 +12,46 @@ import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
 /**
- * A wrapper around the Android main thread scheduler that defers work
- * when its containing {@see Resumable} is suspended.
+ * A scheduler that wraps another scheduler, and an object wrapping Resumable.
+ * A Resumable object is one on which certain operations are unsafe while it is paused.
+ * Examples of a Resumable object are {@see is.hello.sense.ui.activities.SenseActivity}
+ * and {@see is.hello.sense.ui.common.InjectionFragment}. The scheduler sends all of
+ * its workers through a Resumable object, which will then either run the worker
+ * immediately if it's safe, or defer its execution until it's safe to do so.
+ *
+ * @see is.hello.sense.ui.activities.SenseActivity
+ * @see is.hello.sense.ui.common.InjectionFragment
  */
 public class ResumeScheduler extends Scheduler {
-    private final Resumable target;
+    private final Resumable targetResumable;
     private final Scheduler targetScheduler;
 
-    public ResumeScheduler(@NonNull Resumable target, @NonNull Scheduler targetScheduler) {
-        this.target = target;
+    public ResumeScheduler(@NonNull Resumable targetResumable, @NonNull Scheduler targetScheduler) {
+        this.targetResumable = targetResumable;
         this.targetScheduler = targetScheduler;
     }
 
-    public ResumeScheduler(@NonNull Resumable target) {
-        this(target, AndroidSchedulers.mainThread());
+    /**
+     * Creates a ResumeScheduler targeting the main thread.
+     */
+    public ResumeScheduler(@NonNull Resumable targetResumable) {
+        this(targetResumable, AndroidSchedulers.mainThread());
     }
 
     @Override
     public ResumeWorker createWorker() {
-        return new ResumeWorker(target, targetScheduler.createWorker());
+        return new ResumeWorker(targetResumable, targetScheduler.createWorker());
     }
 
 
     private static class ResumeWorker extends Worker {
         private final CompositeSubscription compositeSubscription = new CompositeSubscription();
-        private final Resumable target;
-        private final Worker mainThreadWorker;
+        private final Resumable targetResumable;
+        private final Worker targetWorker;
 
-        private ResumeWorker(@NonNull Resumable target, @NonNull Worker mainThreadWorker) {
-            this.target = target;
-            this.mainThreadWorker = mainThreadWorker;
+        private ResumeWorker(@NonNull Resumable targetResumable, @NonNull Worker targetWorker) {
+            this.targetResumable = targetResumable;
+            this.targetWorker = targetWorker;
         }
 
         @Override
@@ -51,10 +61,10 @@ public class ResumeScheduler extends Scheduler {
 
         @Override
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
-            Runnable work = () -> compositeSubscription.add(mainThreadWorker.schedule(action, delayTime, unit));
-            Subscription subscription = Subscriptions.create(() -> target.cancelPostOnResume(work));
+            Runnable work = () -> compositeSubscription.add(targetWorker.schedule(action, delayTime, unit));
+            Subscription subscription = Subscriptions.create(() -> targetResumable.cancelPostOnResume(work));
             compositeSubscription.add(subscription);
-            target.postOnResume(work);
+            targetResumable.postOnResume(work);
             return subscription;
         }
 
@@ -71,10 +81,24 @@ public class ResumeScheduler extends Scheduler {
 
 
     /**
-     * A Fragment or Activity that will defer work until it is resumed.
+     * A class which has a paused state where certain work is unsafe.
+     *
+     * @see is.hello.sense.ui.activities.SenseActivity
+     * @see is.hello.sense.ui.common.InjectionFragment
      */
     public interface Resumable {
+        /**
+         * Asks the resumable object to perform a unit of work when it is safe to do so.
+         * <p/>
+         * The thread this method is called from is not defined.
+         */
         void postOnResume(@NonNull Runnable runnable);
+
+        /**
+         * Asks the resumable to cancel a pending unit of work, if applicable.
+         * <p/>
+         * The thread this method is called from is not defined.
+         */
         void cancelPostOnResume(@NonNull Runnable runnable);
     }
 }
