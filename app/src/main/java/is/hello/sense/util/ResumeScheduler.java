@@ -46,8 +46,9 @@ public class ResumeScheduler extends Scheduler {
 
         @Override
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
-            Runnable work = () -> mainThreadWorker.schedule(action, delayTime, unit);
+            Runnable work = () -> compositeSubscription.add(mainThreadWorker.schedule(action, delayTime, unit));
             Subscription subscription = Subscriptions.create(() -> target.cancelPostOnResume(work));
+            compositeSubscription.add(subscription);
             target.postOnResume(work);
             return subscription;
         }
