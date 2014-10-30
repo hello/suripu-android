@@ -155,10 +155,19 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="AppTheme.Button.SmartAlarmDay">
+        <item name="android:layout_marginEnd">@dimen/activity_margin</item>
+        <item name="android:background">@drawable/smart_alarm_day_toggle_selector</item>
+        <item name="android:textColor">@drawable/smart_alarm_day_toggle_text</item>
+        <item name="android:textAppearance">@style/AppTheme.Text</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
     <!-- Dividers -->
 
     <style name="Divider">
-        <item name="android:background">@color/grey</item>
+        <item name="android:background">@color/border</item>
     </style>
 
     <style name="Divider.Horizontal">

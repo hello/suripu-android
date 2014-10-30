@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import javax.inject.Inject;
 
@@ -29,6 +30,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     private boolean use24Time = false;
 
     private TextView time;
+    private ViewGroup repeat;
 
     public static @NonNull SmartAlarmDetailFragment newInstance(@NonNull SmartAlarm smartAlarm) {
         SmartAlarmDetailFragment detailFragment = new SmartAlarmDetailFragment();
@@ -59,6 +61,16 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         time.setOnClickListener(this::selectNewTime);
         updateTime();
 
+        this.repeat = (ViewGroup) view.findViewById(R.id.fragment_smart_alarm_detail_repeat);
+        View.OnClickListener dayClickListener = this::dayButtonClicked;
+        for (int i = 0, count = repeat.getChildCount(); i < count; i++) {
+            int day = i + 1;
+            ToggleButton dayButton = (ToggleButton) repeat.getChildAt(i);
+            dayButton.setTag(day);
+            dayButton.setOnClickListener(dayClickListener);
+            dayButton.setChecked(smartAlarm.getDaysOfWeek().contains(day));
+        }
+
         return view;
     }
 
@@ -79,5 +91,15 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     public void selectNewTime(@NonNull View sender) {
 
+    }
+
+    public void dayButtonClicked(@NonNull View sender) {
+        ToggleButton dayButton = (ToggleButton) sender;
+        int day = (Integer) dayButton.getTag();
+
+        if (dayButton.isChecked())
+            smartAlarm.getDaysOfWeek().add(day);
+        else
+            smartAlarm.getDaysOfWeek().remove(day);
     }
 }

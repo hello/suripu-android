@@ -11,6 +11,7 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,6 +41,16 @@ public class SmartAlarm extends ApiResponse {
 
     @JsonProperty("sound")
     private Sound sound;
+
+
+    public SmartAlarm() {
+        this.hourOfDay = 7;
+        this.minuteOfHour = 30;
+        this.isRepeated = true;
+        this.isEnabled = true;
+        this.isEditable = true;
+        this.daysOfWeek = new HashSet<>();
+    }
 
 
     public LocalTime getTime() {

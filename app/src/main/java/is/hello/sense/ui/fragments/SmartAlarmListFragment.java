@@ -70,6 +70,8 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        LoadingDialogFragment.show(getFragmentManager());
+        
         Observable<Boolean> use24Time = preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false);
         bindAndSubscribe(use24Time, adapter::setUse24Time, Functions.LOG_ERROR);
         bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::alarmsUnavailable);
@@ -79,7 +81,6 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     public void onResume() {
         super.onResume();
 
-        LoadingDialogFragment.show(getFragmentManager());
         smartAlarmPresenter.update();
     }
 
