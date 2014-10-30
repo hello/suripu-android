@@ -1,11 +1,14 @@
 package is.hello.sense.ui.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -20,6 +23,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.DateFormatter;
@@ -27,7 +31,9 @@ import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class SmartAlarmListFragment extends InjectionFragment {
+public class SmartAlarmListFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+    private static final int EDIT_REQUEST_CODE = 0x31;
+
     @Inject SmartAlarmPresenter smartAlarmPresenter;
     @Inject PreferencesPresenter preferences;
     @Inject DateFormatter dateFormatter;
@@ -52,10 +58,12 @@ public class SmartAlarmListFragment extends InjectionFragment {
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         this.adapter = new SmartAlarmAdapter(getActivity(), dateFormatter);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
 
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_smart_alarm_list_progress);
 
         ImageButton addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
+        addButton.setOnClickListener(this::newAlarm);
 
         return view;
     }
@@ -76,6 +84,14 @@ public class SmartAlarmListFragment extends InjectionFragment {
         smartAlarmPresenter.update();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+
+        }
+    }
 
     public void bindAlarms(@NonNull List<SmartAlarm> alarms) {
         adapter.clear();
@@ -92,5 +108,22 @@ public class SmartAlarmListFragment extends InjectionFragment {
                 .start();
 
         ErrorDialogFragment.presentError(getFragmentManager(), e);
+    }
+
+
+    private void editAlarm(@NonNull SmartAlarm alarm) {
+        SmartAlarmDetailFragment fragment = SmartAlarmDetailFragment.newInstance(alarm);
+        fragment.setTargetFragment(this, EDIT_REQUEST_CODE);
+        ((FragmentNavigation) getActivity()).showFragment(fragment, getString(R.string.action_new_alarm), true);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        SmartAlarm alarm = (SmartAlarm) adapterView.getItemAtPosition(position);
+        editAlarm(alarm);
+    }
+
+    public void newAlarm(@NonNull View sender) {
+        editAlarm(new SmartAlarm());
     }
 }
