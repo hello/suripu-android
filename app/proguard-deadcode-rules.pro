@@ -9,6 +9,8 @@
 -dontwarn is.hello.sense.**
 -dontwarn retrofit.**
 -dontwarn rx.**
+-dontwarn com.google.protobuf.**
+-dontwarn com.hello.ble.protobuf.**
 
 -keepclassmembers class * {
     static final % *;
@@ -21,6 +23,8 @@
 -keep class org.apache.james.mime4j.** { *; }
 -keep class javax.inject.** { *; }
 -keep class retrofit.** { *; }
+-keep class com.google.protobuf.** { *; }
+-keep class com.hello.ble.protobuf.** { *; }
 
 -keepattributes *Annotation*,EnclosingMethod
 
