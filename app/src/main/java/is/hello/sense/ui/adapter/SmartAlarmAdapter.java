@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.SmartAlarm;
@@ -52,12 +53,12 @@ public class SmartAlarmAdapter extends ArrayAdapter<SmartAlarm> {
 
 
     private class ViewHolder {
-        final Switch enabled;
+        final ToggleButton enabled;
         final TextView time;
         final TextView repeat;
 
         ViewHolder(@NonNull View view) {
-            this.enabled = (Switch) view.findViewById(R.id.item_smart_alarm_enabled);
+            this.enabled = (ToggleButton) view.findViewById(R.id.item_smart_alarm_enabled);
             this.time = (TextView) view.findViewById(R.id.item_smart_alarm_time);
             this.repeat = (TextView) view.findViewById(R.id.item_smart_alarm_repeat);
         }

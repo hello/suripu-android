@@ -1,10 +1,21 @@
 <resources>
 
-    <!-- Base application theme. -->
+    <!-- Themes -->
+
     <style name="AppTheme" parent="android:Theme.Holo.Light">
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:actionBarStyle">@style/TransparentActionBar</item>
         <item name="android:windowBackground">@color/background</item>
+
+        <item name="android:actionBarItemBackground">@drawable/app_theme_selectable_background</item>
+        <item name="android:popupMenuStyle">@style/AppTheme.PopupMenu</item>
+        <item name="android:dropDownListViewStyle">@style/AppTheme.DropDownListView</item>
+        <item name="android:actionBarTabStyle">@style/AppTheme.ActionBarTabStyle</item>
+        <item name="android:actionDropDownStyle">@style/AppTheme.DropDownNav</item>
+        <item name="android:actionBarStyle">@style/AppTheme.ActionBar.Solid</item>
+        <item name="android:actionModeBackground">@drawable/app_theme_cab_background_top</item>
+        <item name="android:actionModeSplitBackground">@drawable/app_theme_cab_background_bottom</item>
+        <item name="android:actionModeCloseButtonStyle">@style/AppTheme.ActionButton.CloseMode</item>
+        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
 
         <item name="android:buttonStyle">@style/AppTheme.Button</item>
         <item name="android:imageButtonStyle">@style/AppTheme.Button.Borderless</item>
@@ -29,18 +40,52 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTitleSize">0dp</item>
     </style>
-    
-    <style name="TransparentActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
-        <item name="android:background">@color/transparent</item>
-    </style>
 
     <style name="AppTheme.Underside">
-        <item name="android:listDivider">@null</item>
-        <item name="android:dividerHeight">0dp</item>
-
         <item name="android:textColor">@color/text_underside</item>
         <item name="android:windowBackground">@color/background_underside</item>
     </style>
+
+    <!-- Action Bar -->
+
+    <style name="AppTheme.ActionBar.Solid" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
+        <item name="android:background">@drawable/app_theme_ab_solid</item>
+        <item name="android:backgroundStacked">@drawable/app_theme_ab_stacked_solid</item>
+        <item name="android:backgroundSplit">@drawable/app_theme_ab_bottom_solid</item>
+        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
+        <item name="android:icon">@android:color/transparent</item>
+        <item name="android:titleTextStyle">@style/AppTheme.Text.ActionBar</item>
+        <item name="android:height">@dimen/action_bar_height</item>
+    </style>
+
+    <style name="AppTheme.Text.ActionBar">
+        <item name="android:textSize">@dimen/action_bar_text_size</item>
+        <item name="android:textColor">@color/text_underside</item>
+    </style>
+
+    <style name="AppTheme.PopupMenu" parent="@android:style/Widget.Holo.Light.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/app_theme_menu_dropdown_panel</item>
+    </style>
+
+    <style name="AppTheme.DropDownListView" parent="@android:style/Widget.Holo.Light.ListView.DropDown">
+        <item name="android:listSelector">@drawable/app_theme_selectable_background</item>
+    </style>
+
+    <style name="AppTheme.ActionBarTabStyle" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
+        <item name="android:background">@drawable/app_theme_tab_indicator_ab</item>
+    </style>
+
+    <style name="AppTheme.DropDownNav" parent="@android:style/Widget.Holo.Light.Spinner">
+        <item name="android:background">@drawable/app_theme_spinner_background_ab</item>
+        <item name="android:popupBackground">@drawable/app_theme_menu_dropdown_panel</item>
+        <item name="android:dropDownSelector">@drawable/app_theme_selectable_background</item>
+    </style>
+
+    <style name="AppTheme.ActionButton.CloseMode" parent="@android:style/Widget.Holo.Light.ActionButton.CloseMode">
+        <item name="android:background">@drawable/app_theme_btn_cab_done</item>
+    </style>
+
+    <!-- Dialogs -->
 
     <style name="AppTheme.Dialog" parent="android:Theme.Holo.Dialog" />
 

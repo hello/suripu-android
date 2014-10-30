@@ -1,4 +1,6 @@
 <resources>
+    <!-- Standard Sizing -->
+
     <dimen name="activity_margin">16dp</dimen>
 
     <dimen name="gap_tiny">3dp</dimen>
@@ -8,15 +10,21 @@
     <dimen name="gap_large">25dp</dimen>
     <dimen name="gap_xlarge">50dp</dimen>
 
+    <!-- Text -->
+
     <dimen name="text_size_small">11sp</dimen>
     <dimen name="text_size_medium">15sp</dimen>
     <dimen name="text_size_large">18sp</dimen>
     <dimen name="text_size_xlarge">26sp</dimen>
 
+    <!-- Divisions and Borders -->
+
     <dimen name="shadow_height">5dp</dimen>
     <dimen name="divider_height">1px</dimen> <!-- px is not a typo -->
     <dimen name="divider_height_edit_text">1dp</dimen>
     <dimen name="button_rounded_border_width">2dp</dimen>
+
+    <!-- Misc -->
 
     <dimen name="sliding_layers_open_height">60dp</dimen>
 
@@ -35,4 +43,14 @@
     <dimen name="grand_sleep_summary_height">175dp</dimen>
 
     <dimen name="timeline_stripe_corner_radius">13dp</dimen>
+
+    <!-- Switch -->
+
+    <dimen name="switch_width">48dp</dimen>
+    <dimen name="switch_height">24dp</dimen>
+
+    <!-- Action Bar -->
+
+    <dimen name="action_bar_height">60dp</dimen>
+    <dimen name="action_bar_text_size">20dp</dimen>
 </resources>
