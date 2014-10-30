@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.SenseApplication;
@@ -22,8 +23,8 @@ public class InjectionFragment extends Fragment implements ObservableContainer, 
     protected ArrayList<Subscription> subscriptions = new ArrayList<>();
     protected ArrayList<Presenter> presenters;
 
-    protected ArrayList<Runnable> onResumeRunnables = new ArrayList<>();
-    protected ResumeScheduler observeScheduler = new ResumeScheduler(this);
+    protected final List<Runnable> onResumeRunnables = Collections.synchronizedList(new ArrayList<>());
+    protected final ResumeScheduler observeScheduler = new ResumeScheduler(this);
 
     public InjectionFragment() {
         SenseApplication.getInstance().inject(this);
