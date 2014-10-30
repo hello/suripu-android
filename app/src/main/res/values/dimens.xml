@@ -17,6 +17,7 @@
     <dimen name="text_size_medium">15sp</dimen>
     <dimen name="text_size_large">20sp</dimen>
     <dimen name="text_size_xlarge">26sp</dimen>
+    <dimen name="text_size_giant">72sp</dimen>
 
     <!-- Divisions and Borders -->
 

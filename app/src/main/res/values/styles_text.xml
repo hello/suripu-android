@@ -109,4 +109,9 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <style name="AppTheme.Text.SmartAlarm.Time.Big">
+        <item name="android:textColor">@color/light_accent</item>
+        <item name="android:textSize">@dimen/text_size_giant</item>
+    </style>
+
 </resources>

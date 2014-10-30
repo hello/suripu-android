@@ -26,6 +26,7 @@ import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
@@ -38,7 +39,6 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     @Inject PreferencesPresenter preferences;
     @Inject DateFormatter dateFormatter;
 
-    private ProgressBar loadingIndicator;
     private SmartAlarmAdapter adapter;
 
     @Override
@@ -60,8 +60,6 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
 
-        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_smart_alarm_list_progress);
-
         ImageButton addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
         addButton.setOnClickListener(this::newAlarm);
 
@@ -81,6 +79,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     public void onResume() {
         super.onResume();
 
+        LoadingDialogFragment.show(getFragmentManager());
         smartAlarmPresenter.update();
     }
 
@@ -88,8 +87,12 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == EDIT_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
 
+            } else if (resultCode == SmartAlarmDetailFragment.RESULT_DELETE) {
+
+            }
         }
     }
 
@@ -97,16 +100,11 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         adapter.clear();
         adapter.addAll(alarms);
 
-        animate(loadingIndicator)
-                .fadeOut(View.GONE)
-                .start();
+        LoadingDialogFragment.close(getFragmentManager());
     }
 
     public void alarmsUnavailable(Throwable e) {
-        animate(loadingIndicator)
-                .fadeOut(View.GONE)
-                .start();
-
+        LoadingDialogFragment.close(getFragmentManager());
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 
