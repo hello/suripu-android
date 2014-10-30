@@ -60,24 +60,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/fragment_underside_insights_container"
-            app:icon="@drawable/icon_sensor_temperature"
-            app:title="@string/condition_temperature" />
+            app:sensorIcon="@drawable/icon_sensor_temperature"
+            app:sensorTitle="@string/condition_temperature" />
 
         <is.hello.sense.ui.widget.SensorStateView
             android:id="@+id/fragment_underside_humidity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/fragment_underside_temperature"
-            app:icon="@drawable/icon_sensor_humidity"
-            app:title="@string/condition_humidity" />
+            app:sensorIcon="@drawable/icon_sensor_humidity"
+            app:sensorTitle="@string/condition_humidity" />
 
         <is.hello.sense.ui.widget.SensorStateView
             android:id="@+id/fragment_underside_particulates"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/fragment_underside_humidity"
-            app:icon="@drawable/icon_sensor_particle"
-            app:title="@string/condition_particulates" />
+            app:sensorIcon="@drawable/icon_sensor_particle"
+            app:sensorTitle="@string/condition_particulates" />
 
         <is.hello.sense.ui.widget.SensorStateView
             android:id="@+id/fragment_underside_alarm"
@@ -85,8 +85,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/fragment_underside_particulates"
             android:layout_marginTop="@dimen/gap_large"
-            app:icon="@drawable/icon_alarm"
-            app:title="@string/action_alarm"
+            app:sensorIcon="@drawable/icon_alarm"
+            app:sensorTitle="@string/action_alarm"
             app:wantsReading="false"/>
 
         <is.hello.sense.ui.widget.SensorStateView
@@ -94,8 +94,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/fragment_underside_alarm"
-            app:icon="@drawable/icon_sensor_particle"
-            app:title="@string/action_insights"
+            app:sensorIcon="@drawable/icon_sensor_particle"
+            app:sensorTitle="@string/action_insights"
             app:wantsReading="false"/>
 
         <is.hello.sense.ui.widget.SensorStateView
@@ -104,8 +104,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/gap_large"
             android:layout_below="@id/fragment_underside_trends"
-            app:icon="@drawable/icon_debug"
-            app:title="@string/activity_debug"
+            app:sensorIcon="@drawable/icon_debug"
+            app:sensorTitle="@string/activity_debug"
             app:wantsReading="false"/>
 
     </RelativeLayout>

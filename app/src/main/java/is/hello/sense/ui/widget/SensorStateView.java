@@ -45,8 +45,8 @@ public class SensorStateView extends FrameLayout {
 
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.SensorStateView, defStyle, 0);
-            String title = styles.getString(R.styleable.SensorStateView_title);
-            Drawable icon = styles.getDrawable(R.styleable.SensorStateView_icon);
+            String title = styles.getString(R.styleable.SensorStateView_sensorTitle);
+            Drawable icon = styles.getDrawable(R.styleable.SensorStateView_sensorIcon);
             boolean wantsReading = styles.getBoolean(R.styleable.SensorStateView_wantsReading, true);
 
             setTitle(title);

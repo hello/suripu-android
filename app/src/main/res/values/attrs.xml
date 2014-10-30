@@ -13,8 +13,8 @@
     </declare-styleable>
 
     <declare-styleable name="SensorStateView">
-        <attr name="title" format="string" />
-        <attr name="icon" format="integer" />
+        <attr name="sensorTitle" format="string" />
+        <attr name="sensorIcon" format="integer" />
         <attr name="wantsReading" format="boolean" />
     </declare-styleable>
 
