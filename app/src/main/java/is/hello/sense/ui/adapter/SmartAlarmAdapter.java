@@ -45,7 +45,14 @@ public class SmartAlarmAdapter extends ArrayAdapter<SmartAlarm> {
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.enabled.setTag(position);
         holder.enabled.setChecked(alarm.isEnabled());
-        holder.time.setText(dateFormatter.formatAsTime(alarm.getTime(), use24Time));
+        if (use24Time) {
+            holder.timePeriod.setVisibility(View.GONE);
+            holder.time.setText(alarm.getTime().toString("H:mm"));
+        } else {
+            holder.timePeriod.setVisibility(View.VISIBLE);
+            holder.time.setText(alarm.getTime().toString("h:mm"));
+            holder.timePeriod.setText(alarm.getTime().toString("a"));
+        }
         holder.repeat.setText(alarm.getDaysOfWeekSummary(getContext()));
 
         return view;
@@ -55,11 +62,13 @@ public class SmartAlarmAdapter extends ArrayAdapter<SmartAlarm> {
     private class ViewHolder {
         final ToggleButton enabled;
         final TextView time;
+        final TextView timePeriod;
         final TextView repeat;
 
         ViewHolder(@NonNull View view) {
             this.enabled = (ToggleButton) view.findViewById(R.id.item_smart_alarm_enabled);
             this.time = (TextView) view.findViewById(R.id.item_smart_alarm_time);
+            this.timePeriod = (TextView) view.findViewById(R.id.item_smart_alarm_time_period);
             this.repeat = (TextView) view.findViewById(R.id.item_smart_alarm_repeat);
         }
     }

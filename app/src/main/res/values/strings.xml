@@ -70,6 +70,7 @@
     <string name="action_log_out">Log Out</string>
 
     <string name="action_alarm">Alarm</string>
+    <string name="action_set_alarm">Set Alarm</string>
 
     <string name="action_forgot_password">Forgot Password</string>
 
@@ -162,15 +163,15 @@
     <string name="action_insights">Insights</string>
     <string name="action_new_alarm">New Alarm</string>
 
-    <string name="day_monday">Monday</string>
-    <string name="day_tuesday">Tuesday</string>
-    <string name="day_wednesday">Wednesday</string>
-    <string name="day_thursday">Thursday</string>
-    <string name="day_friday">Friday</string>
-    <string name="day_saturday">Saturday</string>
-    <string name="day_sunday">Sunday</string>
+    <string name="day_monday">Mon</string>
+    <string name="day_tuesday">Tue</string>
+    <string name="day_wednesday">Wed</string>
+    <string name="day_thursday">Thu</string>
+    <string name="day_friday">Fri</string>
+    <string name="day_saturday">Sat</string>
+    <string name="day_sunday">Sun</string>
     <string name="day_separator">, </string>
-    <string name="days_repeat_prefix">"Repeat on "</string>
+    <string name="days_repeat_prefix">"Smart Alarm  ―  "</string>
     <string name="never">Never</string>
     <string name="label_time_zone">Time Zone</string>
 

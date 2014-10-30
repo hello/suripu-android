@@ -17,19 +17,29 @@
 
     <TextView
         android:id="@+id/item_smart_alarm_time"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/gap_tiny"
         android:layout_alignParentStart="true"
-        android:layout_toStartOf="@id/item_smart_alarm_enabled"
-        android:textAppearance="@style/AppTheme.Text.Heading"
+        android:textAppearance="@style/AppTheme.Text.SmartAlarm.Time"
+        android:text="@string/mock_time" />
+
+    <TextView
+        android:id="@+id/item_smart_alarm_time_period"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/item_smart_alarm_time"
+        android:layout_alignBaseline="@id/item_smart_alarm_time"
+        android:textAppearance="@style/AppTheme.Text.SmartAlarm.Time.Period"
         android:text="@string/mock_time" />
 
     <TextView
         android:id="@+id/item_smart_alarm_repeat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginTop="@dimen/gap_xsmall"
         android:layout_below="@id/item_smart_alarm_time"
-        android:layout_toStartOf="@id/item_smart_alarm_enabled"/>
+        android:layout_toStartOf="@id/item_smart_alarm_enabled"
+        android:textAppearance="@style/AppTheme.Text.SmartAlarm.Repeat"/>
 
 </RelativeLayout>

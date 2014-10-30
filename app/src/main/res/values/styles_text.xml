@@ -93,4 +93,20 @@
         <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
     </style>
 
+    <style name="AppTheme.Text.SmartAlarm" />
+
+    <style name="AppTheme.Text.SmartAlarm.Time">
+        <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
+        <item name="android:textSize">32sp</item>
+    </style>
+
+    <style name="AppTheme.Text.SmartAlarm.Time.Period">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="AppTheme.Text.SmartAlarm.Repeat">
+        <item name="android:textSize">@dimen/text_size_xsmall</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
 </resources>
