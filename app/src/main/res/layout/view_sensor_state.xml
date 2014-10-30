@@ -19,7 +19,6 @@
         android:singleLine="true"
         android:textSize="@dimen/text_size_large"
         android:textAppearance="@style/AppTheme.Text.Body"
-        android:textColor="@color/text_underside"
         android:text="@string/condition_temperature"/>
 
     <TextView

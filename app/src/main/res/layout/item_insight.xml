@@ -20,7 +20,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/AppTheme.Text.Body"
-        android:textColor="@color/text_underside"
         android:text="@string/mock_event_message"
         android:ellipsize="end"
         android:maxLines="3"/>

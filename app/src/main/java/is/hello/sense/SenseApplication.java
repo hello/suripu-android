@@ -39,7 +39,7 @@ public class SenseApplication extends Application {
 
         JodaTimeAndroid.init(this);
         HelloBle.init(this, Logger::println);
-        CalligraphyConfig.initDefault("fonts/Calibre-Regular.otf", R.attr.fontPath);
+        CalligraphyConfig.initDefault("fonts/AvenirLTCom-Roman.ttf", R.attr.fontPath);
         if (buildValues.debugScreenEnabled) {
             SessionLogger.init(this);
         }

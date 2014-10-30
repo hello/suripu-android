@@ -18,7 +18,6 @@
         android:layout_marginBottom="@dimen/gap_small"
         android:padding="@dimen/activity_margin"
         android:gravity="center"
-        android:textColor="#323c47"
         android:textAllCaps="true"
         android:textAppearance="@style/AppTheme.Text.ScreenTitle"
         android:text="@string/title_before_you_slept"/>

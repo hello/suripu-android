@@ -2,10 +2,12 @@
 <resources>
     <!-- Generic -->
 
-    <style name="AppTheme.Text" parent="android:TextAppearance" />
+    <style name="AppTheme.Text" parent="android:TextAppearance">
+        <item name="android:textColor">@color/text_dark</item>
+    </style>
 
     <style name="AppTheme.Text.Heading">
-        <item name="fontPath">fonts/Calibre-Light.otf</item>
+        <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
         <item name="android:textSize">@dimen/text_size_xlarge</item>
         <item name="android:lineSpacingMultiplier">1.2</item>
         <item name="android:textColor">@color/text_dark</item>
@@ -16,7 +18,7 @@
     </style>
 
     <style name="AppTheme.Text.Subheading">
-        <item name="fontPath">fonts/Calibre-Thin.otf</item>
+        <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
         <item name="android:textSize">@dimen/text_size_large</item>
         <item name="android:lineSpacingMultiplier">1.2</item>
         <item name="android:textColor">@color/text_dark</item>
@@ -27,7 +29,7 @@
     </style>
 
     <style name="AppTheme.Text.Microheading">
-        <item name="fontPath">fonts/Calibre-Bold.otf</item>
+        <item name="fontPath">fonts/AvenirLTCom-Black.ttf</item>
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/light_accent</item>
@@ -36,7 +38,7 @@
 
     <style name="AppTheme.Text.ScreenTitle">
         <item name="android:textSize">@dimen/text_size_large</item>
-        <item name="fontPath">fonts/Calibre-Medium.otf</item>
+        <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
 
     <style name="AppTheme.Text.Body">
@@ -44,7 +46,7 @@
     </style>
 
     <style name="AppTheme.Text.Body.Bold">
-        <item name="fontPath">fonts/Calibre-Medium.otf</item>
+        <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
     </style>
 
     <style name="AppTheme.Text.Body.Dimmed">
@@ -67,7 +69,7 @@
 
     <style name="AppTheme.Text.BigScore">
         <item name="android:textSize">96sp</item>
-        <item name="fontPath">fonts/Calibre-Thin.otf</item>
+        <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
 
     <style name="AppTheme.Text.BigScore.Details">
@@ -77,7 +79,7 @@
     </style>
 
     <style name="AppTheme.Text.Condition">
-        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
         <item name="android:textSize">@dimen/text_size_large</item>
     </style>
 
