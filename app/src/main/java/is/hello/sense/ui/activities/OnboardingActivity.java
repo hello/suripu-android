@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,12 +12,15 @@ import android.support.annotation.StringRes;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.hello.ble.protobuf.MorpheusBle;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -42,11 +44,13 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
-public class OnboardingActivity extends InjectionActivity implements FragmentNavigation {
+public class OnboardingActivity extends InjectionActivity implements FragmentNavigation, AccountEditingFragment.Container {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
 
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferences;
+
+    private Account account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,19 +183,34 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public void showBirthday(@NonNull Account account) {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_ACCOUNT);
 
-        showFragment(OnboardingRegisterBirthdayFragment.newInstance(account), null, false);
+        this.account = account;
+        showFragment(new OnboardingRegisterBirthdayFragment(), null, false);
     }
 
-    public void showGender(@NonNull Account account) {
-        showFragment(OnboardingRegisterGenderFragment.newInstance(account), null, true);
+    @NonNull
+    @Override
+    public Account getAccount() {
+        return account;
     }
 
-    public void showHeight(@NonNull Account account) {
-        showFragment(OnboardingRegisterHeightFragment.newInstance(account), null, true);
-    }
-
-    public void showWeight(@NonNull Account account) {
-        showFragment(OnboardingRegisterWeightFragment.newInstance(account), null, true);
+    @Override
+    public void onAccountUpdated(@NonNull AccountEditingFragment updatedBy) {
+        if (updatedBy instanceof OnboardingRegisterBirthdayFragment) {
+            showFragment(new OnboardingRegisterGenderFragment(), null, true);
+        } else if (updatedBy instanceof OnboardingRegisterGenderFragment) {
+            showFragment(new OnboardingRegisterHeightFragment(), null, true);
+        } else if (updatedBy instanceof OnboardingRegisterHeightFragment) {
+            showFragment(new OnboardingRegisterWeightFragment(), null, true);
+        } else if (updatedBy instanceof OnboardingRegisterWeightFragment) {
+            beginBlockingWork(R.string.dialog_loading_message);
+            bindAndSubscribe(apiService.updateAccount(account), ignored -> {
+                finishBlockingWork();
+                showGettingStarted();
+            }, e -> {
+                finishBlockingWork();
+                ErrorDialogFragment.presentError(getFragmentManager(), e);
+            });
+        }
     }
 
     public void showGettingStarted() {
@@ -227,7 +246,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(new OnboardingWifiNetworkFragment(), null, true);
     }
 
-    public void showSignIntoWifiNetwork(@Nullable ScanResult network) {
+    public void showSignIntoWifiNetwork(@Nullable MorpheusBle.wifi_endpoint network) {
         showFragment(OnboardingSignIntoWifiFragment.newInstance(network), null, true);
     }
 
@@ -257,7 +276,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     //region Presenting Blocking Work
 
     public void beginBlockingWork(@StringRes int titleResId) {
-        if (getFragmentManager().findFragmentByTag(LoadingDialogFragment.TAG) != null) {
+        if (getFragmentManager().findFragmentByTag(LoadingDialogFragment.TAG) == null) {
             LoadingDialogFragment dialogFragment = LoadingDialogFragment.newInstance(getString(titleResId), true);
             dialogFragment.show(getFragmentManager(), LoadingDialogFragment.TAG);
         }

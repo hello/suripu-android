@@ -1,8 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,34 +12,19 @@ import org.joda.time.DateTime;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingRegisterBirthdayFragment extends Fragment {
-    private static final String ARG_ACCOUNT = OnboardingRegisterBirthdayFragment.class.getName() + ".ARG_ACCOUNT";
-
+public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     private Account account;
-
-    public static OnboardingRegisterBirthdayFragment newInstance(@NonNull Account account) {
-        OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_ACCOUNT, account);
-        fragment.setArguments(arguments);
-
-        return fragment;
-    }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            this.account = (Account) savedInstanceState.getSerializable(ARG_ACCOUNT);
-        } else {
-            this.account = (Account) getArguments().getSerializable(ARG_ACCOUNT);
+        this.account = getContainer().getAccount();
 
+        if (savedInstanceState == null) {
             Analytics.event(Analytics.EVENT_ONBOARDING_BIRTHDAY, null);
         }
     }
@@ -61,16 +44,9 @@ public class OnboardingRegisterBirthdayFragment extends Fragment {
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
         nextButton.setOnClickListener(ignored -> {
             account.setBirthDate(new DateTime(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), 0, 0));
-            ((OnboardingActivity) getActivity()).showGender(account);
+            getContainer().onAccountUpdated(this);
         });
 
         return view;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putSerializable(ARG_ACCOUNT, account);
     }
 }

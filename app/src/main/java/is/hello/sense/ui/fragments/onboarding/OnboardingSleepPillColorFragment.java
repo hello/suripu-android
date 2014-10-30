@@ -61,6 +61,6 @@ public class OnboardingSleepPillColorFragment extends Fragment implements Select
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        nextButton.setEnabled(newSelectionIndex != SelectorLinearLayout.NOTHING_SELECTED);
+        nextButton.setEnabled(newSelectionIndex != SelectorLinearLayout.EMPTY_SELECTION);
     }
 }

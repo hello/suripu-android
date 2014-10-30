@@ -9,8 +9,11 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Logger;
+import rx.Observable;
 import rx.observables.BlockingObservable;
 
 public class AccountPresenter extends Presenter {
@@ -22,7 +25,7 @@ public class AccountPresenter extends Presenter {
     public @Nullable Parcelable onSaveState() {
         try {
             BlockingObservable<Account> accountObservable = BlockingObservable.from(account);
-            Account account = accountObservable.single();
+            Account account = accountObservable.first();
             Bundle savedState = new Bundle();
             savedState.putSerializable("account", account);
             return savedState;
@@ -50,5 +53,9 @@ public class AccountPresenter extends Presenter {
 
     public void saveAccount(@NonNull Account updatedAccount) {
         apiService.updateAccount(updatedAccount).subscribe(account);
+    }
+
+    public Observable<ApiResponse> updateTimeZone(@NonNull SenseTimeZone senseTimeZone) {
+        return apiService.updateTimeZone(senseTimeZone);
     }
 }

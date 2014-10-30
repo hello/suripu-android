@@ -9,6 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import org.joda.time.DateTimeUtils;
+import org.joda.time.DateTimeZone;
+
 import java.util.TimeZone;
 
 import javax.inject.Inject;
@@ -46,7 +49,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         super.onCreate(savedInstanceState);
 
         newAccount.setHeight(UnitOperations.inchesToCentimeters(70));
-        newAccount.setTimeZoneOffset(TimeZone.getDefault().getRawOffset());
+        newAccount.setTimeZoneOffset(DateTimeZone.getDefault().getOffset(DateTimeUtils.currentTimeMillis()));
 
         setRetainInstance(true);
     }

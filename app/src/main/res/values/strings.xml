@@ -160,6 +160,7 @@
     <string name="action_retry">Retry</string>
     <string name="action_share">Share</string>
     <string name="action_insights">Insights</string>
+<<<<<<< HEAD
     <string name="action_new_alarm">New Alarm</string>
 
     <string name="day_monday">Monday</string>
@@ -172,6 +173,9 @@
     <string name="day_separator">, </string>
     <string name="days_repeat_prefix">"Repeat on "</string>
     <string name="never">Never</string>
+=======
+    <string name="label_time_zone">Time Zone</string>
+>>>>>>> master
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

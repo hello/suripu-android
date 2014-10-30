@@ -12,35 +12,37 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
+import org.joda.time.DateTimeZone;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.Gender;
+import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
+import is.hello.sense.ui.common.AccountEditingFragment;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.DatePickerDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.GenderPickerDialogFragment;
-import is.hello.sense.ui.dialogs.HeightDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.dialogs.WeightDialogFragment;
+import is.hello.sense.ui.dialogs.TimeZoneDialogFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.units.UnitFormatter;
-import is.hello.sense.units.UnitOperations;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.bindFragment;
 
-public class MyInfoFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
-    private static final int REQUEST_CODE_BIRTH_DATE = 0x11;
-    private static final int REQUEST_CODE_GENDER = 0x12;
-    private static final int REQUEST_CODE_HEIGHT = 0x13;
-    private static final int REQUEST_CODE_WEIGHT = 0x14;
+public class MyInfoFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
+    private static final int REQUEST_CODE_TIME_ZONE = 0x19;
 
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
@@ -50,6 +52,7 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
     private StaticItemAdapter.Item genderItem;
     private StaticItemAdapter.Item heightItem;
     private StaticItemAdapter.Item weightItem;
+    private StaticItemAdapter.Item timeZoneItem;
 
     private Account currentAccount;
 
@@ -65,16 +68,18 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.simple_list_view, container, false);
+        View view = inflater.inflate(R.layout.fragment_my_info, container, false);
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
-        this.birthdayItem = adapter.addItem(getString(R.string.label_dob), getString(R.string.missing_data_placeholder), this::changeBirthDate);
-        this.genderItem = adapter.addItem(getString(R.string.label_gender), getString(R.string.missing_data_placeholder), this::changeGender);
-        this.heightItem = adapter.addItem(getString(R.string.label_height), getString(R.string.missing_data_placeholder), this::changeHeight);
-        this.weightItem = adapter.addItem(getString(R.string.label_weight), getString(R.string.missing_data_placeholder), this::changeWeight);
+        String placeholder = getString(R.string.missing_data_placeholder);
+        this.birthdayItem = adapter.addItem(getString(R.string.label_dob), placeholder, this::changeBirthDate);
+        this.genderItem = adapter.addItem(getString(R.string.label_gender), placeholder, this::changeGender);
+        this.heightItem = adapter.addItem(getString(R.string.label_height), placeholder, this::changeHeight);
+        this.weightItem = adapter.addItem(getString(R.string.label_weight), placeholder, this::changeWeight);
+        this.timeZoneItem = adapter.addItem(getString(R.string.label_time_zone), placeholder, this::changeTimeZone);
         listView.setAdapter(adapter);
 
         return view;
@@ -90,6 +95,23 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
         track(bindFragment(this, forAccount).subscribe(this::bindAccount, this::accountUnavailable));
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_TIME_ZONE && resultCode == Activity.RESULT_OK) {
+            String timeZoneId = data.getStringExtra(TimeZoneDialogFragment.RESULT_TIMEZONE_ID);
+            DateTimeZone timeZone = DateTimeZone.forID(timeZoneId);
+            int offset = timeZone.getOffset(DateTimeUtils.currentTimeMillis());
+            currentAccount.setTimeZoneOffset(offset);
+
+            LoadingDialogFragment.show(getFragmentManager());
+            accountPresenter.saveAccount(currentAccount);
+            accountPresenter.updateTimeZone(SenseTimeZone.fromDateTimeZone(timeZone))
+                            .subscribe(ignored -> Logger.info(MyInfoFragment.class.getSimpleName(), "Updated time zone"),
+                                    Functions.LOG_ERROR);
+        }
+    }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -101,58 +123,53 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
             item.getAction().run();
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CODE_BIRTH_DATE) {
-                int year = data.getIntExtra(DatePickerDialogFragment.RESULT_YEAR, 0);
-                int month = data.getIntExtra(DatePickerDialogFragment.RESULT_MONTH, 0);
-                int day = data.getIntExtra(DatePickerDialogFragment.RESULT_DAY, 0);
-
-                currentAccount.setBirthDate(new DateTime(year, month, day, 0, 0));
-            } else if (requestCode == REQUEST_CODE_GENDER) {
-                String genderName = data.getStringExtra(GenderPickerDialogFragment.RESULT_GENDER);
-                Gender newGender = Gender.fromString(genderName);
-                currentAccount.setGender(newGender);
-            } else if (requestCode == REQUEST_CODE_HEIGHT) {
-                int heightInInches = data.getIntExtra(HeightDialogFragment.RESULT_HEIGHT, 0);
-                currentAccount.setHeight(UnitOperations.inchesToCentimeters(heightInInches));
-            } else if (requestCode == REQUEST_CODE_WEIGHT) {
-                long weightInPounds = data.getIntExtra(WeightDialogFragment.RESULT_WEIGHT, 0);
-                currentAccount.setWeight(UnitOperations.poundsToGrams(weightInPounds));
-            }
-
-            LoadingDialogFragment.show(getFragmentManager());
-            accountPresenter.saveAccount(currentAccount);
-        }
+    public FragmentNavigation getNavigationContainer() {
+        return (FragmentNavigation) getActivity();
     }
 
     public void changeBirthDate() {
-        DatePickerDialogFragment dialogFragment = DatePickerDialogFragment.newInstance(currentAccount.getBirthDate());
-        dialogFragment.setTargetFragment(this, REQUEST_CODE_BIRTH_DATE);
-        dialogFragment.show(getFragmentManager(), DatePickerDialogFragment.TAG);
+        OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
+        fragment.setTargetFragment(this, 0x00);
+        getNavigationContainer().showFragment(fragment, getString(R.string.label_dob), true);
     }
 
     public void changeGender() {
-        GenderPickerDialogFragment dialogFragment = new GenderPickerDialogFragment();
-        dialogFragment.setTargetFragment(this, REQUEST_CODE_GENDER);
-        dialogFragment.show(getFragmentManager(), GenderPickerDialogFragment.TAG);
+        OnboardingRegisterGenderFragment fragment = new OnboardingRegisterGenderFragment();
+        fragment.setTargetFragment(this, 0x00);
+        getNavigationContainer().showFragment(fragment, getString(R.string.label_dob), true);
     }
 
     public void changeHeight() {
-        long heightInInches = UnitOperations.centimetersToInches(currentAccount.getHeight());
-        HeightDialogFragment dialogFragment = HeightDialogFragment.newInstance(heightInInches);
-        dialogFragment.setTargetFragment(this, REQUEST_CODE_HEIGHT);
-        dialogFragment.show(getFragmentManager(), HeightDialogFragment.TAG);
+        OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
+        fragment.setTargetFragment(this, 0x00);
+        getNavigationContainer().showFragment(fragment, getString(R.string.label_dob), true);
     }
 
     public void changeWeight() {
-        long weight = UnitOperations.gramsToPounds(currentAccount.getWeight());
-        WeightDialogFragment dialogFragment = WeightDialogFragment.newInstance(weight);
-        dialogFragment.setTargetFragment(this, REQUEST_CODE_WEIGHT);
-        dialogFragment.show(getFragmentManager(), WeightDialogFragment.TAG);
+        OnboardingRegisterWeightFragment fragment = new OnboardingRegisterWeightFragment();
+        fragment.setTargetFragment(this, 0x00);
+        getNavigationContainer().showFragment(fragment, getString(R.string.label_dob), true);
+    }
+
+    public void changeTimeZone() {
+        TimeZoneDialogFragment dialogFragment = new TimeZoneDialogFragment();
+        dialogFragment.setTargetFragment(this, REQUEST_CODE_TIME_ZONE);
+        dialogFragment.show(getFragmentManager(), TimeZoneDialogFragment.TAG);
+    }
+
+    @NonNull
+    @Override
+    public Account getAccount() {
+        return currentAccount;
+    }
+
+    @Override
+    public void onAccountUpdated(@NonNull AccountEditingFragment updatedBy) {
+        getFragmentManager().popBackStackImmediate();
+
+        LoadingDialogFragment.show(getFragmentManager());
+        accountPresenter.saveAccount(currentAccount);
     }
 
 
@@ -166,6 +183,7 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
         genderItem.setValue(getString(account.getGender().nameRes));
         heightItem.setValue(unitSystem.formatHeight(account.getHeight()));
         weightItem.setValue(unitSystem.formatMass(account.getWeight()));
+        timeZoneItem.setValue(DateTimeZone.forOffsetMillis(account.getTimeZoneOffset()).getName(DateTimeUtils.currentTimeMillis()));
 
         this.currentAccount = account;
     }

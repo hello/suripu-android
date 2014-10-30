@@ -39,8 +39,8 @@
 
 -keepnames class dagger.Lazy
 
--keep class org.joda.time.tz.** { *; }
--dontwarn org.joda.time.tz.**
+-keep class org.joda.** { *; }
+-dontwarn org.joda.**
 
 -keepnames class com.fasterxml.jackson.** { *; }
 -dontwarn com.fasterxml.jackson.databind.**

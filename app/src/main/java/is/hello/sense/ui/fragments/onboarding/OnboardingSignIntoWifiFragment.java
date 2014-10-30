@@ -2,7 +2,6 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -16,12 +15,16 @@ import com.hello.ble.protobuf.MorpheusBle;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
+import is.hello.sense.util.Logger;
 
 import static com.hello.ble.BleOperationCallback.OperationFailReason;
 import static is.hello.sense.util.BleObserverCallback.BluetoothError;
@@ -31,21 +34,22 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
     private static final int ERROR_REQUEST_CODE = 0x30;
 
+    @Inject ApiService apiService;
     @Inject HardwarePresenter hardwarePresenter;
 
     private EditText networkName;
     private EditText networkPassword;
 
-    private ScanResult network;
+    private MorpheusBle.wifi_endpoint network;
 
     private boolean hasConnectedToNetwork = false;
     private boolean hasTriedReconnect = false;
 
-    public static OnboardingSignIntoWifiFragment newInstance(@Nullable ScanResult network) {
+    public static OnboardingSignIntoWifiFragment newInstance(@Nullable MorpheusBle.wifi_endpoint network) {
         OnboardingSignIntoWifiFragment fragment = new OnboardingSignIntoWifiFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putParcelable(ARG_SCAN_RESULT, network);
+        arguments.putSerializable(ARG_SCAN_RESULT, network);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -55,7 +59,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.network = getArguments().getParcelable(ARG_SCAN_RESULT);
+        this.network = (MorpheusBle.wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
         if (savedInstanceState != null) {
             this.hasConnectedToNetwork = savedInstanceState.getBoolean("hasConnectedToNetwork", false);
         }
@@ -75,7 +79,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         networkPassword.setOnEditorActionListener(new EditorActionHandler(this::sendWifiCredentials));
 
         if (network != null) {
-            this.networkName.setText(network.SSID);
+            this.networkName.setText(network.getSsid());
             this.networkPassword.requestFocus();
         }
 
@@ -103,6 +107,9 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     }
 
     private void finishedSettingWifi() {
+        apiService.updateTimeZone(SenseTimeZone.fromDefault())
+                  .subscribe(ignored -> Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated."), Functions.LOG_ERROR);
+
         OnboardingActivity activity = (OnboardingActivity) getActivity();
         activity.finishBlockingWork();
         activity.showSetupPill();

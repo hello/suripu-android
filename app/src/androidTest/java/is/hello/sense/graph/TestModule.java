@@ -17,12 +17,16 @@ import is.hello.sense.api.ApiAppContext;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
+import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.api.sessions.TransientApiSessionManager;
 import is.hello.sense.graph.annotations.CacheDirectoryFile;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenterTests;
+import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.graph.presenters.HardwarePresenterTests;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenterTests;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -49,6 +53,9 @@ import static junit.framework.Assert.assertNotNull;
 
         CurrentConditionsPresenterTests.class,
         CurrentConditionsPresenter.class,
+
+        HardwarePresenter.class,
+        HardwarePresenterTests.class,
 
         InsightsPresenter.class,
         InsightsPresenterTests.class,
@@ -107,9 +114,18 @@ public final class TestModule {
         return new TestApiService(context, objectMapper);
     }
 
+    @Singleton @Provides ApiSessionManager provideApiSessionManager() {
+        return new TransientApiSessionManager();
+    }
+
     @Provides SmartAlarmPresenter provideSmartAlarmPresenter(@NonNull ApiService apiService,
                                                              @CacheDirectoryFile @Nullable File cacheDirectory,
                                                              @NonNull ObjectMapper objectMapper) {
         return new SmartAlarmPresenterTests.StubedSmartAlarmPresenter(apiService, cacheDirectory, objectMapper);
+    }
+
+    @Provides @Singleton HardwarePresenter provideHardwarePresenter(@NonNull PreferencesPresenter preferencesPresenter,
+                                                                    @NonNull ApiSessionManager apiSessionManager) {
+        return new HardwarePresenterTests.StubbedHardwarePresenter(preferencesPresenter, apiSessionManager);
     }
 }
