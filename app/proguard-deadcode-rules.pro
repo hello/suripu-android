@@ -9,6 +9,8 @@
 -dontwarn is.hello.sense.**
 -dontwarn retrofit.**
 -dontwarn rx.**
+-dontwarn com.google.protobuf.**
+-dontwarn com.hello.ble.protobuf.**
 
 -keepclassmembers class * {
     static final % *;
@@ -21,6 +23,8 @@
 -keep class org.apache.james.mime4j.** { *; }
 -keep class javax.inject.** { *; }
 -keep class retrofit.** { *; }
+-keep class com.google.protobuf.** { *; }
+-keep class com.hello.ble.protobuf.** { *; }
 
 -keepattributes *Annotation*,EnclosingMethod
 
@@ -52,4 +56,18 @@
 }
 -keep class * {
     @retrofit.http.* *;
+}
+
+-keepnames class * implements java.io.Serializable
+
+-keepclassmembers class * implements java.io.Serializable {
+    static final long serialVersionUID;
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    !static !transient <fields>;
+    !private <fields>;
+    !private <methods>;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
 }

@@ -76,7 +76,7 @@ import rx.schedulers.Schedulers;
     }
 
 
-    public Morpheus getDevice() {
+    public @Nullable Morpheus getDevice() {
         return device;
     }
 
@@ -171,7 +171,13 @@ import rx.schedulers.Schedulers;
 
     public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks() {
         return Observable.create((Observable.OnSubscribe<List<MorpheusBle.wifi_endpoint>>) s -> device.scanSupportedWIFIAP(new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_SET_WIFI_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread());
+                         .subscribeOn(AndroidSchedulers.mainThread())
+                         .map(networks -> {
+                             if (!networks.isEmpty())
+                                 Collections.sort(networks, (l, r) -> Ints.compare(l.getRssi(), r.getRssi()));
+                             
+                             return networks;
+                         });
     }
 
     public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks(int passCount) {

@@ -2,6 +2,7 @@ package is.hello.sense.util;
 
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.hello.ble.BleOperationCallback;
 import com.hello.ble.devices.HelloBleDevice;
@@ -66,6 +67,12 @@ public class BleObserverCallback<T> implements BleOperationCallback<T> {
     public static class BluetoothError extends Exception {
         public final BleOperationCallback.OperationFailReason failureReason;
         public final int errorCode;
+
+        public static boolean isFatal(@Nullable Throwable e) {
+            return ((e != null) &&
+                    (e instanceof BluetoothError) &&
+                    ((BluetoothError) e).failureReason == OperationFailReason.TIME_OUT);
+        }
 
         public BluetoothError(@NonNull BleOperationCallback.OperationFailReason failureReason, int errorCode) {
             this.failureReason = failureReason;
