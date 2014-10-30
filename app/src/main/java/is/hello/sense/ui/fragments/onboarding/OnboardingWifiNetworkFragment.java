@@ -28,6 +28,7 @@ import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.BleObserverCallback;
 
 public class OnboardingWifiNetworkFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     @Inject HardwarePresenter hardwarePresenter;
@@ -71,7 +72,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         swipeRefreshLayout.setColorSchemeResources(R.color.sleep_light, R.color.sleep_intermediate, R.color.sleep_deep, R.color.sleep_awake);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             Analytics.event(Analytics.EVENT_ONBOARDING_WIFI_SCAN, null);
-            rescanRepeating();
+            rescan();
         });
 
         Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
@@ -84,7 +85,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rescanRepeating();
+        rescan();
     }
 
     @Override
@@ -94,7 +95,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     }
 
 
-    public void rescanRepeating() {
+    public void rescan() {
         swipeRefreshLayout.setRefreshing(true);
         otherNetworkView.setVisibility(View.GONE);
         networkAdapter.clear();
