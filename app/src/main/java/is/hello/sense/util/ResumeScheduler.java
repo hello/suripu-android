@@ -17,15 +17,20 @@ import rx.subscriptions.Subscriptions;
  */
 public class ResumeScheduler extends Scheduler {
     private final Resumable target;
-    private final Scheduler mainThread = AndroidSchedulers.mainThread();
+    private final Scheduler targetScheduler;
+
+    public ResumeScheduler(@NonNull Resumable target, @NonNull Scheduler targetScheduler) {
+        this.target = target;
+        this.targetScheduler = targetScheduler;
+    }
 
     public ResumeScheduler(@NonNull Resumable target) {
-        this.target = target;
+        this(target, AndroidSchedulers.mainThread());
     }
 
     @Override
     public ResumeWorker createWorker() {
-        return new ResumeWorker(target, mainThread.createWorker());
+        return new ResumeWorker(target, targetScheduler.createWorker());
     }
 
 
