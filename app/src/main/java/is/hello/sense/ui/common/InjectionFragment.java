@@ -143,7 +143,7 @@ public class InjectionFragment extends Fragment implements ObservableContainer, 
     @Override
     public @NonNull <T> Observable<T> bind(@NonNull Observable<T> toBind) {
         return toBind.observeOn(observeScheduler)
-                     .lift(new OperatorConditionalBinding<>(FRAGMENT_VALIDATOR));
+                     .lift(new OperatorConditionalBinding<>(this, FRAGMENT_VALIDATOR));
     }
 
     @Override
