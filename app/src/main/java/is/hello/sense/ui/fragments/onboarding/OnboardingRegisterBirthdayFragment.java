@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
@@ -43,7 +44,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
 
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
         nextButton.setOnClickListener(ignored -> {
-            account.setBirthDate(new DateTime(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), 0, 0));
+            account.setBirthDate(new LocalDate(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth()));
             getContainer().onAccountUpdated(this);
         });
 

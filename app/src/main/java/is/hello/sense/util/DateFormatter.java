@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Interval;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
@@ -34,7 +35,7 @@ import is.hello.sense.R;
             return formatAsDate(date);
     }
 
-    public @NonNull String formatAsBirthDate(@Nullable DateTime date) {
+    public @NonNull String formatAsBirthDate(@Nullable LocalDate date) {
         if (date != null) {
             return date.toString(context.getString(R.string.format_birth_date));
         } else {

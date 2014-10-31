@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import is.hello.sense.api.ApiService;
 
@@ -39,7 +40,7 @@ public class Account extends ApiResponse {
 
     @JsonProperty("dob")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.DATE_FORMAT)
-    private DateTime birthDate;
+    private LocalDate birthDate;
 
     @JsonProperty("password")
     private String password;
@@ -115,11 +116,11 @@ public class Account extends ApiResponse {
         this.weight = weight;
     }
 
-    public DateTime getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(DateTime birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 

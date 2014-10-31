@@ -91,7 +91,7 @@ public final class SessionLogger {
     public static void init(@NonNull Context context) {
         try {
             File file = new File(getLogFilePath(context));
-            init(new FileOutputStream(file, false));
+            init(new FileOutputStream(file, true));
         } catch (IOException e) {
             Logger.error(SessionLogger.class.getSimpleName(), "Could not initialize session logger.", e);
         }
