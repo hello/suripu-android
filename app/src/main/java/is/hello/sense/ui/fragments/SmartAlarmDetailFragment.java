@@ -1,12 +1,12 @@
 package is.hello.sense.ui.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -30,7 +30,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     private boolean use24Time = false;
 
     private TextView time;
-    private ViewGroup repeat;
 
     public static @NonNull SmartAlarmDetailFragment newInstance(@NonNull SmartAlarm smartAlarm) {
         SmartAlarmDetailFragment detailFragment = new SmartAlarmDetailFragment();
@@ -61,7 +60,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         time.setOnClickListener(this::selectNewTime);
         updateTime();
 
-        this.repeat = (ViewGroup) view.findViewById(R.id.fragment_smart_alarm_detail_repeat);
+        ViewGroup repeat = (ViewGroup) view.findViewById(R.id.fragment_smart_alarm_detail_repeat);
         View.OnClickListener dayClickListener = this::dayButtonClicked;
         for (int i = 0, count = repeat.getChildCount(); i < count; i++) {
             int day = i + 1;
@@ -74,6 +73,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         ToggleButton enabled = (ToggleButton) view.findViewById(R.id.fragment_smart_alarm_detail_enabled);
         enabled.setEnabled(smartAlarm.isEnabled());
         enabled.setOnCheckedChangeListener((button, isEnabled) -> smartAlarm.setEnabled(isEnabled));
+
+        Button sound = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_sound);
 
         return view;
     }
