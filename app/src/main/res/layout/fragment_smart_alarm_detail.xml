@@ -156,7 +156,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="@dimen/gap_small"
-                android:text="@string/action_delete_alarm"
+                android:text="@string/label_delete_alarm"
                 android:textAppearance="@style/AppTheme.Text.Body"/>
 
             <Button
@@ -164,7 +164,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/AppTheme.Button.Raised"
-                android:text="@string/timer_delete"/>
+                android:text="@string/action_delete"/>
 
         </LinearLayout>
 
@@ -180,7 +180,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_margin"
-            android:text="@string/save_label"
+            android:text="@string/action_done"
             style="@style/AppTheme.Button.Rounded"/>
 
     </LinearLayout>
