@@ -25,6 +25,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
+import rx.functions.Action1;
 
 import static com.hello.ble.BleOperationCallback.OperationFailReason;
 import static is.hello.sense.util.BleObserverCallback.BluetoothError;
@@ -125,6 +126,14 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
         beginSettingWifi();
 
+        if (hardwarePresenter.getDevice() == null) {
+            Action1<Throwable> onError = this::deviceRepairFailed;
+            bindAndSubscribe(hardwarePresenter.rediscoverDevice(),
+                             device -> bindAndSubscribe(hardwarePresenter.connectToDevice(device), ignored -> sendWifiCredentials(), onError),
+                             onError);
+            return;
+        }
+
         if (hasConnectedToNetwork) {
             sendAccessToken();
             return;
@@ -187,5 +196,10 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
         dialogFragment.setTargetFragment(this, ERROR_REQUEST_CODE);
         dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+    public void deviceRepairFailed(Throwable e) {
+        ((OnboardingActivity) getActivity()).finishBlockingWork();
+        ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 }

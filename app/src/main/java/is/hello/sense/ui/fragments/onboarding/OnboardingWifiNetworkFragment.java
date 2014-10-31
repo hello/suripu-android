@@ -3,13 +3,13 @@ package is.hello.sense.ui.fragments.onboarding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,16 +28,16 @@ import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.BleObserverCallback;
+import rx.functions.Action1;
 
 public class OnboardingWifiNetworkFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     @Inject HardwarePresenter hardwarePresenter;
 
     private WifiNetworkAdapter networkAdapter;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private View otherNetworkView;
+    private ProgressBar scanningIndicator;
 
     private long scanStarted = 0;
+    private ListView listView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,10 +55,10 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_wifi_networks, container, false);
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        this.otherNetworkView = inflater.inflate(R.layout.item_wifi_network, listView, false);
+        View otherNetworkView = inflater.inflate(R.layout.item_wifi_network, listView, false);
         otherNetworkView.findViewById(R.id.item_wifi_network_locked).setVisibility(View.GONE);
         otherNetworkView.findViewById(R.id.item_wifi_network_scanned).setVisibility(View.GONE);
         ((TextView) otherNetworkView.findViewById(R.id.item_wifi_network_name)).setText(R.string.wifi_other_network);
@@ -68,9 +68,10 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
         listView.setAdapter(networkAdapter);
 
-        this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_onboarding_wifi_networks_refresh_container);
-        swipeRefreshLayout.setColorSchemeResources(R.color.sleep_light, R.color.sleep_intermediate, R.color.sleep_deep, R.color.sleep_awake);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
+        this.scanningIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_wifi_networks_scanning);
+
+        Button rescanButton = (Button) view.findViewById(R.id.fragment_onboarding_wifi_networks_rescan);
+        rescanButton.setOnClickListener(ignored -> {
             Analytics.event(Analytics.EVENT_ONBOARDING_WIFI_SCAN, null);
             rescan();
         });
@@ -96,9 +97,17 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
 
     public void rescan() {
-        swipeRefreshLayout.setRefreshing(true);
-        otherNetworkView.setVisibility(View.GONE);
+        scanningIndicator.setVisibility(View.VISIBLE);
+        listView.setVisibility(View.INVISIBLE);
         networkAdapter.clear();
+
+        if (hardwarePresenter.getDevice() == null) {
+            Action1<Throwable> onError = this::deviceRepairFailed;
+            bindAndSubscribe(hardwarePresenter.rediscoverDevice(),
+                             device -> bindAndSubscribe(hardwarePresenter.connectToDevice(device), ignored -> rescan(), onError),
+                             onError);
+            return;
+        }
 
         this.scanStarted = System.currentTimeMillis();
         bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), this::bindScanResults, this::scanResultsUnavailable);
@@ -107,15 +116,20 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     public void bindScanResults(@NonNull Collection<MorpheusBle.wifi_endpoint> scanResults) {
         networkAdapter.clear();
         networkAdapter.addAll(scanResults);
-        otherNetworkView.setVisibility(View.VISIBLE);
-        swipeRefreshLayout.setRefreshing(false);
+        scanningIndicator.setVisibility(View.GONE);
+        listView.setVisibility(View.VISIBLE);
         trackScanFinished(true);
     }
 
     public void scanResultsUnavailable(Throwable e) {
-        swipeRefreshLayout.setRefreshing(false);
+        scanningIndicator.setVisibility(View.GONE);
         ErrorDialogFragment.presentError(getFragmentManager(), e);
         trackScanFinished(false);
+    }
+
+    public void deviceRepairFailed(Throwable e) {
+        scanningIndicator.setVisibility(View.GONE);
+        ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 
     private void trackScanFinished(boolean succeeded) {

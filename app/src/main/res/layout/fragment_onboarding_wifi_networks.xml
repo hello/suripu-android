@@ -22,8 +22,7 @@
         android:textAppearance="@style/AppTheme.Text.Subheading"
         android:text="@string/info_choose_wifi_network"/>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/fragment_onboarding_wifi_networks_refresh_container"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -33,7 +32,22 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+        <is.hello.sense.ui.widget.TintedProgressBar
+            android:id="@+id/fragment_onboarding_wifi_networks_scanning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/fragment_onboarding_wifi_networks_rescan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:text="@string/action_rescan"
+        style="@style/AppTheme.Button.Borderless.Onboarding" />
 
     <Button
         android:id="@+id/fragment_onboarding_step_help"
