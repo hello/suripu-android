@@ -1,92 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/fragment_smart_alarm_detail_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="@dimen/gap_large"
-        android:textAppearance="@style/AppTheme.Text.SmartAlarm.Time.Big"
-        android:text="@string/mock_time"
-        android:background="?android:attr/selectableItemBackground"/>
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
     <LinearLayout
-        android:id="@+id/fragment_smart_alarm_detail_repeat"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/activity_margin"
-        android:paddingTop="@dimen/gap_large"
-        android:paddingBottom="@dimen/gap_large"
-        android:orientation="horizontal"
-        tools:ignore="RtlSymmetry">
+        android:layout_height="wrap_content">
 
-        <ToggleButton
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/fragment_smart_alarm_detail_time"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textOn="@string/day_sunday"
-            android:textOff="@string/day_sunday"
-            style="@style/AppTheme.Button.SmartAlarmDay"/>
+            android:gravity="center"
+            android:padding="@dimen/gap_large"
+            android:textAppearance="@style/AppTheme.Text.SmartAlarm.Time.Big"
+            android:text="@string/mock_time"
+            android:background="?android:attr/selectableItemBackground"/>
 
-        <ToggleButton
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/fragment_smart_alarm_detail_repeat"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textOn="@string/day_monday"
-            android:textOff="@string/day_monday"
-            android:checked="true"
-            style="@style/AppTheme.Button.SmartAlarmDay"/>
+            android:paddingStart="@dimen/activity_margin"
+            android:paddingBottom="@dimen/gap_large"
+            android:orientation="horizontal"
+            tools:ignore="RtlSymmetry">
 
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textOn="@string/day_tuesday"
-            android:textOff="@string/day_tuesday"
-            style="@style/AppTheme.Button.SmartAlarmDay"/>
+            <ToggleButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOn="@string/day_sunday"
+                android:textOff="@string/day_sunday"
+                style="@style/AppTheme.Button.SmartAlarmDay"/>
 
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textOn="@string/day_wednesday"
-            android:textOff="@string/day_wednesday"
-            style="@style/AppTheme.Button.SmartAlarmDay"/>
+            <ToggleButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOn="@string/day_monday"
+                android:textOff="@string/day_monday"
+                android:checked="true"
+                style="@style/AppTheme.Button.SmartAlarmDay"/>
 
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textOn="@string/day_thursday"
-            android:textOff="@string/day_thursday"
-            style="@style/AppTheme.Button.SmartAlarmDay"/>
+            <ToggleButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOn="@string/day_tuesday"
+                android:textOff="@string/day_tuesday"
+                style="@style/AppTheme.Button.SmartAlarmDay"/>
 
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textOn="@string/day_friday"
-            android:textOff="@string/day_friday"
-            style="@style/AppTheme.Button.SmartAlarmDay"/>
+            <ToggleButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOn="@string/day_wednesday"
+                android:textOff="@string/day_wednesday"
+                style="@style/AppTheme.Button.SmartAlarmDay"/>
 
-        <ToggleButton
-            android:layout_width="0dp"
+            <ToggleButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOn="@string/day_thursday"
+                android:textOff="@string/day_thursday"
+                style="@style/AppTheme.Button.SmartAlarmDay"/>
+
+            <ToggleButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOn="@string/day_friday"
+                android:textOff="@string/day_friday"
+                style="@style/AppTheme.Button.SmartAlarmDay"/>
+
+            <ToggleButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOn="@string/day_saturday"
+                android:textOff="@string/day_saturday"
+                style="@style/AppTheme.Button.SmartAlarmDay"/>
+
+        </LinearLayout>
+
+        <View style="@style/Divider.Horizontal" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textOn="@string/day_saturday"
-            android:textOff="@string/day_saturday"
-            style="@style/AppTheme.Button.SmartAlarmDay"/>
+            android:padding="@dimen/activity_margin"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/gap_small"
+                android:text="@string/action_alarm"
+                android:textAppearance="@style/AppTheme.Text.Body"/>
+
+            <ToggleButton
+                android:id="@+id/fragment_smart_alarm_detail_enabled"
+                android:layout_width="@dimen/switch_width"
+                android:layout_height="@dimen/switch_height"
+                android:textOn=""
+                android:textOff=""
+                android:background="@drawable/switch_selector"/>
+
+        </LinearLayout>
+
+        <View style="@style/Divider.Horizontal" />
+
+
 
     </LinearLayout>
 
-    <View
-        android:layout_marginTop="@dimen/gap_large"
-        style="@style/Divider.Horizontal" />
-
-</LinearLayout>
+</ScrollView>

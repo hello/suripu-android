@@ -71,6 +71,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             dayButton.setChecked(smartAlarm.getDaysOfWeek().contains(day));
         }
 
+        ToggleButton enabled = (ToggleButton) view.findViewById(R.id.fragment_smart_alarm_detail_enabled);
+        enabled.setEnabled(smartAlarm.isEnabled());
+        enabled.setOnCheckedChangeListener((button, isEnabled) -> smartAlarm.setEnabled(isEnabled));
+
         return view;
     }
 
