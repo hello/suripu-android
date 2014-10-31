@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/activity_margin">
+    android:padding="@dimen/gap_outer">
 
     <ImageView
         android:id="@+id/item_device_icon"

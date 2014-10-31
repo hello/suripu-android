@@ -10,8 +10,8 @@
         android:id="@+id/fragment_sensor_history_reading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/activity_margin"
-        android:layout_marginRight="@dimen/activity_margin"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.BigScore"
         android:text="@string/missing_data_placeholder"/>
@@ -20,9 +20,9 @@
         android:id="@+id/fragment_sensor_history_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/activity_margin"
-        android:layout_marginRight="@dimen/activity_margin"
-        android:layout_marginBottom="@dimen/activity_margin"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginBottom="@dimen/gap_outer"
         android:textAppearance="@style/AppTheme.Text.SectionHeading"
         android:text="@string/missing_data_placeholder"/>
 
@@ -120,7 +120,7 @@
         android:id="@+id/fragment_sensor_history_graph"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/activity_margin"
+        android:layout_marginBottom="@dimen/gap_outer"
         app:horizontalLines="7" />
 
 </LinearLayout>

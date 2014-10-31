@@ -10,9 +10,9 @@
         android:id="@+id/fragment_timeline_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/activity_margin"
-        android:paddingLeft="@dimen/activity_margin"
-        android:paddingRight="@dimen/activity_margin"
+        android:paddingTop="@dimen/gap_outer"
+        android:paddingLeft="@dimen/gap_outer"
+        android:paddingRight="@dimen/gap_outer"
         android:textAllCaps="true"
         android:textAppearance="@style/AppTheme.Text.SectionHeading"
         android:text="@string/title_before_you_slept"/>

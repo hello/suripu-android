@@ -4,8 +4,8 @@
     android:id="@+id/item_before_sleep_text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/activity_margin"
+    android:padding="@dimen/gap_outer"
     android:drawableStart="@drawable/sound_bad"
-    android:drawablePadding="@dimen/activity_margin"
+    android:drawablePadding="@dimen/gap_outer"
     android:textAppearance="@style/AppTheme.Text.Body.Timeline"
     android:text="@string/mock_event_message" />

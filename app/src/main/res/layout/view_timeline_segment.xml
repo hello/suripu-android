@@ -8,7 +8,7 @@
     android:minHeight="@dimen/event_view_min_height"
     android:orientation="horizontal"
     app:leftInset="38dp"
-    app:rightInset="@dimen/activity_margin"
+    app:rightInset="@dimen/gap_outer"
     app:value="50"
     app:maxValue="100"
     app:fillColor="@color/sleep_light">
@@ -17,8 +17,8 @@
         android:id="@+id/view_timeline_segment_event_stripe"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/activity_margin"
-        android:layout_marginRight="@dimen/activity_margin"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
         android:background="@color/sleep_awake">
 
         <ImageView
