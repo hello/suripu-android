@@ -179,6 +179,7 @@
     <string name="label_delete_alarm">Delete Alarm</string>
     <string name="action_done">Done</string>
     <string name="action_delete">Delete</string>
+    <string name="dialog_message_confirm_delete_alarm">Are you sure you want to delete this alarm?</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

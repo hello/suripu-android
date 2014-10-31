@@ -1,6 +1,9 @@
 package is.hello.sense.ui.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,8 +36,9 @@ import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class SmartAlarmListFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+public class SmartAlarmListFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private static final int EDIT_REQUEST_CODE = 0x31;
+    private static final int DELETE_REQUEST_CODE = 0x11;
 
     @Inject SmartAlarmPresenter smartAlarmPresenter;
     @Inject PreferencesPresenter preferences;
@@ -61,6 +65,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         this.adapter = new SmartAlarmAdapter(getActivity(), dateFormatter);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
+        listView.setOnItemLongClickListener(this);
 
         ImageButton addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
         addButton.setOnClickListener(this::newAlarm);
@@ -107,6 +112,14 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
             LoadingDialogFragment.show(getFragmentManager());
             smartAlarmPresenter.save(currentAlarms);
+        } else if (requestCode == DELETE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            int position = data.getIntExtra(DeleteAlarmDialogFragment.ARG_INDEX, 0);
+            currentAlarms.remove(position);
+
+            LoadingDialogFragment.show(getFragmentManager());
+            bindAndSubscribe(smartAlarmPresenter.save(currentAlarms),
+                             ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                             this::alarmsUnavailable);
         }
     }
 
@@ -137,7 +150,49 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         editAlarm(alarm, position);
     }
 
+    @Override
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+        DeleteAlarmDialogFragment deleteDialog = DeleteAlarmDialogFragment.newInstance(position);
+        deleteDialog.setTargetFragment(this, DELETE_REQUEST_CODE);
+        deleteDialog.show(getFragmentManager(), DeleteAlarmDialogFragment.TAG);
+        return true;
+    }
+
     public void newAlarm(@NonNull View sender) {
         editAlarm(new SmartAlarm(), SmartAlarmDetailFragment.INDEX_NEW);
+    }
+
+
+    public static class DeleteAlarmDialogFragment extends DialogFragment {
+        public static final String ARG_INDEX = DeleteAlarmDialogFragment.class.getName() + ".ARG_ALARM";
+        public static final String TAG = DeleteAlarmDialogFragment.class.getSimpleName();
+
+        public static DeleteAlarmDialogFragment newInstance(int index) {
+            DeleteAlarmDialogFragment fragment = new DeleteAlarmDialogFragment();
+
+            Bundle arguments = new Bundle();
+            arguments.putInt(ARG_INDEX, index);
+            fragment.setArguments(arguments);
+
+            return fragment;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setTitle(R.string.label_delete_alarm);
+            builder.setMessage(R.string.dialog_message_confirm_delete_alarm);
+            builder.setPositiveButton(R.string.action_delete, (dialog, which) -> {
+                if (getTargetFragment() != null) {
+                    Intent response = new Intent();
+                    response.putExtras(getArguments());
+                    getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, response);
+                }
+            });
+            builder.setNegativeButton(android.R.string.cancel, null);
+
+            return builder.create();
+        }
     }
 }

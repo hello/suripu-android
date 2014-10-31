@@ -119,8 +119,8 @@ public interface ApiService {
     @GET("/alarms")
     Observable<List<SmartAlarm>> smartAlarms();
 
-    @POST("/alarms")
-    Observable<ApiResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp,
+    @POST("/alarms/{client_time_utc}")
+    Observable<ApiResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
                                             @NonNull @Body List<SmartAlarm> alarms);
 
     //endregion

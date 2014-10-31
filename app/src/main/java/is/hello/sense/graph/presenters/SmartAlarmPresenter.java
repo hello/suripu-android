@@ -95,13 +95,15 @@ public class SmartAlarmPresenter extends Presenter {
         });
     }
 
-    public Observable<ApiResponse> save(@NonNull List<SmartAlarm> alarms) {
+    public Observable<ApiResponse> save(@NonNull List<SmartAlarm> updatedAlarms) {
         logEvent("save()");
 
-        return apiService.saveSmartAlarms(System.currentTimeMillis(), alarms)
-                         .doOnCompleted(() -> {
-                             saveCache(alarms);
-                             this.alarms.onNext(alarms);
+        return apiService.saveSmartAlarms(System.currentTimeMillis(), updatedAlarms)
+                         .doOnNext(ignored -> {
+                             logEvent("smart alarms saved");
+
+                             saveCache(updatedAlarms);
+                             this.alarms.onNext(updatedAlarms);
                          })
                          .doOnError(this.alarms::onError);
     }
