@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -25,10 +24,10 @@
             android:id="@+id/fragment_smart_alarm_detail_repeat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/activity_margin"
+            android:paddingStart="@dimen/gap_small"
+            android:paddingEnd="@dimen/gap_small"
             android:paddingBottom="@dimen/gap_large"
-            android:orientation="horizontal"
-            tools:ignore="RtlSymmetry">
+            android:orientation="horizontal">
 
             <ToggleButton
                 android:layout_width="0dp"

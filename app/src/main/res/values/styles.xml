@@ -156,7 +156,6 @@
     </style>
 
     <style name="AppTheme.Button.SmartAlarmDay">
-        <item name="android:layout_marginEnd">@dimen/activity_margin</item>
         <item name="android:background">@drawable/smart_alarm_day_toggle_selector</item>
         <item name="android:textColor">@drawable/smart_alarm_day_toggle_text</item>
         <item name="android:textAppearance">@style/AppTheme.Text</item>
