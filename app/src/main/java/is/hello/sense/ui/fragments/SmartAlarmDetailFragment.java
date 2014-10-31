@@ -29,20 +29,25 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public static final int RESULT_DELETE = 0xD3;
 
     private static final int TIME_REQUEST_CODE = 0x747;
-    private static final String ARG_ALARM = SmartAlarmDetailFragment.class.getName() + ".ARG_ALARM";
+    public static final String ARG_ALARM = SmartAlarmDetailFragment.class.getName() + ".ARG_ALARM";
+    public static final String ARG_INDEX = SmartAlarmDetailFragment.class.getName() + ".ARG_INDEX";
+
+    public static final int INDEX_NEW = -1;
 
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
     private SmartAlarm smartAlarm;
+    private int index = INDEX_NEW;
     private boolean use24Time = false;
 
     private TextView time;
 
-    public static @NonNull SmartAlarmDetailFragment newInstance(@NonNull SmartAlarm smartAlarm) {
+    public static @NonNull SmartAlarmDetailFragment newInstance(@NonNull SmartAlarm smartAlarm, int index) {
         SmartAlarmDetailFragment detailFragment = new SmartAlarmDetailFragment();
 
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_ALARM, smartAlarm);
+        arguments.putInt(ARG_INDEX, index);
         detailFragment.setArguments(arguments);
 
         return detailFragment;
@@ -54,6 +59,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         super.onCreate(savedInstanceState);
 
         this.smartAlarm = (SmartAlarm) getArguments().getSerializable(ARG_ALARM);
+        this.index = getArguments().getInt(ARG_INDEX);
 
         setRetainInstance(true);
     }
@@ -83,6 +89,12 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
         Button sound = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_sound);
         sound.setOnClickListener(this::selectSound);
+
+        Button delete = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_delete);
+        delete.setOnClickListener(this::deleteAlarm);
+
+        Button save = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_save);
+        save.setOnClickListener(this::saveAlarm);
 
         return view;
     }
@@ -134,5 +146,25 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         // TODO: Get those sounds in here.
         ChooseSoundDialogFragment dialogFragment = new ChooseSoundDialogFragment();
         dialogFragment.show(getFragmentManager(), ChooseSoundDialogFragment.TAG);
+    }
+
+
+    public void deleteAlarm(@NonNull View sender) {
+        if (getTargetFragment() != null) {
+            Intent response = new Intent();
+            response.putExtra(ARG_INDEX, index);
+            getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_DELETE, response);
+        }
+        getFragmentManager().popBackStackImmediate();
+    }
+
+    public void saveAlarm(@NonNull View sender) {
+        if (getTargetFragment() != null) {
+            Intent response = new Intent();
+            response.putExtra(ARG_INDEX, index);
+            response.putExtra(ARG_ALARM, smartAlarm);
+            getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, response);
+        }
+        getFragmentManager().popBackStackImmediate();
     }
 }

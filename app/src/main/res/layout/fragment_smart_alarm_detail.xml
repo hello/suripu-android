@@ -144,6 +144,40 @@
 
         <View style="@style/Divider.Horizontal" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_margin"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/gap_small"
+                android:text="@string/action_delete_alarm"
+                android:textAppearance="@style/AppTheme.Text.Body"/>
+
+            <Button
+                android:id="@+id/fragment_smart_alarm_detail_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AppTheme.Button.Raised"
+                android:text="@string/timer_delete"/>
+
+        </LinearLayout>
+
+        <View style="@style/Divider.Horizontal" />
+
+        <Button
+            android:id="@+id/fragment_smart_alarm_detail_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_margin"
+            android:text="@string/save_label"
+            style="@style/AppTheme.Button.Borderless.Onboarding"/>
+
     </LinearLayout>
 
 </ScrollView>

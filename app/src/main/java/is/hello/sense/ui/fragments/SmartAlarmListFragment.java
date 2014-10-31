@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -39,6 +40,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     @Inject PreferencesPresenter preferences;
     @Inject DateFormatter dateFormatter;
 
+    private List<SmartAlarm> currentAlarms = new ArrayList<>();
     private SmartAlarmAdapter adapter;
 
     @Override
@@ -89,15 +91,28 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == EDIT_REQUEST_CODE) {
+            int index = data.getIntExtra(SmartAlarmDetailFragment.ARG_INDEX, 0);
             if (resultCode == Activity.RESULT_OK) {
-
+                SmartAlarm alarm = (SmartAlarm) data.getSerializableExtra(SmartAlarmDetailFragment.ARG_ALARM);
+                if (index == SmartAlarmDetailFragment.INDEX_NEW) {
+                    currentAlarms.add(alarm);
+                } else {
+                    currentAlarms.set(index, alarm);
+                }
             } else if (resultCode == SmartAlarmDetailFragment.RESULT_DELETE) {
-
+                if (index != SmartAlarmDetailFragment.INDEX_NEW) {
+                    currentAlarms.remove(index);
+                }
             }
+
+            LoadingDialogFragment.show(getFragmentManager());
+            smartAlarmPresenter.save(currentAlarms);
         }
     }
 
     public void bindAlarms(@NonNull List<SmartAlarm> alarms) {
+        this.currentAlarms = alarms;
+
         adapter.clear();
         adapter.addAll(alarms);
 
@@ -110,8 +125,8 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     }
 
 
-    private void editAlarm(@NonNull SmartAlarm alarm) {
-        SmartAlarmDetailFragment fragment = SmartAlarmDetailFragment.newInstance(alarm);
+    private void editAlarm(@NonNull SmartAlarm alarm, int index) {
+        SmartAlarmDetailFragment fragment = SmartAlarmDetailFragment.newInstance(alarm, index);
         fragment.setTargetFragment(this, EDIT_REQUEST_CODE);
         ((FragmentNavigation) getActivity()).showFragment(fragment, getString(R.string.action_new_alarm), true);
     }
@@ -119,10 +134,10 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         SmartAlarm alarm = (SmartAlarm) adapterView.getItemAtPosition(position);
-        editAlarm(alarm);
+        editAlarm(alarm, position);
     }
 
     public void newAlarm(@NonNull View sender) {
-        editAlarm(new SmartAlarm());
+        editAlarm(new SmartAlarm(), SmartAlarmDetailFragment.INDEX_NEW);
     }
 }

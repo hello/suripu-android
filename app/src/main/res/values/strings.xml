@@ -176,6 +176,7 @@
     <string name="label_time_zone">Time Zone</string>
     <string name="title_sound">Sound</string>
     <string name="no_sound_placeholder">None</string>
+    <string name="action_delete_alarm">Delete Alarm</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

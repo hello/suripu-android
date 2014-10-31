@@ -99,6 +99,10 @@ public class SmartAlarmPresenter extends Presenter {
         logEvent("save()");
 
         return apiService.saveSmartAlarms(System.currentTimeMillis(), alarms)
-                         .doOnCompleted(() -> saveCache(alarms));
+                         .doOnCompleted(() -> {
+                             saveCache(alarms);
+                             this.alarms.onNext(alarms);
+                         })
+                         .doOnError(this.alarms::onError);
     }
 }
