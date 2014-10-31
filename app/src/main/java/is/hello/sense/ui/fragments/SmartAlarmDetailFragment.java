@@ -17,6 +17,7 @@ import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.ChooseSoundDialogFragment;
 import is.hello.sense.util.DateFormatter;
 
 public class SmartAlarmDetailFragment extends InjectionFragment {
@@ -75,6 +76,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         enabled.setOnCheckedChangeListener((button, isEnabled) -> smartAlarm.setEnabled(isEnabled));
 
         Button sound = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_sound);
+        sound.setOnClickListener(this::selectSound);
 
         return view;
     }
@@ -106,5 +108,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             smartAlarm.getDaysOfWeek().add(day);
         else
             smartAlarm.getDaysOfWeek().remove(day);
+    }
+
+    public void selectSound(@NonNull View sender) {
+        // TODO: Get those sounds in here.
+        ChooseSoundDialogFragment dialogFragment = new ChooseSoundDialogFragment();
+        dialogFragment.show(getFragmentManager(), ChooseSoundDialogFragment.TAG);
     }
 }
