@@ -7,19 +7,26 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.SenseApplication;
 import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
+import is.hello.sense.util.ResumeScheduler;
 import rx.Observable;
 import rx.Subscription;
-import rx.android.observables.AndroidObservable;
 import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.operators.OperatorConditionalBinding;
 
-public class InjectionFragment extends Fragment implements ObservableContainer, PresenterContainer {
+public class InjectionFragment extends Fragment implements ObservableContainer, PresenterContainer, ResumeScheduler.Resumable {
     protected ArrayList<Subscription> subscriptions = new ArrayList<>();
     protected ArrayList<Presenter> presenters;
+
+    protected final List<Runnable> onResumeRunnables = new ArrayList<>(); //Synchronize all access to this!
+    protected final ResumeScheduler observeScheduler = new ResumeScheduler(this);
+    protected static final Func1<Fragment, Boolean> FRAGMENT_VALIDATOR = (fragment) -> fragment.isAdded() && !fragment.getActivity().isFinishing();
 
     public InjectionFragment() {
         SenseApplication.getInstance().inject(this);
@@ -55,6 +62,13 @@ public class InjectionFragment extends Fragment implements ObservableContainer, 
     @Override
     public void onResume() {
         super.onResume();
+
+        synchronized(onResumeRunnables) {
+            for (Runnable runnable : onResumeRunnables) {
+                runnable.run();
+            }
+            onResumeRunnables.clear();
+        }
 
         if (presenters != null) {
             for (Presenter presenter : presenters) {
@@ -98,6 +112,24 @@ public class InjectionFragment extends Fragment implements ObservableContainer, 
     }
 
     @Override
+    public void postOnResume(@NonNull Runnable runnable) {
+        if (isResumed()) {
+            runnable.run();
+        } else {
+            synchronized(onResumeRunnables) {
+                onResumeRunnables.add(runnable);
+            }
+        }
+    }
+
+    @Override
+    public void cancelPostOnResume(@NonNull Runnable runnable) {
+        synchronized(onResumeRunnables) {
+            onResumeRunnables.remove(runnable);
+        }
+    }
+
+    @Override
     public boolean hasSubscriptions() {
         return !subscriptions.isEmpty();
     }
@@ -110,7 +142,8 @@ public class InjectionFragment extends Fragment implements ObservableContainer, 
 
     @Override
     public @NonNull <T> Observable<T> bind(@NonNull Observable<T> toBind) {
-        return AndroidObservable.bindFragment(this, toBind);
+        return toBind.observeOn(observeScheduler)
+                     .lift(new OperatorConditionalBinding<>(this, FRAGMENT_VALIDATOR));
     }
 
     @Override
@@ -142,4 +175,6 @@ public class InjectionFragment extends Fragment implements ObservableContainer, 
 
         return presenters;
     }
+
+
 }

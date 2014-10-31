@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments;
 
 import android.animation.ValueAnimator;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -32,7 +33,9 @@ import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 public class TimelineFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";

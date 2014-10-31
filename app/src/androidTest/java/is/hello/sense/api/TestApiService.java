@@ -18,6 +18,7 @@ import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
+import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
@@ -82,6 +83,11 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<Account> updateAccount(@Body Account account) {
         return Observable.just(account);
+    }
+
+    @Override
+    public Observable<ApiResponse> updateTimeZone(@NonNull @Body SenseTimeZone senseTimeZone) {
+        return unimplemented();
     }
 
     @Override
