@@ -107,6 +107,7 @@ dependencies {
 
     compile 'net.danlew:android.joda:2.4.1'
     compile 'uk.co.chrisjenx:calligraphy:1.1.0'
+    compile 'com.doomonafireball.betterpickers:library:1.5.2'
     compile 'com.amplitude:android-sdk:1.4.1'
 
     compile 'com.android.support:support-v13:20.0.0'

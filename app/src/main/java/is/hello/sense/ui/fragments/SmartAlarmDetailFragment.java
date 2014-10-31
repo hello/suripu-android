@@ -1,5 +1,7 @@
 package is.hello.sense.ui.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +12,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import org.joda.time.LocalTime;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -18,11 +22,13 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ChooseSoundDialogFragment;
+import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.util.DateFormatter;
 
 public class SmartAlarmDetailFragment extends InjectionFragment {
     public static final int RESULT_DELETE = 0xD3;
 
+    private static final int TIME_REQUEST_CODE = 0x747;
     private static final String ARG_ALARM = SmartAlarmDetailFragment.class.getName() + ".ARG_ALARM";
 
     @Inject DateFormatter dateFormatter;
@@ -91,13 +97,27 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         }, Functions.LOG_ERROR);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == TIME_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 7);
+            int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 30);
+            smartAlarm.setTime(new LocalTime(hour, minute));
+            updateTime();
+        }
+    }
+
     public void updateTime() {
         String formattedTime = dateFormatter.formatAsTime(smartAlarm.getTime(), use24Time);
         time.setText(formattedTime);
     }
 
     public void selectNewTime(@NonNull View sender) {
-
+        TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(smartAlarm.getTime());
+        dialogFragment.setTargetFragment(this, TIME_REQUEST_CODE);
+        dialogFragment.show(getFragmentManager(), TimePickerDialogFragment.TAG);
     }
 
     public void dayButtonClicked(@NonNull View sender) {

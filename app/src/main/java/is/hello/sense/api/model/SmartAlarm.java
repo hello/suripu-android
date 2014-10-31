@@ -159,7 +159,7 @@ public class SmartAlarm extends ApiResponse {
                 '}';
     }
 
-    public static class Sound {
+    public static class Sound extends ApiResponse {
         @JsonProperty("id")
         public final long id;
 
