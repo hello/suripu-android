@@ -150,6 +150,9 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     public void factoryReset() {
         Analytics.event(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_FACTORY_RESTORE));
 
+        if (hardwarePresenter.getDevice() == null)
+            return;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.dialog_title_factory_reset);
         builder.setMessage(R.string.dialog_messsage_factory_reset);
