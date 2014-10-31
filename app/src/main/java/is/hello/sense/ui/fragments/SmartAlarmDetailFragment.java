@@ -93,6 +93,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         Button delete = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_delete);
         delete.setOnClickListener(this::deleteAlarm);
 
+        if (this.index == INDEX_NEW) {
+            view.findViewById(R.id.fragment_smart_alarm_detail_delete_container).setVisibility(View.GONE);
+        }
+
         Button save = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_save);
         save.setOnClickListener(this::saveAlarm);
 
