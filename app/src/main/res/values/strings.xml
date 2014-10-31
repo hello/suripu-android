@@ -81,7 +81,7 @@
     <string name="label_account">Account</string>
     <string name="label_units_and_time">Units and Time</string>
     <string name="label_devices">Devices</string>
-    <string name="title_before_you_slept">Before You Slept</string>
+    <string name="title_before_you_slept">Before Sleep</string>
     <string name="title_time_frame_24_hrs">Last 24 Hours</string>
     <string name="title_time_frame_week">Last Week</string>
 
@@ -181,6 +181,8 @@
     <string name="action_delete">Delete</string>
     <string name="dialog_message_confirm_delete_alarm">Are you sure you want to delete this alarm?</string>
     <string name="action_rescan">Rescan</string>
+    <string name="title_breakdown">Breakdown</string>
+    <string name="title_events_timeline">Events Timeline</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

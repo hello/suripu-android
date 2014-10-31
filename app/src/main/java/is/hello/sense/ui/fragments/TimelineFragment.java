@@ -50,6 +50,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
 
     private TimelineSegmentAdapter segmentAdapter;
     private ListView listView;
+    private TextView timelineHeader;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -77,8 +78,8 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
-        listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setAdapter(segmentAdapter);
+        this.listView = (ListView) view.findViewById(android.R.id.list);
+
         listView.setOnItemClickListener(this);
         listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
 
@@ -93,6 +94,19 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
 
         listView.addHeaderView(headerView, null, false);
+
+
+        this.timelineHeader = (TextView) inflater.inflate(R.layout.item_section_header, listView, false);
+        timelineHeader.setText(R.string.title_events_timeline);
+        timelineHeader.setVisibility(View.INVISIBLE);
+        listView.addHeaderView(timelineHeader, null, false);
+
+        View listFooter = new View(getActivity());
+        listFooter.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.activity_margin));
+        listView.addFooterView(listFooter, null, false);
+
+
+        listView.setAdapter(segmentAdapter);
 
         return view;
     }
@@ -162,8 +176,11 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
             if (timeline.getPreSleepInsights() != null && !timeline.getPreSleepInsights().isEmpty()) {
                 showInsights(timeline.getPreSleepInsights());
             }
+
+            timelineHeader.setVisibility(View.VISIBLE);
         } else {
             showInsights(Collections.emptyList());
+            timelineHeader.setVisibility(View.INVISIBLE);
         }
     }
 

@@ -23,7 +23,7 @@
         android:layout_marginLeft="@dimen/activity_margin"
         android:layout_marginRight="@dimen/activity_margin"
         android:layout_marginBottom="@dimen/activity_margin"
-        android:textAppearance="@style/AppTheme.Text.BigScore.Details"
+        android:textAppearance="@style/AppTheme.Text.SectionHeading"
         android:text="@string/missing_data_placeholder"/>
 
     <is.hello.sense.ui.widget.SelectorLinearLayout

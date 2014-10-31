@@ -7,4 +7,5 @@
     android:padding="@dimen/activity_margin"
     android:drawableStart="@drawable/sound_bad"
     android:drawablePadding="@dimen/activity_margin"
+    android:textAppearance="@style/AppTheme.Text.Body.Timeline"
     android:text="@string/mock_event_message" />

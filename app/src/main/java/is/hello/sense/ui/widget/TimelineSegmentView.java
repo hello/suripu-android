@@ -28,7 +28,6 @@ public final class TimelineSegmentView extends FrameLayout {
     private View stripe;
     private ImageView eventTypeImage;
     private TextView eventType;
-    private TimestampTextView time;
 
     public TimelineSegmentView(Context context) {
         super(context);
@@ -76,27 +75,15 @@ public final class TimelineSegmentView extends FrameLayout {
         } else {
             stripe.setBackgroundResource(colorRes);
         }
-        time.setDateTime(segment.getTimestamp());
 
         if (segment.getEventType() != null) {
             eventTypeImage.setImageResource(segment.getEventType().iconRes);
             eventType.setText(segment.getEventType().nameString);
-            time.setBackgroundResource(R.drawable.timestamp_background);
-            int horizontalPadding = (int) (10f * displayMetrics.density);
-            int verticalPadding = (int) (6f * displayMetrics.density);
-            time.setPaddingRelative(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);
-            time.setTextAppearance(getContext(), R.style.AppTheme_Text_Body);
-            time.setVisibility(VISIBLE);
 
             eventTypeImage.setVisibility(VISIBLE);
             eventType.setVisibility(VISIBLE);
         } else {
             eventTypeImage.setImageDrawable(null);
-
-            time.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Dimmed);
-            time.setBackground(null);
-            time.setPaddingRelative(0, 0, 0, 0);
-            time.setVisibility(segment.getTimestamp().getMinuteOfHour() == 0 ? VISIBLE : GONE);
 
             eventTypeImage.setVisibility(INVISIBLE);
             eventType.setVisibility(INVISIBLE);
@@ -118,7 +105,6 @@ public final class TimelineSegmentView extends FrameLayout {
         this.stripe = findViewById(R.id.view_timeline_segment_event_stripe);
         this.eventTypeImage = (ImageView) findViewById(R.id.view_timeline_segment_image_event_type);
         this.eventType = (TextView) findViewById(R.id.view_timeline_segment_event_type);
-        this.time = (TimestampTextView) findViewById(R.id.view_timeline_segment_time);
     }
 
 

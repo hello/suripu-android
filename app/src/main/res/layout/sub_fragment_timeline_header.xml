@@ -5,14 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/background">
+    android:background="@drawable/background_timeline_header">
 
     <TextView
         android:id="@+id/fragment_timeline_date"
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_height"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:padding="@dimen/activity_margin"
         android:gravity="center"
         android:textAllCaps="true"
         android:textAppearance="@style/AppTheme.Text.ScreenTitle"
@@ -22,7 +20,6 @@
         android:id="@+id/fragment_timeline_sleep_score_chart"
         android:layout_width="@dimen/grand_sleep_summary_height"
         android:layout_height="@dimen/grand_sleep_summary_width"
-        android:layout_marginBottom="@dimen/gap_small"
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
@@ -31,32 +28,40 @@
         app:fillColor="@color/sleep_light">
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/AppTheme.Text.SectionHeading"
+            android:text="@string/sleep_score"/>
+
+        <TextView
             android:id="@+id/fragment_timeline_sleep_score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/AppTheme.Text.BigScore"
             android:text="@string/missing_data_placeholder"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/AppTheme.Text.BigScore.Details"
-            android:text="@string/sleep_score"/>
-
     </is.hello.sense.ui.widget.PieGraphView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_margin"
+        android:layout_marginLeft="@dimen/activity_margin"
+        android:layout_marginRight="@dimen/activity_margin"
+        android:layout_marginBottom="@dimen/gap_small"
+        android:textAppearance="@style/AppTheme.Text.SectionHeading"
+        android:text="@string/title_breakdown"/>
 
     <TextView
         android:id="@+id/fragment_timeline_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:padding="@dimen/activity_margin"
+        android:layout_marginLeft="@dimen/activity_margin"
+        android:layout_marginRight="@dimen/activity_margin"
+        android:layout_marginBottom="@dimen/activity_margin"
         android:textAppearance="@style/AppTheme.Text.Body"
+        android:lineSpacingMultiplier="1.3"
         android:text="@string/missing_data_placeholder"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/shadow_height"
-        android:background="@drawable/gradient_timeline_shadow_top" />
-    
 </LinearLayout>

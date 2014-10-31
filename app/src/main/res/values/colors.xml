@@ -8,15 +8,16 @@
 
     <color name="background">#f8f8f8</color>
     <color name="background_dim">#66ffffff</color>
-    <color name="background_timeline">#eaf0f1</color>
-    <color name="background_questions">#476fd6</color>
+    <color name="background_timeline">@color/white</color>
+    <color name="background_questions">#009CFF</color>
     <color name="background_underside">#F5F5F5</color>
     <color name="background_onboarding">@color/white</color>
     <color name="background_insight">@color/white</color>
 
     <color name="border">#dcdcdc</color>
 
-    <color name="text_dark">#7a7a7a</color>
+    <color name="text_dark">#666666</color>
+    <color name="text_section_header">#949495</color>
 
     <color name="edit_text_bottom_line_normal">#919191</color>
     <color name="edit_text_bottom_line_disabled">#cacaca</color>
@@ -39,13 +40,13 @@
     <color name="sensor_ideal">#44d774</color>
     <color name="sensor_unknown">#565961</color>
 
-    <color name="sleep_light">#6aacfb</color>
-    <color name="sleep_intermediate">#4d95ef</color>
-    <color name="sleep_deep">#276ed9</color>
-    <color name="sleep_awake">#515acc</color>
+    <color name="sleep_light">#009CFF</color>
+    <color name="sleep_intermediate">#487ef7</color>
+    <color name="sleep_deep">#1736E4</color>
+    <color name="sleep_awake">#0025BD</color>
 
-    <color name="sleep_light_dimmed">#886aacfb</color>
-    <color name="sleep_intermediate_dimmed">#884d95ef</color>
-    <color name="sleep_deep_dimmed">#88276ed9</color>
-    <color name="sleep_awake_dimmed">#88515acc</color>
+    <color name="sleep_light_dimmed">#9BD4FF</color>
+    <color name="sleep_intermediate_dimmed">#9BD4FF</color>
+    <color name="sleep_deep_dimmed">#d7eefe</color>
+    <color name="sleep_awake_dimmed">#9BD4FF</color>
 </resources>

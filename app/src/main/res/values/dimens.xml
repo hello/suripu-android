@@ -1,7 +1,7 @@
 <resources>
     <!-- Standard Sizing -->
 
-    <dimen name="activity_margin">16dp</dimen>
+    <dimen name="activity_margin">24dp</dimen>
 
     <dimen name="gap_tiny">3dp</dimen>
     <dimen name="gap_xsmall">6dp</dimen>
