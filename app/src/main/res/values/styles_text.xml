@@ -20,7 +20,7 @@
     <style name="AppTheme.Text.Subheading">
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
         <item name="android:textSize">@dimen/text_size_large</item>
-        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:lineSpacingMultiplier">1.7</item>
         <item name="android:textColor">@color/text_dark</item>
     </style>
 
