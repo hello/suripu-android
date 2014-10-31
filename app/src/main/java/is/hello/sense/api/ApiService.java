@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PushRegistration;
@@ -15,6 +14,7 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
@@ -49,10 +49,10 @@ public interface ApiService {
     Observable<Account> updateAccount(@Body Account account);
 
     @POST("/notifications/registration")
-    Observable<ApiResponse> registerForNotifications(@Body PushRegistration registration);
+    Observable<VoidResponse> registerForNotifications(@Body PushRegistration registration);
 
     @POST("/timezone")
-    Observable<ApiResponse> updateTimeZone(@NonNull @Body SenseTimeZone senseTimeZone);
+    Observable<SenseTimeZone> updateTimeZone(@NonNull @Body SenseTimeZone senseTimeZone);
 
     //endregion
 
@@ -92,10 +92,10 @@ public interface ApiService {
     Observable<List<Question>> questions(@NonNull @Query("date") String timestamp);
 
     @POST("/questions")
-    Observable<ApiResponse> answerQuestion(@NonNull @Body Question.Choice answer);
+    Observable<VoidResponse> answerQuestion(@NonNull @Body Question.Choice answer);
 
     @PUT("/questions/:id/skip")
-    Observable<ApiResponse> skipQuestion(@Path("id") long questionId);
+    Observable<VoidResponse> skipQuestion(@Path("id") long questionId);
 
     //endregion
 
@@ -106,10 +106,10 @@ public interface ApiService {
     Observable<List<Device>> registeredDevices();
 
     @DELETE("/devices/pill/{id}")
-    Observable<ApiResponse> unregisterPill(@Path("id") @NonNull String pillId);
+    Observable<VoidResponse> unregisterPill(@Path("id") @NonNull String pillId);
 
     @DELETE("/devices/sense/{id}")
-    Observable<ApiResponse> unregisterSense(@Path("id") @NonNull String senseId);
+    Observable<VoidResponse> unregisterSense(@Path("id") @NonNull String senseId);
 
     //endregion
 
@@ -120,8 +120,8 @@ public interface ApiService {
     Observable<List<SmartAlarm>> smartAlarms();
 
     @POST("/alarms/{client_time_utc}")
-    Observable<ApiResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
-                                            @NonNull @Body List<SmartAlarm> alarms);
+    Observable<VoidResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
+                                             @NonNull @Body List<SmartAlarm> alarms);
 
     //endregion
 }

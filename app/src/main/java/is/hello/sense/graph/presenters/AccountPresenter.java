@@ -9,7 +9,6 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Logger;
@@ -55,7 +54,7 @@ public class AccountPresenter extends Presenter {
         apiService.updateAccount(updatedAccount).subscribe(account);
     }
 
-    public Observable<ApiResponse> updateTimeZone(@NonNull SenseTimeZone senseTimeZone) {
+    public Observable<SenseTimeZone> updateTimeZone(@NonNull SenseTimeZone senseTimeZone) {
         return apiService.updateTimeZone(senseTimeZone);
     }
 }

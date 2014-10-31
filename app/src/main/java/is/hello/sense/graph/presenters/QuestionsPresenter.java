@@ -19,8 +19,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Question;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
@@ -187,7 +187,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     //region Answering Questions
 
-    public Observable<ApiResponse> answerQuestion(@NonNull Question.Choice answer) {
+    public Observable<VoidResponse> answerQuestion(@NonNull Question.Choice answer) {
         return apiService.answerQuestion(answer);
     }
 

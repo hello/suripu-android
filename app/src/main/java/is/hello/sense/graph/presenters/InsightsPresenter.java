@@ -1,7 +1,5 @@
 package is.hello.sense.graph.presenters;
 
-import android.content.ComponentCallbacks2;
-
 import java.util.List;
 
 import javax.inject.Inject;

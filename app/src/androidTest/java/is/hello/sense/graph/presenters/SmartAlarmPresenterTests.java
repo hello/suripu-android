@@ -12,9 +12,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.graph.annotations.CacheDirectoryFile;
 import is.hello.sense.util.SyncObserver;
@@ -39,7 +38,7 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
 
     public void testSave() throws Exception {
         List<SmartAlarm> alarms = Collections.emptyList();
-        SyncObserver<ApiResponse> saveAlarms = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, smartAlarmPresenter.save(alarms));
+        SyncObserver<VoidResponse> saveAlarms = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, smartAlarmPresenter.save(alarms));
         saveAlarms.await();
 
         assertNull(saveAlarms.getError());

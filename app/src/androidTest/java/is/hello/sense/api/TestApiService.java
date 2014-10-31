@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PushRegistration;
@@ -22,6 +21,7 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.util.Logger;
@@ -86,12 +86,12 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ApiResponse> updateTimeZone(@NonNull @Body SenseTimeZone senseTimeZone) {
+    public Observable<SenseTimeZone> updateTimeZone(@NonNull @Body SenseTimeZone senseTimeZone) {
         return unimplemented();
     }
 
     @Override
-    public Observable<ApiResponse> registerForNotifications(@Body PushRegistration registration) {
+    public Observable<VoidResponse> registerForNotifications(@Body PushRegistration registration) {
         return unimplemented();
     }
 
@@ -130,12 +130,12 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ApiResponse> answerQuestion(@NonNull @Body Question.Choice answer) {
+    public Observable<VoidResponse> answerQuestion(@NonNull @Body Question.Choice answer) {
         return unimplemented();
     }
 
     @Override
-    public Observable<ApiResponse> skipQuestion(@Path("id") long questionId) {
+    public Observable<VoidResponse> skipQuestion(@Path("id") long questionId) {
         return unimplemented();
     }
 
@@ -145,12 +145,12 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ApiResponse> unregisterPill(@Path("id") @NonNull String pillId) {
+    public Observable<VoidResponse> unregisterPill(@Path("id") @NonNull String pillId) {
         return unimplemented();
     }
 
     @Override
-    public Observable<ApiResponse> unregisterSense(@Path("id") @NonNull String senseId) {
+    public Observable<VoidResponse> unregisterSense(@Path("id") @NonNull String senseId) {
         return unimplemented();
     }
 
@@ -160,8 +160,8 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ApiResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp,
+    public Observable<VoidResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp,
                                                    @NonNull @Body List<SmartAlarm> alarms) {
-        return Observable.just(new ApiResponse());
+        return Observable.just(new VoidResponse());
     }
 }

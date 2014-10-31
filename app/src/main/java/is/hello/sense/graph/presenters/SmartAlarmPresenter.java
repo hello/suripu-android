@@ -7,14 +7,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.graph.annotations.CacheDirectoryFile;
@@ -95,7 +94,7 @@ public class SmartAlarmPresenter extends Presenter {
         });
     }
 
-    public Observable<ApiResponse> save(@NonNull List<SmartAlarm> updatedAlarms) {
+    public Observable<VoidResponse> save(@NonNull List<SmartAlarm> updatedAlarms) {
         logEvent("save()");
 
         return apiService.saveSmartAlarms(System.currentTimeMillis(), updatedAlarms)
