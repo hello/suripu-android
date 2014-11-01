@@ -234,14 +234,14 @@ import rx.schedulers.Schedulers;
         });
     }
 
-    public Observable<Void> sendWifiCredentials(String bssid, String ssid, String password) {
+    public Observable<Void> sendWifiCredentials(String bssid, String ssid, MorpheusBle.wifi_endpoint.sec_type securityType, String password) {
         logEvent("sendWifiCredentials()");
 
         if (device == null) {
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.setWIFIConnection(bssid, ssid, password, new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_SET_WIFI_TIMEOUT_MS)))
+        return Observable.create((Observable.OnSubscribe<Void>) s -> device.setWIFIConnection(bssid, ssid, securityType, password, new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_SET_WIFI_TIMEOUT_MS)))
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 

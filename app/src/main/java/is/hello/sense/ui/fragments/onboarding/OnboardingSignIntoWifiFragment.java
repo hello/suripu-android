@@ -28,6 +28,7 @@ import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 
 import static com.hello.ble.BleOperationCallback.OperationFailReason;
+import static com.hello.ble.protobuf.MorpheusBle.wifi_endpoint.sec_type;
 import static is.hello.sense.util.BleObserverCallback.BluetoothError;
 
 public class OnboardingSignIntoWifiFragment extends InjectionFragment {
@@ -41,7 +42,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private EditText networkName;
     private EditText networkPassword;
 
-    private MorpheusBle.wifi_endpoint network;
+    private @Nullable MorpheusBle.wifi_endpoint network;
 
     private boolean hasConnectedToNetwork = false;
     private boolean hasTriedReconnect = false;
@@ -120,7 +121,9 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         String networkName = this.networkName.getText().toString();
         String password = this.networkPassword.getText().toString();
 
-        if (TextUtils.isEmpty(networkName) || TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(networkName) ||
+            (TextUtils.isEmpty(password) && network != null &&
+             network.getSecurityType() != sec_type.SL_SCAN_SEC_TYPE_OPEN)) {
             return;
         }
 
@@ -139,7 +142,13 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
             return;
         }
 
-        bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, password), ignored -> {
+        sec_type securityType = sec_type.SL_SCAN_SEC_TYPE_OPEN;
+        if (network != null)
+            securityType = network.getSecurityType();
+        else if (!TextUtils.isEmpty(password))
+            securityType = sec_type.SL_SCAN_SEC_TYPE_WPA2; // Do we ask for this info?
+
+        bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, securityType, password), ignored -> {
             this.hasConnectedToNetwork = true;
             sendAccessToken();
         }, this::presentError);
