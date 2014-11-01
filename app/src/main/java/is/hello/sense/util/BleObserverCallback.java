@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.hello.ble.BleOperationCallback;
 import com.hello.ble.devices.HelloBleDevice;
+import com.hello.ble.protobuf.MorpheusBle;
 
 import rx.Observer;
 
@@ -13,15 +14,18 @@ public class BleObserverCallback<T> implements BleOperationCallback<T> {
     public static final long NO_TIMEOUT = -1;
 
     public final Observer<? super T> observer;
-    public final Handler timeoutHandler;
-    public final Runnable onTimeout;
+    public final @Nullable HelloBleDevice device;
+    public final @Nullable Handler timeoutHandler;
+    public final @Nullable Runnable onTimeout;
 
     public boolean timedOut = false;
 
     public BleObserverCallback(@NonNull Observer<? super T> observer,
+                               @Nullable HelloBleDevice device,
                                @NonNull Handler timeoutHandler,
                                long timeoutMs) {
         this.observer = observer;
+        this.device = device;
         if (timeoutMs == NO_TIMEOUT) {
             this.timeoutHandler = null;
             this.onTimeout = null;
@@ -29,6 +33,10 @@ public class BleObserverCallback<T> implements BleOperationCallback<T> {
             this.timeoutHandler = timeoutHandler;
             this.onTimeout = () -> {
                 Logger.info(BleObserverCallback.class.getSimpleName(), "onTimeout");
+
+                if (device != null) {
+                    this.device.disconnect();
+                }
 
                 this.timedOut = true;
                 observer.onError(new BluetoothError(OperationFailReason.TIME_OUT, 2));
@@ -72,6 +80,14 @@ public class BleObserverCallback<T> implements BleOperationCallback<T> {
             return ((e != null) &&
                     (e instanceof BluetoothError) &&
                     ((BluetoothError) e).failureReason == OperationFailReason.TIME_OUT);
+        }
+
+        public static @Nullable MorpheusBle.ErrorType getErrorType(@Nullable Throwable e) {
+            if (e != null && e instanceof BluetoothError) {
+                return MorpheusBle.ErrorType.valueOf(((BluetoothError) e).errorCode);
+            } else {
+                return null;
+            }
         }
 
         public BluetoothError(@NonNull BleOperationCallback.OperationFailReason failureReason, int errorCode) {

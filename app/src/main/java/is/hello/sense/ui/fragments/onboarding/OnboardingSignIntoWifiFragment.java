@@ -187,6 +187,10 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
                     case FAIL_TO_OBTAIN_IP:
                         message = getString(R.string.error_wifi_ip_failure);
                         break;
+
+                    case DEVICE_ALREADY_PAIRED:
+                        message = getString(R.string.error_sense_already_paired);
+                        break;
                 }
 
                 dialogFragment = ErrorDialogFragment.newInstance(message);
