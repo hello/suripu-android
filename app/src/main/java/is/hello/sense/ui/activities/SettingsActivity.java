@@ -2,9 +2,12 @@ package is.hello.sense.ui.activities;
 
 import android.app.AlertDialog;
 import android.app.ListFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.annotation.XmlRes;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
@@ -19,6 +22,7 @@ import is.hello.sense.ui.fragments.settings.DevicesFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.fragments.settings.SettingsFragment;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 
 public class SettingsActivity extends FragmentNavigationActivity {
     @Override
@@ -26,6 +30,35 @@ public class SettingsActivity extends FragmentNavigationActivity {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
             showFragment(new RootSettingsFragment(), getString(R.string.action_settings), false);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.settings, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.pair_new_sense: {
+                Intent onboarding = new Intent(this, OnboardingActivity.class);
+                onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
+                startActivity(onboarding);
+                return true;
+            }
+
+            case R.id.pair_new_pill: {
+                Intent onboarding = new Intent(this, OnboardingActivity.class);
+                onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
+                startActivity(onboarding);
+                return true;
+            }
+
+            default: {
+                return super.onOptionsItemSelected(item);
+            }
         }
     }
 

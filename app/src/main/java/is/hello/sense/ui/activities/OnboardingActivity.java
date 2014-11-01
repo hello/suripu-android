@@ -47,6 +47,8 @@ import is.hello.sense.util.Constants;
 public class OnboardingActivity extends InjectionActivity implements FragmentNavigation, AccountEditingFragment.Container {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
 
+    public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
+
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferences;
 
@@ -62,7 +64,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         getActionBar().setDisplayShowHomeEnabled(false);
 
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
-            int lastCheckpoint = preferences.getInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
+            int lastCheckpoint = getLastCheckPoint();
             switch (lastCheckpoint) {
                 case Constants.ONBOARDING_CHECKPOINT_NONE:
                     showIntroductionFragment();
@@ -158,6 +160,14 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     //region Steps
+
+    public int getLastCheckPoint() {
+        if (getIntent().hasExtra(EXTRA_START_CHECKPOINT)) {
+            return getIntent().getIntExtra(EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_NONE);
+        } else {
+            return preferences.getInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
+        }
+    }
 
     public void passedCheckPoint(int checkPoint) {
         preferences

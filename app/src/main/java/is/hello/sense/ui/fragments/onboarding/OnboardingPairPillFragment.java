@@ -72,12 +72,24 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     public void next(@NonNull View sender) {
         beginPairing();
 
-        bindAndSubscribe(hardwarePresenter.linkPill(), ignored -> finishedPairing(), e -> {
-            OnboardingActivity onboardingActivity = (OnboardingActivity) getActivity();
-            if (onboardingActivity != null) {
-                onboardingActivity.finishBlockingWork();
-                ErrorDialogFragment.presentError(getFragmentManager(), e);
-            }
-        });
+        if (hardwarePresenter.getDevice() == null) {
+            bindAndSubscribe(hardwarePresenter.rediscoverDevice(), device -> next(sender), this::presentError);
+            return;
+        }
+
+        if (!hardwarePresenter.getDevice().isConnected()) {
+            bindAndSubscribe(hardwarePresenter.connectToDevice(hardwarePresenter.getDevice()), ignored -> next(sender), this::presentError);
+            return;
+        }
+
+        bindAndSubscribe(hardwarePresenter.linkPill(), ignored -> finishedPairing(), this::presentError);
+    }
+
+    public void presentError(Throwable e) {
+        OnboardingActivity onboardingActivity = (OnboardingActivity) getActivity();
+        if (onboardingActivity != null) {
+            onboardingActivity.finishBlockingWork();
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
     }
 }

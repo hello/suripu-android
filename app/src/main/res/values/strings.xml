@@ -186,6 +186,8 @@
     <string name="action_close">Close</string>
     <string name="title_timeline_event_fmt">%1$s - %2$s</string>
     <string name="error_sense_already_paired">Your Sense is already paired.</string>
+    <string name="action_pair_pill">Pair New Pill</string>
+    <string name="action_pair_new_sense">Pair New Sense</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
