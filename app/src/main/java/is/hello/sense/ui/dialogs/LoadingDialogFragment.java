@@ -53,7 +53,7 @@ public class LoadingDialogFragment extends DialogFragment {
 
     @Override
     public @NonNull Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_Details);
+        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_Loading);
 
         dialog.setContentView(R.layout.fragment_dialog_loading);
         dialog.setCanceledOnTouchOutside(false);

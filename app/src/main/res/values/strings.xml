@@ -183,6 +183,8 @@
     <string name="action_rescan">Rescan</string>
     <string name="title_breakdown">Breakdown</string>
     <string name="title_events_timeline">Events Timeline</string>
+    <string name="action_close">Close</string>
+    <string name="title_timeline_event_fmt">%1$s - %2$s</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

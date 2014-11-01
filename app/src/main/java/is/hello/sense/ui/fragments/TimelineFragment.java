@@ -2,7 +2,6 @@ package is.hello.sense.ui.fragments;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -34,7 +32,7 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.Styles;
-import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
+import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.util.Analytics;
@@ -238,8 +236,8 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         TimelineSegment segment = (TimelineSegment) adapterView.getItemAtPosition(position);
         if (segment.getEventType() != null) {
-            TimelineSegmentDetailsDialogFragment dialogFragment = TimelineSegmentDetailsDialogFragment.newInstance(segment);
-            dialogFragment.show(getFragmentManager(), TimelineSegmentDetailsDialogFragment.TAG);
+            TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment);
+            dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
         }
 
         Analytics.event(Analytics.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.PROP_TIMELINE_ACTION, Analytics.PROP_TIMELINE_ACTION_TAP_EVENT));

@@ -95,7 +95,13 @@
 
     <style name="AppTheme.Dialog" parent="android:Theme.Holo.Dialog" />
 
-    <style name="AppTheme.Dialog.Details">
+    <style name="AppTheme.Dialog.Simple">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/raised_item_background</item>
+        <item name="android:paddingBottom">1dp</item>
+    </style>
+
+    <style name="AppTheme.Dialog.Loading">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@color/transparent</item>
