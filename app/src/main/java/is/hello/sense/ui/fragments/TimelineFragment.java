@@ -1,6 +1,8 @@
 package is.hello.sense.ui.fragments;
 
 import android.animation.ValueAnimator;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,17 +29,19 @@ import is.hello.sense.api.model.PreSleepInsight;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.graph.presenters.TimelinePresenter;
+import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.Styles;
 import is.hello.sense.ui.dialogs.TimelineSegmentDetailsDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
+import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
-public class TimelineFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+public class TimelineFragment extends InjectionFragment implements AdapterView.OnItemClickListener, SlidingLayersView.OnInteractionListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
 
     private PieGraphView scoreGraph;
@@ -50,6 +56,8 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     private TimelineSegmentAdapter segmentAdapter;
     private ListView listView;
     private TextView timelineEventsHeader;
+    private ImageButton menuButton;
+    private ImageButton shareButton;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -107,6 +115,22 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
 
 
         listView.setAdapter(segmentAdapter);
+
+
+        this.menuButton = (ImageButton) view.findViewById(R.id.fragment_timeline_header_menu);
+        menuButton.setOnClickListener(ignored -> {
+            HomeActivity activity = (HomeActivity) getActivity();
+            activity.getSlidingLayersView().toggle();
+        });
+
+        this.shareButton = (ImageButton) view.findViewById(R.id.fragment_timeline_header_share);
+        shareButton.setOnClickListener(ignored -> {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "http://hello.is");
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
+        });
+
 
         return view;
     }
@@ -224,5 +248,18 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
 
     public DateTime getDate() {
         return (DateTime) getArguments().getSerializable(ARG_DATE);
+    }
+
+
+    @Override
+    public void onUserWillPullDownTopView() {
+        menuButton.setImageResource(R.drawable.icon_menu_open);
+        shareButton.setImageResource(R.drawable.icon_share_disabled);
+    }
+
+    @Override
+    public void onUserDidPushUpTopView() {
+        menuButton.setImageResource(R.drawable.icon_menu_closed);
+        shareButton.setImageResource(R.drawable.icon_share_enabled);
     }
 }

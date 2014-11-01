@@ -259,6 +259,11 @@ public class HomeActivity
 
     //region Sliding Layers
 
+
+    public SlidingLayersView getSlidingLayersView() {
+        return slidingLayersView;
+    }
+
     @Override
     public void onUserWillPullDownTopView() {
         if (getFragmentManager().findFragmentById(R.id.activity_home_underside_container) == null) {
@@ -267,6 +272,8 @@ public class HomeActivity
                     .add(R.id.activity_home_underside_container, new HomeUndersideFragment())
                     .commit();
         }
+
+        viewPager.getCurrentFragment().onUserWillPullDownTopView();
     }
 
     @Override
@@ -278,8 +285,9 @@ public class HomeActivity
                     .remove(underside)
                     .commit();
         }
-    }
 
+        viewPager.getCurrentFragment().onUserDidPushUpTopView();
+    }
 
     //endregion
 }

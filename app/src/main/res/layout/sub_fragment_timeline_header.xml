@@ -2,19 +2,49 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/background_timeline_header">
 
-    <TextView
-        android:id="@+id/fragment_timeline_date"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/action_bar_height"
-        android:gravity="center"
-        android:textAllCaps="true"
-        android:textAppearance="@style/AppTheme.Text.ScreenTitle"
-        android:text="@string/format_date_last_night"/>
+        android:layout_height="@dimen/action_bar_height">
+
+        <ImageButton
+            android:id="@+id/fragment_timeline_header_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/icon_menu_closed"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:id="@+id/fragment_timeline_header_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/icon_share_enabled"
+            android:contentDescription="@string/action_share" />
+
+        <TextView
+            android:id="@+id/fragment_timeline_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/fragment_timeline_header_menu"
+            android:layout_toStartOf="@id/fragment_timeline_header_share"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:textAppearance="@style/AppTheme.Text.ScreenTitle"
+            android:text="@string/format_date_last_night"
+            android:singleLine="true"
+            android:ellipsize="end"/>
+
+    </RelativeLayout>
 
     <is.hello.sense.ui.widget.PieGraphView
         android:id="@+id/fragment_timeline_sleep_score_chart"

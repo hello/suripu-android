@@ -106,6 +106,9 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         if (isOpen)
             return;
 
+        if (onInteractionListener != null)
+            onInteractionListener.onUserWillPullDownTopView();
+
         animateOpen(Animation.DURATION_DEFAULT);
     }
 
@@ -114,6 +117,13 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
             return;
 
         animateClosed(Animation.DURATION_DEFAULT);
+    }
+
+    public void toggle() {
+        if (isOpen())
+            close();
+        else
+            open();
     }
 
     public OnInteractionListener getOnInteractionListener() {

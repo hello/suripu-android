@@ -29,7 +29,7 @@
 
     <!-- Misc -->
 
-    <dimen name="sliding_layers_open_height">60dp</dimen>
+    <dimen name="sliding_layers_open_height">@dimen/action_bar_height</dimen>
 
     <dimen name="pill_color_size">19dp</dimen>
 
