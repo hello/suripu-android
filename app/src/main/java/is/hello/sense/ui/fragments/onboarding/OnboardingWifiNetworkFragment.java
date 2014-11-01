@@ -38,6 +38,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
     private long scanStarted = 0;
     private ListView listView;
+    private Button rescanButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +71,8 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
         this.scanningIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_wifi_networks_scanning);
 
-        Button rescanButton = (Button) view.findViewById(R.id.fragment_onboarding_wifi_networks_rescan);
+        this.rescanButton = (Button) view.findViewById(R.id.fragment_onboarding_wifi_networks_rescan);
+        rescanButton.setEnabled(false);
         rescanButton.setOnClickListener(ignored -> {
             Analytics.event(Analytics.EVENT_ONBOARDING_WIFI_SCAN, null);
             rescan();
@@ -116,13 +118,17 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     public void bindScanResults(@NonNull Collection<MorpheusBle.wifi_endpoint> scanResults) {
         networkAdapter.clear();
         networkAdapter.addAll(scanResults);
+
         scanningIndicator.setVisibility(View.GONE);
         listView.setVisibility(View.VISIBLE);
+        rescanButton.setEnabled(true);
         trackScanFinished(true);
     }
 
     public void scanResultsUnavailable(Throwable e) {
         scanningIndicator.setVisibility(View.GONE);
+        rescanButton.setEnabled(true);
+
         ErrorDialogFragment.presentError(getFragmentManager(), e);
         trackScanFinished(false);
     }
