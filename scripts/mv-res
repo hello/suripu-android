@@ -23,20 +23,26 @@ main() {
 	fi
 
 	echo_success "> Moving xxhdpi assets"
-	for f in *@3x.png; do
+	for f in $SRC_DIR/*@3x.png; do
 		SANITIZED=$(echo "$f" | sed -E 's/\@3x//g')
-		mv -f "$SRC_DIR/$f" "$DEST_DIR/drawable-xxhdpi/$SANITIZED"
+		DEST_FILE=$(basename $SANITIZED)
+		echo "| copying $f"
+		mv -f "$f" "$DEST_DIR/drawable-xxhdpi/$DEST_FILE"
 	done
 
 	echo_success "> Moving xhdpi assets"
-	for f in *@2x.png; do
+	for f in $SRC_DIR/*@2x.png; do
 		SANITIZED=$(echo "$f" | sed -E 's/\@2x//g')
-		mv -f "$SRC_DIR/$f" "$DEST_DIR/drawable-xhdpi/$SANITIZED"
+		DEST_FILE=$(basename $SANITIZED)
+		echo "| copying $f"
+		mv -f "$f" "$DEST_DIR/drawable-xhdpi/$DEST_FILE"
 	done
 
 	echo_success "> Moving mhdpi assets"
-	for f in *.png; do
-		mv -f "$SRC_DIR/$f" "$DEST_DIR/drawable-mdpi/$f"
+	for f in $SRC_DIR/*.png; do
+		DEST_FILE=$(basename $f)
+		echo "| copying $f"
+		mv -f "$f" "$DEST_DIR/drawable-mdpi/$DEST_FILE"
 	done
 	
 	exit

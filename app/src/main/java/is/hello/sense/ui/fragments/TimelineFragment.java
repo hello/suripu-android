@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
 
     private PieGraphView scoreGraph;
     private TextView scoreText;
+    private TextView messageTextLabel;
     private TextView messageText;
     private LinearLayout insightsContainer;
 
@@ -47,7 +49,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
 
     private TimelineSegmentAdapter segmentAdapter;
     private ListView listView;
-    private TextView timelineHeader;
+    private TextView timelineEventsHeader;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -85,6 +87,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
 
         this.scoreGraph = (PieGraphView) headerView.findViewById(R.id.fragment_timeline_sleep_score_chart);
         this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
+        this.messageTextLabel = (TextView) headerView.findViewById(R.id.fragment_timeline_message_label);
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
 
         TextView dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
@@ -93,10 +96,10 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         listView.addHeaderView(headerView, null, false);
 
 
-        this.timelineHeader = (TextView) inflater.inflate(R.layout.item_section_header, listView, false);
-        timelineHeader.setText(R.string.title_events_timeline);
-        timelineHeader.setVisibility(View.INVISIBLE);
-        listView.addHeaderView(timelineHeader, null, false);
+        this.timelineEventsHeader = (TextView) inflater.inflate(R.layout.item_section_header, listView, false);
+        timelineEventsHeader.setText(R.string.title_events_timeline);
+        timelineEventsHeader.setVisibility(View.INVISIBLE);
+        listView.addHeaderView(timelineEventsHeader, null, false);
 
         View listFooter = new View(getActivity());
         listFooter.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.gap_outer));
@@ -124,7 +127,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         subscribe(segments, segmentAdapter::bindSegments, segmentAdapter::handleError);
 
         Observable<CharSequence> renderedMessage = timelinePresenter.renderedTimelineMessage;
-        bindAndSubscribe(renderedMessage, messageText::setText, error -> messageText.setText(R.string.missing_data_placeholder));
+        bindAndSubscribe(renderedMessage, messageText::setText, this::timelineUnavailable);
     }
 
     public void onTransitionCompleted() {
@@ -174,15 +177,29 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
                 showInsights(timeline.getPreSleepInsights());
             }
 
-            timelineHeader.setVisibility(View.VISIBLE);
+
+            if (timeline.getSegments().isEmpty()) {
+                messageTextLabel.setVisibility(View.INVISIBLE);
+                messageText.setGravity(Gravity.CENTER);
+                timelineEventsHeader.setVisibility(View.INVISIBLE);
+            } else {
+                timelineEventsHeader.setVisibility(View.VISIBLE);
+                messageTextLabel.setVisibility(View.VISIBLE);
+                messageText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+            }
         } else {
+            messageTextLabel.setVisibility(View.INVISIBLE);
+            messageText.setGravity(Gravity.CENTER);
+
             showInsights(Collections.emptyList());
-            timelineHeader.setVisibility(View.INVISIBLE);
+            timelineEventsHeader.setVisibility(View.INVISIBLE);
         }
     }
 
     public void timelineUnavailable(@Nullable Throwable e) {
         scoreGraph.setValue(0);
+        messageTextLabel.setVisibility(View.INVISIBLE);
+        messageText.setGravity(Gravity.CENTER);
         scoreText.setText(R.string.missing_data_placeholder);
 
         if (e != null) {

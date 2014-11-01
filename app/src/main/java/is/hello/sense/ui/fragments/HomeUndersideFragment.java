@@ -62,7 +62,7 @@ public class HomeUndersideFragment extends InjectionFragment implements ViewPage
         this.insightsAdapter = new InsightsAdapter(getActivity(), markdown, view.findViewById(R.id.fragment_underside_insights_loading));
         insightsAdapter.onItemViewClickedListener = this;
         insightsPager.setClipToPadding(false);
-        int padding = getResources().getDimensionPixelSize(R.dimen.gap_small) * 2;
+        int padding = getResources().getDimensionPixelSize(R.dimen.gap_outer);
         insightsPager.setPadding(padding, 0, padding, 0);
         insightsPager.setOffscreenPageLimit(3);
         insightsPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.gap_small));

@@ -49,8 +49,7 @@
         <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
 
-    <style name="AppTheme.Text.Body.Timeline">
-        <item name="android:textColor">@color/black</item>
+    <style name="AppTheme.Text.Body.Light">
         <item name="android:textSize">@dimen/text_size_medium</item>
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>

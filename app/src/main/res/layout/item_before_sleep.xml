@@ -7,5 +7,6 @@
     android:padding="@dimen/gap_outer"
     android:drawableStart="@drawable/sound_bad"
     android:drawablePadding="@dimen/gap_outer"
-    android:textAppearance="@style/AppTheme.Text.Body.Timeline"
+    android:textAppearance="@style/AppTheme.Text.Body.Light"
+    android:textColor="@color/black"
     android:text="@string/mock_event_message" />

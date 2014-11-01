@@ -25,6 +25,7 @@
     <dimen name="divider_height_edit_text">1dp</dimen>
     <dimen name="button_rounded_border_width">2dp</dimen>
     <dimen name="smart_alarm_toggle_line_height">2dp</dimen>
+    <dimen name="pie_graph_stroke_width">3dp</dimen>
 
     <!-- Misc -->
 

@@ -16,10 +16,12 @@
             android:id="@+id/fragment_underside_title"
             android:layout_width="match_parent"
             android:layout_height="@dimen/action_bar_height"
+            android:paddingLeft="@dimen/gap_outer"
+            android:paddingRight="@dimen/gap_outer"
             android:layout_marginBottom="@dimen/gap_small"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
-            android:gravity="center"
+            android:gravity="start|center_vertical"
             android:textAppearance="@style/AppTheme.Text.ScreenTitle"
             android:text="@string/app_name"/>
 
@@ -37,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/fragment_underside_title"
-            android:layout_marginBottom="@dimen/gap_large">
+            android:layout_marginBottom="@dimen/gap_small">
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/fragment_underside_insights"
@@ -78,12 +80,18 @@
             app:sensorIcon="@drawable/icon_sensor_particle"
             app:sensorTitle="@string/condition_particulates" />
 
+        <View
+            android:id="@+id/fragment_underside_conditions_divider"
+            android:layout_below="@id/fragment_underside_particulates"
+            android:layout_marginTop="@dimen/gap_small"
+            android:layout_marginBottom="@dimen/gap_small"
+            style="@style/Divider.Horizontal" />
+
         <is.hello.sense.ui.widget.SensorStateView
             android:id="@+id/fragment_underside_alarm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/fragment_underside_particulates"
-            android:layout_marginTop="@dimen/gap_large"
+            android:layout_below="@id/fragment_underside_conditions_divider"
             app:sensorIcon="@drawable/icon_alarm"
             app:sensorTitle="@string/action_alarm"
             app:wantsReading="false"/>
@@ -93,7 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/fragment_underside_alarm"
-            app:sensorIcon="@drawable/icon_sensor_particle"
+            app:sensorIcon="@drawable/icon_insights"
             app:sensorTitle="@string/action_insights"
             app:wantsReading="false"/>
 
@@ -101,7 +109,6 @@
             android:id="@+id/fragment_underside_debug"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_large"
             android:layout_below="@id/fragment_underside_trends"
             app:sensorIcon="@drawable/icon_debug"
             app:sensorTitle="@string/activity_debug"

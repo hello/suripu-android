@@ -13,12 +13,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_margin="@dimen/gap_outer"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_medium"
         android:drawableStart="@drawable/icon_sensor_temperature"
         android:drawablePadding="@dimen/gap_outer"
         android:singleLine="true"
         android:textSize="@dimen/text_size_large"
-        android:textAppearance="@style/AppTheme.Text.Body"
+        android:textAppearance="@style/AppTheme.Text.Body.Light"
         android:text="@string/condition_temperature"/>
 
     <TextView
@@ -26,17 +29,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/gap_outer"
-        android:minWidth="40dp"
+        android:minWidth="32dp"
         android:gravity="center"
-        android:paddingLeft="@dimen/gap_small"
-        android:paddingRight="@dimen/gap_small"
+        android:paddingLeft="@dimen/gap_medium"
+        android:paddingRight="@dimen/gap_medium"
         android:paddingTop="@dimen/gap_tiny"
-        android:paddingBottom="@dimen/gap_tiny"
+        android:paddingBottom="@dimen/gap_xsmall"
         android:singleLine="true"
         android:textSize="@dimen/text_size_large"
         android:textAppearance="@style/AppTheme.Text.Body.Bold"
         android:textColor="@color/sensor_unknown"
         android:text="@string/missing_data_placeholder"
-        android:background="@drawable/condition_background"/>
+        android:background="@drawable/raised_item_background"/>
 
 </LinearLayout>

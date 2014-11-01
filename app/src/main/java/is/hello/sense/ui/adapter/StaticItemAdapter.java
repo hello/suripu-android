@@ -16,7 +16,7 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     private int valueMaxLength = Integer.MAX_VALUE;
 
     public StaticItemAdapter(Context context) {
-        super(context, R.layout.item_underside_horizontal);
+        super(context, R.layout.item_simple_horizontal);
 
         this.layoutInflater = LayoutInflater.from(context);
     }
@@ -46,7 +46,7 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
-            view = layoutInflater.inflate(R.layout.item_underside_horizontal, parent, false);
+            view = layoutInflater.inflate(R.layout.item_simple_horizontal, parent, false);
             view.setTag(new ViewHolder(view));
         }
 

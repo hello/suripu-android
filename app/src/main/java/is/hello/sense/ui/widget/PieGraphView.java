@@ -12,14 +12,12 @@ import is.hello.sense.R;
 
 @SuppressWarnings("UnusedDeclaration")
 public final class PieGraphView extends GraphView {
-    private final Paint paint = new Paint();
-    private final Path piePath = new Path();
+    private final Path fillPath = new Path();
     private final RectF arcRect = new RectF();
-    private final RectF clipRect = new RectF();
+    private Paint paint;
 
-    private float displayScaleFactor;
+    private float fillStrokeWidth;
     private int trackColor;
-    private int centerColor;
 
     public PieGraphView(Context context) {
         super(context);
@@ -36,20 +34,17 @@ public final class PieGraphView extends GraphView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        piePath.reset();
-        paint.reset();
-        paint.setAntiAlias(true);
+        fillPath.reset();
 
         int width = canvas.getWidth(), height = canvas.getHeight();
         float scale = ((float) value / (float) maxValue);
-        piePath.moveTo(width / 2f, height / 2f);
-
         arcRect.set(0f, 0f, width, height);
-        piePath.arcTo(arcRect, -90f, scale * 360f);
+        arcRect.inset(fillStrokeWidth / 2f, fillStrokeWidth / 2f);
 
-        float inset = 3f * displayScaleFactor;
-        clipRect.set(arcRect);
-        clipRect.inset(inset, inset);
+        if (scale > 0f) {
+            fillPath.moveTo(width / 2f, 0f);
+            fillPath.arcTo(arcRect, -90f, scale * 360f);
+        }
 
         canvas.save();
         {
@@ -57,10 +52,8 @@ public final class PieGraphView extends GraphView {
             canvas.drawOval(arcRect, paint);
 
             paint.setColor(fillColor);
-            canvas.drawPath(piePath, paint);
+            canvas.drawPath(fillPath, paint);
 
-            paint.setColor(centerColor);
-            canvas.drawOval(clipRect, paint);
         }
         canvas.restore();
     }
@@ -75,21 +68,17 @@ public final class PieGraphView extends GraphView {
         postInvalidate();
     }
 
-    public int getCenterColor() {
-        return centerColor;
-    }
-
-    public void setCenterColor(int centerColor) {
-        this.centerColor = centerColor;
-        postInvalidate();
-    }
 
     @Override
     protected void initialize(@Nullable AttributeSet attrs, int defStyleAttr) {
         super.initialize(attrs, defStyleAttr);
 
-        this.displayScaleFactor = getResources().getDisplayMetrics().density;
-        this.trackColor = getResources().getColor(R.color.transparent);
-        this.centerColor = getResources().getColor(R.color.background);
+        this.fillStrokeWidth = getResources().getDimensionPixelSize(R.dimen.pie_graph_stroke_width);
+        this.trackColor = getResources().getColor(R.color.border);
+
+        this.paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(fillStrokeWidth);
     }
 }
