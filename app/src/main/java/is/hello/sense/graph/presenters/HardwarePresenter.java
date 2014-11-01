@@ -32,6 +32,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 @Singleton public class HardwarePresenter extends Presenter {
@@ -41,6 +42,12 @@ import rx.schedulers.Schedulers;
 
     private @Nullable Observable<Morpheus> repairingTask;
     private @Nullable Morpheus device;
+
+    private final Action1<Throwable> respondToError = e -> {
+        if (BleObserverCallback.BluetoothError.isFatal(e)) {
+            clearDevice();
+        }
+    };
 
     @Inject public HardwarePresenter(@NonNull PreferencesPresenter preferencesPresenter,
                                      @NonNull ApiSessionManager apiSessionManager) {
@@ -181,12 +188,13 @@ import rx.schedulers.Schedulers;
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<List<MorpheusBle.wifi_endpoint>>) s -> device.scanSupportedWIFIAP(new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_SET_WIFI_TIMEOUT_MS)))
+        return Observable.create((Observable.OnSubscribe<List<MorpheusBle.wifi_endpoint>>) s -> device.scanSupportedWIFIAP(new BleObserverCallback<>(s, timeoutHandler, BleObserverCallback.NO_TIMEOUT)))
                          .subscribeOn(AndroidSchedulers.mainThread())
+                         .doOnError(this.respondToError)
                          .map(networks -> {
                              if (!networks.isEmpty())
                                  Collections.sort(networks, (l, r) -> Ints.compare(l.getRssi(), r.getRssi()));
-                             
+
                              return networks;
                          });
     }
@@ -242,7 +250,8 @@ import rx.schedulers.Schedulers;
         }
 
         return Observable.create((Observable.OnSubscribe<Void>) s -> device.setWIFIConnection(bssid, ssid, securityType, password, new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_SET_WIFI_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread());
+                         .subscribeOn(AndroidSchedulers.mainThread())
+                         .doOnError(this.respondToError);
     }
 
     public Observable<Void> linkAccount() {
@@ -253,7 +262,8 @@ import rx.schedulers.Schedulers;
         }
 
         return Observable.create((Observable.OnSubscribe<Void>) s -> device.linkAccount(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread());
+                         .subscribeOn(AndroidSchedulers.mainThread())
+                         .doOnError(this.respondToError);
     }
 
     public Observable<String> linkPill() {
@@ -264,11 +274,12 @@ import rx.schedulers.Schedulers;
         }
 
         return Observable.create((Observable.OnSubscribe<String>) s -> device.pairPill(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
+                         .subscribeOn(AndroidSchedulers.mainThread())
                          .doOnNext(pillId -> {
                              logEvent("linkedWithPill(" + pillId + ")");
                              setPairedPillId(pillId);
                          })
-                         .subscribeOn(AndroidSchedulers.mainThread());
+                         .doOnError(this.respondToError);
     }
 
     public Observable<Void> putIntoPairingMode() {
@@ -279,7 +290,8 @@ import rx.schedulers.Schedulers;
         }
 
         return Observable.create((Observable.OnSubscribe<Void>) s -> device.switchToPairingMode(new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread());
+                         .subscribeOn(AndroidSchedulers.mainThread())
+                         .doOnError(this.respondToError);
     }
 
     public Observable<Void> factoryReset() {
@@ -290,7 +302,8 @@ import rx.schedulers.Schedulers;
         }
 
         return Observable.create((Observable.OnSubscribe<Void>) s -> device.factoryReset(new BleObserverCallback<>(s, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread());
+                         .subscribeOn(AndroidSchedulers.mainThread())
+                         .doOnError(this.respondToError);
     }
 
     public void clearDevice() {
