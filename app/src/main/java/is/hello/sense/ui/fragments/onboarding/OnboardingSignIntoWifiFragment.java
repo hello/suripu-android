@@ -155,7 +155,11 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     }
 
     private void sendAccessToken() {
-        bindAndSubscribe(hardwarePresenter.linkAccount(), ignored -> finishedSettingWifi(), this::presentError);
+        if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false)) {
+            finishedSettingWifi();
+        } else {
+            bindAndSubscribe(hardwarePresenter.linkAccount(), ignored -> finishedSettingWifi(), this::presentError);
+        }
     }
 
 

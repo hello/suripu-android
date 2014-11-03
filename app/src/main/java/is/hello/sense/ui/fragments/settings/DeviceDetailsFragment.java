@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -57,6 +59,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             this.signalStrengthItem = adapter.addItem(getString(R.string.title_device_signal_strength), getString(R.string.missing_data_placeholder));
         }
         adapter.addItem(getString(R.string.title_device_firmware_version), device.getFirmwareVersion());
+        adapter.addItem(getString(R.string.action_select_wifi_network), null, this::changeWifiNetwork);
         adapter.addItem(getString(R.string.action_enter_pairing_mode), null, this::putIntoPairingMode);
         adapter.addItem(getString(R.string.action_factory_reset), null, this::factoryReset);
 
@@ -129,6 +132,12 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 
+
+    public void changeWifiNetwork() {
+        Intent intent = new Intent(getActivity(), OnboardingActivity.class);
+        intent.putExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, true);
+        startActivity(intent);
+    }
 
     @SuppressWarnings("CodeBlock2Expr")
     public void putIntoPairingMode() {

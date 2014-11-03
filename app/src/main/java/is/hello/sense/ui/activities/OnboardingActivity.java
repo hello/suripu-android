@@ -48,6 +48,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     private static final String FRAGMENT_TAG = "OnboardingFragment";
 
     public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
+    public static final String EXTRA_WIFI_CHANGE_ONLY = OnboardingActivity.class.getName() + ".EXTRA_WIFI_CHANGE_ONLY";
 
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferences;
@@ -64,6 +65,11 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         getActionBar().setDisplayShowHomeEnabled(false);
 
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
+            if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {
+                showSelectWifiNetwork();
+                return;
+            }
+
             int lastCheckpoint = getLastCheckPoint();
             switch (lastCheckpoint) {
                 case Constants.ONBOARDING_CHECKPOINT_NONE:
@@ -261,6 +267,11 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void showSetupPill() {
+        if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {
+            finish();
+            return;
+        }
+
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SENSE);
 
         OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
