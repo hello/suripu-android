@@ -188,6 +188,7 @@
     <string name="error_sense_already_paired">Your Sense is already paired.</string>
     <string name="action_pair_pill">Pair New Pill</string>
     <string name="action_pair_new_sense">Pair New Sense</string>
+    <string name="action_select_wifi_network">Select Wifi Network</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
