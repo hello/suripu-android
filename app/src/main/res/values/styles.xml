@@ -16,6 +16,9 @@
         <item name="android:actionModeBackground">@drawable/app_theme_cab_background_top</item>
         <item name="android:actionModeSplitBackground">@drawable/app_theme_cab_background_bottom</item>
         <item name="android:actionModeCloseButtonStyle">@style/AppTheme.ActionButton.CloseMode</item>
+        <item name="android:actionOverflowButtonStyle">@style/ActionOverflow</item>
+        <item name="android:actionMenuTextAppearance">@style/AppTheme.Text.ActionMenu</item>
+        <item name="android:actionMenuTextColor">@color/text_dark</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
 
         <item name="android:buttonStyle">@style/AppTheme.Button</item>
@@ -35,6 +38,10 @@
 
     <style name="ActionOverflowOnboarding" parent="android:style/Widget.Holo.ActionButton.Overflow">
         <item name="android:src">@drawable/action_overflow_onboarding</item>
+    </style>
+
+    <style name="ActionOverflow" parent="android:style/Widget.Holo.ActionButton.Overflow">
+        <item name="android:src">@drawable/action_overflow</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -57,6 +64,8 @@
         <item name="android:icon">@android:color/transparent</item>
         <item name="android:titleTextStyle">@style/AppTheme.Text.ActionBar</item>
         <item name="android:height">@dimen/action_bar_height</item>
+        <item name="android:actionMenuTextAppearance">@style/AppTheme.Text.ActionMenu</item>
+        <item name="android:actionMenuTextColor">@color/text_dark</item>
     </style>
 
     <style name="AppTheme.ActionBar.Transparent" parent="AppTheme.ActionBar.Solid">
@@ -69,12 +78,18 @@
         <item name="android:textColor">@color/text_dark</item>
     </style>
 
+    <style name="AppTheme.Text.ActionMenu" parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
+        <item name="android:textSize">@dimen/text_size_small</item>
+    </style>
+
     <style name="AppTheme.PopupMenu" parent="@android:style/Widget.Holo.Light.ListPopupWindow">
         <item name="android:popupBackground">@drawable/app_theme_menu_dropdown_panel</item>
     </style>
 
     <style name="AppTheme.DropDownListView" parent="@android:style/Widget.Holo.Light.ListView.DropDown">
         <item name="android:listSelector">@drawable/app_theme_selectable_background</item>
+        <item name="android:divider">@null</item>
+        <item name="android:dividerHeight">0dp</item>
     </style>
 
     <style name="AppTheme.ActionBarTabStyle" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
