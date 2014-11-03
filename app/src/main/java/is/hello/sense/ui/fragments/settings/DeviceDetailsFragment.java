@@ -82,6 +82,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(this.hardwarePresenter.rediscoverDevice(), this::bindHardwareDevice, this::hardwareDeviceUnavailable);
     }
 
@@ -114,6 +115,14 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
         if (signalStrengthItem != null) {
             signalStrengthItem.setValue(strength);
+        }
+
+        if (device.isConnected()) {
+            LoadingDialogFragment.close(getFragmentManager());
+        } else {
+            bindAndSubscribe(hardwarePresenter.connectToDevice(device),
+                             ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                             this::presentError);
         }
     }
 
