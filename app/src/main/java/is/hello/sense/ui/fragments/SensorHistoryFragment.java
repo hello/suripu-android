@@ -151,7 +151,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 SensorHistory peak = Collections.max(history, (l, r) -> Float.compare(l.getValue(), r.getValue()));
                 this.peakY = Math.max(100, (int) peak.getValue());
                 this.sectionCount = 7;
-                this.pointCount = data.size() / 8;
+                this.pointCount = (int) Math.ceil((double) data.size() / 8.0);
             }
 
             for (int section = 0, count = annotationsContainer.getChildCount(); section < count; section++) {
