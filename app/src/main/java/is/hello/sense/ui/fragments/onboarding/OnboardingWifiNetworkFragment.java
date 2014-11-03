@@ -63,7 +63,6 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         otherNetworkView.findViewById(R.id.item_wifi_network_locked).setVisibility(View.GONE);
         otherNetworkView.findViewById(R.id.item_wifi_network_scanned).setVisibility(View.GONE);
         ((TextView) otherNetworkView.findViewById(R.id.item_wifi_network_name)).setText(R.string.wifi_other_network);
-        otherNetworkView.setVisibility(View.GONE);
         listView.addFooterView(otherNetworkView, null, true);
 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
