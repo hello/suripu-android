@@ -11,22 +11,22 @@ import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.hello.ble.stack.transmission.BlePacketHandler;
-
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import is.hello.sense.bluetooth.stacks.Command;
-import is.hello.sense.bluetooth.stacks.Device;
-import is.hello.sense.bluetooth.stacks.Service;
 import is.hello.sense.bluetooth.errors.BluetoothException;
 import is.hello.sense.bluetooth.errors.BondingException;
 import is.hello.sense.bluetooth.errors.DiscoveryFailedException;
+import is.hello.sense.bluetooth.errors.GattException;
 import is.hello.sense.bluetooth.errors.NotConnectedException;
-import is.hello.sense.bluetooth.errors.StatusException;
 import is.hello.sense.bluetooth.errors.SubscriptionFailedException;
+import is.hello.sense.bluetooth.stacks.Command;
+import is.hello.sense.bluetooth.stacks.Device;
+import is.hello.sense.bluetooth.stacks.DeviceCenter;
+import is.hello.sense.bluetooth.stacks.Service;
+import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscription;
@@ -68,6 +68,12 @@ public class NativeDevice implements Device {
         return bluetoothDevice.getName();
     }
 
+    @Override
+    @NonNull
+    public DeviceCenter getDeviceCenter() {
+        return deviceCenter;
+    }
+
     //endregion
 
 
@@ -79,7 +85,7 @@ public class NativeDevice implements Device {
         return deviceCenter.newConfiguredObservable(s -> {
             gattDispatcher.onConnectionStateChanged = (gatt, connectStatus, newState) -> {
                 if (connectStatus != BluetoothGatt.GATT_SUCCESS) {
-                    s.onError(new StatusException(connectStatus));
+                    s.onError(new GattException(connectStatus));
                     gattDispatcher.onConnectionStateChanged = null;
                 } else if (newState == BluetoothProfile.STATE_CONNECTED) {
                     s.onNext(this);
@@ -220,7 +226,7 @@ public class NativeDevice implements Device {
                     s.onCompleted();
                 } else {
                     this.cachedServices = null;
-                    s.onError(new StatusException(status));
+                    s.onError(new GattException(status));
                 }
                 gattDispatcher.onServicesDiscovered = null;
             };
@@ -274,7 +280,7 @@ public class NativeDevice implements Device {
                         s.onNext(characteristicIdentifier);
                         s.onCompleted();
                     } else {
-                        s.onError(new StatusException(status));
+                        s.onError(new GattException(status));
                     }
 
                     gattDispatcher.onDescriptorWrite = null;
@@ -313,7 +319,7 @@ public class NativeDevice implements Device {
                         s.onError(new SubscriptionFailedException());
                     }
                 } else {
-                    s.onError(new StatusException(status));
+                    s.onError(new GattException(status));
                 }
 
                 gattDispatcher.onDescriptorWrite = null;
@@ -335,7 +341,7 @@ public class NativeDevice implements Device {
         return deviceCenter.newConfiguredObservable(s -> {
             gattDispatcher.onCharacteristicWrite = (gatt, characteristic, status) -> {
                 if (status != BluetoothGatt.GATT_SUCCESS) {
-                    s.onError(new StatusException(status));
+                    s.onError(new GattException(status));
                 } else {
                     s.onNext(null);
                     s.onCompleted();
@@ -352,13 +358,13 @@ public class NativeDevice implements Device {
     }
 
     @Override
-    public void setPacketHandler(@Nullable BlePacketHandler dataHandler) {
+    public void setPacketHandler(@Nullable PacketHandler dataHandler) {
         gattDispatcher.packetHandler = dataHandler;
     }
 
     @Nullable
     @Override
-    public BlePacketHandler getPacketHandler() {
+    public PacketHandler getPacketHandler() {
         return gattDispatcher.packetHandler;
     }
 

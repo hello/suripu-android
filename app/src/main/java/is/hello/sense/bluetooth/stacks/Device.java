@@ -5,11 +5,10 @@ import android.bluetooth.BluetoothProfile;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.hello.ble.stack.transmission.BlePacketHandler;
-
 import java.util.List;
 import java.util.UUID;
 
+import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import rx.Observable;
 
 public interface Device {
@@ -29,6 +28,7 @@ public interface Device {
     int getScannedRssi();
     String getAddress();
     String getName();
+    DeviceCenter getDeviceCenter();
 
     //endregion
 
@@ -70,8 +70,8 @@ public interface Device {
 
     @NonNull Observable<Void> writeCommand(@NonNull Service onService, @NonNull Command command);
 
-    void setPacketHandler(@Nullable BlePacketHandler dataHandler);
-    @Nullable BlePacketHandler getPacketHandler();
+    void setPacketHandler(@Nullable PacketHandler dataHandler);
+    @Nullable PacketHandler getPacketHandler();
 
     //endregion
 }

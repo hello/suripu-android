@@ -7,15 +7,14 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothProfile;
 import android.support.annotation.Nullable;
 
-import com.hello.ble.stack.transmission.BlePacketHandler;
-
 import is.hello.sense.bluetooth.stacks.Device;
+import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.util.Logger;
 import rx.functions.Action2;
 import rx.functions.Action3;
 
 public class NativeGattDispatcher extends BluetoothGattCallback {
-    public @Nullable BlePacketHandler packetHandler;
+    public @Nullable PacketHandler packetHandler;
     public @Nullable Action3<BluetoothGatt, Integer, Integer> onConnectionStateChanged;
     public @Nullable Action2<BluetoothGatt, Integer> onServicesDiscovered;
     public @Nullable Action3<BluetoothGatt, BluetoothGattCharacteristic, Integer> onCharacteristicWrite;
@@ -55,7 +54,7 @@ public class NativeGattDispatcher extends BluetoothGattCallback {
         Logger.info(Device.LOG_TAG, "onCharacteristicRead('" + gatt + "', " + characteristic + ", " + status + ")");
 
         if (packetHandler != null) {
-            packetHandler.dispatch(characteristic.getUuid(), characteristic.getValue());
+            packetHandler.process(characteristic.getUuid(), characteristic.getValue());
         }
     }
 
@@ -78,7 +77,7 @@ public class NativeGattDispatcher extends BluetoothGattCallback {
         Logger.info(Device.LOG_TAG, "onCharacteristicChanged('" + gatt + "', " + characteristic + ", " + ")");
 
         if (packetHandler != null) {
-            packetHandler.dispatch(characteristic.getUuid(), characteristic.getValue());
+            packetHandler.process(characteristic.getUuid(), characteristic.getValue());
         }
     }
 

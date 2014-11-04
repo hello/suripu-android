@@ -2,25 +2,28 @@ package is.hello.sense.bluetooth.devices;
 
 import android.support.annotation.NonNull;
 
-import com.hello.ble.BleOperationCallback;
-import com.hello.ble.devices.HelloBleDevice;
-import com.hello.ble.protobuf.MorpheusBle;
-import com.hello.ble.stack.application.MorpheusProtobufResponseDataHandler;
-import com.hello.ble.stack.transmission.MorpheusBlePacketHandler;
-import com.hello.ble.util.BleUUID;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import is.hello.sense.bluetooth.devices.transmission.SensePacketDataHandler;
+import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
+import is.hello.sense.bluetooth.errors.GattException;
+import is.hello.sense.bluetooth.errors.SenseException;
 import is.hello.sense.bluetooth.stacks.Command;
 import is.hello.sense.bluetooth.stacks.Device;
 import is.hello.sense.bluetooth.stacks.DeviceCenter;
 import is.hello.sense.bluetooth.stacks.Service;
-import is.hello.sense.util.BleObserverCallback;
+import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
+import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Action1;
+
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle.MorpheusCommand;
 
 public class SenseDevice {
     private static int COMMAND_VERSION = 0;
@@ -35,8 +38,8 @@ public class SenseDevice {
 
     private final Device device;
     private Service service;
-    private MorpheusProtobufResponseDataHandler dataHandler;
-    private MorpheusBlePacketHandler packetHandler;
+    private PacketDataHandler<MorpheusCommand> dataHandler;
+    private PacketHandler packetHandler;
 
     public static Observable<List<SenseDevice>> scan(@NonNull DeviceCenter deviceCenter) {
         DeviceCenter.ScanCriteria criteria = new DeviceCenter.ScanCriteria();
@@ -54,8 +57,8 @@ public class SenseDevice {
 
     public SenseDevice(@NonNull Device device) {
         this.device = device;
-        this.dataHandler = new MorpheusProtobufResponseDataHandler(null);
-        this.packetHandler = new MorpheusBlePacketHandler();
+        this.dataHandler = new SensePacketDataHandler();
+        this.packetHandler = new SensePacketHandler();
         packetHandler.registerDataHandler(dataHandler);
         device.setPacketHandler(packetHandler);
     }
@@ -85,7 +88,7 @@ public class SenseDevice {
             device.connect().subscribe(device -> {
                 device.bond().subscribe(ignored -> {
                     device.discoverServices().subscribe(services -> {
-                        this.service = device.getService(BleUUID.MORPHEUS_SERVICE_UUID);
+                        this.service = device.getService(SenseIdentifiers.SENSE_SERVICE_UUID);
                         s.onNext(this);
                         s.onCompleted();
                     }, s::onError);
@@ -98,13 +101,72 @@ public class SenseDevice {
         return device.disconnect().map(ignored -> this);
     }
 
+    public boolean isConnected() {
+        return device.getConnectionStatus() == Device.STATUS_CONNECTED;
+    }
+
+    public int getBondStatus() {
+        return device.getBondStatus();
+    }
+
     //endregion
 
+
+    //region Internal
+
+    protected Service getTargetService() {
+        return service;
+    }
+
+    protected UUID getDescriptorIdentifier() {
+        return SenseIdentifiers.DESCRIPTOR_CHAR_COMMAND_RESPONSE_CONFIG;
+    }
+
+    protected Observable<UUID> subscribe(@NonNull UUID characteristicIdentifier) {
+        return device.subscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier());
+    }
+
+    protected Observable<UUID> unsubscribe(@NonNull UUID characteristicIdentifier) {
+        return device.unsubscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier());
+    }
+
+    protected Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand morpheusCommand) {
+        return device.getDeviceCenter().newConfiguredObservable(s -> {
+            Action1<Throwable> onError = s::onError;
+            Observable<UUID> subscription = subscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE_UUID);
+            subscription.subscribe(subscribedCharacteristic -> {
+                Observable<UUID> unsubscription = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE_UUID);
+                dataHandler.onFinished = response -> {
+                    unsubscription.subscribe(unsubscribedCharacteristic -> {
+                        if (response.getType() == morpheusCommand.getType()) {
+                            s.onNext(response);
+                            s.onCompleted();
+                        } else if (response.getType() == MorpheusCommand.CommandType.MORPHEUS_COMMAND_ERROR) {
+                            s.onError(new SenseException(morpheusCommand.getError()));
+                        } else {
+                            s.onError(new GattException(0));
+                        }
+                    }, onError);
+                };
+                dataHandler.onError = dataError -> {
+                    unsubscription.subscribe(unsubscribedCharacteristic -> {
+                        s.onError(dataError);
+                    }, onError);
+                };
+
+                final byte[] commandData = morpheusCommand.toByteArray();
+                Observable<Void> write = writeLargeCommand(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_UUID, commandData);
+                write.subscribe(ignored -> Logger.info(Device.LOG_TAG, "Wrote command " + morpheusCommand), onError);
+            }, onError);
+        });
+    }
+
+    //endregion
 
     //region Operations
 
     private Observable<Void> writeLargeCommand(UUID commandUUID, byte[] commandData) {
-        List<byte[]> blePackets = packetHandler.prepareBlePacket(commandData);
+        List<byte[]> blePackets = packetHandler.createPackets(commandData);
         LinkedList<byte[]> remainingPackets = new LinkedList<>(blePackets);
 
         return Observable.create((Observable.OnSubscribe<Void>) s -> {
@@ -136,36 +198,88 @@ public class SenseDevice {
         });
     }
 
+    public Observable<Void> setPairingModeEnabled(boolean enabled) {
+        MorpheusCommand.CommandType commandType;
+        if (enabled)
+            commandType = MorpheusCommand.CommandType.MORPHEUS_COMMAND_SWITCH_TO_PAIRING_MODE;
+        else
+            commandType = MorpheusCommand.CommandType.MORPHEUS_COMMAND_SWITCH_TO_NORMAL_MODE;
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(commandType)
+                .setVersion(COMMAND_VERSION)
+                .build();
+        return performCommand(morpheusCommand).map(ignored -> null);
+    }
+
+    public Observable<Void> clearPairedUser() {
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_EREASE_PAIRED_PHONE)
+                .setVersion(COMMAND_VERSION)
+                .build();
+        return performCommand(morpheusCommand).map(ignored -> null);
+    }
+
+    public Observable<Void> wipeFirmware() {
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_MORPHEUS_DFU_BEGIN)
+                .setVersion(COMMAND_VERSION)
+                .build();
+        return performCommand(morpheusCommand).map(ignored -> null);
+    }
+
+    public Observable<Void> setWifiNetwork(String bssid,
+                                           String ssid,
+                                           SenseBle.wifi_endpoint.sec_type securityType,
+                                           String password) {
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
+                .setVersion(COMMAND_VERSION)
+                .setWifiName(bssid)
+                .setWifiSSID(ssid)
+                .setWifiPassword(password)
+                .setSecurityType(securityType)
+                .build();
+        return performCommand(morpheusCommand).map(ignored -> null);
+    }
+
+    public Observable<String> pairPill(final String accountToken) {
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
+                .setVersion(COMMAND_VERSION)
+                .setAccountId(accountToken)
+                .build();
+        return performCommand(morpheusCommand).map(MorpheusCommand::getDeviceId);
+    }
+
+    public Observable<Void> linkAccount(final String accountToken) {
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
+                .setVersion(COMMAND_VERSION)
+                .setAccountId(accountToken)
+                .build();
+        return performCommand(morpheusCommand).map(ignored -> null);
+    }
+
+    public Observable<Void> factoryReset() {
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_FACTORY_RESET)
+                .setVersion(COMMAND_VERSION)
+                .build();
+        return performCommand(morpheusCommand).map(ignored -> null);
+    }
+
+    public Observable<List<SenseBle.wifi_endpoint>> scanForWifiNetworks() {
+        return null;
+    }
+
     public Observable<String> deviceId() {
-        return Observable.create((Observable.OnSubscribe<String>) s -> {
-            dataHandler.setDataCallback(new BleOperationCallback<MorpheusBle.MorpheusCommand>() {
-                @Override
-                public void onCompleted(HelloBleDevice sender, MorpheusBle.MorpheusCommand data) {
-                    Observable<UUID> unsubscribe = device.unsubscribeNotification(service, BleUUID.CHAR_PROTOBUF_COMMAND_RESPONSE_UUID, BleUUID.DESCRIPTOR_CHAR_COMMAND_RESPONSE_CONFIG);
-                    unsubscribe.subscribe(ignored -> {
-                        s.onNext(data.getDeviceId());
-                        s.onCompleted();
-                    }, s::onError);
-                }
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_GET_DEVICE_ID)
+                .setVersion(COMMAND_VERSION)
+                .build();
 
-                @Override
-                public void onFailed(HelloBleDevice sender, OperationFailReason reason, int errorCode) {
-                    Observable<UUID> unsubscribe = device.unsubscribeNotification(service, BleUUID.CHAR_PROTOBUF_COMMAND_RESPONSE_UUID, BleUUID.DESCRIPTOR_CHAR_COMMAND_RESPONSE_CONFIG);
-                    unsubscribe.subscribe(ignored -> s.onError(new BleObserverCallback.BluetoothError(reason, errorCode)), s::onError);
-                }
-            });
-
-            Observable<UUID> subscribe = device.subscribeNotification(service, BleUUID.CHAR_PROTOBUF_COMMAND_RESPONSE_UUID, BleUUID.DESCRIPTOR_CHAR_COMMAND_RESPONSE_CONFIG);
-            subscribe.subscribe(ignored -> {
-                final MorpheusBle.MorpheusCommand morpheusCommand = MorpheusBle.MorpheusCommand.newBuilder()
-                        .setType(MorpheusBle.MorpheusCommand.CommandType.MORPHEUS_COMMAND_GET_DEVICE_ID)
-                        .setVersion(COMMAND_VERSION)
-                        .build();
-                final byte[] commandData = morpheusCommand.toByteArray();
-                Observable<Void> write = writeLargeCommand(BleUUID.CHAR_PROTOBUF_COMMAND_UUID, commandData);
-                write.subscribe(ignored1 -> {}, s::onError);
-            }, s::onError);
-        });
+        return performCommand(morpheusCommand).map(MorpheusCommand::getDeviceId);
     }
 
     //endregion

@@ -1,19 +1,11 @@
 package is.hello.sense.graph.presenters;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.google.common.primitives.Ints;
 import com.google.protobuf.ByteString;
-import com.hello.ble.BleOperationCallback;
-import com.hello.ble.devices.HelloBleDevice;
-import com.hello.ble.devices.Morpheus;
-import com.hello.ble.protobuf.MorpheusBle;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,8 +18,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.util.BleObserverCallback;
-import is.hello.sense.util.Constants;
+import is.hello.sense.bluetooth.devices.SenseDevice;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -38,22 +30,19 @@ import rx.schedulers.Schedulers;
 @Singleton public class HardwarePresenter extends Presenter {
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
-    private final Handler timeoutHandler;
 
-    private @Nullable Observable<Morpheus> repairingTask;
-    private @Nullable Morpheus device;
+    private @Nullable Observable<SenseDevice> repairingTask;
+    private @Nullable SenseDevice device;
 
     private final Action1<Throwable> respondToError = e -> {
-        if (BleObserverCallback.BluetoothError.isFatal(e)) {
-            clearDevice();
-        }
+        //TODO: fatal errors
+        clearDevice();
     };
 
     @Inject public HardwarePresenter(@NonNull PreferencesPresenter preferencesPresenter,
                                      @NonNull ApiSessionManager apiSessionManager) {
         this.preferencesPresenter = preferencesPresenter;
         this.apiSessionManager = apiSessionManager;
-        this.timeoutHandler = new Handler(Looper.getMainLooper());
     }
 
 
@@ -82,7 +71,7 @@ import rx.schedulers.Schedulers;
     }
 
 
-    public @Nullable Morpheus getDevice() {
+    public @Nullable SenseDevice getDevice() {
         return device;
     }
 
@@ -90,24 +79,26 @@ import rx.schedulers.Schedulers;
         return Observable.error(new NoPairedDeviceException());
     }
 
-    public Observable<Set<Morpheus>> scanForDevices() {
+    public Observable<Set<SenseDevice>> scanForDevices() {
         logEvent("scanForDevices()");
 
-        return Observable.create((Observable.OnSubscribe<Set<Morpheus>>) s -> Morpheus.discover(new BleObserverCallback<>(s, null, timeoutHandler, BleObserverCallback.NO_TIMEOUT), Constants.BLE_SCAN_TIMEOUT_MS))
-                         .subscribeOn(AndroidSchedulers.mainThread());
+        // TODO: Scan
+        return null;
+        /*return Observable.create((Observable.OnSubscribe<Set<SenseDevice>>) s -> SenseDevice.discover(new BleObserverCallback<>(s, null, timeoutHandler, BleObserverCallback.NO_TIMEOUT), Constants.BLE_SCAN_TIMEOUT_MS))
+                         .subscribeOn(AndroidSchedulers.mainThread());*/
     }
 
-    public @Nullable Morpheus bestDeviceForPairing(@NonNull Set<Morpheus> devices) {
+    public @Nullable SenseDevice bestDeviceForPairing(@NonNull Set<SenseDevice> devices) {
         logEvent("bestDeviceForPairing(" + devices + ")");
 
         if (devices.isEmpty()) {
             return null;
         } else {
-            return Collections.max(devices, (l, r) -> Ints.compare(l.getScanTimeRssi(), r.getScanTimeRssi()));
+            return Collections.max(devices, (l, r) -> Ints.compare(l.getScannedRssi(), r.getScannedRssi()));
         }
     }
 
-    public Observable<Morpheus> rediscoverDevice() {
+    public Observable<SenseDevice> rediscoverDevice() {
         logEvent("rediscoverDevice()");
 
         if (device != null) {
@@ -120,11 +111,13 @@ import rx.schedulers.Schedulers;
             return repairingTask;
         }
 
-        String deviceAddress = preferencesPresenter.getString(PreferencesPresenter.PAIRED_DEVICE_ADDRESS, null);
+        // TODO: Discovery
+        return null;
+        /*String deviceAddress = preferencesPresenter.getString(PreferencesPresenter.PAIRED_DEVICE_ADDRESS, null);
         if (TextUtils.isEmpty(deviceAddress)) {
             return Observable.error(new Exception(""));
         } else {
-            this.repairingTask = Observable.create((Observable.OnSubscribe<Morpheus>) s -> Morpheus.discover(deviceAddress, new BleObserverCallback<>(s, null, timeoutHandler, BleObserverCallback.NO_TIMEOUT), Constants.BLE_SCAN_TIMEOUT_MS))
+            this.repairingTask = Observable.create((Observable.OnSubscribe<SenseDevice>) s -> SenseDevice.discover(deviceAddress, new BleObserverCallback<>(s, null, timeoutHandler, BleObserverCallback.NO_TIMEOUT), Constants.BLE_SCAN_TIMEOUT_MS))
                     .flatMap(device -> {
                         if (device != null) {
                             logEvent("rediscoveredDevice(" + device + ")");
@@ -138,86 +131,71 @@ import rx.schedulers.Schedulers;
                     })
                     .subscribeOn(AndroidSchedulers.mainThread());
             return repairingTask;
-        }
+        }*/
     }
 
-    public Observable<Void> connectToDevice(@NonNull Morpheus device) {
+    public Observable<SenseDevice> connectToDevice(@NonNull SenseDevice device) {
         logEvent("connectToDevice(" + device + ")");
 
-        if (device.isConnected() && device.getBondState() != BluetoothDevice.BOND_NONE) {
+        if (device.isConnected() && device.getBondStatus() != is.hello.sense.bluetooth.stacks.Device.BOND_BONDED) {
             logEvent("already paired with device " + device);
 
             return Observable.just(null);
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.connect(new BleObserverCallback<>(s, device, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .doOnNext(ignored -> {
-                             logEvent("pairedWithDevice(" + device + ")");
-                             setPairedDeviceAddress(device.getAddress());
-                             this.device = device;
-                         })
-                         .subscribeOn(AndroidSchedulers.mainThread());
+        return device.connect().doOnNext(ignored -> {
+            logEvent("pairedWithDevice(" + device + ")");
+            setPairedDeviceAddress(device.getAddress());
+            this.device = device;
+        });
     }
 
-    public Observable<Void> reconnect() {
+    public Observable<SenseDevice> reconnect() {
         logEvent("reconnect()");
 
         if (device == null) {
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> {
-            device.setDisconnectedCallback(new BleOperationCallback<Integer>() {
-                @Override
-                public void onCompleted(HelloBleDevice sender, Integer data) {
-                    device.connect(new BleObserverCallback<>(s, device, timeoutHandler, BleObserverCallback.NO_TIMEOUT));
-                }
-
-                @Override
-                public void onFailed(HelloBleDevice sender, OperationFailReason reason, int errorCode) {
-                    logEvent("reconnect failed " + reason + " (" + errorCode + ")");
-                    s.onError(new BleObserverCallback.BluetoothError(reason, errorCode));
-                }
-            });
-            device.disconnect();
-        }).subscribeOn(AndroidSchedulers.mainThread());
+        return Observable.create((Observable.OnSubscribe<SenseDevice>) s -> device.disconnect().subscribe(ignored -> device.connect().subscribe(s), s::onError))
+                         .subscribeOn(AndroidSchedulers.mainThread());
     }
 
-    public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks() {
+    public Observable<List<SenseBle.wifi_endpoint>> scanForWifiNetworks() {
         if (device == null) {
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<List<MorpheusBle.wifi_endpoint>>) s -> device.scanSupportedWIFIAP(new BleObserverCallback<>(s, device, timeoutHandler, BleObserverCallback.NO_TIMEOUT)))
-                         .subscribeOn(AndroidSchedulers.mainThread())
-                         .doOnError(this.respondToError)
-                         .map(networks -> {
-                             if (!networks.isEmpty())
-                                 Collections.sort(networks, (l, r) -> Ints.compare(l.getRssi(), r.getRssi()));
+        return device.scanForWifiNetworks()
+                     .subscribeOn(AndroidSchedulers.mainThread())
+                     .doOnError(this.respondToError)
+                     .map(networks -> {
+                         if (!networks.isEmpty())
+                             Collections.sort(networks, (l, r) -> Ints.compare(l.getRssi(), r.getRssi()));
 
-                             return networks;
-                         });
+                         return networks;
+                     });
     }
 
-    public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks(int passCount) {
+    public Observable<List<SenseBle.wifi_endpoint>> scanForWifiNetworks(int passCount) {
         if (passCount == 0)
             throw new IllegalArgumentException("passCount == 0");
 
         if (passCount == 1)
             return scanForWifiNetworks();
 
-        return Observable.create((Observable.OnSubscribe<List<MorpheusBle.wifi_endpoint>>) s -> {
+        return Observable.create((Observable.OnSubscribe<List<SenseBle.wifi_endpoint>>) s -> {
             Scheduler scheduler = Schedulers.computation();
-            Observer<List<MorpheusBle.wifi_endpoint>> observer = new Observer<List<MorpheusBle.wifi_endpoint>>() {
+            Observer<List<SenseBle.wifi_endpoint>> observer = new Observer<List<SenseBle.wifi_endpoint>>() {
                 int pass = 0;
-                Map<ByteString, MorpheusBle.wifi_endpoint> accumulator = new HashMap<>();
+                Map<ByteString, SenseBle.wifi_endpoint> accumulator = new HashMap<>();
 
                 @Override
                 public void onCompleted() {
                     if (++pass < passCount) {
                         scanForWifiNetworks().subscribeOn(scheduler).subscribe(this);
                     } else {
-                        List<MorpheusBle.wifi_endpoint> results = new ArrayList<>();
+                        List<SenseBle.wifi_endpoint> results = new ArrayList<>();
                         results.addAll(accumulator.values());
                         Collections.sort(results, (l, r) -> l.getSsid().compareTo(r.getSsid()));
 
@@ -232,8 +210,8 @@ import rx.schedulers.Schedulers;
                 }
 
                 @Override
-                public void onNext(List<MorpheusBle.wifi_endpoint> wifi_endpoints) {
-                    for (MorpheusBle.wifi_endpoint endpoint : wifi_endpoints) {
+                public void onNext(List<SenseBle.wifi_endpoint> wifi_endpoints) {
+                    for (SenseBle.wifi_endpoint endpoint : wifi_endpoints) {
                         accumulator.put(endpoint.getBssid(), endpoint);
                     }
                 }
@@ -242,16 +220,16 @@ import rx.schedulers.Schedulers;
         });
     }
 
-    public Observable<Void> sendWifiCredentials(String bssid, String ssid, MorpheusBle.wifi_endpoint.sec_type securityType, String password) {
+    public Observable<Void> sendWifiCredentials(String bssid, String ssid, SenseBle.wifi_endpoint.sec_type securityType, String password) {
         logEvent("sendWifiCredentials()");
 
         if (device == null) {
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.setWIFIConnection(bssid, ssid, securityType, password, new BleObserverCallback<>(s, device, timeoutHandler, Constants.BLE_SET_WIFI_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread())
-                         .doOnError(this.respondToError);
+        return device.setWifiNetwork(bssid, ssid, securityType, password)
+                     .subscribeOn(AndroidSchedulers.mainThread())
+                     .doOnError(this.respondToError);
     }
 
     public Observable<Void> linkAccount() {
@@ -261,9 +239,8 @@ import rx.schedulers.Schedulers;
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.linkAccount(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s, device, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread())
-                         .doOnError(this.respondToError);
+        return device.linkAccount(apiSessionManager.getAccessToken())
+                     .doOnError(this.respondToError);
     }
 
     public Observable<String> linkPill() {
@@ -273,13 +250,12 @@ import rx.schedulers.Schedulers;
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<String>) s -> device.pairPill(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s, device, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread())
-                         .doOnNext(pillId -> {
-                             logEvent("linkedWithPill(" + pillId + ")");
-                             setPairedPillId(pillId);
-                         })
-                         .doOnError(this.respondToError);
+        return device.pairPill(apiSessionManager.getAccessToken())
+                     .doOnNext(pillId -> {
+                         logEvent("linkedWithPill(" + pillId + ")");
+                         setPairedPillId(pillId);
+                     })
+                     .doOnError(this.respondToError);
     }
 
     public Observable<Void> putIntoPairingMode() {
@@ -289,9 +265,8 @@ import rx.schedulers.Schedulers;
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.switchToPairingMode(new BleObserverCallback<>(s, device, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread())
-                         .doOnError(this.respondToError);
+        return device.setPairingModeEnabled(true)
+                     .doOnError(this.respondToError);
     }
 
     public Observable<Void> factoryReset() {
@@ -301,9 +276,8 @@ import rx.schedulers.Schedulers;
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.factoryReset(new BleObserverCallback<>(s, device, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread())
-                         .doOnError(this.respondToError);
+        return device.factoryReset()
+                     .doOnError(this.respondToError);
     }
 
     public void clearDevice() {

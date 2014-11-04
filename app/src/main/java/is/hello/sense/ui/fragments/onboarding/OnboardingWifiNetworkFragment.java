@@ -13,8 +13,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.hello.ble.protobuf.MorpheusBle;
-
 import org.json.JSONObject;
 
 import java.util.Collection;
@@ -22,6 +20,7 @@ import java.util.Collection;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
@@ -92,7 +91,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        MorpheusBle.wifi_endpoint network = (MorpheusBle.wifi_endpoint) adapterView.getItemAtPosition(position);
+        SenseBle.wifi_endpoint network = (SenseBle.wifi_endpoint) adapterView.getItemAtPosition(position);
         getOnboardingActivity().showSignIntoWifiNetwork(network);
     }
 
@@ -114,7 +113,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), this::bindScanResults, this::scanResultsUnavailable);
     }
 
-    public void bindScanResults(@NonNull Collection<MorpheusBle.wifi_endpoint> scanResults) {
+    public void bindScanResults(@NonNull Collection<SenseBle.wifi_endpoint> scanResults) {
         networkAdapter.clear();
         networkAdapter.addAll(scanResults);
 

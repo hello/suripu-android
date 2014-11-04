@@ -3,7 +3,9 @@ package is.hello.sense.bluetooth.errors;
 import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
 
-public class StatusException extends BluetoothException {
+public class GattException extends BluetoothException {
+    public final int statusCode;
+
     public static @NonNull String getNameForStatus(int statusCode) {
         switch (statusCode) {
             case BluetoothGatt.GATT_SUCCESS:
@@ -38,11 +40,9 @@ public class StatusException extends BluetoothException {
         }
     }
 
-    public StatusException() {
-        super("An unknown Bluetooth error occurred.");
-    }
-
-    public StatusException(int statusCode) {
+    public GattException(int statusCode) {
         super(getNameForStatus(statusCode));
+
+        this.statusCode = statusCode;
     }
 }

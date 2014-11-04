@@ -28,7 +28,8 @@ public class NativeDeviceCenter implements DeviceCenter {
     }
 
 
-    <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe) {
+    @Override
+    public <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe) {
         return Observable.create(onSubscribe)
                          .subscribeOn(scheduler);
     }

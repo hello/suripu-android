@@ -12,13 +12,12 @@ import android.support.annotation.StringRes;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.hello.ble.protobuf.MorpheusBle;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
@@ -262,7 +261,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(new OnboardingWifiNetworkFragment(), null, true);
     }
 
-    public void showSignIntoWifiNetwork(@Nullable MorpheusBle.wifi_endpoint network) {
+    public void showSignIntoWifiNetwork(@Nullable SenseBle.wifi_endpoint network) {
         showFragment(OnboardingSignIntoWifiFragment.newInstance(network), null, true);
     }
 

@@ -10,13 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.hello.ble.protobuf.MorpheusBle;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
+import is.hello.sense.bluetooth.errors.GattException;
+import is.hello.sense.bluetooth.errors.SenseException;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -27,9 +28,7 @@ import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 
-import static com.hello.ble.BleOperationCallback.OperationFailReason;
-import static com.hello.ble.protobuf.MorpheusBle.wifi_endpoint.sec_type;
-import static is.hello.sense.util.BleObserverCallback.BluetoothError;
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle.wifi_endpoint.sec_type;
 
 public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private static final String ARG_SCAN_RESULT = OnboardingSignIntoWifiFragment.class.getName() + ".ARG_SCAN_RESULT";
@@ -42,12 +41,12 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private EditText networkName;
     private EditText networkPassword;
 
-    private @Nullable MorpheusBle.wifi_endpoint network;
+    private @Nullable SenseBle.wifi_endpoint network;
 
     private boolean hasConnectedToNetwork = false;
     private boolean hasTriedReconnect = false;
 
-    public static OnboardingSignIntoWifiFragment newInstance(@Nullable MorpheusBle.wifi_endpoint network) {
+    public static OnboardingSignIntoWifiFragment newInstance(@Nullable SenseBle.wifi_endpoint network) {
         OnboardingSignIntoWifiFragment fragment = new OnboardingSignIntoWifiFragment();
 
         Bundle arguments = new Bundle();
@@ -61,7 +60,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.network = (MorpheusBle.wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
+        this.network = (SenseBle.wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
         if (savedInstanceState != null) {
             this.hasConnectedToNetwork = savedInstanceState.getBoolean("hasConnectedToNetwork", false);
         }
@@ -110,7 +109,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
     private void finishedSettingWifi() {
         apiService.updateTimeZone(SenseTimeZone.fromDefault())
-                  .subscribe(ignored -> Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated."), Functions.LOG_ERROR);
+                .subscribe(ignored -> Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated."), Functions.LOG_ERROR);
 
         OnboardingActivity activity = (OnboardingActivity) getActivity();
         activity.finishBlockingWork();
@@ -122,8 +121,8 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         String password = this.networkPassword.getText().toString();
 
         if (TextUtils.isEmpty(networkName) ||
-            (TextUtils.isEmpty(password) && network != null &&
-             network.getSecurityType() != sec_type.SL_SCAN_SEC_TYPE_OPEN)) {
+                (TextUtils.isEmpty(password) && network != null &&
+                        network.getSecurityType() != sec_type.SL_SCAN_SEC_TYPE_OPEN)) {
             return;
         }
 
@@ -132,8 +131,8 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         if (hardwarePresenter.getDevice() == null) {
             Action1<Throwable> onError = this::deviceRepairFailed;
             bindAndSubscribe(hardwarePresenter.rediscoverDevice(),
-                             device -> bindAndSubscribe(hardwarePresenter.connectToDevice(device), ignored -> sendWifiCredentials(), onError),
-                             onError);
+                    device -> bindAndSubscribe(hardwarePresenter.connectToDevice(device), ignored -> sendWifiCredentials(), onError),
+                    onError);
             return;
         }
 
@@ -170,40 +169,35 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
     public void presentError(Throwable e) {
         ErrorDialogFragment dialogFragment = null;
-        if (e instanceof BluetoothError) {
-            BluetoothError bluetoothError = (BluetoothError) e;
-            if (bluetoothError.failureReason == OperationFailReason.NETWORK_COULD_NOT_CONNECT) {
-                networkPassword.requestFocus();
+        if (e instanceof GattException && ((GattException) e).statusCode == 133 && !hasTriedReconnect) {
+            tryDeviceReconnect();
+            return;
+        } else if (e instanceof SenseException) {
+            SenseBle.ErrorType errorType = ((SenseException) e).errorType;
+            networkPassword.requestFocus();
 
-                MorpheusBle.ErrorType errorType = MorpheusBle.ErrorType.valueOf(bluetoothError.errorCode);
-                String message;
-                switch (errorType) {
-                    default:
-                    case NETWORK_ERROR:
-                    case WLAN_CONNECTION_ERROR:
-                        message = getString(R.string.error_bad_wifi_credentials);
-                        break;
+            String message;
+            switch (errorType) {
+                default:
+                case NETWORK_ERROR:
+                case WLAN_CONNECTION_ERROR:
+                    message = getString(R.string.error_bad_wifi_credentials);
+                    break;
 
-                    case NO_ENDPOINT_IN_RANGE:
-                        message = getString(R.string.error_wifi_out_of_range);
-                        break;
+                case NO_ENDPOINT_IN_RANGE:
+                    message = getString(R.string.error_wifi_out_of_range);
+                    break;
 
-                    case FAIL_TO_OBTAIN_IP:
-                        message = getString(R.string.error_wifi_ip_failure);
-                        break;
+                case FAIL_TO_OBTAIN_IP:
+                    message = getString(R.string.error_wifi_ip_failure);
+                    break;
 
-                    case DEVICE_ALREADY_PAIRED:
-                        message = getString(R.string.error_sense_already_paired);
-                        break;
-                }
-
-                dialogFragment = ErrorDialogFragment.newInstance(message);
-            } else if (bluetoothError.failureReason == OperationFailReason.GATT_ERROR &&
-                       bluetoothError.errorCode == 133 &&
-                       !hasTriedReconnect) {
-                tryDeviceReconnect();
-                return;
+                case DEVICE_ALREADY_PAIRED:
+                    message = getString(R.string.error_sense_already_paired);
+                    break;
             }
+
+            dialogFragment = ErrorDialogFragment.newInstance(message);
         }
 
         if (dialogFragment == null)

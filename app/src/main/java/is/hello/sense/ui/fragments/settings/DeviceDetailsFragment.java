@@ -11,12 +11,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.hello.ble.devices.Morpheus;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.bluetooth.devices.SenseDevice;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
@@ -102,8 +101,8 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     }
 
 
-    public void bindHardwareDevice(@NonNull Morpheus device) {
-        int rssi = device.getScanTimeRssi();
+    public void bindHardwareDevice(@NonNull SenseDevice device) {
+        int rssi = device.getScannedRssi();
         String strength;
         if (rssi <= -30) {
             strength = getString(R.string.signal_strong);

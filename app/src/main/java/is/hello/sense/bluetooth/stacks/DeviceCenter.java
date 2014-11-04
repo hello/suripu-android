@@ -13,6 +13,7 @@ public interface DeviceCenter {
 
     @NonNull Observable<List<Device>> scanForDevice(@NonNull ScanCriteria scanCriteria, long timeoutMs);
 
+    <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe);
 
     public final class ScanCriteria {
         public List<String> addresses = new ArrayList<>();

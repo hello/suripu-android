@@ -1,2 +1,1 @@
-include ':app', ':ble-android:ble'
-project(':ble-android:ble').projectDir = new File('../ble-android/ble')
+include ':app'
