@@ -38,7 +38,6 @@
             android:layout_toStartOf="@id/fragment_timeline_header_share"
             android:layout_centerVertical="true"
             android:gravity="center"
-            android:textAllCaps="true"
             android:textAppearance="@style/AppTheme.Text.ScreenTitle"
             android:text="@string/format_date_last_night"
             android:singleLine="true"

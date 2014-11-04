@@ -37,7 +37,7 @@ public class UnitFormatterTests extends InjectionTestCase {
     public void testFormatTemperature() throws Exception {
         String formattedTemperature = unitSystem.formatTemperature(4);
         assertNotNull(formattedTemperature);
-        assertEquals("39ºF", formattedTemperature);
+        assertEquals("39º", formattedTemperature);
     }
 
     public void testFormatDistance() throws Exception {

@@ -10,7 +10,7 @@ public class UsCustomaryUnitSystemTests extends TestCase {
     }
 
     public void testFormatTemperature() throws Exception {
-        assertEquals("39ºF", unitSystem.formatTemperature(4));
+        assertEquals("39º", unitSystem.formatTemperature(4));
     }
 
     public void testFormatHeight() throws Exception {

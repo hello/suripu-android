@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 
 import net.hockeyapp.android.UpdateManager;
@@ -33,6 +34,7 @@ import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
@@ -73,7 +75,7 @@ public class HomeActivity
         viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
         if (viewPager.getCurrentFragment() == null) {
-            TimelineFragment fragment = TimelineFragment.newInstance(DateTime.now());
+            TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight());
             viewPager.setCurrentFragment(fragment);
         }
 
@@ -187,7 +189,7 @@ public class HomeActivity
     @Override
     public boolean hasFragmentAfterFragment(@NonNull TimelineFragment fragment) {
         DateTime fragmentTime = fragment.getDate();
-        return fragmentTime.isBefore(DateTime.now().withTimeAtStartOfDay());
+        return fragmentTime.isBefore(DateFormatter.lastNight().withTimeAtStartOfDay());
     }
 
     @Override
@@ -217,6 +219,18 @@ public class HomeActivity
             return;
 
         int containerHeight = homeContainer.getMeasuredHeight();
+        if (containerHeight == 0) {
+            homeContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    showQuestionsButton();
+                    homeContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            });
+
+            return;
+        }
+
         int buttonHeight = newQuestionButton.getMeasuredHeight();
 
         newQuestionButton.setY((float) containerHeight);
@@ -243,6 +257,11 @@ public class HomeActivity
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) viewPager.getLayoutParams();
         layoutParams.bottomMargin = 0;
         viewPager.getParent().requestLayout();
+
+        if (containerHeight == 0) {
+            newQuestionButton.setVisibility(View.INVISIBLE);
+            return;
+        }
 
         animate(newQuestionButton)
                 .y(containerHeight + buttonHeight)

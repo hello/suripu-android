@@ -1,6 +1,9 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -34,6 +37,8 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
     private @Nullable StaticItemAdapter.Item signalStrengthItem;
     private StaticItemAdapter adapter;
+    private Device device;
+    private BluetoothAdapter bluetoothAdapter;
 
     public static DeviceDetailsFragment newInstance(@NonNull Device device) {
         DeviceDetailsFragment fragment = new DeviceDetailsFragment();
@@ -49,18 +54,22 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Device device = (Device) getArguments().getSerializable(ARG_DEVICE);
+        this.device = (Device) getArguments().getSerializable(ARG_DEVICE);
         addPresenter(hardwarePresenter);
+
+        this.bluetoothAdapter = ((BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+
 
         this.adapter = new StaticItemAdapter(getActivity());
         adapter.addItem(getString(R.string.title_device_last_seen), dateFormatter.formatAsDate(device.getLastUpdated()));
+        adapter.addItem(getString(R.string.title_device_firmware_version), device.getFirmwareVersion());
+
         if (device.getType() == Device.Type.SENSE) {
             this.signalStrengthItem = adapter.addItem(getString(R.string.title_device_signal_strength), getString(R.string.missing_data_placeholder));
+            adapter.addItem(getString(R.string.action_select_wifi_network), null, this::changeWifiNetwork);
+            adapter.addItem(getString(R.string.action_enter_pairing_mode), null, this::putIntoPairingMode);
+            adapter.addItem(getString(R.string.action_factory_reset), null, this::factoryReset);
         }
-        adapter.addItem(getString(R.string.title_device_firmware_version), device.getFirmwareVersion());
-        adapter.addItem(getString(R.string.action_select_wifi_network), null, this::changeWifiNetwork);
-        adapter.addItem(getString(R.string.action_enter_pairing_mode), null, this::putIntoPairingMode);
-        adapter.addItem(getString(R.string.action_factory_reset), null, this::factoryReset);
 
         setRetainInstance(true);
     }
@@ -81,8 +90,10 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        LoadingDialogFragment.show(getFragmentManager());
-        bindAndSubscribe(this.hardwarePresenter.rediscoverDevice(), this::bindHardwareDevice, this::hardwareDeviceUnavailable);
+        if (device.getType() == Device.Type.SENSE && bluetoothAdapter.isEnabled()) {
+            LoadingDialogFragment.show(getFragmentManager());
+            bindAndSubscribe(this.hardwarePresenter.rediscoverDevice(), this::bindHardwareDevice, this::presentError);
+        }
     }
 
     @Override
@@ -125,19 +136,15 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         }
     }
 
-    public void hardwareDeviceUnavailable(Throwable e) {
+    public void presentError(@NonNull Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
+        ErrorDialogFragment.presentError(getFragmentManager(), e);
 
         Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
 
         if (signalStrengthItem != null) {
             signalStrengthItem.setValue(getString(R.string.missing_data_placeholder));
         }
-    }
-
-    public void presentError(Throwable e) {
-        LoadingDialogFragment.close(getFragmentManager());
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 
 

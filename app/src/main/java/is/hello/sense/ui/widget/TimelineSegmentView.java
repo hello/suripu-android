@@ -55,7 +55,7 @@ public final class TimelineSegmentView extends FrameLayout {
     }
 
     public void displaySegment(@NonNull TimelineSegment segment, @NonNull Position position) {
-        int sleepDepth = segment.getSleepDepth();
+        int sleepDepth = segment.getSleepDepth() < 0 ? 0 : segment.getSleepDepth();
         graphView.setFillColor(getResources().getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth)));
         graphView.setValue(sleepDepth);
 
@@ -85,8 +85,8 @@ public final class TimelineSegmentView extends FrameLayout {
         } else {
             eventTypeImage.setImageDrawable(null);
 
-            eventTypeImage.setVisibility(INVISIBLE);
-            eventType.setVisibility(INVISIBLE);
+            eventTypeImage.setVisibility(GONE);
+            eventType.setVisibility(GONE);
         }
     }
 

@@ -51,7 +51,7 @@ public class SensorState extends ApiResponse {
         } else if (formatter != null) {
             return formatter.format(getValue());
         } else {
-            return getValue() + getUnit();
+            return getValue().longValue() + getUnit();
         }
     }
 

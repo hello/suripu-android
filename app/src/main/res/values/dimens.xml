@@ -38,6 +38,7 @@
 
     <dimen name="event_image_width">23dp</dimen>
     <dimen name="event_image_height">23dp</dimen>
+    <dimen name="event_stripe_width">27dp</dimen>
     <dimen name="event_view_min_height">30dp</dimen>
 
     <dimen name="grand_sleep_summary_width">175dp</dimen>
