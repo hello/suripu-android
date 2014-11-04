@@ -11,7 +11,7 @@ import is.hello.sense.hardware.stacks.android.NativeDeviceCenter;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 
-@Module(library = true)
+@Module(library = true, complete = false)
 @SuppressWarnings("UnusedDeclaration")
 public class BluetoothModule {
     @Provides @Singleton Scheduler provideScheduler() {

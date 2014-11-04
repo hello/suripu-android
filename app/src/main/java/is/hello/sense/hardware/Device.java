@@ -1,5 +1,7 @@
 package is.hello.sense.hardware;
 
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothProfile;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -9,9 +11,22 @@ import java.util.UUID;
 import rx.Observable;
 
 public interface Device {
-    //region Signal Strength
+    public static final String LOG_TAG = "Bluetooth/" + Device.class.getSimpleName();
+
+    public static final int BOND_NONE = BluetoothDevice.BOND_NONE;
+    public static final int BOND_BONDING = BluetoothDevice.BOND_BONDING;
+    public static final int BOND_BONDED = BluetoothDevice.BOND_BONDED;
+
+    public static final int STATUS_DISCONNECTED = BluetoothProfile.STATE_DISCONNECTED;
+    public static final int STATUS_CONNECTING = BluetoothProfile.STATE_CONNECTING;
+    public static final int STATUS_CONNECTED = BluetoothProfile.STATE_CONNECTED;
+    public static final int STATUS_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING;
+
+    //region Properties
 
     int getScannedRssi();
+    String getAddress();
+    String getName();
 
     //endregion
 
@@ -20,7 +35,7 @@ public interface Device {
 
     @NonNull Observable<Device> connect(@NonNull UUID targetService);
     @NonNull Observable<Device> disconnect();
-    boolean isConnected();
+    int getConnectionStatus();
 
     //endregion
 
@@ -29,7 +44,7 @@ public interface Device {
 
     @NonNull Observable<Device> bond();
     @NonNull Observable<Device> unbond();
-    boolean isBonded();
+    int getBondStatus();
 
     //endregion
 

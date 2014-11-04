@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.hardware.Device;
+import is.hello.sense.hardware.DeviceCenter;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -38,6 +40,8 @@ public final class NativeScanner implements Observable.OnSubscribe<List<Device>>
 
     @Override
     public void call(Subscriber<? super List<Device>> subscriber) {
+        Logger.info(DeviceCenter.LOG_TAG, "Beginning Scan");
+
         this.subscriber = subscriber;
 
         deviceCenter.adapter.startLeScan(this);
@@ -56,10 +60,15 @@ public final class NativeScanner implements Observable.OnSubscribe<List<Device>>
             return;
         }
 
-        results.put(bluetoothDevice.getAddress(), new NativeDevice(deviceCenter, bluetoothDevice, rssi));
+        NativeDevice device = new NativeDevice(deviceCenter, bluetoothDevice, rssi);
+        results.put(bluetoothDevice.getAddress(), device);
+
+        Logger.info(DeviceCenter.LOG_TAG, "Found device " + device);
     }
 
     public void onConcludeScan() {
+        Logger.info(DeviceCenter.LOG_TAG, "Completed Scan");
+
         deviceCenter.adapter.stopLeScan(this);
 
         subscriber.onNext(new ArrayList<>(results.values()));

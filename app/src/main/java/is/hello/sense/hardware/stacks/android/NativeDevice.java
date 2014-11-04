@@ -13,12 +13,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import is.hello.sense.hardware.Command;
 import is.hello.sense.hardware.Device;
 import is.hello.sense.hardware.Service;
+import is.hello.sense.hardware.errors.BluetoothException;
 import is.hello.sense.hardware.errors.BondingException;
 import is.hello.sense.hardware.errors.DiscoveryFailedException;
 import is.hello.sense.hardware.errors.NotConnectedException;
@@ -34,8 +36,8 @@ public class NativeDevice implements Device {
     private final int scannedRssi;
     private final NativeGattDispatcher gattDispatcher = new NativeGattDispatcher();
 
-    private @Nullable BluetoothGatt gatt;
-    private @Nullable List<Service> cachedServices;
+    private BluetoothGatt gatt;
+    private List<Service> cachedServices;
 
     NativeDevice(@NonNull NativeDeviceCenter deviceCenter,
                  @NonNull BluetoothDevice bluetoothDevice,
@@ -46,10 +48,24 @@ public class NativeDevice implements Device {
     }
 
 
+    //region Introspection
+
     @Override
     public int getScannedRssi() {
         return scannedRssi;
     }
+
+    @Override
+    public String getAddress() {
+        return bluetoothDevice.getAddress();
+    }
+
+    @Override
+    public String getName() {
+        return bluetoothDevice.getName();
+    }
+
+    //endregion
 
 
     //region Connectivity
@@ -75,7 +91,7 @@ public class NativeDevice implements Device {
     @NonNull
     @Override
     public Observable<Device> disconnect() {
-        if (!isConnected())
+        if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
         return deviceCenter.newConfiguredObservable(s -> {
@@ -83,6 +99,7 @@ public class NativeDevice implements Device {
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     gatt.close();
                     this.gatt = null;
+                    this.cachedServices = null;
                 }
             };
             gatt.disconnect();
@@ -90,8 +107,11 @@ public class NativeDevice implements Device {
     }
 
     @Override
-    public boolean isConnected() {
-        return (gatt != null && gatt.getConnectionState(bluetoothDevice) == BluetoothProfile.STATE_CONNECTED);
+    public int getConnectionStatus() {
+        if (gatt != null)
+            return gatt.getConnectionState(bluetoothDevice);
+        else
+            return STATUS_DISCONNECTED;
     }
 
     //endregion
@@ -176,8 +196,8 @@ public class NativeDevice implements Device {
     }
 
     @Override
-    public boolean isBonded() {
-        return (bluetoothDevice.getBondState() == BluetoothDevice.BOND_BONDED);
+    public int getBondStatus() {
+        return bluetoothDevice.getBondState();
     }
 
     //endregion
@@ -188,7 +208,7 @@ public class NativeDevice implements Device {
     @NonNull
     @Override
     public Observable<List<Service>> discoverServices() {
-        if (!isConnected())
+        if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
         return deviceCenter.newConfiguredObservable(s -> {
@@ -238,7 +258,7 @@ public class NativeDevice implements Device {
     public Observable<UUID> subscribeNotification(@NonNull Service onService,
                                                   @NonNull UUID characteristicIdentifier,
                                                   @NonNull UUID descriptorIdentifier) {
-        if (!isConnected())
+        if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
         return deviceCenter.newConfiguredObservable(s -> {
@@ -246,7 +266,17 @@ public class NativeDevice implements Device {
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
             if (gatt.setCharacteristicNotification(characteristic, true)) {
                 gattDispatcher.onDescriptorWrite = (gatt, descriptor, status) -> {
+                    if (!Arrays.equals(descriptor.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE))
+                        return;
 
+                    if (status == BluetoothGatt.GATT_SUCCESS) {
+                        s.onNext(characteristicIdentifier);
+                        s.onCompleted();
+                    } else {
+                        s.onError(new StatusException(status));
+                    }
+
+                    gattDispatcher.onDescriptorWrite = null;
                 };
                 BluetoothGattDescriptor descriptor = characteristic.getDescriptor(descriptorIdentifier);
                 descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
@@ -264,28 +294,69 @@ public class NativeDevice implements Device {
     public Observable<UUID> unsubscribeNotification(@NonNull Service onService,
                                                     @NonNull UUID characteristicIdentifier,
                                                     @NonNull UUID descriptorIdentifier) {
-        if (!isConnected())
+        if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
-        return null;
+        return deviceCenter.newConfiguredObservable(s -> {
+            BluetoothGattService service = getGattService(onService);
+            BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
+            gattDispatcher.onDescriptorWrite = (gatt, descriptor, status) -> {
+                if (!Arrays.equals(descriptor.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE))
+                    return;
+
+                if (status == BluetoothGatt.GATT_SUCCESS) {
+                    if (gatt.setCharacteristicNotification(characteristic, false)) {
+                        s.onNext(characteristicIdentifier);
+                        s.onCompleted();
+                    } else {
+                        s.onError(new SubscriptionFailedException());
+                    }
+                } else {
+                    s.onError(new StatusException(status));
+                }
+
+                gattDispatcher.onDescriptorWrite = null;
+            };
+            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(descriptorIdentifier);
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            if (!gatt.writeDescriptor(descriptor)) {
+                s.onError(new SubscriptionFailedException());
+            }
+        });
     }
 
     @NonNull
     @Override
     public Observable<Void> writeCommand(@NonNull Service onService, @NonNull Command command) {
-        if (!isConnected())
+        if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
-        return null;
+        return deviceCenter.newConfiguredObservable(s -> {
+            gattDispatcher.onCharacteristicWrite = (gatt, characteristic, status) -> {
+                if (status != BluetoothGatt.GATT_SUCCESS) {
+                    s.onError(new StatusException(status));
+                } else {
+                    s.onNext(null);
+                    s.onCompleted();
+                }
+            };
+
+            BluetoothGattService service = getGattService(onService);
+            BluetoothGattCharacteristic characteristic = service.getCharacteristic(command.identifier);
+            characteristic.setValue(command.payload);
+            if (!gatt.writeCharacteristic(characteristic)) {
+                s.onError(new BluetoothException());
+            }
+        });
     }
 
     @NonNull
     @Override
     public Observable<Command> incomingPackets() {
-        if (!isConnected())
+        if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
-        return null;
+        return gattDispatcher.incomingSubject;
     }
 
     //endregion
