@@ -5,7 +5,6 @@
     android:id="@+id/view_timeline_segment_graph"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minHeight="@dimen/event_view_min_height"
     android:orientation="horizontal"
     app:leftInset="38dp"
     app:rightInset="@dimen/gap_outer"
@@ -15,7 +14,7 @@
 
     <FrameLayout
         android:id="@+id/view_timeline_segment_event_stripe"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/event_stripe_width"
         android:layout_height="match_parent"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
@@ -26,7 +25,6 @@
             android:layout_width="@dimen/event_image_width"
             android:layout_height="@dimen/event_image_height"
             android:layout_gravity="center"
-            android:layout_margin="2dp"
             android:scaleType="center"
             android:src="@drawable/asleep"
             android:contentDescription="@string/event_type_content_description"

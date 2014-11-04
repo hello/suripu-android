@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -12,13 +13,16 @@ import android.widget.ArrayAdapter;
 
 import java.util.List;
 
+import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.widget.TimelineSegmentView;
 
 public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
-    private static final int NUMBER_HOURS_ON_SCREEN = 4;
+    private static final int NUMBER_HOURS_ON_SCREEN = 20;
 
     private final int itemHeight;
+    private final int eventImageHeight;
+    private final int stripeCornerRadius;
 
     //region Lifecycle
 
@@ -29,6 +33,8 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         Point size = new Point();
         windowManager.getDefaultDisplay().getSize(size);
         this.itemHeight = size.y / NUMBER_HOURS_ON_SCREEN;
+        this.eventImageHeight = context.getResources().getDimensionPixelSize(R.dimen.event_image_height);
+        this.stripeCornerRadius = context.getResources().getDimensionPixelOffset(R.dimen.timeline_stripe_corner_radius);
     }
 
     //endregion
@@ -49,8 +55,16 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         clear();
     }
 
-    private int calculateHeight(@NonNull TimelineSegment segment) {
-        return (int) (segment.getDuration() / 3600) * itemHeight;
+    private int calculateHeight(int position, @NonNull TimelineSegment segment) {
+        if (segment.getEventType() != null) {
+            int itemHeight = this.eventImageHeight + (this.itemHeight * 2);
+            return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
+        } else if (position == 0 || position == getCount() - 1) {
+            int itemHeight = this.stripeCornerRadius;
+            return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
+        } else {
+            return (int) ((segment.getDuration() / 3600f) * this.itemHeight);
+        }
     }
 
     @Override
@@ -68,7 +82,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
         TimelineSegment segment = getItem(position);
         view.displaySegment(segment, segmentPosition);
-        view.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, calculateHeight(segment)));
+        view.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, calculateHeight(position, segment)));
 
         return view;
     }

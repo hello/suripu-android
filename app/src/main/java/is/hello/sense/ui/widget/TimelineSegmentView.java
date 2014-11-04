@@ -85,8 +85,8 @@ public final class TimelineSegmentView extends FrameLayout {
         } else {
             eventTypeImage.setImageDrawable(null);
 
-            eventTypeImage.setVisibility(INVISIBLE);
-            eventType.setVisibility(INVISIBLE);
+            eventTypeImage.setVisibility(GONE);
+            eventType.setVisibility(GONE);
         }
     }
 
