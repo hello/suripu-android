@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 
 import net.hockeyapp.android.UpdateManager;
@@ -217,6 +218,18 @@ public class HomeActivity
             return;
 
         int containerHeight = homeContainer.getMeasuredHeight();
+        if (containerHeight == 0) {
+            homeContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    showQuestionsButton();
+                    homeContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            });
+
+            return;
+        }
+
         int buttonHeight = newQuestionButton.getMeasuredHeight();
 
         newQuestionButton.setY((float) containerHeight);
@@ -243,6 +256,11 @@ public class HomeActivity
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) viewPager.getLayoutParams();
         layoutParams.bottomMargin = 0;
         viewPager.getParent().requestLayout();
+
+        if (containerHeight == 0) {
+            newQuestionButton.setVisibility(View.INVISIBLE);
+            return;
+        }
 
         animate(newQuestionButton)
                 .y(containerHeight + buttonHeight)
