@@ -3,8 +3,8 @@ package is.hello.sense.graph.presenters;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
-import com.google.common.primitives.Ints;
 import com.google.protobuf.ByteString;
 
 import java.util.ArrayList;
@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,6 +19,9 @@ import javax.inject.Singleton;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.SenseDevice;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
+import is.hello.sense.bluetooth.errors.SenseException;
+import is.hello.sense.bluetooth.stacks.DeviceCenter;
+import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -30,19 +32,23 @@ import rx.schedulers.Schedulers;
 @Singleton public class HardwarePresenter extends Presenter {
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
+    private final DeviceCenter deviceCenter;
 
     private @Nullable Observable<SenseDevice> repairingTask;
     private @Nullable SenseDevice device;
 
     private final Action1<Throwable> respondToError = e -> {
-        //TODO: fatal errors
-        clearDevice();
+        if (!(e instanceof SenseException)) {
+            clearDevice();
+        }
     };
 
     @Inject public HardwarePresenter(@NonNull PreferencesPresenter preferencesPresenter,
-                                     @NonNull ApiSessionManager apiSessionManager) {
+                                     @NonNull ApiSessionManager apiSessionManager,
+                                     @NonNull DeviceCenter deviceCenter) {
         this.preferencesPresenter = preferencesPresenter;
         this.apiSessionManager = apiSessionManager;
+        this.deviceCenter = deviceCenter;
     }
 
 
@@ -79,22 +85,20 @@ import rx.schedulers.Schedulers;
         return Observable.error(new NoPairedDeviceException());
     }
 
-    public Observable<Set<SenseDevice>> scanForDevices() {
+    public Observable<List<SenseDevice>> scanForDevices() {
         logEvent("scanForDevices()");
 
-        // TODO: Scan
-        return null;
-        /*return Observable.create((Observable.OnSubscribe<Set<SenseDevice>>) s -> SenseDevice.discover(new BleObserverCallback<>(s, null, timeoutHandler, BleObserverCallback.NO_TIMEOUT), Constants.BLE_SCAN_TIMEOUT_MS))
-                         .subscribeOn(AndroidSchedulers.mainThread());*/
+        DeviceCenter.ScanCriteria scanCriteria = new DeviceCenter.ScanCriteria();
+        return SenseDevice.scan(deviceCenter, scanCriteria);
     }
 
-    public @Nullable SenseDevice bestDeviceForPairing(@NonNull Set<SenseDevice> devices) {
+    public @Nullable SenseDevice bestDeviceForPairing(@NonNull List<SenseDevice> devices) {
         logEvent("bestDeviceForPairing(" + devices + ")");
 
         if (devices.isEmpty()) {
             return null;
         } else {
-            return Collections.max(devices, (l, r) -> Ints.compare(l.getScannedRssi(), r.getScannedRssi()));
+            return Collections.max(devices, (l, r) -> Functions.compareInts(l.getScannedRssi(), r.getScannedRssi()));
         }
     }
 
@@ -111,27 +115,26 @@ import rx.schedulers.Schedulers;
             return repairingTask;
         }
 
-        // TODO: Discovery
-        return null;
-        /*String deviceAddress = preferencesPresenter.getString(PreferencesPresenter.PAIRED_DEVICE_ADDRESS, null);
+        String deviceAddress = preferencesPresenter.getString(PreferencesPresenter.PAIRED_DEVICE_ADDRESS, null);
         if (TextUtils.isEmpty(deviceAddress)) {
             return Observable.error(new Exception(""));
         } else {
-            this.repairingTask = Observable.create((Observable.OnSubscribe<SenseDevice>) s -> SenseDevice.discover(deviceAddress, new BleObserverCallback<>(s, null, timeoutHandler, BleObserverCallback.NO_TIMEOUT), Constants.BLE_SCAN_TIMEOUT_MS))
-                    .flatMap(device -> {
-                        if (device != null) {
-                            logEvent("rediscoveredDevice(" + device + ")");
-                            this.device = device;
-                            this.repairingTask = null;
+            DeviceCenter.ScanCriteria scanCriteria = new DeviceCenter.ScanCriteria();
+            scanCriteria.addAddress(deviceAddress);
+            scanCriteria.setLimit(1);
+            this.repairingTask = SenseDevice.scan(deviceCenter, scanCriteria).flatMap(devices -> {
+                if (!devices.isEmpty()) {
+                    logEvent("rediscoveredDevice(" + device + ")");
+                    this.device = devices.get(0);
+                    this.repairingTask = null;
 
-                            return Observable.just(device);
-                        } else {
-                            return Observable.error(new Exception("Could not rediscover device."));
-                        }
-                    })
-                    .subscribeOn(AndroidSchedulers.mainThread());
+                    return Observable.just(device);
+                } else {
+                    return Observable.error(new Exception("Could not rediscover device."));
+                }
+            });
             return repairingTask;
-        }*/
+        }
     }
 
     public Observable<SenseDevice> connectToDevice(@NonNull SenseDevice device) {
@@ -171,7 +174,7 @@ import rx.schedulers.Schedulers;
                      .doOnError(this.respondToError)
                      .map(networks -> {
                          if (!networks.isEmpty())
-                             Collections.sort(networks, (l, r) -> Ints.compare(l.getRssi(), r.getRssi()));
+                             Collections.sort(networks, (l, r) -> Functions.compareInts(l.getRssi(), r.getRssi()));
 
                          return networks;
                      });

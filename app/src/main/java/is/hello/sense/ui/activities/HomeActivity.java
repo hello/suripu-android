@@ -5,29 +5,23 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
-import com.google.common.primitives.Ints;
 
 import net.hockeyapp.android.UpdateManager;
 
 import org.joda.time.DateTime;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.functional.Functions;
+import is.hello.sense.bluetooth.stacks.DeviceCenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
-import is.hello.sense.bluetooth.stacks.DeviceCenter;
-import is.hello.sense.bluetooth.devices.SenseDevice;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.notifications.NotificationType;
@@ -54,8 +48,6 @@ public class HomeActivity
     @Inject QuestionsPresenter questionsPresenter;
     @Inject PreferencesPresenter preferences;
     @Inject BuildValues buildValues;
-
-    @Inject DeviceCenter deviceCenter;
 
     private ViewGroup homeContainer;
     private SlidingLayersView slidingLayersView;
@@ -103,13 +95,6 @@ public class HomeActivity
 
         if (!buildValues.isDebugBuild() && buildValues.debugScreenEnabled)
             UpdateManager.register(this, getString(R.string.build_hockey_id));
-
-        SenseDevice.scan(deviceCenter)
-                .subscribe(ds -> {
-                    Collections.sort(ds, (l, r) -> Ints.compare(l.getScannedRssi(), r.getScannedRssi()));
-                    SenseDevice strongest = ds.get(0);
-                    strongest.connect().subscribe(device -> Log.i("Bluetooth", "Connected to device " + device), Functions.LOG_ERROR);
-                }, Functions.LOG_ERROR);
     }
 
     @Override
