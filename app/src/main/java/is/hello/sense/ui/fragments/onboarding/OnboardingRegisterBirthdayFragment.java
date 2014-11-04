@@ -38,13 +38,13 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
         DatePicker datePicker = (DatePicker) view.findViewById(R.id.fragment_onboarding_register_birthday_picker);
         if (account.getBirthDate() != null) {
             datePicker.updateDate(account.getBirthDate().getYear(),
-                                  account.getBirthDate().getMonthOfYear(),
+                                  account.getBirthDate().getMonthOfYear() - 1,
                                   account.getBirthDate().getDayOfMonth());
         }
 
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
         nextButton.setOnClickListener(ignored -> {
-            account.setBirthDate(new LocalDate(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth()));
+            account.setBirthDate(new LocalDate(datePicker.getYear(), datePicker.getMonth() + 1, datePicker.getDayOfMonth()));
             getContainer().onAccountUpdated(this);
         });
 
