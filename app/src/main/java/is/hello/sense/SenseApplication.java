@@ -14,7 +14,7 @@ import dagger.ObjectGraph;
 import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.graph.SenseAppModule;
-import is.hello.sense.hardware.BluetoothModule;
+import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;

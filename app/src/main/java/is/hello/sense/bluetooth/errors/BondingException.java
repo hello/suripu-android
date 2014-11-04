@@ -1,4 +1,4 @@
-package is.hello.sense.hardware.errors;
+package is.hello.sense.bluetooth.errors;
 
 public class BondingException extends BluetoothException {
 }

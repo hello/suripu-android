@@ -1,15 +1,14 @@
-package is.hello.sense.hardware.stacks.android;
+package is.hello.sense.bluetooth.stacks.android;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import is.hello.sense.hardware.Device;
-import is.hello.sense.hardware.DeviceCenter;
+import is.hello.sense.bluetooth.stacks.Device;
+import is.hello.sense.bluetooth.stacks.DeviceCenter;
 import rx.Observable;
 import rx.Scheduler;
 

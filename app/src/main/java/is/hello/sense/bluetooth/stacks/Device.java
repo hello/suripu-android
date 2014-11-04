@@ -1,11 +1,10 @@
-package is.hello.sense.hardware;
+package is.hello.sense.bluetooth.stacks;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothProfile;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.hello.ble.stack.application.HelloDataHandler;
 import com.hello.ble.stack.transmission.BlePacketHandler;
 
 import java.util.List;

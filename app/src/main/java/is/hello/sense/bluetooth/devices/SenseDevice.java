@@ -1,4 +1,4 @@
-package is.hello.sense.hardware.devices;
+package is.hello.sense.bluetooth.devices;
 
 import android.support.annotation.NonNull;
 
@@ -14,10 +14,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import is.hello.sense.hardware.Command;
-import is.hello.sense.hardware.Device;
-import is.hello.sense.hardware.DeviceCenter;
-import is.hello.sense.hardware.Service;
+import is.hello.sense.bluetooth.stacks.Command;
+import is.hello.sense.bluetooth.stacks.Device;
+import is.hello.sense.bluetooth.stacks.DeviceCenter;
+import is.hello.sense.bluetooth.stacks.Service;
 import is.hello.sense.util.BleObserverCallback;
 import rx.Observable;
 import rx.Observer;

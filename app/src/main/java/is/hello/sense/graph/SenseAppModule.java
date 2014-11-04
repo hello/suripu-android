@@ -22,7 +22,7 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
-import is.hello.sense.hardware.BluetoothModule;
+import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HomeActivity;

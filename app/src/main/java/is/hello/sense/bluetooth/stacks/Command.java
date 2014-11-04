@@ -1,4 +1,4 @@
-package is.hello.sense.hardware;
+package is.hello.sense.bluetooth.stacks;
 
 import android.support.annotation.NonNull;
 

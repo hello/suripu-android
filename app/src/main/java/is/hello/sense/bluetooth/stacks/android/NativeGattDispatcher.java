@@ -1,4 +1,4 @@
-package is.hello.sense.hardware.stacks.android;
+package is.hello.sense.bluetooth.stacks.android;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
 
 import com.hello.ble.stack.transmission.BlePacketHandler;
 
-import is.hello.sense.hardware.Device;
+import is.hello.sense.bluetooth.stacks.Device;
 import is.hello.sense.util.Logger;
 import rx.functions.Action2;
 import rx.functions.Action3;

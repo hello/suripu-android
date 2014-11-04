@@ -1,4 +1,4 @@
-package is.hello.sense.hardware.stacks.android;
+package is.hello.sense.bluetooth.stacks.android;
 
 import android.bluetooth.BluetoothGattService;
 import android.support.annotation.NonNull;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import is.hello.sense.hardware.Service;
+import is.hello.sense.bluetooth.stacks.Service;
 
 public final class NativeService implements Service {
     public static final int SERVICE_TYPE_PRIMARY = BluetoothGattService.SERVICE_TYPE_PRIMARY;

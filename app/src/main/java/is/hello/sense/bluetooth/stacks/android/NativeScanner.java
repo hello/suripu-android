@@ -1,20 +1,18 @@
-package is.hello.sense.hardware.stacks.android;
+package is.hello.sense.bluetooth.stacks.android;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import is.hello.sense.hardware.Device;
-import is.hello.sense.hardware.DeviceCenter;
+import is.hello.sense.bluetooth.stacks.Device;
+import is.hello.sense.bluetooth.stacks.DeviceCenter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;

@@ -1,7 +1,6 @@
-package is.hello.sense.hardware;
+package is.hello.sense.bluetooth.stacks;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;

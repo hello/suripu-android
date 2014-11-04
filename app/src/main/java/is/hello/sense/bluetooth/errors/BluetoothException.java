@@ -1,4 +1,4 @@
-package is.hello.sense.hardware.errors;
+package is.hello.sense.bluetooth.errors;
 
 public class BluetoothException extends RuntimeException {
     public BluetoothException() {

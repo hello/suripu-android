@@ -1,4 +1,4 @@
-package is.hello.sense.hardware.stacks.android;
+package is.hello.sense.bluetooth.stacks.android;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -8,7 +8,6 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -19,15 +18,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import is.hello.sense.hardware.Command;
-import is.hello.sense.hardware.Device;
-import is.hello.sense.hardware.Service;
-import is.hello.sense.hardware.errors.BluetoothException;
-import is.hello.sense.hardware.errors.BondingException;
-import is.hello.sense.hardware.errors.DiscoveryFailedException;
-import is.hello.sense.hardware.errors.NotConnectedException;
-import is.hello.sense.hardware.errors.StatusException;
-import is.hello.sense.hardware.errors.SubscriptionFailedException;
+import is.hello.sense.bluetooth.stacks.Command;
+import is.hello.sense.bluetooth.stacks.Device;
+import is.hello.sense.bluetooth.stacks.Service;
+import is.hello.sense.bluetooth.errors.BluetoothException;
+import is.hello.sense.bluetooth.errors.BondingException;
+import is.hello.sense.bluetooth.errors.DiscoveryFailedException;
+import is.hello.sense.bluetooth.errors.NotConnectedException;
+import is.hello.sense.bluetooth.errors.StatusException;
+import is.hello.sense.bluetooth.errors.SubscriptionFailedException;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscription;
