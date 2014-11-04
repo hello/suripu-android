@@ -70,7 +70,7 @@ public class DevicesFragment extends InjectionFragment implements AdapterView.On
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Device device = (Device) adapterView.getItemAtPosition(position);
         DeviceDetailsFragment fragment = DeviceDetailsFragment.newInstance(device);
-        ((SettingsActivity) getActivity()).showFragment(fragment, null, true);
+        ((SettingsActivity) getActivity()).showFragment(fragment, getString(device.getType().nameRes), true);
     }
 
 
