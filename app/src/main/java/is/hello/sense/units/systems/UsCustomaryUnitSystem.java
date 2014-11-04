@@ -13,7 +13,7 @@ public class UsCustomaryUnitSystem extends UnitSystem {
 
     @Override
     public String formatTemperature(float temperature) {
-        return UnitOperations.celsiusToFahrenheit((long) temperature) + "ºF";
+        return UnitOperations.celsiusToFahrenheit((long) temperature) + "º";
     }
 
     @Override

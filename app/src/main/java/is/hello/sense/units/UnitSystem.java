@@ -57,7 +57,7 @@ public class UnitSystem {
     }
 
     public String formatTemperature(float temperature) {
-        return (long) (Math.round(temperature)) + "ºC";
+        return (long) (Math.round(temperature)) + "º";
     }
 
     public String formatHeight(float distance) {
@@ -65,7 +65,7 @@ public class UnitSystem {
     }
 
     public String formatParticulates(float particulates) {
-        return String.format("%.3fµg/m³", particulates);
+        return String.format("%.3f", particulates);
     }
 
     //endregion

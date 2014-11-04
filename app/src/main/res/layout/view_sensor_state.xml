@@ -37,7 +37,7 @@
         android:paddingBottom="@dimen/gap_xsmall"
         android:singleLine="true"
         android:textSize="@dimen/text_size_large"
-        android:textAppearance="@style/AppTheme.Text.Body.Bold"
+        android:textAppearance="@style/AppTheme.Text.Body.Light"
         android:textColor="@color/sensor_unknown"
         android:text="@string/missing_data_placeholder"
         android:background="@drawable/raised_item_background"/>
