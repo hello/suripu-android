@@ -121,20 +121,18 @@ public class NativeDevice implements Device {
     //region Bonding
 
     private Observable<Intent> createBondReceiver() {
-        return fromBroadcast(deviceCenter.applicationContext, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)).subscribeOn(deviceCenter.scheduler);
+        return fromBroadcast(deviceCenter.applicationContext, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
+                .subscribeOn(deviceCenter.scheduler)
+                .take(2);
     }
 
     private boolean createBond() {
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            return bluetoothDevice.createBond();
-        } else */{
-            try {
-                Method method = bluetoothDevice.getClass().getMethod("createBond", (Class[]) null);
-                return (Boolean) method.invoke(bluetoothDevice, (Class[]) null);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
+        try {
+            Method method = bluetoothDevice.getClass().getMethod("createBond", (Class[]) null);
+            return (Boolean) method.invoke(bluetoothDevice, (Class[]) null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
