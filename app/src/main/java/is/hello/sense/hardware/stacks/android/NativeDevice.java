@@ -12,6 +12,8 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.hello.ble.stack.transmission.BlePacketHandler;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +28,9 @@ import is.hello.sense.hardware.errors.DiscoveryFailedException;
 import is.hello.sense.hardware.errors.NotConnectedException;
 import is.hello.sense.hardware.errors.StatusException;
 import is.hello.sense.hardware.errors.SubscriptionFailedException;
+import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.Subscription;
 
 import static rx.android.observables.AndroidObservable.fromBroadcast;
 
@@ -72,7 +76,7 @@ public class NativeDevice implements Device {
 
     @NonNull
     @Override
-    public Observable<Device> connect(@NonNull UUID targetService) {
+    public Observable<Device> connect() {
         return deviceCenter.newConfiguredObservable(s -> {
             gattDispatcher.onConnectionStateChanged = (gatt, connectStatus, newState) -> {
                 if (connectStatus != BluetoothGatt.GATT_SUCCESS) {
@@ -108,10 +112,7 @@ public class NativeDevice implements Device {
 
     @Override
     public int getConnectionStatus() {
-        if (gatt != null)
-            return gatt.getConnectionState(bluetoothDevice);
-        else
-            return STATUS_DISCONNECTED;
+        return deviceCenter.bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
     }
 
     //endregion
@@ -120,13 +121,13 @@ public class NativeDevice implements Device {
     //region Bonding
 
     private Observable<Intent> createBondReceiver() {
-        return fromBroadcast(deviceCenter.applicationContext, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)).subscribeOn(deviceCenter.scheduler).take(1);
+        return fromBroadcast(deviceCenter.applicationContext, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)).subscribeOn(deviceCenter.scheduler);
     }
 
     private boolean createBond() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             return bluetoothDevice.createBond();
-        } else {
+        } else */{
             try {
                 Method method = bluetoothDevice.getClass().getMethod("createBond", (Class[]) null);
                 return (Boolean) method.invoke(bluetoothDevice, (Class[]) null);
@@ -151,21 +152,23 @@ public class NativeDevice implements Device {
     @Override
     public Observable<Device> bond() {
         return deviceCenter.newConfiguredObservable(s -> {
-            if (createBond()) {
-                createBondReceiver().subscribe(intent -> {
-                    BluetoothDevice bondedDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    if (!bondedDevice.getAddress().equals(bluetoothDevice.getAddress()))
-                        return;
+            Subscription subscription = createBondReceiver().subscribe(intent -> {
+                Logger.info(Device.LOG_TAG, "Bond status change " + intent);
+                BluetoothDevice bondedDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if (!bondedDevice.getAddress().equals(bluetoothDevice.getAddress()))
+                    return;
 
-                    int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-                    if (state == BluetoothDevice.BOND_BONDED) {
-                        s.onNext(this);
-                        s.onCompleted();
-                    } else if (state == BluetoothDevice.ERROR) {
-                        s.onError(new BondingException());
-                    }
-                }, s::onError);
-            } else {
+                int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+                if (state == BluetoothDevice.BOND_BONDED) {
+                    s.onNext(this);
+                    s.onCompleted();
+                } else if (state == BluetoothDevice.ERROR) {
+                    s.onError(new BondingException());
+                }
+            }, s::onError);
+
+            if (!createBond()) {
+                subscription.unsubscribe();
                 s.onError(new BondingException());
             }
         });
@@ -177,6 +180,7 @@ public class NativeDevice implements Device {
         return deviceCenter.newConfiguredObservable(s -> {
             if (removeBond()) {
                 createBondReceiver().subscribe(intent -> {
+                    Logger.info(Device.LOG_TAG, "Bond status change " + intent);
                     BluetoothDevice bondedDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     if (!bondedDevice.getAddress().equals(bluetoothDevice.getAddress()))
                         return;
@@ -350,13 +354,15 @@ public class NativeDevice implements Device {
         });
     }
 
-    @NonNull
     @Override
-    public Observable<Command> incomingPackets() {
-        if (getConnectionStatus() != STATUS_CONNECTED)
-            return Observable.error(new NotConnectedException());
+    public void setPacketHandler(@Nullable BlePacketHandler dataHandler) {
+        gattDispatcher.packetHandler = dataHandler;
+    }
 
-        return gattDispatcher.incomingSubject;
+    @Nullable
+    @Override
+    public BlePacketHandler getPacketHandler() {
+        return gattDispatcher.packetHandler;
     }
 
     //endregion
@@ -364,12 +370,12 @@ public class NativeDevice implements Device {
 
     @Override
     public String toString() {
-        return "{NativeDevice" +
+        return "{NativeDevice " +
                 "name=" + getName() +
-                "address=" + getAddress() +
-                "connectionStatus" + getConnectionStatus() +
-                "bondStatus" + getBondStatus() +
-                "scannedRssi=" + getScannedRssi() +
+                ", address=" + getAddress() +
+                ", connectionStatus=" + getConnectionStatus() +
+                ", bondStatus=" + getBondStatus() +
+                ", scannedRssi=" + getScannedRssi() +
                 '}';
     }
 }

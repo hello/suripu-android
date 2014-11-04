@@ -10,10 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.common.primitives.Ints;
+
 import net.hockeyapp.android.UpdateManager;
 
 import org.joda.time.DateTime;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -101,7 +104,12 @@ public class HomeActivity
         if (!buildValues.isDebugBuild() && buildValues.debugScreenEnabled)
             UpdateManager.register(this, getString(R.string.build_hockey_id));
 
-        SenseDevice.scan(deviceCenter).subscribe(ds -> Log.i("Bluetooth", "Got devices " + ds), Functions.LOG_ERROR);
+        SenseDevice.scan(deviceCenter)
+                .subscribe(ds -> {
+                    Collections.sort(ds, (l, r) -> Ints.compare(l.getScannedRssi(), r.getScannedRssi()));
+                    SenseDevice strongest = ds.get(0);
+                    strongest.connect().subscribe(device -> Log.i("Bluetooth", "Connected to device " + device), Functions.LOG_ERROR);
+                }, Functions.LOG_ERROR);
     }
 
     @Override

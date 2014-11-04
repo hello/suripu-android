@@ -5,6 +5,9 @@ import android.bluetooth.BluetoothProfile;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.hello.ble.stack.application.HelloDataHandler;
+import com.hello.ble.stack.transmission.BlePacketHandler;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +36,7 @@ public interface Device {
 
     //region Connectivity
 
-    @NonNull Observable<Device> connect(@NonNull UUID targetService);
+    @NonNull Observable<Device> connect();
     @NonNull Observable<Device> disconnect();
     int getConnectionStatus();
 
@@ -67,7 +70,9 @@ public interface Device {
                                                       @NonNull UUID descriptorIdentifier);
 
     @NonNull Observable<Void> writeCommand(@NonNull Service onService, @NonNull Command command);
-    @NonNull Observable<Command> incomingPackets();
+
+    void setPacketHandler(@Nullable BlePacketHandler dataHandler);
+    @Nullable BlePacketHandler getPacketHandler();
 
     //endregion
 }
