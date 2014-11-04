@@ -7,6 +7,8 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
+import is.hello.sense.R;
+
 public class DateFormatterTests extends InstrumentationTestCase {
     private static final LocalDateTime TEST_LOCAL_DATETIME = new LocalDateTime(2014, 10, 1, 10, 30, 0);
     private static final LocalDate TEST_LOCAL_DATE = new LocalDate(2014, 10, 1);
@@ -23,6 +25,9 @@ public class DateFormatterTests extends InstrumentationTestCase {
 
     public void testTimelineDate() {
         assertNotNull(formatter.formatAsTimelineDate(null));
+        String lastNightText = getInstrumentation().getTargetContext().getString(R.string.format_date_last_night);
+        assertEquals(lastNightText, formatter.formatAsTimelineDate(DateFormatter.lastNight()));
+        assertFalse(lastNightText.equals(formatter.formatAsTimelineDate(DateFormatter.lastNight().minusDays(1))));
     }
 
     public void testFormatAsBirthDate() {

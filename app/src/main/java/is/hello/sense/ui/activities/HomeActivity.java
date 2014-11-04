@@ -32,6 +32,7 @@ import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
@@ -72,7 +73,7 @@ public class HomeActivity
         viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
         if (viewPager.getCurrentFragment() == null) {
-            TimelineFragment fragment = TimelineFragment.newInstance(DateTime.now());
+            TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight());
             viewPager.setCurrentFragment(fragment);
         }
 
@@ -186,7 +187,7 @@ public class HomeActivity
     @Override
     public boolean hasFragmentAfterFragment(@NonNull TimelineFragment fragment) {
         DateTime fragmentTime = fragment.getDate();
-        return fragmentTime.isBefore(DateTime.now().withTimeAtStartOfDay());
+        return fragmentTime.isBefore(DateFormatter.lastNight().withTimeAtStartOfDay());
     }
 
     @Override

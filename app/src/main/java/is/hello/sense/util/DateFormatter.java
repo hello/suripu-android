@@ -23,13 +23,17 @@ import is.hello.sense.R;
         this.context = context.getApplicationContext();
     }
 
-    public static boolean isToday(@NonNull DateTime instant) {
-        Interval interval = new Interval(DateTime.now().withTimeAtStartOfDay(), Days.ONE);
+    public static boolean isLastNight(@NonNull DateTime instant) {
+        Interval interval = new Interval(Days.ONE, DateTime.now().withTimeAtStartOfDay());
         return interval.contains(instant);
     }
 
+    public static @NonNull DateTime lastNight() {
+        return DateTime.now().minusDays(1);
+    }
+
     public @NonNull String formatAsTimelineDate(@Nullable DateTime date) {
-        if (date != null && isToday(date))
+        if (date != null && isLastNight(date))
             return context.getString(R.string.format_date_last_night);
         else
             return formatAsDate(date);

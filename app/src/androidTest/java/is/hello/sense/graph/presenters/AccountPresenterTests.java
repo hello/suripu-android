@@ -1,6 +1,6 @@
 package is.hello.sense.graph.presenters;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import javax.inject.Inject;
 
@@ -25,7 +25,7 @@ public class AccountPresenterTests extends InjectionTestCase {
         Account updatedAccount = new Account();
         updatedAccount.setWeight(120L);
         updatedAccount.setHeight(2000L);
-        updatedAccount.setBirthDate(DateTime.now());
+        updatedAccount.setBirthDate(LocalDate.now());
 
         SyncObserver<Account> account = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, accountPresenter.account);
         accountPresenter.saveAccount(updatedAccount);

@@ -18,7 +18,7 @@ public class BleObserverCallbackTests extends TestCase {
     public void testNonTimeout() throws Exception {
         RecordingObserver<Void> observer = new RecordingObserver<>();
         Handler handler = new Handler(Looper.getMainLooper());
-        BleObserverCallback<Void> observerCallback = new BleObserverCallback<>(observer, handler, 5);
+        BleObserverCallback<Void> observerCallback = new BleObserverCallback<>(observer, null, handler, 5);
         assertTrue(handler.hasMessages(0));
 
         observerCallback.onCompleted(null, null);
@@ -35,7 +35,7 @@ public class BleObserverCallbackTests extends TestCase {
     public void testTimeout() throws Exception {
         RecordingObserver<Void> observer = new RecordingObserver<>();
         Handler handler = new Handler(Looper.getMainLooper());
-        BleObserverCallback<Void> observerCallback = new BleObserverCallback<>(observer, handler, 1);
+        BleObserverCallback<Void> observerCallback = new BleObserverCallback<>(observer, null, handler, 1);
         assertTrue(handler.hasMessages(0));
 
         Thread.sleep(10, 0);
