@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,20 +21,17 @@ import rx.Subscriber;
 
 public final class NativeScanner implements Observable.OnSubscribe<List<Device>>, BluetoothAdapter.LeScanCallback {
     private final @NonNull NativeDeviceCenter deviceCenter;
-    private final @Nullable String address;
-    private final @NonNull byte[] scanRecord;
+    private final @NonNull DeviceCenter.ScanCriteria scanCriteria;
     private final long timeoutMs;
-    private final Map<String, Device> results = new HashMap<>();
+    private final Map<String, Pair<BluetoothDevice, Integer>> results = new HashMap<>();
 
     private Subscriber<? super List<Device>> subscriber;
 
     public NativeScanner(@NonNull NativeDeviceCenter deviceCenter,
-                         @Nullable String address,
-                         @NonNull byte[] scanRecord,
+                         @NonNull DeviceCenter.ScanCriteria scanCriteria,
                          long timeoutMs) {
         this.deviceCenter = deviceCenter;
-        this.address = address;
-        this.scanRecord = scanRecord;
+        this.scanCriteria = scanCriteria;
         this.timeoutMs = timeoutMs;
     }
 
@@ -51,19 +49,21 @@ public final class NativeScanner implements Observable.OnSubscribe<List<Device>>
     }
 
     @Override
-    public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanRecord) {
-        if (!Arrays.equals(scanRecord, this.scanRecord)) {
+    public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanResponse) {
+        if (!scanCriteria.doesScanRecordMatch(scanResponse)) {
             return;
         }
 
-        if (address != null && !address.equals(bluetoothDevice.getAddress())) {
+        if (!scanCriteria.addresses.isEmpty() && !scanCriteria.addresses.contains(bluetoothDevice.getAddress())) {
             return;
         }
 
-        NativeDevice device = new NativeDevice(deviceCenter, bluetoothDevice, rssi);
-        results.put(bluetoothDevice.getAddress(), device);
+        if (results.size() >= scanCriteria.limit) {
+            return;
+        }
 
-        Logger.info(DeviceCenter.LOG_TAG, "Found device " + device);
+        Logger.info(DeviceCenter.LOG_TAG, "Found device " + bluetoothDevice.getName() + " - " + bluetoothDevice.getAddress());
+        results.put(bluetoothDevice.getAddress(), Pair.create(bluetoothDevice, rssi));
     }
 
     public void onConcludeScan() {
@@ -71,7 +71,11 @@ public final class NativeScanner implements Observable.OnSubscribe<List<Device>>
 
         deviceCenter.adapter.stopLeScan(this);
 
-        subscriber.onNext(new ArrayList<>(results.values()));
+        List<Device> devices = new ArrayList<>();
+        for (Pair<BluetoothDevice, Integer> scanRecord : results.values()) {
+            devices.add(new NativeDevice(deviceCenter, scanRecord.first, scanRecord.second));
+        }
+        subscriber.onNext(devices);
         subscriber.onCompleted();
     }
 }

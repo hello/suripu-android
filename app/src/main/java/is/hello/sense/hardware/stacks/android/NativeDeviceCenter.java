@@ -37,7 +37,7 @@ public class NativeDeviceCenter implements DeviceCenter {
 
     @NonNull
     @Override
-    public Observable<List<Device>> scanForDevice(@Nullable String address, @NonNull byte[] scanRecord, long timeoutMs) {
-        return newConfiguredObservable(new NativeScanner(this, address, scanRecord, timeoutMs));
+    public Observable<List<Device>> scanForDevice(@NonNull ScanCriteria scanCriteria, long timeoutMs) {
+        return newConfiguredObservable(new NativeScanner(this, scanCriteria, timeoutMs));
     }
 }

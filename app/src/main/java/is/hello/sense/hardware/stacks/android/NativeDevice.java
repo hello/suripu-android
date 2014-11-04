@@ -360,4 +360,16 @@ public class NativeDevice implements Device {
     }
 
     //endregion
+
+
+    @Override
+    public String toString() {
+        return "{NativeDevice" +
+                "name=" + getName() +
+                "address=" + getAddress() +
+                "connectionStatus" + getConnectionStatus() +
+                "bondStatus" + getBondStatus() +
+                "scannedRssi=" + getScannedRssi() +
+                '}';
+    }
 }
