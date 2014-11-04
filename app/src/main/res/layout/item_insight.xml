@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/insights_height"
     android:padding="@dimen/gap_medium"
-    android:background="@drawable/insight_background"
+    android:background="@drawable/raised_item_background"
     android:orientation="vertical">
 
     <TextView
