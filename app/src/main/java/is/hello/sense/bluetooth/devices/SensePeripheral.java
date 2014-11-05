@@ -15,7 +15,7 @@ import is.hello.sense.bluetooth.errors.GattError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
-import is.hello.sense.bluetooth.stacks.ScanCriteria;
+import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
 import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.util.Logger;
@@ -37,9 +37,9 @@ public class SensePeripheral {
     private PacketHandler packetHandler;
 
     public static Observable<List<SensePeripheral>> discover(@NonNull BluetoothStack bluetoothStack,
-                                                             @NonNull ScanCriteria criteria) {
+                                                             @NonNull DiscoveryCriteria criteria) {
         criteria.setScanRecord(SenseIdentifiers.SENSE_SERVICE_BYTES);
-        return bluetoothStack.scanForDevice(criteria)
+        return bluetoothStack.discoverPeripherals(criteria)
                              .map(SensePeripheral::fromDevices);
     }
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
-import is.hello.sense.bluetooth.stacks.ScanCriteria;
+import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
 import rx.Observable;
 import rx.Scheduler;
 
@@ -38,7 +38,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
     @NonNull
     @Override
-    public Observable<List<Peripheral>> scanForDevice(@NonNull ScanCriteria scanCriteria) {
-        return newConfiguredObservable(new PeripheralScanner(this, scanCriteria));
+    public Observable<List<Peripheral>> discoverPeripherals(@NonNull DiscoveryCriteria discoveryCriteria) {
+        return newConfiguredObservable(new PeripheralScanner(this, discoveryCriteria));
     }
 }

@@ -22,7 +22,7 @@ import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
-import is.hello.sense.bluetooth.stacks.ScanCriteria;
+import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
 import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.Observer;
@@ -91,7 +91,7 @@ import rx.schedulers.Schedulers;
     public Observable<List<SensePeripheral>> scanForDevices() {
         logEvent("scanForDevices()");
 
-        return SensePeripheral.discover(bluetoothStack, new ScanCriteria());
+        return SensePeripheral.discover(bluetoothStack, new DiscoveryCriteria());
     }
 
     public @Nullable
@@ -122,7 +122,7 @@ import rx.schedulers.Schedulers;
         if (TextUtils.isEmpty(deviceAddress)) {
             return Observable.error(new Exception(""));
         } else {
-            this.repairingTask = SensePeripheral.discover(bluetoothStack, ScanCriteria.forAddress(deviceAddress)).flatMap(devices -> {
+            this.repairingTask = SensePeripheral.discover(bluetoothStack, DiscoveryCriteria.forAddress(deviceAddress)).flatMap(devices -> {
                 if (!devices.isEmpty()) {
                     logEvent("rediscoveredDevice(" + device + ")");
                     this.device = devices.get(0);
