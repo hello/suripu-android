@@ -85,6 +85,7 @@ public class NativeDevice implements Device {
         return deviceCenter.newConfiguredObservable(s -> {
             gattDispatcher.onConnectionStateChanged = (gatt, connectStatus, newState) -> {
                 if (connectStatus != BluetoothGatt.GATT_SUCCESS) {
+                    Logger.error(LOG_TAG, "Could not connect. " + GattException.getNameForStatus(connectStatus));
                     s.onError(new GattException(connectStatus));
                     gattDispatcher.onConnectionStateChanged = null;
                 } else if (newState == BluetoothProfile.STATE_CONNECTED) {
@@ -128,6 +129,10 @@ public class NativeDevice implements Device {
     private Observable<Intent> createBondReceiver() {
         return fromBroadcast(deviceCenter.applicationContext, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
                 .subscribeOn(deviceCenter.scheduler)
+                .filter(intent -> {
+                    BluetoothDevice bondedDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    return (bondedDevice != null && bondedDevice.getAddress().equals(bluetoothDevice.getAddress()));
+                })
                 .take(2);
     }
 
@@ -154,12 +159,13 @@ public class NativeDevice implements Device {
     @NonNull
     @Override
     public Observable<Device> bond() {
+        if (getBondStatus() == BOND_BONDED) {
+            return Observable.just(this);
+        }
+
         return deviceCenter.newConfiguredObservable(s -> {
             Subscription subscription = createBondReceiver().subscribe(intent -> {
                 Logger.info(Device.LOG_TAG, "Bond status change " + intent);
-                BluetoothDevice bondedDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (!bondedDevice.getAddress().equals(bluetoothDevice.getAddress()))
-                    return;
 
                 int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
                 if (state == BluetoothDevice.BOND_BONDED) {
@@ -180,6 +186,10 @@ public class NativeDevice implements Device {
     @NonNull
     @Override
     public Observable<Device> unbond() {
+        if (getBondStatus() == BOND_NONE) {
+            return Observable.just(this);
+        }
+
         return deviceCenter.newConfiguredObservable(s -> {
             if (removeBond()) {
                 createBondReceiver().subscribe(intent -> {
@@ -202,6 +212,10 @@ public class NativeDevice implements Device {
         });
     }
 
+    public Observable<Device> rebond() {
+        return deviceCenter.newConfiguredObservable(s -> unbond().subscribe(ignored -> bond().subscribe(s), s::onError));
+    }
+
     @Override
     public int getBondStatus() {
         return bluetoothDevice.getBondState();
@@ -220,15 +234,33 @@ public class NativeDevice implements Device {
 
         return deviceCenter.newConfiguredObservable(s -> {
             gattDispatcher.onServicesDiscovered = (gatt, status) -> {
-                if (status == BluetoothGatt.GATT_SUCCESS) {
+                if (status == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
+                    Logger.info(LOG_TAG, "Insufficient authorization returned, waiting for implicit re-bond.");
+                    createBondReceiver().subscribe(intent -> {
+                        Logger.info(LOG_TAG, "Implicit re-bond completed, retrying services discovery.");
+                        if (!gatt.discoverServices()) {
+                            s.onError(new DiscoveryFailedException());
+                        }
+                    }, e -> {
+                        this.cachedServices = null;
+                        s.onError(new GattException(status));
+                        gattDispatcher.onServicesDiscovered = null;
+                    });
+                } else if (status == BluetoothGatt.GATT_SUCCESS) {
                     this.cachedServices = NativeService.wrapNativeServices(gatt.getServices());
+
                     s.onNext(cachedServices);
                     s.onCompleted();
+
+                    gattDispatcher.onServicesDiscovered = null;
                 } else {
+                    Logger.error(LOG_TAG, "Could not discover services. " + GattException.getNameForStatus(status));
+
                     this.cachedServices = null;
                     s.onError(new GattException(status));
+
+                    gattDispatcher.onServicesDiscovered = null;
                 }
-                gattDispatcher.onServicesDiscovered = null;
             };
 
             if (!gatt.discoverServices()) {
@@ -280,6 +312,7 @@ public class NativeDevice implements Device {
                         s.onNext(characteristicIdentifier);
                         s.onCompleted();
                     } else {
+                        Logger.error(LOG_TAG, "Could not subscribe to characteristic. " + GattException.getNameForStatus(status));
                         s.onError(new GattException(status));
                     }
 
@@ -316,6 +349,7 @@ public class NativeDevice implements Device {
                         s.onNext(characteristicIdentifier);
                         s.onCompleted();
                     } else {
+                        Logger.error(LOG_TAG, "Could not unsubscribe from characteristic. " + GattException.getNameForStatus(status));
                         s.onError(new SubscriptionFailedException());
                     }
                 } else {
@@ -340,7 +374,28 @@ public class NativeDevice implements Device {
 
         return deviceCenter.newConfiguredObservable(s -> {
             gattDispatcher.onCharacteristicWrite = (gatt, characteristic, status) -> {
-                if (status != BluetoothGatt.GATT_SUCCESS) {
+                if (status == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
+                    if (getBondStatus() == BOND_NONE) {
+                        Logger.info(LOG_TAG, "Command write failed, trying implicit re-bond.");
+                        createBondReceiver().subscribe(intent -> {
+                            Logger.info(LOG_TAG, "Implicit re-bond completed, retrying command write.");
+                            writeCommand(onService, command).subscribe(s);
+                        }, e -> {
+                            Logger.error(LOG_TAG, "Could not perform implicit re-bond. Propagating original error " + GattException.getNameForStatus(status));
+                            s.onError(new GattException(status));
+                        });
+                    } else {
+                        Logger.info(LOG_TAG, "Command write failed, trying explicit re-bond.");
+                        rebond().subscribe(ignored -> {
+                            Logger.info(LOG_TAG, "Explicit re-bond completed, retrying command write.");
+                            writeCommand(onService, command).subscribe(s);
+                        }, e -> {
+                            Logger.error(LOG_TAG, "Could not perform explicit re-bond. Propagating original error " + GattException.getNameForStatus(status));
+                            s.onError(new GattException(status));
+                        });
+                    }
+                } else if (status != BluetoothGatt.GATT_SUCCESS) {
+                    Logger.error(LOG_TAG, "Could not write command " + command + ", " + GattException.getNameForStatus(status));
                     s.onError(new GattException(status));
                 } else {
                     s.onNext(null);

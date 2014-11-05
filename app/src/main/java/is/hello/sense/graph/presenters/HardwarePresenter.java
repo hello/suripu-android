@@ -121,7 +121,6 @@ import rx.schedulers.Schedulers;
         } else {
             DeviceCenter.ScanCriteria scanCriteria = new DeviceCenter.ScanCriteria();
             scanCriteria.addAddress(deviceAddress);
-            scanCriteria.setLimit(1);
             this.repairingTask = SenseDevice.scan(deviceCenter, scanCriteria).flatMap(devices -> {
                 if (!devices.isEmpty()) {
                     logEvent("rediscoveredDevice(" + device + ")");

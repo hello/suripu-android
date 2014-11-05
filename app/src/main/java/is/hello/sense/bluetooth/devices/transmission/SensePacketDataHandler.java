@@ -68,7 +68,7 @@ public class SensePacketDataHandler extends PacketDataHandler<SenseBle.MorpheusC
             final SenseBle.MorpheusCommand data;
             try {
                 data = SenseBle.MorpheusCommand.parseFrom(Arrays.copyOfRange(this.buffer, 0, actualDataLength));
-                this.onFinished(data);
+                this.onResponse(data);
             } catch (InvalidProtocolBufferException e) {
                 Logger.error(SensePacketDataHandler.class.getSimpleName(), "Could not parse command.", e);
                 onError(new ProtobufProcessingException(ProtobufProcessingException.Reason.INVALID_PROTOBUF));

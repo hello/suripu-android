@@ -21,9 +21,12 @@ import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.functions.Action1;
+import rx.functions.Action2;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle.MorpheusCommand;
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle.MorpheusCommand.CommandType;
 
 public class SenseDevice {
     private static int COMMAND_VERSION = 0;
@@ -138,26 +141,18 @@ public class SenseDevice {
         return device.unsubscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier());
     }
 
-    protected Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command) {
+    protected Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command,
+                                                         @NonNull Action2<MorpheusCommand, Subscriber<? super MorpheusCommand>> onFinish) {
         return device.getDeviceCenter().newConfiguredObservable(s -> {
             Action1<Throwable> onError = s::onError;
             Observable<UUID> subscription = subscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE_UUID);
             subscription.subscribe(subscribedCharacteristic -> {
-                Observable<UUID> unsubscription = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE_UUID);
-                dataHandler.onFinished = response -> {
+                dataHandler.onResponse = response -> {
                     Logger.info(Device.LOG_TAG, "Got response to command " + command + ": " + response);
-                    unsubscription.subscribe(ignored -> {
-                        if (response.getType() == command.getType()) {
-                            s.onNext(response);
-                            s.onCompleted();
-                        } else if (response.getType() == MorpheusCommand.CommandType.MORPHEUS_COMMAND_ERROR) {
-                            s.onError(new SenseException(command.getError()));
-                        } else {
-                            s.onError(new GattException(0));
-                        }
-                    }, onError);
+                    onFinish.call(response, s);
                 };
                 dataHandler.onError = dataError -> {
+                    Observable<UUID> unsubscription = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE_UUID);
                     Logger.error(Device.LOG_TAG, "Could not complete command " + command, dataError);
                     unsubscription.subscribe(ignored -> s.onError(dataError), onError);
                 };
@@ -167,6 +162,22 @@ public class SenseDevice {
                 Observable<Void> write = writeLargeCommand(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_UUID, commandData);
                 write.subscribe(ignored -> Logger.info(Device.LOG_TAG, "Wrote command " + command), onError);
             }, onError);
+        });
+    }
+
+    protected Observable<MorpheusCommand> performSimpleCommand(@NonNull MorpheusCommand command) {
+        return performCommand(command, (response, s) -> {
+            Observable<UUID> unsubscription = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE_UUID);
+            unsubscription.subscribe(ignored -> {
+                if (response.getType() == command.getType()) {
+                    s.onNext(response);
+                    s.onCompleted();
+                } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
+                    s.onError(new SenseException(command.getError()));
+                } else {
+                    s.onError(new GattException(0));
+                }
+            }, s::onError);
         });
     }
 
@@ -216,37 +227,37 @@ public class SenseDevice {
     public Observable<Void> setPairingModeEnabled(boolean enabled) {
         Logger.info(Device.LOG_TAG, "setPairingModeEnabled(" + enabled + ")");
 
-        MorpheusCommand.CommandType commandType;
+        CommandType commandType;
         if (enabled)
-            commandType = MorpheusCommand.CommandType.MORPHEUS_COMMAND_SWITCH_TO_PAIRING_MODE;
+            commandType = CommandType.MORPHEUS_COMMAND_SWITCH_TO_PAIRING_MODE;
         else
-            commandType = MorpheusCommand.CommandType.MORPHEUS_COMMAND_SWITCH_TO_NORMAL_MODE;
+            commandType = CommandType.MORPHEUS_COMMAND_SWITCH_TO_NORMAL_MODE;
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(commandType)
                 .setVersion(COMMAND_VERSION)
                 .build();
-        return performCommand(morpheusCommand).map(ignored -> null);
+        return performSimpleCommand(morpheusCommand).map(ignored -> null);
     }
 
     public Observable<Void> clearPairedUser() {
         Logger.info(Device.LOG_TAG, "clearPairedUser()");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_EREASE_PAIRED_PHONE)
+                .setType(CommandType.MORPHEUS_COMMAND_EREASE_PAIRED_PHONE)
                 .setVersion(COMMAND_VERSION)
                 .build();
-        return performCommand(morpheusCommand).map(ignored -> null);
+        return performSimpleCommand(morpheusCommand).map(ignored -> null);
     }
 
     public Observable<Void> wipeFirmware() {
         Logger.info(Device.LOG_TAG, "wipeFirmware()");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_MORPHEUS_DFU_BEGIN)
+                .setType(CommandType.MORPHEUS_COMMAND_MORPHEUS_DFU_BEGIN)
                 .setVersion(COMMAND_VERSION)
                 .build();
-        return performCommand(morpheusCommand).map(ignored -> null);
+        return performSimpleCommand(morpheusCommand).map(ignored -> null);
     }
 
     public Observable<Void> setWifiNetwork(String bssid,
@@ -256,61 +267,86 @@ public class SenseDevice {
         Logger.info(Device.LOG_TAG, "setWifiNetwork(" + ssid + ")");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
+                .setType(CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
                 .setVersion(COMMAND_VERSION)
                 .setWifiName(bssid)
                 .setWifiSSID(ssid)
                 .setWifiPassword(password)
                 .setSecurityType(securityType)
                 .build();
-        return performCommand(morpheusCommand).map(ignored -> null);
+        return performSimpleCommand(morpheusCommand).map(ignored -> null);
     }
 
     public Observable<String> pairPill(final String accountToken) {
         Logger.info(Device.LOG_TAG, "pairPill(" + accountToken + ")");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
+                .setType(CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
                 .setVersion(COMMAND_VERSION)
                 .setAccountId(accountToken)
                 .build();
-        return performCommand(morpheusCommand).map(MorpheusCommand::getDeviceId);
+        return performSimpleCommand(morpheusCommand).map(MorpheusCommand::getDeviceId);
     }
 
     public Observable<Void> linkAccount(final String accountToken) {
         Logger.info(Device.LOG_TAG, "linkAccount(" + accountToken + ")");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
+                .setType(CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
                 .setVersion(COMMAND_VERSION)
                 .setAccountId(accountToken)
                 .build();
-        return performCommand(morpheusCommand).map(ignored -> null);
+        return performSimpleCommand(morpheusCommand).map(ignored -> null);
     }
 
     public Observable<Void> factoryReset() {
         Logger.info(Device.LOG_TAG, "factoryReset()");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_FACTORY_RESET)
+                .setType(CommandType.MORPHEUS_COMMAND_FACTORY_RESET)
                 .setVersion(COMMAND_VERSION)
                 .build();
-        return performCommand(morpheusCommand).map(ignored -> null);
+        return performSimpleCommand(morpheusCommand).map(ignored -> null);
     }
 
     public Observable<List<SenseBle.wifi_endpoint>> scanForWifiNetworks() {
-        return null;
+        Logger.info(Device.LOG_TAG, "scanForWifiNetworks()");
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_START_WIFISCAN)
+                .setVersion(COMMAND_VERSION)
+                .build();
+
+        //noinspection MismatchedQueryAndUpdateOfCollection
+        List<SenseBle.wifi_endpoint> endpoints = new ArrayList<>();
+        Observable<UUID> unsubscription = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE_UUID);
+        return performCommand(morpheusCommand, (response, subscriber) -> {
+            if (response.getType() == CommandType.MORPHEUS_COMMAND_START_WIFISCAN) {
+                if(response.getWifiScanResultCount() == 1) {
+                    endpoints.add(response.getWifiScanResult(0));
+                }
+            } else if (response.getType() == CommandType.MORPHEUS_COMMAND_STOP_WIFISCAN) {
+                unsubscription.subscribe(ignored -> {
+                    subscriber.onNext(response);
+                    subscriber.onCompleted();
+                }, subscriber::onError);
+            } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
+                unsubscription.subscribe(ignored -> subscriber.onError(new SenseException(response.getError())), subscriber::onError);
+            } else {
+                unsubscription.subscribe(ignored -> subscriber.onError(new GattException(0)), subscriber::onError);
+            }
+        }).map(ignored -> endpoints);
     }
 
     public Observable<String> deviceId() {
         Logger.info(Device.LOG_TAG, "deviceId()");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_GET_DEVICE_ID)
+                .setType(CommandType.MORPHEUS_COMMAND_GET_DEVICE_ID)
                 .setVersion(COMMAND_VERSION)
                 .build();
 
-        return performCommand(morpheusCommand).map(MorpheusCommand::getDeviceId);
+        return performSimpleCommand(morpheusCommand).map(MorpheusCommand::getDeviceId);
     }
 
     //endregion

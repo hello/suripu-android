@@ -48,6 +48,8 @@ public final class NativeScanner implements Observable.OnSubscribe<List<Device>>
 
     @Override
     public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanResponse) {
+        Logger.info(DeviceCenter.LOG_TAG, "Found device " + bluetoothDevice.getName() + " - " + bluetoothDevice.getAddress());
+
         if (!scanCriteria.doesScanRecordMatch(scanResponse)) {
             return;
         }
@@ -60,19 +62,18 @@ public final class NativeScanner implements Observable.OnSubscribe<List<Device>>
             return;
         }
 
-        Logger.info(DeviceCenter.LOG_TAG, "Found device " + bluetoothDevice.getName() + " - " + bluetoothDevice.getAddress());
         results.put(bluetoothDevice.getAddress(), Pair.create(bluetoothDevice, rssi));
     }
 
     public void onConcludeScan() {
-        Logger.info(DeviceCenter.LOG_TAG, "Completed Scan");
-
         deviceCenter.adapter.stopLeScan(this);
 
         List<Device> devices = new ArrayList<>();
         for (Pair<BluetoothDevice, Integer> scanRecord : results.values()) {
             devices.add(new NativeDevice(deviceCenter, scanRecord.first, scanRecord.second));
         }
+        Logger.info(DeviceCenter.LOG_TAG, "Completed Scan " + devices);
+
         subscriber.onNext(devices);
         subscriber.onCompleted();
     }

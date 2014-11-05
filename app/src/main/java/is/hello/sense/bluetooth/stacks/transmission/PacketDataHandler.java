@@ -22,35 +22,22 @@ public abstract class PacketDataHandler<T> {
     //region Propagating Data
 
     public @Nullable Action1<Throwable> onError;
-    public @Nullable Action1<T> onFinished;
-
-    public void clearHandlers() {
-        this.onError = null;
-        this.onFinished = null;
-    }
+    public @Nullable Action1<T> onResponse;
 
     protected void onError(@NonNull Throwable e) {
         Logger.error(LOG_TAG, "Data error " + e);
 
         if (this.onError != null) {
             this.onError.call(e);
-        } else {
-            throw new IllegalStateException("PacketDataHandler received error without a terminal receiver");
         }
-
-        clearHandlers();
     }
 
-    protected void onFinished(@Nullable final T data) {
+    protected void onResponse(@Nullable final T data) {
         Logger.info(LOG_TAG, "Finished decoding packets into " + data);
 
-        if (this.onFinished != null) {
-            this.onFinished.call(data);
-        } else {
-            throw new IllegalStateException("PacketDataHandler received data without a terminal receiver");
+        if (this.onResponse != null) {
+            this.onResponse.call(data);
         }
-
-        clearHandlers();
     }
 
     //endregion
