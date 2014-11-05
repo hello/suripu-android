@@ -10,8 +10,8 @@ import java.util.UUID;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketDataHandler;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
-import is.hello.sense.bluetooth.errors.GattException;
-import is.hello.sense.bluetooth.errors.SenseException;
+import is.hello.sense.bluetooth.errors.BluetoothError;
+import is.hello.sense.bluetooth.errors.GattError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
@@ -77,15 +77,18 @@ public class SensePeripheral {
     //region Connectivity
 
     public Observable<SensePeripheral> connect() {
-        Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
-
         return peripheral.getStack().newConfiguredObservable(s -> {
+            Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
+
             peripheral.connect().subscribe(device -> {
                 Logger.info(Peripheral.LOG_TAG, "connected to " + toString());
+
                 device.bond().subscribe(ignored -> {
                     Logger.info(Peripheral.LOG_TAG, "bonded to " + toString());
+
                     device.discoverServices().subscribe(services -> {
                         Logger.info(Peripheral.LOG_TAG, "discovered services for " + toString());
+
                         this.peripheralService = device.getService(SenseIdentifiers.SENSE_SERVICE);
                         s.onNext(this);
                         s.onCompleted();
@@ -164,9 +167,9 @@ public class SensePeripheral {
                     s.onNext(response);
                     s.onCompleted();
                 } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
-                    s.onError(new SenseException(command.getError()));
+                    s.onError(new SensePeripheralError(command.getError()));
                 } else {
-                    s.onError(new GattException(0));
+                    s.onError(new BluetoothError());
                 }
             }, s::onError);
         });
@@ -228,8 +231,8 @@ public class SensePeripheral {
         return performSimpleCommand(morpheusCommand).map(ignored -> null);
     }
 
-    public Observable<Void> clearPairedUser() {
-        Logger.info(Peripheral.LOG_TAG, "clearPairedUser()");
+    public Observable<Void> clearPairedPhone() {
+        Logger.info(Peripheral.LOG_TAG, "clearPairedPhone()");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_EREASE_PAIRED_PHONE)
@@ -238,8 +241,8 @@ public class SensePeripheral {
         return performSimpleCommand(morpheusCommand).map(ignored -> null);
     }
 
-    public Observable<Void> wipeFirmware() {
-        Logger.info(Peripheral.LOG_TAG, "wipeFirmware()");
+    public Observable<Void> beginDfu() {
+        Logger.info(Peripheral.LOG_TAG, "beginDfu()");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_MORPHEUS_DFU_BEGIN)
@@ -319,9 +322,9 @@ public class SensePeripheral {
                     subscriber.onCompleted();
                 }, subscriber::onError);
             } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
-                unsubscription.subscribe(ignored -> subscriber.onError(new SenseException(response.getError())), subscriber::onError);
+                unsubscription.subscribe(ignored -> subscriber.onError(new SensePeripheralError(response.getError())), subscriber::onError);
             } else {
-                unsubscription.subscribe(ignored -> subscriber.onError(new GattException(0)), subscriber::onError);
+                unsubscription.subscribe(ignored -> subscriber.onError(new GattError(0)), subscriber::onError);
             }
         }).map(ignored -> endpoints);
     }

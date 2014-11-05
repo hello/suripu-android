@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import is.hello.sense.bluetooth.devices.SenseIdentifiers;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
-import is.hello.sense.bluetooth.errors.ProtobufProcessingException;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.ProtobufProcessingError;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.transmission.SequencedPacket;
 import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
@@ -36,7 +36,7 @@ public class SensePacketDataHandler extends PacketDataHandler<SenseBle.MorpheusC
         if (this.expectedIndex != blePacket.sequenceNumber) {
             this.packets.clear();
             this.expectedIndex = 0;
-            onError(new ProtobufProcessingException(ProtobufProcessingException.Reason.DATA_LOST_OR_OUT_OF_ORDER));
+            onError(new ProtobufProcessingError(ProtobufProcessingError.Reason.DATA_LOST_OR_OUT_OF_ORDER));
             return;
         } else {
             this.expectedIndex = blePacket.sequenceNumber + 1;
@@ -71,7 +71,7 @@ public class SensePacketDataHandler extends PacketDataHandler<SenseBle.MorpheusC
                 this.onResponse(data);
             } catch (InvalidProtocolBufferException e) {
                 Logger.error(SensePacketDataHandler.class.getSimpleName(), "Could not parse command.", e);
-                onError(new ProtobufProcessingException(ProtobufProcessingException.Reason.INVALID_PROTOBUF));
+                onError(new ProtobufProcessingError(ProtobufProcessingError.Reason.INVALID_PROTOBUF));
             }
 
             this.packets.clear();

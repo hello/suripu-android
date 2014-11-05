@@ -16,8 +16,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
-import is.hello.sense.bluetooth.errors.GattException;
-import is.hello.sense.bluetooth.errors.SenseException;
+import is.hello.sense.bluetooth.errors.GattError;
+import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -169,11 +169,11 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
     public void presentError(Throwable e) {
         ErrorDialogFragment dialogFragment = null;
-        if (e instanceof GattException && ((GattException) e).statusCode == 133 && !hasTriedReconnect) {
+        if (e instanceof GattError && ((GattError) e).statusCode == 133 && !hasTriedReconnect) {
             tryDeviceReconnect();
             return;
-        } else if (e instanceof SenseException) {
-            SenseBle.ErrorType errorType = ((SenseException) e).errorType;
+        } else if (e instanceof SensePeripheralError) {
+            SenseBle.ErrorType errorType = ((SensePeripheralError) e).errorType;
             networkPassword.requestFocus();
 
             String message;

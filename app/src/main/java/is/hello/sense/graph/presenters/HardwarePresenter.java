@@ -19,7 +19,7 @@ import javax.inject.Singleton;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
-import is.hello.sense.bluetooth.errors.SenseException;
+import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.ScanCriteria;
@@ -40,7 +40,7 @@ import rx.schedulers.Schedulers;
     private @Nullable SensePeripheral device;
 
     private final Action1<Throwable> respondToError = e -> {
-        if (!(e instanceof SenseException)) {
+        if (!(e instanceof SensePeripheralError)) {
             clearDevice();
         }
     };

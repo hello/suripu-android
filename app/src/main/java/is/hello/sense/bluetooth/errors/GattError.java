@@ -3,11 +3,11 @@ package is.hello.sense.bluetooth.errors;
 import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
 
-public class GattException extends BluetoothException {
+public class GattError extends BluetoothError {
     public final int statusCode;
 
-    public static @NonNull String getNameForStatus(int statusCode) {
-        switch (statusCode) {
+    public static @NonNull String statusToString(int status) {
+        switch (status) {
             case BluetoothGatt.GATT_SUCCESS:
                 return "GATT_SUCCESS";
 
@@ -36,13 +36,13 @@ public class GattException extends BluetoothException {
                 return "GATT_FAILURE";
 
             default:
-                return "UNKNOWN: " + statusCode;
+                return "UNKNOWN: " + status;
         }
     }
 
-    public GattException(int statusCode) {
-        super(getNameForStatus(statusCode));
+    public GattError(int status) {
+        super(statusToString(status));
 
-        this.statusCode = statusCode;
+        this.statusCode = status;
     }
 }

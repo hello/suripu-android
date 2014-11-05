@@ -112,7 +112,7 @@ public interface Peripheral {
      * <p/>
      * Does nothing if there is already an active connection.
      * <p/>
-     * Yields an {@see java.lang.UnsupportedOperationException} if called
+     * Yields an {@see is.hello.sense.bluetooth.errors.PeripheralConnectionError} if called
      * when peripheral connection status is changing.
      */
     @NonNull Observable<Peripheral> connect();
