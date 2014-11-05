@@ -2,6 +2,7 @@ package is.hello.sense.bluetooth.stacks;
 
 import android.support.annotation.NonNull;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import rx.Observable;
@@ -20,6 +21,11 @@ public interface BluetoothStack {
 
 
     /**
+     * Returns the behaviors of the stack that are implementation specific.
+     */
+    EnumSet<Traits> getTraits();
+
+    /**
      * Performs a scan for peripherals matching a given set of criteria.
      * <p/>
      * Yields {@see is.hello.sense.bluetooth.errors.BluetoothDisabledError}
@@ -33,4 +39,20 @@ public interface BluetoothStack {
      * Vends an observable configured appropriately for use with the BluetoothStack.
      */
     <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe);
+
+
+    /**
+     * Describes behaviors of the stack that vary between backing implementations.
+     */
+    public enum Traits {
+        /**
+         * Indicates that bonding information is wiped out
+         * whenever a vended Peripheral disconnects.
+         * <p/>
+         * Clients should always attempt to bond after connecting.
+         *
+         * @see Peripheral#createBond()
+         */
+        BONDS_NOT_PERSISTENT,
+    }
 }

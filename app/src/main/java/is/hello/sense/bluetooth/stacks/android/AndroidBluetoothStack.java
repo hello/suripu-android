@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
@@ -31,11 +32,9 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
 
     @Override
-    public <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe) {
-        return Observable.create(onSubscribe)
-                         .subscribeOn(scheduler);
+    public EnumSet<Traits> getTraits() {
+        return EnumSet.of(Traits.BONDS_NOT_PERSISTENT);
     }
-
 
     @NonNull
     @Override
@@ -45,5 +44,21 @@ public class AndroidBluetoothStack implements BluetoothStack {
         } else {
             return Observable.error(new BluetoothDisabledError());
         }
+    }
+
+    @Override
+    public <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe) {
+        return Observable.create(onSubscribe)
+                .subscribeOn(scheduler);
+    }
+
+    @Override
+    public String toString() {
+        return "AndroidBluetoothStack{" +
+                "applicationContext=" + applicationContext +
+                ", scheduler=" + scheduler +
+                ", adapter=" + adapter +
+                ", traits=" + getTraits() +
+                '}';
     }
 }

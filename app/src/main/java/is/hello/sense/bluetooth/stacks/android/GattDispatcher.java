@@ -25,11 +25,6 @@ public class GattDispatcher extends BluetoothGattCallback {
         super.onConnectionStateChange(gatt, status, newState);
         Logger.info(Peripheral.LOG_TAG, "onConnectionStateChange('" + gatt + "', " + status + ", " + newState + ")");
 
-        if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_DISCONNECTED) {
-            Logger.info(Peripheral.LOG_TAG, "Closing gatt layer");
-            gatt.close();
-        }
-
         if (onConnectionStateChanged != null)
             onConnectionStateChanged.call(gatt, status, newState);
         else
