@@ -13,7 +13,6 @@ import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
 import is.hello.sense.bluetooth.errors.GattException;
 import is.hello.sense.bluetooth.errors.SenseException;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.bluetooth.stacks.Command;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.ScanCriteria;
@@ -204,15 +203,12 @@ public class SensePeripheral {
                         s.onCompleted();
                     } else {
                         Logger.info(Peripheral.LOG_TAG, "Writing next chunk of large command " + commandUUID);
-
-                        Command command = Command.with(commandUUID, remainingPackets.getFirst());
-                        peripheral.writeCommand(peripheralService, command).subscribe(this);
+                        peripheral.writeCommand(peripheralService, commandUUID, remainingPackets.getFirst()).subscribe(this);
                     }
                 }
             };
             Logger.info(Peripheral.LOG_TAG, "Writing first chunk of large command (" + remainingPackets.size() + " chunks) " + commandUUID);
-            Command firstCommand = Command.with(commandUUID, remainingPackets.getFirst());
-            peripheral.writeCommand(peripheralService, firstCommand).subscribe(writeObserver);
+            peripheral.writeCommand(peripheralService, commandUUID, remainingPackets.getFirst()).subscribe(writeObserver);
         });
     }
 

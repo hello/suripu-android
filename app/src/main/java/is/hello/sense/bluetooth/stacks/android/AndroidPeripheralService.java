@@ -4,22 +4,22 @@ import android.bluetooth.BluetoothGattService;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 
 public final class AndroidPeripheralService implements PeripheralService {
-    public static final int SERVICE_TYPE_PRIMARY = BluetoothGattService.SERVICE_TYPE_PRIMARY;
-    public static final int SERVICE_TYPE_SECONDARY = BluetoothGattService.SERVICE_TYPE_SECONDARY;
-
     final @NonNull BluetoothGattService service;
 
-    static @NonNull List<PeripheralService> wrapNativeServices(@NonNull List<BluetoothGattService> nativeServices) {
-        List<PeripheralService> peripheralServices = new ArrayList<>();
+    static @NonNull Map<UUID, PeripheralService> wrapNativeServices(@NonNull List<BluetoothGattService> nativeServices) {
+        Map<UUID, PeripheralService> peripheralServices = new HashMap<>();
 
-        for (BluetoothGattService nativeService : nativeServices)
-            peripheralServices.add(new AndroidPeripheralService(nativeService));
+        for (BluetoothGattService nativeService : nativeServices) {
+            peripheralServices.put(nativeService.getUuid(), new AndroidPeripheralService(nativeService));
+        }
 
         return peripheralServices;
     }
@@ -47,9 +47,8 @@ public final class AndroidPeripheralService implements PeripheralService {
 
         AndroidPeripheralService that = (AndroidPeripheralService) o;
 
-        if (!service.equals(that.service)) return false;
+        return service.equals(that.service);
 
-        return true;
     }
 
     @Override

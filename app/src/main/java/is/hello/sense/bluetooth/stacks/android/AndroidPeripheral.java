@@ -14,7 +14,8 @@ import android.support.annotation.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 import is.hello.sense.bluetooth.errors.BluetoothException;
@@ -24,7 +25,6 @@ import is.hello.sense.bluetooth.errors.GattException;
 import is.hello.sense.bluetooth.errors.NotConnectedException;
 import is.hello.sense.bluetooth.errors.SubscriptionFailedException;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.bluetooth.stacks.Command;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
@@ -35,14 +35,13 @@ import rx.Subscription;
 import static rx.android.observables.AndroidObservable.fromBroadcast;
 
 public class AndroidPeripheral implements Peripheral {
-    private final @NonNull
-    AndroidBluetoothStack deviceCenter;
+    private final @NonNull AndroidBluetoothStack deviceCenter;
     private final @NonNull BluetoothDevice bluetoothDevice;
     private final int scannedRssi;
     private final GattDispatcher gattDispatcher = new GattDispatcher();
 
     private BluetoothGatt gatt;
-    private List<PeripheralService> cachedPeripheralServices;
+    private Map<UUID, PeripheralService> cachedPeripheralServices;
 
     AndroidPeripheral(@NonNull AndroidBluetoothStack deviceCenter,
                       @NonNull BluetoothDevice bluetoothDevice,
@@ -87,7 +86,10 @@ public class AndroidPeripheral implements Peripheral {
         if (this.gatt != null) {
             Logger.warn(LOG_TAG, "Redundant call to connect(), ignoring.");
 
-            return Observable.just(this);
+            if (getConnectionStatus() == STATUS_CONNECTED)
+                return Observable.just(this);
+            else if (getConnectionStatus() == STATUS_CONNECTING || getConnectionStatus() == STATUS_DISCONNECTING)
+                return Observable.error(new UnsupportedOperationException());
         }
 
         return deviceCenter.newConfiguredObservable(s -> {
@@ -241,7 +243,7 @@ public class AndroidPeripheral implements Peripheral {
         });
     }
 
-    public Observable<Peripheral> rebond() {
+    public Observable<Peripheral> recreateBond() {
         return deviceCenter.newConfiguredObservable(s -> unbond().subscribe(ignored -> bond().subscribe(s), s::onError));
     }
 
@@ -257,7 +259,7 @@ public class AndroidPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<List<PeripheralService>> discoverServices() {
+    public Observable<Collection<PeripheralService>> discoverServices() {
         if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
@@ -278,7 +280,7 @@ public class AndroidPeripheral implements Peripheral {
                 } else if (status == BluetoothGatt.GATT_SUCCESS) {
                     this.cachedPeripheralServices = AndroidPeripheralService.wrapNativeServices(gatt.getServices());
 
-                    s.onNext(cachedPeripheralServices);
+                    s.onNext(cachedPeripheralServices.values());
                     s.onCompleted();
 
                     gattDispatcher.onServicesDiscovered = null;
@@ -302,13 +304,10 @@ public class AndroidPeripheral implements Peripheral {
     @Override
     public PeripheralService getService(@NonNull UUID serviceIdentifier) {
         if (gatt != null) {
-            BluetoothGattService nativeService = gatt.getService(serviceIdentifier);
-            if (nativeService != null) {
-                return new AndroidPeripheralService(nativeService);
-            }
+            return cachedPeripheralServices.get(serviceIdentifier);
+        } else {
+            return null;
         }
-
-        return null;
     }
 
 
@@ -397,7 +396,7 @@ public class AndroidPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService, @NonNull Command command) {
+    public Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService, @NonNull UUID identifier, @NonNull byte[] payload) {
         if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
@@ -408,23 +407,23 @@ public class AndroidPeripheral implements Peripheral {
                         Logger.info(LOG_TAG, "Command write failed, trying implicit re-bond.");
                         createBondReceiver().subscribe(intent -> {
                             Logger.info(LOG_TAG, "Implicit re-bond completed, retrying command write.");
-                            writeCommand(onPeripheralService, command).subscribe(s);
+                            writeCommand(onPeripheralService, identifier, payload).subscribe(s);
                         }, e -> {
                             Logger.error(LOG_TAG, "Could not perform implicit re-bond. Propagating original error " + GattException.getNameForStatus(status));
                             s.onError(new GattException(status));
                         });
                     } else {
                         Logger.info(LOG_TAG, "Command write failed, trying explicit re-bond.");
-                        rebond().subscribe(ignored -> {
+                        recreateBond().subscribe(ignored -> {
                             Logger.info(LOG_TAG, "Explicit re-bond completed, retrying command write.");
-                            writeCommand(onPeripheralService, command).subscribe(s);
+                            writeCommand(onPeripheralService, identifier, payload).subscribe(s);
                         }, e -> {
                             Logger.error(LOG_TAG, "Could not perform explicit re-bond. Propagating original error " + GattException.getNameForStatus(status));
                             s.onError(new GattException(status));
                         });
                     }
                 } else if (status != BluetoothGatt.GATT_SUCCESS) {
-                    Logger.error(LOG_TAG, "Could not write command " + command + ", " + GattException.getNameForStatus(status));
+                    Logger.error(LOG_TAG, "Could not write command " + identifier + ", " + GattException.getNameForStatus(status));
                     s.onError(new GattException(status));
                 } else {
                     s.onNext(null);
@@ -433,8 +432,8 @@ public class AndroidPeripheral implements Peripheral {
             };
 
             BluetoothGattService service = getGattService(onPeripheralService);
-            BluetoothGattCharacteristic characteristic = service.getCharacteristic(command.identifier);
-            characteristic.setValue(command.payload);
+            BluetoothGattCharacteristic characteristic = service.getCharacteristic(identifier);
+            characteristic.setValue(payload);
             if (!gatt.writeCharacteristic(characteristic)) {
                 s.onError(new BluetoothException());
             }
