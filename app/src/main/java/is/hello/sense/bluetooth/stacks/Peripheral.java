@@ -11,8 +11,8 @@ import java.util.UUID;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import rx.Observable;
 
-public interface Device {
-    public static final String LOG_TAG = "Bluetooth/" + Device.class.getSimpleName();
+public interface Peripheral {
+    public static final String LOG_TAG = "Bluetooth." + Peripheral.class.getSimpleName();
 
     public static final int BOND_NONE = BluetoothDevice.BOND_NONE;
     public static final int BOND_BONDING = BluetoothDevice.BOND_BONDING;
@@ -25,18 +25,18 @@ public interface Device {
 
     //region Properties
 
-    int getScannedRssi();
+    int getScanTimeRssi();
     String getAddress();
     String getName();
-    DeviceCenter getDeviceCenter();
+    BluetoothStack getStack();
 
     //endregion
 
 
     //region Connectivity
 
-    @NonNull Observable<Device> connect();
-    @NonNull Observable<Device> disconnect();
+    @NonNull Observable<Peripheral> connect();
+    @NonNull Observable<Peripheral> disconnect();
     int getConnectionStatus();
 
     //endregion
@@ -44,8 +44,8 @@ public interface Device {
 
     //region Bonding
 
-    @NonNull Observable<Device> bond();
-    @NonNull Observable<Device> unbond();
+    @NonNull Observable<Peripheral> bond();
+    @NonNull Observable<Peripheral> unbond();
     int getBondStatus();
 
     //endregion
@@ -53,22 +53,22 @@ public interface Device {
 
     //region Discovering Services
 
-    @NonNull Observable<List<Service>> discoverServices();
-    @Nullable Service getService(@NonNull UUID serviceIdentifier);
+    @NonNull Observable<List<PeripheralService>> discoverServices();
+    @Nullable PeripheralService getService(@NonNull UUID serviceIdentifier);
 
     //endregion
 
 
     //region Characteristics
 
-    @NonNull Observable<UUID> subscribeNotification(@NonNull Service onService,
+    @NonNull Observable<UUID> subscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                     @NonNull UUID characteristicIdentifier,
                                                     @NonNull UUID descriptorIdentifier);
-    @NonNull Observable<UUID> unsubscribeNotification(@NonNull Service onService,
+    @NonNull Observable<UUID> unsubscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                       @NonNull UUID characteristicIdentifier,
                                                       @NonNull UUID descriptorIdentifier);
 
-    @NonNull Observable<Void> writeCommand(@NonNull Service onService, @NonNull Command command);
+    @NonNull Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService, @NonNull Command command);
 
     void setPacketHandler(@Nullable PacketHandler dataHandler);
     @Nullable PacketHandler getPacketHandler();

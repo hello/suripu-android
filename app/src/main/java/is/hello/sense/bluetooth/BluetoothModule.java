@@ -7,8 +7,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import is.hello.sense.bluetooth.stacks.DeviceCenter;
-import is.hello.sense.bluetooth.stacks.android.NativeDeviceCenter;
+import is.hello.sense.bluetooth.stacks.BluetoothStack;
+import is.hello.sense.bluetooth.stacks.android.AndroidBluetoothStack;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -20,8 +20,8 @@ public class BluetoothModule {
     }
 
     @Provides @Singleton
-    DeviceCenter provideDeviceCenter(@NonNull Context applicationContext,
+    BluetoothStack provideDeviceCenter(@NonNull Context applicationContext,
                                                           @NonNull Scheduler scheduler) {
-        return new NativeDeviceCenter(applicationContext, scheduler);
+        return new AndroidBluetoothStack(applicationContext, scheduler);
     }
 }

@@ -31,7 +31,7 @@ public abstract class PacketHandler {
         }
     }
 
-    public final void registerDataHandler(final PacketDataHandler handler) {
+    public final void setPacketDataHandler(final PacketDataHandler handler) {
         this.dataHandlers.add(handler);
     }
 

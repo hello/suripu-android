@@ -28,7 +28,7 @@ public class SensePacketDataHandler extends PacketDataHandler<SenseBle.MorpheusC
 
     @Override
     public boolean shouldProcessCharacteristic(final @NonNull UUID characteristicIdentifier) {
-        return SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE_UUID.equals(characteristicIdentifier);
+        return SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE.equals(characteristicIdentifier);
     }
 
     @Override

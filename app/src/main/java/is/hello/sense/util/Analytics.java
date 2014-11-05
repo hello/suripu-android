@@ -95,7 +95,7 @@ public class Analytics {
     public static final String EVENT_ONBOARDING_WIFI_SCAN = "Onboarding WiFi Scan";
 
     /**
-     * When the Sense wifi scan completes.
+     * When the Sense wifi discover completes.
      */
     public static final String EVENT_ONBOARDING_WIFI_SCAN_COMPLETED = "Onboarding Wifi Scan Completed";
     public static final String PROP_DURATION = "duration"; //in seconds

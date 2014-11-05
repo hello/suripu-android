@@ -7,19 +7,20 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import is.hello.sense.bluetooth.stacks.Device;
-import is.hello.sense.bluetooth.stacks.DeviceCenter;
+import is.hello.sense.bluetooth.stacks.BluetoothStack;
+import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.bluetooth.stacks.ScanCriteria;
 import rx.Observable;
 import rx.Scheduler;
 
-public class NativeDeviceCenter implements DeviceCenter {
+public class AndroidBluetoothStack implements BluetoothStack {
     final @NonNull Context applicationContext;
     final @NonNull Scheduler scheduler;
 
     final @NonNull BluetoothManager bluetoothManager;
     final @NonNull BluetoothAdapter adapter;
 
-    public NativeDeviceCenter(@NonNull Context applicationContext, @NonNull Scheduler scheduler) {
+    public AndroidBluetoothStack(@NonNull Context applicationContext, @NonNull Scheduler scheduler) {
         this.applicationContext = applicationContext;
         this.scheduler = scheduler;
 
@@ -37,7 +38,7 @@ public class NativeDeviceCenter implements DeviceCenter {
 
     @NonNull
     @Override
-    public Observable<List<Device>> scanForDevice(@NonNull ScanCriteria scanCriteria, long timeoutMs) {
-        return newConfiguredObservable(new NativeScanner(this, scanCriteria, timeoutMs));
+    public Observable<List<Peripheral>> scanForDevice(@NonNull ScanCriteria scanCriteria) {
+        return newConfiguredObservable(new PeripheralScanner(this, scanCriteria));
     }
 }

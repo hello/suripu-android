@@ -17,10 +17,12 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.bluetooth.devices.SenseDevice;
+import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
 import is.hello.sense.bluetooth.errors.SenseException;
-import is.hello.sense.bluetooth.stacks.DeviceCenter;
+import is.hello.sense.bluetooth.stacks.BluetoothStack;
+import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.bluetooth.stacks.ScanCriteria;
 import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.Observer;
@@ -32,10 +34,10 @@ import rx.schedulers.Schedulers;
 @Singleton public class HardwarePresenter extends Presenter {
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
-    private final DeviceCenter deviceCenter;
+    private final BluetoothStack bluetoothStack;
 
-    private @Nullable Observable<SenseDevice> repairingTask;
-    private @Nullable SenseDevice device;
+    private @Nullable Observable<SensePeripheral> repairingTask;
+    private @Nullable SensePeripheral device;
 
     private final Action1<Throwable> respondToError = e -> {
         if (!(e instanceof SenseException)) {
@@ -45,10 +47,10 @@ import rx.schedulers.Schedulers;
 
     @Inject public HardwarePresenter(@NonNull PreferencesPresenter preferencesPresenter,
                                      @NonNull ApiSessionManager apiSessionManager,
-                                     @NonNull DeviceCenter deviceCenter) {
+                                     @NonNull BluetoothStack bluetoothStack) {
         this.preferencesPresenter = preferencesPresenter;
         this.apiSessionManager = apiSessionManager;
-        this.deviceCenter = deviceCenter;
+        this.bluetoothStack = bluetoothStack;
     }
 
 
@@ -77,7 +79,8 @@ import rx.schedulers.Schedulers;
     }
 
 
-    public @Nullable SenseDevice getDevice() {
+    public @Nullable
+    SensePeripheral getDevice() {
         return device;
     }
 
@@ -85,14 +88,14 @@ import rx.schedulers.Schedulers;
         return Observable.error(new NoPairedDeviceException());
     }
 
-    public Observable<List<SenseDevice>> scanForDevices() {
+    public Observable<List<SensePeripheral>> scanForDevices() {
         logEvent("scanForDevices()");
 
-        DeviceCenter.ScanCriteria scanCriteria = new DeviceCenter.ScanCriteria();
-        return SenseDevice.scan(deviceCenter, scanCriteria);
+        return SensePeripheral.discover(bluetoothStack, new ScanCriteria());
     }
 
-    public @Nullable SenseDevice bestDeviceForPairing(@NonNull List<SenseDevice> devices) {
+    public @Nullable
+    SensePeripheral bestDeviceForPairing(@NonNull List<SensePeripheral> devices) {
         logEvent("bestDeviceForPairing(" + devices + ")");
 
         if (devices.isEmpty()) {
@@ -102,7 +105,7 @@ import rx.schedulers.Schedulers;
         }
     }
 
-    public Observable<SenseDevice> rediscoverDevice() {
+    public Observable<SensePeripheral> rediscoverDevice() {
         logEvent("rediscoverDevice()");
 
         if (device != null) {
@@ -119,9 +122,7 @@ import rx.schedulers.Schedulers;
         if (TextUtils.isEmpty(deviceAddress)) {
             return Observable.error(new Exception(""));
         } else {
-            DeviceCenter.ScanCriteria scanCriteria = new DeviceCenter.ScanCriteria();
-            scanCriteria.addAddress(deviceAddress);
-            this.repairingTask = SenseDevice.scan(deviceCenter, scanCriteria).flatMap(devices -> {
+            this.repairingTask = SensePeripheral.discover(bluetoothStack, ScanCriteria.forAddress(deviceAddress)).flatMap(devices -> {
                 if (!devices.isEmpty()) {
                     logEvent("rediscoveredDevice(" + device + ")");
                     this.device = devices.get(0);
@@ -136,10 +137,10 @@ import rx.schedulers.Schedulers;
         }
     }
 
-    public Observable<SenseDevice> connectToDevice(@NonNull SenseDevice device) {
+    public Observable<SensePeripheral> connectToDevice(@NonNull SensePeripheral device) {
         logEvent("connectToDevice(" + device + ")");
 
-        if (device.isConnected() && device.getBondStatus() != is.hello.sense.bluetooth.stacks.Device.BOND_BONDED) {
+        if (device.isConnected() && device.getBondStatus() != Peripheral.BOND_BONDED) {
             logEvent("already paired with device " + device);
 
             return Observable.just(null);
@@ -152,14 +153,14 @@ import rx.schedulers.Schedulers;
         });
     }
 
-    public Observable<SenseDevice> reconnect() {
+    public Observable<SensePeripheral> reconnect() {
         logEvent("reconnect()");
 
         if (device == null) {
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<SenseDevice>) s -> device.disconnect().subscribe(ignored -> device.connect().subscribe(s), s::onError))
+        return Observable.create((Observable.OnSubscribe<SensePeripheral>) s -> device.disconnect().subscribe(ignored -> device.connect().subscribe(s), s::onError))
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 

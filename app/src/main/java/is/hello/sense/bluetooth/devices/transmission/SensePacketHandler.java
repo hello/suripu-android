@@ -14,7 +14,7 @@ import is.hello.sense.bluetooth.stacks.transmission.SequencedPacket;
 public class SensePacketHandler extends PacketHandler {
     @Override
     public SequencedPacket createSequencedPacket(final @NonNull UUID characteristicIdentifier, final @NonNull byte[] payload) {
-        if (SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE_UUID.equals(characteristicIdentifier)) {
+        if (SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE.equals(characteristicIdentifier)) {
             int sequenceNumber = payload[0];
             return new SequencedPacket(sequenceNumber, Arrays.copyOfRange(payload, 1, payload.length));
         } else {

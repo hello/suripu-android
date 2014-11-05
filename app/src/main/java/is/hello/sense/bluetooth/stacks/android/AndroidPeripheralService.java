@@ -7,24 +7,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import is.hello.sense.bluetooth.stacks.Service;
+import is.hello.sense.bluetooth.stacks.PeripheralService;
 
-public final class NativeService implements Service {
+public final class AndroidPeripheralService implements PeripheralService {
     public static final int SERVICE_TYPE_PRIMARY = BluetoothGattService.SERVICE_TYPE_PRIMARY;
     public static final int SERVICE_TYPE_SECONDARY = BluetoothGattService.SERVICE_TYPE_SECONDARY;
 
     final @NonNull BluetoothGattService service;
 
-    static @NonNull List<Service> wrapNativeServices(@NonNull List<BluetoothGattService> nativeServices) {
-        List<Service> services = new ArrayList<>();
+    static @NonNull List<PeripheralService> wrapNativeServices(@NonNull List<BluetoothGattService> nativeServices) {
+        List<PeripheralService> peripheralServices = new ArrayList<>();
 
         for (BluetoothGattService nativeService : nativeServices)
-            services.add(new NativeService(nativeService));
+            peripheralServices.add(new AndroidPeripheralService(nativeService));
 
-        return services;
+        return peripheralServices;
     }
 
-    NativeService(@NonNull BluetoothGattService service) {
+    AndroidPeripheralService(@NonNull BluetoothGattService service) {
         this.service = service;
     }
 
@@ -39,18 +39,13 @@ public final class NativeService implements Service {
         return service.getType();
     }
 
-    @Override
-    public List<Service> getIncludedServices() {
-        return wrapNativeServices(service.getIncludedServices());
-    }
-
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        NativeService that = (NativeService) o;
+        AndroidPeripheralService that = (AndroidPeripheralService) o;
 
         if (!service.equals(that.service)) return false;
 

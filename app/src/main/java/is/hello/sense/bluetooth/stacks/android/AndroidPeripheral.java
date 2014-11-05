@@ -23,10 +23,10 @@ import is.hello.sense.bluetooth.errors.DiscoveryFailedException;
 import is.hello.sense.bluetooth.errors.GattException;
 import is.hello.sense.bluetooth.errors.NotConnectedException;
 import is.hello.sense.bluetooth.errors.SubscriptionFailedException;
+import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Command;
-import is.hello.sense.bluetooth.stacks.Device;
-import is.hello.sense.bluetooth.stacks.DeviceCenter;
-import is.hello.sense.bluetooth.stacks.Service;
+import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -34,18 +34,19 @@ import rx.Subscription;
 
 import static rx.android.observables.AndroidObservable.fromBroadcast;
 
-public class NativeDevice implements Device {
-    private final @NonNull NativeDeviceCenter deviceCenter;
+public class AndroidPeripheral implements Peripheral {
+    private final @NonNull
+    AndroidBluetoothStack deviceCenter;
     private final @NonNull BluetoothDevice bluetoothDevice;
     private final int scannedRssi;
-    private final NativeGattDispatcher gattDispatcher = new NativeGattDispatcher();
+    private final GattDispatcher gattDispatcher = new GattDispatcher();
 
     private BluetoothGatt gatt;
-    private List<Service> cachedServices;
+    private List<PeripheralService> cachedPeripheralServices;
 
-    NativeDevice(@NonNull NativeDeviceCenter deviceCenter,
-                 @NonNull BluetoothDevice bluetoothDevice,
-                 int scannedRssi) {
+    AndroidPeripheral(@NonNull AndroidBluetoothStack deviceCenter,
+                      @NonNull BluetoothDevice bluetoothDevice,
+                      int scannedRssi) {
         this.deviceCenter = deviceCenter;
         this.bluetoothDevice = bluetoothDevice;
         this.scannedRssi = scannedRssi;
@@ -55,7 +56,7 @@ public class NativeDevice implements Device {
     //region Introspection
 
     @Override
-    public int getScannedRssi() {
+    public int getScanTimeRssi() {
         return scannedRssi;
     }
 
@@ -71,7 +72,7 @@ public class NativeDevice implements Device {
 
     @Override
     @NonNull
-    public DeviceCenter getDeviceCenter() {
+    public BluetoothStack getStack() {
         return deviceCenter;
     }
 
@@ -82,7 +83,7 @@ public class NativeDevice implements Device {
 
     @NonNull
     @Override
-    public Observable<Device> connect() {
+    public Observable<Peripheral> connect() {
         if (this.gatt != null) {
             Logger.warn(LOG_TAG, "Redundant call to connect(), ignoring.");
 
@@ -116,7 +117,7 @@ public class NativeDevice implements Device {
 
     @NonNull
     @Override
-    public Observable<Device> disconnect() {
+    public Observable<Peripheral> disconnect() {
         if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
@@ -137,7 +138,7 @@ public class NativeDevice implements Device {
                         s.onCompleted();
                     }
 
-                    this.cachedServices = null;
+                    this.cachedPeripheralServices = null;
                 }
             };
             gatt.disconnect();
@@ -186,14 +187,14 @@ public class NativeDevice implements Device {
 
     @NonNull
     @Override
-    public Observable<Device> bond() {
+    public Observable<Peripheral> bond() {
         if (getBondStatus() == BOND_BONDED) {
             return Observable.just(this);
         }
 
         return deviceCenter.newConfiguredObservable(s -> {
             Subscription subscription = createBondReceiver().subscribe(intent -> {
-                Logger.info(Device.LOG_TAG, "Bond status change " + intent);
+                Logger.info(Peripheral.LOG_TAG, "Bond status change " + intent);
 
                 int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
                 if (state == BluetoothDevice.BOND_BONDED) {
@@ -213,7 +214,7 @@ public class NativeDevice implements Device {
 
     @NonNull
     @Override
-    public Observable<Device> unbond() {
+    public Observable<Peripheral> unbond() {
         if (getBondStatus() == BOND_NONE) {
             return Observable.just(this);
         }
@@ -221,7 +222,7 @@ public class NativeDevice implements Device {
         return deviceCenter.newConfiguredObservable(s -> {
             if (removeBond()) {
                 createBondReceiver().subscribe(intent -> {
-                    Logger.info(Device.LOG_TAG, "Bond status change " + intent);
+                    Logger.info(Peripheral.LOG_TAG, "Bond status change " + intent);
                     BluetoothDevice bondedDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     if (!bondedDevice.getAddress().equals(bluetoothDevice.getAddress()))
                         return;
@@ -240,7 +241,7 @@ public class NativeDevice implements Device {
         });
     }
 
-    public Observable<Device> rebond() {
+    public Observable<Peripheral> rebond() {
         return deviceCenter.newConfiguredObservable(s -> unbond().subscribe(ignored -> bond().subscribe(s), s::onError));
     }
 
@@ -256,7 +257,7 @@ public class NativeDevice implements Device {
 
     @NonNull
     @Override
-    public Observable<List<Service>> discoverServices() {
+    public Observable<List<PeripheralService>> discoverServices() {
         if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
@@ -270,21 +271,21 @@ public class NativeDevice implements Device {
                             s.onError(new DiscoveryFailedException());
                         }
                     }, e -> {
-                        this.cachedServices = null;
+                        this.cachedPeripheralServices = null;
                         s.onError(new GattException(status));
                         gattDispatcher.onServicesDiscovered = null;
                     });
                 } else if (status == BluetoothGatt.GATT_SUCCESS) {
-                    this.cachedServices = NativeService.wrapNativeServices(gatt.getServices());
+                    this.cachedPeripheralServices = AndroidPeripheralService.wrapNativeServices(gatt.getServices());
 
-                    s.onNext(cachedServices);
+                    s.onNext(cachedPeripheralServices);
                     s.onCompleted();
 
                     gattDispatcher.onServicesDiscovered = null;
                 } else {
                     Logger.error(LOG_TAG, "Could not discover services. " + GattException.getNameForStatus(status));
 
-                    this.cachedServices = null;
+                    this.cachedPeripheralServices = null;
                     s.onError(new GattException(status));
 
                     gattDispatcher.onServicesDiscovered = null;
@@ -299,11 +300,11 @@ public class NativeDevice implements Device {
 
     @Nullable
     @Override
-    public Service getService(@NonNull UUID serviceIdentifier) {
+    public PeripheralService getService(@NonNull UUID serviceIdentifier) {
         if (gatt != null) {
             BluetoothGattService nativeService = gatt.getService(serviceIdentifier);
             if (nativeService != null) {
-                return new NativeService(nativeService);
+                return new AndroidPeripheralService(nativeService);
             }
         }
 
@@ -316,20 +317,20 @@ public class NativeDevice implements Device {
 
     //region Characteristics
 
-    private @NonNull BluetoothGattService getGattService(@NonNull Service onService) {
-        return ((NativeService) onService).service;
+    private @NonNull BluetoothGattService getGattService(@NonNull PeripheralService onPeripheralService) {
+        return ((AndroidPeripheralService) onPeripheralService).service;
     }
 
     @NonNull
     @Override
-    public Observable<UUID> subscribeNotification(@NonNull Service onService,
+    public Observable<UUID> subscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                   @NonNull UUID characteristicIdentifier,
                                                   @NonNull UUID descriptorIdentifier) {
         if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
         return deviceCenter.newConfiguredObservable(s -> {
-            BluetoothGattService service = getGattService(onService);
+            BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
             if (gatt.setCharacteristicNotification(characteristic, true)) {
                 gattDispatcher.onDescriptorWrite = (gatt, descriptor, status) -> {
@@ -359,14 +360,14 @@ public class NativeDevice implements Device {
 
     @NonNull
     @Override
-    public Observable<UUID> unsubscribeNotification(@NonNull Service onService,
+    public Observable<UUID> unsubscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                     @NonNull UUID characteristicIdentifier,
                                                     @NonNull UUID descriptorIdentifier) {
         if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
         return deviceCenter.newConfiguredObservable(s -> {
-            BluetoothGattService service = getGattService(onService);
+            BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
             gattDispatcher.onDescriptorWrite = (gatt, descriptor, status) -> {
                 if (!Arrays.equals(descriptor.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE))
@@ -396,7 +397,7 @@ public class NativeDevice implements Device {
 
     @NonNull
     @Override
-    public Observable<Void> writeCommand(@NonNull Service onService, @NonNull Command command) {
+    public Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService, @NonNull Command command) {
         if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new NotConnectedException());
 
@@ -407,7 +408,7 @@ public class NativeDevice implements Device {
                         Logger.info(LOG_TAG, "Command write failed, trying implicit re-bond.");
                         createBondReceiver().subscribe(intent -> {
                             Logger.info(LOG_TAG, "Implicit re-bond completed, retrying command write.");
-                            writeCommand(onService, command).subscribe(s);
+                            writeCommand(onPeripheralService, command).subscribe(s);
                         }, e -> {
                             Logger.error(LOG_TAG, "Could not perform implicit re-bond. Propagating original error " + GattException.getNameForStatus(status));
                             s.onError(new GattException(status));
@@ -416,7 +417,7 @@ public class NativeDevice implements Device {
                         Logger.info(LOG_TAG, "Command write failed, trying explicit re-bond.");
                         rebond().subscribe(ignored -> {
                             Logger.info(LOG_TAG, "Explicit re-bond completed, retrying command write.");
-                            writeCommand(onService, command).subscribe(s);
+                            writeCommand(onPeripheralService, command).subscribe(s);
                         }, e -> {
                             Logger.error(LOG_TAG, "Could not perform explicit re-bond. Propagating original error " + GattException.getNameForStatus(status));
                             s.onError(new GattException(status));
@@ -431,7 +432,7 @@ public class NativeDevice implements Device {
                 }
             };
 
-            BluetoothGattService service = getGattService(onService);
+            BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(command.identifier);
             characteristic.setValue(command.payload);
             if (!gatt.writeCharacteristic(characteristic)) {
@@ -461,7 +462,7 @@ public class NativeDevice implements Device {
                 ", address=" + getAddress() +
                 ", connectionStatus=" + getConnectionStatus() +
                 ", bondStatus=" + getBondStatus() +
-                ", scannedRssi=" + getScannedRssi() +
+                ", scannedRssi=" + getScanTimeRssi() +
                 '}';
     }
 }

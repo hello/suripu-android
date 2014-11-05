@@ -16,7 +16,7 @@ import android.widget.Button;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.bluetooth.devices.SenseDevice;
+import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -99,14 +99,14 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         if (bluetoothAdapter.isEnabled()) {
             beginPairing();
 
-            Observable<SenseDevice> device = hardwarePresenter.scanForDevices().map(hardwarePresenter::bestDeviceForPairing);
+            Observable<SensePeripheral> device = hardwarePresenter.scanForDevices().map(hardwarePresenter::bestDeviceForPairing);
             bindAndSubscribe(device, this::pairWith, this::pairingFailed);
         } else {
             startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
         }
     }
 
-    public void pairWith(@Nullable SenseDevice device) {
+    public void pairWith(@Nullable SensePeripheral device) {
         if (device != null) {
             bindAndSubscribe(hardwarePresenter.connectToDevice(device), ignored -> finishedPairing(), this::pairingFailed);
         } else {
