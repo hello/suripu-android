@@ -145,14 +145,14 @@ public interface Peripheral {
      * <p/>
      * Does nothing if the device is already bonded.
      */
-    @NonNull Observable<Peripheral> bond();
+    @NonNull Observable<Peripheral> createBond();
 
     /**
      * Removes the bond to the peripheral from the current device.
      * <p/>
      * Does nothing if the device is not bonded.
      */
-    @NonNull Observable<Peripheral> unbond();
+    @NonNull Observable<Peripheral> removeBond();
 
     /**
      * Returns the bond status of the peripheral.

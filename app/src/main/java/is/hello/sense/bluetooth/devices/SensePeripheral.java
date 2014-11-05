@@ -83,7 +83,7 @@ public class SensePeripheral {
             peripheral.connect().subscribe(device -> {
                 Logger.info(Peripheral.LOG_TAG, "connected to " + toString());
 
-                device.bond().subscribe(ignored -> {
+                device.createBond().subscribe(ignored -> {
                     Logger.info(Peripheral.LOG_TAG, "bonded to " + toString());
 
                     device.discoverServices().subscribe(services -> {

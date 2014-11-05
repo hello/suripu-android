@@ -12,6 +12,12 @@ import is.hello.sense.bluetooth.stacks.android.AndroidBluetoothStack;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 
+/**
+ * A partial object graph that vends a configured BluetoothStack object.
+ * <p/>
+ * Requires a containing module to provide an unqualified
+ * application Context in order to compile.
+ */
 @Module(library = true, complete = false)
 @SuppressWarnings("UnusedDeclaration")
 public class BluetoothModule {
@@ -19,9 +25,8 @@ public class BluetoothModule {
         return AndroidSchedulers.mainThread();
     }
 
-    @Provides @Singleton
-    BluetoothStack provideDeviceCenter(@NonNull Context applicationContext,
-                                                          @NonNull Scheduler scheduler) {
+    @Provides @Singleton BluetoothStack provideDeviceCenter(@NonNull Context applicationContext,
+                                                            @NonNull Scheduler scheduler) {
         return new AndroidBluetoothStack(applicationContext, scheduler);
     }
 }

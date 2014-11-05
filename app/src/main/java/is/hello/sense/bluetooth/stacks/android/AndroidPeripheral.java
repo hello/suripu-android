@@ -85,10 +85,11 @@ public class AndroidPeripheral implements Peripheral {
         if (this.gatt != null) {
             Logger.warn(LOG_TAG, "Redundant call to connect(), ignoring.");
 
-            if (getConnectionStatus() == STATUS_CONNECTED)
+            if (getConnectionStatus() == STATUS_CONNECTED) {
                 return Observable.just(this);
-            else if (getConnectionStatus() == STATUS_CONNECTING || getConnectionStatus() == STATUS_DISCONNECTING)
+            } else if (getConnectionStatus() == STATUS_CONNECTING || getConnectionStatus() == STATUS_DISCONNECTING) {
                 return Observable.error(new PeripheralConnectionError("Peripheral is changing conection status."));
+            }
         }
 
         return deviceCenter.newConfiguredObservable(s -> {
@@ -119,8 +120,9 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     @Override
     public Observable<Peripheral> disconnect() {
-        if (getConnectionStatus() != STATUS_CONNECTED)
-            return Observable.error(new PeripheralConnectionError("Peripheral is not connected."));
+        if (getConnectionStatus() != STATUS_CONNECTED) {
+            return Observable.error(new PeripheralConnectionError());
+        }
 
         return deviceCenter.newConfiguredObservable(s -> {
             gattDispatcher.onConnectionStateChanged = (gatt, connectStatus, newState) -> {
@@ -166,29 +168,33 @@ public class AndroidPeripheral implements Peripheral {
                 .take(2);
     }
 
-    private boolean createBond() {
+    private boolean tryCreateBond() {
         try {
             Method method = bluetoothDevice.getClass().getMethod("createBond", (Class[]) null);
-            return (Boolean) method.invoke(bluetoothDevice, (Class[]) null);
+            return (Boolean) method.invoke(bluetoothDevice, (Object[]) null);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(LOG_TAG, "Could not invoke `createBond` on native BluetoothDevice.", e);
             return false;
         }
     }
 
-    private boolean removeBond() {
+    private boolean tryRemoveBond() {
         try {
             Method method = bluetoothDevice.getClass().getMethod("removeBond", (Class[]) null);
-            return (Boolean) method.invoke(bluetoothDevice, (Class[]) null);
+            return (Boolean) method.invoke(bluetoothDevice, (Object[]) null);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(LOG_TAG, "Could not invoke `removeBond` on native BluetoothDevice.", e);
             return false;
         }
     }
 
     @NonNull
     @Override
-    public Observable<Peripheral> bond() {
+    public Observable<Peripheral> createBond() {
+        if (getConnectionStatus() != STATUS_CONNECTED) {
+            return Observable.error(new PeripheralConnectionError());
+        }
+
         if (getBondStatus() == BOND_BONDED) {
             return Observable.just(this);
         }
@@ -206,7 +212,7 @@ public class AndroidPeripheral implements Peripheral {
                 }
             }, s::onError);
 
-            if (!createBond()) {
+            if (!tryCreateBond()) {
                 subscription.unsubscribe();
                 s.onError(new BondingError());
             }
@@ -215,13 +221,17 @@ public class AndroidPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<Peripheral> unbond() {
+    public Observable<Peripheral> removeBond() {
+        if (getConnectionStatus() != STATUS_CONNECTED) {
+            return Observable.error(new PeripheralConnectionError());
+        }
+
         if (getBondStatus() == BOND_NONE) {
             return Observable.just(this);
         }
 
         return deviceCenter.newConfiguredObservable(s -> {
-            if (removeBond()) {
+            if (tryRemoveBond()) {
                 createBondReceiver().subscribe(intent -> {
                     Logger.info(Peripheral.LOG_TAG, "Bond status change " + intent);
                     BluetoothDevice bondedDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
@@ -243,7 +253,7 @@ public class AndroidPeripheral implements Peripheral {
     }
 
     public Observable<Peripheral> recreateBond() {
-        return deviceCenter.newConfiguredObservable(s -> unbond().subscribe(ignored -> bond().subscribe(s), s::onError));
+        return deviceCenter.newConfiguredObservable(s -> removeBond().subscribe(ignored -> createBond().subscribe(s), s::onError));
     }
 
     @Override
@@ -265,9 +275,9 @@ public class AndroidPeripheral implements Peripheral {
         return deviceCenter.newConfiguredObservable(s -> {
             gattDispatcher.onServicesDiscovered = (gatt, status) -> {
                 if (status == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
-                    Logger.info(LOG_TAG, "Insufficient authorization returned, waiting for implicit re-bond.");
+                    Logger.info(LOG_TAG, "Insufficient authorization returned, waiting for implicit re-createBond.");
                     createBondReceiver().subscribe(intent -> {
-                        Logger.info(LOG_TAG, "Implicit re-bond completed, retrying services discovery.");
+                        Logger.info(LOG_TAG, "Implicit re-createBond completed, retrying services discovery.");
                         if (!gatt.discoverServices()) {
                             s.onError(new PeripheralServiceDiscoveryFailedError());
                         }
@@ -403,21 +413,21 @@ public class AndroidPeripheral implements Peripheral {
             gattDispatcher.onCharacteristicWrite = (gatt, characteristic, status) -> {
                 if (status == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
                     if (getBondStatus() == BOND_NONE) {
-                        Logger.info(LOG_TAG, "Command write failed, trying implicit re-bond.");
+                        Logger.info(LOG_TAG, "Command write failed, trying implicit re-createBond.");
                         createBondReceiver().subscribe(intent -> {
-                            Logger.info(LOG_TAG, "Implicit re-bond completed, retrying command write.");
+                            Logger.info(LOG_TAG, "Implicit re-createBond completed, retrying command write.");
                             writeCommand(onPeripheralService, identifier, payload).subscribe(s);
                         }, e -> {
-                            Logger.error(LOG_TAG, "Could not perform implicit re-bond. Propagating original error " + GattError.statusToString(status));
+                            Logger.error(LOG_TAG, "Could not perform implicit re-createBond. Propagating original error " + GattError.statusToString(status));
                             s.onError(new GattError(status));
                         });
                     } else {
-                        Logger.info(LOG_TAG, "Command write failed, trying explicit re-bond.");
+                        Logger.info(LOG_TAG, "Command write failed, trying explicit re-createBond.");
                         recreateBond().subscribe(ignored -> {
-                            Logger.info(LOG_TAG, "Explicit re-bond completed, retrying command write.");
+                            Logger.info(LOG_TAG, "Explicit re-createBond completed, retrying command write.");
                             writeCommand(onPeripheralService, identifier, payload).subscribe(s);
                         }, e -> {
-                            Logger.error(LOG_TAG, "Could not perform explicit re-bond. Propagating original error " + GattError.statusToString(status));
+                            Logger.error(LOG_TAG, "Could not perform explicit re-createBond. Propagating original error " + GattError.statusToString(status));
                             s.onError(new GattError(status));
                         });
                     }

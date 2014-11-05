@@ -22,6 +22,9 @@ public interface BluetoothStack {
     /**
      * Performs a scan for peripherals matching a given set of criteria.
      * <p/>
+     * Yields {@see is.hello.sense.bluetooth.errors.BluetoothDisabledError}
+     * if the device's Bluetooth radio is currently disabled.
+     *
      * @see DiscoveryCriteria
      */
     @NonNull Observable<List<Peripheral>> discoverPeripherals(@NonNull DiscoveryCriteria discoveryCriteria);
