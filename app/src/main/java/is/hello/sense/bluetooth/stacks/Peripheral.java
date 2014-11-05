@@ -176,7 +176,7 @@ public interface Peripheral {
      *
      * @see Peripheral#getService(java.util.UUID)
      */
-    @NonNull Observable<Collection<PeripheralService>> discoverServices();
+    @NonNull Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout);
 
     /**
      * Looks up a peripheral service by identifier on the peripheral.
@@ -193,14 +193,17 @@ public interface Peripheral {
 
     @NonNull Observable<UUID> subscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                     @NonNull UUID characteristicIdentifier,
-                                                    @NonNull UUID descriptorIdentifier);
+                                                    @NonNull UUID descriptorIdentifier,
+                                                    @NonNull OperationTimeout timeout);
     @NonNull Observable<UUID> unsubscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                       @NonNull UUID characteristicIdentifier,
-                                                      @NonNull UUID descriptorIdentifier);
+                                                      @NonNull UUID descriptorIdentifier,
+                                                      @NonNull OperationTimeout timeout);
 
     @NonNull Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService,
                                            @NonNull UUID identifier,
-                                           @NonNull byte[] payload);
+                                           @NonNull byte[] payload,
+                                           @NonNull OperationTimeout timeout);
 
     /**
      * Associates a given packet handler with the Peripheral.

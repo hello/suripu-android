@@ -18,23 +18,25 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.BondingError;
+import is.hello.sense.bluetooth.errors.GattError;
+import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
-import is.hello.sense.bluetooth.errors.GattError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
+import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
 
 import static rx.android.observables.AndroidObservable.fromBroadcast;
 
 public class AndroidPeripheral implements Peripheral {
-    private final @NonNull AndroidBluetoothStack deviceCenter;
+    private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull BluetoothDevice bluetoothDevice;
     private final int scannedRssi;
     private final GattDispatcher gattDispatcher = new GattDispatcher();
@@ -42,10 +44,10 @@ public class AndroidPeripheral implements Peripheral {
     private BluetoothGatt gatt;
     private Map<UUID, PeripheralService> cachedPeripheralServices;
 
-    AndroidPeripheral(@NonNull AndroidBluetoothStack deviceCenter,
+    AndroidPeripheral(@NonNull AndroidBluetoothStack stack,
                       @NonNull BluetoothDevice bluetoothDevice,
                       int scannedRssi) {
-        this.deviceCenter = deviceCenter;
+        this.stack = stack;
         this.bluetoothDevice = bluetoothDevice;
         this.scannedRssi = scannedRssi;
     }
@@ -71,7 +73,7 @@ public class AndroidPeripheral implements Peripheral {
     @Override
     @NonNull
     public BluetoothStack getStack() {
-        return deviceCenter;
+        return stack;
     }
 
     //endregion
@@ -92,7 +94,7 @@ public class AndroidPeripheral implements Peripheral {
             }
         }
 
-        return deviceCenter.newConfiguredObservable(s -> {
+        return stack.newConfiguredObservable(s -> {
             gattDispatcher.onConnectionStateChanged = (gatt, connectStatus, newState) -> {
                 if (connectStatus != BluetoothGatt.GATT_SUCCESS) {
                     Logger.error(LOG_TAG, "Could not connect. " + GattError.statusToString(connectStatus));
@@ -113,7 +115,7 @@ public class AndroidPeripheral implements Peripheral {
                     gattDispatcher.onConnectionStateChanged = null;
                 }
             };
-            this.gatt = bluetoothDevice.connectGatt(deviceCenter.applicationContext, false, gattDispatcher);
+            this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
         });
     }
 
@@ -124,7 +126,7 @@ public class AndroidPeripheral implements Peripheral {
             return Observable.error(new PeripheralConnectionError());
         }
 
-        return deviceCenter.newConfiguredObservable(s -> {
+        return stack.newConfiguredObservable(s -> {
             gattDispatcher.onConnectionStateChanged = (gatt, connectStatus, newState) -> {
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     if (connectStatus != BluetoothGatt.GATT_SUCCESS) {
@@ -150,7 +152,36 @@ public class AndroidPeripheral implements Peripheral {
 
     @Override
     public int getConnectionStatus() {
-        return deviceCenter.bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
+        return stack.bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
+    }
+
+    //endregion
+
+
+    //region Internal
+
+    private <T> void setupTimeout(@NonNull OperationTimeoutError.Operation operation,
+                                  @NonNull OperationTimeout timeout,
+                                  @NonNull Subscriber<T> subscriber) {
+        timeout.setTimeoutAction(() -> {
+            switch (operation) {
+                case DISCOVER_SERVICES:
+                    gattDispatcher.onServicesDiscovered = null;
+                    break;
+
+                case SUBSCRIBE_NOTIFICATION:
+                case UNSUBSCRIBE_NOTIFICATION:
+                    gattDispatcher.onDescriptorWrite = null;
+                    break;
+
+                case WRITE_COMMAND:
+                    gattDispatcher.onCharacteristicWrite = null;
+                    break;
+            }
+
+            disconnect().subscribe(ignored -> subscriber.onError(new OperationTimeoutError(operation)),
+                    e -> subscriber.onError(new OperationTimeoutError(operation, e)));
+        }, stack.scheduler);
     }
 
     //endregion
@@ -159,8 +190,8 @@ public class AndroidPeripheral implements Peripheral {
     //region Bonding
 
     private Observable<Intent> createBondReceiver() {
-        return fromBroadcast(deviceCenter.applicationContext, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
-                .subscribeOn(deviceCenter.scheduler)
+        return fromBroadcast(stack.applicationContext, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
+                .subscribeOn(stack.scheduler)
                 .filter(intent -> {
                     BluetoothDevice bondedDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     return (bondedDevice != null && bondedDevice.getAddress().equals(bluetoothDevice.getAddress()));
@@ -199,7 +230,7 @@ public class AndroidPeripheral implements Peripheral {
             return Observable.just(this);
         }
 
-        return deviceCenter.newConfiguredObservable(s -> {
+        return stack.newConfiguredObservable(s -> {
             Subscription subscription = createBondReceiver().subscribe(intent -> {
                 Logger.info(Peripheral.LOG_TAG, "Bond status change " + intent);
 
@@ -230,7 +261,7 @@ public class AndroidPeripheral implements Peripheral {
             return Observable.just(this);
         }
 
-        return deviceCenter.newConfiguredObservable(s -> {
+        return stack.newConfiguredObservable(s -> {
             if (tryRemoveBond()) {
                 createBondReceiver().subscribe(intent -> {
                     Logger.info(Peripheral.LOG_TAG, "Bond status change " + intent);
@@ -253,7 +284,7 @@ public class AndroidPeripheral implements Peripheral {
     }
 
     public Observable<Peripheral> recreateBond() {
-        return deviceCenter.newConfiguredObservable(s -> removeBond().subscribe(ignored -> createBond().subscribe(s), s::onError));
+        return stack.newConfiguredObservable(s -> removeBond().subscribe(ignored -> createBond().subscribe(s), s::onError));
     }
 
     @Override
@@ -268,17 +299,23 @@ public class AndroidPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<Collection<PeripheralService>> discoverServices() {
+    public Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
         if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new PeripheralConnectionError());
 
-        return deviceCenter.newConfiguredObservable(s -> {
+        return stack.newConfiguredObservable(s -> {
+            setupTimeout(OperationTimeoutError.Operation.DISCOVER_SERVICES, timeout, s);
+
             gattDispatcher.onServicesDiscovered = (gatt, status) -> {
+                timeout.unschedule();
+
                 if (status == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
                     Logger.info(LOG_TAG, "Insufficient authorization returned, waiting for implicit re-createBond.");
                     createBondReceiver().subscribe(intent -> {
                         Logger.info(LOG_TAG, "Implicit re-createBond completed, retrying services discovery.");
-                        if (!gatt.discoverServices()) {
+                        if (gatt.discoverServices()) {
+                            timeout.schedule();
+                        } else {
                             s.onError(new PeripheralServiceDiscoveryFailedError());
                         }
                     }, e -> {
@@ -303,7 +340,9 @@ public class AndroidPeripheral implements Peripheral {
                 }
             };
 
-            if (!gatt.discoverServices()) {
+            if (gatt.discoverServices()) {
+                timeout.schedule();
+            } else {
                 s.onError(new PeripheralServiceDiscoveryFailedError());
             }
         });
@@ -333,17 +372,22 @@ public class AndroidPeripheral implements Peripheral {
     @Override
     public Observable<UUID> subscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                   @NonNull UUID characteristicIdentifier,
-                                                  @NonNull UUID descriptorIdentifier) {
+                                                  @NonNull UUID descriptorIdentifier,
+                                                  @NonNull OperationTimeout timeout) {
         if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new PeripheralConnectionError());
 
-        return deviceCenter.newConfiguredObservable(s -> {
+        return stack.newConfiguredObservable(s -> {
+            setupTimeout(OperationTimeoutError.Operation.SUBSCRIBE_NOTIFICATION, timeout, s);
+
             BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
             if (gatt.setCharacteristicNotification(characteristic, true)) {
                 gattDispatcher.onDescriptorWrite = (gatt, descriptor, status) -> {
                     if (!Arrays.equals(descriptor.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE))
                         return;
+
+                    timeout.unschedule();
 
                     if (status == BluetoothGatt.GATT_SUCCESS) {
                         s.onNext(characteristicIdentifier);
@@ -357,11 +401,13 @@ public class AndroidPeripheral implements Peripheral {
                 };
                 BluetoothGattDescriptor descriptor = characteristic.getDescriptor(descriptorIdentifier);
                 descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                if (!gatt.writeDescriptor(descriptor)) {
+                if (gatt.writeDescriptor(descriptor)) {
+                    timeout.schedule();
+                } else {
                     s.onError(new GattError(BluetoothGatt.GATT_FAILURE));
                 }
             } else {
-                s.onError(new GattError(BluetoothGatt.GATT_FAILURE));
+                s.onError(new GattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
         });
     }
@@ -370,16 +416,21 @@ public class AndroidPeripheral implements Peripheral {
     @Override
     public Observable<UUID> unsubscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                     @NonNull UUID characteristicIdentifier,
-                                                    @NonNull UUID descriptorIdentifier) {
+                                                    @NonNull UUID descriptorIdentifier,
+                                                    @NonNull OperationTimeout timeout) {
         if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new PeripheralConnectionError());
 
-        return deviceCenter.newConfiguredObservable(s -> {
+        return stack.newConfiguredObservable(s -> {
+            setupTimeout(OperationTimeoutError.Operation.UNSUBSCRIBE_NOTIFICATION, timeout, s);
+
             BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
             gattDispatcher.onDescriptorWrite = (gatt, descriptor, status) -> {
                 if (!Arrays.equals(descriptor.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE))
                     return;
+
+                timeout.unschedule();
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     if (gatt.setCharacteristicNotification(characteristic, false)) {
@@ -397,26 +448,35 @@ public class AndroidPeripheral implements Peripheral {
             };
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(descriptorIdentifier);
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            if (!gatt.writeDescriptor(descriptor)) {
-                s.onError(new GattError(BluetoothGatt.GATT_FAILURE));
+            if (gatt.writeDescriptor(descriptor)) {
+                timeout.schedule();
+            } else {
+                s.onError(new GattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
         });
     }
 
     @NonNull
     @Override
-    public Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService, @NonNull UUID identifier, @NonNull byte[] payload) {
+    public Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService,
+                                         @NonNull UUID identifier,
+                                         @NonNull byte[] payload,
+                                         @NonNull OperationTimeout timeout) {
         if (getConnectionStatus() != STATUS_CONNECTED)
             return Observable.error(new PeripheralConnectionError());
 
-        return deviceCenter.newConfiguredObservable(s -> {
+        return stack.newConfiguredObservable(s -> {
+            setupTimeout(OperationTimeoutError.Operation.WRITE_COMMAND, timeout, s);
+
             gattDispatcher.onCharacteristicWrite = (gatt, characteristic, status) -> {
+                timeout.unschedule();
+
                 if (status == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
                     if (getBondStatus() == BOND_NONE) {
                         Logger.info(LOG_TAG, "Command write failed, trying implicit re-createBond.");
                         createBondReceiver().subscribe(intent -> {
                             Logger.info(LOG_TAG, "Implicit re-createBond completed, retrying command write.");
-                            writeCommand(onPeripheralService, identifier, payload).subscribe(s);
+                            writeCommand(onPeripheralService, identifier, payload, timeout).subscribe(s);
                         }, e -> {
                             Logger.error(LOG_TAG, "Could not perform implicit re-createBond. Propagating original error " + GattError.statusToString(status));
                             s.onError(new GattError(status));
@@ -425,7 +485,7 @@ public class AndroidPeripheral implements Peripheral {
                         Logger.info(LOG_TAG, "Command write failed, trying explicit re-createBond.");
                         recreateBond().subscribe(ignored -> {
                             Logger.info(LOG_TAG, "Explicit re-createBond completed, retrying command write.");
-                            writeCommand(onPeripheralService, identifier, payload).subscribe(s);
+                            writeCommand(onPeripheralService, identifier, payload, timeout).subscribe(s);
                         }, e -> {
                             Logger.error(LOG_TAG, "Could not perform explicit re-createBond. Propagating original error " + GattError.statusToString(status));
                             s.onError(new GattError(status));
@@ -443,8 +503,10 @@ public class AndroidPeripheral implements Peripheral {
             BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(identifier);
             characteristic.setValue(payload);
-            if (!gatt.writeCharacteristic(characteristic)) {
-                s.onError(new BluetoothError());
+            if (gatt.writeCharacteristic(characteristic)) {
+                timeout.schedule();
+            } else {
+                s.onError(new GattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
         });
     }
