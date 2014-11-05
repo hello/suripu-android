@@ -32,10 +32,12 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
 
     private TextView readingText;
+    private TextView messageTitleText;
     private TextView messageText;
     private LineGraphView graphView;
     private GraphAdapter adapter = new GraphAdapter();
-    private ViewGroup annotationsContainer;
+    private ViewGroup titleAnnotationsContainer;
+    private ViewGroup valueAnnotationsContainer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         View view = inflater.inflate(R.layout.fragment_sensor_history, container, false);
 
         this.readingText = (TextView) view.findViewById(R.id.fragment_sensor_history_reading);
+        this.messageTitleText = (TextView) view.findViewById(R.id.fragment_sensor_history_message_title);
         this.messageText = (TextView) view.findViewById(R.id.fragment_sensor_history_message);
         this.graphView = (LineGraphView) view.findViewById(R.id.fragment_sensor_history_graph);
         graphView.setAdapter(adapter);
@@ -61,7 +64,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         SelectorLinearLayout historyMode = (SelectorLinearLayout) view.findViewById(R.id.fragment_sensor_history_mode);
         historyMode.setOnSelectionChangedListener(this);
 
-        this.annotationsContainer = (ViewGroup) view.findViewById(R.id.fragment_sensor_history_graph_annotations);
+        this.titleAnnotationsContainer = (ViewGroup) view.findViewById(R.id.fragment_sensor_history_graph_title_annotations);
+        this.valueAnnotationsContainer = (ViewGroup) view.findViewById(R.id.fragment_sensor_history_graph_value_annotations);
 
         return view;
     }
@@ -91,7 +95,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void bindConditions(@Nullable CurrentConditionsPresenter.Result result) {
         if (result == null) {
             readingText.setText(R.string.missing_data_placeholder);
-            messageText.setText(R.string.missing_data_placeholder);
+            messageTitleText.setText(R.string.missing_data_placeholder);
         } else {
             String sensor = getSensorHistoryActivity().getSensor();
             SensorState condition = result.conditions.getSensorStateWithName(sensor);
@@ -109,6 +113,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 else
                     readingText.setText(R.string.missing_data_placeholder);
 
+                messageTitleText.setText(sensor);
                 messageText.setText(condition.getMessage());
             }
         }
@@ -117,7 +122,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void conditionUnavailable(@NonNull Throwable e) {
         Logger.error(SensorHistoryFragment.class.getSimpleName(), "Could not load conditions", e);
         readingText.setText(R.string.missing_data_placeholder);
-        messageText.setText(R.string.missing_data_placeholder);
+        messageTitleText.setText(R.string.dialog_error_title);
+        messageText.setText(e.getMessage());
     }
 
 
@@ -131,7 +137,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         private final List<SensorHistory> data = new ArrayList<>();
         private int peakY = 100;
         private int sectionCount = 0;
-        private int pointCount = 0;
+        private int sectionPointCount = 0;
 
 
         public void clear() {
@@ -146,22 +152,26 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             if (history.isEmpty()) {
                 this.peakY = 100;
                 this.sectionCount = 0;
-                this.pointCount = 0;
+                this.sectionPointCount = 0;
             } else {
                 SensorHistory peak = Collections.max(history, (l, r) -> Float.compare(l.getValue(), r.getValue()));
                 this.peakY = Math.max(100, (int) peak.getValue());
                 this.sectionCount = 7;
-                this.pointCount = (int) Math.ceil((double) data.size() / 8.0);
+                this.sectionPointCount = (int) Math.ceil((float) data.size() / (float) sectionCount);
             }
 
-            for (int section = 0, count = annotationsContainer.getChildCount(); section < count; section++) {
-                TextView annotation = (TextView) annotationsContainer.getChildAt(section);
+            for (int section = 0, count = titleAnnotationsContainer.getChildCount(); section < count; section++) {
+                TextView title = (TextView) titleAnnotationsContainer.getChildAt(section);
+                TextView value = (TextView) valueAnnotationsContainer.getChildAt(section);
                 if (section < sectionCount) {
                     CharSequence sectionTitle = getSectionTitle(section);
-                    CharSequence sectionRepresentativeValue = getFormattedMagnitudeAt(section, getSectionPointCount(section) / 2);
-                    annotation.setText(sectionTitle + "\n" + sectionRepresentativeValue);
+                    title.setText(sectionTitle);
+
+                    CharSequence sectionValue = getFormattedMagnitudeAt(section, getSectionPointCount(section) / 2);
+                    value.setText(sectionValue);
                 } else {
-                    annotation.setText(R.string.missing_data_placeholder);
+                    title.setText(R.string.missing_data_placeholder);
+                    value.setText(R.string.missing_data_placeholder);
                 }
             }
 
@@ -176,7 +186,12 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
 
         private int calculateIndex(int section, int position) {
-            return (section * pointCount) + position;
+            return Math.min(data.size() - 1, (section * sectionPointCount) + position);
+        }
+
+        private SensorHistory getPoint(int section, int position) {
+            int index = calculateIndex(section, position);
+            return data.get(index);
         }
 
         @Override
@@ -187,9 +202,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         public @NonNull CharSequence getSectionTitle(int section) {
             SensorHistory representativeSample = data.get(calculateIndex(section, 0));
             if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_DAY)
-                return representativeSample.getTime().toString("h a");
+                return representativeSample.getTime().toString("h");
             else
-                return representativeSample.getTime().toString("EE");
+                return representativeSample.getTime().toString("E").substring(0, 1);
         }
 
         @Override
@@ -199,24 +214,24 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         @Override
         public int getSectionPointCount(int section) {
-            return pointCount;
+            return sectionPointCount;
         }
 
         @Override
         public float getMagnitudeAt(int section, int position) {
-            return data.get(calculateIndex(section, position)).getValue();
+            return getPoint(section, position).getValue();
         }
 
         @NonNull
         @Override
         public CharSequence getFormattedMagnitudeAt(int section, int position) {
-            SensorHistory point = data.get(calculateIndex(section, position));
-            return Float.toString(point.getValue());
+            SensorHistory point = getPoint(section, position);
+            return Integer.toString((int) point.getValue());
         }
 
         @Override
         public boolean wantsMarkerAt(int section, int position) {
-            return (position == pointCount / 2);
+            return false;
         }
     }
 }

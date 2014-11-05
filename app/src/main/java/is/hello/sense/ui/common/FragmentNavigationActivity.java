@@ -56,7 +56,7 @@ public abstract class FragmentNavigationActivity extends SenseActivity implement
                              boolean wantsBackStackEntry) {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         String tag = fragment.getClass().getSimpleName();
-        if (getFragmentManager().findFragmentById(R.id.activity_fragment_navigation_container) == null) {
+        if (getTopFragment() == null) {
             transaction.add(R.id.activity_fragment_navigation_container, fragment, tag);
         } else {
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -82,6 +82,10 @@ public abstract class FragmentNavigationActivity extends SenseActivity implement
             //noinspection ConstantConditions
             getActionBar().setTitle(getDefaultTitle());
         }
+    }
+
+    protected @Nullable Fragment getTopFragment() {
+        return getFragmentManager().findFragmentById(R.id.activity_fragment_navigation_container);
     }
 
     protected abstract @StringRes int getDefaultTitle();

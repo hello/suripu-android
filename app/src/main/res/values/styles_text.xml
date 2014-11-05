@@ -54,6 +54,10 @@
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
 
+    <style name="AppTheme.Text.Body.Light.Small">
+        <item name="android:textSize">@dimen/text_size_small</item>
+    </style>
+
     <style name="AppTheme.Text.Body.Bold">
         <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
     </style>

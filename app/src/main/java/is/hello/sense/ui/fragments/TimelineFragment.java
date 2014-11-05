@@ -56,6 +56,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     private TextView timelineEventsHeader;
     private ImageButton menuButton;
     private ImageButton shareButton;
+    private TextView dateText;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -96,7 +97,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         this.messageTextLabel = (TextView) headerView.findViewById(R.id.fragment_timeline_message_label);
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
 
-        TextView dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
+        this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
 
         listView.addHeaderView(headerView, null, false);
@@ -150,6 +151,13 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
 
         Observable<CharSequence> renderedMessage = timelinePresenter.renderedTimelineMessage;
         bindAndSubscribe(renderedMessage, messageText::setText, this::timelineUnavailable);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
     }
 
     public void onTransitionCompleted() {

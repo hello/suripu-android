@@ -1,6 +1,10 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -34,6 +38,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private static final String ARG_SCAN_RESULT = OnboardingSignIntoWifiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
     private static final int ERROR_REQUEST_CODE = 0x30;
+    private static final int ALREADY_LINKED_REQUEST_CODE = 0x66;
 
     @Inject ApiService apiService;
     @Inject HardwarePresenter hardwarePresenter;
@@ -100,6 +105,8 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
         if (requestCode == ERROR_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             sendWifiCredentials();
+        } else if (requestCode == ALREADY_LINKED_REQUEST_CODE && resultCode == DeviceAlreadyPairedDialogFragment.RESULT_ALREADY_LINKED) {
+            finishedSettingWifi();
         }
     }
 
@@ -168,12 +175,19 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     }
 
     public void presentError(Throwable e) {
-        ErrorDialogFragment dialogFragment = null;
+        ErrorDialogFragment errorDialogFragment = null;
         if (e instanceof GattError && ((GattError) e).statusCode == 133 && !hasTriedReconnect) {
             tryDeviceReconnect();
             return;
         } else if (e instanceof SensePeripheralError) {
             SenseBle.ErrorType errorType = ((SensePeripheralError) e).errorType;
+            if (errorType == SenseBle.ErrorType.DEVICE_ALREADY_PAIRED) {
+                DeviceAlreadyPairedDialogFragment dialogFragment = new DeviceAlreadyPairedDialogFragment();
+                dialogFragment.setTargetFragment(this, ALREADY_LINKED_REQUEST_CODE);
+                dialogFragment.show(getFragmentManager(), DeviceAlreadyPairedDialogFragment.TAG);
+                return;
+            }
+
             networkPassword.requestFocus();
 
             String message;
@@ -197,20 +211,52 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
                     break;
             }
 
-            dialogFragment = ErrorDialogFragment.newInstance(message);
+            errorDialogFragment = ErrorDialogFragment.newInstance(message);
         }
 
-        if (dialogFragment == null)
-            dialogFragment = ErrorDialogFragment.newInstance(e);
+        if (errorDialogFragment == null)
+            errorDialogFragment = ErrorDialogFragment.newInstance(e);
 
         ((OnboardingActivity) getActivity()).finishBlockingWork();
 
-        dialogFragment.setTargetFragment(this, ERROR_REQUEST_CODE);
-        dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        errorDialogFragment.setTargetFragment(this, ERROR_REQUEST_CODE);
+        errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     public void deviceRepairFailed(Throwable e) {
         ((OnboardingActivity) getActivity()).finishBlockingWork();
         ErrorDialogFragment.presentError(getFragmentManager(), e);
+    }
+
+
+    public static class DeviceAlreadyPairedDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+        public static final String TAG = DeviceAlreadyPairedDialogFragment.class.getSimpleName();
+
+        public static final int RESULT_ALREADY_LINKED = 0;
+        public static final int RESULT_NOT_LINKED = 1;
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setTitle(R.string.dialog_title_sense_already_linked);
+            builder.setMessage(R.string.dialog_message_sense_already_linked);
+            builder.setPositiveButton(android.R.string.yes, this);
+            builder.setNegativeButton(android.R.string.no, this);
+
+            return builder.create();
+        }
+
+        @Override
+        public void onClick(DialogInterface dialogInterface, int which) {
+            if (getTargetFragment() == null)
+                return;
+
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_ALREADY_LINKED, null);
+            } else {
+                getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_NOT_LINKED, null);
+            }
+        }
     }
 }

@@ -69,7 +69,6 @@ public final class LineGraphView extends FrameLayout {
 
     protected void initialize(@Nullable AttributeSet attrs, int defStyleAttr) {
         float density = getResources().getDisplayMetrics().density;
-        this.topLineHeight = 3f * density;
 
         topLinePaint.setStyle(Paint.Style.STROKE);
         topLinePaint.setAntiAlias(true);
@@ -83,14 +82,10 @@ public final class LineGraphView extends FrameLayout {
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.LineGraphView, defStyleAttr, 0);
             setTopLineColor(styles.getColor(R.styleable.LineGraphView_topLineColor, Color.GRAY));
+            this.topLineHeight = styles.getDimensionPixelOffset(R.styleable.LineGraphView_topLineHeight, 1);
             setGridColor(styles.getColor(R.styleable.LineGraphView_gridColor, Color.LTGRAY));
             setMarkerColor(styles.getColor(R.styleable.LineGraphView_markerColor, Color.DKGRAY));
-            int drawableRes = styles.getInt(R.styleable.LineGraphView_fill, -1);
-            if (drawableRes != -1) {
-                this.fillDrawable = getResources().getDrawable(drawableRes);
-            } else {
-                this.fillDrawable = new ColorDrawable(Color.WHITE);
-            }
+            this.fillDrawable = styles.getDrawable(R.styleable.LineGraphView_fill);
             this.pointMarkerSize = styles.getFloat(R.styleable.LineGraphView_markerSize, 5f * density);
 
             this.numberOfVerticalLines = styles.getInt(R.styleable.LineGraphView_verticalLines, 0);
@@ -102,17 +97,19 @@ public final class LineGraphView extends FrameLayout {
             markersPaint.setColor(Color.DKGRAY);
             this.pointMarkerSize = 5f * density;
             this.fillDrawable = new ColorDrawable(Color.WHITE);
+            this.topLineHeight = 3f * density;
         }
 
         this.highlightedValueText = new TextView(getContext());
         highlightedValueText.setGravity(Gravity.CENTER);
-        highlightedValueText.setMinimumWidth((int) (50f * density));
-        highlightedValueText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        highlightedValueText.setMinimumWidth((int) (30f * density));
+        highlightedValueText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelOffset(R.dimen.text_size_small));
         highlightedValueText.setBackgroundResource(R.drawable.timestamp_background);
+        highlightedValueText.setTextColor(Color.WHITE);
         int padding = getResources().getDimensionPixelSize(R.dimen.gap_small);
         highlightedValueText.setPadding(padding, padding, padding, padding);
         highlightedValueText.setVisibility(INVISIBLE);
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.END);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.START);
         int margin = getResources().getDimensionPixelSize(R.dimen.gap_small);
         layoutParams.setMargins(margin, margin, margin, margin);
         addView(highlightedValueText, layoutParams);
@@ -274,6 +271,11 @@ public final class LineGraphView extends FrameLayout {
 
     public void setTopLineColor(int color) {
         topLinePaint.setColor(color);
+    }
+
+    public void setTopLineHeight(int height) {
+        this.topLineHeight = height;
+        postInvalidate();
     }
 
     public void setMarkerColor(int color) {
