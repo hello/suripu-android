@@ -85,6 +85,14 @@ public class SettingsActivity extends FragmentNavigationActivity {
         invalidateOptionsMenu();
     }
 
+    @Override
+    public void onBackStackChanged() {
+        super.onBackStackChanged();
+
+        this.isDeviceMenuVisible = (getTopFragment() instanceof DevicesFragment);
+        invalidateOptionsMenu();
+    }
+
     private void showSettings(@XmlRes int prefsRes, @StringRes int titleRes) {
         showFragment(SettingsFragment.newInstance(prefsRes), getString(titleRes), true);
     }
