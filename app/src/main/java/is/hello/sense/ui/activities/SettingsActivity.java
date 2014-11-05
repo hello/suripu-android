@@ -18,6 +18,7 @@ import is.hello.sense.SenseApplication;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
+import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.DevicesFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.fragments.settings.SettingsFragment;
@@ -89,7 +90,7 @@ public class SettingsActivity extends FragmentNavigationActivity {
 
             this.adapter = new StaticItemAdapter(getActivity());
             adapter.addItem(getString(R.string.label_my_info), null, () -> getSettingsActivity().showFragment(new MyInfoFragment(), getString(R.string.label_my_info), true));
-            adapter.addItem(getString(R.string.label_account), null);
+            adapter.addItem(getString(R.string.label_account), null, () -> getSettingsActivity().showFragment(new AccountSettingsFragment(), getString(R.string.label_account), true));
             adapter.addItem(getString(R.string.label_units_and_time), null, () -> getSettingsActivity().showSettings(R.xml.settings_units_and_time, R.string.label_units_and_time));
             adapter.addItem(getString(R.string.label_devices), null, () -> getSettingsActivity().showFragment(new DevicesFragment(), getString(R.string.label_devices), true));
             adapter.addItem(getString(R.string.action_log_out), null, this::logOut);
