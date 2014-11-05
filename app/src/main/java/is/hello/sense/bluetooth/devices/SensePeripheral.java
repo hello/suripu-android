@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.devices.transmission.SensePacketDataHandler;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
@@ -16,6 +17,7 @@ import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
+import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.util.Logger;
@@ -32,6 +34,7 @@ public class SensePeripheral {
     private static int COMMAND_VERSION = 0;
 
     private final Peripheral peripheral;
+    private final SchedulerOperationTimeout commonTimeout;
     private PeripheralService peripheralService;
     private PacketDataHandler<MorpheusCommand> dataHandler;
     private PacketHandler packetHandler;
@@ -53,6 +56,7 @@ public class SensePeripheral {
 
     public SensePeripheral(@NonNull Peripheral peripheral) {
         this.peripheral = peripheral;
+        this.commonTimeout = new SchedulerOperationTimeout(30, TimeUnit.SECONDS);
         this.dataHandler = new SensePacketDataHandler();
         this.packetHandler = new SensePacketHandler();
         packetHandler.setPacketDataHandler(dataHandler);
@@ -86,7 +90,7 @@ public class SensePeripheral {
                 device.createBond().subscribe(ignored -> {
                     Logger.info(Peripheral.LOG_TAG, "bonded to " + toString());
 
-                    device.discoverServices().subscribe(services -> {
+                    device.discoverServices(commonTimeout).subscribe(services -> {
                         Logger.info(Peripheral.LOG_TAG, "discovered services for " + toString());
 
                         this.peripheralService = device.getService(SenseIdentifiers.SENSE_SERVICE);
@@ -126,13 +130,13 @@ public class SensePeripheral {
     protected Observable<UUID> subscribe(@NonNull UUID characteristicIdentifier) {
         Logger.info(Peripheral.LOG_TAG, "Subscribing to " + characteristicIdentifier);
 
-        return peripheral.subscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier());
+        return peripheral.subscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier(), commonTimeout);
     }
 
     protected Observable<UUID> unsubscribe(@NonNull UUID characteristicIdentifier) {
         Logger.info(Peripheral.LOG_TAG, "Unsubscribing from " + characteristicIdentifier);
 
-        return peripheral.unsubscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier());
+        return peripheral.unsubscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier(), commonTimeout);
     }
 
     protected Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command,
@@ -197,7 +201,6 @@ public class SensePeripheral {
 
                 @Override
                 public void onNext(Void ignored) {
-
                     remainingPackets.removeFirst();
                     if (remainingPackets.isEmpty()) {
                         Logger.info(Peripheral.LOG_TAG, "Write large command " + commandUUID);
@@ -206,12 +209,12 @@ public class SensePeripheral {
                         s.onCompleted();
                     } else {
                         Logger.info(Peripheral.LOG_TAG, "Writing next chunk of large command " + commandUUID);
-                        peripheral.writeCommand(peripheralService, commandUUID, remainingPackets.getFirst()).subscribe(this);
+                        peripheral.writeCommand(peripheralService, commandUUID, remainingPackets.getFirst(), commonTimeout).subscribe(this);
                     }
                 }
             };
             Logger.info(Peripheral.LOG_TAG, "Writing first chunk of large command (" + remainingPackets.size() + " chunks) " + commandUUID);
-            peripheral.writeCommand(peripheralService, commandUUID, remainingPackets.getFirst()).subscribe(writeObserver);
+            peripheral.writeCommand(peripheralService, commandUUID, remainingPackets.getFirst(), commonTimeout).subscribe(writeObserver);
         });
     }
 
