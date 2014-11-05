@@ -287,8 +287,10 @@ import rx.schedulers.Schedulers;
 
         if (device != null) {
             if (device.isConnected()) {
-                logEvent("disconnect from paired device");
-                device.disconnect();
+                logEvent("disconnect from paired peripheral");
+
+                device.disconnect().subscribe(ignored -> logEvent("disconnected peripheral"),
+                                              e -> logEvent("Could not disconnect peripheral " + e));
             }
 
             this.device = null;

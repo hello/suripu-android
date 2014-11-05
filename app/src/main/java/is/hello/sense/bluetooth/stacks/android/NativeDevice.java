@@ -1,5 +1,6 @@
 package is.hello.sense.bluetooth.stacks.android;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -82,15 +83,30 @@ public class NativeDevice implements Device {
     @NonNull
     @Override
     public Observable<Device> connect() {
+        if (this.gatt != null) {
+            Logger.warn(LOG_TAG, "Redundant call to connect(), ignoring.");
+
+            return Observable.just(this);
+        }
+
         return deviceCenter.newConfiguredObservable(s -> {
             gattDispatcher.onConnectionStateChanged = (gatt, connectStatus, newState) -> {
                 if (connectStatus != BluetoothGatt.GATT_SUCCESS) {
                     Logger.error(LOG_TAG, "Could not connect. " + GattException.getNameForStatus(connectStatus));
                     s.onError(new GattException(connectStatus));
+
+                    if (newState == BluetoothAdapter.STATE_DISCONNECTED) {
+                        gatt.disconnect();
+                        this.gatt = null;
+                    }
+
                     gattDispatcher.onConnectionStateChanged = null;
                 } else if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    Logger.info(LOG_TAG, "Connected " + toString());
+
                     s.onNext(this);
                     s.onCompleted();
+
                     gattDispatcher.onConnectionStateChanged = null;
                 }
             };
@@ -107,8 +123,20 @@ public class NativeDevice implements Device {
         return deviceCenter.newConfiguredObservable(s -> {
             gattDispatcher.onConnectionStateChanged = (gatt, connectStatus, newState) -> {
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    gatt.close();
-                    this.gatt = null;
+                    if (connectStatus != BluetoothGatt.GATT_SUCCESS) {
+                        Logger.info(LOG_TAG, "Could not disconnect " + toString() + "; " + GattException.getNameForStatus(connectStatus));
+
+                        s.onError(new GattException(connectStatus));
+                    } else {
+                        Logger.info(LOG_TAG, "Disconnected " + toString());
+
+                        gatt.close(); // This call is not safe unless the device is disconnected.
+                        this.gatt = null;
+
+                        s.onNext(this);
+                        s.onCompleted();
+                    }
+
                     this.cachedServices = null;
                 }
             };
