@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,7 +132,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         private final List<SensorHistory> data = new ArrayList<>();
         private int peakY = 100;
         private int sectionCount = 0;
-        private int pointCount = 0;
+        private int sectionPointCount = 0;
 
 
         public void clear() {
@@ -146,12 +147,12 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             if (history.isEmpty()) {
                 this.peakY = 100;
                 this.sectionCount = 0;
-                this.pointCount = 0;
+                this.sectionPointCount = 0;
             } else {
                 SensorHistory peak = Collections.max(history, (l, r) -> Float.compare(l.getValue(), r.getValue()));
                 this.peakY = Math.max(100, (int) peak.getValue());
                 this.sectionCount = 7;
-                this.pointCount = (int) Math.ceil((double) data.size() / 8.0);
+                this.sectionPointCount = (int) Math.ceil((float) data.size() / (float) sectionCount);
             }
 
             for (int section = 0, count = annotationsContainer.getChildCount(); section < count; section++) {
@@ -176,7 +177,12 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
 
         private int calculateIndex(int section, int position) {
-            return (section * pointCount) + position;
+            return Math.min(data.size() - 1, (section * sectionPointCount) + position);
+        }
+
+        private SensorHistory getPoint(int section, int position) {
+            int index = calculateIndex(section, position);
+            return data.get(index);
         }
 
         @Override
@@ -199,24 +205,24 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         @Override
         public int getSectionPointCount(int section) {
-            return pointCount;
+            return sectionPointCount;
         }
 
         @Override
         public float getMagnitudeAt(int section, int position) {
-            return data.get(calculateIndex(section, position)).getValue();
+            return getPoint(section, position).getValue();
         }
 
         @NonNull
         @Override
         public CharSequence getFormattedMagnitudeAt(int section, int position) {
-            SensorHistory point = data.get(calculateIndex(section, position));
+            SensorHistory point = getPoint(section, position);
             return Float.toString(point.getValue());
         }
 
         @Override
         public boolean wantsMarkerAt(int section, int position) {
-            return (position == pointCount / 2);
+            return (position == sectionPointCount / 2);
         }
     }
 }
