@@ -4,12 +4,8 @@
 
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/white" />
+            <solid android:color="@color/light_accent" />
             <corners android:radius="20dp" />
-            <stroke
-                android:color="@color/border"
-                android:width="2dp"
-                android:dashWidth="2dp" />
         </shape>
     </item>
 

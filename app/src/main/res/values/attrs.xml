@@ -23,6 +23,7 @@
         <attr name="horizontalLines" format="integer" />
         <attr name="gridColor" format="color" />
         <attr name="topLineColor" format="color" />
+        <attr name="topLineHeight" format="dimension" />
         <attr name="markerColor" format="color" />
         <attr name="fill" format="integer" />
         <attr name="markerSize" format="float" />

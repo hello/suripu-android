@@ -173,9 +173,15 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="AppTheme.Button.ModeSelector">
+        <item name="android:background">@drawable/mode_selector_button_selector</item>
+        <item name="android:textColor">@drawable/toggle_button_text_selector</item>
+        <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
+    </style>
+
     <style name="AppTheme.Button.SmartAlarmDay">
         <item name="android:background">@drawable/smart_alarm_day_toggle_selector</item>
-        <item name="android:textColor">@drawable/smart_alarm_day_toggle_text</item>
+        <item name="android:textColor">@drawable/toggle_button_text_selector</item>
         <item name="android:textAppearance">@style/AppTheme.Text</item>
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="android:textAllCaps">true</item>
