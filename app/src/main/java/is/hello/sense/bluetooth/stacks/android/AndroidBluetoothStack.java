@@ -30,12 +30,6 @@ public class AndroidBluetoothStack implements BluetoothStack {
         this.adapter = bluetoothManager.getAdapter();
     }
 
-
-    @Override
-    public EnumSet<Traits> getTraits() {
-        return EnumSet.of(Traits.BONDS_NOT_PERSISTENT);
-    }
-
     @NonNull
     @Override
     public Observable<List<Peripheral>> discoverPeripherals(@NonNull DiscoveryCriteria discoveryCriteria) {
@@ -50,6 +44,17 @@ public class AndroidBluetoothStack implements BluetoothStack {
     public <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe) {
         return Observable.create(onSubscribe)
                 .subscribeOn(scheduler);
+    }
+
+
+    @Override
+    public EnumSet<Traits> getTraits() {
+        return EnumSet.of(Traits.BONDS_NOT_PERSISTENT);
+    }
+
+    @Override
+    public SupportLevel getDeviceSupportLevel() {
+        return SupportLevel.UNTESTED;
     }
 
     @Override

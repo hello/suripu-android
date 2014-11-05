@@ -21,11 +21,6 @@ public interface BluetoothStack {
 
 
     /**
-     * Returns the behaviors of the stack that are implementation specific.
-     */
-    EnumSet<Traits> getTraits();
-
-    /**
      * Performs a scan for peripherals matching a given set of criteria.
      * <p/>
      * Yields {@see is.hello.sense.bluetooth.errors.BluetoothDisabledError}
@@ -42,6 +37,11 @@ public interface BluetoothStack {
 
 
     /**
+     * Returns the behaviors of the stack that are implementation specific.
+     */
+    EnumSet<Traits> getTraits();
+
+    /**
      * Describes behaviors of the stack that vary between backing implementations.
      */
     public enum Traits {
@@ -54,5 +54,31 @@ public interface BluetoothStack {
          * @see Peripheral#createBond()
          */
         BONDS_NOT_PERSISTENT,
+    }
+
+
+    /**
+     * Returns the level of support the stack has for the current device.
+     */
+    SupportLevel getDeviceSupportLevel();
+
+    /**
+     * Describes the level of support the current device has in the implementation.
+     */
+    public enum SupportLevel {
+        /**
+         * The device is explicitly unsupported, one or more core operations are known to fail.
+         */
+        UNSUPPORTED,
+
+        /**
+         * The device has not been tested, so one or more core operations may not work.
+         */
+        UNTESTED,
+
+        /**
+         * The device is explicitly tested and known to work.
+         */
+        SUPPORTED,
     }
 }
