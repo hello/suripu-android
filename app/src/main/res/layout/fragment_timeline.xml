@@ -6,4 +6,5 @@
     android:layout_height="match_parent"
     android:divider="@null"
     android:dividerHeight="0dp"
+    android:listSelector="@color/transparent"
     android:background="@color/background_timeline"/>

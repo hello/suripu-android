@@ -1,2 +1,3 @@
-include ':app', ':ble-android:ble'
+include ':app', ':ble-android:ble', ':ble'
 project(':ble-android:ble').projectDir = new File('../ble-android/ble')
+project(':ble').projectDir = new File('/Users/km/Documents/Projects/ble-android/ble')
