@@ -189,6 +189,8 @@
     <string name="action_pair_pill">Pair New Pill</string>
     <string name="action_pair_new_sense">Pair New Sense</string>
     <string name="action_select_wifi_network">Select Wifi Network</string>
+    <string name="dialog_title_sense_already_linked">Sense is already paired</string>
+    <string name="dialog_message_sense_already_linked">Have you already paired this Sense to your account?</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
