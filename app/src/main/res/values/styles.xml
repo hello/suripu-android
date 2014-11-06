@@ -102,7 +102,7 @@
 
     <style name="AppTheme.Dialog" parent="android:Theme.Holo.Dialog" />
 
-    <style name="AppTheme.Dialog.Simple">
+    <style name="AppTheme.Dialog.Simple" parent="android:Theme.Holo.Dialog.MinWidth">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@drawable/raised_item_background</item>
         <item name="android:paddingBottom">1dp</item>
@@ -193,6 +193,15 @@
         <item name="android:background">@drawable/raised_item_background</item>
         <item name="android:textColor">@color/light_accent</item>
         <item name="android:textAppearance">@style/AppTheme.Text.SectionHeading</item>
+    </style>
+
+    <style name="AppTheme.Button.Dialog" parent="AppTheme.Button.Borderless">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/light_accent</item>
+    </style>
+
+    <style name="AppTheme.Button.Dialog.Positive">
+        <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
     </style>
 
     <!-- Dividers -->

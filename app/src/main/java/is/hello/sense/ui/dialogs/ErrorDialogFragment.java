@@ -1,7 +1,6 @@
 package is.hello.sense.ui.dialogs;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -12,6 +11,7 @@ import android.text.TextUtils;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 
 public class ErrorDialogFragment extends DialogFragment {
@@ -72,27 +72,27 @@ public class ErrorDialogFragment extends DialogFragment {
 
     @Override
     public @NonNull Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
 
-        builder.setTitle(R.string.dialog_error_title);
+        dialog.setTitle(R.string.dialog_error_title);
         String message = getMessage();
         if (!TextUtils.isEmpty(message)) {
             if (hasRequestInfo()) {
-                builder.setMessage(getString(R.string.dialog_error_extended_message_format, message, getResponseReason(), getResponseStatus()));
+                dialog.setMessage(getString(R.string.dialog_error_extended_message_format, message, getResponseReason(), getResponseStatus()));
             } else {
-                builder.setMessage(message);
+                dialog.setMessage(message);
             }
         } else {
-            builder.setMessage(R.string.dialog_error_generic_message);
+            dialog.setMessage(R.string.dialog_error_generic_message);
         }
 
         if (getTargetFragment() != null) {
-            builder.setNeutralButton(R.string.action_retry, (button, which) -> getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null));
+            dialog.setNegativeButton(R.string.action_retry, (button, which) -> getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null));
         }
 
-        builder.setPositiveButton(android.R.string.ok, null);
+        dialog.setPositiveButton(android.R.string.ok, null);
 
-        return builder.create();
+        return dialog;
     }
 
     @Override

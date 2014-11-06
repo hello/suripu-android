@@ -13,6 +13,7 @@
     <color name="background_underside">#F5F5F5</color>
     <color name="background_onboarding">@color/white</color>
     <color name="background_insight">@color/white</color>
+    <color name="background_dialog_buttons">#9BD4FF</color>
 
     <color name="border">#dcdcdc</color>
 
