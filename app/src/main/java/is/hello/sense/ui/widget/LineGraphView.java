@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -28,11 +29,9 @@ import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 
 public final class LineGraphView extends FrameLayout {
     private Adapter adapter;
-    private int numberOfHorizontalLines = 0;
-    private int numberOfVerticalLines = 0;
-    private float pointMarkerSize;
+    private int numberOfLines = 0;
     private Drawable fillDrawable;
-    private boolean wantsMarkers = true;
+    private Drawable gridDrawable;
     private boolean wantsHeaders = true;
     private boolean wantsFooters = true;
 
@@ -41,8 +40,6 @@ public final class LineGraphView extends FrameLayout {
 
     private float topLineHeight;
 
-    private final Paint gridPaint = new Paint();
-    private final Paint markersPaint = new Paint();
     private final Paint topLinePaint = new Paint();
     private final Paint textPaint = new Paint();
 
@@ -51,7 +48,6 @@ public final class LineGraphView extends FrameLayout {
     private final Path markersPath = new Path();
 
     private final Rect textRect = new Rect();
-    private final RectF markerRect = new RectF();
 
     private int headerFooterPadding;
 
@@ -81,34 +77,28 @@ public final class LineGraphView extends FrameLayout {
 
         topLinePaint.setStyle(Paint.Style.STROKE);
         topLinePaint.setAntiAlias(true);
+        topLinePaint.setStrokeJoin(Paint.Join.ROUND);
         topLinePaint.setStrokeCap(Paint.Cap.ROUND);
         topLinePaint.setStrokeWidth(topLineHeight);
 
-        gridPaint.setAntiAlias(true);
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_medium));
+        textPaint.setSubpixelText(true);
+        textPaint.setTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_small));
+        textPaint.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "fonts/AvenirLTCom-Light.ttf"));
         textPaint.setColor(resources.getColor(R.color.text_dark));
-        markersPaint.setAntiAlias(true);
 
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.LineGraphView, defStyleAttr, 0);
             setTopLineColor(styles.getColor(R.styleable.LineGraphView_topLineColor, Color.GRAY));
             this.topLineHeight = styles.getDimensionPixelOffset(R.styleable.LineGraphView_topLineHeight, 1);
-            setGridColor(styles.getColor(R.styleable.LineGraphView_gridColor, Color.LTGRAY));
-            setMarkerColor(styles.getColor(R.styleable.LineGraphView_markerColor, Color.DKGRAY));
             this.fillDrawable = styles.getDrawable(R.styleable.LineGraphView_fill);
-            this.pointMarkerSize = styles.getFloat(R.styleable.LineGraphView_markerSize, 5f * density);
 
-            this.numberOfHorizontalLines = styles.getInt(R.styleable.LineGraphView_verticalLines, 0);
-            this.numberOfVerticalLines = styles.getInt(R.styleable.LineGraphView_horizontalLines, 0);
-            this.wantsMarkers = styles.getBoolean(R.styleable.LineGraphView_wantsMarkers, true);
+            this.numberOfLines = styles.getInt(R.styleable.LineGraphView_lineCount, 0);
+            this.gridDrawable = styles.getDrawable(R.styleable.LineGraphView_gridDrawable);
             this.wantsHeaders = styles.getBoolean(R.styleable.LineGraphView_wantsHeaders, true);
             this.wantsFooters = styles.getBoolean(R.styleable.LineGraphView_wantsFooters, true);
         } else {
             topLinePaint.setColor(Color.GRAY);
-            gridPaint.setColor(Color.LTGRAY);
-            markersPaint.setColor(Color.DKGRAY);
-            this.pointMarkerSize = 5f * density;
             this.fillDrawable = new ColorDrawable(Color.WHITE);
             this.topLineHeight = 3f * density;
         }
@@ -167,20 +157,12 @@ public final class LineGraphView extends FrameLayout {
         int minX = 0, minY = 0;
         int height = getMeasuredHeight() - minY, width = getMeasuredWidth() - minX;
 
-        if (numberOfHorizontalLines > 0) {
-            float lineDistance = height / numberOfHorizontalLines;
-            float lineOffset = lineDistance;
-            for (int line = 1; line < numberOfHorizontalLines; line++) {
-                canvas.drawLine(minX, lineOffset, width, lineOffset, gridPaint);
-                lineOffset += lineDistance;
-            }
-        }
-
-        if (numberOfVerticalLines > 0) {
-            float lineDistance = width / numberOfVerticalLines;
-            float lineOffset = lineDistance;
-            for (int line = 1; line < numberOfVerticalLines; line++) {
-                canvas.drawLine(lineOffset, minY, lineOffset, height, gridPaint);
+        if (gridDrawable != null && numberOfLines > 0) {
+            int lineDistance = width / numberOfLines;
+            int lineOffset = lineDistance;
+            for (int line = 1; line < numberOfLines; line++) {
+                gridDrawable.setBounds(lineOffset, minY, lineOffset + 1, height);
+                gridDrawable.draw(canvas);
                 lineOffset += lineDistance;
             }
         }
@@ -201,7 +183,6 @@ public final class LineGraphView extends FrameLayout {
             }
 
             float sectionWidth = width / sectionCount;
-            float halfPointMarkerArea = pointMarkerSize / 2;
             for (int section = 0; section < sectionCount; section++) {
                 int pointCount = cachedSectionCounts.get(section);
                 if (pointCount == 0)
@@ -214,8 +195,8 @@ public final class LineGraphView extends FrameLayout {
                     textPaint.getTextBounds(text, 0, text.length(), textRect);
 
                     float sectionMidX = (sectionWidth * section) + (sectionWidth / 2);
-                    float textX = sectionMidX - textRect.centerX();
-                    float textY = (headerFooterHeight / 2) - textRect.centerY();
+                    float textX = Math.round(sectionMidX - textRect.centerX());
+                    float textY = Math.round((headerFooterHeight / 2) - textRect.centerY());
                     canvas.drawText(text, textX, textY, textPaint);
                 }
 
@@ -224,8 +205,8 @@ public final class LineGraphView extends FrameLayout {
                     textPaint.getTextBounds(text, 0, text.length(), textRect);
 
                     float sectionMidX = (sectionWidth * section) + (sectionWidth / 2);
-                    float textX = sectionMidX - textRect.centerX();
-                    float textY = (minY + height) + ((headerFooterHeight / 2) - textRect.centerY());
+                    float textX = Math.round(sectionMidX - textRect.centerX());
+                    float textY = Math.round((minY + height) + ((headerFooterHeight / 2) - textRect.centerY()));
                     canvas.drawText(text, textX, textY, textPaint);
                 }
 
@@ -241,12 +222,6 @@ public final class LineGraphView extends FrameLayout {
 
                     topLinePath.lineTo(segmentX, segmentY);
                     fillPath.lineTo(segmentX, segmentY - topLineHeight / 2f);
-
-                    if (wantsMarkers && adapter.wantsMarkerAt(section, position)) {
-                        markerRect.set(segmentX - halfPointMarkerArea, segmentY - halfPointMarkerArea,
-                                segmentX + halfPointMarkerArea, segmentY + halfPointMarkerArea);
-                        markersPath.addOval(markerRect, Path.Direction.CW);
-                    }
                 }
             }
 
@@ -263,10 +238,6 @@ public final class LineGraphView extends FrameLayout {
                 canvas.restore();
             }
             canvas.drawPath(topLinePath, topLinePaint);
-
-            if (wantsMarkers) {
-                canvas.drawPath(markersPath, markersPaint);
-            }
         }
     }
 
@@ -298,18 +269,13 @@ public final class LineGraphView extends FrameLayout {
         invalidate();
     }
 
-    public void setNumberOfHorizontalLines(int numberOfHorizontalLines) {
-        this.numberOfHorizontalLines = numberOfHorizontalLines;
+    public void setNumberOfLines(int numberOfLines) {
+        this.numberOfLines = numberOfLines;
         invalidate();
     }
 
-    public void setNumberOfVerticalLines(int numberOfVerticalLines) {
-        this.numberOfVerticalLines = numberOfVerticalLines;
-        invalidate();
-    }
-
-    public void setGridColor(int color) {
-        gridPaint.setColor(color);
+    public void setGridDrawable(Drawable gridDrawable) {
+        this.gridDrawable = gridDrawable;
         invalidate();
     }
 
@@ -322,17 +288,8 @@ public final class LineGraphView extends FrameLayout {
         invalidate();
     }
 
-    public void setMarkerColor(int color) {
-        markersPaint.setColor(color);
-    }
-
     public void setFillDrawable(Drawable fillDrawable) {
         this.fillDrawable = fillDrawable;
-        invalidate();
-    }
-
-    public void setPointMarkerSize(float pointMarkerSize) {
-        this.pointMarkerSize = pointMarkerSize;
         invalidate();
     }
 
@@ -409,7 +366,6 @@ public final class LineGraphView extends FrameLayout {
         int getSectionPointCount(int section);
         float getMagnitudeAt(int section, int position);
         @NonNull CharSequence getFormattedMagnitudeAt(int section, int position);
-        boolean wantsMarkerAt(int section, int position);
         String getSectionHeader(int section);
         String getSectionFooter(int section);
     }

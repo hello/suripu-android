@@ -19,15 +19,11 @@
     </declare-styleable>
 
     <declare-styleable name="LineGraphView">
-        <attr name="verticalLines" format="integer" />
-        <attr name="horizontalLines" format="integer" />
-        <attr name="gridColor" format="color" />
+        <attr name="lineCount" format="integer" />
+        <attr name="gridDrawable" format="integer" />
         <attr name="topLineColor" format="color" />
         <attr name="topLineHeight" format="dimension" />
-        <attr name="markerColor" format="color" />
         <attr name="fill" format="integer" />
-        <attr name="markerSize" format="float" />
-        <attr name="wantsMarkers" format="boolean" />
         <attr name="wantsHeaders" format="boolean" />
         <attr name="wantsFooters" format="boolean" />
     </declare-styleable>

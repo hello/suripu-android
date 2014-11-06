@@ -50,6 +50,7 @@
         android:paddingTop="@dimen/gap_outer"
         android:background="@drawable/background_line_graph"
         app:fill="@color/transparent"
+        app:gridDrawable="@drawable/graph_grid_fill"
         app:topLineHeight="2dp" />
 
     <LinearLayout

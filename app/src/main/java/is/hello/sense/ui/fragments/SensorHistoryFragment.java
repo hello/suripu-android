@@ -167,7 +167,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
             bindAndSubscribe(generateSeries, sections -> {
                 this.sections.addAll(sections);
-                graphView.setNumberOfVerticalLines(sections.size());
+                graphView.setNumberOfLines(sections.size());
                 graphView.notifyDataChanged();
             }, Functions.LOG_ERROR);
 
@@ -241,11 +241,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 default:
                     return Integer.toString((int) value) + "%";
             }
-        }
-
-        @Override
-        public boolean wantsMarkerAt(int section, int position) {
-            return false;
         }
     }
 
