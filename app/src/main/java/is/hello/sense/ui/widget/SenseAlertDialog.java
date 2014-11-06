@@ -3,6 +3,8 @@ package is.hello.sense.ui.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.View;
@@ -43,6 +45,14 @@ public class SenseAlertDialog extends Dialog {
     public void setTitle(@StringRes int titleId) {
         super.setTitle(titleId);
         titleText.setText(titleId);
+    }
+
+    public void setIcon(@Nullable Drawable icon) {
+        titleText.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
+    }
+
+    public void setIcon(@DrawableRes int iconId) {
+        titleText.setCompoundDrawablesRelativeWithIntrinsicBounds(iconId, 0, 0, 0);
     }
 
     public void setMessage(CharSequence message) {
