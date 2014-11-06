@@ -329,8 +329,8 @@ public final class LineGraphView extends FrameLayout {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 highlightedValueText.setAlpha(0f);
-                highlightedValueText.setScaleX(0.5f);
-                highlightedValueText.setScaleY(0.5f);
+                highlightedValueText.setScaleX(0f);
+                highlightedValueText.setScaleY(0f);
                 highlightedValueText.setVisibility(VISIBLE);
                 PropertyAnimatorProxy.animate(highlightedValueText)
                         .alpha(1f)
@@ -347,8 +347,8 @@ public final class LineGraphView extends FrameLayout {
             case MotionEvent.ACTION_UP:
                 PropertyAnimatorProxy.animate(highlightedValueText)
                         .alpha(0f)
-                        .scaleX(0.5f)
-                        .scaleY(0.5f)
+                        .scaleX(0f)
+                        .scaleY(0f)
                         .setApplyChangesToView(true)
                         .addOnAnimationCompleted(finished -> highlightedValueText.setVisibility(INVISIBLE))
                         .start();

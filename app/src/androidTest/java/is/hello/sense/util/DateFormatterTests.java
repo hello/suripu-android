@@ -43,9 +43,12 @@ public class DateFormatterTests extends InstrumentationTestCase {
     public void testFormatAsTime() {
         assertNotNull(formatter.formatAsTime((LocalTime) null, false));
         assertNotNull(formatter.formatAsTime((LocalDateTime) null, false));
+        assertNotNull(formatter.formatAsTime((DateTime) null, false));
         assertEquals("10:30 AM", formatter.formatAsTime(TEST_LOCAL_DATETIME, false));
         assertEquals("10:30", formatter.formatAsTime(TEST_LOCAL_DATETIME, true));
         assertEquals("10:30 AM", formatter.formatAsTime(TEST_LOCAL_TIME, false));
         assertEquals("10:30", formatter.formatAsTime(TEST_LOCAL_TIME, true));
+        assertEquals("10:30 AM", formatter.formatAsTime(TEST_DATETIME, false));
+        assertEquals("10:30", formatter.formatAsTime(TEST_DATETIME, true));
     }
 }

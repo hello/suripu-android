@@ -47,11 +47,19 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingTop="@dimen/gap_outer"
         android:background="@drawable/background_line_graph"
         app:fill="@color/transparent"
         app:gridDrawable="@drawable/graph_grid_fill"
-        app:topLineHeight="2dp" />
+        app:topLineHeight="2dp">
+
+        <is.hello.sense.ui.widget.TintedProgressBar
+            android:id="@+id/fragment_sensor_history_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            style="@android:style/Widget.Holo.Light.ProgressBar"/>
+
+    </is.hello.sense.ui.widget.LineGraphView>
 
     <LinearLayout
         android:layout_width="match_parent"

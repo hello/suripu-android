@@ -7,6 +7,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Function;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
@@ -29,21 +31,26 @@ import is.hello.sense.ui.widget.LineGraphView;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import static is.hello.sense.functional.Functions.mapList;
 import static is.hello.sense.functional.Functions.segmentList;
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class SensorHistoryFragment extends InjectionFragment implements SelectorLinearLayout.OnSelectionChangedListener {
     @Inject CurrentConditionsPresenter conditionsPresenter;
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
+    @Inject DateFormatter dateFormatter;
+    @Inject PreferencesPresenter preferences;
 
     private TextView readingText;
     private TextView messageTitleText;
     private TextView messageText;
     private LineGraphView graphView;
+    private ProgressBar loadingIndicator;
     private Adapter adapter = new Adapter();
     private String sensor;
 
@@ -69,6 +76,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         this.messageTitleText = (TextView) view.findViewById(R.id.fragment_sensor_history_message_title);
         this.messageText = (TextView) view.findViewById(R.id.fragment_sensor_history_message);
         this.graphView = (LineGraphView) view.findViewById(R.id.fragment_sensor_history_graph);
+        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_sensor_history_loading);
         graphView.setAdapter(adapter);
 
         SelectorLinearLayout historyMode = (SelectorLinearLayout) view.findViewById(R.id.fragment_sensor_history_mode);
@@ -83,6 +91,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         bindAndSubscribe(conditionsPresenter.currentConditions, this::bindConditions, this::conditionUnavailable);
         bindAndSubscribe(sensorHistoryPresenter.history, adapter::bindHistory, adapter::historyUnavailable);
+        bindAndSubscribe(preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false), adapter::setUse24Time, Functions.LOG_ERROR);
     }
 
     @Override
@@ -135,6 +144,13 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
+        loadingIndicator.setScaleX(0f);
+        loadingIndicator.setScaleY(0f);
+        animate(loadingIndicator)
+                .fadeIn()
+                .scale(1f)
+                .start();
+        adapter.clear();
         sensorHistoryPresenter.setMode(newSelectionIndex);
     }
 
@@ -143,6 +159,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         private List<Section> sections = new ArrayList<>();
         private int peakMagnitude = 100;
         private UnitSystem unitSystem;
+        private boolean use24Time = false;
 
         public void bindHistory(@NonNull Pair<List<SensorHistory>, UnitSystem> result) {
             sections.clear();
@@ -172,15 +189,31 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             }, Functions.LOG_ERROR);
 
             this.unitSystem = result.second;
+
+            animate(loadingIndicator)
+                    .fadeOut(View.GONE)
+                    .scale(0f)
+                    .start();
         }
 
         public void historyUnavailable(Throwable e) {
             ErrorDialogFragment.presentError(getFragmentManager(), e);
             clear();
+
+            animate(loadingIndicator)
+                    .fadeOut(View.GONE)
+                    .scale(0f)
+                    .start();
         }
 
         public void clear() {
             sections.clear();
+            graphView.setNumberOfLines(0);
+            graphView.notifyDataChanged();
+        }
+
+        public void setUse24Time(boolean use24Time) {
+            this.use24Time = use24Time;
             graphView.notifyDataChanged();
         }
 
@@ -210,14 +243,22 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         public CharSequence getFormattedMagnitudeAt(int section, int position) {
             SensorHistory instant = sections.get(section).get(position);
             float value = instant.getValue();
+            String formattedValue;
             switch (sensor) {
                 case SensorHistory.SENSOR_NAME_TEMPERATURE:
-                    return unitSystem.formatTemperature(value);
+                    formattedValue = unitSystem.formatTemperature(value);
+                    break;
+
                 case SensorHistory.SENSOR_NAME_PARTICULATES:
-                    return unitSystem.formatParticulates(value);
+                    formattedValue = unitSystem.formatParticulates(value);
+                    break;
+
                 default:
-                    return Integer.toString((int) value) + "%";
+                    formattedValue = Integer.toString((int) value) + "%";
+                    break;
             }
+
+            return formattedValue + " – " + dateFormatter.formatAsTime(instant.getTime(), use24Time);
         }
 
         @Override
@@ -226,7 +267,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
                 return value.getTime().toString("E").substring(0, 1);
             } else {
-                return value.getTime().toString("h a");
+                if (use24Time)
+                    return value.getTime().toString("H");
+                else
+                    return value.getTime().toString("h a");
             }
         }
 
