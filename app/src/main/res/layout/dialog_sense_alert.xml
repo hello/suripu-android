@@ -14,6 +14,7 @@
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
         android:layout_marginTop="@dimen/gap_outer"
+        android:drawablePadding="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.ScreenTitle"/>
 
     <TextView
