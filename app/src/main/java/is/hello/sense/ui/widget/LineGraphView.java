@@ -8,14 +8,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -91,11 +89,11 @@ public final class LineGraphView extends FrameLayout {
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.LineGraphView, defStyleAttr, 0);
             setTopLineColor(styles.getColor(R.styleable.LineGraphView_topLineColor, Color.GRAY));
-            this.topLineHeight = styles.getDimensionPixelOffset(R.styleable.LineGraphView_topLineHeight, 1);
-            this.fillDrawable = styles.getDrawable(R.styleable.LineGraphView_fill);
+            setTopLineHeight(styles.getDimensionPixelOffset(R.styleable.LineGraphView_topLineHeight, 1));
+            setFillDrawable(styles.getDrawable(R.styleable.LineGraphView_fill));
 
             this.numberOfLines = styles.getInt(R.styleable.LineGraphView_lineCount, 0);
-            this.gridDrawable = styles.getDrawable(R.styleable.LineGraphView_gridDrawable);
+            setGridDrawable(styles.getDrawable(R.styleable.LineGraphView_gridDrawable));
             this.wantsHeaders = styles.getBoolean(R.styleable.LineGraphView_wantsHeaders, true);
             this.wantsFooters = styles.getBoolean(R.styleable.LineGraphView_wantsFooters, true);
         } else {
@@ -294,18 +292,20 @@ public final class LineGraphView extends FrameLayout {
         invalidate();
     }
 
+    public void setTypeface(@NonNull Typeface typeface) {
+        textPaint.setTypeface(typeface);
+        invalidate();
+    }
+
+    public void setTextSize(int size) {
+        textPaint.setTextSize(size);
+        invalidate();
+    }
+
     //endregion
 
 
     //region Event Handling
-
-    private int calculateSegmentCountInRange(int start, int end) {
-        int count = 0;
-        for (int section = start; section < end; section++) {
-            count += cachedSectionCounts.get(section);
-        }
-        return count;
-    }
 
     private int getSectionAtX(float x) {
         int limit = cachedSectionCounts.size();
@@ -316,7 +316,6 @@ public final class LineGraphView extends FrameLayout {
         float sectionMinX = getSectionWidth() * section;
         float segmentWidth = getSegmentWidth(section);
         float xInSection = x - sectionMinX;
-        Log.i(getClass().getSimpleName(), "x: " + x + "; sectionMinX: " + sectionMinX + "; sectionMinX: " + sectionMinX + "; xInSection: " + xInSection + "; segmentWidth: " + segmentWidth);
         return (int) (xInSection / segmentWidth);
     }
 
