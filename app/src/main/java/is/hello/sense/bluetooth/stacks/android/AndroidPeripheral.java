@@ -30,6 +30,7 @@ import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 
@@ -231,8 +232,7 @@ public class AndroidPeripheral implements Peripheral {
                 .filter(intent -> {
                     BluetoothDevice bondedDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     return (bondedDevice != null && bondedDevice.getAddress().equals(bluetoothDevice.getAddress()));
-                })
-                .take(2);
+                });
     }
 
     private boolean tryCreateBond() {
@@ -273,21 +273,36 @@ public class AndroidPeripheral implements Peripheral {
         }
 
         return stack.newConfiguredObservable(s -> {
-            Subscription subscription = createBondReceiver().subscribe(intent -> {
-                Logger.info(Peripheral.LOG_TAG, "Bond status change " + intent.getAction() + ": " + intent.getExtras());
+            Subscription subscription = createBondReceiver().subscribe(new Subscriber<Intent>() {
+                @Override
+                public void onCompleted() {}
 
-                int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-                if (state == BluetoothDevice.BOND_BONDED) {
-                    Logger.error(LOG_TAG, "Bonding succeeded.");
-
-                    s.onNext(this);
-                    s.onCompleted();
-                } else if (state == BluetoothDevice.ERROR) {
-                    Logger.error(LOG_TAG, "Bonding failed.");
-
-                    s.onError(new BondingError());
+                @Override
+                public void onError(Throwable e) {
+                    s.onError(e);
                 }
-            }, s::onError);
+
+                @Override
+                public void onNext(Intent intent) {
+                    Logger.info(Peripheral.LOG_TAG, "Bond status change " + intent.getAction() + ": " + intent.getExtras());
+
+                    int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+                    if (state == BluetoothDevice.BOND_BONDED) {
+                        Logger.error(LOG_TAG, "Bonding succeeded.");
+
+                        s.onNext(AndroidPeripheral.this);
+                        s.onCompleted();
+
+                        unsubscribe();
+                    } else if (state == BluetoothDevice.ERROR) {
+                        Logger.error(LOG_TAG, "Bonding failed.");
+
+                        s.onError(new BondingError());
+
+                        unsubscribe();
+                    }
+                }
+            });
 
             if (!tryCreateBond()) {
                 Logger.error(LOG_TAG, "createBond failed.");
@@ -311,21 +326,36 @@ public class AndroidPeripheral implements Peripheral {
 
         return stack.newConfiguredObservable(s -> {
             if (tryRemoveBond()) {
-                createBondReceiver().subscribe(intent -> {
-                    Logger.info(Peripheral.LOG_TAG, "Bond status change " + intent.getAction() + ": " + intent.getExtras());
+                createBondReceiver().subscribe(new Subscriber<Intent>() {
+                    @Override
+                    public void onCompleted() {}
 
-                    int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-                    if (state == BluetoothDevice.BOND_NONE) {
-                        Logger.error(LOG_TAG, "Unbonding succeeded.");
-
-                        s.onNext(this);
-                        s.onCompleted();
-                    } else if (state == BluetoothDevice.ERROR) {
-                        Logger.error(LOG_TAG, "Unbonding failed.");
-
-                        s.onError(new BondingError());
+                    @Override
+                    public void onError(Throwable e) {
+                        s.onError(e);
                     }
-                }, s::onError);
+
+                    @Override
+                    public void onNext(Intent intent) {
+                        Logger.info(Peripheral.LOG_TAG, "Bond status change " + intent.getAction() + ": " + intent.getExtras());
+
+                        int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+                        if (state == BluetoothDevice.BOND_NONE) {
+                            Logger.error(LOG_TAG, "Unbonding succeeded.");
+
+                            s.onNext(AndroidPeripheral.this);
+                            s.onCompleted();
+
+                            unsubscribe();
+                        } else if (state == BluetoothDevice.ERROR) {
+                            Logger.error(LOG_TAG, "Unbonding failed.");
+
+                            s.onError(new BondingError());
+
+                            unsubscribe();
+                        }
+                    }
+                });
             } else {
                 Logger.error(LOG_TAG, "removeBond failed.");
 
