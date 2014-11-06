@@ -28,8 +28,8 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
     private Subscriber<? super List<Peripheral>> subscriber;
     private Subscription timeout;
 
-    public PeripheralScanner(@NonNull AndroidBluetoothStack deviceCenter,
-                             @NonNull DiscoveryCriteria discoveryCriteria) {
+    PeripheralScanner(@NonNull AndroidBluetoothStack deviceCenter,
+                      @NonNull DiscoveryCriteria discoveryCriteria) {
         this.deviceCenter = deviceCenter;
         this.discoveryCriteria = discoveryCriteria;
     }
@@ -59,12 +59,12 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
             return;
         }
 
-        if (results.size() >= discoveryCriteria.limit) {
-            onConcludeScan();
-            return;
-        }
-
         results.put(bluetoothDevice.getAddress(), Pair.create(bluetoothDevice, rssi));
+
+        if (results.size() >= discoveryCriteria.limit) {
+            Logger.info(BluetoothStack.LOG_TAG, "Discovery limit reached, concluding scan");
+            onConcludeScan();
+        }
     }
 
     public void onConcludeScan() {
