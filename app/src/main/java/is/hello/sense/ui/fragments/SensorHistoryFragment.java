@@ -181,7 +181,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 List<Section> sections = mapList(segments, Section::new);
 
                 float peak = Collections.max(history, (l, r) -> Float.compare(l.getValue(), r.getValue())).getValue();
-                int constrainedPeak = Math.min(100, (int) peak);
+                int constrainedPeak = Math.max(100, (int) peak);
 
                 s.onNext(Pair.create(sections, constrainedPeak));
                 s.onCompleted();
