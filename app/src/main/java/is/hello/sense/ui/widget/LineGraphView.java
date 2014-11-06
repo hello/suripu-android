@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -308,12 +309,15 @@ public final class LineGraphView extends FrameLayout {
 
     private int getSectionAtX(float x) {
         int limit = cachedSectionCounts.size();
-        return Math.min(limit - 1, Math.round(x / getSectionWidth()));
+        return (int) Math.min(limit - 1, Math.floor(x / getSectionWidth()));
     }
 
     private int getSegmentAtX(int section, float x) {
-        int sectionMax = cachedSectionCounts.get(section) - 1;
-        return Math.min(sectionMax, Math.round(x / getSegmentWidth(section)) - calculateSegmentCountInRange(0, section - 1));
+        float sectionMinX = getSectionWidth() * section;
+        float segmentWidth = getSegmentWidth(section);
+        float xInSection = x - sectionMinX;
+        Log.i(getClass().getSimpleName(), "x: " + x + "; sectionMinX: " + sectionMinX + "; sectionMinX: " + sectionMinX + "; xInSection: " + xInSection + "; segmentWidth: " + segmentWidth);
+        return (int) (xInSection / segmentWidth);
     }
 
     @Override
