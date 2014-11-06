@@ -13,7 +13,9 @@ import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.GattError;
+import is.hello.sense.bluetooth.errors.TooManyOperationsError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
+import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
@@ -34,7 +36,7 @@ public class SensePeripheral {
     private static int COMMAND_VERSION = 0;
 
     private final Peripheral peripheral;
-    private final SchedulerOperationTimeout commonTimeout;
+    private final OperationTimeout commonTimeout;
     private PeripheralService peripheralService;
     private PacketDataHandler<MorpheusCommand> dataHandler;
     private PacketHandler packetHandler;
@@ -130,13 +132,19 @@ public class SensePeripheral {
     protected Observable<UUID> subscribe(@NonNull UUID characteristicIdentifier) {
         Logger.info(Peripheral.LOG_TAG, "Subscribing to " + characteristicIdentifier);
 
-        return peripheral.subscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier(), commonTimeout);
+        if (commonTimeout.isScheduled())
+            return Observable.error(new TooManyOperationsError());
+        else
+            return peripheral.subscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier(), commonTimeout);
     }
 
     protected Observable<UUID> unsubscribe(@NonNull UUID characteristicIdentifier) {
         Logger.info(Peripheral.LOG_TAG, "Unsubscribing from " + characteristicIdentifier);
 
-        return peripheral.unsubscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier(), commonTimeout);
+        if (commonTimeout.isScheduled())
+            return Observable.error(new TooManyOperationsError());
+        else
+            return peripheral.unsubscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier(), commonTimeout);
     }
 
     protected Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command,

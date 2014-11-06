@@ -29,6 +29,13 @@ public interface OperationTimeout {
     void unschedule();
 
     /**
+     * Returns whether or not the operation is currently scheduled.
+     * <p/>
+     * This can be used as an operation guard by wrappers around {@see Peripheral}.
+     */
+    boolean isScheduled();
+
+    /**
      * Called by the bluetooth stack. Specifies an action to run when
      * the timeout expires that will allow the stack to clean up any
      * resources.

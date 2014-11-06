@@ -55,6 +55,11 @@ public class SchedulerOperationTimeout implements OperationTimeout {
     }
 
     @Override
+    public boolean isScheduled() {
+        return (subscription != null);
+    }
+
+    @Override
     public void setTimeoutAction(@NonNull Action0 action, @NonNull Scheduler scheduler) {
         Logger.info(LOG_TAG, "Timeout action " + action + "; " + scheduler);
 
