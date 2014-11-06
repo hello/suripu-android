@@ -1,11 +1,13 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -26,15 +28,15 @@ import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 
 public final class LineGraphView extends FrameLayout {
     private Adapter adapter;
-    private int numberOfVerticalLines = 0;
     private int numberOfHorizontalLines = 0;
+    private int numberOfVerticalLines = 0;
     private float pointMarkerSize;
     private Drawable fillDrawable;
     private boolean wantsMarkers = true;
     private boolean wantsHeaders = true;
     private boolean wantsFooters = true;
 
-    private float cachedPeakMagnitude = 0f, cachedTotalSegmentCount = 0f;
+    private float cachedPeakMagnitude = 0f;
     private final List<Integer> cachedSectionCounts = new ArrayList<>();
 
     private float topLineHeight;
@@ -42,12 +44,16 @@ public final class LineGraphView extends FrameLayout {
     private final Paint gridPaint = new Paint();
     private final Paint markersPaint = new Paint();
     private final Paint topLinePaint = new Paint();
+    private final Paint textPaint = new Paint();
 
     private final Path topLinePath = new Path();
     private final Path fillPath = new Path();
     private final Path markersPath = new Path();
 
+    private final Rect textRect = new Rect();
     private final RectF markerRect = new RectF();
+
+    private int headerFooterPadding;
 
     private TextView highlightedValueText;
 
@@ -70,7 +76,8 @@ public final class LineGraphView extends FrameLayout {
     }
 
     protected void initialize(@Nullable AttributeSet attrs, int defStyleAttr) {
-        float density = getResources().getDisplayMetrics().density;
+        Resources resources = getResources();
+        float density = resources.getDisplayMetrics().density;
 
         topLinePaint.setStyle(Paint.Style.STROKE);
         topLinePaint.setAntiAlias(true);
@@ -78,7 +85,9 @@ public final class LineGraphView extends FrameLayout {
         topLinePaint.setStrokeWidth(topLineHeight);
 
         gridPaint.setAntiAlias(true);
-
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_medium));
+        textPaint.setColor(resources.getColor(R.color.text_dark));
         markersPaint.setAntiAlias(true);
 
         if (attrs != null) {
@@ -90,8 +99,8 @@ public final class LineGraphView extends FrameLayout {
             this.fillDrawable = styles.getDrawable(R.styleable.LineGraphView_fill);
             this.pointMarkerSize = styles.getFloat(R.styleable.LineGraphView_markerSize, 5f * density);
 
-            this.numberOfVerticalLines = styles.getInt(R.styleable.LineGraphView_verticalLines, 0);
-            this.numberOfHorizontalLines = styles.getInt(R.styleable.LineGraphView_horizontalLines, 0);
+            this.numberOfHorizontalLines = styles.getInt(R.styleable.LineGraphView_verticalLines, 0);
+            this.numberOfVerticalLines = styles.getInt(R.styleable.LineGraphView_horizontalLines, 0);
             this.wantsMarkers = styles.getBoolean(R.styleable.LineGraphView_wantsMarkers, true);
             this.wantsHeaders = styles.getBoolean(R.styleable.LineGraphView_wantsHeaders, true);
             this.wantsFooters = styles.getBoolean(R.styleable.LineGraphView_wantsFooters, true);
@@ -103,6 +112,8 @@ public final class LineGraphView extends FrameLayout {
             this.fillDrawable = new ColorDrawable(Color.WHITE);
             this.topLineHeight = 3f * density;
         }
+
+        this.headerFooterPadding = getResources().getDimensionPixelSize(R.dimen.gap_medium);
 
         this.highlightedValueText = new TextView(getContext());
         highlightedValueText.setGravity(Gravity.CENTER);
@@ -126,15 +137,15 @@ public final class LineGraphView extends FrameLayout {
 
     private float getSectionWidth() {
         if (adapter != null) {
-            return getMeasuredWidth() / adapter.getSectionCount();
+            return getMeasuredWidth() / cachedSectionCounts.size();
         } else {
             return 0f;
         }
     }
 
-    private float getSegmentWidth() {
+    private float getSegmentWidth(int section) {
         if (adapter != null) {
-            return getMeasuredWidth() / cachedTotalSegmentCount;
+            return getSectionWidth() / cachedSectionCounts.get(section);
         } else {
             return 0f;
         }
@@ -145,71 +156,102 @@ public final class LineGraphView extends FrameLayout {
     }
 
     private float absoluteSegmentY(float height, int section, int position) {
-        return height - (height * (adapter.getMagnitudeAt(section, position) / this.cachedPeakMagnitude));
+        return Math.round(height - (height * (adapter.getMagnitudeAt(section, position) / this.cachedPeakMagnitude)));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        int sectionCount = cachedSectionCounts.size();
         int minX = 0, minY = 0;
         int height = getMeasuredHeight() - minY, width = getMeasuredWidth() - minX;
 
-        if (numberOfVerticalLines > 0) {
-            float lineDistance = height / numberOfVerticalLines;
+        if (numberOfHorizontalLines > 0) {
+            float lineDistance = height / numberOfHorizontalLines;
             float lineOffset = lineDistance;
-            for (int line = 1; line < numberOfVerticalLines; line++) {
+            for (int line = 1; line < numberOfHorizontalLines; line++) {
                 canvas.drawLine(minX, lineOffset, width, lineOffset, gridPaint);
                 lineOffset += lineDistance;
             }
         }
 
-        if (numberOfHorizontalLines > 0) {
-            float lineDistance = width / numberOfHorizontalLines;
+        if (numberOfVerticalLines > 0) {
+            float lineDistance = width / numberOfVerticalLines;
             float lineOffset = lineDistance;
-            for (int line = 1; line < numberOfHorizontalLines; line++) {
+            for (int line = 1; line < numberOfVerticalLines; line++) {
                 canvas.drawLine(lineOffset, minY, lineOffset, height, gridPaint);
                 lineOffset += lineDistance;
             }
         }
 
-        if (adapter != null && cachedSectionCounts.size() > 0) {
+        if (adapter != null && sectionCount > 0) {
             topLinePath.reset();
             fillPath.reset();
             markersPath.reset();
 
-            if (adapter != null && cachedSectionCounts.size() > 0) {
-                int sections = cachedSectionCounts.size();
-                float segmentWidth = width / cachedTotalSegmentCount;
-                float sectionWidth = width / sections;
-                float halfPointMarkerArea = pointMarkerSize / 2;
-                for (int section = 0; section < sections; section++) {
-                    int pointCount = cachedSectionCounts.get(section);
+            int headerFooterHeight = (int) textPaint.getTextSize() + (headerFooterPadding * 2);
+            if (wantsHeaders) {
+                minY += headerFooterHeight;
+                height -= headerFooterHeight;
+            }
 
-                    for (int position = 0; position < pointCount; position++) {
-                        if (section == 0 && position == 0) {
-                            float firstPointY = absoluteSegmentY(height, section, position);
-                            fillPath.moveTo(minX, firstPointY);
-                            topLinePath.moveTo(minX, firstPointY);
-                        }
+            if (wantsFooters) {
+                height -= headerFooterHeight;
+            }
 
-                        float segmentX = absoluteSegmentX(sectionWidth, segmentWidth, section, position);
-                        float segmentY = absoluteSegmentY(height, section, position);
+            float sectionWidth = width / sectionCount;
+            float halfPointMarkerArea = pointMarkerSize / 2;
+            for (int section = 0; section < sectionCount; section++) {
+                int pointCount = cachedSectionCounts.get(section);
+                if (pointCount == 0)
+                    continue;
 
-                        topLinePath.lineTo(segmentX, segmentY);
-                        fillPath.lineTo(segmentX, segmentY - topLineHeight / 2f);
+                float segmentWidth = sectionWidth / (float) pointCount;
 
-                        if (wantsMarkers && adapter.wantsMarkerAt(section, position)) {
-                            markerRect.set(segmentX - halfPointMarkerArea, segmentY - halfPointMarkerArea,
-                                    segmentX + halfPointMarkerArea, segmentY + halfPointMarkerArea);
-                            markersPath.addOval(markerRect, Path.Direction.CW);
-                        }
-                    }
+                if (wantsHeaders) {
+                    String text = adapter.getSectionHeader(section);
+                    textPaint.getTextBounds(text, 0, text.length(), textRect);
+
+                    float sectionMidX = (sectionWidth * section) + (sectionWidth / 2);
+                    float textX = sectionMidX - textRect.centerX();
+                    float textY = (headerFooterHeight / 2) - textRect.centerY();
+                    canvas.drawText(text, textX, textY, textPaint);
                 }
 
-                fillPath.lineTo(width, height);
-                fillPath.lineTo(minX, height);
+                if (wantsFooters) {
+                    String text = adapter.getSectionFooter(section);
+                    textPaint.getTextBounds(text, 0, text.length(), textRect);
+
+                    float sectionMidX = (sectionWidth * section) + (sectionWidth / 2);
+                    float textX = sectionMidX - textRect.centerX();
+                    float textY = (minY + height) + ((headerFooterHeight / 2) - textRect.centerY());
+                    canvas.drawText(text, textX, textY, textPaint);
+                }
+
+                for (int position = 0; position < pointCount; position++) {
+                    if (section == 0 && position == 0) {
+                        float firstPointY = minY + absoluteSegmentY(height, section, position);
+                        fillPath.moveTo(minX, firstPointY);
+                        topLinePath.moveTo(minX, firstPointY);
+                    }
+
+                    float segmentX = absoluteSegmentX(sectionWidth, segmentWidth, section, position);
+                    float segmentY = minY + absoluteSegmentY(height, section, position);
+
+                    topLinePath.lineTo(segmentX, segmentY);
+                    fillPath.lineTo(segmentX, segmentY - topLineHeight / 2f);
+
+                    if (wantsMarkers && adapter.wantsMarkerAt(section, position)) {
+                        markerRect.set(segmentX - halfPointMarkerArea, segmentY - halfPointMarkerArea,
+                                segmentX + halfPointMarkerArea, segmentY + halfPointMarkerArea);
+                        markersPath.addOval(markerRect, Path.Direction.CW);
+                    }
+                }
             }
+
+            fillPath.lineTo(width, height);
+            fillPath.lineTo(minX, height);
 
             if (fillDrawable != null) {
                 canvas.save();
@@ -247,30 +289,28 @@ public final class LineGraphView extends FrameLayout {
 
         if (adapter != null) {
             this.cachedPeakMagnitude = adapter.getPeakMagnitude();
-            this.cachedTotalSegmentCount = 0f;
             for (int section = 0, sections = adapter.getSectionCount(); section < sections; section++) {
                 int count = adapter.getSectionPointCount(section);
-                cachedTotalSegmentCount += count;
                 cachedSectionCounts.add(count);
             }
         }
 
-        postInvalidate();
-    }
-
-    public void setNumberOfVerticalLines(int numberOfVerticalLines) {
-        this.numberOfVerticalLines = numberOfVerticalLines;
-        postInvalidate();
+        invalidate();
     }
 
     public void setNumberOfHorizontalLines(int numberOfHorizontalLines) {
         this.numberOfHorizontalLines = numberOfHorizontalLines;
-        postInvalidate();
+        invalidate();
+    }
+
+    public void setNumberOfVerticalLines(int numberOfVerticalLines) {
+        this.numberOfVerticalLines = numberOfVerticalLines;
+        invalidate();
     }
 
     public void setGridColor(int color) {
         gridPaint.setColor(color);
-        postInvalidate();
+        invalidate();
     }
 
     public void setTopLineColor(int color) {
@@ -279,7 +319,7 @@ public final class LineGraphView extends FrameLayout {
 
     public void setTopLineHeight(int height) {
         this.topLineHeight = height;
-        postInvalidate();
+        invalidate();
     }
 
     public void setMarkerColor(int color) {
@@ -288,12 +328,12 @@ public final class LineGraphView extends FrameLayout {
 
     public void setFillDrawable(Drawable fillDrawable) {
         this.fillDrawable = fillDrawable;
-        postInvalidate();
+        invalidate();
     }
 
     public void setPointMarkerSize(float pointMarkerSize) {
         this.pointMarkerSize = pointMarkerSize;
-        postInvalidate();
+        invalidate();
     }
 
     //endregion
@@ -315,8 +355,8 @@ public final class LineGraphView extends FrameLayout {
     }
 
     private int getSegmentAtX(int section, float x) {
-        int sectionMax =  cachedSectionCounts.get(section) - 1;
-        return Math.min(sectionMax, Math.round(x / getSegmentWidth()) - calculateSegmentCountInRange(0, section - 1));
+        int sectionMax = cachedSectionCounts.get(section) - 1;
+        return Math.min(sectionMax, Math.round(x / getSegmentWidth(section)) - calculateSegmentCountInRange(0, section - 1));
     }
 
     @Override

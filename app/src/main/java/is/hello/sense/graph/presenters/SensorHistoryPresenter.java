@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import java.util.List;
 
@@ -13,6 +14,8 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.units.UnitSystem;
 import rx.Observable;
 
 public class SensorHistoryPresenter extends Presenter {
@@ -20,11 +23,12 @@ public class SensorHistoryPresenter extends Presenter {
     public static final int MODE_DAY = 1;
 
     @Inject ApiService apiService;
+    @Inject UnitFormatter unitFormatter;
 
     private String sensorName;
     private int mode;
 
-    public final PresenterSubject<List<SensorHistory>> history = PresenterSubject.create();
+    public final PresenterSubject<Pair<List<SensorHistory>, UnitSystem>> history = PresenterSubject.create();
 
     @Override
     public void onRestoreState(@NonNull Parcelable savedState) {
@@ -66,7 +70,8 @@ public class SensorHistoryPresenter extends Presenter {
             } else {
                 newHistory = apiService.sensorHistoryForWeek(getSensorName(), System.currentTimeMillis());
             }
-            newHistory.subscribe(history);
+            Observable<Pair<List<SensorHistory>, UnitSystem>> result = Observable.combineLatest(newHistory, unitFormatter.unitSystem, Pair::new);
+            result.subscribe(history);
         }
     }
 

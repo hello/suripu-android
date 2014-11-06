@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.LineGraphView;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -43,12 +45,15 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     private TextView messageText;
     private LineGraphView graphView;
     private Adapter adapter = new Adapter();
+    private String sensor;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        sensorHistoryPresenter.setSensorName(getSensorHistoryActivity().getSensor());
+        this.sensor = getSensorHistoryActivity().getSensor();
+
+        sensorHistoryPresenter.setSensorName(sensor);
         addPresenter(sensorHistoryPresenter);
         addPresenter(conditionsPresenter);
 
@@ -99,7 +104,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             readingText.setText(R.string.missing_data_placeholder);
             messageTitleText.setText(R.string.missing_data_placeholder);
         } else {
-            String sensor = getSensorHistoryActivity().getSensor();
             SensorState condition = result.conditions.getSensorStateWithName(sensor);
             if (condition != null) {
                 UnitFormatter.Formatter formatter = null;
@@ -138,25 +142,36 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public class Adapter implements LineGraphView.Adapter {
         private List<Section> sections = new ArrayList<>();
         private int peakMagnitude = 100;
+        private UnitSystem unitSystem;
 
-        public void bindHistory(@NonNull List<SensorHistory> history) {
+        public void bindHistory(@NonNull Pair<List<SensorHistory>, UnitSystem> result) {
             sections.clear();
+
+            List<SensorHistory> history = result.first;
             if (history.isEmpty()) {
                 return;
             }
 
             Observable<List<Section>> generateSeries = Observable.create((Observable.OnSubscribe<List<Section>>) s -> {
-                Function<SensorHistory, Integer> segmentKeyProducer = sensorHistory -> sensorHistory.getTime().getDayOfMonth();
+                Function<SensorHistory, Integer> segmentKeyProducer;
+                if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
+                    segmentKeyProducer = sensorHistory -> sensorHistory.getTime().getDayOfMonth();
+                } else {
+                    segmentKeyProducer = sensorHistory -> sensorHistory.getTime().getHourOfDay() / 6;
+                }
                 List<List<SensorHistory>> segments = segmentList(segmentKeyProducer, history);
-                List<Section> sections = mapList(segments, seg -> new Section(seg));
+                List<Section> sections = mapList(segments, Section::new);
                 s.onNext(sections);
                 s.onCompleted();
             }).subscribeOn(Schedulers.computation());
 
             bindAndSubscribe(generateSeries, sections -> {
                 this.sections.addAll(sections);
+                graphView.setNumberOfVerticalLines(sections.size());
                 graphView.notifyDataChanged();
             }, Functions.LOG_ERROR);
+
+            this.unitSystem = result.second;
         }
 
         public void historyUnavailable(Throwable e) {
@@ -194,44 +209,74 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public CharSequence getFormattedMagnitudeAt(int section, int position) {
             SensorHistory instant = sections.get(section).get(position);
-            return (int) instant.getValue() + " – " + instant.getTime().toString("h:mm a");
+            float value = instant.getValue();
+            switch (sensor) {
+                case SensorHistory.SENSOR_NAME_TEMPERATURE:
+                    return unitSystem.formatTemperature(value);
+                case SensorHistory.SENSOR_NAME_PARTICULATES:
+                    return unitSystem.formatParticulates(value);
+                default:
+                    return Integer.toString((int) value) + "%";
+            }
+        }
+
+        @Override
+        public String getSectionHeader(int section) {
+            SensorHistory value = sections.get(section).getRepresentativeValue();
+            if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
+                return value.getTime().toString("E").substring(0, 1);
+            } else {
+                return value.getTime().toString("h a");
+            }
+        }
+
+        @Override
+        public String getSectionFooter(int section) {
+            float value = sections.get(section).getAverage();
+            switch (sensor) {
+                case SensorHistory.SENSOR_NAME_TEMPERATURE:
+                    return unitSystem.formatTemperature(value);
+                case SensorHistory.SENSOR_NAME_PARTICULATES:
+                    return unitSystem.formatParticulates(value);
+                default:
+                    return Integer.toString((int) value) + "%";
+            }
         }
 
         @Override
         public boolean wantsMarkerAt(int section, int position) {
             return false;
         }
+    }
 
+    private static class Section {
+        private final List<SensorHistory> instants;
+        private final float average;
 
-        private class Section {
-            private final List<SensorHistory> instants;
-            private final float average;
-
-            private Section(@NonNull List<SensorHistory> instants) {
-                this.instants = instants;
-                float average = 0f;
-                for (SensorHistory instant : instants) {
-                    average += instant.getValue();
-                }
-                average /= instants.size();
-                this.average = average;
+        private Section(@NonNull List<SensorHistory> instants) {
+            this.instants = instants;
+            float average = 0f;
+            for (SensorHistory instant : instants) {
+                average += instant.getValue();
             }
+            average /= instants.size();
+            this.average = average;
+        }
 
-            public SensorHistory get(int i) {
-                return instants.get(i);
-            }
+        public SensorHistory get(int i) {
+            return instants.get(i);
+        }
 
-            public int size() {
-                return instants.size();
-            }
+        public int size() {
+            return instants.size();
+        }
 
-            public float getAverage() {
-                return average;
-            }
+        public float getAverage() {
+            return average;
+        }
 
-            public SensorHistory getRepresentativeValue() {
-                return instants.get(0);
-            }
+        public SensorHistory getRepresentativeValue() {
+            return instants.get(0);
         }
     }
 }
