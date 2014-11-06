@@ -288,7 +288,7 @@ public class AndroidPeripheral implements Peripheral {
 
                     int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
                     if (state == BluetoothDevice.BOND_BONDED) {
-                        Logger.error(LOG_TAG, "Bonding succeeded.");
+                        Logger.info(LOG_TAG, "Bonding succeeded.");
 
                         s.onNext(AndroidPeripheral.this);
                         s.onCompleted();
@@ -341,7 +341,7 @@ public class AndroidPeripheral implements Peripheral {
 
                         int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
                         if (state == BluetoothDevice.BOND_NONE) {
-                            Logger.error(LOG_TAG, "Unbonding succeeded.");
+                            Logger.info(LOG_TAG, "Unbonding succeeded.");
 
                             s.onNext(AndroidPeripheral.this);
                             s.onCompleted();
