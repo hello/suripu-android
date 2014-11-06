@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -161,15 +162,15 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         private UnitSystem unitSystem;
         private boolean use24Time = false;
 
-        public void bindHistory(@NonNull Pair<List<SensorHistory>, UnitSystem> result) {
+        public void bindHistory(@NonNull Pair<List<SensorHistory>, UnitSystem> historyAndUnits) {
             sections.clear();
 
-            List<SensorHistory> history = result.first;
+            List<SensorHistory> history = historyAndUnits.first;
             if (history.isEmpty()) {
                 return;
             }
 
-            Observable<List<Section>> generateSeries = Observable.create((Observable.OnSubscribe<List<Section>>) s -> {
+            Observable<Pair<List<Section>, Integer>> generateSeries = Observable.create((Observable.OnSubscribe<Pair<List<Section>, Integer>>) s -> {
                 Function<SensorHistory, Integer> segmentKeyProducer;
                 if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
                     segmentKeyProducer = sensorHistory -> sensorHistory.getTime().getDayOfMonth();
@@ -178,17 +179,22 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 }
                 List<List<SensorHistory>> segments = segmentList(segmentKeyProducer, history);
                 List<Section> sections = mapList(segments, Section::new);
-                s.onNext(sections);
+
+                float peak = Collections.max(history, (l, r) -> Float.compare(l.getValue(), r.getValue())).getValue();
+                int constrainedPeak = Math.min(100, (int) peak);
+
+                s.onNext(Pair.create(sections, constrainedPeak));
                 s.onCompleted();
             }).subscribeOn(Schedulers.computation());
 
-            bindAndSubscribe(generateSeries, sections -> {
-                this.sections.addAll(sections);
+            bindAndSubscribe(generateSeries, segmentsAndPeak -> {
+                this.sections.addAll(segmentsAndPeak.first);
+                this.peakMagnitude = segmentsAndPeak.second;
                 graphView.setNumberOfLines(sections.size());
                 graphView.notifyDataChanged();
             }, Functions.LOG_ERROR);
 
-            this.unitSystem = result.second;
+            this.unitSystem = historyAndUnits.second;
 
             animate(loadingIndicator)
                     .fadeOut(View.GONE)

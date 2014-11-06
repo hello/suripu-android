@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -72,7 +71,6 @@ public final class LineGraphView extends FrameLayout {
 
     protected void initialize(@Nullable AttributeSet attrs, int defStyleAttr) {
         Resources resources = getResources();
-        float density = resources.getDisplayMetrics().density;
 
         topLinePaint.setStyle(Paint.Style.STROKE);
         topLinePaint.setAntiAlias(true);
@@ -82,31 +80,30 @@ public final class LineGraphView extends FrameLayout {
 
         textPaint.setAntiAlias(true);
         textPaint.setSubpixelText(true);
-        textPaint.setTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_small));
-        textPaint.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "fonts/AvenirLTCom-Light.ttf"));
-        textPaint.setColor(resources.getColor(R.color.text_dark));
+        setTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_small));
+        setTypeface(Typeface.createFromAsset(getResources().getAssets(), "fonts/AvenirLTCom-Light.ttf"));
+        setTextColor(resources.getColor(R.color.text_dark));
 
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.LineGraphView, defStyleAttr, 0);
-            setTopLineColor(styles.getColor(R.styleable.LineGraphView_topLineColor, Color.GRAY));
-            setTopLineHeight(styles.getDimensionPixelOffset(R.styleable.LineGraphView_topLineHeight, 1));
+            setTopLineColor(styles.getColor(R.styleable.LineGraphView_topLineColor, resources.getColor(R.color.grey)));
+            setTopLineHeight(styles.getDimensionPixelOffset(R.styleable.LineGraphView_topLineHeight, resources.getDimensionPixelSize(R.dimen.divider_height)));
             setFillDrawable(styles.getDrawable(R.styleable.LineGraphView_fill));
 
             this.numberOfLines = styles.getInt(R.styleable.LineGraphView_lineCount, 0);
             setGridDrawable(styles.getDrawable(R.styleable.LineGraphView_gridDrawable));
+
             this.wantsHeaders = styles.getBoolean(R.styleable.LineGraphView_wantsHeaders, true);
             this.wantsFooters = styles.getBoolean(R.styleable.LineGraphView_wantsFooters, true);
         } else {
-            topLinePaint.setColor(Color.GRAY);
-            this.fillDrawable = new ColorDrawable(Color.WHITE);
-            this.topLineHeight = 3f * density;
+            setTopLineColor(resources.getColor(R.color.grey));
+            setTopLineHeight(resources.getDimensionPixelSize(R.dimen.divider_height));
         }
 
         this.headerFooterPadding = getResources().getDimensionPixelSize(R.dimen.gap_medium);
 
         this.highlightedValueText = new TextView(getContext());
         highlightedValueText.setGravity(Gravity.CENTER);
-        highlightedValueText.setMinimumWidth((int) (30f * density));
         highlightedValueText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelOffset(R.dimen.text_size_small));
         highlightedValueText.setBackgroundResource(R.drawable.timestamp_background);
         highlightedValueText.setTextColor(Color.WHITE);
@@ -299,6 +296,11 @@ public final class LineGraphView extends FrameLayout {
 
     public void setTextSize(int size) {
         textPaint.setTextSize(size);
+        invalidate();
+    }
+
+    public void setTextColor(int color) {
+        textPaint.setColor(color);
         invalidate();
     }
 
