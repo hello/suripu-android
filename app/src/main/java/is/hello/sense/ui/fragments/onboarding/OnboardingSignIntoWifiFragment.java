@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
@@ -27,6 +26,7 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
@@ -237,14 +237,14 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            SenseAlertDialog builder = new SenseAlertDialog(getActivity());
 
             builder.setTitle(R.string.dialog_title_sense_already_linked);
             builder.setMessage(R.string.dialog_message_sense_already_linked);
             builder.setPositiveButton(android.R.string.yes, this);
             builder.setNegativeButton(android.R.string.no, this);
 
-            return builder.create();
+            return builder;
         }
 
         @Override
