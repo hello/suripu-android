@@ -9,11 +9,11 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 import is.hello.sense.bluetooth.devices.SenseIdentifiers;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.ProtobufProcessingError;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
+import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.transmission.SequencedPacket;
-import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.util.Logger;
 
 public class SensePacketDataHandler extends PacketDataHandler<SenseBle.MorpheusCommand> {

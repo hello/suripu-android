@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;

@@ -1,6 +1,7 @@
 package is.hello.sense.bluetooth.stacks;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -34,6 +35,14 @@ public interface BluetoothStack {
      * Vends an observable configured appropriately for use with the BluetoothStack.
      */
     <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe);
+
+
+    /**
+     * Returns a boolean indicating whether or not a given error is
+     * fatal in the context of the bluetooth stack implementation,
+     * and the client code should disconnect and perform a rediscovery.
+     */
+    boolean isErrorFatal(@Nullable Throwable e);
 
 
     /**

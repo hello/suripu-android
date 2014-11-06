@@ -3,7 +3,6 @@ package is.hello.sense.bluetooth.stacks.android;
 import android.bluetooth.BluetoothGattService;
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

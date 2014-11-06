@@ -19,10 +19,9 @@ import javax.inject.Singleton;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
-import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
+import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.Observer;
@@ -39,11 +38,7 @@ import rx.schedulers.Schedulers;
     private @Nullable Observable<SensePeripheral> repairingTask;
     private @Nullable SensePeripheral device;
 
-    private final Action1<Throwable> respondToError = e -> {
-        if (!(e instanceof SensePeripheralError)) {
-            clearDevice();
-        }
-    };
+    private final Action1<Throwable> respondToError;
 
     @Inject public HardwarePresenter(@NonNull PreferencesPresenter preferencesPresenter,
                                      @NonNull ApiSessionManager apiSessionManager,
@@ -51,6 +46,11 @@ import rx.schedulers.Schedulers;
         this.preferencesPresenter = preferencesPresenter;
         this.apiSessionManager = apiSessionManager;
         this.bluetoothStack = bluetoothStack;
+        this.respondToError = e -> {
+            if (bluetoothStack.isErrorFatal(e)) {
+                clearDevice();
+            }
+        };
     }
 
 

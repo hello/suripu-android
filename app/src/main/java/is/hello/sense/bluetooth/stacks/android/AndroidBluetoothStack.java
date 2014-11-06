@@ -4,14 +4,17 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.EnumSet;
 import java.util.List;
 
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
+import is.hello.sense.bluetooth.errors.GattError;
+import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
+import is.hello.sense.bluetooth.stacks.Peripheral;
 import rx.Observable;
 import rx.Scheduler;
 
@@ -48,6 +51,11 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
 
     @Override
+    public boolean isErrorFatal(@Nullable Throwable e) {
+        return e != null && (e instanceof OperationTimeoutError || e instanceof GattError);
+    }
+
+    @Override
     public EnumSet<Traits> getTraits() {
         return EnumSet.of(Traits.BONDS_NOT_PERSISTENT);
     }
@@ -56,6 +64,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
     public SupportLevel getDeviceSupportLevel() {
         return SupportLevel.UNTESTED;
     }
+
 
     @Override
     public String toString() {
