@@ -15,10 +15,9 @@ import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.GattError;
 import is.hello.sense.bluetooth.errors.TooManyOperationsError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.bluetooth.stacks.OperationTimeout;
+import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
-import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
@@ -32,12 +31,9 @@ import rx.functions.Action2;
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle.MorpheusCommand;
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle.MorpheusCommand.CommandType;
 
-public class SensePeripheral {
+public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     private static int COMMAND_VERSION = 0;
 
-    private final Peripheral peripheral;
-    private final OperationTimeout commonTimeout;
-    private PeripheralService peripheralService;
     private PacketDataHandler<MorpheusCommand> dataHandler;
     private PacketHandler packetHandler;
 
@@ -57,8 +53,8 @@ public class SensePeripheral {
     }
 
     public SensePeripheral(@NonNull Peripheral peripheral) {
-        this.peripheral = peripheral;
-        this.commonTimeout = new SchedulerOperationTimeout(30, TimeUnit.SECONDS);
+        super(peripheral, new SchedulerOperationTimeout(30, TimeUnit.SECONDS));
+
         this.dataHandler = new SensePacketDataHandler();
         this.packetHandler = new SensePacketHandler();
         packetHandler.setPacketDataHandler(dataHandler);
@@ -66,65 +62,19 @@ public class SensePeripheral {
     }
 
 
-
-    public int getScannedRssi() {
-        return peripheral.getScanTimeRssi();
-    }
-
-    public String getAddress() {
-        return peripheral.getAddress();
-    }
-
-    public String getName() {
-        return peripheral.getName();
-    }
-
-
-    //region Connectivity
-
-    public Observable<SensePeripheral> connect() {
-        return peripheral.getStack().newConfiguredObservable(s -> {
-            Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
-
-            peripheral.connect().subscribe(device -> {
-                Logger.info(Peripheral.LOG_TAG, "connected to " + toString());
-
-                device.createBond().subscribe(ignored -> {
-                    Logger.info(Peripheral.LOG_TAG, "bonded to " + toString());
-
-                    device.discoverServices(commonTimeout).subscribe(services -> {
-                        Logger.info(Peripheral.LOG_TAG, "discovered services for " + toString());
-
-                        this.peripheralService = device.getService(SenseIdentifiers.SENSE_SERVICE);
-                        s.onNext(this);
-                        s.onCompleted();
-                    }, s::onError);
-                }, s::onError);
-            }, s::onError);
-        });
-    }
-
-    public Observable<SensePeripheral> disconnect() {
-        return peripheral.disconnect().map(ignored -> this);
-    }
-
-    public boolean isConnected() {
-        return peripheral.getConnectionStatus() == Peripheral.STATUS_CONNECTED;
-    }
-
-    public int getBondStatus() {
-        return peripheral.getBondStatus();
-    }
-
-    //endregion
-
-
     //region Internal
+
+
+    @Override
+    protected UUID getTargetServiceIdentifier() {
+        return SenseIdentifiers.SENSE_SERVICE;
+    }
 
     protected PeripheralService getTargetService() {
         return peripheralService;
     }
 
+    @Override
     protected UUID getDescriptorIdentifier() {
         return SenseIdentifiers.DESCRIPTOR_CHAR_COMMAND_RESPONSE_CONFIG;
     }
@@ -352,16 +302,4 @@ public class SensePeripheral {
     }
 
     //endregion
-
-
-    @Override
-    public String toString() {
-        return "{SenseDevice " +
-                "name=" + getName() +
-                ", address=" + getAddress() +
-                ", connectionStatus=" + peripheral.getConnectionStatus() +
-                ", bondStatus=" + peripheral.getBondStatus() +
-                ", scannedRssi=" + getScannedRssi() +
-                '}';
-    }
 }
