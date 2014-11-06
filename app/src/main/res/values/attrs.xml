@@ -28,5 +28,7 @@
         <attr name="fill" format="integer" />
         <attr name="markerSize" format="float" />
         <attr name="wantsMarkers" format="boolean" />
+        <attr name="wantsHeaders" format="boolean" />
+        <attr name="wantsFooters" format="boolean" />
     </declare-styleable>
 </resources>

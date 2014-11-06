@@ -31,6 +31,8 @@ public final class LineGraphView extends FrameLayout {
     private float pointMarkerSize;
     private Drawable fillDrawable;
     private boolean wantsMarkers = true;
+    private boolean wantsHeaders = true;
+    private boolean wantsFooters = true;
 
     private float cachedPeakMagnitude = 0f, cachedTotalSegmentCount = 0f;
     private final List<Integer> cachedSectionCounts = new ArrayList<>();
@@ -91,6 +93,8 @@ public final class LineGraphView extends FrameLayout {
             this.numberOfVerticalLines = styles.getInt(R.styleable.LineGraphView_verticalLines, 0);
             this.numberOfHorizontalLines = styles.getInt(R.styleable.LineGraphView_horizontalLines, 0);
             this.wantsMarkers = styles.getBoolean(R.styleable.LineGraphView_wantsMarkers, true);
+            this.wantsHeaders = styles.getBoolean(R.styleable.LineGraphView_wantsHeaders, true);
+            this.wantsFooters = styles.getBoolean(R.styleable.LineGraphView_wantsFooters, true);
         } else {
             topLinePaint.setColor(Color.GRAY);
             gridPaint.setColor(Color.LTGRAY);
@@ -366,5 +370,7 @@ public final class LineGraphView extends FrameLayout {
         float getMagnitudeAt(int section, int position);
         @NonNull CharSequence getFormattedMagnitudeAt(int section, int position);
         boolean wantsMarkerAt(int section, int position);
+        String getSectionHeader(int section);
+        String getSectionFooter(int section);
     }
 }
