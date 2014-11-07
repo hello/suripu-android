@@ -3,6 +3,7 @@ package is.hello.sense.util;
 import android.test.InstrumentationTestCase;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
@@ -12,7 +13,7 @@ import is.hello.sense.R;
 public class DateFormatterTests extends InstrumentationTestCase {
     private static final LocalDateTime TEST_LOCAL_DATETIME = new LocalDateTime(2014, 10, 1, 10, 30, 0);
     private static final LocalDate TEST_LOCAL_DATE = new LocalDate(2014, 10, 1);
-    private static final DateTime TEST_DATETIME = new DateTime(2014, 10, 1, 10, 30, 0);
+    private static final DateTime TEST_DATETIME = new DateTime(2014, 10, 1, 10, 30, 0, DateTimeZone.getDefault());
     private static final LocalTime TEST_LOCAL_TIME = new LocalTime(10, 30, 0);
     private DateFormatter formatter;
 

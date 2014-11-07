@@ -3,12 +3,15 @@ package is.hello.sense.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -170,6 +173,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 return;
             }
 
+            Log.i(SensorHistoryFragment.class.getSimpleName(), "history: " + history);
+
             Observable<Pair<List<Section>, Integer>> generateSeries = Observable.create((Observable.OnSubscribe<Pair<List<Section>, Integer>>) s -> {
                 Function<SensorHistory, Integer> segmentKeyProducer;
                 if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
@@ -272,12 +277,12 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         public String getSectionHeader(int section) {
             SensorHistory value = sections.get(section).getRepresentativeValue();
             if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
-                return value.getTime().toString("E").substring(0, 1);
+                return dateFormatter.formatDateTime(value.getTime(), "E").substring(0, 1);
             } else {
                 if (use24Time)
-                    return value.getTime().toString("H");
+                    return dateFormatter.formatDateTime(value.getTime(), "H");
                 else
-                    return value.getTime().toString("h a");
+                    return dateFormatter.formatDateTime(value.getTime(), "h a");
             }
         }
 

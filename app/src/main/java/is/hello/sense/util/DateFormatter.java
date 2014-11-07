@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -23,6 +24,9 @@ import is.hello.sense.R;
         this.context = context.getApplicationContext();
     }
 
+
+    //region Last Night
+
     public static boolean isLastNight(@NonNull DateTime instant) {
         Interval interval = new Interval(Days.ONE, DateTime.now().withTimeAtStartOfDay());
         return interval.contains(instant);
@@ -31,6 +35,27 @@ import is.hello.sense.R;
     public static @NonNull DateTime lastNight() {
         return DateTime.now().minusDays(1);
     }
+
+    //endregion
+
+
+    //region Primitive Formatters
+
+    public @NonNull DateTimeZone getTargetTimeZone() {
+        return DateTimeZone.getDefault();
+    }
+
+    /**
+     * Formats a given DateTime instance according to a given pattern, applying the formatter's target time zone.
+     */
+    public @NonNull String formatDateTime(@NonNull DateTime dateTime, @NonNull String pattern) {
+        return dateTime.withZone(getTargetTimeZone()).toString(pattern);
+    }
+
+    //endregion
+
+
+    //region Core Formatters
 
     public @NonNull String formatAsTimelineDate(@Nullable DateTime date) {
         if (date != null && isLastNight(date))
@@ -49,7 +74,7 @@ import is.hello.sense.R;
 
     public @NonNull String formatAsDate(@Nullable DateTime date) {
         if (date != null) {
-            return date.toString(context.getString(R.string.format_date));
+            return formatDateTime(date, context.getString(R.string.format_date));
         } else {
             return context.getString(R.string.format_date_placeholder);
         }
@@ -78,10 +103,12 @@ import is.hello.sense.R;
     public @NonNull String formatAsTime(@Nullable DateTime time, boolean use24Time) {
         if (time != null) {
             if (use24Time)
-                return time.toString(context.getString(R.string.format_time_24_hr));
+                return formatDateTime(time, context.getString(R.string.format_time_24_hr));
             else
-                return time.toString(context.getString(R.string.format_time_12_hr));
+                return formatDateTime(time, context.getString(R.string.format_time_12_hr));
         }
         return context.getString(R.string.format_date_placeholder);
     }
+
+    //endregion
 }
