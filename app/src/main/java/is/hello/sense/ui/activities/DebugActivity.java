@@ -70,6 +70,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
 
     private void addActions() {
         debugItems.addItem("Environment", currentEnvironment.toString(), this::changeEnvironment);
+        debugItems.addItem("View Log", null, this::viewLog);
         debugItems.addItem("Share Log", null, this::sendLog);
     }
 
@@ -91,6 +92,10 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         });
         builder.setCancelable(true);
         builder.create().show();
+    }
+
+    public void viewLog() {
+        startActivity(new Intent(this, SessionLogViewerActivity.class));
     }
 
     public void sendLog() {
