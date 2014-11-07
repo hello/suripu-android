@@ -9,14 +9,14 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 import is.hello.sense.bluetooth.devices.SenseIdentifiers;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.ProtobufProcessingError;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
 import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.transmission.SequencedPacket;
 import is.hello.sense.util.Logger;
 
-public class SensePacketDataHandler extends PacketDataHandler<SenseBle.MorpheusCommand> {
+public class SensePacketDataHandler extends PacketDataHandler<MorpheusBle.MorpheusCommand> {
     private int totalPackets = 0;
     private byte[] buffer;
     private int expectedIndex = 0;
@@ -65,9 +65,9 @@ public class SensePacketDataHandler extends PacketDataHandler<SenseBle.MorpheusC
         }
 
         if (this.packets.size() == this.totalPackets) {
-            final SenseBle.MorpheusCommand data;
+            final MorpheusBle.MorpheusCommand data;
             try {
-                data = SenseBle.MorpheusCommand.parseFrom(Arrays.copyOfRange(this.buffer, 0, actualDataLength));
+                data = MorpheusBle.MorpheusCommand.parseFrom(Arrays.copyOfRange(this.buffer, 0, actualDataLength));
                 this.onResponse(data);
             } catch (InvalidProtocolBufferException e) {
                 Logger.error(SensePacketDataHandler.class.getSimpleName(), "Could not parse command.", e);

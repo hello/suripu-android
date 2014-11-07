@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.devices.transmission.SensePacketDataHandler;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.GattError;
 import is.hello.sense.bluetooth.errors.TooManyOperationsError;
@@ -28,8 +28,8 @@ import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Action2;
 
-import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle.MorpheusCommand;
-import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle.MorpheusCommand.CommandType;
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.MorpheusCommand;
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.MorpheusCommand.CommandType;
 
 public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     private static int COMMAND_VERSION = 0;
@@ -214,7 +214,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     public Observable<Void> setWifiNetwork(String bssid,
                                            String ssid,
-                                           SenseBle.wifi_endpoint.sec_type securityType,
+                                           MorpheusBle.wifi_endpoint.sec_type securityType,
                                            String password) {
         Logger.info(Peripheral.LOG_TAG, "setWifiNetwork(" + ssid + ")");
 
@@ -261,7 +261,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         return performSimpleCommand(morpheusCommand).map(ignored -> null);
     }
 
-    public Observable<List<SenseBle.wifi_endpoint>> scanForWifiNetworks() {
+    public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks() {
         Logger.info(Peripheral.LOG_TAG, "scanForWifiNetworks()");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
@@ -270,7 +270,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .build();
 
         //noinspection MismatchedQueryAndUpdateOfCollection
-        List<SenseBle.wifi_endpoint> endpoints = new ArrayList<>();
+        List<MorpheusBle.wifi_endpoint> endpoints = new ArrayList<>();
         Observable<UUID> unsubscription = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE);
         return performCommand(morpheusCommand, (response, subscriber) -> {
             if (response.getType() == CommandType.MORPHEUS_COMMAND_START_WIFISCAN) {

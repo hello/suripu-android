@@ -18,7 +18,7 @@ import javax.inject.Singleton;
 
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseBle;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
 import is.hello.sense.bluetooth.stacks.Peripheral;
@@ -164,7 +164,7 @@ import rx.schedulers.Schedulers;
                          .subscribeOn(AndroidSchedulers.mainThread());
     }
 
-    public Observable<List<SenseBle.wifi_endpoint>> scanForWifiNetworks() {
+    public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks() {
         if (device == null) {
             return noDeviceError();
         }
@@ -180,25 +180,25 @@ import rx.schedulers.Schedulers;
                      });
     }
 
-    public Observable<List<SenseBle.wifi_endpoint>> scanForWifiNetworks(int passCount) {
+    public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks(int passCount) {
         if (passCount == 0)
             throw new IllegalArgumentException("passCount == 0");
 
         if (passCount == 1)
             return scanForWifiNetworks();
 
-        return Observable.create((Observable.OnSubscribe<List<SenseBle.wifi_endpoint>>) s -> {
+        return Observable.create((Observable.OnSubscribe<List<MorpheusBle.wifi_endpoint>>) s -> {
             Scheduler scheduler = Schedulers.computation();
-            Observer<List<SenseBle.wifi_endpoint>> observer = new Observer<List<SenseBle.wifi_endpoint>>() {
+            Observer<List<MorpheusBle.wifi_endpoint>> observer = new Observer<List<MorpheusBle.wifi_endpoint>>() {
                 int pass = 0;
-                Map<ByteString, SenseBle.wifi_endpoint> accumulator = new HashMap<>();
+                Map<ByteString, MorpheusBle.wifi_endpoint> accumulator = new HashMap<>();
 
                 @Override
                 public void onCompleted() {
                     if (++pass < passCount) {
                         scanForWifiNetworks().subscribeOn(scheduler).subscribe(this);
                     } else {
-                        List<SenseBle.wifi_endpoint> results = new ArrayList<>();
+                        List<MorpheusBle.wifi_endpoint> results = new ArrayList<>();
                         results.addAll(accumulator.values());
                         Collections.sort(results, (l, r) -> l.getSsid().compareTo(r.getSsid()));
 
@@ -213,8 +213,8 @@ import rx.schedulers.Schedulers;
                 }
 
                 @Override
-                public void onNext(List<SenseBle.wifi_endpoint> wifi_endpoints) {
-                    for (SenseBle.wifi_endpoint endpoint : wifi_endpoints) {
+                public void onNext(List<MorpheusBle.wifi_endpoint> wifi_endpoints) {
+                    for (MorpheusBle.wifi_endpoint endpoint : wifi_endpoints) {
                         accumulator.put(endpoint.getBssid(), endpoint);
                     }
                 }
@@ -223,7 +223,7 @@ import rx.schedulers.Schedulers;
         });
     }
 
-    public Observable<Void> sendWifiCredentials(String bssid, String ssid, SenseBle.wifi_endpoint.sec_type securityType, String password) {
+    public Observable<Void> sendWifiCredentials(String bssid, String ssid, MorpheusBle.wifi_endpoint.sec_type securityType, String password) {
         logEvent("sendWifiCredentials()");
 
         if (device == null) {
