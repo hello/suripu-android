@@ -1,5 +1,8 @@
 package is.hello.sense.graph.presenters;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,6 +34,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
+
 @Singleton public class HardwarePresenter extends Presenter {
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
@@ -41,7 +46,8 @@ import rx.schedulers.Schedulers;
 
     private final Action1<Throwable> respondToError;
 
-    @Inject public HardwarePresenter(@NonNull PreferencesPresenter preferencesPresenter,
+    @Inject public HardwarePresenter(@NonNull Context context,
+                                     @NonNull PreferencesPresenter preferencesPresenter,
                                      @NonNull ApiSessionManager apiSessionManager,
                                      @NonNull BluetoothStack bluetoothStack) {
         this.preferencesPresenter = preferencesPresenter;
@@ -52,6 +58,14 @@ import rx.schedulers.Schedulers;
                 clearDevice();
             }
         };
+
+        Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
+    }
+
+    public void onUserLoggedOut(@NonNull Intent intent) {
+        setPairedDeviceAddress(null);
+        setPairedPillId(null);
     }
 
 
