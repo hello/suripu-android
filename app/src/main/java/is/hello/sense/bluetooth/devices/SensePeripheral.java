@@ -13,7 +13,6 @@ import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.GattError;
-import is.hello.sense.bluetooth.errors.TooManyOperationsError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
 import is.hello.sense.bluetooth.stacks.Peripheral;
@@ -77,24 +76,6 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     @Override
     protected UUID getDescriptorIdentifier() {
         return SenseIdentifiers.DESCRIPTOR_CHAR_COMMAND_RESPONSE_CONFIG;
-    }
-
-    protected Observable<UUID> subscribe(@NonNull UUID characteristicIdentifier) {
-        Logger.info(Peripheral.LOG_TAG, "Subscribing to " + characteristicIdentifier);
-
-        if (commonTimeout.isScheduled())
-            return Observable.error(new TooManyOperationsError());
-        else
-            return peripheral.subscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier(), commonTimeout);
-    }
-
-    protected Observable<UUID> unsubscribe(@NonNull UUID characteristicIdentifier) {
-        Logger.info(Peripheral.LOG_TAG, "Unsubscribing from " + characteristicIdentifier);
-
-        if (commonTimeout.isScheduled())
-            return Observable.error(new TooManyOperationsError());
-        else
-            return peripheral.unsubscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier(), commonTimeout);
     }
 
     protected Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command,

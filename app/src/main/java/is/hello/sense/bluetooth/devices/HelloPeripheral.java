@@ -58,6 +58,8 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
                         Logger.info(Peripheral.LOG_TAG, "discovered services for " + toString());
 
                         this.peripheralService = device.getService(getTargetServiceIdentifier());
+                        commonTimeout.recycle();
+
                         s.onNext(ConnectStatus.CONNECTED);
                         s.onCompleted();
                     }, s::onError);
@@ -94,19 +96,29 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
     protected Observable<UUID> subscribe(@NonNull UUID characteristicIdentifier) {
         Logger.info(Peripheral.LOG_TAG, "Subscribing to " + characteristicIdentifier);
 
-        if (commonTimeout.isScheduled())
+        if (commonTimeout.isScheduled()) {
             return Observable.error(new TooManyOperationsError());
-        else
-            return peripheral.subscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier(), commonTimeout);
+        } else {
+            return peripheral.subscribeNotification(getTargetService(),
+                                                    characteristicIdentifier,
+                                                    getDescriptorIdentifier(),
+                                                    commonTimeout)
+                             .finallyDo(commonTimeout::recycle);
+        }
     }
 
     protected Observable<UUID> unsubscribe(@NonNull UUID characteristicIdentifier) {
         Logger.info(Peripheral.LOG_TAG, "Unsubscribing from " + characteristicIdentifier);
 
-        if (commonTimeout.isScheduled())
+        if (commonTimeout.isScheduled()) {
             return Observable.error(new TooManyOperationsError());
-        else
-            return peripheral.unsubscribeNotification(getTargetService(), characteristicIdentifier, getDescriptorIdentifier(), commonTimeout);
+        } else {
+            return peripheral.unsubscribeNotification(getTargetService(),
+                                                      characteristicIdentifier,
+                                                      getDescriptorIdentifier(),
+                                                      commonTimeout)
+                             .finallyDo(commonTimeout::recycle);
+        }
     }
 
     //endregion
