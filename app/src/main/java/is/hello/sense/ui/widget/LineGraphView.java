@@ -122,19 +122,11 @@ public final class LineGraphView extends FrameLayout {
     //region Drawing
 
     private float getSectionWidth() {
-        if (adapter != null) {
-            return getMeasuredWidth() / cachedSectionCounts.size();
-        } else {
-            return 0f;
-        }
+        return getMeasuredWidth() / cachedSectionCounts.size();
     }
 
     private float getSegmentWidth(int section) {
-        if (adapter != null) {
-            return getSectionWidth() / cachedSectionCounts.get(section);
-        } else {
-            return 0f;
-        }
+        return getSectionWidth() / cachedSectionCounts.get(section);
     }
 
     private float absoluteSegmentX(float sectionWidth, float segmentWidth, int section, int position) {
