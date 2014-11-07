@@ -244,26 +244,27 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             return sections.get(section).get(position).getValue();
         }
 
+        private String formatSensorValue(float value) {
+            switch (sensor) {
+                case SensorHistory.SENSOR_NAME_TEMPERATURE:
+                    return unitSystem.formatTemperature(value);
+
+                case SensorHistory.SENSOR_NAME_PARTICULATES:
+                    return unitSystem.formatParticulates(value);
+
+                case SensorHistory.SENSOR_NAME_HUMIDITY:
+                    return Integer.toString((int) value) + "%";
+
+                default:
+                    return Integer.toString((int) value);
+            }
+        }
+
         @NonNull
         @Override
         public CharSequence getFormattedMagnitudeAt(int section, int position) {
             SensorHistory instant = sections.get(section).get(position);
-            float value = instant.getValue();
-            String formattedValue;
-            switch (sensor) {
-                case SensorHistory.SENSOR_NAME_TEMPERATURE:
-                    formattedValue = unitSystem.formatTemperature(value);
-                    break;
-
-                case SensorHistory.SENSOR_NAME_PARTICULATES:
-                    formattedValue = unitSystem.formatParticulates(value);
-                    break;
-
-                default:
-                    formattedValue = Integer.toString((int) value) + "%";
-                    break;
-            }
-
+            String formattedValue = formatSensorValue(instant.getValue());
             return formattedValue + " – " + dateFormatter.formatAsTime(instant.getTime(), use24Time);
         }
 
@@ -283,14 +284,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public String getSectionFooter(int section) {
             float value = sections.get(section).getAverage();
-            switch (sensor) {
-                case SensorHistory.SENSOR_NAME_TEMPERATURE:
-                    return unitSystem.formatTemperature(value);
-                case SensorHistory.SENSOR_NAME_PARTICULATES:
-                    return unitSystem.formatParticulates(value);
-                default:
-                    return Integer.toString((int) value) + "%";
-            }
+            return formatSensorValue(value);
         }
     }
 
