@@ -74,4 +74,14 @@ import is.hello.sense.R;
         }
         return context.getString(R.string.format_date_placeholder);
     }
+
+    public @NonNull String formatAsTime(@Nullable DateTime time, boolean use24Time) {
+        if (time != null) {
+            if (use24Time)
+                return time.toString(context.getString(R.string.format_time_24_hr));
+            else
+                return time.toString(context.getString(R.string.format_time_12_hr));
+        }
+        return context.getString(R.string.format_date_placeholder);
+    }
 }
