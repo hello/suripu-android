@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -24,6 +25,7 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+import is.hello.sense.ui.common.ViewUtil;
 
 public final class LineGraphView extends FrameLayout {
     private Adapter adapter;
@@ -318,7 +320,7 @@ public final class LineGraphView extends FrameLayout {
         if (adapter == null || cachedSectionCounts.size() == 0)
             return false;
 
-        float x = event.getX();
+        float x = ViewUtil.getNormalizedX(event);
         int section = getSectionAtX(x);
         int segment = getSegmentAtX(section, x);
         highlightedValueText.setText(adapter.getFormattedMagnitudeAt(section, segment));

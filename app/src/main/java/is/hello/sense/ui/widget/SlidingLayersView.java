@@ -18,6 +18,7 @@ import android.widget.ListView;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+import is.hello.sense.ui.common.ViewUtil;
 import is.hello.sense.util.Constants;
 
 public class SlidingLayersView extends FrameLayout implements GestureInterceptingView {
@@ -299,7 +300,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
                     velocityTracker.addMovement(event);
 
-                    float y = event.getY();
+                    float y = ViewUtil.getNormalizedY(event);
                     float deltaY = y - lastEventY;
                     float newY = Math.max(-shadowHeight, topViewY + deltaY);
 
@@ -307,8 +308,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                     topViewY = newY;
                 }
 
-                this.lastEventX = event.getX();
-                this.lastEventY = event.getY();
+                this.lastEventX = ViewUtil.getNormalizedX(event);
+                this.lastEventY = ViewUtil.getNormalizedY(event);
 
                 break;
             }
@@ -343,8 +344,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     public boolean onInterceptTouchEvent(@NonNull MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                this.lastEventX = event.getX();
-                this.lastEventY = event.getY();
+                this.lastEventX = ViewUtil.getNormalizedX(event);
+                this.lastEventY = ViewUtil.getNormalizedY(event);
                 this.listView = findFirstViewIn(ListView.class, this);
 
                 this.topView = getChildAt(1);
@@ -364,7 +365,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 if (gestureInterceptingChild != null && gestureInterceptingChild.hasActiveGesture())
                     return false;
 
-                float x = event.getX(), y = event.getY();
+                float x = ViewUtil.getNormalizedX(event), y = ViewUtil.getNormalizedY(event);
                 float deltaX = x - lastEventX;
                 float deltaY = y - lastEventY;
                 if (Math.abs(deltaY) >= touchSlop && Math.abs(deltaY) > Math.abs(deltaX) &&
