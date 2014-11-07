@@ -1,6 +1,8 @@
 package is.hello.sense.util;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
@@ -12,13 +14,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+
+import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public final class SessionLogger {
     public static final String FILENAME = "Sense-Session-Log.txt";
@@ -119,10 +123,14 @@ public final class SessionLogger {
 
     public static void init(@NonNull Context context) {
         File file = new File(getLogFilePath(context));
-        init(file);
+        init(context, file);
     }
 
-    public static void init(@NonNull File logFile) {
+    public static void init(@NonNull Context context, @NonNull File logFile) {
+        if (SessionLogger.initialized) {
+            throw new IllegalStateException("Cannot initialize SessionLogger more than once.");
+        }
+
         try {
             SessionLogger.printWriter = new PrintWriter(new FileOutputStream(logFile, true));
             SessionLogger.logFile = logFile;
@@ -132,6 +140,12 @@ public final class SessionLogger {
             SessionLogger.initialized = true;
 
             println(Log.INFO, "Internal", "Session Began");
+
+            Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+            logOutSignal.subscribe(intent ->
+                    clearLog().subscribe(ignored -> Log.i(SessionLogger.class.getSimpleName(), "Cleared session log for log out"),
+                                         e -> Log.e(SessionLogger.class.getSimpleName(), "Could not clear log.", e)),
+                    Functions.LOG_ERROR);
         } catch (IOException e) {
             Logger.error(SessionLogger.class.getSimpleName(), "Could not initialize session logger.", e);
         }
