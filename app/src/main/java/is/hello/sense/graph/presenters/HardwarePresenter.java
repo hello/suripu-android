@@ -54,7 +54,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         this.apiSessionManager = apiSessionManager;
         this.bluetoothStack = bluetoothStack;
         this.respondToError = e -> {
-            if (bluetoothStack.isErrorFatal(e)) {
+            if (bluetoothStack.doesErrorRequireReconnect(e)) {
                 clearDevice();
             }
         };
@@ -94,9 +94,12 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
 
-    public @Nullable
-    SensePeripheral getDevice() {
+    public @Nullable SensePeripheral getDevice() {
         return device;
+    }
+
+    public boolean isErrorFatal(@Nullable Throwable e) {
+        return bluetoothStack.isErrorFatal(e);
     }
 
     private @NonNull <T> Observable<T> noDeviceError() {

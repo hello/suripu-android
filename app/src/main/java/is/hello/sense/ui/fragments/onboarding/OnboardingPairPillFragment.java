@@ -15,6 +15,7 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingPairPillFragment extends InjectionFragment {
@@ -57,14 +58,15 @@ public class OnboardingPairPillFragment extends InjectionFragment {
 
 
     private void beginPairing() {
-        ((OnboardingActivity) getActivity()).beginBlockingWork(R.string.title_pairing);
+        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_pairing), true);
     }
 
     private void finishedPairing() {
         hardwarePresenter.clearDevice();
 
+        LoadingDialogFragment.close(getFragmentManager());
+
         OnboardingActivity activity = (OnboardingActivity) getActivity();
-        activity.finishBlockingWork();
         activity.showWelcome();
     }
 
@@ -86,9 +88,10 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     }
 
     public void presentError(Throwable e) {
-        OnboardingActivity onboardingActivity = (OnboardingActivity) getActivity();
-        if (onboardingActivity != null) {
-            onboardingActivity.finishBlockingWork();
+        LoadingDialogFragment.close(getFragmentManager());
+        if (hardwarePresenter.isErrorFatal(e)) {
+            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else {
             ErrorDialogFragment.presentError(getFragmentManager(), e);
         }
     }

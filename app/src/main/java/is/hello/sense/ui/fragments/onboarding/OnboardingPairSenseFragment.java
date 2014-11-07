@@ -136,9 +136,11 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     }
 
     public void pairingFailed(Throwable e) {
-        OnboardingActivity onboardingActivity = (OnboardingActivity) getActivity();
-        if (onboardingActivity != null) {
-            LoadingDialogFragment.close(getFragmentManager());
+        LoadingDialogFragment.close(getFragmentManager());
+
+        if (hardwarePresenter.isErrorFatal(e)) {
+            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else {
             ErrorDialogFragment.presentError(getFragmentManager(), e);
         }
     }

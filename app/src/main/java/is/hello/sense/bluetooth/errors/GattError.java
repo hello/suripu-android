@@ -4,6 +4,8 @@ import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
 
 public class GattError extends BluetoothError {
+    public static final int STATUS_GATT_ERROR = 133;
+
     public final int statusCode;
 
     public static @NonNull String statusToString(int status) {
@@ -36,7 +38,7 @@ public class GattError extends BluetoothError {
                 return "GATT_FAILURE";
 
             case -123:
-            case 133:
+            case STATUS_GATT_ERROR:
                 return "GAT_ERROR";
 
             default:

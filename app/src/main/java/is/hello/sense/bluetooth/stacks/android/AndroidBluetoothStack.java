@@ -51,8 +51,13 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
 
     @Override
-    public boolean isErrorFatal(@Nullable Throwable e) {
+    public boolean doesErrorRequireReconnect(@Nullable Throwable e) {
         return e != null && (e instanceof OperationTimeoutError || e instanceof GattError);
+    }
+
+    @Override
+    public boolean isErrorFatal(@Nullable Throwable e) {
+        return e != null && (e instanceof GattError && ((GattError) e).statusCode == GattError.STATUS_GATT_ERROR);
     }
 
     @Override

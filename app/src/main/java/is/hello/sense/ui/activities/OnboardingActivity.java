@@ -18,6 +18,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
@@ -50,6 +51,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public static final String EXTRA_WIFI_CHANGE_ONLY = OnboardingActivity.class.getName() + ".EXTRA_WIFI_CHANGE_ONLY";
 
     @Inject ApiService apiService;
+    @Inject HardwarePresenter hardwarePresenter;
     @Inject PreferencesPresenter preferences;
 
     private Account account;
@@ -76,12 +78,12 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_ACCOUNT:
-                    beginBlockingWork(R.string.dialog_loading_message);
+                    LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
                     bindAndSubscribe(apiService.getAccount(), account -> {
-                        finishBlockingWork();
+                        LoadingDialogFragment.close(getFragmentManager());
                         showBirthday(account);
                     }, e -> {
-                        finishBlockingWork();
+                        LoadingDialogFragment.close(getFragmentManager());
                         ErrorDialogFragment.presentError(getFragmentManager(), e);
                     });
                     break;
@@ -217,12 +219,12 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         } else if (updatedBy instanceof OnboardingRegisterHeightFragment) {
             showFragment(new OnboardingRegisterWeightFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterWeightFragment) {
-            beginBlockingWork(R.string.dialog_loading_message);
+            LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
             bindAndSubscribe(apiService.updateAccount(account), ignored -> {
-                finishBlockingWork();
+                LoadingDialogFragment.close(getFragmentManager());
                 showGettingStarted();
             }, e -> {
-                finishBlockingWork();
+                LoadingDialogFragment.close(getFragmentManager());
                 ErrorDialogFragment.presentError(getFragmentManager(), e);
             });
         }
@@ -297,10 +299,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
     @Deprecated
     public void beginBlockingWork(@StringRes int titleResId) {
-        if (getFragmentManager().findFragmentByTag(LoadingDialogFragment.TAG) == null) {
-            LoadingDialogFragment dialogFragment = LoadingDialogFragment.newInstance(getString(titleResId), true);
-            dialogFragment.show(getFragmentManager(), LoadingDialogFragment.TAG);
-        }
+        LoadingDialogFragment.show(getFragmentManager(), getString(titleResId), true);
     }
 
     @Deprecated
@@ -316,6 +315,8 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                 .edit()
                 .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, true)
                 .apply();
+
+        hardwarePresenter.clearDevice();
 
         startActivity(new Intent(this, HomeActivity.class));
         finish();

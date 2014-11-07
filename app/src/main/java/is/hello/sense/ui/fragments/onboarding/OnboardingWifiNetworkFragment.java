@@ -127,13 +127,23 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         scanningIndicator.setVisibility(View.GONE);
         rescanButton.setEnabled(true);
 
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        if (hardwarePresenter.isErrorFatal(e)) {
+            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
+
         trackScanFinished(false);
     }
 
     public void deviceRepairFailed(Throwable e) {
         scanningIndicator.setVisibility(View.GONE);
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+
+        if (hardwarePresenter.isErrorFatal(e)) {
+            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
     }
 
     private void trackScanFinished(boolean succeeded) {

@@ -195,6 +195,7 @@
     <string name="title_connecting">Connecting with Sense…</string>
     <string name="title_discovering_services">Discovering Services…</string>
     <string name="title_linking_account">Linking with Sense…</string>
+    <string name="error_message_ble_radio_borked">Your phone\'s Bluetooth appears to be unstable. Please turn off both your Wifi and Bluetooth, and turn them back on after a few seconds. If your problems persist, please restart your phone and try again.</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

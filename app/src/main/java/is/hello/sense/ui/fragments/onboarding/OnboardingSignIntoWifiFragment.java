@@ -173,6 +173,11 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
 
     public void presentError(Throwable e) {
+        if (hardwarePresenter.isErrorFatal(e)) {
+            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+            return;
+        }
+
         ErrorDialogFragment errorDialogFragment = null;
         if (e instanceof SensePeripheralError) {
             MorpheusBle.ErrorType errorType = ((SensePeripheralError) e).errorType;
@@ -220,7 +225,12 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
     public void deviceRepairFailed(Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+
+        if (hardwarePresenter.isErrorFatal(e)) {
+            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
     }
 
 
