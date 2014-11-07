@@ -18,14 +18,14 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
-import is.hello.sense.bluetooth.errors.GattError;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
@@ -46,10 +46,11 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private EditText networkName;
     private EditText networkPassword;
 
+    private LoadingDialogFragment loadingDialogFragment;
+
     private @Nullable MorpheusBle.wifi_endpoint network;
 
     private boolean hasConnectedToNetwork = false;
-    private boolean hasTriedReconnect = false;
 
     public static OnboardingSignIntoWifiFragment newInstance(@Nullable MorpheusBle.wifi_endpoint network) {
         OnboardingSignIntoWifiFragment fragment = new OnboardingSignIntoWifiFragment();
@@ -111,15 +112,16 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     }
 
     private void beginSettingWifi() {
-        ((OnboardingActivity) getActivity()).beginBlockingWork(R.string.title_connecting_network);
+        this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_connecting_network), true);
     }
 
     private void finishedSettingWifi() {
         apiService.updateTimeZone(SenseTimeZone.fromDefault())
-                .subscribe(ignored -> Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated."), Functions.LOG_ERROR);
+                  .subscribe(ignored -> Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated."), Functions.LOG_ERROR);
+
+        LoadingDialogFragment.close(getFragmentManager());
 
         OnboardingActivity activity = (OnboardingActivity) getActivity();
-        activity.finishBlockingWork();
         activity.showSetupPill();
     }
 
@@ -164,22 +166,15 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false)) {
             finishedSettingWifi();
         } else {
+            loadingDialogFragment.setTitle(getString(R.string.title_linking_account));
             bindAndSubscribe(hardwarePresenter.linkAccount(), ignored -> finishedSettingWifi(), this::presentError);
         }
     }
 
 
-    private void tryDeviceReconnect() {
-        this.hasTriedReconnect = true;
-        bindAndSubscribe(hardwarePresenter.reconnect(), ignored -> sendWifiCredentials(), this::presentError);
-    }
-
     public void presentError(Throwable e) {
         ErrorDialogFragment errorDialogFragment = null;
-        if (e instanceof GattError && ((GattError) e).statusCode == 133 && !hasTriedReconnect) {
-            tryDeviceReconnect();
-            return;
-        } else if (e instanceof SensePeripheralError) {
+        if (e instanceof SensePeripheralError) {
             MorpheusBle.ErrorType errorType = ((SensePeripheralError) e).errorType;
             if (errorType == MorpheusBle.ErrorType.DEVICE_ALREADY_PAIRED) {
                 DeviceAlreadyPairedDialogFragment dialogFragment = new DeviceAlreadyPairedDialogFragment();
@@ -217,14 +212,14 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         if (errorDialogFragment == null)
             errorDialogFragment = ErrorDialogFragment.newInstance(e);
 
-        ((OnboardingActivity) getActivity()).finishBlockingWork();
+        LoadingDialogFragment.close(getFragmentManager());
 
         errorDialogFragment.setTargetFragment(this, ERROR_REQUEST_CODE);
         errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     public void deviceRepairFailed(Throwable e) {
-        ((OnboardingActivity) getActivity()).finishBlockingWork();
+        LoadingDialogFragment.close(getFragmentManager());
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 

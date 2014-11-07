@@ -295,6 +295,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
     //region Presenting Blocking Work
 
+    @Deprecated
     public void beginBlockingWork(@StringRes int titleResId) {
         if (getFragmentManager().findFragmentByTag(LoadingDialogFragment.TAG) == null) {
             LoadingDialogFragment dialogFragment = LoadingDialogFragment.newInstance(getString(titleResId), true);
@@ -302,6 +303,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         }
     }
 
+    @Deprecated
     public void finishBlockingWork() {
         LoadingDialogFragment.close(getFragmentManager());
     }

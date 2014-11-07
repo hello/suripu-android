@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
@@ -137,7 +138,7 @@ import rx.schedulers.Schedulers;
         }
     }
 
-    public Observable<SensePeripheral> connectToDevice(@NonNull SensePeripheral device) {
+    public Observable<HelloPeripheral.ConnectStatus> connectToDevice(@NonNull SensePeripheral device) {
         logEvent("connectToDevice(" + device + ")");
 
         if (device.isConnected() && device.getBondStatus() != Peripheral.BOND_BONDED) {
@@ -151,17 +152,6 @@ import rx.schedulers.Schedulers;
             setPairedDeviceAddress(device.getAddress());
             this.device = device;
         });
-    }
-
-    public Observable<SensePeripheral> reconnect() {
-        logEvent("reconnect()");
-
-        if (device == null) {
-            return noDeviceError();
-        }
-
-        return Observable.create((Observable.OnSubscribe<SensePeripheral>) s -> device.disconnect().subscribe(ignored -> device.connect().subscribe(s), s::onError))
-                         .subscribeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks() {

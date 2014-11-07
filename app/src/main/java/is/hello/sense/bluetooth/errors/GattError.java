@@ -35,6 +35,10 @@ public class GattError extends BluetoothError {
             case BluetoothGatt.GATT_FAILURE:
                 return "GATT_FAILURE";
 
+            case -123:
+            case 133:
+                return "GAT_ERROR";
+
             default:
                 return "UNKNOWN: " + status;
         }

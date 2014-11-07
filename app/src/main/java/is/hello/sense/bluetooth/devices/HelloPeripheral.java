@@ -41,22 +41,24 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
 
     //region Connectivity
 
-    public Observable<TSelf> connect() {
+    public Observable<ConnectStatus> connect() {
         return peripheral.getStack().newConfiguredObservable(s -> {
             Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
 
+            s.onNext(ConnectStatus.CONNECTING);
             peripheral.connect().subscribe(device -> {
                 Logger.info(Peripheral.LOG_TAG, "connected to " + toString());
 
+                s.onNext(ConnectStatus.BONDING);
                 device.createBond().subscribe(ignored -> {
                     Logger.info(Peripheral.LOG_TAG, "bonded to " + toString());
 
+                    s.onNext(ConnectStatus.DISCOVERING_SERVICES);
                     device.discoverServices(commonTimeout).subscribe(services -> {
                         Logger.info(Peripheral.LOG_TAG, "discovered services for " + toString());
 
                         this.peripheralService = device.getService(getTargetServiceIdentifier());
-                        //noinspection unchecked
-                        s.onNext((TSelf) this);
+                        s.onNext(ConnectStatus.CONNECTED);
                         s.onCompleted();
                     }, s::onError);
                 }, s::onError);
@@ -113,5 +115,13 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
     @Override
     public String toString() {
         return '{' + getClass().getSimpleName() + ' ' + getName() + '@' + getAddress() + '}';
+    }
+
+
+    public static enum ConnectStatus {
+        CONNECTING,
+        BONDING,
+        DISCOVERING_SERVICES,
+        CONNECTED,
     }
 }

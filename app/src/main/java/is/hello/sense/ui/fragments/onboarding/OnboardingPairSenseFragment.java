@@ -22,6 +22,7 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 
@@ -36,6 +37,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     private BluetoothAdapter bluetoothAdapter;
 
     private Button nextButton;
+    private LoadingDialogFragment loadingDialogFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,12 +83,13 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     }
 
     private void beginPairing() {
-        ((OnboardingActivity) getActivity()).beginBlockingWork(R.string.title_pairing);
+        this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_pairing), true);
     }
 
     private void finishedPairing() {
+        LoadingDialogFragment.close(getFragmentManager());
+
         OnboardingActivity activity = (OnboardingActivity) getActivity();
-        activity.finishBlockingWork();
         if (isSecondUser) {
             activity.showSetupPill();
         } else {
@@ -108,7 +111,25 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
 
     public void pairWith(@Nullable SensePeripheral device) {
         if (device != null) {
-            bindAndSubscribe(hardwarePresenter.connectToDevice(device), ignored -> finishedPairing(), this::pairingFailed);
+            bindAndSubscribe(hardwarePresenter.connectToDevice(device), status -> {
+                switch (status) {
+                    case CONNECTING:
+                        loadingDialogFragment.setTitle(getString(R.string.title_connecting));
+                        break;
+
+                    case BONDING:
+                        loadingDialogFragment.setTitle(getString(R.string.title_bonding));
+                        break;
+
+                    case DISCOVERING_SERVICES:
+                        loadingDialogFragment.setTitle(getString(R.string.title_discovering_services));
+                        break;
+
+                    case CONNECTED:
+                        finishedPairing();
+                        break;
+                }
+            }, this::pairingFailed);
         } else {
             pairingFailed(new Exception("Could not find any devices."));
         }
@@ -117,7 +138,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     public void pairingFailed(Throwable e) {
         OnboardingActivity onboardingActivity = (OnboardingActivity) getActivity();
         if (onboardingActivity != null) {
-            onboardingActivity.finishBlockingWork();
+            LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getFragmentManager(), e);
         }
     }

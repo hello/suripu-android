@@ -191,6 +191,10 @@
     <string name="action_select_wifi_network">Select Wifi Network</string>
     <string name="dialog_title_sense_already_linked">Sense is already paired</string>
     <string name="dialog_message_sense_already_linked">Have you already paired this Sense to your account?</string>
+    <string name="title_connecting">Connecting...</string>
+    <string name="title_bonding">Bonding...</string>
+    <string name="title_discovering_services">Discovering Services...</string>
+    <string name="title_linking_account">Linking Account...</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
