@@ -24,6 +24,8 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
@@ -71,6 +73,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     private void addActions() {
         debugItems.addItem("Environment", currentEnvironment.toString(), this::changeEnvironment);
         debugItems.addItem("View Log", null, this::viewLog);
+        debugItems.addItem("Clear Log", null, this::clearLog);
         debugItems.addItem("Share Log", null, this::sendLog);
     }
 
@@ -96,6 +99,16 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
 
     public void viewLog() {
         startActivity(new Intent(this, SessionLogViewerActivity.class));
+    }
+
+    public void clearLog() {
+        LoadingDialogFragment.show(getFragmentManager());
+        bindAndSubscribe(SessionLogger.clearLog(),
+                         ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                         e -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             ErrorDialogFragment.presentError(getFragmentManager(), e);
+                         });
     }
 
     public void sendLog() {

@@ -9,12 +9,14 @@ import android.util.Log;
 import org.joda.time.DateTime;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -24,6 +26,7 @@ public final class SessionLogger {
     private static final int ROLLOVER = 3;
 
     private static boolean initialized = false;
+    private static File logFile;
     private static PrintWriter printWriter;
     private static AtomicInteger messagesWritten = new AtomicInteger();
     private static Handler handler;
@@ -83,27 +86,54 @@ public final class SessionLogger {
         }).subscribeOn(AndroidSchedulers.handlerThread(handler));
     }
 
+    public static Observable<Void> clearLog() {
+        return Observable.create((Observable.OnSubscribe<Void>) s -> {
+            if (logFile == null) {
+                s.onError(new FileNotFoundException());
+                return;
+            }
+
+            try {
+                SessionLogger.initialized = false;
+
+                Functions.safeClose(printWriter);
+                SessionLogger.printWriter = new PrintWriter(new FileOutputStream(logFile, false));
+
+                SessionLogger.initialized = true;
+
+                println(Log.INFO, "Internal", "Log Cleared");
+                printWriter.flush();
+
+                s.onNext(null);
+                s.onCompleted();
+            } catch (Exception e) {
+                s.onError(e);
+            }
+        }).subscribeOn(AndroidSchedulers.handlerThread(handler));
+    }
+
     public static @NonNull String getLogFilePath(@NonNull Context context) {
         return context.getExternalCacheDir() + File.separator + FILENAME;
     }
 
 
     public static void init(@NonNull Context context) {
+        File file = new File(getLogFilePath(context));
+        init(file);
+    }
+
+    public static void init(@NonNull File logFile) {
         try {
-            File file = new File(getLogFilePath(context));
-            init(new FileOutputStream(file, true));
+            SessionLogger.printWriter = new PrintWriter(new FileOutputStream(logFile, true));
+            SessionLogger.logFile = logFile;
+            HandlerThread workerThread = new HandlerThread("SessionLogger.handlerThread");
+            workerThread.start();
+            SessionLogger.handler = new Handler(workerThread.getLooper());
+            SessionLogger.initialized = true;
+
+            println(Log.INFO, "Internal", "Session Began");
         } catch (IOException e) {
             Logger.error(SessionLogger.class.getSimpleName(), "Could not initialize session logger.", e);
         }
-    }
-
-    public static void init(@NonNull OutputStream stream) {
-        SessionLogger.printWriter = new PrintWriter(stream);
-        HandlerThread workerThread = new HandlerThread("SessionLogger.handlerThread");
-        workerThread.start();
-        SessionLogger.handler = new Handler(workerThread.getLooper());
-        SessionLogger.initialized = true;
-
-        println(Log.INFO, "Internal", "Session Began");
     }
 }
