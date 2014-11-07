@@ -39,6 +39,7 @@ import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.CachedObjectTests;
+import is.hello.sense.util.DateFormatterTests;
 
 import static junit.framework.Assert.assertNotNull;
 
@@ -70,6 +71,7 @@ import static junit.framework.Assert.assertNotNull;
         SmartAlarmPresenterTests.class,
         CachedObjectTests.class,
 
+        DateFormatterTests.class,
         UnitFormatterTests.class,
     }
 )

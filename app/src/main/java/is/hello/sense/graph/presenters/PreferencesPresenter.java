@@ -21,6 +21,7 @@ import rx.subscriptions.Subscriptions;
     public static final String UNIT_SYSTEM = "unit_system_name";
     public static final String USE_24_TIME = "use_24_time";
 
+    public static final String PAIRED_DEVICE_TIME_ZONE = "paired_device_time_zone";
     public static final String PAIRED_DEVICE_ADDRESS = "paired_device_address";
     public static final String PAIRED_PILL_ID = "paired_pill_id";
 
