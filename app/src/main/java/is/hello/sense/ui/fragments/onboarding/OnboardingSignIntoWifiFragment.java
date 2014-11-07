@@ -193,6 +193,9 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
             String message;
             switch (errorType) {
                 default:
+                    message = errorType.toString();
+                    break;
+
                 case NETWORK_ERROR:
                 case WLAN_CONNECTION_ERROR:
                     message = getString(R.string.error_bad_wifi_credentials);
@@ -204,10 +207,6 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
                 case FAIL_TO_OBTAIN_IP:
                     message = getString(R.string.error_wifi_ip_failure);
-                    break;
-
-                case DEVICE_ALREADY_PAIRED:
-                    message = getString(R.string.error_sense_already_paired);
                     break;
             }
 
