@@ -1,27 +1,33 @@
 package is.hello.sense.util;
 
-import android.test.InstrumentationTestCase;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
-import is.hello.sense.R;
+import javax.inject.Inject;
 
-public class DateFormatterTests extends InstrumentationTestCase {
+import is.hello.sense.R;
+import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
+
+public class DateFormatterTests extends InjectionTestCase {
     private static final LocalDateTime TEST_LOCAL_DATETIME = new LocalDateTime(2014, 10, 1, 10, 30, 0);
     private static final LocalDate TEST_LOCAL_DATE = new LocalDate(2014, 10, 1);
     private static final DateTime TEST_DATETIME = new DateTime(2014, 10, 1, 10, 30, 0, DateTimeZone.getDefault());
     private static final LocalTime TEST_LOCAL_TIME = new LocalTime(10, 30, 0);
     private DateFormatter formatter;
 
+    @Inject PreferencesPresenter preferences;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        this.formatter = new DateFormatter(getInstrumentation().getTargetContext());
+        if (formatter == null) {
+            this.formatter = new DateFormatter(getInstrumentation().getTargetContext(), preferences);
+        }
     }
 
     public void testTimelineDate() {

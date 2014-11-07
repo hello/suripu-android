@@ -3,6 +3,7 @@ package is.hello.sense.util;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -12,16 +13,22 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
+import java.util.TimeZone;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.sense.R;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 
 @Singleton public class DateFormatter {
     private final Context context;
+    private final PreferencesPresenter preferences;
 
-    @Inject public DateFormatter(@NonNull Context context) {
+    @Inject public DateFormatter(@NonNull Context context,
+                                 @NonNull PreferencesPresenter preferences) {
         this.context = context.getApplicationContext();
+        this.preferences = preferences;
     }
 
 
@@ -42,7 +49,11 @@ import is.hello.sense.R;
     //region Primitive Formatters
 
     public @NonNull DateTimeZone getTargetTimeZone() {
-        return DateTimeZone.getDefault();
+        String pairedDeviceTimeZone = preferences.getString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, null);
+        if (TextUtils.isEmpty(pairedDeviceTimeZone))
+            return DateTimeZone.getDefault();
+        else
+            return DateTimeZone.forID(pairedDeviceTimeZone);
     }
 
     /**

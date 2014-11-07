@@ -22,6 +22,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -42,6 +43,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private static final int ALREADY_LINKED_REQUEST_CODE = 0x66;
 
     @Inject ApiService apiService;
+    @Inject PreferencesPresenter preferences;
     @Inject HardwarePresenter hardwarePresenter;
 
     private EditText networkName;
@@ -116,8 +118,15 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     }
 
     private void finishedSettingWifi() {
-        apiService.updateTimeZone(SenseTimeZone.fromDefault())
-                  .subscribe(ignored -> Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated."), Functions.LOG_ERROR);
+        SenseTimeZone timeZone = SenseTimeZone.fromDefault();
+        apiService.updateTimeZone(timeZone)
+                  .subscribe(ignored -> {
+                      Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
+
+                      preferences.edit()
+                              .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
+                              .apply();
+                  }, Functions.LOG_ERROR);
 
         OnboardingActivity activity = (OnboardingActivity) getActivity();
         activity.finishBlockingWork();
