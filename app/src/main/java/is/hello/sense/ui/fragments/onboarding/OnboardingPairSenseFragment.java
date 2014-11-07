@@ -83,7 +83,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     }
 
     private void beginPairing() {
-        this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_pairing), true);
+        this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_scanning_for_sense), true);
     }
 
     private void finishedPairing() {
@@ -118,7 +118,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
                         break;
 
                     case BONDING:
-                        loadingDialogFragment.setTitle(getString(R.string.title_bonding));
+                        loadingDialogFragment.setTitle(getString(R.string.title_pairing));
                         break;
 
                     case DISCOVERING_SERVICES:
