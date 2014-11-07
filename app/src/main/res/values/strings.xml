@@ -151,7 +151,7 @@
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
     <string name="action_factory_reset">Factory Reset</string>
     <string name="dialog_title_factory_reset">Perform factory reset?</string>
-    <string name="dialog_messsage_factory_reset">A factory reset cannot be undone.</string>
+    <string name="dialog_messsage_factory_reset">This will clear all of Sense\'s and log you out.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave On Boarding?</string>
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
     <string name="title_onboarding_getting_started">Getting Started</string>

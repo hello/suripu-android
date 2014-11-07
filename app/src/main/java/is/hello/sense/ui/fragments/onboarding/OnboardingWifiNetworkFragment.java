@@ -20,6 +20,7 @@ import java.util.Collection;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -104,7 +105,12 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         if (hardwarePresenter.getDevice() == null) {
             Action1<Throwable> onError = this::deviceRepairFailed;
             bindAndSubscribe(hardwarePresenter.rediscoverDevice(),
-                             device -> bindAndSubscribe(hardwarePresenter.connectToDevice(device), ignored -> rescan(), onError),
+                             device -> bindAndSubscribe(hardwarePresenter.connectToDevice(device), status -> {
+                                 if (status != HelloPeripheral.ConnectStatus.CONNECTED)
+                                     return;
+
+                                 rescan();
+                             }, onError),
                              onError);
             return;
         }

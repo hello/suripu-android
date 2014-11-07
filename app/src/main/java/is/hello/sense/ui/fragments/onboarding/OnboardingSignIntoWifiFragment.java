@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.functional.Functions;
@@ -140,7 +141,12 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         if (hardwarePresenter.getDevice() == null) {
             Action1<Throwable> onError = this::deviceRepairFailed;
             bindAndSubscribe(hardwarePresenter.rediscoverDevice(),
-                    device -> bindAndSubscribe(hardwarePresenter.connectToDevice(device), ignored -> sendWifiCredentials(), onError),
+                    device -> bindAndSubscribe(hardwarePresenter.connectToDevice(device), status -> {
+                        if (status != HelloPeripheral.ConnectStatus.CONNECTED)
+                            return;
+
+                        sendWifiCredentials();
+                    }, onError),
                     onError);
             return;
         }

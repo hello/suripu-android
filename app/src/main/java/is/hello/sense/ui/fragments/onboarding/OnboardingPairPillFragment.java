@@ -11,6 +11,7 @@ import android.widget.Button;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -80,7 +81,12 @@ public class OnboardingPairPillFragment extends InjectionFragment {
         }
 
         if (!hardwarePresenter.getDevice().isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToDevice(hardwarePresenter.getDevice()), ignored -> next(sender), this::presentError);
+            bindAndSubscribe(hardwarePresenter.connectToDevice(hardwarePresenter.getDevice()), status -> {
+                if (status != HelloPeripheral.ConnectStatus.CONNECTED)
+                    return;
+
+                next(sender);
+            }, this::presentError);
             return;
         }
 
