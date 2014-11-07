@@ -111,6 +111,10 @@ public final class SessionLogger {
                 s.onNext(null);
                 s.onCompleted();
             } catch (Exception e) {
+                Functions.safeClose(printWriter);
+                SessionLogger.printWriter = null;
+                SessionLogger.initialized = false;
+
                 s.onError(e);
             }
         }).subscribeOn(AndroidSchedulers.handlerThread(handler));
@@ -148,6 +152,10 @@ public final class SessionLogger {
                     Functions.LOG_ERROR);
         } catch (IOException e) {
             Logger.error(SessionLogger.class.getSimpleName(), "Could not initialize session logger.", e);
+
+            Functions.safeClose(printWriter);
+            SessionLogger.printWriter = null;
+            SessionLogger.initialized = false;
         }
     }
 }
