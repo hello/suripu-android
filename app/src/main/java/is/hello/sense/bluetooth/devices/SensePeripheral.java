@@ -129,7 +129,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                     s.onNext(response);
                     s.onCompleted();
                 } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
-                    s.onError(new SensePeripheralError(command.getError()));
+                    s.onError(new SensePeripheralError(response.getError()));
                 } else {
                     s.onError(new BluetoothError());
                 }
