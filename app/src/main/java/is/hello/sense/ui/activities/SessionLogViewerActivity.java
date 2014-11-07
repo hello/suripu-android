@@ -31,7 +31,18 @@ public class SessionLogViewerActivity extends SenseActivity {
 
         this.activityIndicator = (ProgressBar) findViewById(R.id.activity_session_log_viewer_activity);
 
-        reload();
+        if (savedInstanceState == null) {
+            reload();
+        } else {
+            webView.restoreState(savedInstanceState);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        webView.saveState(outState);
     }
 
     @Override
