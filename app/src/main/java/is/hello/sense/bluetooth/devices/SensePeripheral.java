@@ -15,6 +15,7 @@ import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.GattError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
+import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
@@ -25,7 +26,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action1;
-import rx.functions.Action2;
+import rx.functions.Action3;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.MorpheusCommand;
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.MorpheusCommand.CommandType;
@@ -33,8 +34,12 @@ import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle
 public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     private static int COMMAND_VERSION = 0;
 
-    private PacketDataHandler<MorpheusCommand> dataHandler;
-    private PacketHandler packetHandler;
+    private static final long STACK_TIMEOUT_S = 30;
+    private static final long WIFI_SCAN_TIMEOUT_S = 60;
+
+    private final OperationTimeout simpleCommandTimeout = new SchedulerOperationTimeout("Simple Command", 45, TimeUnit.SECONDS);
+    private final PacketDataHandler<MorpheusCommand> dataHandler;
+    private final PacketHandler packetHandler;
 
     public static Observable<List<SensePeripheral>> discover(@NonNull BluetoothStack bluetoothStack,
                                                              @NonNull DiscoveryCriteria criteria) {
@@ -52,7 +57,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     }
 
     public SensePeripheral(@NonNull Peripheral peripheral) {
-        super(peripheral, new SchedulerOperationTimeout(30, TimeUnit.SECONDS));
+        super(peripheral, new SchedulerOperationTimeout("Common Peripheral", STACK_TIMEOUT_S, TimeUnit.SECONDS));
 
         this.dataHandler = new SensePacketDataHandler();
         this.packetHandler = new SensePacketHandler();
@@ -79,33 +84,58 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     }
 
     protected Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command,
-                                                         @NonNull Action2<MorpheusCommand, Subscriber<? super MorpheusCommand>> onFinish) {
+                                                         @NonNull OperationTimeout timeout,
+                                                         @NonNull OnCommandResponse onCommandResponse) {
         return peripheral.getStack().newConfiguredObservable(s -> {
+            timeout.setTimeoutAction(() -> {
+                Logger.error(Peripheral.LOG_TAG, "Command timed out " + command);
+
+                dataHandler.onResponse = null;
+                dataHandler.onError = null;
+
+                MorpheusCommand timeoutResponse = MorpheusCommand.newBuilder()
+                        .setVersion(COMMAND_VERSION)
+                        .setType(CommandType.MORPHEUS_COMMAND_ERROR)
+                        .setError(MorpheusBle.ErrorType.TIME_OUT)
+                        .build();
+                onCommandResponse.call(timeoutResponse, s, timeout);
+            }, peripheral.getStack().getScheduler());
+
             Action1<Throwable> onError = s::onError;
-            Observable<UUID> subscription = subscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE);
-            subscription.subscribe(subscribedCharacteristic -> {
+            Observable<UUID> subscribe = subscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE);
+            subscribe.subscribe(subscribedCharacteristic -> {
                 dataHandler.onResponse = response -> {
                     Logger.info(Peripheral.LOG_TAG, "Got response to command " + command + ": " + response);
-                    onFinish.call(response, s);
+                    onCommandResponse.call(response, s, timeout);
                 };
                 dataHandler.onError = dataError -> {
-                    Observable<UUID> unsubscription = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE);
+                    timeout.unschedule();
+                    timeout.recycle();
+
+                    Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE);
                     Logger.error(Peripheral.LOG_TAG, "Could not complete command " + command, dataError);
-                    unsubscription.subscribe(ignored -> s.onError(dataError), onError);
+                    unsubscribe.subscribe(ignored -> s.onError(dataError), onError);
                 };
 
                 Logger.info(Peripheral.LOG_TAG, "Writing command " + command);
+
                 final byte[] commandData = command.toByteArray();
                 Observable<Void> write = writeLargeCommand(SenseIdentifiers.CHAR_PROTOBUF_COMMAND, commandData);
-                write.subscribe(ignored -> Logger.info(Peripheral.LOG_TAG, "Wrote command " + command), onError);
+                write.subscribe(ignored -> {
+                    Logger.info(Peripheral.LOG_TAG, "Wrote command " + command);
+                    timeout.schedule();
+                }, onError);
             }, onError);
         });
     }
 
     protected Observable<MorpheusCommand> performSimpleCommand(@NonNull MorpheusCommand command) {
-        return performCommand(command, (response, s) -> {
-            Observable<UUID> unsubscription = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE);
-            unsubscription.subscribe(ignored -> {
+        return performCommand(command, simpleCommandTimeout, (response, s, timeout) -> {
+            timeout.unschedule();
+            timeout.recycle();
+
+            Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE);
+            unsubscribe.subscribe(ignored -> {
                 if (response.getType() == command.getType()) {
                     s.onNext(response);
                     s.onCompleted();
@@ -253,19 +283,26 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         //noinspection MismatchedQueryAndUpdateOfCollection
         List<MorpheusBle.wifi_endpoint> endpoints = new ArrayList<>();
         Observable<UUID> unsubscription = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE);
-        return performCommand(morpheusCommand, (response, subscriber) -> {
+        OperationTimeout wifiTimeout = new SchedulerOperationTimeout("Scan Wifi", WIFI_SCAN_TIMEOUT_S, TimeUnit.SECONDS);
+        return performCommand(morpheusCommand, wifiTimeout, (response, subscriber, timeout) -> {
             if (response.getType() == CommandType.MORPHEUS_COMMAND_START_WIFISCAN) {
                 if(response.getWifiScanResultCount() == 1) {
                     endpoints.add(response.getWifiScanResult(0));
                 }
             } else if (response.getType() == CommandType.MORPHEUS_COMMAND_STOP_WIFISCAN) {
+                timeout.unschedule();
+
                 unsubscription.subscribe(ignored -> {
                     subscriber.onNext(response);
                     subscriber.onCompleted();
                 }, subscriber::onError);
             } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
+                timeout.unschedule();
+
                 unsubscription.subscribe(ignored -> subscriber.onError(new SensePeripheralError(response.getError())), subscriber::onError);
             } else {
+                timeout.unschedule();
+
                 unsubscription.subscribe(ignored -> subscriber.onError(new GattError(0)), subscriber::onError);
             }
         }).map(ignored -> endpoints);
@@ -283,4 +320,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     }
 
     //endregion
+
+
+    private interface OnCommandResponse extends Action3<MorpheusCommand, Subscriber<? super MorpheusCommand>, OperationTimeout> {}
 }

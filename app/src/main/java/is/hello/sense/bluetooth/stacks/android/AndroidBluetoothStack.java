@@ -44,9 +44,13 @@ public class AndroidBluetoothStack implements BluetoothStack {
     }
 
     @Override
+    public Scheduler getScheduler() {
+        return scheduler;
+    }
+
+    @Override
     public <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe) {
-        return Observable.create(onSubscribe)
-                .subscribeOn(scheduler);
+        return Observable.create(onSubscribe).subscribeOn(getScheduler());
     }
 
 

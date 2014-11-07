@@ -10,6 +10,7 @@ import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.functions.Action1;
 
 public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
     protected final Peripheral peripheral;
@@ -46,6 +47,10 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
             Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
 
             s.onNext(ConnectStatus.CONNECTING);
+            Action1<Throwable> onError = e -> {
+                s.onError(e);
+                commonTimeout.recycle();
+            };
             peripheral.connect().subscribe(device -> {
                 Logger.info(Peripheral.LOG_TAG, "connected to " + toString());
 
@@ -57,14 +62,13 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
                     device.discoverServices(commonTimeout).subscribe(services -> {
                         Logger.info(Peripheral.LOG_TAG, "discovered services for " + toString());
 
-                        this.peripheralService = device.getService(getTargetServiceIdentifier());
                         commonTimeout.recycle();
-
+                        this.peripheralService = device.getService(getTargetServiceIdentifier());
                         s.onNext(ConnectStatus.CONNECTED);
                         s.onCompleted();
-                    }, s::onError);
-                }, s::onError);
-            }, s::onError);
+                    }, onError);
+                }, onError);
+            }, onError);
         });
     }
 
@@ -100,10 +104,9 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
             return Observable.error(new TooManyOperationsError());
         } else {
             return peripheral.subscribeNotification(getTargetService(),
-                                                    characteristicIdentifier,
-                                                    getDescriptorIdentifier(),
-                                                    commonTimeout)
-                             .finallyDo(commonTimeout::recycle);
+                    characteristicIdentifier,
+                    getDescriptorIdentifier(),
+                    commonTimeout);
         }
     }
 
@@ -114,10 +117,9 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
             return Observable.error(new TooManyOperationsError());
         } else {
             return peripheral.unsubscribeNotification(getTargetService(),
-                                                      characteristicIdentifier,
-                                                      getDescriptorIdentifier(),
-                                                      commonTimeout)
-                             .finallyDo(commonTimeout::recycle);
+                    characteristicIdentifier,
+                    getDescriptorIdentifier(),
+                    commonTimeout);
         }
     }
 

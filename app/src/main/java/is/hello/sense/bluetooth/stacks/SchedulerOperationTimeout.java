@@ -14,6 +14,7 @@ import rx.functions.Action0;
  * Simple implementation of {@see OperationTimeout} that uses deferred workers.
  */
 public class SchedulerOperationTimeout implements OperationTimeout {
+    private final String name;
     private final long durationMs;
 
     private @Nullable Action0 action;
@@ -21,7 +22,8 @@ public class SchedulerOperationTimeout implements OperationTimeout {
     private @Nullable Subscription subscription;
 
 
-    public SchedulerOperationTimeout(long duration, @NonNull TimeUnit timeUnit) {
+    public SchedulerOperationTimeout(@NonNull String name, long duration, @NonNull TimeUnit timeUnit) {
+        this.name = name;
         this.durationMs = timeUnit.toMillis(duration);
     }
 
@@ -32,7 +34,7 @@ public class SchedulerOperationTimeout implements OperationTimeout {
             throw new NullPointerException();
         }
 
-        Logger.info(LOG_TAG, "Scheduling time out of " + durationMs + " milliseconds");
+        Logger.info(LOG_TAG, "Scheduling time out " + toString());
 
         if (subscription != null && !subscription.isUnsubscribed())
             unschedule();
@@ -46,7 +48,7 @@ public class SchedulerOperationTimeout implements OperationTimeout {
             throw new NullPointerException();
         }
 
-        Logger.info(LOG_TAG, "Unscheduling time out of " + durationMs + " milliseconds");
+        Logger.info(LOG_TAG, "Unscheduling time out " + toString());
 
         if (subscription != null) {
             subscription.unsubscribe();
@@ -69,11 +71,11 @@ public class SchedulerOperationTimeout implements OperationTimeout {
 
     @Override
     public void recycle() {
-        Logger.info(LOG_TAG, "Recycling time out of " + durationMs + " milliseconds");
+        Logger.info(LOG_TAG, "Recycling time out " + toString());
 
         if (subscription != null) {
-            Logger.warn(LOG_TAG, "Recycle called on scheduled operation durationMs.");
             unschedule();
+            throw new IllegalStateException("Recycle called on scheduled operation.");
         }
 
         this.action = null;
@@ -84,7 +86,8 @@ public class SchedulerOperationTimeout implements OperationTimeout {
     @Override
     public String toString() {
         return "SchedulerOperationTimeout{" +
-                "durationMs=" + durationMs +
+                "name='" + name + '\'' +
+                ", durationMs=" + durationMs +
                 ", action=" + action +
                 ", scheduler=" + scheduler +
                 ", subscription=" + subscription +

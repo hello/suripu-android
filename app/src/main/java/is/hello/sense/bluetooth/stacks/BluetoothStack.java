@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import rx.Observable;
+import rx.Scheduler;
 
 /**
  * A semi-opaque interface intended to contain all of the necessary logic to interact
@@ -30,6 +31,11 @@ public interface BluetoothStack {
      * @see DiscoveryCriteria
      */
     @NonNull Observable<List<Peripheral>> discoverPeripherals(@NonNull DiscoveryCriteria discoveryCriteria);
+
+    /**
+     * Returns the Rx scheduler used for all stack operations.
+     */
+    @NonNull Scheduler getScheduler();
 
     /**
      * Vends an observable configured appropriately for use with the BluetoothStack.
