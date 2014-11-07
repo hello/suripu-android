@@ -39,6 +39,13 @@ public class SessionLogViewerActivity extends SenseActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        webView.destroy();
+    }
+
+    @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
