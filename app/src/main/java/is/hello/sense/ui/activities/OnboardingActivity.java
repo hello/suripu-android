@@ -25,6 +25,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
@@ -33,6 +34,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSetup2ndPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
@@ -258,9 +260,13 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public void showPillInstructions() {
         OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
         builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
-        builder.setNextFragmentClass(OnboardingWelcomeFragment.class);
+        builder.setNextFragmentClass(OnboardingSetup2ndPillFragment.class);
         builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SETUP_PILL);
         showFragment(builder.build(), null, true);
+    }
+
+    public void show2ndPillPairing() {
+        showFragment(new Onboarding2ndPillInfoFragment(), null, true);
     }
 
     public void showWelcome() {

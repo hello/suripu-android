@@ -192,6 +192,12 @@
     <string name="dialog_title_sense_already_linked">Sense is already paired</string>
     <string name="dialog_message_sense_already_linked">Have you already paired this Sense to your account?</string>
     <string name="label_searching_for_pill">Looking for your Sleep Pill</string>
+    <string name="title_onboarding_setup_2nd_pill">Set up another Sleep Pill?</string>
+    <string name="info_onboarding_setup_2nd_pill">Would you like to set up a second Sleep Pill at this time?\n\nYou can always do this later by visiting Settings.</string>
+    <string name="action_setup_another_pill">Set up another Sleep Pill</string>
+    <string name="action_no_thanks">No Thanks</string>
+    <string name="title_onboarding_2nd_pill_info">Have your partner get the app</string>
+    <string name="info_onboarding_2nd_pill_info">Your Sense is now in Pairing Mode\n\nHave your partner visit hello.is/app to download the Sense app and set up their Sleep Pill.</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
