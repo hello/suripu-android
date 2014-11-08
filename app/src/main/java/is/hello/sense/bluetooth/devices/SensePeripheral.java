@@ -253,7 +253,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         Logger.info(Peripheral.LOG_TAG, "pairPill(" + accountToken + ")");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
+                .setType(CommandType.MORPHEUS_COMMAND_PAIR_PILL)
                 .setVersion(COMMAND_VERSION)
                 .setAccountId(accountToken)
                 .build();
