@@ -7,7 +7,7 @@
     <color name="light_accent">#009CFF</color>
 
     <color name="background">#f8f8f8</color>
-    <color name="background_dim">#66ffffff</color>
+    <color name="background_light_overlay">#99ffffff</color>
     <color name="background_timeline">@color/white</color>
     <color name="background_questions">#009CFF</color>
     <color name="background_underside">#F5F5F5</color>
