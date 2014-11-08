@@ -93,9 +93,9 @@
     <string name="action_turn_on_ble">Turn on Bluetooth</string>
     <string name="action_onboarding_help">I\'m having trouble</string>
     <string name="title_setup_sense">Setting up Sense</string>
-    <string name="info_setup_sense">Plug in Sense next to your bed. Sense will glow blue to tell you it is on, and ready to be paired with your mobile device.</string>
+    <string name="info_setup_sense">Make sure Sense is plugged into a wall outlet next to your bed.</string>
     <string name="title_pair_sense">Pairing with Sense</string>
-    <string name="info_pair_sense">Now we\'ll pair your mobile device with Sense. Make sure sense is blue, then tap continue.</string>
+    <string name="info_pair_sense">Now we\'ll pair your phone with Sense. Make sure your Sense is plugged in and nearby, then tap Continue.</string>
     <string name="title_pairing">Pairing</string>
     <string name="title_scanning">Scanning</string>
     <string name="title_connecting_network">Connecting</string>
@@ -133,12 +133,12 @@
     <string name="action_1st_sleep_pill">First Sleep Pill</string>
     <string name="title_setup_second_pill">Add a second Sleep Pill</string>
     <string name="info_setup_second_pill"><![CDATA[To connect a second sleep pill, Sense needs to be put into pairing mode.\n\nAsk the owner of the first sleeping pill to stand next to Sense and open the Sense app, then go to Settings &gt; Devices &gt; Sense and tap \'Put Sense into Pairing Mode\'.\n\nSense will glow blue when it is in pairing mode.]]></string>
-    <string name="title_intro_sleep_pill">Introducing Sleep Pill</string>
-    <string name="info_intro_sleep_pill">Clip your Sleep Pill to the pillow-case you sleep on.</string>
+    <string name="title_intro_sleep_pill">Attach Sleep Pill to your Pillow</string>
+    <string name="info_intro_sleep_pill">Clip your Sleep Pill to the pillowcase you sleep on.</string>
     <string name="title_onboarding_sleep_pill_color">Personalize your Sleep Pill</string>
     <string name="info_onboarding_sleep_pill_color">Choose an LED color for your Sleep Pill so you know which one is yours.</string>
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
-    <string name="info_pair_pill">Gently shake your Sleep Pill for three seconds. When your Sleep Pill lights up green, tap continue.</string>
+    <string name="info_pair_pill">Shake your Sleep Pill for three seconds to pair it with your Sense.</string>
     <string name="error_bad_wifi_credentials">The wifi network credentials you entered are incorrect.</string>
     <string name="error_wifi_out_of_range">The wifi network you selected could not be found by Sense.</string>
     <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the wifi network you selected.</string>
