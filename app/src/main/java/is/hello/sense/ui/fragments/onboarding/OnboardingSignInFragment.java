@@ -74,7 +74,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         request.subscribe(session -> {
             getOnboardingActivity().finishBlockingWork();
             apiSessionManager.setSession(session);
-            getOnboardingActivity().showGettingStarted();
+            getOnboardingActivity().showSetupSense();
 
             Analytics.event(Analytics.EVENT_SIGNED_IN, null);
         }, error -> {

@@ -4,9 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/gap_xlarge"
-    android:paddingLeft="@dimen/gap_xlarge"
-    android:paddingRight="@dimen/gap_xlarge">
+    android:padding="@dimen/gap_xlarge">
 
     <TextView
         android:layout_width="match_parent"
@@ -22,6 +20,30 @@
         android:textAppearance="@style/AppTheme.Text.Subheading"
         android:text="@string/info_pair_pill"/>
 
-    <include layout="@layout/sub_fragment_onboarding_buttons" />
+    <is.hello.sense.ui.widget.TintedProgressBar
+        android:id="@+id/fragment_onboarding_pair_pill_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        style="@android:style/Widget.Holo.ProgressBar"/>
+
+    <TextView
+        android:id="@+id/fragment_onboarding_pair_pill_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Body.Light"
+        android:textColor="@color/light_accent"
+        android:text="@string/label_searching_for_pill"/>
+
+    <Button
+        android:id="@+id/fragment_onboarding_pair_pill_retry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_large"
+        android:text="@string/action_retry"
+        style="@style/AppTheme.Button.Rounded"
+        android:visibility="gone"/>
 
 </LinearLayout>

@@ -4,7 +4,7 @@
     android:id="@+id/fragment_dialog_loading_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_dim">
+    android:background="@color/background_light_overlay">
 
     <is.hello.sense.ui.widget.TintedProgressBar
         android:id="@+id/fragment_dialog_loading_bar"

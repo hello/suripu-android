@@ -132,7 +132,8 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         LoadingDialogFragment.close(getFragmentManager());
 
         OnboardingActivity activity = (OnboardingActivity) getActivity();
-        activity.showSetupPill();
+        activity.finishBlockingWork();
+        activity.showPairPill(-1);
     }
 
     private void sendWifiCredentials() {

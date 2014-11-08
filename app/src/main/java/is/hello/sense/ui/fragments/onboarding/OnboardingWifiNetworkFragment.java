@@ -34,11 +34,14 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     @Inject HardwarePresenter hardwarePresenter;
 
     private WifiNetworkAdapter networkAdapter;
-    private ProgressBar scanningIndicator;
-
     private long scanStarted = 0;
+
+    private TextView infoLabel;
+    private TextView scanningIndicatorLabel;
+    private ProgressBar scanningIndicator;
     private ListView listView;
     private Button rescanButton;
+    private Button helpButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,8 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_wifi_networks, container, false);
 
+        this.infoLabel = (TextView) view.findViewById(R.id.fragment_onboarding_wifi_networks_info);
+
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
@@ -68,6 +73,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
         listView.setAdapter(networkAdapter);
 
+        this.scanningIndicatorLabel = (TextView) view.findViewById(R.id.fragment_onboarding_wifi_networks_scanning_label);
         this.scanningIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_wifi_networks_scanning);
 
         this.rescanButton = (Button) view.findViewById(R.id.fragment_onboarding_wifi_networks_rescan);
@@ -77,7 +83,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
             rescan();
         });
 
-        Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
+        this.helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
         helpButton.setOnClickListener(v -> Toast.makeText(v.getContext().getApplicationContext(), "Hang in there...", Toast.LENGTH_SHORT).show());
 
         return view;
@@ -98,8 +104,12 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
 
     public void rescan() {
+        scanningIndicatorLabel.setVisibility(View.VISIBLE);
         scanningIndicator.setVisibility(View.VISIBLE);
+        infoLabel.setVisibility(View.INVISIBLE);
         listView.setVisibility(View.INVISIBLE);
+        rescanButton.setVisibility(View.INVISIBLE);
+        helpButton.setVisibility(View.INVISIBLE);
         networkAdapter.clear();
 
         if (hardwarePresenter.getPeripheral() == null) {
@@ -123,15 +133,23 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         networkAdapter.clear();
         networkAdapter.addAll(scanResults);
 
+        scanningIndicatorLabel.setVisibility(View.GONE);
         scanningIndicator.setVisibility(View.GONE);
+        infoLabel.setVisibility(View.VISIBLE);
         listView.setVisibility(View.VISIBLE);
-        rescanButton.setEnabled(true);
+        rescanButton.setVisibility(View.VISIBLE);
+        helpButton.setVisibility(View.VISIBLE);
+
         trackScanFinished(true);
     }
 
     public void scanResultsUnavailable(Throwable e) {
+        scanningIndicatorLabel.setVisibility(View.GONE);
         scanningIndicator.setVisibility(View.GONE);
-        rescanButton.setEnabled(true);
+        infoLabel.setVisibility(View.VISIBLE);
+        listView.setVisibility(View.VISIBLE);
+        rescanButton.setVisibility(View.VISIBLE);
+        helpButton.setVisibility(View.VISIBLE);
 
         if (hardwarePresenter.isErrorFatal(e)) {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
@@ -143,8 +161,13 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     }
 
     public void deviceRepairFailed(Throwable e) {
+        scanningIndicatorLabel.setVisibility(View.GONE);
         scanningIndicator.setVisibility(View.GONE);
-
+        infoLabel.setVisibility(View.VISIBLE);
+        listView.setVisibility(View.VISIBLE);
+        rescanButton.setVisibility(View.VISIBLE);
+        helpButton.setVisibility(View.VISIBLE);
+        
         if (hardwarePresenter.isErrorFatal(e)) {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
         } else {

@@ -16,13 +16,15 @@
         android:text="@string/title_choose_wifi_network"/>
 
     <TextView
+        android:id="@+id/fragment_onboarding_wifi_networks_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/gap_large"
         android:textAppearance="@style/AppTheme.Text.Subheading"
-        android:text="@string/info_choose_wifi_network"/>
+        android:text="@string/info_choose_wifi_network"
+        android:visibility="invisible"/>
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -30,16 +32,26 @@
         <ListView
             android:id="@android:id/list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
 
         <is.hello.sense.ui.widget.TintedProgressBar
             android:id="@+id/fragment_onboarding_wifi_networks_scanning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"/>
+            android:layout_centerInParent="true" />
 
-    </FrameLayout>
+        <TextView
+            android:id="@+id/fragment_onboarding_wifi_networks_scanning_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/fragment_onboarding_wifi_networks_scanning"
+            android:layout_marginBottom="@dimen/gap_small"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.Body"
+            android:text="@string/label_finding_wifi_networks"/>
+
+    </RelativeLayout>
 
     <Button
         android:id="@+id/fragment_onboarding_wifi_networks_rescan"
@@ -47,7 +59,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/gap_small"
         android:text="@string/action_rescan"
-        style="@style/AppTheme.Button.Borderless.Onboarding" />
+        style="@style/AppTheme.Button.Borderless.Onboarding"
+        android:visibility="invisible"/>
 
     <Button
         android:id="@+id/fragment_onboarding_step_help"
@@ -56,6 +69,7 @@
         android:layout_marginTop="@dimen/gap_small"
         android:layout_marginBottom="@dimen/gap_large"
         android:text="@string/action_onboarding_help"
-        style="@style/AppTheme.Button.Borderless.Onboarding" />
+        style="@style/AppTheme.Button.Borderless.Onboarding"
+        android:visibility="invisible"/>
 
 </LinearLayout>
