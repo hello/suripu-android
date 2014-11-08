@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 
+import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import rx.Observable;
 import rx.Scheduler;
 
@@ -28,9 +29,9 @@ public interface BluetoothStack {
      * Yields {@see is.hello.sense.bluetooth.errors.BluetoothDisabledError}
      * if the device's Bluetooth radio is currently disabled.
      *
-     * @see DiscoveryCriteria
+     * @see is.hello.sense.bluetooth.stacks.util.ScanCriteria
      */
-    @NonNull Observable<List<Peripheral>> discoverPeripherals(@NonNull DiscoveryCriteria discoveryCriteria);
+    @NonNull Observable<List<Peripheral>> discoverPeripherals(@NonNull ScanCriteria scanCriteria);
 
     /**
      * Returns the Rx scheduler used for all stack operations.

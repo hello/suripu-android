@@ -14,7 +14,8 @@ import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.GattError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
+import is.hello.sense.bluetooth.stacks.util.ScanResponse;
+import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
@@ -42,10 +43,18 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     private final PacketHandler packetHandler;
 
     public static Observable<List<SensePeripheral>> discover(@NonNull BluetoothStack bluetoothStack,
-                                                             @NonNull DiscoveryCriteria criteria) {
-        criteria.setScanRecord(SenseIdentifiers.SENSE_SERVICE_BYTES);
+                                                             @NonNull ScanCriteria criteria) {
+        criteria.addConstraint(new ScanResponse(ScanResponse.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT));
         return bluetoothStack.discoverPeripherals(criteria)
                              .map(SensePeripheral::fromDevices);
+    }
+
+    public static Observable<SensePeripheral> rediscover(@NonNull BluetoothStack bluetoothStack,
+                                                         @NonNull String deviceId) {
+        ScanCriteria criteria = new ScanCriteria();
+        criteria.setLimit(1);
+        criteria.addConstraint(new ScanResponse(ScanResponse.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId));
+        return discover(bluetoothStack, criteria).map(ds -> ds.get(0));
     }
 
     public static List<SensePeripheral> fromDevices(@NonNull List<Peripheral> peripherals) {
@@ -71,7 +80,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     @Override
     protected UUID getTargetServiceIdentifier() {
-        return SenseIdentifiers.SENSE_SERVICE;
+        return SenseIdentifiers.SERVICE;
     }
 
     protected PeripheralService getTargetService() {

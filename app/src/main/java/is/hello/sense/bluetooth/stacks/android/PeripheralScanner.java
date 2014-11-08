@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.bluetooth.stacks.DiscoveryCriteria;
+import is.hello.sense.bluetooth.stacks.util.ScanResponse;
+import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -22,16 +24,16 @@ import rx.Subscription;
 final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>>, BluetoothAdapter.LeScanCallback {
     private final @NonNull AndroidBluetoothStack deviceCenter;
     private final @NonNull
-    DiscoveryCriteria discoveryCriteria;
+    ScanCriteria scanCriteria;
     private final Map<String, Pair<BluetoothDevice, Integer>> results = new HashMap<>();
 
     private Subscriber<? super List<Peripheral>> subscriber;
     private Subscription timeout;
 
     PeripheralScanner(@NonNull AndroidBluetoothStack deviceCenter,
-                      @NonNull DiscoveryCriteria discoveryCriteria) {
+                      @NonNull ScanCriteria scanCriteria) {
         this.deviceCenter = deviceCenter;
-        this.discoveryCriteria = discoveryCriteria;
+        this.scanCriteria = scanCriteria;
     }
 
 
@@ -44,24 +46,25 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
         deviceCenter.adapter.startLeScan(this);
         this.timeout = deviceCenter.scheduler
                                    .createWorker()
-                                   .schedule(this::onConcludeScan, discoveryCriteria.duration, TimeUnit.MILLISECONDS);
+                                   .schedule(this::onConcludeScan, scanCriteria.duration, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanResponse) {
-        Logger.info(BluetoothStack.LOG_TAG, "Found device " + bluetoothDevice.getName() + " - " + bluetoothDevice.getAddress());
+        Set<ScanResponse> parsedResponses = ScanResponse.parse(scanResponse);
+        Logger.info(BluetoothStack.LOG_TAG, "Found device " + bluetoothDevice.getName() + " - " + bluetoothDevice.getAddress() + " " + parsedResponses);
 
-        if (!discoveryCriteria.doesScanResponseMatch(scanResponse)) {
+        if (!scanCriteria.matches(parsedResponses)) {
             return;
         }
 
-        if (!discoveryCriteria.addresses.isEmpty() && !discoveryCriteria.addresses.contains(bluetoothDevice.getAddress())) {
+        if (!scanCriteria.peripheralAddresses.isEmpty() && !scanCriteria.peripheralAddresses.contains(bluetoothDevice.getAddress())) {
             return;
         }
 
         results.put(bluetoothDevice.getAddress(), Pair.create(bluetoothDevice, rssi));
 
-        if (results.size() >= discoveryCriteria.limit) {
+        if (results.size() >= scanCriteria.limit) {
             Logger.info(BluetoothStack.LOG_TAG, "Discovery limit reached, concluding scan");
             onConcludeScan();
         }

@@ -316,7 +316,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                 .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, true)
                 .apply();
 
-        hardwarePresenter.clearDevice();
+        hardwarePresenter.clearPeripheral();
 
         startActivity(new Intent(this, HomeActivity.class));
         finish();

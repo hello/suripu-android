@@ -96,7 +96,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
         if (device.getType() == Device.Type.SENSE && bluetoothAdapter.isEnabled()) {
             this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_scanning_for_sense), false);
-            bindAndSubscribe(this.hardwarePresenter.rediscoverDevice(), this::bindHardwareDevice, this::presentError);
+            bindAndSubscribe(this.hardwarePresenter.discoverDevice(device), this::bindHardwareDevice, this::presentError);
         }
     }
 
@@ -104,7 +104,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     public void onDestroy() {
         super.onDestroy();
 
-        this.hardwarePresenter.clearDevice();
+        this.hardwarePresenter.clearPeripheral();
     }
 
 
@@ -134,7 +134,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         if (device.isConnected()) {
             LoadingDialogFragment.close(getFragmentManager());
         } else {
-            bindAndSubscribe(hardwarePresenter.connectToDevice(device),
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(device),
                              status -> {
                                  switch (status) {
                                      case CONNECTING:
@@ -184,7 +184,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     public void putIntoPairingMode() {
         Analytics.event(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE));
 
-        if (hardwarePresenter.getDevice() == null)
+        if (hardwarePresenter.getPeripheral() == null)
             return;
 
         LoadingDialogFragment.show(getFragmentManager());
@@ -196,7 +196,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     public void factoryReset() {
         Analytics.event(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_FACTORY_RESTORE));
 
-        if (hardwarePresenter.getDevice() == null)
+        if (hardwarePresenter.getPeripheral() == null)
             return;
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());

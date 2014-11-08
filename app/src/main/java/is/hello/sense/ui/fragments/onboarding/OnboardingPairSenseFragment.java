@@ -111,7 +111,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
 
     public void pairWith(@Nullable SensePeripheral device) {
         if (device != null) {
-            bindAndSubscribe(hardwarePresenter.connectToDevice(device), status -> {
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(device), status -> {
                 switch (status) {
                     case CONNECTING:
                         loadingDialogFragment.setTitle(getString(R.string.title_connecting));

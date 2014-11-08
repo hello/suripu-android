@@ -63,7 +63,7 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     }
 
     private void finishedPairing() {
-        hardwarePresenter.clearDevice();
+        hardwarePresenter.clearPeripheral();
 
         LoadingDialogFragment.close(getFragmentManager());
 
@@ -75,13 +75,13 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     public void next(@NonNull View sender) {
         beginPairing();
 
-        if (hardwarePresenter.getDevice() == null) {
-            bindAndSubscribe(hardwarePresenter.rediscoverDevice(), device -> next(sender), this::presentError);
+        if (hardwarePresenter.getPeripheral() == null) {
+            bindAndSubscribe(hardwarePresenter.rediscoverPeripheral(), device -> next(sender), this::presentError);
             return;
         }
 
-        if (!hardwarePresenter.getDevice().isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToDevice(hardwarePresenter.getDevice()), status -> {
+        if (!hardwarePresenter.getPeripheral().isConnected()) {
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(hardwarePresenter.getPeripheral()), status -> {
                 if (status != HelloPeripheral.ConnectStatus.CONNECTED)
                     return;
 

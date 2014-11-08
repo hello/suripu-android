@@ -102,10 +102,10 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         listView.setVisibility(View.INVISIBLE);
         networkAdapter.clear();
 
-        if (hardwarePresenter.getDevice() == null) {
+        if (hardwarePresenter.getPeripheral() == null) {
             Action1<Throwable> onError = this::deviceRepairFailed;
-            bindAndSubscribe(hardwarePresenter.rediscoverDevice(),
-                             device -> bindAndSubscribe(hardwarePresenter.connectToDevice(device), status -> {
+            bindAndSubscribe(hardwarePresenter.rediscoverPeripheral(),
+                             device -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(device), status -> {
                                  if (status != HelloPeripheral.ConnectStatus.CONNECTED)
                                      return;
 
