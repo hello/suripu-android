@@ -25,7 +25,6 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingGettingStartedFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
@@ -36,10 +35,8 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingSleepPillColorFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWelcomeFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingWhichPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -88,11 +85,11 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_QUESTIONS:
-                    showGettingStarted();
+                    showSetupSense();
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_SENSE:
-                    showSetupPill();
+                    showPairPill(-1);
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_PILL:
@@ -221,7 +218,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             beginBlockingWork(R.string.dialog_loading_message);
             bindAndSubscribe(apiService.updateAccount(account), ignored -> {
                 finishBlockingWork();
-                showGettingStarted();
+                showSetupSense();
             }, e -> {
                 finishBlockingWork();
                 ErrorDialogFragment.presentError(getFragmentManager(), e);
@@ -229,33 +226,14 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         }
     }
 
-    public void showGettingStarted() {
+    public void showSetupSense() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
 
-        showFragment(new OnboardingGettingStartedFragment(), null, false);
-    }
-
-    public void showWhichPill() {
-        showFragment(new OnboardingWhichPillFragment(), null, true);
-    }
-
-    public void showSetupSense(boolean secondPill) {
-        if (secondPill) {
-            Bundle arguments = new Bundle();
-            arguments.putBoolean(OnboardingPairSenseFragment.ARG_IS_SECOND_USER, true);
-            OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
-            builder.setLayout(R.layout.sub_fragment_onboarding_2nd_user_setup_sense);
-            builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
-            builder.setNextFragmentArguments(arguments);
-            builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_ADD_PILL);
-            showFragment(builder.build(), null, true);
-        } else {
-            OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
-            builder.setLayout(R.layout.sub_fragment_onboarding_1st_user_setup_sense);
-            builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
-            builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_SETUP);
-            showFragment(builder.build(), null, true);
-        }
+        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
+        builder.setLayout(R.layout.sub_fragment_onboarding_intro_setup_sense);
+        builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
+        builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_SETUP);
+        showFragment(builder.build(), null, true);
     }
 
     public void showSelectWifiNetwork() {
@@ -266,7 +244,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(OnboardingSignIntoWifiFragment.newInstance(network), null, true);
     }
 
-    public void showSetupPill() {
+    public void showPairPill(int selectedColorIndex) {
         if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {
             finish();
             return;
@@ -274,15 +252,15 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SENSE);
 
-        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
-        builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
-        builder.setNextFragmentClass(OnboardingSleepPillColorFragment.class);
-        builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SETUP_PILL);
-        showFragment(builder.build(), null, true);
+        showFragment(OnboardingPairPillFragment.newInstance(selectedColorIndex), null, true);
     }
 
-    public void showPairPill(int selectedColorIndex) {
-        showFragment(OnboardingPairPillFragment.newInstance(selectedColorIndex), null, true);
+    public void showPillInstructions() {
+        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
+        builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
+        builder.setNextFragmentClass(OnboardingWelcomeFragment.class);
+        builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SETUP_PILL);
+        showFragment(builder.build(), null, true);
     }
 
     public void showWelcome() {
