@@ -1,12 +1,13 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -21,6 +22,12 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     private static final String ARG_COLOR_INDEX = OnboardingPairPillFragment.class.getName() + ".ARG_COLOR_INDEX";
 
     @Inject HardwarePresenter hardwarePresenter;
+
+    private ProgressBar activityIndicator;
+    private TextView activityStatus;
+    private Button retryButton;
+
+    private boolean isPairing = false;
 
     public static OnboardingPairPillFragment newInstance(int colorIndex) {
         OnboardingPairPillFragment fragment = new OnboardingPairPillFragment();
@@ -46,18 +53,29 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_pair_pill, container, false);
 
-        Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_step_continue);
-        nextButton.setOnClickListener(this::next);
-
-        Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        helpButton.setOnClickListener(ignored -> finishedPairing());
+        this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_pair_pill_activity);
+        this.activityStatus = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_status);
+        this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_retry);
+        retryButton.setOnClickListener(ignored -> pairPill());
 
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (!isPairing) {
+            pairPill();
+        }
+    }
 
     private void beginPairing() {
-        ((OnboardingActivity) getActivity()).beginBlockingWork(R.string.title_pairing);
+        this.isPairing = true;
+
+        activityIndicator.setVisibility(View.VISIBLE);
+        activityStatus.setVisibility(View.VISIBLE);
+        retryButton.setVisibility(View.GONE);
     }
 
     private void finishedPairing() {
@@ -65,20 +83,20 @@ public class OnboardingPairPillFragment extends InjectionFragment {
 
         OnboardingActivity activity = (OnboardingActivity) getActivity();
         activity.finishBlockingWork();
-        activity.showWelcome();
+        activity.showPillInstructions();
     }
 
 
-    public void next(@NonNull View sender) {
+    public void pairPill() {
         beginPairing();
 
         if (hardwarePresenter.getDevice() == null) {
-            bindAndSubscribe(hardwarePresenter.rediscoverDevice(), device -> next(sender), this::presentError);
+            bindAndSubscribe(hardwarePresenter.rediscoverDevice(), device -> pairPill(), this::presentError);
             return;
         }
 
         if (!hardwarePresenter.getDevice().isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToDevice(hardwarePresenter.getDevice()), ignored -> next(sender), this::presentError);
+            bindAndSubscribe(hardwarePresenter.connectToDevice(hardwarePresenter.getDevice()), ignored -> pairPill(), this::presentError);
             return;
         }
 
@@ -86,10 +104,12 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     }
 
     public void presentError(Throwable e) {
-        OnboardingActivity onboardingActivity = (OnboardingActivity) getActivity();
-        if (onboardingActivity != null) {
-            onboardingActivity.finishBlockingWork();
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
-        }
+        this.isPairing = false;
+
+        activityIndicator.setVisibility(View.GONE);
+        activityStatus.setVisibility(View.GONE);
+        retryButton.setVisibility(View.VISIBLE);
+
+        ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 }

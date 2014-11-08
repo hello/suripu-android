@@ -89,7 +89,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         OnboardingActivity activity = (OnboardingActivity) getActivity();
         activity.finishBlockingWork();
         if (isSecondUser) {
-            activity.showPillInstructions();
+            activity.showPairPill(-1);
         } else {
             activity.showSelectWifiNetwork();
         }
