@@ -3,6 +3,7 @@ package is.hello.sense.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 public class SensorHistory extends ApiResponse {
     public static final String SENSOR_NAME_TEMPERATURE = "temperature";
@@ -40,4 +41,26 @@ public class SensorHistory extends ApiResponse {
                 ", offset=" + offset +
                 '}';
     }
+
+
+    //region Time Zone Fun
+
+    /**
+     * Returns the user's current time, in the UTC timezone. For use with sensor history.
+     */
+    public static long currentTimeMillisShifted() {
+        DateTime now = DateTime.now();
+        DateTime nowUTC = new DateTime(
+                now.getYear(),
+                now.getMonthOfYear(),
+                now.getDayOfMonth(),
+                now.getHourOfDay(),
+                now.getMinuteOfHour(),
+                now.getSecondOfMinute(),
+                DateTimeZone.UTC
+        );
+        return nowUTC.getMillis();
+    }
+
+    //endregion
 }
