@@ -94,11 +94,6 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     }
 
     @Override
-    protected PeripheralService getTargetService() {
-        return peripheralService;
-    }
-
-    @Override
     protected UUID getDescriptorIdentifier() {
         return SenseIdentifiers.DESCRIPTOR_CHAR_COMMAND_RESPONSE_CONFIG;
     }

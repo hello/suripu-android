@@ -9,9 +9,11 @@ import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.util.Logger;
 import rx.Observable;
-import rx.functions.Action0;
 import rx.functions.Action1;
 
+/**
+ * Semi-high level wrapper around a Peripheral. Provides generic connection and subscription functionality.
+ */
 public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
     protected final Peripheral peripheral;
     protected PeripheralService peripheralService;
@@ -39,7 +41,13 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
 
     //region Connectivity
 
-    public Observable<ConnectStatus> connect(@NonNull OperationTimeout timeout) {
+    /**
+     * Connects to the peripheral, ensures a bond is present, and performs service discovery.
+     * This method should be wrapped by subclasses so that the caller does not have to provide
+     * an operation timeout object.
+     * @param timeout   A timeout object to apply to the service discovery portion of connection.
+     */
+    protected Observable<ConnectStatus> connect(@NonNull OperationTimeout timeout) {
         return peripheral.getStack().newConfiguredObservable(s -> {
             Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
 
