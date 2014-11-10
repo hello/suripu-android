@@ -25,8 +25,8 @@ import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.Observer;
@@ -47,6 +47,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     private final Action1<Throwable> respondToError;
 
+    public final Observable<Boolean> bluetoothEnabled;
+
     @Inject public HardwarePresenter(@NonNull Context context,
                                      @NonNull PreferencesPresenter preferencesPresenter,
                                      @NonNull ApiSessionManager apiSessionManager,
@@ -62,11 +64,21 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
         Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
+
+        this.bluetoothEnabled = bluetoothStack.isEnabled();
+        bluetoothEnabled.subscribe(this::onBluetoothEnabledChanged, Functions.LOG_ERROR);
     }
 
     public void onUserLoggedOut(@NonNull Intent intent) {
         setPairedDeviceAddress(null);
         setPairedPillId(null);
+    }
+
+    public void onBluetoothEnabledChanged(boolean enabled) {
+        logEvent("onBluetoothEnabledChanged(" + enabled + ")");
+        if (!enabled) {
+            this.peripheral = null;
+        }
     }
 
 
@@ -182,19 +194,19 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return repairingTask;
     }
 
-    public Observable<HelloPeripheral.ConnectStatus> connectToPeripheral(@NonNull SensePeripheral device) {
-        logEvent("connectToPeripheral(" + device + ")");
+    public Observable<HelloPeripheral.ConnectStatus> connectToPeripheral(@NonNull SensePeripheral peripheral) {
+        logEvent("connectToPeripheral(" + peripheral + ")");
 
-        if (device.isConnected() && device.getBondStatus() != Peripheral.BOND_BONDED) {
-            logEvent("already paired with peripheral " + device);
+        if (peripheral.isConnected() && peripheral.getBondStatus() != Peripheral.BOND_BONDED) {
+            logEvent("already paired with peripheral " + peripheral);
 
             return Observable.just(null);
         }
 
-        return device.connect().doOnNext(ignored -> {
-            logEvent("pairedWithPeripheral(" + device + ")");
-            setPairedDeviceAddress(device.getAddress());
-            this.peripheral = device;
+        return peripheral.connect().doOnNext(ignored -> {
+            logEvent("pairedWithPeripheral(" + peripheral + ")");
+            setPairedDeviceAddress(peripheral.getAddress());
+            this.peripheral = peripheral;
         });
     }
 

@@ -3,6 +3,8 @@ package is.hello.sense.bluetooth.stacks.android;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -15,8 +17,12 @@ import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.Scheduler;
+import rx.subjects.ReplaySubject;
+
+import static rx.android.observables.AndroidObservable.fromBroadcast;
 
 public class AndroidBluetoothStack implements BluetoothStack {
     final @NonNull Context applicationContext;
@@ -25,12 +31,18 @@ public class AndroidBluetoothStack implements BluetoothStack {
     final @NonNull BluetoothManager bluetoothManager;
     final @NonNull BluetoothAdapter adapter;
 
+    final @NonNull ReplaySubject<Boolean> enabled = ReplaySubject.createWithSize(1);
+
     public AndroidBluetoothStack(@NonNull Context applicationContext, @NonNull Scheduler scheduler) {
         this.applicationContext = applicationContext;
         this.scheduler = scheduler;
 
         this.bluetoothManager = (BluetoothManager) applicationContext.getSystemService(Context.BLUETOOTH_SERVICE);
         this.adapter = bluetoothManager.getAdapter();
+
+        Observable<Intent> stateChanged = fromBroadcast(applicationContext, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+        stateChanged.observeOn(getScheduler()).subscribe(ignored -> enabled.onNext(adapter.isEnabled()), Functions.LOG_ERROR);
+        enabled.onNext(adapter.isEnabled());
     }
 
     @NonNull
@@ -43,6 +55,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
         }
     }
 
+    @NonNull
     @Override
     public Scheduler getScheduler() {
         return scheduler;
@@ -53,6 +66,10 @@ public class AndroidBluetoothStack implements BluetoothStack {
         return Observable.create(onSubscribe).subscribeOn(getScheduler());
     }
 
+    @Override
+    public Observable<Boolean> isEnabled() {
+        return this.enabled;
+    }
 
     @Override
     public boolean doesErrorRequireReconnect(@Nullable Throwable e) {

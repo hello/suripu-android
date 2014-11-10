@@ -43,6 +43,15 @@ public interface BluetoothStack {
      */
     <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe);
 
+    /**
+     * Returns an observable that will continuously report the enabled state of the bluetooth stack.
+     * <p/>
+     * This seems like something that would work predictably outside of the context of the wrapper,
+     * but it's not. On some (all?) devices, the broadcast for this state change reports the wrong
+     * values, so we provide a nice predictable interface for clients.
+     */
+    Observable<Boolean> isEnabled();
+
 
     /**
      * Returns a boolean indicating whether or not a given error is

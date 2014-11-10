@@ -13,6 +13,7 @@ import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.GattError;
+import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.util.ScanResponse;
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
@@ -55,7 +56,13 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         ScanCriteria criteria = new ScanCriteria();
         criteria.setLimit(1);
         criteria.addConstraint(new ScanResponse(ScanResponse.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId));
-        return discover(bluetoothStack, criteria).map(ds -> ds.get(0));
+        return discover(bluetoothStack, criteria).flatMap(ds -> {
+            if (ds.isEmpty()) {
+                return Observable.error(new PeripheralConnectionError());
+            } else {
+                return Observable.just(ds.get(0));
+            }
+        });
     }
 
     public static List<SensePeripheral> fromDevices(@NonNull List<Peripheral> peripherals) {

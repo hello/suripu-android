@@ -19,6 +19,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
@@ -97,6 +98,8 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         if (device.getType() == Device.Type.SENSE && bluetoothAdapter.isEnabled()) {
             this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_scanning_for_sense), false);
             bindAndSubscribe(this.hardwarePresenter.discoverDevice(device), this::bindHardwareDevice, this::presentError);
+
+            bindAndSubscribe(this.hardwarePresenter.bluetoothEnabled, this::onBluetoothStateChanged, Functions.LOG_ERROR);
         }
     }
 
@@ -115,6 +118,14 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             item.getAction().run();
     }
 
+
+    public void onBluetoothStateChanged(boolean isEnabled) {
+        if (!isEnabled) {
+            if (signalStrengthItem != null) {
+                signalStrengthItem.setValue(getString(R.string.missing_data_placeholder));
+            }
+        }
+    }
 
     public void bindHardwareDevice(@NonNull SensePeripheral device) {
         int rssi = device.getScannedRssi();
@@ -135,26 +146,26 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             LoadingDialogFragment.close(getFragmentManager());
         } else {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(device),
-                             status -> {
-                                 switch (status) {
-                                     case CONNECTING:
-                                         loadingDialogFragment.setTitle(getString(R.string.title_connecting));
-                                         break;
+                    status -> {
+                        switch (status) {
+                            case CONNECTING:
+                                loadingDialogFragment.setTitle(getString(R.string.title_connecting));
+                                break;
 
-                                     case BONDING:
-                                         loadingDialogFragment.setTitle(getString(R.string.title_pairing));
-                                         break;
+                            case BONDING:
+                                loadingDialogFragment.setTitle(getString(R.string.title_pairing));
+                                break;
 
-                                     case DISCOVERING_SERVICES:
-                                         loadingDialogFragment.setTitle(getString(R.string.title_discovering_services));
-                                         break;
+                            case DISCOVERING_SERVICES:
+                                loadingDialogFragment.setTitle(getString(R.string.title_discovering_services));
+                                break;
 
-                                     case CONNECTED:
-                                         LoadingDialogFragment.close(getFragmentManager());
-                                         break;
-                                 }
-                             },
-                             this::presentError);
+                            case CONNECTED:
+                                LoadingDialogFragment.close(getFragmentManager());
+                                break;
+                        }
+                    },
+                    this::presentError);
         }
     }
 
@@ -176,6 +187,9 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
 
     public void changeWifiNetwork() {
+        if (hardwarePresenter.getPeripheral() == null)
+            return;
+
         Intent intent = new Intent(getActivity(), OnboardingActivity.class);
         intent.putExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, true);
         startActivity(intent);

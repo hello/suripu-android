@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
@@ -25,8 +24,6 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
-
-import static rx.android.observables.AndroidObservable.fromBroadcast;
 
 public class OnboardingPairSenseFragment extends InjectionFragment {
     public static final String ARG_IS_SECOND_USER = OnboardingPairSenseFragment.class.getName() + ".ARG_IS_SECOND_USER";
@@ -70,8 +67,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Intent> bluetoothStateChanged = fromBroadcast(getActivity(), new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-        subscribe(bluetoothStateChanged, ignored -> updateNextButton(), Functions.LOG_ERROR);
+        subscribe(hardwarePresenter.bluetoothEnabled, ignored -> updateNextButton(), Functions.LOG_ERROR);
     }
 
 
