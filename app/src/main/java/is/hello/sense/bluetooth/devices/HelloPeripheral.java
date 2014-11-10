@@ -4,23 +4,20 @@ import android.support.annotation.NonNull;
 
 import java.util.UUID;
 
-import is.hello.sense.bluetooth.errors.TooManyOperationsError;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
     protected final Peripheral peripheral;
-    protected final OperationTimeout commonTimeout;
     protected PeripheralService peripheralService;
 
-    protected HelloPeripheral(@NonNull Peripheral peripheral,
-                              @NonNull OperationTimeout timeout) {
+    protected HelloPeripheral(@NonNull Peripheral peripheral) {
         this.peripheral = peripheral;
-        this.commonTimeout = timeout;
     }
 
     //region Properties
@@ -42,15 +39,12 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
 
     //region Connectivity
 
-    public Observable<ConnectStatus> connect() {
+    public Observable<ConnectStatus> connect(@NonNull OperationTimeout timeout) {
         return peripheral.getStack().newConfiguredObservable(s -> {
             Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
 
             s.onNext(ConnectStatus.CONNECTING);
-            Action1<Throwable> onError = e -> {
-                s.onError(e);
-                commonTimeout.recycle();
-            };
+            Action1<Throwable> onError = s::onError;
             peripheral.connect().subscribe(device -> {
                 Logger.info(Peripheral.LOG_TAG, "connected to " + toString());
 
@@ -59,10 +53,9 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
                     Logger.info(Peripheral.LOG_TAG, "bonded to " + toString());
 
                     s.onNext(ConnectStatus.DISCOVERING_SERVICES);
-                    device.discoverServices(commonTimeout).subscribe(services -> {
+                    device.discoverServices(timeout).subscribe(services -> {
                         Logger.info(Peripheral.LOG_TAG, "discovered services for " + toString());
 
-                        commonTimeout.recycle();
                         this.peripheralService = device.getService(getTargetServiceIdentifier());
                         s.onNext(ConnectStatus.CONNECTED);
                         s.onCompleted();
@@ -97,30 +90,24 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
         return peripheralService;
     }
 
-    protected Observable<UUID> subscribe(@NonNull UUID characteristicIdentifier) {
+    protected Observable<UUID> subscribe(@NonNull UUID characteristicIdentifier,
+                                         @NonNull OperationTimeout timeout) {
         Logger.info(Peripheral.LOG_TAG, "Subscribing to " + characteristicIdentifier);
 
-        if (commonTimeout.isScheduled()) {
-            return Observable.error(new TooManyOperationsError());
-        } else {
-            return peripheral.subscribeNotification(getTargetService(),
-                    characteristicIdentifier,
-                    getDescriptorIdentifier(),
-                    commonTimeout);
-        }
+        return peripheral.subscribeNotification(getTargetService(),
+                                                characteristicIdentifier,
+                                                getDescriptorIdentifier(),
+                                                timeout);
     }
 
-    protected Observable<UUID> unsubscribe(@NonNull UUID characteristicIdentifier) {
+    protected Observable<UUID> unsubscribe(@NonNull UUID characteristicIdentifier,
+                                           @NonNull OperationTimeout timeout) {
         Logger.info(Peripheral.LOG_TAG, "Unsubscribing from " + characteristicIdentifier);
 
-        if (commonTimeout.isScheduled()) {
-            return Observable.error(new TooManyOperationsError());
-        } else {
-            return peripheral.unsubscribeNotification(getTargetService(),
-                    characteristicIdentifier,
-                    getDescriptorIdentifier(),
-                    commonTimeout);
-        }
+        return peripheral.unsubscribeNotification(getTargetService(),
+                                                  characteristicIdentifier,
+                                                  getDescriptorIdentifier(),
+                                                  timeout);
     }
 
     //endregion

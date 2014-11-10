@@ -400,6 +400,7 @@ public class AndroidPeripheral implements Peripheral {
 
             gattDispatcher.onServicesDiscovered = (gatt, status) -> {
                 timeout.unschedule();
+                timeout.recycle();
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     this.cachedPeripheralServices = AndroidPeripheralService.wrapNativeServices(gatt.getServices());
@@ -468,6 +469,7 @@ public class AndroidPeripheral implements Peripheral {
                         return;
 
                     timeout.unschedule();
+                    timeout.recycle();
 
                     if (status == BluetoothGatt.GATT_SUCCESS) {
                         s.onNext(characteristicIdentifier);
@@ -509,6 +511,7 @@ public class AndroidPeripheral implements Peripheral {
                     return;
 
                 timeout.unschedule();
+                timeout.recycle();
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     if (gatt.setCharacteristicNotification(characteristic, false)) {
@@ -548,6 +551,7 @@ public class AndroidPeripheral implements Peripheral {
 
             gattDispatcher.onCharacteristicWrite = (gatt, characteristic, status) -> {
                 timeout.unschedule();
+                timeout.recycle();
 
                 if (status != BluetoothGatt.GATT_SUCCESS) {
                     Logger.error(LOG_TAG, "Could not write command " + identifier + ", " + GattError.statusToString(status));

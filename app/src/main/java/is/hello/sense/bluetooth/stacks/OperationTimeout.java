@@ -10,6 +10,8 @@ import rx.functions.Action0;
  * <p/>
  * The stack will {@see #schedule} a timeout when it begins an operation,
  * and {@see #unschedule} it either when the task completes, or fails.
+ * <p/>
+ * <em>Important:</em> OperationTimeout implementations are not guaranteed to be thread-safe.
  */
 public interface OperationTimeout {
     public static final String LOG_TAG = "Bluetooth." + OperationTimeout.class.getSimpleName();
@@ -29,11 +31,11 @@ public interface OperationTimeout {
     void unschedule();
 
     /**
-     * Returns whether or not the operation is currently scheduled.
+     * For use by clients. Unschedules and reschedules the timeout timer.
      * <p/>
-     * This can be used as an operation guard by wrappers around {@see Peripheral}.
+     * This method is not assumed to be safe to call until after {@see #setTimeoutAction} is called.
      */
-    boolean isScheduled();
+    void reschedule();
 
     /**
      * Called by the bluetooth stack. Specifies an action to run when
@@ -49,8 +51,9 @@ public interface OperationTimeout {
     void setTimeoutAction(@NonNull Action0 action, @NonNull Scheduler scheduler);
 
     /**
-     * For use by the client of the operation timeout. Unschedules the timeout
-     * and clears any associated actions and state so the operation can be reused.
+     * Called by the bluetooth stack. Clears all state associated with the timeout operation.
+     * <p/>
+     * It is an error for this method to be called on a scheduled timeout.
      */
     void recycle();
 }

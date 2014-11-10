@@ -3,6 +3,8 @@ package is.hello.sense.bluetooth.stacks;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.util.Logger;
@@ -13,28 +15,65 @@ import rx.functions.Action0;
 /**
  * Simple implementation of {@see OperationTimeout} that uses deferred workers.
  */
-public class SchedulerOperationTimeout implements OperationTimeout {
-    private final String name;
-    private final long durationMs;
+public final class SchedulerOperationTimeout implements OperationTimeout {
+    /**
+     * One timeout for stack operations, one timeout for a wrapper interface.
+     */
+    private static final int OBJECT_POOL_SIZE = 2;
+
+    private String name;
+    private long durationMs;
 
     private @Nullable Action0 action;
     private @Nullable Scheduler scheduler;
     private @Nullable Subscription subscription;
 
 
-    public SchedulerOperationTimeout(@NonNull String name, long duration, @NonNull TimeUnit timeUnit) {
+    //region Lifecycle
+
+    private SchedulerOperationTimeout() {
+
+    }
+
+    private SchedulerOperationTimeout init(@NonNull String name, long duration, @NonNull TimeUnit timeUnit) {
         this.name = name;
         this.durationMs = timeUnit.toMillis(duration);
+
+        return this;
     }
+
+    private static final List<SchedulerOperationTimeout> pool = new ArrayList<>(OBJECT_POOL_SIZE);
+    static {
+        for (int i = 0; i < OBJECT_POOL_SIZE; i++) {
+            pool.add(new SchedulerOperationTimeout());
+        }
+    }
+
+    public static SchedulerOperationTimeout acquire(@NonNull String name, long duration, @NonNull TimeUnit timeUnit) {
+        Logger.info(LOG_TAG, "Vending time out '" + name + "' (" + pool.size() + " objects available)");
+
+        if (pool.isEmpty()) {
+            throw new IllegalStateException("SchedulerOperationTimeout object pool exhausted, cannot vend '" + name + "'");
+        }
+
+        SchedulerOperationTimeout timeout = pool.get(0);
+        pool.remove(0);
+
+        Logger.info(LOG_TAG, "Pool now contains " + pool.size() + " available objects");
+
+        return timeout.init(name, duration, timeUnit);
+    }
+
+    //endregion
 
 
     @Override
     public void schedule() {
         if (action == null || scheduler == null) {
-            throw new NullPointerException();
+            throw new IllegalStateException("Cannot schedule a time out that has no action");
         }
 
-        Logger.info(LOG_TAG, "Scheduling time out " + toString());
+        Logger.info(LOG_TAG, "Scheduling time out '" + name + "'");
 
         if (subscription != null && !subscription.isUnsubscribed())
             unschedule();
@@ -45,10 +84,10 @@ public class SchedulerOperationTimeout implements OperationTimeout {
     @Override
     public void unschedule() {
         if (action == null || scheduler == null) {
-            throw new NullPointerException();
+            throw new IllegalStateException("Cannot unschedule a time out that has no action");
         }
 
-        Logger.info(LOG_TAG, "Unscheduling time out " + toString());
+        Logger.info(LOG_TAG, "Unscheduling time out '" + name + "'");
 
         if (subscription != null) {
             subscription.unsubscribe();
@@ -57,29 +96,33 @@ public class SchedulerOperationTimeout implements OperationTimeout {
     }
 
     @Override
-    public boolean isScheduled() {
-        return (subscription != null);
+    public void reschedule() {
+        unschedule();
+        schedule();
     }
 
     @Override
     public void setTimeoutAction(@NonNull Action0 action, @NonNull Scheduler scheduler) {
-        Logger.info(LOG_TAG, "Timeout action " + action + "; " + scheduler);
-
         this.action = action;
         this.scheduler = scheduler;
     }
 
     @Override
     public void recycle() {
-        Logger.info(LOG_TAG, "Recycling time out " + toString());
+        Logger.info(LOG_TAG, "Recycling time out '" + name + "'");
 
         if (subscription != null) {
             unschedule();
             throw new IllegalStateException("Recycle called on scheduled operation.");
         }
 
+        this.name = null;
+        this.durationMs = 0;
         this.action = null;
         this.scheduler = null;
+
+        pool.add(0, this);
+        Logger.info(LOG_TAG, "Pool now contains " + pool.size() + " available objects");
     }
 
 
