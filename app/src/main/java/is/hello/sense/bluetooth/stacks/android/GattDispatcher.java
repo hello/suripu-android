@@ -5,34 +5,54 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothProfile;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.util.Logger;
+import rx.functions.Action0;
 import rx.functions.Action2;
 import rx.functions.Action3;
 
-public class GattDispatcher extends BluetoothGattCallback {
+class GattDispatcher extends BluetoothGattCallback {
+    private final List<ConnectionStateListener> connectionStateListeners = new ArrayList<>();
+    private final AndroidPeripheral peripheral;
+
     public @Nullable PacketHandler packetHandler;
-    public @Nullable Action3<BluetoothGatt, Integer, Integer> onConnectionStateChanged;
     public @Nullable Action2<BluetoothGatt, Integer> onServicesDiscovered;
     public @Nullable Action3<BluetoothGatt, BluetoothGattCharacteristic, Integer> onCharacteristicWrite;
     public @Nullable Action3<BluetoothGatt, BluetoothGattDescriptor, Integer> onDescriptorWrite;
+
+    GattDispatcher(@NonNull AndroidPeripheral peripheral) {
+        this.peripheral = peripheral;
+    }
+
+    void addConnectionStateListener(@NonNull ConnectionStateListener changeHandler) {
+        connectionStateListeners.add(changeHandler);
+    }
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
         super.onConnectionStateChange(gatt, status, newState);
         Logger.info(Peripheral.LOG_TAG, "onConnectionStateChange('" + gatt + "', " + status + ", " + newState + ")");
 
-        if (onConnectionStateChanged != null) {
-            onConnectionStateChanged.call(gatt, status, newState);
-        } else {
+        if (connectionStateListeners.isEmpty()) {
             Logger.warn(Peripheral.LOG_TAG, "unhandled call to onConnectionStateChange");
 
             if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                Logger.info(Peripheral.LOG_TAG, "implicitly closing gatt layer in gatt dispatcher, this is a bug");
-                gatt.close(); // This call is not safe unless the device is disconnected.
+                peripheral.closeGatt();
+            }
+        } else {
+            Iterator<ConnectionStateListener> iterator = connectionStateListeners.iterator();
+            Action0 removeListener = iterator::remove;
+            while (iterator.hasNext()) {
+                ConnectionStateListener listener = iterator.next();
+                listener.onConnectionStateChanged(gatt, status, newState, removeListener);
             }
         }
     }
@@ -92,5 +112,13 @@ public class GattDispatcher extends BluetoothGattCallback {
             onDescriptorWrite.call(gatt, descriptor, status);
         else
             Logger.warn(Peripheral.LOG_TAG, "unhandled call to onDescriptorWrite");
+    }
+
+
+    interface ConnectionStateListener {
+        void onConnectionStateChanged(@NonNull BluetoothGatt gatt,
+                                      int status,
+                                      int newState,
+                                      @NonNull Action0 removeListener);
     }
 }

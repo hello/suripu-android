@@ -1,6 +1,5 @@
 package is.hello.sense.bluetooth.stacks.android;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -11,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -39,7 +39,7 @@ public class AndroidPeripheral implements Peripheral {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull BluetoothDevice bluetoothDevice;
     private final int scannedRssi;
-    private final GattDispatcher gattDispatcher = new GattDispatcher();
+    private final GattDispatcher gattDispatcher = new GattDispatcher(this);
 
     private BluetoothGatt gatt;
     private Map<UUID, PeripheralService> cachedPeripheralServices;
@@ -81,6 +81,15 @@ public class AndroidPeripheral implements Peripheral {
 
     //region Connectivity
 
+    void closeGatt() {
+        if (gatt != null) {
+            Log.i(LOG_TAG, "Closing gatt layer");
+
+            gatt.close();
+            this.gatt = null;
+        }
+    }
+
     @NonNull
     @Override
     public Observable<Peripheral> connect() {
@@ -95,29 +104,29 @@ public class AndroidPeripheral implements Peripheral {
         }
 
         return stack.newConfiguredObservable(s -> {
-            gattDispatcher.onConnectionStateChanged = (gatt, connectStatus, newState) -> {
+            gattDispatcher.addConnectionStateListener((gatt, connectStatus, newState, removeThisListener) -> {
                 if (connectStatus != BluetoothGatt.GATT_SUCCESS) {
                     Logger.error(LOG_TAG, "Could not connect. " + GattError.statusToString(connectStatus));
                     s.onError(new GattError(connectStatus));
 
-                    if (newState == BluetoothAdapter.STATE_DISCONNECTED) {
-                        gatt.close();
-                        this.gatt = null;
+                    if (newState == STATUS_DISCONNECTED) {
+                        closeGatt();
                     }
 
-                    gattDispatcher.onConnectionStateChanged = null;
-                } else if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    removeThisListener.call();
+                } else if (newState == STATUS_CONNECTED) {
                     Logger.info(LOG_TAG, "Connected " + toString());
 
-                    // Pre-existing bonding information guarantees that every
-                    // other connection will not function correctly, so we just
-                    // get rid of it right off to save us the trouble later.
                     if (getBondStatus() == BOND_NONE) {
                         s.onNext(this);
                         s.onCompleted();
 
-                        gattDispatcher.onConnectionStateChanged = null;
+                        removeThisListener.call();
                     } else {
+                        // Pre-existing bonding information guarantees that every
+                        // other connection will not function correctly, so we just
+                        // get rid of it right off to save us the trouble later.
+
                         Logger.info(LOG_TAG, "Previously persisted bonding discovered, removing.");
 
                         removeBond().subscribe(ignored -> {
@@ -131,11 +140,11 @@ public class AndroidPeripheral implements Peripheral {
                             s.onNext(this);
                             s.onCompleted();
 
-                            gattDispatcher.onConnectionStateChanged = null;
+                            removeThisListener.call();
                         });
                     }
                 }
-            };
+            });
 
             Logger.info(LOG_TAG, "Connecting " + toString());
 
@@ -157,11 +166,9 @@ public class AndroidPeripheral implements Peripheral {
         Logger.info(LOG_TAG, "Disconnecting " + toString());
 
         return stack.newConfiguredObservable(s -> {
-            gattDispatcher.onConnectionStateChanged = (gatt, connectStatus, newState) -> {
+            gattDispatcher.addConnectionStateListener((gatt, connectStatus, newState, removeThisListener) -> {
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    Logger.info(LOG_TAG, "Closing gatt layer");
-                    gatt.close(); // This call is not safe unless the device is disconnected.
-                    this.gatt = null;
+                    closeGatt();
 
                     if (connectStatus != BluetoothGatt.GATT_SUCCESS) {
                         Logger.info(LOG_TAG, "Could not disconnect " + toString() + "; " + GattError.statusToString(connectStatus));
@@ -175,8 +182,10 @@ public class AndroidPeripheral implements Peripheral {
                     }
 
                     this.cachedPeripheralServices = null;
+
+                    removeThisListener.call();
                 }
-            };
+            });
 
             if (getBondStatus() == BluetoothDevice.BOND_BONDED) {
                 removeBond().subscribe(ignored -> {}, s::onError);
@@ -353,6 +362,13 @@ public class AndroidPeripheral implements Peripheral {
 
                             unsubscribe();
                         }
+                    }
+                });
+
+                gattDispatcher.addConnectionStateListener((gatt, connectStatus, newState, removeThisListener) -> {
+                    if (connectStatus == STATUS_DISCONNECTED) {
+                        closeGatt();
+                        removeThisListener.call();
                     }
                 });
             } else {
