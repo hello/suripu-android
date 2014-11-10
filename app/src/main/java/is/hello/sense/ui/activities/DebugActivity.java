@@ -69,7 +69,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         }
         debugItems.addItem("Build Type", buildValues.type);
         debugItems.addItem("Device Model", Build.MODEL);
-        debugItems.addItem("BLE Stack Support", bluetoothStack.getDeviceSupportLevel().toString());
+        debugItems.addItem("BLE Device Support", bluetoothStack.getDeviceSupportLevel().toString());
         debugItems.addItem("BLE Stack Traits", TextUtils.join(", ", bluetoothStack.getTraits()));
         debugItems.addItem("Access Token", sessionManager.getAccessToken());
         debugItems.addItem("GCM ID", getSharedPreferences(Constants.NOTIFICATION_PREFS, 0).getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, "<none>"));
