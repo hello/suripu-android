@@ -88,7 +88,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
     @Override
     public SupportLevel getDeviceSupportLevel() {
-        return SupportLevel.UNTESTED;
+        return DeviceSupport.getDeviceSupportLevel();
     }
 
 

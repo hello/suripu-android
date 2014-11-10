@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -67,6 +68,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
             Logger.debug(DebugActivity.class.getSimpleName(), "Could not look up app version", e);
         }
         debugItems.addItem("Build Type", buildValues.type);
+        debugItems.addItem("Device Model", Build.MODEL);
         debugItems.addItem("BLE Stack Support", bluetoothStack.getDeviceSupportLevel().toString());
         debugItems.addItem("BLE Stack Traits", TextUtils.join(", ", bluetoothStack.getTraits()));
         debugItems.addItem("Access Token", sessionManager.getAccessToken());
