@@ -159,16 +159,16 @@ public class AndroidPeripheral implements Peripheral {
         return stack.newConfiguredObservable(s -> {
             gattDispatcher.onConnectionStateChanged = (gatt, connectStatus, newState) -> {
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                    Logger.info(LOG_TAG, "Closing gatt layer");
+                    gatt.close(); // This call is not safe unless the device is disconnected.
+                    this.gatt = null;
+
                     if (connectStatus != BluetoothGatt.GATT_SUCCESS) {
                         Logger.info(LOG_TAG, "Could not disconnect " + toString() + "; " + GattError.statusToString(connectStatus));
 
                         s.onError(new GattError(connectStatus));
                     } else {
                         Logger.info(LOG_TAG, "Disconnected " + toString());
-
-                        Logger.info(LOG_TAG, "Closing gatt layer");
-                        gatt.close(); // This call is not safe unless the device is disconnected.
-                        this.gatt = null;
 
                         s.onNext(this);
                         s.onCompleted();

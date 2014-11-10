@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothProfile;
 import android.support.annotation.Nullable;
 
 import is.hello.sense.bluetooth.stacks.Peripheral;
@@ -24,10 +25,16 @@ public class GattDispatcher extends BluetoothGattCallback {
         super.onConnectionStateChange(gatt, status, newState);
         Logger.info(Peripheral.LOG_TAG, "onConnectionStateChange('" + gatt + "', " + status + ", " + newState + ")");
 
-        if (onConnectionStateChanged != null)
+        if (onConnectionStateChanged != null) {
             onConnectionStateChanged.call(gatt, status, newState);
-        else
+        } else {
             Logger.warn(Peripheral.LOG_TAG, "unhandled call to onConnectionStateChange");
+
+            if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                Logger.info(Peripheral.LOG_TAG, "implicitly closing gatt layer in gatt dispatcher, this is a bug");
+                gatt.close(); // This call is not safe unless the device is disconnected.
+            }
+        }
     }
 
     @Override
