@@ -1,5 +1,6 @@
 package is.hello.sense.bluetooth.stacks.android;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import is.hello.sense.bluetooth.errors.BondingError;
 import is.hello.sense.bluetooth.errors.GattError;
@@ -39,10 +41,11 @@ public class AndroidPeripheral implements Peripheral {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull BluetoothDevice bluetoothDevice;
     private final int scannedRssi;
-    private final GattDispatcher gattDispatcher = new GattDispatcher(this);
+    private final GattDispatcher gattDispatcher = new GattDispatcher();
 
     private BluetoothGatt gatt;
     private Map<UUID, PeripheralService> cachedPeripheralServices;
+    private Subscription bluetoothStateSubscription;
 
     AndroidPeripheral(@NonNull AndroidBluetoothStack stack,
                       @NonNull BluetoothDevice bluetoothDevice,
@@ -50,6 +53,12 @@ public class AndroidPeripheral implements Peripheral {
         this.stack = stack;
         this.bluetoothDevice = bluetoothDevice;
         this.scannedRssi = scannedRssi;
+
+        gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
+            if (newState == STATUS_DISCONNECTED) {
+                closeGatt(gatt);
+            }
+        });
     }
 
 
@@ -81,12 +90,19 @@ public class AndroidPeripheral implements Peripheral {
 
     //region Connectivity
 
-    void closeGatt() {
+    void closeGatt(@Nullable BluetoothGatt gatt) {
         if (gatt != null) {
             Log.i(LOG_TAG, "Closing gatt layer");
 
             gatt.close();
-            this.gatt = null;
+            if (gatt == this.gatt) {
+                this.gatt = null;
+            }
+        }
+
+        if (bluetoothStateSubscription != null) {
+            bluetoothStateSubscription.unsubscribe();
+            this.bluetoothStateSubscription = null;
         }
     }
 
@@ -104,18 +120,33 @@ public class AndroidPeripheral implements Peripheral {
         }
 
         return stack.newConfiguredObservable(s -> {
-            gattDispatcher.addConnectionStateListener((gatt, connectStatus, newState, removeThisListener) -> {
-                if (connectStatus != BluetoothGatt.GATT_SUCCESS) {
-                    Logger.error(LOG_TAG, "Could not connect. " + GattError.statusToString(connectStatus));
-                    s.onError(new GattError(connectStatus));
+            AtomicBoolean hasRetried = new AtomicBoolean(false);
+            gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
+                // The first connection attempt made after the user has power-cycled their
+                // bluetooth radio will result in a 133/gatt stack error. Trying again
+                // seems to work 100% of the time.
+                if (gattStatus == GattError.STATUS_GATT_STACK_ERROR && !hasRetried.get()) {
+                    Logger.warn(LOG_TAG, "First connection attempt failed due to stack error, retrying.");
 
-                    if (newState == STATUS_DISCONNECTED) {
-                        closeGatt();
-                    }
+                    hasRetried.set(true);
+                    gatt.close();
+                    this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
+                } else if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
+                    Logger.error(LOG_TAG, "Could not connect. " + GattError.statusToString(gattStatus));
+                    s.onError(new GattError(gattStatus));
 
                     removeThisListener.call();
                 } else if (newState == STATUS_CONNECTED) {
                     Logger.info(LOG_TAG, "Connected " + toString());
+
+                    Observable<Intent> bluetoothStateObserver = fromBroadcast(stack.applicationContext, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+                    this.bluetoothStateSubscription = bluetoothStateObserver.subscribe(intent -> {
+                        Logger.info(LOG_TAG, "User disabled bluetooth radio, abandoning connection");
+
+                        if (!stack.adapter.isEnabled()) {
+                            gatt.disconnect();
+                        }
+                    }, e -> Logger.error(LOG_TAG, "Bluetooth state observation error", e));
 
                     if (getBondStatus() == BOND_NONE) {
                         s.onNext(this);
@@ -133,6 +164,7 @@ public class AndroidPeripheral implements Peripheral {
                             Logger.info(LOG_TAG, "Previously persisted bonding removed, reconnecting.");
 
                             // We can't reuse a BluetoothGatt object after removing a bond, because, whatever.
+                            gatt.close();
                             this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
                         }, e -> {
                             Logger.warn(LOG_TAG, "Could not remove previously persisted bonding information, ignoring.", e);
@@ -166,14 +198,12 @@ public class AndroidPeripheral implements Peripheral {
         Logger.info(LOG_TAG, "Disconnecting " + toString());
 
         return stack.newConfiguredObservable(s -> {
-            gattDispatcher.addConnectionStateListener((gatt, connectStatus, newState, removeThisListener) -> {
+            gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    closeGatt();
+                    if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
+                        Logger.info(LOG_TAG, "Could not disconnect " + toString() + "; " + GattError.statusToString(gattStatus));
 
-                    if (connectStatus != BluetoothGatt.GATT_SUCCESS) {
-                        Logger.info(LOG_TAG, "Could not disconnect " + toString() + "; " + GattError.statusToString(connectStatus));
-
-                        s.onError(new GattError(connectStatus));
+                        s.onError(new GattError(gattStatus));
                     } else {
                         Logger.info(LOG_TAG, "Disconnected " + toString());
 
@@ -362,13 +392,6 @@ public class AndroidPeripheral implements Peripheral {
 
                             unsubscribe();
                         }
-                    }
-                });
-
-                gattDispatcher.addConnectionStateListener((gatt, connectStatus, newState, removeThisListener) -> {
-                    if (connectStatus == STATUS_DISCONNECTED) {
-                        closeGatt();
-                        removeThisListener.call();
                     }
                 });
             } else {

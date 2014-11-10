@@ -4,7 +4,13 @@ import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
 
 public class GattError extends BluetoothError {
-    public static final int STATUS_GATT_ERROR = 133;
+    /**
+     * This error code shows up if you turn off the Bluetooth radio,
+     * and a device has an open gatt layer <em>and</em> is bonded.
+     * Retrying your connection after receiving this error will work
+     * seemingly 100% of the time.
+     */
+    public static final int STATUS_GATT_STACK_ERROR = 133;
 
     public final int statusCode;
 
@@ -38,8 +44,8 @@ public class GattError extends BluetoothError {
                 return "GATT_FAILURE";
 
             case -123:
-            case STATUS_GATT_ERROR:
-                return "GAT_ERROR";
+            case STATUS_GATT_STACK_ERROR:
+                return "GATT_ERROR";
 
             default:
                 return "UNKNOWN: " + status;

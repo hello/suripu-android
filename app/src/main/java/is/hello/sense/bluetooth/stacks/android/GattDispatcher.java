@@ -21,16 +21,11 @@ import rx.functions.Action3;
 
 class GattDispatcher extends BluetoothGattCallback {
     private final List<ConnectionStateListener> connectionStateListeners = new ArrayList<>();
-    private final AndroidPeripheral peripheral;
 
     public @Nullable PacketHandler packetHandler;
     public @Nullable Action2<BluetoothGatt, Integer> onServicesDiscovered;
     public @Nullable Action3<BluetoothGatt, BluetoothGattCharacteristic, Integer> onCharacteristicWrite;
     public @Nullable Action3<BluetoothGatt, BluetoothGattDescriptor, Integer> onDescriptorWrite;
-
-    GattDispatcher(@NonNull AndroidPeripheral peripheral) {
-        this.peripheral = peripheral;
-    }
 
     void addConnectionStateListener(@NonNull ConnectionStateListener changeHandler) {
         connectionStateListeners.add(changeHandler);
@@ -43,10 +38,6 @@ class GattDispatcher extends BluetoothGattCallback {
 
         if (connectionStateListeners.isEmpty()) {
             Logger.warn(Peripheral.LOG_TAG, "unhandled call to onConnectionStateChange");
-
-            if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                peripheral.closeGatt();
-            }
         } else {
             Iterator<ConnectionStateListener> iterator = connectionStateListeners.iterator();
             Action0 removeListener = iterator::remove;
