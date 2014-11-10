@@ -97,12 +97,12 @@ public class AndroidPeripheral implements Peripheral {
             gatt.close();
             if (gatt == this.gatt) {
                 this.gatt = null;
-            }
-        }
 
-        if (bluetoothStateSubscription != null) {
-            bluetoothStateSubscription.unsubscribe();
-            this.bluetoothStateSubscription = null;
+                if (bluetoothStateSubscription != null) {
+                    bluetoothStateSubscription.unsubscribe();
+                    this.bluetoothStateSubscription = null;
+                }
+            }
         }
     }
 
