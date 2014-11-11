@@ -309,10 +309,11 @@ public final class LineGraphView extends FrameLayout {
     }
 
     private int getSegmentAtX(int section, float x) {
+        int limit = cachedSectionCounts.get(section);
         float sectionMinX = getSectionWidth() * section;
         float segmentWidth = getSegmentWidth(section);
         float xInSection = x - sectionMinX;
-        return (int) (xInSection / segmentWidth);
+        return (int) Math.min(limit - 1, xInSection / segmentWidth);
     }
 
     @Override
