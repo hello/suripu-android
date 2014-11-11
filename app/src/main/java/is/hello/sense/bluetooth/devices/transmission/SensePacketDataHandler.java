@@ -36,6 +36,7 @@ public class SensePacketDataHandler extends PacketDataHandler<MorpheusBle.Morphe
         if (this.expectedIndex != blePacket.sequenceNumber) {
             this.packets.clear();
             this.expectedIndex = 0;
+            this.buffer = null;
             onError(new ProtobufProcessingError(ProtobufProcessingError.Reason.DATA_LOST_OR_OUT_OF_ORDER));
             return;
         } else {
