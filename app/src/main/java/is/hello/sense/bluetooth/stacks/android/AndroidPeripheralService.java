@@ -13,10 +13,10 @@ import is.hello.sense.bluetooth.stacks.PeripheralService;
 public final class AndroidPeripheralService implements PeripheralService {
     final @NonNull BluetoothGattService service;
 
-    static @NonNull Map<UUID, PeripheralService> wrapNativeServices(@NonNull List<BluetoothGattService> nativeServices) {
+    static @NonNull Map<UUID, PeripheralService> wrapGattServices(@NonNull List<BluetoothGattService> services) {
         Map<UUID, PeripheralService> peripheralServices = new HashMap<>();
 
-        for (BluetoothGattService nativeService : nativeServices) {
+        for (BluetoothGattService nativeService : services) {
             peripheralServices.put(nativeService.getUuid(), new AndroidPeripheralService(nativeService));
         }
 
@@ -58,7 +58,7 @@ public final class AndroidPeripheralService implements PeripheralService {
 
     @Override
     public String toString() {
-        return "NativeService{" +
+        return "AndroidPeripheralService{" +
                 "service=" + service +
                 '}';
     }

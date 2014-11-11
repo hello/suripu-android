@@ -426,7 +426,7 @@ public class AndroidPeripheral implements Peripheral {
                 timeout.recycle();
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
-                    this.cachedPeripheralServices = AndroidPeripheralService.wrapNativeServices(gatt.getServices());
+                    this.cachedPeripheralServices = AndroidPeripheralService.wrapGattServices(gatt.getServices());
 
                     s.onNext(cachedPeripheralServices.values());
                     s.onCompleted();
