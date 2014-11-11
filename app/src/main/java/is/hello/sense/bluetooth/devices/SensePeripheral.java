@@ -94,7 +94,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     @Override
     protected UUID getDescriptorIdentifier() {
-        return SenseIdentifiers.DESCRIPTOR_CHAR_COMMAND_RESPONSE_CONFIG;
+        return SenseIdentifiers.DESCRIPTOR_CHARACTERISTIC_COMMAND_RESPONSE_CONFIG;
     }
 
     protected @NonNull OperationTimeout createOperationTimeout(@NonNull String name) {
@@ -128,7 +128,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
             }, peripheral.getStack().getScheduler());
 
             Action1<Throwable> onError = s::onError;
-            Observable<UUID> subscribe = subscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Subscribe"));
+            Observable<UUID> subscribe = subscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Subscribe"));
             subscribe.subscribe(subscribedCharacteristic -> {
                 dataHandler.onResponse = response -> {
                     Logger.info(Peripheral.LOG_TAG, "Got response to command " + command + ": " + response);
@@ -138,7 +138,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                     timeout.unschedule();
                     timeout.recycle();
 
-                    Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+                    Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                     Logger.error(Peripheral.LOG_TAG, "Could not complete command " + command, dataError);
                     unsubscribe.subscribe(ignored -> s.onError(dataError), onError);
                 };
@@ -146,7 +146,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 Logger.info(Peripheral.LOG_TAG, "Writing command " + command);
 
                 final byte[] commandData = command.toByteArray();
-                Observable<Void> write = writeLargeCommand(SenseIdentifiers.CHAR_PROTOBUF_COMMAND, commandData);
+                Observable<Void> write = writeLargeCommand(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND, commandData);
                 write.subscribe(ignored -> {
                     Logger.info(Peripheral.LOG_TAG, "Wrote command " + command);
                     timeout.schedule();
@@ -161,7 +161,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
             timeout.unschedule();
             timeout.recycle();
 
-            Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+            Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
             unsubscribe.subscribe(ignored -> {
                 if (response.getType() == command.getType()) {
                     s.onNext(response);
@@ -320,7 +320,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 timeout.unschedule();
                 timeout.recycle();
 
-                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> {
                     subscriber.onNext(response);
                     subscriber.onCompleted();
@@ -329,13 +329,13 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 timeout.unschedule();
                 timeout.recycle();
 
-                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> subscriber.onError(new SensePeripheralError(response.getError())), subscriber::onError);
             } else {
                 timeout.unschedule();
                 timeout.recycle();
 
-                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHAR_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> subscriber.onError(new GattError(0)), subscriber::onError);
             }
         }).map(ignored -> endpoints);

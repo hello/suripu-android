@@ -53,18 +53,18 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
 
             s.onNext(ConnectStatus.CONNECTING);
             Action1<Throwable> onError = s::onError;
-            peripheral.connect().subscribe(device -> {
+            peripheral.connect().subscribe(peripheral -> {
                 Logger.info(Peripheral.LOG_TAG, "connected to " + toString());
 
                 s.onNext(ConnectStatus.BONDING);
-                device.createBond().subscribe(ignored -> {
+                peripheral.createBond().subscribe(ignored -> {
                     Logger.info(Peripheral.LOG_TAG, "bonded to " + toString());
 
                     s.onNext(ConnectStatus.DISCOVERING_SERVICES);
-                    device.discoverServices(timeout).subscribe(services -> {
+                    peripheral.discoverServices(timeout).subscribe(services -> {
                         Logger.info(Peripheral.LOG_TAG, "discovered services for " + toString());
 
-                        this.peripheralService = device.getService(getTargetServiceIdentifier());
+                        this.peripheralService = peripheral.getService(getTargetServiceIdentifier());
                         s.onNext(ConnectStatus.CONNECTED);
                         s.onCompleted();
                     }, onError);
