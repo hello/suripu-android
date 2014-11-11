@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import is.hello.sense.bluetooth.errors.BondingError;
-import is.hello.sense.bluetooth.errors.GattError;
+import is.hello.sense.bluetooth.errors.BluetoothGattError;
+import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
@@ -125,15 +125,15 @@ public class AndroidPeripheral implements Peripheral {
                 // The first connection attempt made after the user has power-cycled their
                 // bluetooth radio will result in a 133/gatt stack error. Trying again
                 // seems to work 100% of the time.
-                if (gattStatus == GattError.STATUS_GATT_STACK_ERROR && !hasRetried.get()) {
+                if (gattStatus == BluetoothGattError.STACK_ERROR && !hasRetried.get()) {
                     Logger.warn(LOG_TAG, "First connection attempt failed due to stack error, retrying.");
 
                     hasRetried.set(true);
                     gatt.close();
                     this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
                 } else if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
-                    Logger.error(LOG_TAG, "Could not connect. " + GattError.statusToString(gattStatus));
-                    s.onError(new GattError(gattStatus));
+                    Logger.error(LOG_TAG, "Could not connect. " + BluetoothGattError.statusToString(gattStatus));
+                    s.onError(new BluetoothGattError(gattStatus));
 
                     removeThisListener.call();
                 } else if (newState == STATUS_CONNECTED) {
@@ -201,9 +201,9 @@ public class AndroidPeripheral implements Peripheral {
             gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
-                        Logger.info(LOG_TAG, "Could not disconnect " + toString() + "; " + GattError.statusToString(gattStatus));
+                        Logger.info(LOG_TAG, "Could not disconnect " + toString() + "; " + BluetoothGattError.statusToString(gattStatus));
 
-                        s.onError(new GattError(gattStatus));
+                        s.onError(new BluetoothGattError(gattStatus));
                     } else {
                         Logger.info(LOG_TAG, "Disconnected " + toString());
 
@@ -335,7 +335,7 @@ public class AndroidPeripheral implements Peripheral {
                     } else if (state == BluetoothDevice.ERROR) {
                         Logger.error(LOG_TAG, "Bonding failed.");
 
-                        s.onError(new BondingError());
+                        s.onError(new PeripheralBondAlterationError());
 
                         unsubscribe();
                     }
@@ -346,7 +346,7 @@ public class AndroidPeripheral implements Peripheral {
                 Logger.error(LOG_TAG, "createBond failed.");
 
                 subscription.unsubscribe();
-                s.onError(new BondingError());
+                s.onError(new PeripheralBondAlterationError());
             }
         });
     }
@@ -388,7 +388,7 @@ public class AndroidPeripheral implements Peripheral {
                         } else if (state == BluetoothDevice.ERROR) {
                             Logger.error(LOG_TAG, "Unbonding failed.");
 
-                            s.onError(new BondingError());
+                            s.onError(new PeripheralBondAlterationError());
 
                             unsubscribe();
                         }
@@ -397,7 +397,7 @@ public class AndroidPeripheral implements Peripheral {
             } else {
                 Logger.error(LOG_TAG, "removeBond failed.");
 
-                s.onError(new BondingError());
+                s.onError(new PeripheralBondAlterationError());
             }
         });
     }
@@ -433,10 +433,10 @@ public class AndroidPeripheral implements Peripheral {
 
                     gattDispatcher.onServicesDiscovered = null;
                 } else {
-                    Logger.error(LOG_TAG, "Could not discover services. " + GattError.statusToString(status));
+                    Logger.error(LOG_TAG, "Could not discover services. " + BluetoothGattError.statusToString(status));
 
                     this.cachedPeripheralServices = null;
-                    s.onError(new GattError(status));
+                    s.onError(new BluetoothGattError(status));
 
                     gattDispatcher.onServicesDiscovered = null;
                 }
@@ -498,8 +498,8 @@ public class AndroidPeripheral implements Peripheral {
                         s.onNext(characteristicIdentifier);
                         s.onCompleted();
                     } else {
-                        Logger.error(LOG_TAG, "Could not subscribe to characteristic. " + GattError.statusToString(status));
-                        s.onError(new GattError(status));
+                        Logger.error(LOG_TAG, "Could not subscribe to characteristic. " + BluetoothGattError.statusToString(status));
+                        s.onError(new BluetoothGattError(status));
                     }
 
                     gattDispatcher.onDescriptorWrite = null;
@@ -507,10 +507,10 @@ public class AndroidPeripheral implements Peripheral {
                 if (gatt.writeDescriptor(descriptorToWrite)) {
                     timeout.schedule();
                 } else {
-                    s.onError(new GattError(BluetoothGatt.GATT_FAILURE));
+                    s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE));
                 }
             } else {
-                s.onError(new GattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
+                s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
         });
     }
@@ -541,11 +541,11 @@ public class AndroidPeripheral implements Peripheral {
                         s.onNext(characteristicIdentifier);
                         s.onCompleted();
                     } else {
-                        Logger.error(LOG_TAG, "Could not unsubscribe from characteristic. " + GattError.statusToString(status));
-                        s.onError(new GattError(BluetoothGatt.GATT_FAILURE));
+                        Logger.error(LOG_TAG, "Could not unsubscribe from characteristic. " + BluetoothGattError.statusToString(status));
+                        s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE));
                     }
                 } else {
-                    s.onError(new GattError(status));
+                    s.onError(new BluetoothGattError(status));
                 }
 
                 gattDispatcher.onDescriptorWrite = null;
@@ -555,7 +555,7 @@ public class AndroidPeripheral implements Peripheral {
             if (gatt.writeDescriptor(descriptor)) {
                 timeout.schedule();
             } else {
-                s.onError(new GattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
+                s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
         });
     }
@@ -577,8 +577,8 @@ public class AndroidPeripheral implements Peripheral {
                 timeout.recycle();
 
                 if (status != BluetoothGatt.GATT_SUCCESS) {
-                    Logger.error(LOG_TAG, "Could not write command " + identifier + ", " + GattError.statusToString(status));
-                    s.onError(new GattError(status));
+                    Logger.error(LOG_TAG, "Could not write command " + identifier + ", " + BluetoothGattError.statusToString(status));
+                    s.onError(new BluetoothGattError(status));
                 } else {
                     s.onNext(null);
                     s.onCompleted();
@@ -591,7 +591,7 @@ public class AndroidPeripheral implements Peripheral {
             if (gatt.writeCharacteristic(characteristic)) {
                 timeout.schedule();
             } else {
-                s.onError(new GattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
+                s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
         });
     }

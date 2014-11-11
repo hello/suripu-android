@@ -12,7 +12,6 @@ import is.hello.sense.bluetooth.devices.transmission.SensePacketDataHandler;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.BluetoothError;
-import is.hello.sense.bluetooth.errors.GattError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
@@ -336,7 +335,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
-                unsubscribe.subscribe(ignored -> subscriber.onError(new GattError(0)), subscriber::onError);
+                unsubscribe.subscribe(ignored -> subscriber.onError(new SensePeripheralError(MorpheusBle.ErrorType.INTERNAL_DATA_ERROR)), subscriber::onError);
             }
         }).map(ignored -> endpoints);
     }

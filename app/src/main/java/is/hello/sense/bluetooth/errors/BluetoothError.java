@@ -3,8 +3,8 @@ package is.hello.sense.bluetooth.errors;
 /**
  * Super type of all errors yielded by the low level Bluetooth stack.
  *
- * @see is.hello.sense.bluetooth.errors.BondingError
- * @see is.hello.sense.bluetooth.errors.GattError
+ * @see PeripheralBondAlterationError
+ * @see BluetoothGattError
  * @see is.hello.sense.bluetooth.errors.PeripheralConnectionError
  * @see is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError
  */

@@ -3,14 +3,20 @@ package is.hello.sense.bluetooth.errors;
 import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
 
-public class GattError extends BluetoothError {
+/**
+ * Used to report errors from the gatt layer of the Android bluetooth stack.
+ * <p/>
+ * This error type generally should not be used outside of direct interactions
+ * with a {@see is.hello.sense.bluetooth.stacks.Peripheral} object.
+ */
+public class BluetoothGattError extends BluetoothError {
     /**
      * This error code shows up if you turn off the Bluetooth radio,
      * and a device has an open gatt layer <em>and</em> is bonded.
      * Retrying your connection after receiving this error will work
      * seemingly 100% of the time.
      */
-    public static final int STATUS_GATT_STACK_ERROR = 133;
+    public static final int STACK_ERROR = 133;
 
     public final int statusCode;
 
@@ -44,15 +50,15 @@ public class GattError extends BluetoothError {
                 return "GATT_FAILURE";
 
             case -123:
-            case STATUS_GATT_STACK_ERROR:
-                return "GATT_ERROR";
+            case STACK_ERROR:
+                return "GATT_STACK_ERROR";
 
             default:
                 return "UNKNOWN: " + status;
         }
     }
 
-    public GattError(int status) {
+    public BluetoothGattError(int status) {
         super(statusToString(status));
 
         this.statusCode = status;

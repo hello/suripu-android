@@ -12,7 +12,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
-import is.hello.sense.bluetooth.errors.GattError;
+import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
@@ -73,12 +73,12 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
     @Override
     public boolean errorRequiresReconnect(@Nullable Throwable e) {
-        return e != null && (e instanceof OperationTimeoutError || e instanceof GattError);
+        return e != null && (e instanceof OperationTimeoutError || e instanceof BluetoothGattError);
     }
 
     @Override
     public boolean isErrorFatal(@Nullable Throwable e) {
-        return e != null && (e instanceof GattError && ((GattError) e).statusCode == GattError.STATUS_GATT_STACK_ERROR);
+        return e != null && (e instanceof BluetoothGattError && ((BluetoothGattError) e).statusCode == BluetoothGattError.STACK_ERROR);
     }
 
     @Override
