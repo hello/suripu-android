@@ -15,14 +15,13 @@ import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.GattError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.bluetooth.stacks.util.ScanResponse;
-import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
-import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
+import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
+import is.hello.sense.bluetooth.stacks.util.ScanResponse;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Observer;
@@ -235,7 +234,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         Logger.info(Peripheral.LOG_TAG, "clearPairedPhone()");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(CommandType.MORPHEUS_COMMAND_EREASE_PAIRED_PHONE)
+                .setType(CommandType.MORPHEUS_COMMAND_ERASE_PAIRED_PHONE)
                 .setVersion(COMMAND_VERSION)
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(ignored -> null);

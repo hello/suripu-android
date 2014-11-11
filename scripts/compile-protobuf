@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Example exports
+# export HELLO_SURIPU_PROTOBUF_SRC="/Users/km/Documents/Projects/kodobannin/morpheus/morpheus_ble.proto"
+# export HELLO_SURIPU_PROTOBUF_OUTPUT_PKG="is.hello.sense.bluetooth.devices.transmission.protobuf"
+# export HELLO_SURIPU_PROTOBUF_OUTPUT_FILENAME="MorpheusBle.java"
+
+echo_error() {
+	echo "$(tput setaf 1)$1$(tput sgr0)"
+}
+
+echo_success() {
+	echo "$(tput setaf 2)$1$(tput sgr0)"
+}
+
+if [ -z $HELLO_SURIPU_PROTOBUF_SRC ]; then
+	echo_error "HELLO_SURIPU_PROTOBUF_SRC not specified"
+	exit
+fi
+
+if [ -z $HELLO_SURIPU_PROTOBUF_OUTPUT_PKG ]; then
+	echo_error "HELLO_SURIPU_PROTOBUF_OUTPUT_PKG not specified"
+	exit
+fi
+
+if [ -z $HELLO_SURIPU_PROTOBUF_OUTPUT_FILENAME ]; then
+	echo_error "HELLO_SURIPU_PROTOBUF_OUTPUT_FILENAME not specified"
+	exit
+fi
+
+SRC_DIR=$(dirname "$HELLO_SURIPU_PROTOBUF_SRC")
+OUTPUT_DIR="app/src/main/java/is/hello/sense/bluetooth/devices/transmission/protobuf"
+
+echo_success "-> Compiling protobuf definitions"
+protoc \
+	--proto_path="$SRC_DIR" \
+	--java_out="$OUTPUT_DIR" \
+	"$HELLO_SURIPU_PROTOBUF_SRC"
+
+OUTPUT_FILE="$OUTPUT_DIR/$HELLO_SURIPU_PROTOBUF_OUTPUT_FILENAME"
+
+echo_success "-> Inserting package on '$HELLO_SURIPU_PROTOBUF_OUTPUT_FILENAME'"
+echo "package $HELLO_SURIPU_PROTOBUF_OUTPUT_PKG;" | cat - "$OUTPUT_FILE" > temp && mv "temp" "$OUTPUT_FILE"
+
+echo_success "Compiled protobuf to $OUTPUT_DIR"
