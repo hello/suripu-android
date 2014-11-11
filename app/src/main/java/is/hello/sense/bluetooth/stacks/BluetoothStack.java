@@ -58,7 +58,7 @@ public interface BluetoothStack {
      * fatal in the context of the bluetooth stack implementation,
      * and the client code should disconnect and perform a rediscovery.
      */
-    boolean doesErrorRequireReconnect(@Nullable Throwable e);
+    boolean errorRequiresReconnect(@Nullable Throwable e);
 
     /**
      * Returns whether or not the given error is severe enough that

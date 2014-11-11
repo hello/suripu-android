@@ -10,20 +10,21 @@ public final class ScanResponse {
     public final int type;
     public final byte[] payload;
 
-    public static @NonNull Set<ScanResponse> parse(byte[] scanResponse) {
-        HashSet<ScanResponse> parsedResponses = new HashSet<>();
+    public static @NonNull Set<ScanResponse> parse(byte[] rawResponse) {
+        Set<ScanResponse> parsedResponses = new HashSet<>();
         int index = 0;
-        while (index < scanResponse.length) {
-            byte dataLength = scanResponse[index++];
-            if (dataLength == 0)
+        while (index < rawResponse.length) {
+            byte dataLength = rawResponse[index++];
+            if (dataLength == 0) {
                 break;
+            }
 
-            int dataType = scanResponse[index];
+            int dataType = rawResponse[index];
             if (dataType == 0) {
                 break;
             }
 
-            byte[] payload = Arrays.copyOfRange(scanResponse, index + 1, index + dataLength);
+            byte[] payload = Arrays.copyOfRange(rawResponse, index + 1, index + dataLength);
             parsedResponses.add(new ScanResponse(dataType, payload));
 
             index += dataLength;

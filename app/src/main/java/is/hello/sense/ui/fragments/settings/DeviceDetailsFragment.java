@@ -97,7 +97,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
         if (device.getType() == Device.Type.SENSE && bluetoothAdapter.isEnabled()) {
             this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_scanning_for_sense), false);
-            bindAndSubscribe(this.hardwarePresenter.discoverDevice(device), this::bindHardwareDevice, this::presentError);
+            bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device), this::bindPeripheral, this::presentError);
 
             bindAndSubscribe(this.hardwarePresenter.bluetoothEnabled, this::onBluetoothStateChanged, Functions.LOG_ERROR);
         }
@@ -127,8 +127,8 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         }
     }
 
-    public void bindHardwareDevice(@NonNull SensePeripheral device) {
-        int rssi = device.getScannedRssi();
+    public void bindPeripheral(@NonNull SensePeripheral peripheral) {
+        int rssi = peripheral.getScannedRssi();
         String strength;
         if (rssi <= -30) {
             strength = getString(R.string.signal_strong);
@@ -142,10 +142,10 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             signalStrengthItem.setValue(strength);
         }
 
-        if (device.isConnected()) {
+        if (peripheral.isConnected()) {
             LoadingDialogFragment.close(getFragmentManager());
         } else {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(device),
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral),
                     status -> {
                         switch (status) {
                             case CONNECTING:
@@ -203,7 +203,9 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
         LoadingDialogFragment.show(getFragmentManager());
 
-        bindAndSubscribe(hardwarePresenter.putIntoPairingMode(), device -> LoadingDialogFragment.close(getFragmentManager()), this::presentError);
+        bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
+                         ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                         this::presentError);
     }
 
     @SuppressWarnings("CodeBlock2Expr")
@@ -219,7 +221,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         dialog.setNegativeButton(android.R.string.cancel, null);
         dialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> {
             LoadingDialogFragment.show(getFragmentManager());
-            bindAndSubscribe(hardwarePresenter.factoryReset(), device -> {
+            bindAndSubscribe(hardwarePresenter.factoryReset(), ignored -> {
                 LoadingDialogFragment.close(getFragmentManager());
                 apiSessionManager.logOut(getActivity());
                 getActivity().finish();

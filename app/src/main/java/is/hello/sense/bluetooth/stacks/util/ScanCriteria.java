@@ -15,8 +15,19 @@ public final class ScanCriteria {
      */
     public static final int DEFAULT_DURATION_MS = 10000;
 
+    /**
+     * Device addresses to match against when performing a scan.
+     * <p/>
+     * This list being empty has the effect of all addresses being acceptable.
+     */
     public final List<String> peripheralAddresses = new ArrayList<>();
 
+    /**
+     * Advertising data to match against when a device is discovered.
+     * <p/>
+     * This list being empty has the effect of advertising data
+     * not being used to determine what devices are acceptable.
+     */
     public final List<ScanResponse> constraints = new ArrayList<>();
 
     /**

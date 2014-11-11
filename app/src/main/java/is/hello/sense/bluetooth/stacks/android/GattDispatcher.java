@@ -22,10 +22,10 @@ import rx.functions.Action3;
 class GattDispatcher extends BluetoothGattCallback {
     private final List<ConnectionStateListener> connectionStateListeners = new ArrayList<>();
 
-    public @Nullable PacketHandler packetHandler;
-    public @Nullable Action2<BluetoothGatt, Integer> onServicesDiscovered;
-    public @Nullable Action3<BluetoothGatt, BluetoothGattCharacteristic, Integer> onCharacteristicWrite;
-    public @Nullable Action3<BluetoothGatt, BluetoothGattDescriptor, Integer> onDescriptorWrite;
+    @Nullable PacketHandler packetHandler;
+    @Nullable Action2<BluetoothGatt, Integer> onServicesDiscovered;
+    @Nullable Action3<BluetoothGatt, BluetoothGattCharacteristic, Integer> onCharacteristicWrite;
+    @Nullable Action3<BluetoothGatt, BluetoothGattDescriptor, Integer> onDescriptorWrite;
 
     void addConnectionStateListener(@NonNull ConnectionStateListener changeHandler) {
         connectionStateListeners.add(changeHandler);

@@ -41,7 +41,7 @@ public class Onboarding2ndPillInfoFragment extends InjectionFragment {
 
     public void putSenseIntoPairingMode() {
         if (hardwarePresenter.getPeripheral() == null) {
-            bindAndSubscribe(hardwarePresenter.rediscoverPeripheral(), ignored -> putSenseIntoPairingMode(), Functions.LOG_ERROR);
+            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(), ignored -> putSenseIntoPairingMode(), Functions.LOG_ERROR);
             return;
         }
 

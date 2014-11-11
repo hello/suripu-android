@@ -17,7 +17,6 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingPairPillFragment extends InjectionFragment {
@@ -92,7 +91,7 @@ public class OnboardingPairPillFragment extends InjectionFragment {
         beginPairing();
 
         if (hardwarePresenter.getPeripheral() == null) {
-            bindAndSubscribe(hardwarePresenter.rediscoverPeripheral(), device -> pairPill(), this::presentError);
+            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(), ignored -> pairPill(), this::presentError);
             return;
         }
 

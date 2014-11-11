@@ -23,8 +23,7 @@ import rx.Subscription;
 
 final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>>, BluetoothAdapter.LeScanCallback {
     private final @NonNull AndroidBluetoothStack deviceCenter;
-    private final @NonNull
-    ScanCriteria scanCriteria;
+    private final @NonNull ScanCriteria scanCriteria;
     private final Map<String, Pair<BluetoothDevice, Integer>> results = new HashMap<>();
 
     private Subscriber<? super List<Peripheral>> subscriber;

@@ -42,7 +42,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     private final ApiSessionManager apiSessionManager;
     private final BluetoothStack bluetoothStack;
 
-    private @Nullable Observable<SensePeripheral> repairingTask;
+    private @Nullable Observable<SensePeripheral> rediscovery;
     private @Nullable SensePeripheral peripheral;
 
     private final Action1<Throwable> respondToError;
@@ -57,7 +57,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         this.apiSessionManager = apiSessionManager;
         this.bluetoothStack = bluetoothStack;
         this.respondToError = e -> {
-            if (bluetoothStack.doesErrorRequireReconnect(e)) {
+            if (bluetoothStack.errorRequiresReconnect(e)) {
                 clearPeripheral();
             }
         };
@@ -70,7 +70,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     public void onUserLoggedOut(@NonNull Intent intent) {
-        setPairedDeviceAddress(null);
+        setLastPeripheralAddress(null);
         setPairedPillId(null);
     }
 
@@ -82,7 +82,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
 
-    public void setPairedDeviceAddress(@Nullable String address) {
+    public void setLastPeripheralAddress(@Nullable String address) {
         logEvent("saving paired peripheral address: " + address);
 
         SharedPreferences.Editor editor = preferencesPresenter.edit();
@@ -125,37 +125,37 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return SensePeripheral.discover(bluetoothStack, new ScanCriteria());
     }
 
-    public @Nullable SensePeripheral bestDeviceForPairing(@NonNull List<SensePeripheral> devices) {
-        logEvent("bestDeviceForPairing(" + devices + ")");
+    public @Nullable SensePeripheral getClosestPeripheral(@NonNull List<SensePeripheral> peripherals) {
+        logEvent("getClosestPeripheral(" + peripherals + ")");
 
-        if (devices.isEmpty()) {
+        if (peripherals.isEmpty()) {
             return null;
         } else {
-            return Collections.max(devices, (l, r) -> Functions.compareInts(l.getScannedRssi(), r.getScannedRssi()));
+            return Collections.max(peripherals, (l, r) -> Functions.compareInts(l.getScannedRssi(), r.getScannedRssi()));
         }
     }
 
-    public Observable<SensePeripheral> rediscoverPeripheral() {
-        logEvent("rediscoverPeripheral()");
+    public Observable<SensePeripheral> rediscoverLastPeripheral() {
+        logEvent("rediscoverLastPeripheral()");
 
         if (peripheral != null) {
-            logEvent("device already rediscovered " + peripheral);
+            logEvent("peripheral already rediscovered " + peripheral);
 
             return Observable.just(peripheral);
         }
 
-        if (repairingTask != null) {
-            return repairingTask;
+        if (rediscovery != null) {
+            return rediscovery;
         }
 
-        String deviceAddress = preferencesPresenter.getString(PreferencesPresenter.PAIRED_DEVICE_ADDRESS, null);
-        if (TextUtils.isEmpty(deviceAddress)) {
+        String address = preferencesPresenter.getString(PreferencesPresenter.PAIRED_DEVICE_ADDRESS, null);
+        if (TextUtils.isEmpty(address)) {
             return Observable.error(new Exception(""));
         } else {
-            this.repairingTask = SensePeripheral.discover(bluetoothStack, ScanCriteria.forAddress(deviceAddress)).flatMap(devices -> {
-                if (!devices.isEmpty()) {
-                    this.peripheral = devices.get(0);
-                    this.repairingTask = null;
+            this.rediscovery = SensePeripheral.discover(bluetoothStack, ScanCriteria.forAddress(address)).flatMap(peripherals -> {
+                if (!peripherals.isEmpty()) {
+                    this.peripheral = peripherals.get(0);
+                    this.rediscovery = null;
 
                     logEvent("rediscoveredDevice(" + peripheral + ")");
                     return Observable.just(peripheral);
@@ -163,12 +163,12 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                     return Observable.error(new Exception("Could not rediscover device."));
                 }
             });
-            return repairingTask;
+            return rediscovery;
         }
     }
 
-    public Observable<SensePeripheral> discoverDevice(@NonNull Device device) {
-        logEvent("discoverDevice(" + device.getDeviceId() + ")");
+    public Observable<SensePeripheral> discoverPeripheralForDevice(@NonNull Device device) {
+        logEvent("discoverPeripheralForDevice(" + device.getDeviceId() + ")");
 
         if (TextUtils.isEmpty(device.getDeviceId()) || device.getType() != Device.Type.SENSE)
             throw new IllegalArgumentException("Malformed Sense device " + device);
@@ -179,18 +179,18 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
             return Observable.just(this.peripheral);
         }
 
-        if (repairingTask != null) {
-            return repairingTask;
+        if (rediscovery != null) {
+            return rediscovery;
         }
 
-        this.repairingTask = SensePeripheral.rediscover(bluetoothStack, device.getDeviceId()).flatMap(peripheral -> {
-            logEvent("rediscoveredDevice(" + peripheral + ")");
+        this.rediscovery = SensePeripheral.rediscover(bluetoothStack, device.getDeviceId()).flatMap(peripheral -> {
+            logEvent("rediscoveredPeripheralForDevice(" + peripheral + ")");
             this.peripheral = peripheral;
-            this.repairingTask = null;
+            this.rediscovery = null;
 
             return Observable.just(this.peripheral);
         });
-        return repairingTask;
+        return rediscovery;
     }
 
     public Observable<HelloPeripheral.ConnectStatus> connectToPeripheral(@NonNull SensePeripheral peripheral) {
@@ -204,7 +204,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
         return peripheral.connect().doOnNext(ignored -> {
             logEvent("pairedWithPeripheral(" + peripheral + ")");
-            setPairedDeviceAddress(peripheral.getAddress());
+            setLastPeripheralAddress(peripheral.getAddress());
             this.peripheral = peripheral;
         });
     }
@@ -218,8 +218,9 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                      .subscribeOn(AndroidSchedulers.mainThread())
                      .doOnError(this.respondToError)
                      .map(networks -> {
-                         if (!networks.isEmpty())
+                         if (!networks.isEmpty()) {
                              Collections.sort(networks, (l, r) -> Functions.compareInts(l.getRssi(), r.getRssi()));
+                         }
 
                          return networks;
                      });
@@ -268,7 +269,10 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         });
     }
 
-    public Observable<Void> sendWifiCredentials(String bssid, String ssid, MorpheusBle.wifi_endpoint.sec_type securityType, String password) {
+    public Observable<Void> sendWifiCredentials(@NonNull String bssid,
+                                                @NonNull String ssid,
+                                                @NonNull MorpheusBle.wifi_endpoint.sec_type securityType,
+                                                @NonNull String password) {
         logEvent("sendWifiCredentials()");
 
         if (peripheral == null) {
@@ -276,8 +280,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         }
 
         return peripheral.setWifiNetwork(bssid, ssid, securityType, password)
-                     .subscribeOn(AndroidSchedulers.mainThread())
-                     .doOnError(this.respondToError);
+                         .subscribeOn(AndroidSchedulers.mainThread())
+                         .doOnError(this.respondToError);
     }
 
     public Observable<Void> linkAccount() {
@@ -288,7 +292,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         }
 
         return peripheral.linkAccount(apiSessionManager.getAccessToken())
-                     .doOnError(this.respondToError);
+                         .doOnError(this.respondToError);
     }
 
     public Observable<String> linkPill() {
@@ -299,11 +303,11 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         }
 
         return peripheral.pairPill(apiSessionManager.getAccessToken())
-                     .doOnNext(pillId -> {
-                         logEvent("linkedWithPill(" + pillId + ")");
-                         setPairedPillId(pillId);
-                     })
-                     .doOnError(this.respondToError);
+                         .doOnNext(pillId -> {
+                             logEvent("linkedWithPill(" + pillId + ")");
+                             setPairedPillId(pillId);
+                         })
+                         .doOnError(this.respondToError);
     }
 
     public Observable<Void> putIntoPairingMode() {
@@ -314,7 +318,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         }
 
         return peripheral.setPairingModeEnabled(true)
-                     .doOnError(this.respondToError);
+                         .doOnError(this.respondToError);
     }
 
     public Observable<Void> factoryReset() {
@@ -325,7 +329,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         }
 
         return peripheral.factoryReset()
-                     .doOnError(this.respondToError);
+                         .doOnError(this.respondToError);
     }
 
     public void clearPeripheral() {
@@ -336,7 +340,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                 logEvent("disconnect from paired peripheral");
 
                 peripheral.disconnect().subscribe(ignored -> logEvent("disconnected peripheral"),
-                                              e -> logEvent("Could not disconnect peripheral " + e));
+                                                  e -> logEvent("Could not disconnect peripheral " + e));
             }
 
             this.peripheral = null;

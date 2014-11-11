@@ -72,7 +72,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
     }
 
     @Override
-    public boolean doesErrorRequireReconnect(@Nullable Throwable e) {
+    public boolean errorRequiresReconnect(@Nullable Throwable e) {
         return e != null && (e instanceof OperationTimeoutError || e instanceof GattError);
     }
 

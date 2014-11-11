@@ -161,14 +161,14 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
         if (hardwarePresenter.getPeripheral() == null) {
             Action1<Throwable> onError = this::deviceRepairFailed;
-            bindAndSubscribe(hardwarePresenter.rediscoverPeripheral(),
-                    device -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(device), status -> {
-                        if (status != HelloPeripheral.ConnectStatus.CONNECTED)
-                            return;
+            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
+                             peripheral -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral), status -> {
+                                 if (status != HelloPeripheral.ConnectStatus.CONNECTED)
+                                     return;
 
-                        sendWifiCredentials();
-                    }, onError),
-                    onError);
+                                 sendWifiCredentials();
+                             }, onError),
+                             onError);
             return;
         }
 

@@ -114,8 +114,8 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
         if (hardwarePresenter.getPeripheral() == null) {
             Action1<Throwable> onError = this::deviceRepairFailed;
-            bindAndSubscribe(hardwarePresenter.rediscoverPeripheral(),
-                             device -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(device), status -> {
+            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
+                             peripheral -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral), status -> {
                                  if (status != HelloPeripheral.ConnectStatus.CONNECTED)
                                      return;
 
