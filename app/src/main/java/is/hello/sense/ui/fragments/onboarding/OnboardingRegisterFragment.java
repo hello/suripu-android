@@ -12,8 +12,6 @@ import android.widget.EditText;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 
-import java.util.TimeZone;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -22,16 +20,12 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
-import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
-import rx.Observable;
-
-import static rx.android.observables.AndroidObservable.bindFragment;
 
 public class OnboardingRegisterFragment extends InjectionFragment {
     private EditText nameText;
@@ -88,8 +82,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
         getOnboardingActivity().beginBlockingWork(R.string.dialog_loading_message);
 
-        Observable<Account> observable = bindFragment(this, apiService.createAccount(newAccount));
-        observable.subscribe(this::login, error -> {
+        bindAndSubscribe(apiService.createAccount(newAccount), this::login, error -> {
             getOnboardingActivity().finishBlockingWork();
             ErrorDialogFragment.presentError(getFragmentManager(), error);
         });
@@ -97,8 +90,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
     public void login(@NonNull Account createdAccount) {
         OAuthCredentials credentials = new OAuthCredentials(environment, emailText.getText().toString(), passwordText.getText().toString());
-        Observable<OAuthSession> observable = bindFragment(this, apiService.authorize(credentials));
-        observable.subscribe(session -> {
+        bindAndSubscribe(apiService.authorize(credentials), session -> {
             getOnboardingActivity().finishBlockingWork();
 
             sessionManager.setSession(session);
