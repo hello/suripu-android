@@ -177,10 +177,11 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
             Observable<Pair<List<Section>, Integer>> generateSeries = Observable.create((Observable.OnSubscribe<Pair<List<Section>, Integer>>) s -> {
                 Function<SensorHistory, Integer> segmentKeyProducer;
+                DateTimeZone timeZone = dateFormatter.getTargetTimeZone();
                 if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
-                    segmentKeyProducer = sensorHistory -> sensorHistory.getTime().getDayOfMonth();
+                    segmentKeyProducer = sensorHistory -> sensorHistory.getTime().withZone(timeZone).getDayOfMonth();
                 } else {
-                    segmentKeyProducer = sensorHistory -> sensorHistory.getTime().getHourOfDay() / 6;
+                    segmentKeyProducer = sensorHistory -> sensorHistory.getTime().withZone(timeZone).getHourOfDay() / 6;
                 }
                 List<List<SensorHistory>> segments = segmentList(segmentKeyProducer, history);
                 List<Section> sections = mapList(segments, Section::new);

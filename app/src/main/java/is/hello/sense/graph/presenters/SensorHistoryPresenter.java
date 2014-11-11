@@ -7,9 +7,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-
 import java.util.List;
 
 import javax.inject.Inject;
@@ -19,7 +16,6 @@ import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
-import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
 public class SensorHistoryPresenter extends Presenter {
@@ -70,9 +66,9 @@ public class SensorHistoryPresenter extends Presenter {
         if (!TextUtils.isEmpty(getSensorName())) {
             Observable<List<SensorHistory>> newHistory;
             if (getMode() == MODE_DAY) {
-                newHistory = apiService.sensorHistoryForDay(getSensorName(), SensorHistory.currentTimeMillisShifted());
+                newHistory = apiService.sensorHistoryForDay(getSensorName(), SensorHistory.timeForLatest());
             } else {
-                newHistory = apiService.sensorHistoryForWeek(getSensorName(), SensorHistory.currentTimeMillisShifted());
+                newHistory = apiService.sensorHistoryForWeek(getSensorName(), SensorHistory.timeForLatest());
             }
             Observable<Pair<List<SensorHistory>, UnitSystem>> result = Observable.combineLatest(newHistory, unitFormatter.unitSystem, Pair::new);
             result.subscribe(history);

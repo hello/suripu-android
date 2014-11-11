@@ -48,7 +48,7 @@ public class SensorHistory extends ApiResponse {
     /**
      * Returns the user's current time, in the UTC timezone. For use with sensor history.
      */
-    public static long currentTimeMillisShifted() {
+    public static long timeForLatest() {
         DateTime now = DateTime.now();
         DateTime nowUTC = new DateTime(
                 now.getYear(),
