@@ -42,36 +42,26 @@ public class SensePacketHandler extends PacketHandler {
         }
 
 
-        int bytesRemain = applicationData.length;
-        for (int i = 0; i < totalPacketCount; i++) {
-            if (i == 0) {
+        int bytesRemaining = applicationData.length;
+        for (int packetIndex = 0; packetIndex < totalPacketCount; packetIndex++) {
+            if (packetIndex == 0) {
                 final byte[] headPacket = new byte[PacketHandler.BLE_PACKET_LEN];
                 headPacket[1] = (byte) totalPacketCount;
-                for (int k = 0; k < PacketHandler.HEADER_PACKET_PAYLOAD_LEN; k++) {
-                    headPacket[k + 2] = applicationData[k];
-                    bytesRemain--;
-                }
+
+                System.arraycopy(applicationData, 0, headPacket, 2, PacketHandler.HEADER_PACKET_PAYLOAD_LEN);
+                bytesRemaining -= PacketHandler.HEADER_PACKET_PAYLOAD_LEN;
+
                 packets.add(headPacket);
+            } else {
+                final int packetLength = (packetIndex == totalPacketCount - 1) ? (bytesRemaining + 1) : PacketHandler.BLE_PACKET_LEN;
+                final byte[] packet = new byte[packetLength];
+                packet[0] = (byte) packetIndex;
 
-            }
+                int dataStart = PacketHandler.HEADER_PACKET_PAYLOAD_LEN + (packetIndex - 1) * PacketHandler.PACKET_PAYLOAD_LEN;
+                int dataAmount = packetLength - 1;
+                System.arraycopy(applicationData, dataStart, packet, 1, dataAmount);
+                bytesRemaining -= dataAmount;
 
-            if (i > 0 && i < totalPacketCount - 1) {
-                final byte[] packet = new byte[PacketHandler.BLE_PACKET_LEN];
-                packet[0] = (byte) i;
-                for (int k = 0; k < packet.length - 1; k++) {
-                    packet[k + 1] = applicationData[PacketHandler.HEADER_PACKET_PAYLOAD_LEN + (i - 1) * PacketHandler.PACKET_PAYLOAD_LEN + k];
-                    bytesRemain--;
-                }
-                packets.add(packet);
-            }
-
-            if (i == totalPacketCount - 1) {
-                final byte[] packet = new byte[bytesRemain + 1];
-                packet[0] = (byte) i;
-                for (int k = 0; k < packet.length - 1; k++) {
-                    packet[k + 1] = applicationData[PacketHandler.HEADER_PACKET_PAYLOAD_LEN + (i - 1) * PacketHandler.PACKET_PAYLOAD_LEN + k];
-                    bytesRemain--;
-                }
                 packets.add(packet);
             }
         }
