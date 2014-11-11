@@ -1,5 +1,7 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -22,11 +24,14 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 
 public class OnboardingPairSenseFragment extends InjectionFragment {
     public static final String ARG_IS_SECOND_USER = OnboardingPairSenseFragment.class.getName() + ".ARG_IS_SECOND_USER";
+
+    private static int REQUEST_CODE_PAIR_HELP = 0x19;
 
     @Inject HardwarePresenter hardwarePresenter;
 
@@ -70,6 +75,15 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         subscribe(hardwarePresenter.bluetoothEnabled, ignored -> updateNextButton(), Functions.LOG_ERROR);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_PAIR_HELP && resultCode == OnboardingPairHelpFragment.RESULT_NEW_SENSE) {
+            TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
+            dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
+        }
+    }
 
     private void updateNextButton() {
         if (bluetoothAdapter.isEnabled())
@@ -138,6 +152,30 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
         } else {
             ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
+    }
+
+
+    public static class TroubleshootSenseDialogFragment extends DialogFragment {
+        public static final String TAG = TroubleshootSenseDialogFragment.class.getSimpleName();
+
+        public static final int RESULT_HELP = 0x505;
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+
+            dialog.setTitle(R.string.dialog_title_troubleshoot_sense);
+            dialog.setMessage(R.string.dialog_message_troubleshoot_sense);
+
+            dialog.setPositiveButton(android.R.string.ok, null);
+            dialog.setNegativeButton(R.string.action_help, (sender, which) -> {
+                if (getTargetFragment() != null) {
+                    getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_HELP, null);
+                }
+            });
+
+            return dialog;
         }
     }
 }
