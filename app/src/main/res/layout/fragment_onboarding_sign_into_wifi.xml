@@ -44,6 +44,36 @@
         android:imeOptions="actionSend|flagNoExtractUi"
         android:hint="@string/label_password"/>
 
+    <RelativeLayout
+        android:id="@+id/fragment_onboarding_sign_into_wifi_security_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:background="@drawable/edit_text_background_normal">
+
+        <TextView
+            android:id="@+id/fragment_onboarding_sign_into_wifi_security_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/gap_tiny"
+            android:layout_marginRight="@dimen/gap_tiny"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:text="@string/title_security"
+            android:textSize="@dimen/text_size_medium"
+            android:textColor="?android:textColorHint"/>
+
+        <Spinner
+            android:id="@+id/fragment_onboarding_sign_into_wifi_security"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:gravity="end|center_vertical"
+            style="@style/AppTheme.Spinner"/>
+
+    </RelativeLayout>
+
     <Button
         android:id="@+id/fragment_onboarding_step_help"
         android:layout_width="match_parent"

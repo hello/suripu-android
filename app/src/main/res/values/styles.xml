@@ -25,6 +25,7 @@
         <item name="android:imageButtonStyle">@style/AppTheme.Button.Borderless</item>
         <item name="android:editTextStyle">@style/AppTheme.Text.EditText</item>
         <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
+        <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
 
         <item name="android:listDivider">@color/border</item>
         <item name="android:dividerHeight">@dimen/divider_height</item>
@@ -96,7 +97,7 @@
     </style>
 
     <style name="AppTheme.DropDownNav" parent="@android:style/Widget.Holo.Light.Spinner">
-        <item name="android:background">@drawable/app_theme_spinner_background_ab</item>
+        <item name="android:background">@drawable/spinner_background_selector</item>
         <item name="android:popupBackground">@drawable/app_theme_menu_dropdown_panel</item>
         <item name="android:dropDownSelector">@drawable/app_theme_selectable_background</item>
     </style>
@@ -209,6 +210,15 @@
 
     <style name="AppTheme.Button.Dialog.Positive">
         <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
+    </style>
+
+    <!-- Spinners -->
+
+    <style name="AppTheme.Spinner" parent="android:Widget.Holo.Light.Spinner">
+        <item name="android:background">@drawable/spinner_background_selector</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:popupBackground">@drawable/app_theme_menu_dropdown_panel</item>
+        <item name="android:dropDownSelector">@drawable/app_theme_selectable_background</item>
     </style>
 
     <!-- Dividers -->

@@ -3,15 +3,20 @@ package is.hello.sense.ui.fragments.onboarding;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -48,6 +53,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
     private EditText networkName;
     private EditText networkPassword;
+    private Spinner networkSecurity;
 
     private LoadingDialogFragment loadingDialogFragment;
 
@@ -88,9 +94,15 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         this.networkPassword = (EditText) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_password);
         networkPassword.setOnEditorActionListener(new EditorActionHandler(this::sendWifiCredentials));
 
+        ViewGroup securityContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_security_container);
+        this.networkSecurity = (Spinner) securityContainer.findViewById(R.id.fragment_onboarding_sign_into_wifi_security);
+
         if (network != null) {
             this.networkName.setText(network.getSsid());
             this.networkPassword.requestFocus();
+            securityContainer.setVisibility(View.GONE);
+        } else {
+            networkSecurity.setAdapter(new SecurityTypeAdapter(getActivity()));
         }
 
         return view;
@@ -165,11 +177,12 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
             return;
         }
 
-        sec_type securityType = sec_type.SL_SCAN_SEC_TYPE_OPEN;
-        if (network != null)
+        sec_type securityType;
+        if (network != null) {
             securityType = network.getSecurityType();
-        else if (!TextUtils.isEmpty(password))
-            securityType = sec_type.SL_SCAN_SEC_TYPE_WPA2; // Do we ask for this info?
+        } else {
+            securityType = (sec_type) networkSecurity.getSelectedItem();
+        }
 
         bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, securityType, password), ignored -> {
             this.hasConnectedToNetwork = true;
@@ -276,6 +289,45 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
             } else {
                 getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_NOT_LINKED, null);
             }
+        }
+    }
+
+    private static class SecurityTypeAdapter extends ArrayAdapter<sec_type> {
+        private SecurityTypeAdapter(Context context) {
+            super(context, R.layout.item_sec_type, sec_type.values());
+        }
+
+        private @StringRes int getTitle(int position) {
+            switch (getItem(position)) {
+                case SL_SCAN_SEC_TYPE_OPEN:
+                    return R.string.sec_type_open;
+
+                case SL_SCAN_SEC_TYPE_WEP:
+                    return R.string.sec_type_wep;
+
+                case SL_SCAN_SEC_TYPE_WPA:
+                    return R.string.sec_type_wpa;
+
+                case SL_SCAN_SEC_TYPE_WPA2:
+                    return R.string.sec_type_wpa2;
+
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView text = (TextView) super.getView(position, convertView, parent);
+            text.setText(getTitle(position));
+            return text;
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            TextView text = (TextView) super.getDropDownView(position, convertView, parent);
+            text.setText(getTitle(position));
+            return text;
         }
     }
 }
