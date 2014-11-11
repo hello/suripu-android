@@ -1,17 +1,12 @@
 package is.hello.sense.ui.common;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.SenseApplication;
@@ -24,7 +19,7 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.operators.OperatorConditionalBinding;
 
-public class InjectionFragment extends Fragment implements ObservableContainer, PresenterContainer, ResumeScheduler.Resumable {
+public class InjectionFragment extends SenseFragment implements ObservableContainer, PresenterContainer, ResumeScheduler.Resumable {
     protected ArrayList<Subscription> subscriptions = new ArrayList<>();
     protected ArrayList<Presenter> presenters;
 
@@ -178,25 +173,5 @@ public class InjectionFragment extends Fragment implements ObservableContainer, 
             this.presenters = new ArrayList<>();
 
         return presenters;
-    }
-
-
-    /**
-     * Safely pops the fragment from the back stack, propagating a result value
-     * and response Intent to the receiver's target fragment.
-     * <p/>
-     * This method requires a target fragment and the receiver be attached to an activity.
-     * @param resultCode    The result code to propagate back.
-     * @param response      The result of the fragment.
-     * @return  true if the fragment was popped and the target fragment informed; false otherwise.
-     */
-    protected boolean popFromBackStack(int resultCode, @Nullable Intent response) {
-        if (getTargetFragment() != null && getFragmentManager() != null) {
-            new Handler().post(() -> getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, response));
-            getFragmentManager().popBackStackImmediate();
-            return true;
-        } else {
-            return false;
-        }
     }
 }

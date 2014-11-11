@@ -34,6 +34,8 @@ import static rx.android.observables.AndroidObservable.fromBroadcast;
 public class OnboardingPairSenseFragment extends InjectionFragment {
     public static final String ARG_IS_SECOND_USER = OnboardingPairSenseFragment.class.getName() + ".ARG_IS_SECOND_USER";
 
+    private static int REQUEST_CODE_PAIR_HELP = 0x19;
+
     @Inject HardwarePresenter hardwarePresenter;
 
     private boolean isSecondUser = false;
@@ -76,6 +78,15 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         subscribe(bluetoothStateChanged, ignored -> updateNextButton(), Functions.LOG_ERROR);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_PAIR_HELP && resultCode == OnboardingPairHelpFragment.RESULT_NEW_SENSE) {
+            TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
+            dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
+        }
+    }
 
     private void updateNextButton() {
         if (bluetoothAdapter.isEnabled())

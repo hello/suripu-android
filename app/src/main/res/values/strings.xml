@@ -202,6 +202,12 @@
     <string name="action_help">Help</string>
     <string name="dialog_title_troubleshoot_sense">Sense Not Found</string>
     <string name="dialog_message_troubleshoot_sense">We could not connect to your Sense. Please make sure your Sense is plugged in, nearby, and in Pairing Mode.</string>
+    <string name="title_fragment_onboarding_pair_help">Adding a second Sleep Pill?</string>
+    <string name="info_fragment_onboarding_pair_help">Are you adding a second Sleep Pill to a Sense that has been set up previously, or are you setting up Sense for the first time?</string>
+    <string name="title_fragment_onboarding_pair_help_2nd_pill">I\'m adding a second sleep pill</string>
+    <string name="title_fragment_onboarding_pair_help_new_sense">I\'m setting up a new Sense</string>
+    <string name="info_onboarding_partner_info"><![CDATA[To connect a second Sleep Pill, Sense needs to be put into pairing mode.\n\nAsk the owner of the first Sleep Pill to stand next to Sense and open the Sense app, then go to Settings > Devices > Sense and tap \'Put Sense into Pairing Mode\'.\n\nSense will glow purple when it is in pairing mode.]]></string>
+    <string name="title_onboarding_partner_info">Add a second Sleep Pill</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
