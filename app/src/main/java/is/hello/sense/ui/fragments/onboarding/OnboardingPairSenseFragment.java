@@ -18,9 +18,11 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
+import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -141,14 +143,18 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
                 }
             }, this::pairingFailed);
         } else {
-            pairingFailed(new Exception("Could not find any devices."));
+            pairingFailed(new PeripheralConnectionError());
         }
     }
 
     public void pairingFailed(Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
-        if (hardwarePresenter.isErrorFatal(e)) {
+        if (e instanceof PeripheralConnectionError) {
+            OnboardingPairHelpFragment pairHelpFragment = new OnboardingPairHelpFragment();
+            pairHelpFragment.setTargetFragment(this, REQUEST_CODE_PAIR_HELP);
+            ((FragmentNavigation) getActivity()).showFragment(pairHelpFragment, null, true);
+        } else if (hardwarePresenter.isErrorFatal(e)) {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
         } else {
             ErrorDialogFragment.presentError(getFragmentManager(), e);

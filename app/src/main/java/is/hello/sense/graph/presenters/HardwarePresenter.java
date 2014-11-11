@@ -125,8 +125,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return SensePeripheral.discover(bluetoothStack, new ScanCriteria());
     }
 
-    public @Nullable
-    SensePeripheral bestDeviceForPairing(@NonNull List<SensePeripheral> devices) {
+    public @Nullable SensePeripheral bestDeviceForPairing(@NonNull List<SensePeripheral> devices) {
         logEvent("bestDeviceForPairing(" + devices + ")");
 
         if (devices.isEmpty()) {
