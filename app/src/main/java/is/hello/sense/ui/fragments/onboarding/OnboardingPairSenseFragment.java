@@ -1,5 +1,7 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -23,6 +25,7 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 
@@ -120,6 +123,30 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         if (onboardingActivity != null) {
             onboardingActivity.finishBlockingWork();
             ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
+    }
+
+
+    public static class TroubleshootSenseDialogFragment extends DialogFragment {
+        public static final String TAG = TroubleshootSenseDialogFragment.class.getSimpleName();
+
+        public static final int RESULT_HELP = 0x505;
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+
+            dialog.setTitle(R.string.dialog_title_troubleshoot_sense);
+            dialog.setMessage(R.string.dialog_message_troubleshoot_sense);
+
+            dialog.setPositiveButton(android.R.string.ok, null);
+            dialog.setNegativeButton(R.string.action_help, (sender, which) -> {
+                if (getTargetFragment() != null) {
+                    getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_HELP, null);
+                }
+            });
+
+            return dialog;
         }
     }
 }
