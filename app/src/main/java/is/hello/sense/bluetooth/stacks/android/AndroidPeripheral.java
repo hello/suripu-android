@@ -612,7 +612,7 @@ public class AndroidPeripheral implements Peripheral {
 
     @Override
     public String toString() {
-        return "{NativeDevice " +
+        return "{AndroidPeripheral " +
                 "name=" + getName() +
                 ", address=" + getAddress() +
                 ", connectionStatus=" + getConnectionStatus() +
