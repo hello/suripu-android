@@ -360,7 +360,7 @@ public final class LineGraphView extends FrameLayout {
     //endregion
 
     public interface Adapter {
-        int getPeakMagnitude();
+        float getPeakMagnitude();
         int getSectionCount();
         int getSectionPointCount(int section);
         float getMagnitudeAt(int section, int position);

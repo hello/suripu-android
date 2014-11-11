@@ -161,7 +161,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
     public class Adapter implements LineGraphView.Adapter {
         private List<Section> sections = new ArrayList<>();
-        private int peakMagnitude = 100;
+        private float peakMagnitude = 100;
         private UnitSystem unitSystem;
         private boolean use24Time = false;
 
@@ -175,7 +175,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
             Log.i(SensorHistoryFragment.class.getSimpleName(), "history: " + history);
 
-            Observable<Pair<List<Section>, Integer>> generateSeries = Observable.create((Observable.OnSubscribe<Pair<List<Section>, Integer>>) s -> {
+            Observable<Pair<List<Section>, Float>> generateSeries = Observable.create((Observable.OnSubscribe<Pair<List<Section>, Float>>) s -> {
                 Function<SensorHistory, Integer> segmentKeyProducer;
                 DateTimeZone timeZone = dateFormatter.getTargetTimeZone();
                 if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
@@ -187,9 +187,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 List<Section> sections = mapList(segments, Section::new);
 
                 float peak = Collections.max(history, (l, r) -> Float.compare(l.getValue(), r.getValue())).getValue();
-                int constrainedPeak = Math.max(100, (int) peak);
-
-                s.onNext(Pair.create(sections, constrainedPeak));
+                s.onNext(Pair.create(sections, peak));
                 s.onCompleted();
             }).subscribeOn(Schedulers.computation());
 
@@ -231,7 +229,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
 
         @Override
-        public int getPeakMagnitude() {
+        public float getPeakMagnitude() {
             return peakMagnitude;
         }
 
