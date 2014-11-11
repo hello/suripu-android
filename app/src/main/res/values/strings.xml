@@ -208,6 +208,11 @@
     <string name="title_fragment_onboarding_pair_help_new_sense">I\'m setting up a new Sense</string>
     <string name="info_onboarding_partner_info"><![CDATA[To connect a second Sleep Pill, Sense needs to be put into pairing mode.\n\nAsk the owner of the first Sleep Pill to stand next to Sense and open the Sense app, then go to Settings > Devices > Sense and tap \'Put Sense into Pairing Mode\'.\n\nSense will glow purple when it is in pairing mode.]]></string>
     <string name="title_onboarding_partner_info">Add a second Sleep Pill</string>
+    <string name="title_security">Security</string>
+    <string name="sec_type_wpa2">WPA2</string>
+    <string name="sec_type_wpa">WPA</string>
+    <string name="sec_type_wep">WEP</string>
+    <string name="sec_type_open">Open</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
