@@ -15,15 +15,11 @@ import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
-import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
-import rx.Observable;
-
-import static rx.android.observables.AndroidObservable.bindFragment;
 
 public class OnboardingSignInFragment extends InjectionFragment {
     @Inject ApiSessionManager apiSessionManager;
@@ -70,8 +66,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         getOnboardingActivity().beginBlockingWork(R.string.dialog_loading_message);
 
         OAuthCredentials credentials = new OAuthCredentials(environment, email, password);
-        Observable<OAuthSession> request = bindFragment(this, apiService.authorize(credentials));
-        request.subscribe(session -> {
+        bindAndSubscribe(apiService.authorize(credentials), session -> {
             apiSessionManager.setSession(session);
             getOnboardingActivity().showHomeActivity();
 

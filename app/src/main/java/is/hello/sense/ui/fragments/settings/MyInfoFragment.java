@@ -39,8 +39,6 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static rx.android.observables.AndroidObservable.bindFragment;
-
 public class MyInfoFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
     private static final int REQUEST_CODE_TIME_ZONE = 0x19;
 
@@ -90,9 +88,9 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
         super.onViewCreated(view, savedInstanceState);
 
         Observable<Pair<Account, UnitSystem>> forAccount = Observable.combineLatest(accountPresenter.account,
-                unitFormatter.unitSystem,
-                Pair::new);
-        track(bindFragment(this, forAccount).subscribe(this::bindAccount, this::accountUnavailable));
+                                                                                    unitFormatter.unitSystem,
+                                                                                    Pair::new);
+        bindAndSubscribe(forAccount, this::bindAccount, this::accountUnavailable);
     }
 
     @Override
