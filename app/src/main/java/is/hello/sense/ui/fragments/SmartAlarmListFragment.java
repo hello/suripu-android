@@ -109,18 +109,15 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
                     currentAlarms.remove(index);
                 }
             }
-
-            LoadingDialogFragment.show(getFragmentManager());
-            smartAlarmPresenter.save(currentAlarms);
         } else if (requestCode == DELETE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             int position = data.getIntExtra(DeleteAlarmDialogFragment.ARG_INDEX, 0);
             currentAlarms.remove(position);
-
-            LoadingDialogFragment.show(getFragmentManager());
-            bindAndSubscribe(smartAlarmPresenter.save(currentAlarms),
-                             ignored -> LoadingDialogFragment.close(getFragmentManager()),
-                             this::alarmsUnavailable);
         }
+
+        LoadingDialogFragment.show(getFragmentManager());
+        bindAndSubscribe(smartAlarmPresenter.save(currentAlarms),
+                ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                this::alarmsUnavailable);
     }
 
     public void bindAlarms(@NonNull List<SmartAlarm> alarms) {

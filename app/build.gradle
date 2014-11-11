@@ -27,13 +27,13 @@ def generateVersionCode() {
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion 20
+    buildToolsVersion "21.0.2"
 
     defaultConfig {
         applicationId "is.hello.sense"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion 18
+        targetSdkVersion 20
         versionCode generateVersionCode()
         versionName "1.0.0"
 

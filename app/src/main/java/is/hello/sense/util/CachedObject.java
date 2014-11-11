@@ -1,6 +1,5 @@
 package is.hello.sense.util;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -38,16 +37,20 @@ public class CachedObject<T> {
 
     public Observable<T> get() {
         return Observable.create((Observable.OnSubscribe<T>) s -> {
-            FileInputStream inputStream = null;
-            try {
-                inputStream = new FileInputStream(objectFile);
-                T value = objectMapper.readValue(inputStream, this.valueType);
-                s.onNext(value);
+            if (objectFile.exists()) {
+                FileInputStream inputStream = null;
+                try {
+                    inputStream = new FileInputStream(objectFile);
+                    T value = objectMapper.readValue(inputStream, this.valueType);
+                    s.onNext(value);
+                    s.onCompleted();
+                } catch (IOException e) {
+                    s.onError(e);
+                } finally {
+                    Functions.safeClose(inputStream);
+                }
+            } else {
                 s.onCompleted();
-            } catch (IOException e) {
-                s.onError(e);
-            } finally {
-                Functions.safeClose(inputStream);
             }
         }).subscribeOn(Schedulers.io());
     }

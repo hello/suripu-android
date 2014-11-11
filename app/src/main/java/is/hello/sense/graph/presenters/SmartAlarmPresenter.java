@@ -23,7 +23,7 @@ import rx.Observable;
 import rx.Subscription;
 
 public class SmartAlarmPresenter extends Presenter {
-    private static final String CACHE_FILENAME = "Suripu-Smart-Alarms.json";
+    private static final String CACHE_FILENAME = "Suripu-Smart-Alarms-test.json";
 
     private final ApiService apiService;
     private final @Nullable CachedObject<List<SmartAlarm>> alarmCache;
