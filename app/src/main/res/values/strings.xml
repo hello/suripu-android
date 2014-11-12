@@ -151,7 +151,7 @@
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
     <string name="action_factory_reset">Factory Reset</string>
     <string name="dialog_title_factory_reset">Perform factory reset?</string>
-    <string name="dialog_messsage_factory_reset">A factory reset cannot be undone.</string>
+    <string name="dialog_messsage_factory_reset">This will clear all of Sense\'s and log you out.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave On Boarding?</string>
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
     <string name="title_onboarding_getting_started">Getting Started</string>
@@ -191,6 +191,11 @@
     <string name="action_select_wifi_network">Select Wifi Network</string>
     <string name="dialog_title_sense_already_linked">Sense is already paired</string>
     <string name="dialog_message_sense_already_linked">Have you already paired this Sense to your account?</string>
+    <string name="title_scanning_for_sense">Looking for Sense…</string>
+    <string name="title_connecting">Connecting with Sense…</string>
+    <string name="title_discovering_services">Discovering Services…</string>
+    <string name="title_linking_account">Linking with Sense…</string>
+    <string name="error_message_ble_radio_borked">Your phone\'s Bluetooth appears to be unstable. Please turn off both your Wifi and Bluetooth, and turn them back on after a few seconds. If your problems persist, please restart your phone and try again.</string>
     <string name="label_searching_for_pill">Looking for your Sleep Pill</string>
     <string name="title_onboarding_setup_2nd_pill">Set up another Sleep Pill?</string>
     <string name="info_onboarding_setup_2nd_pill">Would you like to set up a second Sleep Pill at this time?\n\nYou can always do this later by visiting Settings.</string>

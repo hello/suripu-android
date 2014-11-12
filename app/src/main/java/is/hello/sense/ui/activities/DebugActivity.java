@@ -8,7 +8,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,6 +23,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -35,6 +38,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     @Inject ApiSessionManager sessionManager;
     @Inject BuildValues buildValues;
     @Inject ApiEnvironment currentEnvironment;
+    @Inject BluetoothStack bluetoothStack;
 
     private StaticItemAdapter debugItems;
 
@@ -64,6 +68,9 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
             Logger.debug(DebugActivity.class.getSimpleName(), "Could not look up app version", e);
         }
         debugItems.addItem("Build Type", buildValues.type);
+        debugItems.addItem("Device Model", Build.MODEL);
+        debugItems.addItem("BLE Device Support", bluetoothStack.getDeviceSupportLevel().toString());
+        debugItems.addItem("BLE Stack Traits", TextUtils.join(", ", bluetoothStack.getTraits()));
         debugItems.addItem("Access Token", sessionManager.getAccessToken());
         debugItems.addItem("GCM ID", getSharedPreferences(Constants.NOTIFICATION_PREFS, 0).getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, "<none>"));
         debugItems.addItem("Host", currentEnvironment.baseUrl);

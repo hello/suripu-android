@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
@@ -15,21 +14,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.hello.ble.devices.Morpheus;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.devices.SensePeripheral;
+import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
-
-import static rx.android.observables.AndroidObservable.fromBroadcast;
 
 public class OnboardingPairSenseFragment extends InjectionFragment {
     public static final String ARG_IS_SECOND_USER = OnboardingPairSenseFragment.class.getName() + ".ARG_IS_SECOND_USER";
@@ -42,6 +41,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     private BluetoothAdapter bluetoothAdapter;
 
     private Button nextButton;
+    private LoadingDialogFragment loadingDialogFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,8 +74,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Intent> bluetoothStateChanged = fromBroadcast(getActivity(), new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-        subscribe(bluetoothStateChanged, ignored -> updateNextButton(), Functions.LOG_ERROR);
+        subscribe(hardwarePresenter.bluetoothEnabled, ignored -> updateNextButton(), Functions.LOG_ERROR);
     }
 
     @Override
@@ -96,12 +95,13 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     }
 
     private void beginPairing() {
-        ((OnboardingActivity) getActivity()).beginBlockingWork(R.string.title_pairing);
+        this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_scanning_for_sense), true);
     }
 
     private void finishedPairing() {
+        LoadingDialogFragment.close(getFragmentManager());
+
         OnboardingActivity activity = (OnboardingActivity) getActivity();
-        activity.finishBlockingWork();
         if (isSecondUser) {
             activity.showPairPill(-1);
         } else {
@@ -114,25 +114,49 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         if (bluetoothAdapter.isEnabled()) {
             beginPairing();
 
-            Observable<Morpheus> device = hardwarePresenter.scanForDevices().map(hardwarePresenter::bestDeviceForPairing);
+            Observable<SensePeripheral> device = hardwarePresenter.scanForDevices().map(hardwarePresenter::getClosestPeripheral);
             bindAndSubscribe(device, this::pairWith, this::pairingFailed);
         } else {
             startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
         }
     }
 
-    public void pairWith(@Nullable Morpheus device) {
+    public void pairWith(@Nullable SensePeripheral device) {
         if (device != null) {
-            bindAndSubscribe(hardwarePresenter.connectToDevice(device), ignored -> finishedPairing(), this::pairingFailed);
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(device), status -> {
+                switch (status) {
+                    case CONNECTING:
+                        loadingDialogFragment.setTitle(getString(R.string.title_connecting));
+                        break;
+
+                    case BONDING:
+                        loadingDialogFragment.setTitle(getString(R.string.title_pairing));
+                        break;
+
+                    case DISCOVERING_SERVICES:
+                        loadingDialogFragment.setTitle(getString(R.string.title_discovering_services));
+                        break;
+
+                    case CONNECTED:
+                        finishedPairing();
+                        break;
+                }
+            }, this::pairingFailed);
         } else {
-            pairingFailed(new Exception("Could not find any devices."));
+            pairingFailed(new PeripheralConnectionError());
         }
     }
 
     public void pairingFailed(Throwable e) {
-        OnboardingActivity onboardingActivity = (OnboardingActivity) getActivity();
-        if (onboardingActivity != null) {
-            onboardingActivity.finishBlockingWork();
+        LoadingDialogFragment.close(getFragmentManager());
+
+        if (e instanceof PeripheralConnectionError) {
+            OnboardingPairHelpFragment pairHelpFragment = new OnboardingPairHelpFragment();
+            pairHelpFragment.setTargetFragment(this, REQUEST_CODE_PAIR_HELP);
+            ((FragmentNavigation) getActivity()).showFragment(pairHelpFragment, null, true);
+        } else if (hardwarePresenter.isErrorFatal(e)) {
+            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else {
             ErrorDialogFragment.presentError(getFragmentManager(), e);
         }
     }

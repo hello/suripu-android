@@ -2,6 +2,7 @@ package is.hello.sense.ui.dialogs;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,10 +18,26 @@ public class LoadingDialogFragment extends DialogFragment {
 
     private static final String ARG_TITLE = LoadingDialogFragment.class.getName() + ".ARG_TITLE";
     private static final String ARG_WANTS_OPAQUE_BACKGROUND = LoadingDialogFragment.class.getName() + "._ARG_WANTS_OPAQUE_BACKGROUND";
+    private TextView titleText;
 
-    public static void show(@NonNull FragmentManager fm) {
-        LoadingDialogFragment dialog = LoadingDialogFragment.newInstance(null, false);
+    public static @NonNull LoadingDialogFragment show(@NonNull FragmentManager fm,
+                                                      @Nullable String title,
+                                                      boolean wantsOpaqueBackground) {
+        Fragment preexistingDialog = fm.findFragmentByTag(TAG);
+        if (preexistingDialog != null) {
+            fm.beginTransaction()
+                    .remove(preexistingDialog)
+                    .commit();
+        }
+
+        LoadingDialogFragment dialog = LoadingDialogFragment.newInstance(title, wantsOpaqueBackground);
         dialog.show(fm, TAG);
+
+        return dialog;
+    }
+
+    public static @NonNull LoadingDialogFragment show(@NonNull FragmentManager fm) {
+        return show(fm, null, false);
     }
 
     public static void close(@NonNull FragmentManager fm) {
@@ -65,10 +82,18 @@ public class LoadingDialogFragment extends DialogFragment {
                 container.setBackgroundColor(getResources().getColor(R.color.background));
             }
 
-            TextView titleText = (TextView) dialog.findViewById(R.id.fragment_dialog_loading_title);
+            this.titleText = (TextView) dialog.findViewById(R.id.fragment_dialog_loading_title);
             titleText.setText(arguments.getString(ARG_TITLE));
         }
 
         return dialog;
+    }
+
+    public void setTitle(@Nullable String title) {
+        getArguments().putString(ARG_TITLE, title);
+
+        if (titleText != null) {
+            titleText.setText(title);
+        }
     }
 }

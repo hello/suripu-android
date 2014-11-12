@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.settings;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -14,18 +13,20 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.hello.ble.devices.Morpheus;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.bluetooth.devices.SensePeripheral;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
@@ -33,6 +34,7 @@ import is.hello.sense.util.Logger;
 public class DeviceDetailsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     private static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
 
+    @Inject ApiSessionManager apiSessionManager;
     @Inject DateFormatter dateFormatter;
     @Inject HardwarePresenter hardwarePresenter;
 
@@ -40,6 +42,8 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     private StaticItemAdapter adapter;
     private Device device;
     private BluetoothAdapter bluetoothAdapter;
+
+    private LoadingDialogFragment loadingDialogFragment;
 
     public static DeviceDetailsFragment newInstance(@NonNull Device device) {
         DeviceDetailsFragment fragment = new DeviceDetailsFragment();
@@ -92,8 +96,10 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         super.onViewCreated(view, savedInstanceState);
 
         if (device.getType() == Device.Type.SENSE && bluetoothAdapter.isEnabled()) {
-            LoadingDialogFragment.show(getFragmentManager());
-            bindAndSubscribe(this.hardwarePresenter.rediscoverDevice(), this::bindHardwareDevice, this::presentError);
+            this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_scanning_for_sense), false);
+            bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device), this::bindPeripheral, this::presentError);
+
+            bindAndSubscribe(this.hardwarePresenter.bluetoothEnabled, this::onBluetoothStateChanged, Functions.LOG_ERROR);
         }
     }
 
@@ -101,7 +107,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     public void onDestroy() {
         super.onDestroy();
 
-        this.hardwarePresenter.clearDevice();
+        this.hardwarePresenter.clearPeripheral();
     }
 
 
@@ -113,8 +119,16 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     }
 
 
-    public void bindHardwareDevice(@NonNull Morpheus device) {
-        int rssi = device.getScanTimeRssi();
+    public void onBluetoothStateChanged(boolean isEnabled) {
+        if (!isEnabled) {
+            if (signalStrengthItem != null) {
+                signalStrengthItem.setValue(getString(R.string.missing_data_placeholder));
+            }
+        }
+    }
+
+    public void bindPeripheral(@NonNull SensePeripheral peripheral) {
+        int rssi = peripheral.getScannedRssi();
         String strength;
         if (rssi <= -30) {
             strength = getString(R.string.signal_strong);
@@ -128,18 +142,41 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             signalStrengthItem.setValue(strength);
         }
 
-        if (device.isConnected()) {
+        if (peripheral.isConnected()) {
             LoadingDialogFragment.close(getFragmentManager());
         } else {
-            bindAndSubscribe(hardwarePresenter.connectToDevice(device),
-                             ignored -> LoadingDialogFragment.close(getFragmentManager()),
-                             this::presentError);
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral),
+                    status -> {
+                        switch (status) {
+                            case CONNECTING:
+                                loadingDialogFragment.setTitle(getString(R.string.title_connecting));
+                                break;
+
+                            case BONDING:
+                                loadingDialogFragment.setTitle(getString(R.string.title_pairing));
+                                break;
+
+                            case DISCOVERING_SERVICES:
+                                loadingDialogFragment.setTitle(getString(R.string.title_discovering_services));
+                                break;
+
+                            case CONNECTED:
+                                LoadingDialogFragment.close(getFragmentManager());
+                                break;
+                        }
+                    },
+                    this::presentError);
         }
     }
 
     public void presentError(@NonNull Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+
+        if (hardwarePresenter.isErrorFatal(e)) {
+            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
 
         Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
 
@@ -150,46 +187,47 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
 
     public void changeWifiNetwork() {
+        if (hardwarePresenter.getPeripheral() == null)
+            return;
+
         Intent intent = new Intent(getActivity(), OnboardingActivity.class);
         intent.putExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, true);
         startActivity(intent);
     }
 
-    @SuppressWarnings("CodeBlock2Expr")
     public void putIntoPairingMode() {
         Analytics.event(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE));
 
-        if (hardwarePresenter.getDevice() == null)
+        if (hardwarePresenter.getPeripheral() == null)
             return;
 
         LoadingDialogFragment.show(getFragmentManager());
 
-        bindAndSubscribe(hardwarePresenter.connectToDevice(hardwarePresenter.getDevice()), ignored -> {
-            bindAndSubscribe(hardwarePresenter.putIntoPairingMode(), ignored1 -> {
-                LoadingDialogFragment.close(getFragmentManager());
-            }, this::presentError);
-        }, this::presentError);
+        bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
+                         ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                         this::presentError);
     }
 
     @SuppressWarnings("CodeBlock2Expr")
     public void factoryReset() {
         Analytics.event(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_FACTORY_RESTORE));
 
-        if (hardwarePresenter.getDevice() == null)
+        if (hardwarePresenter.getPeripheral() == null)
             return;
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.dialog_title_factory_reset);
-        builder.setMessage(R.string.dialog_messsage_factory_reset);
-        builder.setNegativeButton(android.R.string.cancel, null);
-        builder.setPositiveButton(R.string.action_factory_reset, (d, which) -> {
+        SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+        dialog.setTitle(R.string.dialog_title_factory_reset);
+        dialog.setMessage(R.string.dialog_messsage_factory_reset);
+        dialog.setNegativeButton(android.R.string.cancel, null);
+        dialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> {
             LoadingDialogFragment.show(getFragmentManager());
-            bindAndSubscribe(hardwarePresenter.connectToDevice(hardwarePresenter.getDevice()), ignored -> {
-                bindAndSubscribe(hardwarePresenter.factoryReset(), ignored1 -> {
-                    LoadingDialogFragment.close(getFragmentManager());
-                }, this::presentError);
+            bindAndSubscribe(hardwarePresenter.factoryReset(), ignored -> {
+                LoadingDialogFragment.close(getFragmentManager());
+                apiSessionManager.logOut(getActivity());
+                getActivity().finish();
             }, this::presentError);
         });
-        builder.create().show();
+        dialog.setDestructive(true);
+        dialog.show();
     }
 }

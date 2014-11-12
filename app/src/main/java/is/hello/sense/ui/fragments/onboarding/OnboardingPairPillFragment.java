@@ -12,6 +12,7 @@ import android.widget.TextView;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -79,10 +80,9 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     }
 
     private void finishedPairing() {
-        hardwarePresenter.clearDevice();
+        hardwarePresenter.clearPeripheral();
 
         OnboardingActivity activity = (OnboardingActivity) getActivity();
-        activity.finishBlockingWork();
         activity.showPillInstructions();
     }
 
@@ -90,13 +90,18 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     public void pairPill() {
         beginPairing();
 
-        if (hardwarePresenter.getDevice() == null) {
-            bindAndSubscribe(hardwarePresenter.rediscoverDevice(), device -> pairPill(), this::presentError);
+        if (hardwarePresenter.getPeripheral() == null) {
+            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(), ignored -> pairPill(), this::presentError);
             return;
         }
 
-        if (!hardwarePresenter.getDevice().isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToDevice(hardwarePresenter.getDevice()), ignored -> pairPill(), this::presentError);
+        if (!hardwarePresenter.getPeripheral().isConnected()) {
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(hardwarePresenter.getPeripheral()), status -> {
+                if (status != HelloPeripheral.ConnectStatus.CONNECTED)
+                    return;
+
+                pairPill();
+            }, this::presentError);
             return;
         }
 
@@ -110,6 +115,10 @@ public class OnboardingPairPillFragment extends InjectionFragment {
         activityStatus.setVisibility(View.GONE);
         retryButton.setVisibility(View.VISIBLE);
 
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        if (hardwarePresenter.isErrorFatal(e)) {
+            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
     }
 }

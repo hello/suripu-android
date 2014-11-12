@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +29,11 @@ public class ErrorDialogFragment extends DialogFragment {
     public static void presentError(@NonNull FragmentManager fm, @Nullable Throwable e) {
         ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(e);
         fragment.show(fm, TAG);
+    }
+
+    public static void presentFatalBluetoothError(@NonNull FragmentManager fm, @NonNull Context context) {
+        ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(context.getString(R.string.error_message_ble_radio_borked));
+        dialogFragment.show(fm, ErrorDialogFragment.TAG);
     }
 
     public static ErrorDialogFragment newInstance(@Nullable Throwable e) {

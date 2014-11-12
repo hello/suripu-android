@@ -13,8 +13,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.hello.ble.protobuf.MorpheusBle;
-
 import org.json.JSONObject;
 
 import java.util.Collection;
@@ -22,6 +20,8 @@ import java.util.Collection;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.devices.HelloPeripheral;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
@@ -112,10 +112,15 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         helpButton.setVisibility(View.INVISIBLE);
         networkAdapter.clear();
 
-        if (hardwarePresenter.getDevice() == null) {
+        if (hardwarePresenter.getPeripheral() == null) {
             Action1<Throwable> onError = this::deviceRepairFailed;
-            bindAndSubscribe(hardwarePresenter.rediscoverDevice(),
-                             device -> bindAndSubscribe(hardwarePresenter.connectToDevice(device), ignored -> rescan(), onError),
+            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
+                             peripheral -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral), status -> {
+                                 if (status != HelloPeripheral.ConnectStatus.CONNECTED)
+                                     return;
+
+                                 rescan();
+                             }, onError),
                              onError);
             return;
         }
@@ -146,7 +151,12 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         rescanButton.setVisibility(View.VISIBLE);
         helpButton.setVisibility(View.VISIBLE);
 
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        if (hardwarePresenter.isErrorFatal(e)) {
+            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
+
         trackScanFinished(false);
     }
 
@@ -158,7 +168,11 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         rescanButton.setVisibility(View.VISIBLE);
         helpButton.setVisibility(View.VISIBLE);
         
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        if (hardwarePresenter.isErrorFatal(e)) {
+            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
     }
 
     private void trackScanFinished(boolean succeeded) {

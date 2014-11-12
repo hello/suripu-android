@@ -34,6 +34,9 @@ public final class Functions {
             return false;
         }
     }
+    public static int compareInts(int a, int b) {
+        return (a < b) ? -1 : ((a > b) ? 1 : 0);
+    }
     public static final Action1<Throwable> LOG_ERROR = e -> Logger.error("UnexpectedErrors", "An error occurred.", e);
 
     //endregion

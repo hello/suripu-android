@@ -6,17 +6,16 @@ import android.content.SharedPreferences;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.amplitude.api.Amplitude;
-import com.hello.ble.HelloBle;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import dagger.ObjectGraph;
 import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiModule;
+import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.SenseAppModule;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
-import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
@@ -38,7 +37,6 @@ public class SenseApplication extends Application {
         this.buildValues = new BuildValues(this);
 
         JodaTimeAndroid.init(this);
-        HelloBle.init(this, Logger::println);
         CalligraphyConfig.initDefault("fonts/AvenirLTCom-Roman.ttf", R.attr.fontPath);
         if (buildValues.debugScreenEnabled) {
             SessionLogger.init(this);
@@ -58,7 +56,11 @@ public class SenseApplication extends Application {
     }
 
     public void buildGraph() {
-        this.graph = ObjectGraph.create(new ApiModule(this, getApiEnvironment(), buildValues), new SenseAppModule(this));
+        this.graph = ObjectGraph.create(
+                new ApiModule(this, getApiEnvironment(), buildValues),
+                new SenseAppModule(this),
+                new BluetoothModule()
+        );
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_BUILT_GRAPH));
     }
 

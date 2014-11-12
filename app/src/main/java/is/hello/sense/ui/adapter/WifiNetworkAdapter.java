@@ -9,9 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.hello.ble.protobuf.MorpheusBle;
-
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 
 public class WifiNetworkAdapter extends ArrayAdapter<MorpheusBle.wifi_endpoint> {
     private final LayoutInflater inflater;

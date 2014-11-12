@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../ble-android/ble/ble.iml" filepath="$PROJECT_DIR$/../ble-android/ble/ble.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../ble-android/ble/ble-android-ble.iml" filepath="$PROJECT_DIR$/../ble-android/ble/ble-android-ble.iml" />
       <module fileurl="file://$PROJECT_DIR$/suripu-android.iml" filepath="$PROJECT_DIR$/suripu-android.iml" />
     </modules>
   </component>

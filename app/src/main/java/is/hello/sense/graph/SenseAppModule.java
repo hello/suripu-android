@@ -22,6 +22,7 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
+import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HomeActivity;
@@ -52,7 +53,7 @@ import is.hello.sense.ui.widget.TimestampTextView;
 import is.hello.sense.util.BuildValues;
 
 @Module(
-    includes = {ApiModule.class},
+    includes = {ApiModule.class, BluetoothModule.class},
     injects = {
         BuildValues.class,
         DebugActivity.class,

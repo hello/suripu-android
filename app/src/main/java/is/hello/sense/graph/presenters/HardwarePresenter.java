@@ -1,33 +1,33 @@
 package is.hello.sense.graph.presenters;
 
-import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.google.common.primitives.Ints;
 import com.google.protobuf.ByteString;
-import com.hello.ble.BleOperationCallback;
-import com.hello.ble.devices.HelloBleDevice;
-import com.hello.ble.devices.Morpheus;
-import com.hello.ble.protobuf.MorpheusBle;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import is.hello.sense.api.model.Device;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.util.BleObserverCallback;
-import is.hello.sense.util.Constants;
+import is.hello.sense.bluetooth.devices.HelloPeripheral;
+import is.hello.sense.bluetooth.devices.SensePeripheral;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.stacks.BluetoothStack;
+import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
+import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -35,30 +35,55 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
+
 @Singleton public class HardwarePresenter extends Presenter {
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
-    private final Handler timeoutHandler;
+    private final BluetoothStack bluetoothStack;
 
-    private @Nullable Observable<Morpheus> repairingTask;
-    private @Nullable Morpheus device;
+    private @Nullable Observable<SensePeripheral> rediscovery;
+    private @Nullable SensePeripheral peripheral;
 
-    private final Action1<Throwable> respondToError = e -> {
-        if (BleObserverCallback.BluetoothError.isFatal(e)) {
-            clearDevice();
-        }
-    };
+    private final Action1<Throwable> respondToError;
 
-    @Inject public HardwarePresenter(@NonNull PreferencesPresenter preferencesPresenter,
-                                     @NonNull ApiSessionManager apiSessionManager) {
+    public final Observable<Boolean> bluetoothEnabled;
+
+    @Inject public HardwarePresenter(@NonNull Context context,
+                                     @NonNull PreferencesPresenter preferencesPresenter,
+                                     @NonNull ApiSessionManager apiSessionManager,
+                                     @NonNull BluetoothStack bluetoothStack) {
         this.preferencesPresenter = preferencesPresenter;
         this.apiSessionManager = apiSessionManager;
-        this.timeoutHandler = new Handler(Looper.getMainLooper());
+        this.bluetoothStack = bluetoothStack;
+        this.respondToError = e -> {
+            if (bluetoothStack.errorRequiresReconnect(e)) {
+                clearPeripheral();
+            }
+        };
+
+        Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
+
+        this.bluetoothEnabled = bluetoothStack.isEnabled();
+        bluetoothEnabled.subscribe(this::onBluetoothEnabledChanged, Functions.LOG_ERROR);
+    }
+
+    public void onUserLoggedOut(@NonNull Intent intent) {
+        setLastPeripheralAddress(null);
+        setPairedPillId(null);
+    }
+
+    public void onBluetoothEnabledChanged(boolean enabled) {
+        logEvent("onBluetoothEnabledChanged(" + enabled + ")");
+        if (!enabled) {
+            this.peripheral = null;
+        }
     }
 
 
-    public void setPairedDeviceAddress(@Nullable String address) {
-        logEvent("saving paired device address: " + address);
+    public void setLastPeripheralAddress(@Nullable String address) {
+        logEvent("saving paired peripheral address: " + address);
 
         SharedPreferences.Editor editor = preferencesPresenter.edit();
         if (address != null) {
@@ -82,121 +107,123 @@ import rx.schedulers.Schedulers;
     }
 
 
-    public @Nullable Morpheus getDevice() {
-        return device;
+    public @Nullable SensePeripheral getPeripheral() {
+        return peripheral;
+    }
+
+    public boolean isErrorFatal(@Nullable Throwable e) {
+        return bluetoothStack.isErrorFatal(e);
     }
 
     private @NonNull <T> Observable<T> noDeviceError() {
-        return Observable.error(new NoPairedDeviceException());
+        return Observable.error(new NoConnectedPeripheralException());
     }
 
-    public Observable<Set<Morpheus>> scanForDevices() {
+    public Observable<List<SensePeripheral>> scanForDevices() {
         logEvent("scanForDevices()");
 
-        return Observable.create((Observable.OnSubscribe<Set<Morpheus>>) s -> Morpheus.discover(new BleObserverCallback<>(s, null, timeoutHandler, BleObserverCallback.NO_TIMEOUT), Constants.BLE_SCAN_TIMEOUT_MS))
-                         .subscribeOn(AndroidSchedulers.mainThread());
+        return SensePeripheral.discover(bluetoothStack, new ScanCriteria());
     }
 
-    public @Nullable Morpheus bestDeviceForPairing(@NonNull Set<Morpheus> devices) {
-        logEvent("bestDeviceForPairing(" + devices + ")");
+    public @Nullable SensePeripheral getClosestPeripheral(@NonNull List<SensePeripheral> peripherals) {
+        logEvent("getClosestPeripheral(" + peripherals + ")");
 
-        if (devices.isEmpty()) {
+        if (peripherals.isEmpty()) {
             return null;
         } else {
-            return Collections.max(devices, (l, r) -> Ints.compare(l.getScanTimeRssi(), r.getScanTimeRssi()));
+            return Collections.max(peripherals, (l, r) -> Functions.compareInts(l.getScannedRssi(), r.getScannedRssi()));
         }
     }
 
-    public Observable<Morpheus> rediscoverDevice() {
-        logEvent("rediscoverDevice()");
+    public Observable<SensePeripheral> rediscoverLastPeripheral() {
+        logEvent("rediscoverLastPeripheral()");
 
-        if (device != null) {
-            logEvent("device already rediscovered " + device);
+        if (peripheral != null) {
+            logEvent("peripheral already rediscovered " + peripheral);
 
-            return Observable.just(device);
+            return Observable.just(peripheral);
         }
 
-        if (repairingTask != null) {
-            return repairingTask;
+        if (rediscovery != null) {
+            return rediscovery;
         }
 
-        String deviceAddress = preferencesPresenter.getString(PreferencesPresenter.PAIRED_DEVICE_ADDRESS, null);
-        if (TextUtils.isEmpty(deviceAddress)) {
+        String address = preferencesPresenter.getString(PreferencesPresenter.PAIRED_DEVICE_ADDRESS, null);
+        if (TextUtils.isEmpty(address)) {
             return Observable.error(new Exception(""));
         } else {
-            this.repairingTask = Observable.create((Observable.OnSubscribe<Morpheus>) s -> Morpheus.discover(deviceAddress, new BleObserverCallback<>(s, null, timeoutHandler, BleObserverCallback.NO_TIMEOUT), Constants.BLE_SCAN_TIMEOUT_MS))
-                    .flatMap(device -> {
-                        if (device != null) {
-                            logEvent("rediscoveredDevice(" + device + ")");
-                            this.device = device;
-                            this.repairingTask = null;
+            this.rediscovery = SensePeripheral.discover(bluetoothStack, ScanCriteria.forAddress(address)).flatMap(peripherals -> {
+                if (!peripherals.isEmpty()) {
+                    this.peripheral = peripherals.get(0);
+                    this.rediscovery = null;
 
-                            return Observable.just(device);
-                        } else {
-                            return Observable.error(new Exception("Could not rediscover device."));
-                        }
-                    })
-                    .subscribeOn(AndroidSchedulers.mainThread());
-            return repairingTask;
+                    logEvent("rediscoveredDevice(" + peripheral + ")");
+                    return Observable.just(peripheral);
+                } else {
+                    return Observable.error(new Exception("Could not rediscover device."));
+                }
+            });
+            return rediscovery;
         }
     }
 
-    public Observable<Void> connectToDevice(@NonNull Morpheus device) {
-        logEvent("connectToDevice(" + device + ")");
+    public Observable<SensePeripheral> discoverPeripheralForDevice(@NonNull Device device) {
+        logEvent("discoverPeripheralForDevice(" + device.getDeviceId() + ")");
 
-        if (device.isConnected() && device.getBondState() != BluetoothDevice.BOND_NONE) {
-            logEvent("already paired with device " + device);
+        if (TextUtils.isEmpty(device.getDeviceId()) || device.getType() != Device.Type.SENSE)
+            throw new IllegalArgumentException("Malformed Sense device " + device);
+
+        if (this.peripheral != null) {
+            logEvent("peripheral already discovered " + peripheral);
+
+            return Observable.just(this.peripheral);
+        }
+
+        if (rediscovery != null) {
+            return rediscovery;
+        }
+
+        this.rediscovery = SensePeripheral.rediscover(bluetoothStack, device.getDeviceId()).flatMap(peripheral -> {
+            logEvent("rediscoveredPeripheralForDevice(" + peripheral + ")");
+            this.peripheral = peripheral;
+            this.rediscovery = null;
+
+            return Observable.just(this.peripheral);
+        });
+        return rediscovery;
+    }
+
+    public Observable<HelloPeripheral.ConnectStatus> connectToPeripheral(@NonNull SensePeripheral peripheral) {
+        logEvent("connectToPeripheral(" + peripheral + ")");
+
+        if (peripheral.isConnected() && peripheral.getBondStatus() != Peripheral.BOND_BONDED) {
+            logEvent("already paired with peripheral " + peripheral);
 
             return Observable.just(null);
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.connect(new BleObserverCallback<>(s, device, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .doOnNext(ignored -> {
-                             logEvent("pairedWithDevice(" + device + ")");
-                             setPairedDeviceAddress(device.getAddress());
-                             this.device = device;
-                         })
-                         .subscribeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Observable<Void> reconnect() {
-        logEvent("reconnect()");
-
-        if (device == null) {
-            return noDeviceError();
-        }
-
-        return Observable.create((Observable.OnSubscribe<Void>) s -> {
-            device.setDisconnectedCallback(new BleOperationCallback<Integer>() {
-                @Override
-                public void onCompleted(HelloBleDevice sender, Integer data) {
-                    device.connect(new BleObserverCallback<>(s, device, timeoutHandler, BleObserverCallback.NO_TIMEOUT));
-                }
-
-                @Override
-                public void onFailed(HelloBleDevice sender, OperationFailReason reason, int errorCode) {
-                    logEvent("reconnect failed " + reason + " (" + errorCode + ")");
-                    s.onError(new BleObserverCallback.BluetoothError(reason, errorCode));
-                }
-            });
-            device.disconnect();
-        }).subscribeOn(AndroidSchedulers.mainThread());
+        return peripheral.connect().doOnNext(ignored -> {
+            logEvent("pairedWithPeripheral(" + peripheral + ")");
+            setLastPeripheralAddress(peripheral.getAddress());
+            this.peripheral = peripheral;
+        });
     }
 
     public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks() {
-        if (device == null) {
+        if (peripheral == null) {
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<List<MorpheusBle.wifi_endpoint>>) s -> device.scanSupportedWIFIAP(new BleObserverCallback<>(s, device, timeoutHandler, BleObserverCallback.NO_TIMEOUT)))
-                         .subscribeOn(AndroidSchedulers.mainThread())
-                         .doOnError(this.respondToError)
-                         .map(networks -> {
-                             if (!networks.isEmpty())
-                                 Collections.sort(networks, (l, r) -> Ints.compare(l.getRssi(), r.getRssi()));
+        return peripheral.scanForWifiNetworks()
+                     .subscribeOn(AndroidSchedulers.mainThread())
+                     .doOnError(this.respondToError)
+                     .map(networks -> {
+                         if (!networks.isEmpty()) {
+                             Collections.sort(networks, (l, r) -> Functions.compareInts(l.getRssi(), r.getRssi()));
+                         }
 
-                             return networks;
-                         });
+                         return networks;
+                     });
     }
 
     public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks(int passCount) {
@@ -242,14 +269,17 @@ import rx.schedulers.Schedulers;
         });
     }
 
-    public Observable<Void> sendWifiCredentials(String bssid, String ssid, MorpheusBle.wifi_endpoint.sec_type securityType, String password) {
+    public Observable<Void> sendWifiCredentials(@NonNull String bssid,
+                                                @NonNull String ssid,
+                                                @NonNull MorpheusBle.wifi_endpoint.sec_type securityType,
+                                                @NonNull String password) {
         logEvent("sendWifiCredentials()");
 
-        if (device == null) {
+        if (peripheral == null) {
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.setWIFIConnection(bssid, ssid, securityType, password, new BleObserverCallback<>(s, device, timeoutHandler, Constants.BLE_SET_WIFI_TIMEOUT_MS)))
+        return peripheral.setWifiNetwork(bssid, ssid, securityType, password)
                          .subscribeOn(AndroidSchedulers.mainThread())
                          .doOnError(this.respondToError);
     }
@@ -257,24 +287,22 @@ import rx.schedulers.Schedulers;
     public Observable<Void> linkAccount() {
         logEvent("linkAccount()");
 
-        if (device == null) {
+        if (peripheral == null) {
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.linkAccount(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s, device, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread())
+        return peripheral.linkAccount(apiSessionManager.getAccessToken())
                          .doOnError(this.respondToError);
     }
 
     public Observable<String> linkPill() {
         logEvent("linkPill()");
 
-        if (device == null) {
+        if (peripheral == null) {
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<String>) s -> device.pairPill(apiSessionManager.getAccessToken(), new BleObserverCallback<>(s, device, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread())
+        return peripheral.pairPill(apiSessionManager.getAccessToken())
                          .doOnNext(pillId -> {
                              logEvent("linkedWithPill(" + pillId + ")");
                              setPairedPillId(pillId);
@@ -285,44 +313,44 @@ import rx.schedulers.Schedulers;
     public Observable<Void> putIntoPairingMode() {
         logEvent("putIntoPairingMode()");
 
-        if (device == null) {
+        if (peripheral == null) {
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.switchToPairingMode(new BleObserverCallback<>(s, device, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread())
+        return peripheral.setPairingModeEnabled(true)
                          .doOnError(this.respondToError);
     }
 
     public Observable<Void> factoryReset() {
         logEvent("factoryReset()");
 
-        if (device == null) {
+        if (peripheral == null) {
             return noDeviceError();
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> device.factoryReset(new BleObserverCallback<>(s, device, timeoutHandler, Constants.BLE_DEFAULT_TIMEOUT_MS)))
-                         .subscribeOn(AndroidSchedulers.mainThread())
+        return peripheral.factoryReset()
                          .doOnError(this.respondToError);
     }
 
-    public void clearDevice() {
-        logEvent("clearDevice()");
+    public void clearPeripheral() {
+        logEvent("clearPeripheral()");
 
-        if (device != null) {
-            if (device.isConnected()) {
-                logEvent("disconnect from paired device");
-                device.disconnect();
+        if (peripheral != null) {
+            if (peripheral.isConnected()) {
+                logEvent("disconnect from paired peripheral");
+
+                peripheral.disconnect().subscribe(ignored -> logEvent("disconnected peripheral"),
+                                                  e -> logEvent("Could not disconnect peripheral " + e));
             }
 
-            this.device = null;
+            this.peripheral = null;
         }
     }
 
 
-    public static class NoPairedDeviceException extends Exception {
-        public NoPairedDeviceException() {
-            super("HardwarePresenter device method called without paired device.", new NullPointerException());
+    public static class NoConnectedPeripheralException extends Exception {
+        public NoConnectedPeripheralException() {
+            super("HardwarePresenter peripheral method called without paired peripheral.", new NullPointerException());
         }
     }
 }
