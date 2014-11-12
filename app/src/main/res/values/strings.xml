@@ -218,6 +218,7 @@
     <string name="sec_type_wpa">WPA</string>
     <string name="sec_type_wep">WEP</string>
     <string name="sec_type_open">Open</string>
+    <string name="title_smart_alarm">Smart Alarm</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
