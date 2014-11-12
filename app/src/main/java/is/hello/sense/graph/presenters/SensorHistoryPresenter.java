@@ -17,6 +17,7 @@ import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import rx.Observable;
+import rx.Subscription;
 
 public class SensorHistoryPresenter extends Presenter {
     public static final int MODE_WEEK = 0;
@@ -27,6 +28,8 @@ public class SensorHistoryPresenter extends Presenter {
 
     private String sensorName;
     private int mode;
+
+    private @Nullable Subscription updateSubscription;
 
     public final PresenterSubject<Pair<List<SensorHistory>, UnitSystem>> history = PresenterSubject.create();
 
@@ -63,6 +66,11 @@ public class SensorHistoryPresenter extends Presenter {
     }
 
     public void update() {
+        if (updateSubscription != null && !updateSubscription.isUnsubscribed()) {
+            updateSubscription.unsubscribe();
+            this.updateSubscription = null;
+        }
+
         if (!TextUtils.isEmpty(getSensorName())) {
             Observable<List<SensorHistory>> newHistory;
             if (getMode() == MODE_DAY) {
@@ -71,7 +79,7 @@ public class SensorHistoryPresenter extends Presenter {
                 newHistory = apiService.sensorHistoryForWeek(getSensorName(), SensorHistory.timeForLatest());
             }
             Observable<Pair<List<SensorHistory>, UnitSystem>> result = Observable.combineLatest(newHistory, unitFormatter.unitSystem, Pair::new);
-            result.subscribe(history);
+            this.updateSubscription = result.finallyDo(() -> this.updateSubscription = null).subscribe(history);
         }
     }
 

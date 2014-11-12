@@ -38,6 +38,7 @@ import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static is.hello.sense.functional.Functions.mapList;
@@ -165,8 +166,15 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         private UnitSystem unitSystem;
         private boolean use24Time = false;
 
+        private @Nullable Subscription generateSeriesSubscription;
+
         public void bindHistory(@NonNull Pair<List<SensorHistory>, UnitSystem> historyAndUnits) {
             sections.clear();
+
+            if (generateSeriesSubscription != null) {
+                generateSeriesSubscription.unsubscribe();
+                this.generateSeriesSubscription = null;
+            }
 
             List<SensorHistory> history = historyAndUnits.first;
             if (history.isEmpty()) {
@@ -191,11 +199,14 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 s.onCompleted();
             }).subscribeOn(Schedulers.computation());
 
-            bindAndSubscribe(generateSeries, segmentsAndPeak -> {
+            this.generateSeriesSubscription = bindAndSubscribe(generateSeries, segmentsAndPeak -> {
                 this.sections.addAll(segmentsAndPeak.first);
                 this.peakMagnitude = segmentsAndPeak.second;
+
                 graphView.setNumberOfLines(sections.size());
                 graphView.notifyDataChanged();
+
+                this.generateSeriesSubscription = null;
             }, Functions.LOG_ERROR);
 
             this.unitSystem = historyAndUnits.second;
