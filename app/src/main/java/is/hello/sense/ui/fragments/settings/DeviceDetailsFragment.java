@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.settings;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -204,7 +205,10 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         LoadingDialogFragment.show(getFragmentManager());
 
         bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                         ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                         ignored -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             getFragmentManager().popBackStackImmediate();
+                         },
                          this::presentError);
     }
 

@@ -202,7 +202,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
             return Observable.just(null);
         }
 
-        return peripheral.connect().doOnNext(ignored -> {
+        return peripheral.connect().doOnCompleted(() -> {
             logEvent("pairedWithPeripheral(" + peripheral + ")");
             setLastPeripheralAddress(peripheral.getAddress());
             this.peripheral = peripheral;
@@ -318,7 +318,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         }
 
         return peripheral.setPairingModeEnabled(true)
-                         .doOnError(this.respondToError);
+                         .doOnError(this.respondToError)
+                         .doOnCompleted(this::clearPeripheral);
     }
 
     public Observable<Void> factoryReset() {
