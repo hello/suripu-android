@@ -9,8 +9,10 @@ import java.util.List;
 
 import is.hello.sense.SenseApplication;
 import is.hello.sense.ui.activities.SenseActivity;
+import is.hello.sense.util.Logger;
 import is.hello.sense.util.ResumeScheduler;
 import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -104,7 +106,27 @@ public class InjectionActivity extends SenseActivity implements ObservableContai
 
     @Override
     public @NonNull <T> Subscription subscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
-        return track(toSubscribe.subscribe(onNext, onError));
+        return track(toSubscribe.unsafeSubscribe(new Subscriber<T>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                try {
+                    onError.call(e);
+                } catch (Throwable actionError) {
+                    Logger.error(InjectionActivity.class.getSimpleName(), "onError handler threw an exception, crashing", e);
+                    throw actionError;
+                }
+            }
+
+            @Override
+            public void onNext(T t) {
+                onNext.call(t);
+            }
+        }));
     }
 
     @Override
