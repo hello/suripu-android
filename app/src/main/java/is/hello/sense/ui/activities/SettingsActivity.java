@@ -22,8 +22,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
-import is.hello.sense.ui.fragments.settings.DeviceDetailsFragment;
-import is.hello.sense.ui.fragments.settings.DevicesFragment;
+import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.fragments.settings.SettingsFragment;
 import is.hello.sense.util.Analytics;
@@ -81,7 +80,7 @@ public class SettingsActivity extends FragmentNavigationActivity {
     public void showFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
         super.showFragment(fragment, title, wantsBackStackEntry);
 
-        this.isDeviceMenuVisible = (fragment instanceof DevicesFragment);
+        this.isDeviceMenuVisible = (fragment instanceof DeviceListFragment);
         invalidateOptionsMenu();
     }
 
@@ -89,7 +88,7 @@ public class SettingsActivity extends FragmentNavigationActivity {
     public void onBackStackChanged() {
         super.onBackStackChanged();
 
-        this.isDeviceMenuVisible = (getTopFragment() instanceof DevicesFragment);
+        this.isDeviceMenuVisible = (getTopFragment() instanceof DeviceListFragment);
         invalidateOptionsMenu();
     }
 
@@ -117,7 +116,7 @@ public class SettingsActivity extends FragmentNavigationActivity {
             adapter.addItem(getString(R.string.label_my_info), null, () -> getSettingsActivity().showFragment(new MyInfoFragment(), getString(R.string.label_my_info), true));
             adapter.addItem(getString(R.string.label_account), null, () -> getSettingsActivity().showFragment(new AccountSettingsFragment(), getString(R.string.label_account), true));
             adapter.addItem(getString(R.string.label_units_and_time), null, () -> getSettingsActivity().showSettings(R.xml.settings_units_and_time, R.string.label_units_and_time));
-            adapter.addItem(getString(R.string.label_devices), null, () -> getSettingsActivity().showFragment(new DevicesFragment(), getString(R.string.label_devices), true));
+            adapter.addItem(getString(R.string.label_devices), null, () -> getSettingsActivity().showFragment(new DeviceListFragment(), getString(R.string.label_devices), true));
             adapter.addItem(getString(R.string.action_log_out), null, this::logOut);
             setListAdapter(adapter);
         }

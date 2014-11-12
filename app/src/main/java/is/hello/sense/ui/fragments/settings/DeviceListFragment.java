@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.text.DateFormat;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -24,11 +25,13 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.util.DateFormatter;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class DevicesFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+public class DeviceListFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     @Inject DevicesPresenter devicesPresenter;
+    @Inject DateFormatter dateFormatter;
 
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;
@@ -46,12 +49,12 @@ public class DevicesFragment extends InjectionFragment implements AdapterView.On
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_settings_devices, container, false);
+        View view = inflater.inflate(R.layout.fragment_settings_device_list, container, false);
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        this.adapter = new DevicesAdapter(getActivity());
+        this.adapter = new DevicesAdapter(getActivity(), dateFormatter);
         listView.setAdapter(adapter);
 
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_settings_devices_progress);
@@ -96,11 +99,13 @@ public class DevicesFragment extends InjectionFragment implements AdapterView.On
 
     private static class DevicesAdapter extends ArrayAdapter<Device> {
         private final LayoutInflater inflater;
+        private final DateFormatter dateFormatter;
 
-        private DevicesAdapter(Context context) {
+        private DevicesAdapter(@NonNull Context context, @NonNull DateFormatter dateFormatter) {
             super(context, R.layout.item_device);
 
             this.inflater = LayoutInflater.from(context);
+            this.dateFormatter = dateFormatter;
         }
 
         @Override
@@ -116,7 +121,12 @@ public class DevicesFragment extends InjectionFragment implements AdapterView.On
             Device device = getItem(position);
             holder.icon.setImageResource(device.getType().iconRes);
             holder.title.setText(device.getType().nameRes);
-            holder.status.setText(device.getState().nameRes);
+            if (device.getState() == Device.State.LOW_BATTERY) {
+                holder.status.setText(device.getState().nameRes);
+            } else {
+                String formattedDate = dateFormatter.formatAsDate(device.getLastUpdated());
+                holder.status.setText(getContext().getString(R.string.device_last_seen_fmt, formattedDate));
+            }
 
             return view;
         }

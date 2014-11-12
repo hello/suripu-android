@@ -46,7 +46,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceDetailsFragment;
-import is.hello.sense.ui.fragments.settings.DevicesFragment;
+import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.widget.TimelineSegmentView;
 import is.hello.sense.ui.widget.TimestampTextView;
@@ -74,7 +74,7 @@ import is.hello.sense.util.BuildValues;
         OnboardingPairPillFragment.class,
         Onboarding2ndPillInfoFragment.class,
 
-        DevicesFragment.class,
+        DeviceListFragment.class,
         DevicesPresenter.class,
         DeviceDetailsFragment.class,
 
