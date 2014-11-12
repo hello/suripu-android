@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import javax.inject.Inject;
@@ -47,6 +48,9 @@ public class OnboardingSignInFragment extends InjectionFragment {
         this.email = (EditText) view.findViewById(R.id.fragment_onboarding_email);
         this.password = (EditText) view.findViewById(R.id.fragment_onboarding_password);
         password.setOnEditorActionListener(new EditorActionHandler(this::signIn));
+
+        Button signIn = (Button) view.findViewById(R.id.fragment_onboarding_sign_in_go);
+        signIn.setOnClickListener(ignored -> signIn());
 
         return view;
     }

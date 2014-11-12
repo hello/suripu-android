@@ -1,52 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/gap_xlarge"
-    android:paddingBottom="@dimen/gap_xlarge"
-    android:paddingLeft="@dimen/gap_large"
-    android:paddingRight="@dimen/gap_large"
-    android:background="@color/background_onboarding">
+    android:fillViewport="true">
 
-    <TextView
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:textAppearance="@style/AppTheme.Text.Heading"
-        android:text="@string/title_register_weight"/>
+        android:paddingTop="@dimen/gap_xlarge"
+        android:paddingBottom="@dimen/gap_xlarge"
+        android:paddingLeft="@dimen/gap_large"
+        android:paddingRight="@dimen/gap_large"
+        android:background="@color/background_onboarding">
 
-    <EditText
-        android:id="@+id/fragment_onboarding_register_weight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_medium"
-        android:layout_centerInParent="true"
-        android:nextFocusForward="@+id/fragment_onboarding_register_height_inches"
-        android:imeOptions="actionGo|flagNoExtractUi"
-        android:hint="@string/default_weight"
-        android:text="@string/default_weight"
-        style="@style/AppTheme.Text.EditText.Onboarding.Metric">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:textAppearance="@style/AppTheme.Text.Heading"
+            android:text="@string/title_register_weight"/>
 
-        <requestFocus />
+        <EditText
+            android:id="@+id/fragment_onboarding_register_weight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap_medium"
+            android:layout_centerInParent="true"
+            android:nextFocusForward="@+id/fragment_onboarding_register_height_inches"
+            android:imeOptions="actionGo|flagNoExtractUi"
+            android:hint="@string/default_weight"
+            android:text="@string/default_weight"
+            style="@style/AppTheme.Text.EditText.Onboarding.Metric">
 
-    </EditText>
+            <requestFocus />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_toEndOf="@id/fragment_onboarding_register_weight"
-        android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
-        android:text="@string/label_pounds"/>
+        </EditText>
 
-    <Button
-        android:id="@+id/fragment_onboarding_next"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="@string/action_next"
-        style="@style/AppTheme.Button.Rounded"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toEndOf="@id/fragment_onboarding_register_weight"
+            android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
+            android:text="@string/label_pounds"/>
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/fragment_onboarding_next"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="@string/action_next"
+            style="@style/AppTheme.Button.Rounded"/>
+
+    </RelativeLayout>
+
+</ScrollView>

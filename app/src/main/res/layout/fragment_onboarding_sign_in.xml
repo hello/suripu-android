@@ -45,9 +45,17 @@
             android:hint="@string/label_password"/>
 
         <Button
+            android:id="@+id/fragment_onboarding_sign_in_go"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_log_in"
+            style="@style/AppTheme.Button.Rounded"/>
+
+        <Button
             android:id="@+id/fragment_onboarding_sign_in_forgot"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_small"
             android:text="@string/action_forgot_password"
             style="@style/AppTheme.Button.Borderless.Onboarding"/>
 

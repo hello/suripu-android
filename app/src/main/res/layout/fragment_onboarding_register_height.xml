@@ -1,74 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/gap_xlarge"
-    android:paddingBottom="@dimen/gap_xlarge"
-    android:paddingLeft="@dimen/gap_large"
-    android:paddingRight="@dimen/gap_large"
-    android:background="@color/background_onboarding">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/AppTheme.Text.Heading"
-        android:text="@string/title_register_height"/>
-
+    android:fillViewport="true">
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/fragment_onboarding_register_height_feet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/gap_medium"
-            android:nextFocusForward="@+id/fragment_onboarding_register_height_inches"
-            android:imeOptions="actionNext|flagNoExtractUi"
-            android:hint="@string/default_feet"
-            android:text="@string/default_feet"
-            style="@style/AppTheme.Text.EditText.Onboarding.Metric">
-
-            <requestFocus />
-
-        </EditText>
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/gap_xlarge"
+        android:paddingBottom="@dimen/gap_xlarge"
+        android:paddingLeft="@dimen/gap_large"
+        android:paddingRight="@dimen/gap_large"
+        android:background="@color/background_onboarding">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
-            android:text="@string/label_feet"/>
+            android:textAppearance="@style/AppTheme.Text.Heading"
+            android:text="@string/title_register_height"/>
 
-        <EditText
-            android:id="@+id/fragment_onboarding_register_height_inches"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/gap_medium"
-            android:imeOptions="actionGo|flagNoExtractUi"
-            android:hint="@string/default_inches"
-            android:text="@string/default_inches"
-            style="@style/AppTheme.Text.EditText.Onboarding.Metric"/>
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/fragment_onboarding_register_height_feet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/gap_medium"
+                android:nextFocusForward="@+id/fragment_onboarding_register_height_inches"
+                android:imeOptions="actionNext|flagNoExtractUi"
+                android:hint="@string/default_feet"
+                android:text="@string/default_feet"
+                style="@style/AppTheme.Text.EditText.Onboarding.Metric">
+
+                <requestFocus />
+
+            </EditText>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
+                android:text="@string/label_feet"/>
+
+            <EditText
+                android:id="@+id/fragment_onboarding_register_height_inches"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/gap_medium"
+                android:imeOptions="actionGo|flagNoExtractUi"
+                android:hint="@string/default_inches"
+                android:text="@string/default_inches"
+                style="@style/AppTheme.Text.EditText.Onboarding.Metric"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
+                android:text="@string/label_inches"/>
+
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/fragment_onboarding_next"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
-            android:text="@string/label_inches"/>
+            android:text="@string/action_next"
+            style="@style/AppTheme.Button.Rounded"/>
 
     </LinearLayout>
 
-
-    <Button
-        android:id="@+id/fragment_onboarding_next"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/action_next"
-        style="@style/AppTheme.Button.Rounded"/>
-
-</LinearLayout>
+</ScrollView>

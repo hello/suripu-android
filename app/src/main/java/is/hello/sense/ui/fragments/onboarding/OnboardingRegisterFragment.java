@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import org.joda.time.DateTimeUtils;
@@ -58,6 +59,9 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         this.emailText = (EditText) view.findViewById(R.id.fragment_onboarding_register_email);
         this.passwordText = (EditText) view.findViewById(R.id.fragment_onboarding_register_password);
         passwordText.setOnEditorActionListener(new EditorActionHandler(this::register));
+
+        Button register = (Button) view.findViewById(R.id.fragment_onboarding_register_go);
+        register.setOnClickListener(ignored -> register());
 
         return view;
     }
