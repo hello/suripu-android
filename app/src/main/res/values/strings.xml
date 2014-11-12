@@ -160,7 +160,7 @@
     <string name="title_one_pill">One Sleep Pill</string>
     <string name="action_retry">Retry</string>
     <string name="action_share">Share</string>
-    <string name="action_insights">Insights</string>
+    <string name="action_insights">Trends</string>
     <string name="action_new_alarm">New Alarm</string>
 
     <string name="day_monday">Mon</string>
