@@ -209,6 +209,106 @@ public final class MorpheusBle {
     // @@protoc_insertion_point(enum_scope:ErrorType)
   }
 
+  /**
+   * Protobuf enum {@code wifi_connection_state}
+   */
+  public enum wifi_connection_state
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>NO_WLAN_CONNECTED = 0;</code>
+     */
+    NO_WLAN_CONNECTED(0, 0),
+    /**
+     * <code>WLAN_CONNECTING = 1;</code>
+     */
+    WLAN_CONNECTING(1, 1),
+    /**
+     * <code>WLAN_CONNECTED = 2;</code>
+     */
+    WLAN_CONNECTED(2, 2),
+    /**
+     * <code>IP_RETRIEVED = 3;</code>
+     */
+    IP_RETRIEVED(3, 3),
+    ;
+
+    /**
+     * <code>NO_WLAN_CONNECTED = 0;</code>
+     */
+    public static final int NO_WLAN_CONNECTED_VALUE = 0;
+    /**
+     * <code>WLAN_CONNECTING = 1;</code>
+     */
+    public static final int WLAN_CONNECTING_VALUE = 1;
+    /**
+     * <code>WLAN_CONNECTED = 2;</code>
+     */
+    public static final int WLAN_CONNECTED_VALUE = 2;
+    /**
+     * <code>IP_RETRIEVED = 3;</code>
+     */
+    public static final int IP_RETRIEVED_VALUE = 3;
+
+
+    public final int getNumber() { return value; }
+
+    public static wifi_connection_state valueOf(int value) {
+      switch (value) {
+        case 0: return NO_WLAN_CONNECTED;
+        case 1: return WLAN_CONNECTING;
+        case 2: return WLAN_CONNECTED;
+        case 3: return IP_RETRIEVED;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<wifi_connection_state>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<wifi_connection_state>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<wifi_connection_state>() {
+            public wifi_connection_state findValueByNumber(int number) {
+              return wifi_connection_state.valueOf(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(index);
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return MorpheusBle.getDescriptor().getEnumTypes().get(1);
+    }
+
+    private static final wifi_connection_state[] VALUES = values();
+
+    public static wifi_connection_state valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int index;
+    private final int value;
+
+    private wifi_connection_state(int index, int value) {
+      this.index = index;
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:wifi_connection_state)
+  }
+
   public interface wifi_endpointOrBuilder extends
       // @@protoc_insertion_point(interface_extends:wifi_endpoint)
       com.google.protobuf.MessageOrBuilder {
@@ -2088,29 +2188,21 @@ public final class MorpheusBle {
     int getUptime();
 
     /**
-     * <code>optional int32 motionData = 11;</code>
-     */
-    boolean hasMotionData();
-    /**
-     * <code>optional int32 motionData = 11;</code>
-     */
-    int getMotionData();
-
-    /**
-     * <code>optional bytes motionDataEntrypted = 12;</code>
-     */
-    boolean hasMotionDataEntrypted();
-    /**
-     * <code>optional bytes motionDataEntrypted = 12;</code>
-     */
-    com.google.protobuf.ByteString getMotionDataEntrypted();
-
-    /**
      * <code>optional int32 firmwareVersion = 13;</code>
+     *
+     * <pre>
+     * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
+     * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
+     * </pre>
      */
     boolean hasFirmwareVersion();
     /**
      * <code>optional int32 firmwareVersion = 13;</code>
+     *
+     * <pre>
+     * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
+     * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
+     * </pre>
      */
     int getFirmwareVersion();
 
@@ -2159,6 +2251,15 @@ public final class MorpheusBle {
      * <code>optional .pill_data pill_data = 16;</code>
      */
     MorpheusBle.pill_dataOrBuilder getPillDataOrBuilder();
+
+    /**
+     * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
+     */
+    boolean hasWifiConnectionState();
+    /**
+     * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
+     */
+    MorpheusBle.wifi_connection_state getWifiConnectionState();
   }
   /**
    * Protobuf type {@code MorpheusCommand}
@@ -2279,25 +2380,15 @@ public final class MorpheusBle {
               uptime_ = input.readInt32();
               break;
             }
-            case 88: {
-              bitField0_ |= 0x00000400;
-              motionData_ = input.readInt32();
-              break;
-            }
-            case 98: {
-              bitField0_ |= 0x00000800;
-              motionDataEntrypted_ = input.readBytes();
-              break;
-            }
             case 104: {
-              bitField0_ |= 0x00001000;
+              bitField0_ |= 0x00000400;
               firmwareVersion_ = input.readInt32();
               break;
             }
             case 114: {
-              if (!((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
+              if (!((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
                 wifiScanResult_ = new java.util.ArrayList<MorpheusBle.wifi_endpoint>();
-                mutable_bitField0_ |= 0x00002000;
+                mutable_bitField0_ |= 0x00000800;
               }
               wifiScanResult_.add(input.readMessage(MorpheusBle.wifi_endpoint.PARSER, extensionRegistry));
               break;
@@ -2308,14 +2399,14 @@ public final class MorpheusBle {
               if (value == null) {
                 unknownFields.mergeVarintField(15, rawValue);
               } else {
-                bitField0_ |= 0x00002000;
+                bitField0_ |= 0x00000800;
                 securityType_ = value;
               }
               break;
             }
             case 130: {
               MorpheusBle.pill_data.Builder subBuilder = null;
-              if (((bitField0_ & 0x00004000) == 0x00004000)) {
+              if (((bitField0_ & 0x00001000) == 0x00001000)) {
                 subBuilder = pillData_.toBuilder();
               }
               pillData_ = input.readMessage(MorpheusBle.pill_data.PARSER, extensionRegistry);
@@ -2323,7 +2414,18 @@ public final class MorpheusBle {
                 subBuilder.mergeFrom(pillData_);
                 pillData_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00004000;
+              bitField0_ |= 0x00001000;
+              break;
+            }
+            case 136: {
+              int rawValue = input.readEnum();
+              MorpheusBle.wifi_connection_state value = MorpheusBle.wifi_connection_state.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(17, rawValue);
+              } else {
+                bitField0_ |= 0x00002000;
+                wifiConnectionState_ = value;
+              }
               break;
             }
           }
@@ -2334,7 +2436,7 @@ public final class MorpheusBle {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
+        if (((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
           wifiScanResult_ = java.util.Collections.unmodifiableList(wifiScanResult_);
         }
         this.unknownFields = unknownFields.build();
@@ -2944,46 +3046,26 @@ public final class MorpheusBle {
       return uptime_;
     }
 
-    public static final int MOTIONDATA_FIELD_NUMBER = 11;
-    private int motionData_;
-    /**
-     * <code>optional int32 motionData = 11;</code>
-     */
-    public boolean hasMotionData() {
-      return ((bitField0_ & 0x00000400) == 0x00000400);
-    }
-    /**
-     * <code>optional int32 motionData = 11;</code>
-     */
-    public int getMotionData() {
-      return motionData_;
-    }
-
-    public static final int MOTIONDATAENTRYPTED_FIELD_NUMBER = 12;
-    private com.google.protobuf.ByteString motionDataEntrypted_;
-    /**
-     * <code>optional bytes motionDataEntrypted = 12;</code>
-     */
-    public boolean hasMotionDataEntrypted() {
-      return ((bitField0_ & 0x00000800) == 0x00000800);
-    }
-    /**
-     * <code>optional bytes motionDataEntrypted = 12;</code>
-     */
-    public com.google.protobuf.ByteString getMotionDataEntrypted() {
-      return motionDataEntrypted_;
-    }
-
     public static final int FIRMWAREVERSION_FIELD_NUMBER = 13;
     private int firmwareVersion_;
     /**
      * <code>optional int32 firmwareVersion = 13;</code>
+     *
+     * <pre>
+     * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
+     * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
+     * </pre>
      */
     public boolean hasFirmwareVersion() {
-      return ((bitField0_ & 0x00001000) == 0x00001000);
+      return ((bitField0_ & 0x00000400) == 0x00000400);
     }
     /**
      * <code>optional int32 firmwareVersion = 13;</code>
+     *
+     * <pre>
+     * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
+     * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
+     * </pre>
      */
     public int getFirmwareVersion() {
       return firmwareVersion_;
@@ -3030,7 +3112,7 @@ public final class MorpheusBle {
      * <code>optional .wifi_endpoint.sec_type security_type = 15;</code>
      */
     public boolean hasSecurityType() {
-      return ((bitField0_ & 0x00002000) == 0x00002000);
+      return ((bitField0_ & 0x00000800) == 0x00000800);
     }
     /**
      * <code>optional .wifi_endpoint.sec_type security_type = 15;</code>
@@ -3045,7 +3127,7 @@ public final class MorpheusBle {
      * <code>optional .pill_data pill_data = 16;</code>
      */
     public boolean hasPillData() {
-      return ((bitField0_ & 0x00004000) == 0x00004000);
+      return ((bitField0_ & 0x00001000) == 0x00001000);
     }
     /**
      * <code>optional .pill_data pill_data = 16;</code>
@@ -3060,6 +3142,21 @@ public final class MorpheusBle {
       return pillData_;
     }
 
+    public static final int WIFI_CONNECTION_STATE_FIELD_NUMBER = 17;
+    private MorpheusBle.wifi_connection_state wifiConnectionState_;
+    /**
+     * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
+     */
+    public boolean hasWifiConnectionState() {
+      return ((bitField0_ & 0x00002000) == 0x00002000);
+    }
+    /**
+     * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
+     */
+    public MorpheusBle.wifi_connection_state getWifiConnectionState() {
+      return wifiConnectionState_;
+    }
+
     private void initFields() {
       version_ = 0;
       type_ = MorpheusBle.MorpheusCommand.CommandType.MORPHEUS_COMMAND_SET_TIME;
@@ -3071,12 +3168,11 @@ public final class MorpheusBle {
       wifiPassword_ = "";
       batteryLevel_ = 0;
       uptime_ = 0;
-      motionData_ = 0;
-      motionDataEntrypted_ = com.google.protobuf.ByteString.EMPTY;
       firmwareVersion_ = 0;
       wifiScanResult_ = java.util.Collections.emptyList();
       securityType_ = MorpheusBle.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN;
       pillData_ = MorpheusBle.pill_data.getDefaultInstance();
+      wifiConnectionState_ = MorpheusBle.wifi_connection_state.NO_WLAN_CONNECTED;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3142,22 +3238,19 @@ public final class MorpheusBle {
         output.writeInt32(10, uptime_);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
-        output.writeInt32(11, motionData_);
-      }
-      if (((bitField0_ & 0x00000800) == 0x00000800)) {
-        output.writeBytes(12, motionDataEntrypted_);
-      }
-      if (((bitField0_ & 0x00001000) == 0x00001000)) {
         output.writeInt32(13, firmwareVersion_);
       }
       for (int i = 0; i < wifiScanResult_.size(); i++) {
         output.writeMessage(14, wifiScanResult_.get(i));
       }
-      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
         output.writeEnum(15, securityType_.getNumber());
       }
-      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
         output.writeMessage(16, pillData_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        output.writeEnum(17, wifiConnectionState_.getNumber());
       }
       getUnknownFields().writeTo(output);
     }
@@ -3210,27 +3303,23 @@ public final class MorpheusBle {
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(11, motionData_);
-      }
-      if (((bitField0_ & 0x00000800) == 0x00000800)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(12, motionDataEntrypted_);
-      }
-      if (((bitField0_ & 0x00001000) == 0x00001000)) {
-        size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(13, firmwareVersion_);
       }
       for (int i = 0; i < wifiScanResult_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(14, wifiScanResult_.get(i));
       }
-      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(15, securityType_.getNumber());
       }
-      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(16, pillData_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(17, wifiConnectionState_.getNumber());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3371,26 +3460,24 @@ public final class MorpheusBle {
         bitField0_ = (bitField0_ & ~0x00000100);
         uptime_ = 0;
         bitField0_ = (bitField0_ & ~0x00000200);
-        motionData_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000400);
-        motionDataEntrypted_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000800);
         firmwareVersion_ = 0;
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00000400);
         if (wifiScanResultBuilder_ == null) {
           wifiScanResult_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00002000);
+          bitField0_ = (bitField0_ & ~0x00000800);
         } else {
           wifiScanResultBuilder_.clear();
         }
         securityType_ = MorpheusBle.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN;
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00001000);
         if (pillDataBuilder_ == null) {
           pillData_ = MorpheusBle.pill_data.getDefaultInstance();
         } else {
           pillDataBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00002000);
+        wifiConnectionState_ = MorpheusBle.wifi_connection_state.NO_WLAN_CONNECTED;
+        bitField0_ = (bitField0_ & ~0x00004000);
         return this;
       }
 
@@ -3462,36 +3549,32 @@ public final class MorpheusBle {
         if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
           to_bitField0_ |= 0x00000400;
         }
-        result.motionData_ = motionData_;
-        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
-          to_bitField0_ |= 0x00000800;
-        }
-        result.motionDataEntrypted_ = motionDataEntrypted_;
-        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
-          to_bitField0_ |= 0x00001000;
-        }
         result.firmwareVersion_ = firmwareVersion_;
         if (wifiScanResultBuilder_ == null) {
-          if (((bitField0_ & 0x00002000) == 0x00002000)) {
+          if (((bitField0_ & 0x00000800) == 0x00000800)) {
             wifiScanResult_ = java.util.Collections.unmodifiableList(wifiScanResult_);
-            bitField0_ = (bitField0_ & ~0x00002000);
+            bitField0_ = (bitField0_ & ~0x00000800);
           }
           result.wifiScanResult_ = wifiScanResult_;
         } else {
           result.wifiScanResult_ = wifiScanResultBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
-          to_bitField0_ |= 0x00002000;
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00000800;
         }
         result.securityType_ = securityType_;
-        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
-          to_bitField0_ |= 0x00004000;
+        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+          to_bitField0_ |= 0x00001000;
         }
         if (pillDataBuilder_ == null) {
           result.pillData_ = pillData_;
         } else {
           result.pillData_ = pillDataBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
+          to_bitField0_ |= 0x00002000;
+        }
+        result.wifiConnectionState_ = wifiConnectionState_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3548,12 +3631,6 @@ public final class MorpheusBle {
         if (other.hasUptime()) {
           setUptime(other.getUptime());
         }
-        if (other.hasMotionData()) {
-          setMotionData(other.getMotionData());
-        }
-        if (other.hasMotionDataEntrypted()) {
-          setMotionDataEntrypted(other.getMotionDataEntrypted());
-        }
         if (other.hasFirmwareVersion()) {
           setFirmwareVersion(other.getFirmwareVersion());
         }
@@ -3561,7 +3638,7 @@ public final class MorpheusBle {
           if (!other.wifiScanResult_.isEmpty()) {
             if (wifiScanResult_.isEmpty()) {
               wifiScanResult_ = other.wifiScanResult_;
-              bitField0_ = (bitField0_ & ~0x00002000);
+              bitField0_ = (bitField0_ & ~0x00000800);
             } else {
               ensureWifiScanResultIsMutable();
               wifiScanResult_.addAll(other.wifiScanResult_);
@@ -3574,7 +3651,7 @@ public final class MorpheusBle {
               wifiScanResultBuilder_.dispose();
               wifiScanResultBuilder_ = null;
               wifiScanResult_ = other.wifiScanResult_;
-              bitField0_ = (bitField0_ & ~0x00002000);
+              bitField0_ = (bitField0_ & ~0x00000800);
               wifiScanResultBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getWifiScanResultFieldBuilder() : null;
@@ -3588,6 +3665,9 @@ public final class MorpheusBle {
         }
         if (other.hasPillData()) {
           mergePillData(other.getPillData());
+        }
+        if (other.hasWifiConnectionState()) {
+          setWifiConnectionState(other.getWifiConnectionState());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -4222,100 +4302,53 @@ public final class MorpheusBle {
         return this;
       }
 
-      private int motionData_ ;
-      /**
-       * <code>optional int32 motionData = 11;</code>
-       */
-      public boolean hasMotionData() {
-        return ((bitField0_ & 0x00000400) == 0x00000400);
-      }
-      /**
-       * <code>optional int32 motionData = 11;</code>
-       */
-      public int getMotionData() {
-        return motionData_;
-      }
-      /**
-       * <code>optional int32 motionData = 11;</code>
-       */
-      public Builder setMotionData(int value) {
-        bitField0_ |= 0x00000400;
-        motionData_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int32 motionData = 11;</code>
-       */
-      public Builder clearMotionData() {
-        bitField0_ = (bitField0_ & ~0x00000400);
-        motionData_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private com.google.protobuf.ByteString motionDataEntrypted_ = com.google.protobuf.ByteString.EMPTY;
-      /**
-       * <code>optional bytes motionDataEntrypted = 12;</code>
-       */
-      public boolean hasMotionDataEntrypted() {
-        return ((bitField0_ & 0x00000800) == 0x00000800);
-      }
-      /**
-       * <code>optional bytes motionDataEntrypted = 12;</code>
-       */
-      public com.google.protobuf.ByteString getMotionDataEntrypted() {
-        return motionDataEntrypted_;
-      }
-      /**
-       * <code>optional bytes motionDataEntrypted = 12;</code>
-       */
-      public Builder setMotionDataEntrypted(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000800;
-        motionDataEntrypted_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional bytes motionDataEntrypted = 12;</code>
-       */
-      public Builder clearMotionDataEntrypted() {
-        bitField0_ = (bitField0_ & ~0x00000800);
-        motionDataEntrypted_ = getDefaultInstance().getMotionDataEntrypted();
-        onChanged();
-        return this;
-      }
-
       private int firmwareVersion_ ;
       /**
        * <code>optional int32 firmwareVersion = 13;</code>
+       *
+       * <pre>
+       * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
+       * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
+       * </pre>
        */
       public boolean hasFirmwareVersion() {
-        return ((bitField0_ & 0x00001000) == 0x00001000);
+        return ((bitField0_ & 0x00000400) == 0x00000400);
       }
       /**
        * <code>optional int32 firmwareVersion = 13;</code>
+       *
+       * <pre>
+       * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
+       * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
+       * </pre>
        */
       public int getFirmwareVersion() {
         return firmwareVersion_;
       }
       /**
        * <code>optional int32 firmwareVersion = 13;</code>
+       *
+       * <pre>
+       * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
+       * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
+       * </pre>
        */
       public Builder setFirmwareVersion(int value) {
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00000400;
         firmwareVersion_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>optional int32 firmwareVersion = 13;</code>
+       *
+       * <pre>
+       * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
+       * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
+       * </pre>
        */
       public Builder clearFirmwareVersion() {
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00000400);
         firmwareVersion_ = 0;
         onChanged();
         return this;
@@ -4324,9 +4357,9 @@ public final class MorpheusBle {
       private java.util.List<MorpheusBle.wifi_endpoint> wifiScanResult_ =
         java.util.Collections.emptyList();
       private void ensureWifiScanResultIsMutable() {
-        if (!((bitField0_ & 0x00002000) == 0x00002000)) {
+        if (!((bitField0_ & 0x00000800) == 0x00000800)) {
           wifiScanResult_ = new java.util.ArrayList<MorpheusBle.wifi_endpoint>(wifiScanResult_);
-          bitField0_ |= 0x00002000;
+          bitField0_ |= 0x00000800;
          }
       }
 
@@ -4476,7 +4509,7 @@ public final class MorpheusBle {
       public Builder clearWifiScanResult() {
         if (wifiScanResultBuilder_ == null) {
           wifiScanResult_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00002000);
+          bitField0_ = (bitField0_ & ~0x00000800);
           onChanged();
         } else {
           wifiScanResultBuilder_.clear();
@@ -4553,7 +4586,7 @@ public final class MorpheusBle {
           wifiScanResultBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               MorpheusBle.wifi_endpoint, MorpheusBle.wifi_endpoint.Builder, MorpheusBle.wifi_endpointOrBuilder>(
                   wifiScanResult_,
-                  ((bitField0_ & 0x00002000) == 0x00002000),
+                  ((bitField0_ & 0x00000800) == 0x00000800),
                   getParentForChildren(),
                   isClean());
           wifiScanResult_ = null;
@@ -4566,7 +4599,7 @@ public final class MorpheusBle {
        * <code>optional .wifi_endpoint.sec_type security_type = 15;</code>
        */
       public boolean hasSecurityType() {
-        return ((bitField0_ & 0x00004000) == 0x00004000);
+        return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       /**
        * <code>optional .wifi_endpoint.sec_type security_type = 15;</code>
@@ -4581,7 +4614,7 @@ public final class MorpheusBle {
         if (value == null) {
           throw new NullPointerException();
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00001000;
         securityType_ = value;
         onChanged();
         return this;
@@ -4590,7 +4623,7 @@ public final class MorpheusBle {
        * <code>optional .wifi_endpoint.sec_type security_type = 15;</code>
        */
       public Builder clearSecurityType() {
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00001000);
         securityType_ = MorpheusBle.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN;
         onChanged();
         return this;
@@ -4603,7 +4636,7 @@ public final class MorpheusBle {
        * <code>optional .pill_data pill_data = 16;</code>
        */
       public boolean hasPillData() {
-        return ((bitField0_ & 0x00008000) == 0x00008000);
+        return ((bitField0_ & 0x00002000) == 0x00002000);
       }
       /**
        * <code>optional .pill_data pill_data = 16;</code>
@@ -4628,7 +4661,7 @@ public final class MorpheusBle {
         } else {
           pillDataBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
@@ -4642,7 +4675,7 @@ public final class MorpheusBle {
         } else {
           pillDataBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
@@ -4650,7 +4683,7 @@ public final class MorpheusBle {
        */
       public Builder mergePillData(MorpheusBle.pill_data value) {
         if (pillDataBuilder_ == null) {
-          if (((bitField0_ & 0x00008000) == 0x00008000) &&
+          if (((bitField0_ & 0x00002000) == 0x00002000) &&
               pillData_ != MorpheusBle.pill_data.getDefaultInstance()) {
             pillData_ =
               MorpheusBle.pill_data.newBuilder(pillData_).mergeFrom(value).buildPartial();
@@ -4661,7 +4694,7 @@ public final class MorpheusBle {
         } else {
           pillDataBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
@@ -4674,14 +4707,14 @@ public final class MorpheusBle {
         } else {
           pillDataBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00002000);
         return this;
       }
       /**
        * <code>optional .pill_data pill_data = 16;</code>
        */
       public MorpheusBle.pill_data.Builder getPillDataBuilder() {
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00002000;
         onChanged();
         return getPillDataFieldBuilder().getBuilder();
       }
@@ -4710,6 +4743,41 @@ public final class MorpheusBle {
           pillData_ = null;
         }
         return pillDataBuilder_;
+      }
+
+      private MorpheusBle.wifi_connection_state wifiConnectionState_ = MorpheusBle.wifi_connection_state.NO_WLAN_CONNECTED;
+      /**
+       * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
+       */
+      public boolean hasWifiConnectionState() {
+        return ((bitField0_ & 0x00004000) == 0x00004000);
+      }
+      /**
+       * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
+       */
+      public MorpheusBle.wifi_connection_state getWifiConnectionState() {
+        return wifiConnectionState_;
+      }
+      /**
+       * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
+       */
+      public Builder setWifiConnectionState(MorpheusBle.wifi_connection_state value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00004000;
+        wifiConnectionState_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
+       */
+      public Builder clearWifiConnectionState() {
+        bitField0_ = (bitField0_ & ~0x00004000);
+        wifiConnectionState_ = MorpheusBle.wifi_connection_state.NO_WLAN_CONNECTED;
+        onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:MorpheusCommand)
@@ -5617,46 +5685,49 @@ public final class MorpheusBle {
       "_WPA2\020\003\"\221\001\n\tpill_data\022\021\n\tdevice_id\030\001 \002(\t" +
       "\022\025\n\rbattery_level\030\002 \001(\005\022\016\n\006uptime\030\003 \001(\005\022" +
       "\035\n\025motion_data_entrypted\030\004 \001(\014\022\030\n\020firmwa" +
-      "re_version\030\005 \001(\005\022\021\n\ttimestamp\030\006 \002(\004\"\330\t\n\017",
+      "re_version\030\005 \001(\005\022\021\n\ttimestamp\030\006 \002(\004\"\336\t\n\017",
       "MorpheusCommand\022\017\n\007version\030\001 \002(\005\022*\n\004type" +
       "\030\002 \002(\0162\034.MorpheusCommand.CommandType\022\020\n\010" +
       "deviceId\030\003 \001(\t\022\021\n\taccountId\030\004 \001(\t\022\031\n\005err" +
       "or\030\005 \001(\0162\n.ErrorType\022\020\n\010wifiName\030\006 \001(\t\022\020" +
       "\n\010wifiSSID\030\007 \001(\t\022\024\n\014wifiPassword\030\010 \001(\t\022\024" +
-      "\n\014batteryLevel\030\t \001(\005\022\016\n\006uptime\030\n \001(\005\022\022\n\n" +
-      "motionData\030\013 \001(\005\022\033\n\023motionDataEntrypted\030" +
-      "\014 \001(\014\022\027\n\017firmwareVersion\030\r \001(\005\022(\n\020wifi_s" +
-      "can_result\030\016 \003(\0132\016.wifi_endpoint\022.\n\rsecu" +
-      "rity_type\030\017 \001(\0162\027.wifi_endpoint.sec_type",
-      "\022\035\n\tpill_data\030\020 \001(\0132\n.pill_data\"\244\006\n\013Comm" +
-      "andType\022\035\n\031MORPHEUS_COMMAND_SET_TIME\020\000\022\035" +
-      "\n\031MORPHEUS_COMMAND_GET_TIME\020\001\022&\n\"MORPHEU" +
-      "S_COMMAND_SET_WIFI_ENDPOINT\020\002\022&\n\"MORPHEU" +
-      "S_COMMAND_GET_WIFI_ENDPOINT\020\003\022\037\n\033MORPHEU" +
-      "S_COMMAND_SET_ALARMS\020\004\022\037\n\033MORPHEUS_COMMA" +
-      "ND_GET_ALARMS\020\005\022+\n\'MORPHEUS_COMMAND_SWIT" +
-      "CH_TO_PAIRING_MODE\020\006\022*\n&MORPHEUS_COMMAND" +
-      "_SWITCH_TO_NORMAL_MODE\020\007\022#\n\037MORPHEUS_COM" +
-      "MAND_START_WIFISCAN\020\010\022\"\n\036MORPHEUS_COMMAN",
-      "D_STOP_WIFISCAN\020\t\022\"\n\036MORPHEUS_COMMAND_GE" +
-      "T_DEVICE_ID\020\n\022\'\n#MORPHEUS_COMMAND_ERASE_" +
-      "PAIRED_PHONE\020\013\022\036\n\032MORPHEUS_COMMAND_PAIR_" +
-      "PILL\020\014\022\032\n\026MORPHEUS_COMMAND_ERROR\020\r\022\037\n\033MO" +
-      "RPHEUS_COMMAND_PAIR_SENSE\020\016\022 \n\034MORPHEUS_" +
-      "COMMAND_UNPAIR_PILL\020\017\022\'\n#MORPHEUS_COMMAN" +
-      "D_MORPHEUS_DFU_BEGIN\020\020\022\036\n\032MORPHEUS_COMMA" +
-      "ND_PILL_DATA\020\021\022#\n\037MORPHEUS_COMMAND_PILL_" +
-      "HEARTBEAT\020\022\022#\n\037MORPHEUS_COMMAND_PILL_DFU" +
-      "_BEGIN\020\023\022\"\n\036MORPHEUS_COMMAND_FACTORY_RES",
-      "ET\020\024\022 \n\034MORPHEUS_COMMAND_PILL_SHAKES\020\025\"A" +
-      "\n\021batched_pill_data\022\031\n\005pills\030\001 \003(\0132\n.pil" +
-      "l_data\022\021\n\tdevice_id\030\002 \002(\t*\373\001\n\tErrorType\022" +
-      "\014\n\010TIME_OUT\020\000\022\021\n\rNETWORK_ERROR\020\001\022\031\n\025DEVI" +
-      "CE_ALREADY_PAIRED\020\002\022\027\n\023INTERNAL_DATA_ERR" +
-      "OR\020\003\022\030\n\024DEVICE_DATABASE_FULL\020\004\022\024\n\020DEVICE" +
-      "_NO_MEMORY\020\005\022\035\n\031INTERNAL_OPERATION_FAILE" +
-      "D\020\006\022\030\n\024NO_ENDPOINT_IN_RANGE\020\007\022\031\n\025WLAN_CO" +
-      "NNECTION_ERROR\020\010\022\025\n\021FAIL_TO_OBTAIN_IP\020\t"
+      "\n\014batteryLevel\030\t \001(\005\022\016\n\006uptime\030\n \001(\005\022\027\n\017" +
+      "firmwareVersion\030\r \001(\005\022(\n\020wifi_scan_resul" +
+      "t\030\016 \003(\0132\016.wifi_endpoint\022.\n\rsecurity_type" +
+      "\030\017 \001(\0162\027.wifi_endpoint.sec_type\022\035\n\tpill_" +
+      "data\030\020 \001(\0132\n.pill_data\0225\n\025wifi_connectio",
+      "n_state\030\021 \001(\0162\026.wifi_connection_state\"\244\006" +
+      "\n\013CommandType\022\035\n\031MORPHEUS_COMMAND_SET_TI" +
+      "ME\020\000\022\035\n\031MORPHEUS_COMMAND_GET_TIME\020\001\022&\n\"M" +
+      "ORPHEUS_COMMAND_SET_WIFI_ENDPOINT\020\002\022&\n\"M" +
+      "ORPHEUS_COMMAND_GET_WIFI_ENDPOINT\020\003\022\037\n\033M" +
+      "ORPHEUS_COMMAND_SET_ALARMS\020\004\022\037\n\033MORPHEUS" +
+      "_COMMAND_GET_ALARMS\020\005\022+\n\'MORPHEUS_COMMAN" +
+      "D_SWITCH_TO_PAIRING_MODE\020\006\022*\n&MORPHEUS_C" +
+      "OMMAND_SWITCH_TO_NORMAL_MODE\020\007\022#\n\037MORPHE" +
+      "US_COMMAND_START_WIFISCAN\020\010\022\"\n\036MORPHEUS_",
+      "COMMAND_STOP_WIFISCAN\020\t\022\"\n\036MORPHEUS_COMM" +
+      "AND_GET_DEVICE_ID\020\n\022\'\n#MORPHEUS_COMMAND_" +
+      "ERASE_PAIRED_PHONE\020\013\022\036\n\032MORPHEUS_COMMAND" +
+      "_PAIR_PILL\020\014\022\032\n\026MORPHEUS_COMMAND_ERROR\020\r" +
+      "\022\037\n\033MORPHEUS_COMMAND_PAIR_SENSE\020\016\022 \n\034MOR" +
+      "PHEUS_COMMAND_UNPAIR_PILL\020\017\022\'\n#MORPHEUS_" +
+      "COMMAND_MORPHEUS_DFU_BEGIN\020\020\022\036\n\032MORPHEUS" +
+      "_COMMAND_PILL_DATA\020\021\022#\n\037MORPHEUS_COMMAND" +
+      "_PILL_HEARTBEAT\020\022\022#\n\037MORPHEUS_COMMAND_PI" +
+      "LL_DFU_BEGIN\020\023\022\"\n\036MORPHEUS_COMMAND_FACTO",
+      "RY_RESET\020\024\022 \n\034MORPHEUS_COMMAND_PILL_SHAK" +
+      "ES\020\025\"A\n\021batched_pill_data\022\031\n\005pills\030\001 \003(\013" +
+      "2\n.pill_data\022\021\n\tdevice_id\030\002 \002(\t*\373\001\n\tErro" +
+      "rType\022\014\n\010TIME_OUT\020\000\022\021\n\rNETWORK_ERROR\020\001\022\031" +
+      "\n\025DEVICE_ALREADY_PAIRED\020\002\022\027\n\023INTERNAL_DA" +
+      "TA_ERROR\020\003\022\030\n\024DEVICE_DATABASE_FULL\020\004\022\024\n\020" +
+      "DEVICE_NO_MEMORY\020\005\022\035\n\031INTERNAL_OPERATION" +
+      "_FAILED\020\006\022\030\n\024NO_ENDPOINT_IN_RANGE\020\007\022\031\n\025W" +
+      "LAN_CONNECTION_ERROR\020\010\022\025\n\021FAIL_TO_OBTAIN" +
+      "_IP\020\t*i\n\025wifi_connection_state\022\025\n\021NO_WLA",
+      "N_CONNECTED\020\000\022\023\n\017WLAN_CONNECTING\020\001\022\022\n\016WL" +
+      "AN_CONNECTED\020\002\022\020\n\014IP_RETRIEVED\020\003"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -5687,7 +5758,7 @@ public final class MorpheusBle {
     internal_static_MorpheusCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_MorpheusCommand_descriptor,
-        new java.lang.String[] { "Version", "Type", "DeviceId", "AccountId", "Error", "WifiName", "WifiSSID", "WifiPassword", "BatteryLevel", "Uptime", "MotionData", "MotionDataEntrypted", "FirmwareVersion", "WifiScanResult", "SecurityType", "PillData", });
+        new java.lang.String[] { "Version", "Type", "DeviceId", "AccountId", "Error", "WifiName", "WifiSSID", "WifiPassword", "BatteryLevel", "Uptime", "FirmwareVersion", "WifiScanResult", "SecurityType", "PillData", "WifiConnectionState", });
     internal_static_batched_pill_data_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_batched_pill_data_fieldAccessorTable = new

@@ -1,6 +1,7 @@
 package is.hello.sense.bluetooth.devices;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -30,6 +31,7 @@ import rx.functions.Action3;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.MorpheusCommand;
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.MorpheusCommand.CommandType;
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.wifi_connection_state;
 
 public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     private static int COMMAND_VERSION = 0;
@@ -46,7 +48,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                                                              @NonNull ScanCriteria criteria) {
         criteria.addConstraint(new ScanResponse(ScanResponse.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT));
         return bluetoothStack.discoverPeripherals(criteria)
-                             .map(SensePeripheral::fromDevices);
+                .map(SensePeripheral::fromDevices);
     }
 
     public static Observable<SensePeripheral> rediscover(@NonNull BluetoothStack bluetoothStack,
@@ -266,6 +268,15 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         return performSimpleCommand(morpheusCommand, SchedulerOperationTimeout.acquire("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS)).map(ignored -> null);
     }
 
+    public Observable<SenseWifiNetwork> getWifiNetwork() {
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_GET_WIFI_ENDPOINT)
+                .setVersion(COMMAND_VERSION)
+                .build();
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(response ->
+                new SenseWifiNetwork(response.getWifiSSID(), response.getWifiConnectionState()));
+    }
+
     public Observable<String> pairPill(final String accountToken) {
         Logger.info(Peripheral.LOG_TAG, "pairPill(" + accountToken + ")");
 
@@ -355,4 +366,24 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
 
     private interface OnCommandResponse extends Action3<MorpheusCommand, Subscriber<? super MorpheusCommand>, OperationTimeout> {}
+
+
+    public final class SenseWifiNetwork {
+        public final @Nullable String ssid;
+        public final @Nullable wifi_connection_state connectionState;
+
+        SenseWifiNetwork(@Nullable String ssid, @Nullable wifi_connection_state connectionState) {
+            this.ssid = ssid;
+            this.connectionState = connectionState;
+        }
+
+
+        @Override
+        public String toString() {
+            return "SenseWifiNetwork{" +
+                    "ssid='" + ssid + '\'' +
+                    ", connectionState=" + connectionState +
+                    '}';
+        }
+    }
 }
