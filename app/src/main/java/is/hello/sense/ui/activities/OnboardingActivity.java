@@ -1,6 +1,5 @@
 package is.hello.sense.ui.activities;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -40,6 +39,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWelcomeFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
@@ -158,12 +158,12 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     @Override
     public void onBackPressed() {
         if (getFragmentManager().getBackStackEntryCount() == 0) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            SenseAlertDialog builder = new SenseAlertDialog(this);
             builder.setTitle(R.string.dialog_title_confirm_leave_onboarding);
             builder.setMessage(R.string.dialog_message_confirm_leave_onboarding);
             builder.setPositiveButton(android.R.string.ok, (dialog, which) -> super.onBackPressed());
             builder.setNegativeButton(android.R.string.cancel, null);
-            builder.create().show();
+            builder.show();
         } else {
             super.onBackPressed();
         }

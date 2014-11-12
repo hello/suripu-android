@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <is.hello.sense.ui.widget.SensorStateView
+            android:id="@+id/fragment_device_details_last_seen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:sensorTitle="@string/title_device_last_seen"/>
+
+        <is.hello.sense.ui.widget.SensorStateView
+            android:id="@+id/fragment_device_details_version"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:sensorTitle="@string/title_device_firmware_version"/>
+
+        <is.hello.sense.ui.widget.TintedProgressBar
+            android:id="@+id/fragment_device_details_sense_pairing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/gap_xlarge"
+            android:visibility="gone"
+            style="@android:style/Widget.Holo.ProgressBar.Large"/>
+
+        <LinearLayout
+            android:id="@+id/fragment_device_details_sense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <View style="@style/Divider.Horizontal.Padded" />
+
+            <is.hello.sense.ui.widget.SensorStateView
+                android:id="@+id/fragment_device_details_sense_signal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:sensorTitle="@string/title_device_signal_strength"/>
+
+            <is.hello.sense.ui.widget.SensorStateView
+                android:id="@+id/fragment_device_details_sense_change_wifi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:sensorTitle="@string/action_select_wifi_network"
+                app:wantsReading="false"/>
+
+            <is.hello.sense.ui.widget.SensorStateView
+                android:id="@+id/fragment_device_details_sense_pairing_mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:sensorTitle="@string/action_enter_pairing_mode"
+                app:wantsReading="false"/>
+
+            <is.hello.sense.ui.widget.SensorStateView
+                android:id="@+id/fragment_device_details_sense_factory_reset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:sensorTitle="@string/action_factory_reset"
+                app:wantsReading="false"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

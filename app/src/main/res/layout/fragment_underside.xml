@@ -83,9 +83,7 @@
         <View
             android:id="@+id/fragment_underside_conditions_divider"
             android:layout_below="@id/fragment_underside_particulates"
-            android:layout_marginTop="@dimen/gap_small"
-            android:layout_marginBottom="@dimen/gap_small"
-            style="@style/Divider.Horizontal" />
+            style="@style/Divider.Horizontal.Padded" />
 
         <is.hello.sense.ui.widget.SensorStateView
             android:id="@+id/fragment_underside_alarm"

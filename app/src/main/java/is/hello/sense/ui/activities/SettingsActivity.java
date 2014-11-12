@@ -1,6 +1,5 @@
 package is.hello.sense.ui.activities;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ListFragment;
 import android.content.Intent;
@@ -25,6 +24,7 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.fragments.settings.SettingsFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
@@ -137,7 +137,7 @@ public class SettingsActivity extends FragmentNavigationActivity {
         }
 
         public void logOut() {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            SenseAlertDialog builder = new SenseAlertDialog(getActivity());
             builder.setTitle(R.string.dialog_title_log_out);
             builder.setMessage(R.string.dialog_message_log_out);
             builder.setNegativeButton(android.R.string.cancel, null);
@@ -148,7 +148,7 @@ public class SettingsActivity extends FragmentNavigationActivity {
 
                 Analytics.event(Analytics.EVENT_SIGNED_OUT, null);
             });
-            builder.create().show();
+            builder.show();
         }
 
         //endregion

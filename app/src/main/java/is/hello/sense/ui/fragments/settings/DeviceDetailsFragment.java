@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.settings;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -12,13 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -28,9 +28,12 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.SensorStateView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
+
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class DeviceDetailsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     private static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
@@ -39,12 +42,12 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     @Inject DateFormatter dateFormatter;
     @Inject HardwarePresenter hardwarePresenter;
 
-    private @Nullable StaticItemAdapter.Item signalStrengthItem;
-    private StaticItemAdapter adapter;
+    private ProgressBar pairingActivityIndicator;
+    private ViewGroup senseActionsContainer;
+    private @Nullable SensorStateView signalStrength;
+
     private Device device;
     private BluetoothAdapter bluetoothAdapter;
-
-    private LoadingDialogFragment loadingDialogFragment;
 
     public static DeviceDetailsFragment newInstance(@NonNull Device device) {
         DeviceDetailsFragment fragment = new DeviceDetailsFragment();
@@ -65,29 +68,34 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
         this.bluetoothAdapter = ((BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 
-
-        this.adapter = new StaticItemAdapter(getActivity());
-        adapter.addItem(getString(R.string.title_device_last_seen), dateFormatter.formatAsDate(device.getLastUpdated()));
-        adapter.addItem(getString(R.string.title_device_firmware_version), device.getFirmwareVersion());
-
-        if (device.getType() == Device.Type.SENSE) {
-            this.signalStrengthItem = adapter.addItem(getString(R.string.title_device_signal_strength), getString(R.string.missing_data_placeholder));
-            adapter.addItem(getString(R.string.action_select_wifi_network), null, this::changeWifiNetwork);
-            adapter.addItem(getString(R.string.action_enter_pairing_mode), null, this::putIntoPairingMode);
-            adapter.addItem(getString(R.string.action_factory_reset), null, this::factoryReset);
-        }
-
         setRetainInstance(true);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.simple_list_view, container, false);
+        View view = inflater.inflate(R.layout.fragment_device_details, container, false);
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(this);
+        SensorStateView lastSeen = (SensorStateView) view.findViewById(R.id.fragment_device_details_last_seen);
+        lastSeen.setReading(dateFormatter.formatAsDate(device.getLastUpdated()));
+
+        SensorStateView version = (SensorStateView) view.findViewById(R.id.fragment_device_details_version);
+        version.setReading(device.getFirmwareVersion());
+
+        if (device.getType() == Device.Type.SENSE) {
+            this.pairingActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_device_details_sense_pairing);
+            this.senseActionsContainer = (ViewGroup) view.findViewById(R.id.fragment_device_details_sense);
+            this.signalStrength = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_signal);
+
+            SensorStateView changeWifi = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_change_wifi);
+            changeWifi.setOnClickListener(this::changeWifiNetwork);
+
+            SensorStateView enterPairingMode = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_pairing_mode);
+            enterPairingMode.setOnClickListener(this::putIntoPairingMode);
+
+            SensorStateView factoryReset = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_factory_reset);
+            factoryReset.setOnClickListener(this::factoryReset);
+        }
 
         return view;
     }
@@ -97,9 +105,10 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         super.onViewCreated(view, savedInstanceState);
 
         if (device.getType() == Device.Type.SENSE && bluetoothAdapter.isEnabled()) {
-            this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_scanning_for_sense), false);
-            bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device), this::bindPeripheral, this::presentError);
+            pairingActivityIndicator.setVisibility(View.VISIBLE);
+            senseActionsContainer.setVisibility(View.GONE);
 
+            bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device), this::bindPeripheral, this::presentError);
             bindAndSubscribe(this.hardwarePresenter.bluetoothEnabled, this::onBluetoothStateChanged, Functions.LOG_ERROR);
         }
     }
@@ -122,8 +131,10 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
     public void onBluetoothStateChanged(boolean isEnabled) {
         if (!isEnabled) {
-            if (signalStrengthItem != null) {
-                signalStrengthItem.setValue(getString(R.string.missing_data_placeholder));
+            if (signalStrength != null) {
+                signalStrength.setReading(getString(R.string.missing_data_placeholder));
+                senseActionsContainer.setVisibility(View.GONE);
+                pairingActivityIndicator.setVisibility(View.GONE);
             }
         }
     }
@@ -139,34 +150,22 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             strength = getString(R.string.signal_weak);
         }
 
-        if (signalStrengthItem != null) {
-            signalStrengthItem.setValue(strength);
+        if (signalStrength != null) {
+            signalStrength.setReading(strength);
         }
 
         if (peripheral.isConnected()) {
-            LoadingDialogFragment.close(getFragmentManager());
+            senseActionsContainer.setVisibility(View.VISIBLE);
+            pairingActivityIndicator.setVisibility(View.GONE);
         } else {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral),
-                    status -> {
-                        switch (status) {
-                            case CONNECTING:
-                                loadingDialogFragment.setTitle(getString(R.string.title_connecting));
-                                break;
-
-                            case BONDING:
-                                loadingDialogFragment.setTitle(getString(R.string.title_pairing));
-                                break;
-
-                            case DISCOVERING_SERVICES:
-                                loadingDialogFragment.setTitle(getString(R.string.title_discovering_services));
-                                break;
-
-                            case CONNECTED:
-                                LoadingDialogFragment.close(getFragmentManager());
-                                break;
-                        }
-                    },
-                    this::presentError);
+                             status -> {
+                                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
+                                     senseActionsContainer.setVisibility(View.VISIBLE);
+                                     pairingActivityIndicator.setVisibility(View.GONE);
+                                 }
+                             },
+                             this::presentError);
         }
     }
 
@@ -181,13 +180,15 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
         Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
 
-        if (signalStrengthItem != null) {
-            signalStrengthItem.setValue(getString(R.string.missing_data_placeholder));
+        if (signalStrength != null) {
+            signalStrength.setReading(getString(R.string.missing_data_placeholder));
+            senseActionsContainer.setVisibility(View.GONE);
+            pairingActivityIndicator.setVisibility(View.GONE);
         }
     }
 
 
-    public void changeWifiNetwork() {
+    public void changeWifiNetwork(@NonNull View sender) {
         if (hardwarePresenter.getPeripheral() == null)
             return;
 
@@ -196,7 +197,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         startActivity(intent);
     }
 
-    public void putIntoPairingMode() {
+    public void putIntoPairingMode(@NonNull View sender) {
         Analytics.event(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE));
 
         if (hardwarePresenter.getPeripheral() == null)
@@ -213,7 +214,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     }
 
     @SuppressWarnings("CodeBlock2Expr")
-    public void factoryReset() {
+    public void factoryReset(@NonNull View sender) {
         Analytics.event(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_FACTORY_RESTORE));
 
         if (hardwarePresenter.getPeripheral() == null)

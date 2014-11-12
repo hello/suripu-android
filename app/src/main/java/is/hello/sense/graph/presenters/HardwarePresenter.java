@@ -43,6 +43,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     private final BluetoothStack bluetoothStack;
 
     private @Nullable Observable<SensePeripheral> rediscovery;
+    private @Nullable Observable<SensePeripheral.ConnectStatus> connectingToPeripheral;
     private @Nullable SensePeripheral peripheral;
 
     private final Action1<Throwable> respondToError;
@@ -196,17 +197,25 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     public Observable<HelloPeripheral.ConnectStatus> connectToPeripheral(@NonNull SensePeripheral peripheral) {
         logEvent("connectToPeripheral(" + peripheral + ")");
 
+        if (connectingToPeripheral != null) {
+            return connectingToPeripheral;
+        }
+
         if (peripheral.isConnected() && peripheral.getBondStatus() != Peripheral.BOND_BONDED) {
             logEvent("already paired with peripheral " + peripheral);
 
             return Observable.just(null);
         }
 
-        return peripheral.connect().doOnCompleted(() -> {
+        this.connectingToPeripheral = peripheral.connect().doOnCompleted(() -> {
             logEvent("pairedWithPeripheral(" + peripheral + ")");
             setLastPeripheralAddress(peripheral.getAddress());
             this.peripheral = peripheral;
+
+            this.connectingToPeripheral = null;
         });
+
+        return connectingToPeripheral;
     }
 
     public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks() {
