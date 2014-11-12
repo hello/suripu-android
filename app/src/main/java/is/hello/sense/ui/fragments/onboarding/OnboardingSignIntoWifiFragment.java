@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -97,9 +98,17 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         ViewGroup securityContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_security_container);
         this.networkSecurity = (Spinner) securityContainer.findViewById(R.id.fragment_onboarding_sign_into_wifi_security);
 
+        Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_continue);
+        continueButton.setOnClickListener(ignored -> sendWifiCredentials());
+
         if (network != null) {
             this.networkName.setText(network.getSsid());
-            this.networkPassword.requestFocus();
+            if (network.getSecurityType() == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
+                this.networkPassword.setVisibility(View.GONE);
+            } else {
+                this.networkPassword.setVisibility(View.VISIBLE);
+                this.networkPassword.requestFocus();
+            }
             securityContainer.setVisibility(View.GONE);
         } else {
             networkSecurity.setAdapter(new SecurityTypeAdapter(getActivity()));
