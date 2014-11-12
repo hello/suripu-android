@@ -193,6 +193,8 @@
         <item name="android:textAppearance">@style/AppTheme.Text</item>
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:paddingTop">@dimen/gap_medium</item>
+        <item name="android:paddingBottom">@dimen/gap_large</item>
     </style>
 
     <style name="AppTheme.Button.Raised">

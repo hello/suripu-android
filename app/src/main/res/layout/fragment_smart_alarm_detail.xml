@@ -26,7 +26,6 @@
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/gap_small"
             android:paddingEnd="@dimen/gap_small"
-            android:paddingBottom="@dimen/gap_large"
             android:orientation="horizontal">
 
             <ToggleButton
