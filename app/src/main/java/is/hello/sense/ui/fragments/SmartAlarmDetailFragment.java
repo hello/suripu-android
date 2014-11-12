@@ -64,6 +64,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         this.smartAlarm = (SmartAlarm) getArguments().getSerializable(ARG_ALARM);
         this.index = getArguments().getInt(ARG_INDEX);
 
+        if (smartAlarm.getSound() == null) {
+            smartAlarm.setSound(SmartAlarm.Sound.none());
+        }
+
         setRetainInstance(true);
     }
 

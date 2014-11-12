@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -50,13 +51,16 @@ public class SmartAlarm extends ApiResponse {
         this.isEnabled = true;
         this.isEditable = true;
         this.daysOfWeek = new HashSet<>();
+        this.sound = Sound.none();
     }
 
 
+    @JsonIgnore
     public LocalTime getTime() {
         return new LocalTime(hourOfDay, minuteOfHour);
     }
 
+    @JsonIgnore
     public void setTime(@NonNull LocalTime time) {
         this.hourOfDay = time.getHourOfDay();
         this.minuteOfHour = time.getMinuteOfHour();
@@ -85,15 +89,11 @@ public class SmartAlarm extends ApiResponse {
         return isEditable;
     }
 
-    public Set<Integer> getDaysOfWeek() {
-        return daysOfWeek;
-    }
-
     /**
      * @see org.joda.time.DateTimeConstants
      */
-    public void setDaysOfWeek(Set<Integer> daysOfWeek) {
-        this.daysOfWeek = daysOfWeek;
+    public Set<Integer> getDaysOfWeek() {
+        return daysOfWeek;
     }
 
     public static @NonNull String nameForDayOfWeek(@NonNull Context context, int dayOfWeek) {
@@ -165,6 +165,11 @@ public class SmartAlarm extends ApiResponse {
 
         @JsonProperty("name")
         public final String name;
+
+
+        public static @NonNull Sound none() {
+            return new Sound(0, "NotReal");
+        }
 
 
         public Sound(@JsonProperty("id") long id,
