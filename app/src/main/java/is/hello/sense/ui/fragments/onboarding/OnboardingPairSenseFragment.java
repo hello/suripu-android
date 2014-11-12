@@ -18,6 +18,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -28,16 +29,13 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 
 public class OnboardingPairSenseFragment extends InjectionFragment {
-    public static final String ARG_IS_SECOND_USER = OnboardingPairSenseFragment.class.getName() + ".ARG_IS_SECOND_USER";
-
     private static int REQUEST_CODE_PAIR_HELP = 0x19;
 
     @Inject HardwarePresenter hardwarePresenter;
-
-    private boolean isSecondUser = false;
     private BluetoothAdapter bluetoothAdapter;
 
     private Button nextButton;
@@ -47,7 +45,6 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.isSecondUser = (getArguments() != null && getArguments().getBoolean(ARG_IS_SECOND_USER, false));
         this.bluetoothAdapter = ((BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 
         Analytics.event(Analytics.EVENT_ONBOARDING_PAIR_SENSE, null);
@@ -99,14 +96,20 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     }
 
     private void finishedPairing() {
-        LoadingDialogFragment.close(getFragmentManager());
+        loadingDialogFragment.setTitle(getString(R.string.title_checking_connectivity));
+        bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
+                LoadingDialogFragment.close(getFragmentManager());
+            if (network.connectionState == MorpheusBle.wifi_connection_state.IP_RETRIEVED) {
+                ((OnboardingActivity) getActivity()).showPairPill(-1);
+            } else {
+                ((OnboardingActivity) getActivity()).showSelectWifiNetwork(true);
+            }
+        }, e -> {
+            Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not get Sense's wifi network", e);
 
-        OnboardingActivity activity = (OnboardingActivity) getActivity();
-        if (isSecondUser) {
-            activity.showPairPill(-1);
-        } else {
-            activity.showSelectWifiNetwork(true);
-        }
+            LoadingDialogFragment.close(getFragmentManager());
+            ((OnboardingActivity) getActivity()).showSelectWifiNetwork(true);
+        });
     }
 
 

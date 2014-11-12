@@ -278,6 +278,16 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         });
     }
 
+    public Observable<SensePeripheral.SenseWifiNetwork> currentWifiNetwork() {
+        logEvent("currentWifiNetwork()");
+
+        if (peripheral == null) {
+            return noDeviceError();
+        }
+
+        return peripheral.getWifiNetwork();
+    }
+
     public Observable<Void> sendWifiCredentials(@NonNull String bssid,
                                                 @NonNull String ssid,
                                                 @NonNull MorpheusBle.wifi_endpoint.sec_type securityType,

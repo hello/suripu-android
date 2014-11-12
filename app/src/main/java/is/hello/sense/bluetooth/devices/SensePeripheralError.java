@@ -13,4 +13,10 @@ public class SensePeripheralError extends BluetoothError {
 
         this.errorType = errorType != null ? errorType : MorpheusBle.ErrorType.INTERNAL_OPERATION_FAILED;
     }
+
+    public static boolean errorTypeEquals(@Nullable Throwable error, MorpheusBle.ErrorType errorType) {
+        return (error != null && (error instanceof SensePeripheralError) &&
+                ((SensePeripheralError) error).errorType == errorType);
+
+    }
 }
