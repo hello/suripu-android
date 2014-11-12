@@ -66,7 +66,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {
-                showSelectWifiNetwork();
+                showSelectWifiNetwork(false);
                 return;
             }
 
@@ -135,6 +135,10 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
     @Override
     public void showFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
+        if (!wantsBackStackEntry) {
+            getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             transaction.add(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
@@ -185,7 +189,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void showIntroductionFragment() {
-        showFragment(new OnboardingIntroductionFragment(), null, true);
+        showFragment(new OnboardingIntroductionFragment(), null, false);
     }
 
     public void showSignIn() {
@@ -239,8 +243,8 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(builder.build(), null, true);
     }
 
-    public void showSelectWifiNetwork() {
-        showFragment(new OnboardingWifiNetworkFragment(), null, true);
+    public void showSelectWifiNetwork(boolean wantsBackStackEntry) {
+        showFragment(new OnboardingWifiNetworkFragment(), null, wantsBackStackEntry);
     }
 
     public void showSignIntoWifiNetwork(@Nullable MorpheusBle.wifi_endpoint network) {
