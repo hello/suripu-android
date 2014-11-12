@@ -13,11 +13,13 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 
@@ -63,7 +65,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
             return;
         }
 
-        getOnboardingActivity().beginBlockingWork(R.string.dialog_loading_message);
+        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
 
         OAuthCredentials credentials = new OAuthCredentials(environment, email, password);
         bindAndSubscribe(apiService.authorize(credentials), session -> {
@@ -72,8 +74,13 @@ public class OnboardingSignInFragment extends InjectionFragment {
 
             Analytics.event(Analytics.EVENT_SIGNED_IN, null);
         }, error -> {
-            getOnboardingActivity().finishBlockingWork();
-            ErrorDialogFragment.presentError(getFragmentManager(), error);
+            LoadingDialogFragment.close(getFragmentManager());
+            if (ApiException.statusEquals(error, 401)) {
+                ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_account_invalid_credentials));
+                dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            } else {
+                ErrorDialogFragment.presentError(getFragmentManager(), error);
+            }
         });
     }
 }

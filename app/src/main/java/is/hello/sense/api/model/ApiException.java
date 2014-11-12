@@ -10,6 +10,19 @@ public class ApiException extends Exception {
     private final ErrorResponse errorResponse;
     private final RetrofitError networkStackError;
 
+    public static boolean statusEquals(@Nullable Throwable e, int status) {
+        if (e == null) {
+            return false;
+        }
+
+        if (!(e instanceof ApiException)) {
+            return false;
+        }
+
+        Integer errorStatus = ((ApiException) e).getStatus();
+        return (errorStatus != null && errorStatus == status);
+    }
+
     public ApiException(@Nullable ErrorResponse errorResponse, @NonNull RetrofitError networkStackError) {
         super(networkStackError);
 

@@ -220,6 +220,8 @@
     <string name="sec_type_open">Open</string>
     <string name="title_smart_alarm">Smart Alarm</string>
     <string name="device_last_seen_fmt">Last Seen %1$s</string>
+    <string name="error_account_email_taken">An account with the email address %1$s already exists</string>
+    <string name="error_account_invalid_credentials">The email address or password you entered is incorrect.</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>
