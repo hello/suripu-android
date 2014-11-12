@@ -103,6 +103,21 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         return isOpen;
     }
 
+    public void openWithoutAnimation() {
+        this.topView = getChildAt(1);
+        this.topViewY = topView.getY();
+
+        PropertyAnimatorProxy.stop(topView);
+
+        if (onInteractionListener != null)
+            onInteractionListener.onUserWillPullDownTopView();
+
+        requestLayout();
+
+        this.isOpen = true;
+        this.listView = null;
+    }
+
     public void open() {
         if (isOpen)
             return;

@@ -45,6 +45,7 @@ public class HomeActivity
         extends InjectionActivity
         implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener {
     public static final String EXTRA_IS_NOTIFICATION = HomeActivity.class.getName() + ".EXTRA_IS_NOTIFICATION";
+    public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
     @Inject QuestionsPresenter questionsPresenter;
     @Inject PreferencesPresenter preferences;
@@ -55,12 +56,16 @@ public class HomeActivity
     private Button newQuestionButton;
     private FragmentPageView<TimelineFragment> viewPager;
 
+    private boolean isFirstActivityRun;
+
     //region Lifecycle
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        this.isFirstActivityRun = (savedInstanceState == null);
 
         this.homeContainer = (ViewGroup) findViewById(R.id.activity_home_container);
 
@@ -132,6 +137,10 @@ public class HomeActivity
 
         if (!buildValues.isDebugBuild()) {
             UpdateManager.register(this, buildValues.hockeyId);
+        }
+
+        if (isFirstActivityRun && getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false)) {
+            slidingLayersView.openWithoutAnimation();
         }
     }
 
@@ -293,6 +302,8 @@ public class HomeActivity
         }
 
         viewPager.getCurrentFragment().onUserWillPullDownTopView();
+
+        this.isFirstActivityRun = false;
     }
 
     @Override
