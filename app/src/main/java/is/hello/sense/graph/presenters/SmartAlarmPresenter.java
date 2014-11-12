@@ -23,25 +23,12 @@ import rx.Observable;
 import rx.Subscription;
 
 public class SmartAlarmPresenter extends Presenter {
-    private static final String CACHE_FILENAME = "Suripu-Smart-Alarms-test.json";
-
     private final ApiService apiService;
-    private final @Nullable CachedObject<List<SmartAlarm>> alarmCache;
 
     public final PresenterSubject<List<SmartAlarm>> alarms = PresenterSubject.create();
 
-    @Inject SmartAlarmPresenter(@NonNull ApiService apiService,
-                                @CacheDirectoryFile @Nullable File cacheDirectory,
-                                @NonNull ObjectMapper objectMapper) {
+    @Inject SmartAlarmPresenter(@NonNull ApiService apiService) {
         this.apiService = apiService;
-
-        if (cacheDirectory != null) {
-            this.alarmCache = new CachedObject<>(CachedObject.getFile(cacheDirectory, CACHE_FILENAME),
-                                                 new TypeReference<List<SmartAlarm>>() {},
-                                                 objectMapper);
-        } else {
-            this.alarmCache = null;
-        }
     }
 
     @Override
@@ -55,53 +42,19 @@ public class SmartAlarmPresenter extends Presenter {
         return true;
     }
 
-    public @Nullable Observable<List<SmartAlarm>> retrieveCache() {
-        if (alarmCache != null) {
-            return alarmCache.get();
-        } else {
-            return null;
-        }
-    }
-
-    public @Nullable Observable<List<SmartAlarm>> saveCache(@Nullable List<SmartAlarm> alarms) {
-        if (alarmCache != null) {
-            return alarmCache.set(alarms);
-        } else {
-            return null;
-        }
-    }
-
 
     public void update() {
         logEvent("update()");
 
-        Observable<List<SmartAlarm>> cache = retrieveCache();
-        Subscription cacheSubscription = cache != null ? cache.subscribe(alarms) : null;
-        apiService.smartAlarms().subscribe(alarms -> {
-            if (cacheSubscription != null && !cacheSubscription.isUnsubscribed())
-                cacheSubscription.unsubscribe();
-
-            this.alarms.onNext(alarms);
-            if (alarmCache != null) {
-                alarmCache.set(alarms)
-                          .subscribe(ignored -> logEvent("cache updated"), Functions.LOG_ERROR);
-            }
-        }, e -> {
-            Logger.error(SmartAlarmPresenter.class.getSimpleName(), "Could not refresh smart alarms.", e);
-            if (cacheSubscription != null && cacheSubscription.isUnsubscribed()) {
-                alarms.onError(e);
-            }
-        });
+        apiService.smartAlarms().subscribe(alarms);
     }
 
     public Observable<VoidResponse> save(@NonNull List<SmartAlarm> updatedAlarms) {
         logEvent("save()");
 
         return apiService.saveSmartAlarms(System.currentTimeMillis(), updatedAlarms)
-                         .doOnNext(ignored -> {
+                         .doOnCompleted(() -> {
                              logEvent("smart alarms saved");
-
-                             saveCache(updatedAlarms);
                              this.alarms.onNext(updatedAlarms);
                          })
                          .doOnError(this.alarms::onError);

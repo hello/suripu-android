@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,18 +30,16 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
-
-public class SmartAlarmListFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class SmartAlarmListFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, SmartAlarmAdapter.OnAlarmEnabledChanged {
     private static final int EDIT_REQUEST_CODE = 0x31;
     private static final int DELETE_REQUEST_CODE = 0x11;
 
     @Inject SmartAlarmPresenter smartAlarmPresenter;
     @Inject PreferencesPresenter preferences;
-    @Inject DateFormatter dateFormatter;
 
     private List<SmartAlarm> currentAlarms = new ArrayList<>();
     private SmartAlarmAdapter adapter;
@@ -62,7 +59,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         View view = inflater.inflate(R.layout.fragment_smart_alarm_list, container, false);
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
-        this.adapter = new SmartAlarmAdapter(getActivity(), dateFormatter);
+        this.adapter = new SmartAlarmAdapter(getActivity(), this);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
@@ -155,6 +152,16 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         return true;
     }
 
+    @Override
+    public void onAlarmEnabledChanged(int position, boolean enabled) {
+        currentAlarms.get(position).setEnabled(enabled);
+
+        LoadingDialogFragment.show(getFragmentManager());
+        bindAndSubscribe(smartAlarmPresenter.save(currentAlarms),
+                ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                this::alarmsUnavailable);
+    }
+
     public void newAlarm(@NonNull View sender) {
         editAlarm(new SmartAlarm(), SmartAlarmDetailFragment.INDEX_NEW);
     }
@@ -176,20 +183,21 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
 
-            builder.setTitle(R.string.label_delete_alarm);
-            builder.setMessage(R.string.dialog_message_confirm_delete_alarm);
-            builder.setPositiveButton(R.string.action_delete, (dialog, which) -> {
+            dialog.setTitle(R.string.label_delete_alarm);
+            dialog.setMessage(R.string.dialog_message_confirm_delete_alarm);
+            dialog.setPositiveButton(R.string.action_delete, (sender, which) -> {
                 if (getTargetFragment() != null) {
                     Intent response = new Intent();
                     response.putExtras(getArguments());
                     getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, response);
                 }
             });
-            builder.setNegativeButton(android.R.string.cancel, null);
+            dialog.setNegativeButton(android.R.string.cancel, null);
+            dialog.setDestructive(true);
 
-            return builder.create();
+            return dialog;
         }
     }
 }

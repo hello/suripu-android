@@ -5,12 +5,10 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
-import java.io.File;
-
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiModule;
-import is.hello.sense.graph.annotations.CacheDirectoryFile;
+import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
@@ -22,7 +20,6 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
-import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HomeActivity;
@@ -113,15 +110,6 @@ public class SenseAppModule {
 
     @Provides Context provideApplicationContext() {
         return applicationContext;
-    }
-
-    @Provides @CacheDirectoryFile File provideCacheDirectoryFile() {
-        File cacheFile = applicationContext.getExternalCacheDir();
-        if (cacheFile == null) {
-            cacheFile = applicationContext.getCacheDir();
-        }
-
-        return cacheFile;
     }
 
     @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {
