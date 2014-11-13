@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -166,6 +167,12 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
 
 
     public void showSleepScore(int sleepScore) {
+        if (sleepScore > 0) {
+            scoreGraph.setTrackColor(Color.TRANSPARENT);
+        } else {
+            scoreGraph.setTrackColor(getResources().getColor(R.color.border));
+        }
+
         scoreGraph.setFillColor(getResources().getColor(Styles.getSleepScoreColorRes(sleepScore)));
         ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animation.Properties.createWithDelay(250));
         if (updateAnimation != null) {
@@ -218,6 +225,8 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
                 messageText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
             }
         } else {
+            scoreGraph.setTrackColor(getResources().getColor(R.color.border));
+
             messageTextLabel.setVisibility(View.INVISIBLE);
             messageText.setGravity(Gravity.CENTER);
 
@@ -227,10 +236,12 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     }
 
     public void timelineUnavailable(@Nullable Throwable e) {
+        scoreGraph.setTrackColor(getResources().getColor(R.color.border));
         scoreGraph.setValue(0);
+        scoreText.setText(R.string.missing_data_placeholder);
+
         messageTextLabel.setVisibility(View.INVISIBLE);
         messageText.setGravity(Gravity.CENTER);
-        scoreText.setText(R.string.missing_data_placeholder);
 
         if (e != null) {
             messageText.setText(getString(R.string.timeline_error_message, e.getMessage()));
