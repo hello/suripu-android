@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.graph.SafeObserverWrapper;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import rx.Observable;
@@ -79,7 +80,7 @@ public class SensorHistoryPresenter extends Presenter {
                 newHistory = apiService.sensorHistoryForWeek(getSensorName(), SensorHistory.timeForLatest());
             }
             Observable<Pair<List<SensorHistory>, UnitSystem>> result = Observable.combineLatest(newHistory, unitFormatter.unitSystem, Pair::new);
-            this.updateSubscription = result.finallyDo(() -> this.updateSubscription = null).subscribe(history);
+            this.updateSubscription = result.subscribe(new SafeObserverWrapper<>(history));
         }
     }
 

@@ -152,11 +152,14 @@ public class InjectionFragment extends SenseFragment implements ObservableContai
         return track(toSubscribe.unsafeSubscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
-
+                unsubscribe();
             }
 
             @Override
             public void onError(Throwable e) {
+                if (isUnsubscribed())
+                    return;
+
                 try {
                     onError.call(e);
                 } catch (Throwable actionError) {
@@ -167,6 +170,9 @@ public class InjectionFragment extends SenseFragment implements ObservableContai
 
             @Override
             public void onNext(T t) {
+                if (isUnsubscribed())
+                    return;
+
                 onNext.call(t);
             }
         }));

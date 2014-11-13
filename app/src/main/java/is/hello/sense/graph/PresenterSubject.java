@@ -1,6 +1,7 @@
 package is.hello.sense.graph;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,8 +90,8 @@ public final class PresenterSubject<T> extends Subject<T, T> {
         @Override
         public void call(Subscriber<? super T> subscriber) {
             subscriber.onStart();
+            subscriber.add(Subscriptions.create(() -> subscribers.remove(subscriber)));
             if (!subscriber.isUnsubscribed()) {
-                subscriber.add(Subscriptions.create(() -> subscribers.remove(subscriber)));
                 subscribers.add(subscriber);
 
                 if (value != null) {
