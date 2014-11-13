@@ -23,6 +23,8 @@ import is.hello.sense.ui.common.Styles;
 import is.hello.sense.ui.widget.HorizontalBarGraphView;
 
 public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment, TimelineSegmentAdapter.SegmentViewHolder> implements View.OnClickListener {
+    public static final int VIEW_ITEM_TYPE = 0;
+
     private static final int NUMBER_HOURS_ON_SCREEN = 20;
 
     private final Context context;
@@ -102,6 +104,10 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
         segmentViewHolder.itemView.setMinimumHeight(calculateHeight(position, segment));
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return VIEW_ITEM_TYPE;
+    }
 
     public final class SegmentViewHolder extends RecyclerView.ViewHolder {
         private HorizontalBarGraphView graphView;

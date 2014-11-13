@@ -39,8 +39,8 @@ public class HeaderFooterRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
 
 
     //region Overrides
-    private int getPositionInWrapper(int position) {
-        return position - headerViews.size();
+    public int getPositionInWrapper(int position) {
+        return Math.max(0, position - headerViews.size());
     }
 
 

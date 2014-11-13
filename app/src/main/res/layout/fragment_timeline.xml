@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/list"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:divider="@null"
-    android:dividerHeight="0dp"
-    android:listSelector="@color/transparent"
-    android:background="@color/background_timeline"/>
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:listSelector="@color/transparent"
+        android:background="@color/background_timeline"/>
+
+    <is.hello.sense.ui.widget.TimestampTextView
+        android:id="@+id/fragment_timeline_scrubber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/gap_medium"
+        android:text="@string/mock_time"
+        android:layout_gravity="top|end"
+        android:visibility="invisible"
+        style="@style/AppTheme.Text.Timestamp"/>
+
+</FrameLayout>

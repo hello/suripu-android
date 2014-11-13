@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.PreSleepInsight;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.HeaderFooterRecyclerAdapter;
@@ -33,32 +35,48 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.Styles;
+import is.hello.sense.ui.common.ViewUtil;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.TimestampTextView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, TimelineSegmentAdapter.OnItemClickedListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
 
-    private PieGraphView scoreGraph;
-    private TextView scoreText;
-    private TextView messageTextLabel;
-    private TextView messageText;
-    private LinearLayout insightsContainer;
 
     @Inject DateFormatter dateFormatter;
     @Inject TimelinePresenter timelinePresenter;
 
-    private TimelineSegmentAdapter segmentAdapter;
+    private static RecyclerView.RecycledViewPool SEGMENT_POOL = new RecyclerView.RecycledViewPool();
+    static {
+        SEGMENT_POOL.setMaxRecycledViews(TimelineSegmentAdapter.VIEW_ITEM_TYPE, 15);
+    }
+
     private RecyclerView recyclerView;
+    private LinearLayoutManager timelineLayoutManager;
     private HeaderFooterRecyclerAdapter headerFooterAdapter;
-    private TextView timelineEventsHeader;
+    private TimelineSegmentAdapter segmentAdapter;
+
+    private TimestampTextView timeScrubber;
+    private float timeScrubberMargin;
+
+    private View headerView;
     private ImageButton menuButton;
     private ImageButton shareButton;
     private TextView dateText;
+    private PieGraphView scoreGraph;
+    private TextView scoreText;
+    private TextView messageTextLabel;
+    private TextView messageText;
+
+    private TextView timelineEventsHeader;
+    private LinearLayout insightsContainer;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -78,6 +96,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         addPresenter(timelinePresenter);
 
         this.segmentAdapter = new TimelineSegmentAdapter(getActivity(), this);
+        this.timeScrubberMargin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
 
         setRetainInstance(true);
     }
@@ -86,16 +105,22 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
+        this.timeScrubber = (TimestampTextView) view.findViewById(R.id.fragment_timeline_scrubber);
+
         this.recyclerView = (RecyclerView) view.findViewById(android.R.id.list);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+        recyclerView.setOnScrollListener(new TimelineScrollListener());
+        recyclerView.setRecycledViewPool(SEGMENT_POOL);
+
+        this.timelineLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(timelineLayoutManager);
 
 
         this.headerFooterAdapter = new HeaderFooterRecyclerAdapter(segmentAdapter);
         recyclerView.setAdapter(headerFooterAdapter);
 
-        View headerView = inflater.inflate(R.layout.sub_fragment_timeline_header, recyclerView, false);
+        this.headerView = inflater.inflate(R.layout.sub_fragment_timeline_header, recyclerView, false);
 
         this.scoreGraph = (PieGraphView) headerView.findViewById(R.id.fragment_timeline_sleep_score_chart);
         this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
@@ -166,6 +191,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         // This is the best place to fire animations.
     }
 
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+
+        SEGMENT_POOL.clear();
+    }
 
     public void showSleepScore(int sleepScore) {
         scoreGraph.setFillColor(getResources().getColor(Styles.getSleepScoreColorRes(sleepScore)));
@@ -218,6 +249,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 timelineEventsHeader.setVisibility(View.VISIBLE);
                 messageTextLabel.setVisibility(View.VISIBLE);
                 messageText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+
+                bindAndSubscribe(ViewUtil.onGlobalLayout(recyclerView).take(1), view -> {
+                    updateTimeScrubber();
+                    animate(timeScrubber)
+                            .fadeIn()
+                            .start();
+                }, Functions.LOG_ERROR);
             }
         } else {
             messageTextLabel.setVisibility(View.INVISIBLE);
@@ -225,6 +263,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
             showInsights(Collections.emptyList());
             timelineEventsHeader.setVisibility(View.INVISIBLE);
+
+            timeScrubber.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -239,6 +279,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         } else {
             messageText.setText(R.string.missing_data_placeholder);
         }
+
+        timeScrubber.setVisibility(View.INVISIBLE);
     }
 
 
@@ -269,5 +311,44 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onUserDidPushUpTopView() {
         menuButton.setImageResource(R.drawable.icon_menu_closed);
         shareButton.setImageResource(R.drawable.icon_share_enabled);
+    }
+
+
+    private void updateTimeScrubber() {
+        int firstVisiblePosition = timelineLayoutManager.findFirstVisibleItemPosition();
+        if (firstVisiblePosition == 0) {
+            timeScrubber.setY(timeScrubberMargin + headerView.getBottom());
+        } else {
+            timeScrubber.setY(timeScrubberMargin);
+        }
+
+        int segmentPosition = headerFooterAdapter.getPositionInWrapper(firstVisiblePosition);
+        TimelineSegment segment = segmentAdapter.getItem(segmentPosition);
+        timeScrubber.setDateTime(segment.getTimestamp());
+    }
+
+    private class TimelineScrollListener extends RecyclerView.OnScrollListener {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+
+            if (segmentAdapter.getItemCount() > 0) {
+                int firstVisiblePosition = timelineLayoutManager.findFirstVisibleItemPosition();
+                int segmentPosition = headerFooterAdapter.getPositionInWrapper(firstVisiblePosition);
+                TimelineSegment segment = segmentAdapter.getItem(segmentPosition);
+                timeScrubber.setDateTime(segment.getTimestamp());
+
+                updateTimeScrubber();
+            }
+        }
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                updateTimeScrubber();
+            }
+        }
     }
 }
