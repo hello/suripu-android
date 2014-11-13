@@ -20,6 +20,7 @@ import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
+import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -153,14 +154,14 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     public void pairingFailed(Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
-        if (e instanceof PeripheralConnectionError) {
+        if (e instanceof PeripheralNotFoundError) {
             OnboardingPairHelpFragment pairHelpFragment = new OnboardingPairHelpFragment();
             pairHelpFragment.setTargetFragment(this, REQUEST_CODE_PAIR_HELP);
             ((FragmentNavigation) getActivity()).showFragment(pairHelpFragment, null, true);
         } else if (hardwarePresenter.isErrorFatal(e)) {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
         } else {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
     }
 

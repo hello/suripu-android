@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import is.hello.sense.R;

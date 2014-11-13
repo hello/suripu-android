@@ -16,7 +16,6 @@ import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
-import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -124,11 +123,8 @@ public class OnboardingPairPillFragment extends InjectionFragment {
         } else if (e instanceof OperationTimeoutError || SensePeripheralError.errorTypeEquals(e, MorpheusBle.ErrorType.TIME_OUT)) {
             ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_sleep_pill_scan_timeout));
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-        } else if (e instanceof PeripheralConnectionError) {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_sense_not_found));
-            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
     }
 }

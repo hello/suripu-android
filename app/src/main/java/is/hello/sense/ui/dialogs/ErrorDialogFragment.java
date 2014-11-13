@@ -12,6 +12,16 @@ import android.text.TextUtils;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.bluetooth.devices.SensePeripheralError;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
+import is.hello.sense.bluetooth.errors.BluetoothGattError;
+import is.hello.sense.bluetooth.errors.OperationTimeoutError;
+import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
+import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
+import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
+import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 
@@ -29,6 +39,62 @@ public class ErrorDialogFragment extends DialogFragment {
     public static void presentError(@NonNull FragmentManager fm, @Nullable Throwable e) {
         ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(e);
         fragment.show(fm, TAG);
+    }
+
+    public static void presentBluetoothError(@NonNull FragmentManager fm,
+                                             @NonNull Context context,
+                                             @NonNull Throwable e) {
+        String message = null;
+        if (e instanceof BluetoothDisabledError) {
+            message = context.getString(R.string.error_bluetooth_disabled);
+        } else if (e instanceof BluetoothGattError) {
+            message = context.getString(R.string.error_bluetooth_gatt_failure_fmt, e.getMessage());
+        } else if (e instanceof OperationTimeoutError) {
+            message = context.getString(R.string.error_generic_bluetooth_timeout);
+        } else if (e instanceof PeripheralBondAlterationError) {
+            message = context.getString(R.string.error_bluetooth_bonding_change);
+        } else if (e instanceof PeripheralConnectionError) {
+            message = context.getString(R.string.error_bluetooth_no_connection);
+        } else if (e instanceof PeripheralServiceDiscoveryFailedError) {
+            message = context.getString(R.string.error_bluetooth_service_discovery_failed);
+        } else if (e instanceof PeripheralNotFoundError) {
+            message = context.getString(R.string.error_sense_not_found);
+        } else if (e instanceof SensePeripheralError) {
+            MorpheusBle.ErrorType errorType = ((SensePeripheralError) e).errorType;
+            switch (errorType) {
+                default:
+                    message = errorType.toString();
+                    break;
+
+                case DEVICE_ALREADY_PAIRED:
+                    message = context.getString(R.string.error_sense_already_paired);
+                    break;
+
+                case DEVICE_DATABASE_FULL:
+                    message = context.getString(R.string.error_sense_device_db_full);
+                    break;
+
+                case TIME_OUT:
+                    message = context.getString(R.string.error_generic_bluetooth_timeout);
+                    break;
+
+                case NETWORK_ERROR:
+                case WLAN_CONNECTION_ERROR:
+                    message = context.getString(R.string.error_bad_wifi_credentials);
+                    break;
+
+                case NO_ENDPOINT_IN_RANGE:
+                    message = context.getString(R.string.error_wifi_out_of_range);
+                    break;
+
+                case FAIL_TO_OBTAIN_IP:
+                    message = context.getString(R.string.error_wifi_ip_failure);
+                    break;
+            }
+        }
+
+        ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(message);
+        dialogFragment.show(fm, TAG);
     }
 
     public static void presentFatalBluetoothError(@NonNull FragmentManager fm, @NonNull Context context) {
@@ -59,7 +125,7 @@ public class ErrorDialogFragment extends DialogFragment {
         return fragment;
     }
 
-    public static ErrorDialogFragment newInstance(@NonNull String message) {
+    public static ErrorDialogFragment newInstance(@Nullable String message) {
         ErrorDialogFragment fragment = new ErrorDialogFragment();
 
         Bundle arguments = new Bundle();

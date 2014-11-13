@@ -185,12 +185,9 @@
     <string name="title_events_timeline">Events Timeline</string>
     <string name="action_close">Close</string>
     <string name="title_timeline_event_fmt">%1$s - %2$s</string>
-    <string name="error_sense_already_paired">Your Sense is already paired.</string>
     <string name="action_pair_pill">Pair New Pill</string>
     <string name="action_pair_new_sense">Pair New Sense</string>
     <string name="action_select_wifi_network">Select Wifi Network</string>
-    <string name="dialog_title_sense_already_linked">Sense is already paired</string>
-    <string name="dialog_message_sense_already_linked">Have you already paired this Sense to your account?</string>
     <string name="title_scanning_for_sense">Looking for Sense…</string>
     <string name="title_connecting">Connecting with Sense…</string>
     <string name="title_discovering_services">Discovering Services…</string>
@@ -226,6 +223,14 @@
     <string name="error_sleep_pill_scan_timeout">Sense could not find any Sleep Pills.</string>
     <string name="error_sense_not_found">We could not connect to your Sense. Please make sure your Sense is plugged in, and nearby.</string>
     <string name="onboarding_register_info_explanation">This information is used to provide personalized sleep insights.</string>
+    <string name="error_bluetooth_disabled">Please enable Bluetooth to continue.</string>
+    <string name="error_bluetooth_gatt_failure_fmt">An internal Bluetooth error has occurred (%1$s)</string>
+    <string name="error_generic_bluetooth_timeout">Bluetooth operation timed out</string>
+    <string name="error_bluetooth_bonding_change">Could not modify bond with Sense</string>
+    <string name="error_bluetooth_no_connection">Operation could not be completed because you are not connected to a Sense</string>
+    <string name="error_bluetooth_service_discovery_failed">Could not resolve services offered by Sense device</string>
+    <string name="error_sense_already_paired">Your Sense is already linked to this account.</string>
+    <string name="error_sense_device_db_full">Your Sense cannot be paired to anymore devices.</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

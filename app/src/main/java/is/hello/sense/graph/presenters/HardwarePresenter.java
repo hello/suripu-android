@@ -24,7 +24,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
-import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
+import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
@@ -162,7 +162,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                     logEvent("rediscoveredDevice(" + peripheral + ")");
                     return Observable.just(peripheral);
                 } else {
-                    return Observable.error(new PeripheralConnectionError());
+                    return Observable.error(new PeripheralNotFoundError());
                 }
             });
             return rediscovery;

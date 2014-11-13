@@ -175,11 +175,8 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
         if (hardwarePresenter.isErrorFatal(e)) {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
-        } else if (e instanceof PeripheralConnectionError) {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_sense_not_found));
-            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
 
         Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);

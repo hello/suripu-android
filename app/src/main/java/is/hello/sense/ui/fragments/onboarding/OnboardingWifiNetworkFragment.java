@@ -22,7 +22,6 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
-import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
@@ -155,7 +154,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         if (hardwarePresenter.isErrorFatal(e)) {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
         } else {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
 
         trackScanFinished(false);
@@ -171,11 +170,8 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         
         if (hardwarePresenter.isErrorFatal(e)) {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
-        } else if (e instanceof PeripheralConnectionError) {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_sense_not_found));
-            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
     }
 
