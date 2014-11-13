@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/gap_xlarge"
-        android:paddingBottom="@dimen/gap_xlarge"
+        android:paddingBottom="@dimen/gap_large"
         android:paddingLeft="@dimen/gap_large"
         android:paddingRight="@dimen/gap_large"
         android:background="@color/background_onboarding">
@@ -21,6 +21,12 @@
             android:textAppearance="@style/AppTheme.Text.Heading"
             android:text="@string/title_register_height"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_small"
+            android:textAppearance="@style/AppTheme.Text.Subheading"
+            android:text="@string/onboarding_register_info_explanation"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -68,13 +74,20 @@
 
         </LinearLayout>
 
-
         <Button
             android:id="@+id/fragment_onboarding_next"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/action_next"
             style="@style/AppTheme.Button.Rounded"/>
+
+        <Button
+            android:id="@+id/fragment_onboarding_skip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_small"
+            android:text="@string/action_skip"
+            style="@style/AppTheme.Button.Borderless.Onboarding"/>
 
     </LinearLayout>
 

@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import is.hello.sense.R;
@@ -47,6 +46,9 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
             account.setBirthDate(new LocalDate(datePicker.getYear(), datePicker.getMonth() + 1, datePicker.getDayOfMonth()));
             getContainer().onAccountUpdated(this);
         });
+
+        Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
+        skipButton.setOnClickListener(ignored -> getContainer().onAccountUpdated(this));
 
         return view;
     }

@@ -5,17 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="@dimen/gap_xlarge"
-    android:paddingBottom="@dimen/gap_xlarge"
+    android:paddingBottom="@dimen/gap_large"
     android:paddingLeft="@dimen/gap_large"
     android:paddingRight="@dimen/gap_large"
     android:background="@color/background_onboarding">
 
     <TextView
+        android:id="@+id/fragment_onboarding_register_birthday_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:textAppearance="@style/AppTheme.Text.Heading"
         android:text="@string/title_register_birthday"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_below="@id/fragment_onboarding_register_birthday_title"
+        android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:text="@string/onboarding_register_info_explanation"/>
 
     <DatePicker
         android:id="@+id/fragment_onboarding_register_birthday_picker"
@@ -27,10 +36,19 @@
         style="@android:style/Widget.Holo.DatePicker"/>
 
     <Button
+        android:id="@+id/fragment_onboarding_skip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:text="@string/action_skip"
+        android:layout_alignParentBottom="true"
+        style="@style/AppTheme.Button.Borderless.Onboarding"/>
+
+    <Button
         android:id="@+id/fragment_onboarding_next"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/fragment_onboarding_skip"
         android:text="@string/action_next"
         style="@style/AppTheme.Button.Rounded"/>
 

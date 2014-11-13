@@ -113,7 +113,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         networkAdapter.clear();
 
         if (hardwarePresenter.getPeripheral() == null) {
-            Action1<Throwable> onError = this::deviceRepairFailed;
+            Action1<Throwable> onError = this::peripheralRediscoveryFailed;
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
                              peripheral -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral), status -> {
                                  if (status != HelloPeripheral.ConnectStatus.CONNECTED)
@@ -154,13 +154,13 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         if (hardwarePresenter.isErrorFatal(e)) {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
         } else {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
 
         trackScanFinished(false);
     }
 
-    public void deviceRepairFailed(Throwable e) {
+    public void peripheralRediscoveryFailed(Throwable e) {
         scanningIndicatorLabel.setVisibility(View.GONE);
         scanningIndicator.setVisibility(View.GONE);
         infoLabel.setVisibility(View.VISIBLE);
@@ -171,7 +171,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         if (hardwarePresenter.isErrorFatal(e)) {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
         } else {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
     }
 

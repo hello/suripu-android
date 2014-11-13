@@ -13,7 +13,7 @@ import is.hello.sense.bluetooth.devices.transmission.SensePacketDataHandler;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.BluetoothError;
-import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
+import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
@@ -58,7 +58,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         criteria.addConstraint(new ScanResponse(ScanResponse.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId));
         return discover(bluetoothStack, criteria).flatMap(ds -> {
             if (ds.isEmpty()) {
-                return Observable.error(new PeripheralConnectionError());
+                return Observable.error(new PeripheralNotFoundError());
             } else {
                 return Observable.just(ds.get(0));
             }

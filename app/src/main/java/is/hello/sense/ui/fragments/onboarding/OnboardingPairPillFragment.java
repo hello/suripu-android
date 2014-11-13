@@ -124,7 +124,7 @@ public class OnboardingPairPillFragment extends InjectionFragment {
             ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_sleep_pill_scan_timeout));
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
     }
 }
