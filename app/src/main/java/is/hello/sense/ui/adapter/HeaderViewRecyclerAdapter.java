@@ -57,6 +57,7 @@ public class HeaderViewRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
 
     /**
      * Construct a new header view recycler adapter
+     *
      * @param adapter The underlying adapter to wrap
      */
     public HeaderViewRecyclerAdapter(RecyclerView.Adapter adapter) {
@@ -64,14 +65,16 @@ public class HeaderViewRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         mFooterViews = new ArrayList<>();
         mItemTypesOffset = new HashMap<>();
         setWrappedAdapter(adapter);
+        setHasStableIds(adapter.hasStableIds());
     }
 
     /**
      * Replaces the underlying adapter, notifying RecyclerView of changes
+     *
      * @param adapter The new adapter to wrap
      */
     public void setAdapter(RecyclerView.Adapter adapter) {
-        if(mWrappedAdapter != null && mWrappedAdapter.getItemCount() > 0) {
+        if (mWrappedAdapter != null && mWrappedAdapter.getItemCount() > 0) {
             notifyItemRangeRemoved(getHeaderCount(), mWrappedAdapter.getItemCount());
         }
         setWrappedAdapter(adapter);
@@ -81,23 +84,25 @@ public class HeaderViewRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     @Override
     public int getItemViewType(int position) {
         int hCount = getHeaderCount();
-        if (position < hCount) return HEADERS_START + position;
-        else {
+        if (position < hCount) {
+            return HEADERS_START + position;
+        } else {
             int itemCount = mWrappedAdapter.getItemCount();
             if (position < hCount + itemCount) {
                 return getAdapterTypeOffset() + mWrappedAdapter.getItemViewType(position - hCount);
+            } else {
+                return FOOTERS_START + position - hCount - itemCount;
             }
-            else return FOOTERS_START  + position - hCount - itemCount;
         }
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        if (viewType < HEADERS_START + getHeaderCount())
+        if (viewType < HEADERS_START + getHeaderCount()) {
             return new StaticViewHolder(mHeaderViews.get(viewType - HEADERS_START));
-        else if (viewType < FOOTERS_START + getFooterCount())
+        } else if (viewType < FOOTERS_START + getFooterCount()) {
             return new StaticViewHolder(mFooterViews.get(viewType - FOOTERS_START));
-        else {
+        } else {
             return mWrappedAdapter.onCreateViewHolder(viewGroup, viewType - getAdapterTypeOffset());
         }
     }
@@ -114,6 +119,7 @@ public class HeaderViewRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     /**
      * Add a static view to appear at the start of the RecyclerView. Headers are displayed in the
      * order they were added.
+     *
      * @param view The header view to add
      */
     public void addHeaderView(View view) {
@@ -123,6 +129,7 @@ public class HeaderViewRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     /**
      * Add a static view to appear at the end of the RecyclerView. Footers are displayed in the
      * order they were added.
+     *
      * @param view The footer view to add
      */
     public void addFooterView(View view) {
@@ -155,11 +162,26 @@ public class HeaderViewRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         return mFooterViews.size();
     }
 
+    @Override
+    public long getItemId(int position) {
+        int hCount = getHeaderCount();
+        if (position < hCount) {
+            return HEADERS_START + position;
+        } else {
+            int itemCount = mWrappedAdapter.getItemCount();
+            if (position < hCount + itemCount) {
+                return getAdapterTypeOffset() + mWrappedAdapter.getItemId(position - hCount);
+            } else {
+                return FOOTERS_START + position - hCount - itemCount;
+            }
+        }
+    }
+
     private void setWrappedAdapter(RecyclerView.Adapter adapter) {
         if (mWrappedAdapter != null) mWrappedAdapter.unregisterAdapterDataObserver(mDataObserver);
         mWrappedAdapter = adapter;
         Class adapterClass = mWrappedAdapter.getClass();
-        if(!mItemTypesOffset.containsKey(adapterClass)) putAdapterTypeOffset(adapterClass);
+        if (!mItemTypesOffset.containsKey(adapterClass)) putAdapterTypeOffset(adapterClass);
         mWrappedAdapter.registerAdapterDataObserver(mDataObserver);
     }
 

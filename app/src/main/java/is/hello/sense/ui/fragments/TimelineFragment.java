@@ -88,7 +88,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
         this.recyclerView = (RecyclerView) view.findViewById(android.R.id.list);
-
+        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
 
