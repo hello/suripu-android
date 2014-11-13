@@ -199,7 +199,7 @@
     <string name="action_setup_another_pill">Set up another Sleep Pill</string>
     <string name="action_no_thanks">No Thanks</string>
     <string name="title_onboarding_2nd_pill_info">Have your partner get the app</string>
-    <string name="info_onboarding_2nd_pill_info">Your Sense is now in Pairing Mode\n\nHave your partner visit hello.is/app to download the Sense app and set up their Sleep Pill.</string>
+    <string name="info_onboarding_2nd_pill_info">Your Sense is now in Pairing Mode.\n\nHave your partner visit hello.is/app to download the Sense app and create a new account. They will be given instructions to set up their Sleep Pill.</string>
     <string name="label_finding_wifi_networks">Finding Wifi Networks…</string>
     <string name="action_help">Help</string>
     <string name="dialog_title_troubleshoot_sense">Sense Not Found</string>
