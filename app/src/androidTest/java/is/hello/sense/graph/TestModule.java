@@ -3,7 +3,6 @@ package is.hello.sense.graph;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,6 +18,8 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TransientApiSessionManager;
+import is.hello.sense.bluetooth.stacks.BluetoothStack;
+import is.hello.sense.bluetooth.stacks.TestBluetoothStack;
 import is.hello.sense.graph.annotations.CacheDirectoryFile;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
@@ -97,17 +98,6 @@ public final class TestModule {
         return ApiModule.createConfiguredObjectMapper(null);
     }
 
-    @Provides @CacheDirectoryFile File provideCacheDirectoryFile() {
-        File cacheFile = targetContext.getExternalCacheDir();
-        if (cacheFile == null) {
-            cacheFile = targetContext.getCacheDir();
-        }
-
-        assertNotNull(cacheFile);
-
-        return cacheFile;
-    }
-
     @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {
         return applicationContext.getSharedPreferences("test_suite_preferences", Context.MODE_PRIVATE);
     }
@@ -120,14 +110,7 @@ public final class TestModule {
         return new TransientApiSessionManager();
     }
 
-    @Provides SmartAlarmPresenter provideSmartAlarmPresenter(@NonNull ApiService apiService,
-                                                             @CacheDirectoryFile @Nullable File cacheDirectory,
-                                                             @NonNull ObjectMapper objectMapper) {
-        return new SmartAlarmPresenterTests.StubedSmartAlarmPresenter(apiService, cacheDirectory, objectMapper);
-    }
-
-    @Provides @Singleton HardwarePresenter provideHardwarePresenter(@NonNull PreferencesPresenter preferencesPresenter,
-                                                                    @NonNull ApiSessionManager apiSessionManager) {
-        return new HardwarePresenterTests.StubbedHardwarePresenter(preferencesPresenter, apiSessionManager);
+    @Provides @Singleton BluetoothStack providesBluetoothStack() {
+        return new TestBluetoothStack();
     }
 }

@@ -1,7 +1,8 @@
 package is.hello.sense;
 
 import com.google.protobuf.ByteString;
-import com.hello.ble.protobuf.MorpheusBle;
+
+import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 
 public final class Fixtures {
     public static final MorpheusBle.wifi_endpoint[] SCAN_RESULTS_1 = {

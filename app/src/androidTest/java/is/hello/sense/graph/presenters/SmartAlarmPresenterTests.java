@@ -1,23 +1,14 @@
 package is.hello.sense.graph.presenters;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.graph.InjectionTestCase;
-import is.hello.sense.graph.annotations.CacheDirectoryFile;
 import is.hello.sense.util.SyncObserver;
-import rx.Observable;
 
 @SuppressWarnings("ConstantConditions")
 public class SmartAlarmPresenterTests extends InjectionTestCase {
@@ -32,7 +23,6 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
         smartAlarms.await();
 
         assertNull(smartAlarms.getError());
-        assertEquals(2, smartAlarms.getResults().size());
         assertEquals(1, smartAlarms.getLast().size());
     }
 
@@ -43,27 +33,5 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
 
         assertNull(saveAlarms.getError());
         assertNotNull(saveAlarms.getSingle());
-    }
-
-
-    public static class StubedSmartAlarmPresenter extends SmartAlarmPresenter {
-        public StubedSmartAlarmPresenter(@NonNull ApiService apiService,
-                                         @CacheDirectoryFile @Nullable File cacheDirectory,
-                                         @NonNull ObjectMapper objectMapper) {
-            super(apiService, cacheDirectory, objectMapper);
-        }
-
-
-        @Nullable
-        @Override
-        public Observable<List<SmartAlarm>> retrieveCache() {
-            return Observable.just(Collections.emptyList());
-        }
-
-        @Nullable
-        @Override
-        public Observable<List<SmartAlarm>> saveCache(@Nullable List<SmartAlarm> alarms) {
-            return Observable.just(Collections.emptyList());
-        }
     }
 }

@@ -236,49 +236,6 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                      });
     }
 
-    public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks(int passCount) {
-        if (passCount == 0)
-            throw new IllegalArgumentException("passCount == 0");
-
-        if (passCount == 1)
-            return scanForWifiNetworks();
-
-        return Observable.create((Observable.OnSubscribe<List<MorpheusBle.wifi_endpoint>>) s -> {
-            Scheduler scheduler = Schedulers.computation();
-            Observer<List<MorpheusBle.wifi_endpoint>> observer = new Observer<List<MorpheusBle.wifi_endpoint>>() {
-                int pass = 0;
-                Map<ByteString, MorpheusBle.wifi_endpoint> accumulator = new HashMap<>();
-
-                @Override
-                public void onCompleted() {
-                    if (++pass < passCount) {
-                        scanForWifiNetworks().subscribeOn(scheduler).subscribe(this);
-                    } else {
-                        List<MorpheusBle.wifi_endpoint> results = new ArrayList<>();
-                        results.addAll(accumulator.values());
-                        Collections.sort(results, (l, r) -> l.getSsid().compareTo(r.getSsid()));
-
-                        s.onNext(results);
-                        s.onCompleted();
-                    }
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    s.onError(e);
-                }
-
-                @Override
-                public void onNext(List<MorpheusBle.wifi_endpoint> wifi_endpoints) {
-                    for (MorpheusBle.wifi_endpoint endpoint : wifi_endpoints) {
-                        accumulator.put(endpoint.getBssid(), endpoint);
-                    }
-                }
-            };
-            scanForWifiNetworks().subscribeOn(scheduler).subscribe(observer);
-        });
-    }
-
     public Observable<SensePeripheral.SenseWifiNetwork> currentWifiNetwork() {
         logEvent("currentWifiNetwork()");
 
