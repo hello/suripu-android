@@ -27,6 +27,7 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -178,7 +179,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         beginSettingWifi();
 
         if (hardwarePresenter.getPeripheral() == null) {
-            Action1<Throwable> onError = this::deviceRepairFailed;
+            Action1<Throwable> onError = this::peripheralRediscoveryFailed;
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
                              peripheral -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral), status -> {
                                  if (status != HelloPeripheral.ConnectStatus.CONNECTED)
@@ -268,11 +269,14 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    public void deviceRepairFailed(Throwable e) {
+    public void peripheralRediscoveryFailed(Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
         if (hardwarePresenter.isErrorFatal(e)) {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else if (e instanceof PeripheralConnectionError) {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_sense_not_found));
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
             ErrorDialogFragment.presentError(getFragmentManager(), e);
         }

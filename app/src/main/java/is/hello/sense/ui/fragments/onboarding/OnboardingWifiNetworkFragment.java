@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
@@ -113,7 +114,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         networkAdapter.clear();
 
         if (hardwarePresenter.getPeripheral() == null) {
-            Action1<Throwable> onError = this::deviceRepairFailed;
+            Action1<Throwable> onError = this::peripheralRediscoveryFailed;
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
                              peripheral -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral), status -> {
                                  if (status != HelloPeripheral.ConnectStatus.CONNECTED)
@@ -160,7 +161,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         trackScanFinished(false);
     }
 
-    public void deviceRepairFailed(Throwable e) {
+    public void peripheralRediscoveryFailed(Throwable e) {
         scanningIndicatorLabel.setVisibility(View.GONE);
         scanningIndicator.setVisibility(View.GONE);
         infoLabel.setVisibility(View.VISIBLE);
@@ -170,6 +171,9 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         
         if (hardwarePresenter.isErrorFatal(e)) {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else if (e instanceof PeripheralConnectionError) {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_sense_not_found));
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
             ErrorDialogFragment.presentError(getFragmentManager(), e);
         }

@@ -222,8 +222,9 @@
     <string name="device_last_seen_fmt">Last Seen %1$s</string>
     <string name="error_account_email_taken">An account with the email address %1$s already exists</string>
     <string name="error_account_invalid_credentials">The email address or password you entered is incorrect.</string>
-    <string name="title_checking_connectivity">Checking Connectivity...</string>
+    <string name="title_checking_connectivity">Checking Connectivity…</string>
     <string name="error_sleep_pill_scan_timeout">Sense could not find any Sleep Pills.</string>
+    <string name="error_sense_not_found">We could not connect to your Sense. Please make sure your Sense is plugged in, and nearby.</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

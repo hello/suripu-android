@@ -20,6 +20,7 @@ import is.hello.sense.api.model.Device;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
+import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -174,6 +175,9 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
         if (hardwarePresenter.isErrorFatal(e)) {
             ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+        } else if (e instanceof PeripheralConnectionError) {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_sense_not_found));
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
             ErrorDialogFragment.presentError(getFragmentManager(), e);
         }
