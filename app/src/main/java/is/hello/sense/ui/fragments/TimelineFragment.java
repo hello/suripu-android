@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -29,7 +28,7 @@ import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
-import is.hello.sense.ui.adapter.HeaderViewRecyclerAdapter;
+import is.hello.sense.ui.adapter.HeaderFooterRecyclerAdapter;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -55,7 +54,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private TimelineSegmentAdapter segmentAdapter;
     private RecyclerView recyclerView;
-    private HeaderViewRecyclerAdapter headerFooterAdapter;
+    private HeaderFooterRecyclerAdapter headerFooterAdapter;
     private TextView timelineEventsHeader;
     private ImageButton menuButton;
     private ImageButton shareButton;
@@ -93,7 +92,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         recyclerView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
 
 
-        this.headerFooterAdapter = new HeaderViewRecyclerAdapter(segmentAdapter);
+        this.headerFooterAdapter = new HeaderFooterRecyclerAdapter(segmentAdapter);
         recyclerView.setAdapter(headerFooterAdapter);
 
         View headerView = inflater.inflate(R.layout.sub_fragment_timeline_header, recyclerView, false);
