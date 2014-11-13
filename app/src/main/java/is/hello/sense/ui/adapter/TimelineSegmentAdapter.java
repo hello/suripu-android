@@ -4,21 +4,25 @@ import android.content.Context;
 import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.widget.TimelineSegmentView;
 
-public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
+public class TimelineSegmentAdapter extends RecyclerView.Adapter<TimelineSegmentAdapter.SegmentViewHolder> implements View.OnClickListener {
     private static final int NUMBER_HOURS_ON_SCREEN = 20;
+
+    private final Context context;
+    private final List<TimelineSegment> data = new ArrayList<>();
+    private final OnItemClickedListener onItemClickedListener;
 
     private final int itemHeight;
     private final int eventImageHeight;
@@ -26,8 +30,11 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
     //region Lifecycle
 
-    public TimelineSegmentAdapter(@NonNull Context context) {
-        super(context, android.R.layout.simple_list_item_1);
+    public TimelineSegmentAdapter(@NonNull Context context, @NonNull OnItemClickedListener onItemClickedListener) {
+        super();
+
+        this.context = context;
+        this.onItemClickedListener = onItemClickedListener;
 
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
@@ -43,23 +50,26 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     //region Bindings
 
     public void bindSegments(@Nullable List<TimelineSegment> segments) {
-        clear();
+        notifyItemRangeRemoved(0, data.size());
+        data.clear();
 
         if (segments != null) {
-            addAll(segments);
+            data.addAll(segments);
+            notifyItemRangeInserted(0, data.size());
         }
     }
 
     @SuppressWarnings("UnusedParameters")
     public void handleError(@NonNull Throwable ignored) {
-        clear();
+        notifyItemRangeRemoved(0, data.size());
+        data.clear();
     }
 
     private int calculateHeight(int position, @NonNull TimelineSegment segment) {
         if (segment.getEventType() != null) {
             int itemHeight = this.eventImageHeight + (this.itemHeight * 2);
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
-        } else if (position == 0 || position == getCount() - 1) {
+        } else if (position == 0 || position == getItemCount() - 1) {
             int itemHeight = this.stripeCornerRadius;
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
         } else {
@@ -68,22 +78,52 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        TimelineSegmentView view = (TimelineSegmentView) convertView;
-        if (view == null) {
-            view = new TimelineSegmentView(getContext());
-        }
+    public SegmentViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
+        TimelineSegmentView segmentView = new TimelineSegmentView(context);
+        segmentView.setOnClickListener(this);
+        return new SegmentViewHolder(segmentView);
+    }
+
+    @Override
+    public void onBindViewHolder(SegmentViewHolder segmentViewHolder, int position) {
+        TimelineSegmentView view = (TimelineSegmentView) segmentViewHolder.itemView;
 
         TimelineSegmentView.Position segmentPosition = TimelineSegmentView.Position.MIDDLE;
         if (position == 0)
             segmentPosition = TimelineSegmentView.Position.FIRST;
-        else if (position == getCount() - 1)
+        else if (position == getItemCount() - 1)
             segmentPosition = TimelineSegmentView.Position.LAST;
 
         TimelineSegment segment = getItem(position);
+        view.setTag(position);
         view.displaySegment(segment, segmentPosition);
-        view.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, calculateHeight(position, segment)));
+        view.setLayoutParams(new RecyclerView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, calculateHeight(position, segment)));
+    }
 
-        return view;
+    @Override
+    public int getItemCount() {
+        return data.size();
+    }
+
+    public TimelineSegment getItem(int position) {
+        return data.get(position);
+    }
+
+
+    public final class SegmentViewHolder extends RecyclerView.ViewHolder {
+        public SegmentViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+
+    @Override
+    public void onClick(@NonNull View view) {
+        int position = (Integer) view.getTag();
+        onItemClickedListener.onItemClicked(position);
+    }
+
+    public interface OnItemClickedListener {
+        void onItemClicked(int position);
     }
 }

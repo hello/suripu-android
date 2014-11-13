@@ -5,14 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
@@ -28,6 +29,7 @@ import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.ui.adapter.HeaderViewRecyclerAdapter;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -39,7 +41,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
-public class TimelineFragment extends InjectionFragment implements AdapterView.OnItemClickListener, SlidingLayersView.OnInteractionListener {
+public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, TimelineSegmentAdapter.OnItemClickedListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
 
     private PieGraphView scoreGraph;
@@ -52,7 +54,8 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     @Inject TimelinePresenter timelinePresenter;
 
     private TimelineSegmentAdapter segmentAdapter;
-    private ListView listView;
+    private RecyclerView recyclerView;
+    private HeaderViewRecyclerAdapter headerFooterAdapter;
     private TextView timelineEventsHeader;
     private ImageButton menuButton;
     private ImageButton shareButton;
@@ -75,7 +78,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         timelinePresenter.setDate(getDate());
         addPresenter(timelinePresenter);
 
-        this.segmentAdapter = new TimelineSegmentAdapter(getActivity());
+        this.segmentAdapter = new TimelineSegmentAdapter(getActivity(), this);
 
         setRetainInstance(true);
     }
@@ -84,13 +87,16 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
-        this.listView = (ListView) view.findViewById(android.R.id.list);
+        this.recyclerView = (RecyclerView) view.findViewById(android.R.id.list);
 
-        listView.setOnItemClickListener(this);
-        listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
 
 
-        View headerView = inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
+        this.headerFooterAdapter = new HeaderViewRecyclerAdapter(segmentAdapter);
+        recyclerView.setAdapter(headerFooterAdapter);
+
+        View headerView = inflater.inflate(R.layout.sub_fragment_timeline_header, recyclerView, false);
 
         this.scoreGraph = (PieGraphView) headerView.findViewById(R.id.fragment_timeline_sleep_score_chart);
         this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
@@ -100,29 +106,26 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
 
-        listView.addHeaderView(headerView, null, false);
+        headerFooterAdapter.addHeaderView(headerView);
 
 
-        this.timelineEventsHeader = (TextView) inflater.inflate(R.layout.item_section_header, listView, false);
+        this.timelineEventsHeader = (TextView) inflater.inflate(R.layout.item_section_header, recyclerView, false);
         timelineEventsHeader.setText(R.string.title_events_timeline);
         timelineEventsHeader.setVisibility(View.INVISIBLE);
-        listView.addHeaderView(timelineEventsHeader, null, false);
+        headerFooterAdapter.addHeaderView(timelineEventsHeader);
 
         View listFooter = new View(getActivity());
         listFooter.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.gap_outer));
-        listView.addFooterView(listFooter, null, false);
+        headerFooterAdapter.addFooterView(listFooter);
 
 
-        listView.setAdapter(segmentAdapter);
-
-
-        this.menuButton = (ImageButton) view.findViewById(R.id.fragment_timeline_header_menu);
+        this.menuButton = (ImageButton) headerView.findViewById(R.id.fragment_timeline_header_menu);
         menuButton.setOnClickListener(ignored -> {
             HomeActivity activity = (HomeActivity) getActivity();
             activity.getSlidingLayersView().toggle();
         });
 
-        this.shareButton = (ImageButton) view.findViewById(R.id.fragment_timeline_header_share);
+        this.shareButton = (ImageButton) headerView.findViewById(R.id.fragment_timeline_header_share);
         shareButton.setOnClickListener(ignored -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -187,8 +190,8 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
                 insightsContainer.removeViews(2, childCount - 2);
             }
         } else {
-            this.insightsContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_before_sleep, listView, false);
-            listView.addFooterView(insightsContainer, null, false);
+            this.insightsContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_before_sleep, recyclerView, false);
+            headerFooterAdapter.addFooterView(insightsContainer);
         }
 
         for (PreSleepInsight preSleepInsight : preSleepInsights) {
@@ -241,8 +244,8 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
 
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        TimelineSegment segment = (TimelineSegment) adapterView.getItemAtPosition(position);
+    public void onItemClicked(int position) {
+        TimelineSegment segment = segmentAdapter.getItem(position);
         if (segment.getEventType() != null) {
             TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment);
             dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
