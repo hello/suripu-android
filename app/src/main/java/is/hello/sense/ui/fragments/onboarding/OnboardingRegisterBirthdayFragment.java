@@ -48,6 +48,9 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
             getContainer().onAccountUpdated(this);
         });
 
+        Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
+        skipButton.setOnClickListener(ignored -> getContainer().onAccountUpdated(this));
+
         return view;
     }
 }
