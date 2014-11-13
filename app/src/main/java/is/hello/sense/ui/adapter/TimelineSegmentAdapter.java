@@ -2,25 +2,31 @@ package is.hello.sense.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AbsListView;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
-import is.hello.sense.ui.widget.TimelineSegmentView;
+import is.hello.sense.ui.common.Styles;
+import is.hello.sense.ui.widget.HorizontalBarGraphView;
 
 public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment, TimelineSegmentAdapter.SegmentViewHolder> implements View.OnClickListener {
     private static final int NUMBER_HOURS_ON_SCREEN = 20;
 
     private final Context context;
+    private final LayoutInflater inflater;
     private final OnItemClickedListener onItemClickedListener;
 
     private final int itemHeight;
@@ -33,6 +39,7 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
         super();
 
         this.context = context;
+        this.inflater = LayoutInflater.from(context);
         this.onItemClickedListener = onItemClickedListener;
 
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -77,32 +84,90 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
 
     @Override
     public SegmentViewHolder onCreateViewHolder(ViewGroup viewGroup, int itemType) {
-        TimelineSegmentView segmentView = new TimelineSegmentView(context);
+        View segmentView = inflater.inflate(R.layout.item_timeline_segment, viewGroup, false);
         segmentView.setOnClickListener(this);
         return new SegmentViewHolder(segmentView);
     }
 
     @Override
     public void onBindViewHolder(SegmentViewHolder segmentViewHolder, int position) {
-        TimelineSegmentView view = (TimelineSegmentView) segmentViewHolder.itemView;
-
-        TimelineSegmentView.Position segmentPosition = TimelineSegmentView.Position.MIDDLE;
+        ItemPosition segmentPosition = ItemPosition.MIDDLE;
         if (position == 0)
-            segmentPosition = TimelineSegmentView.Position.FIRST;
+            segmentPosition = ItemPosition.FIRST;
         else if (position == getItemCount() - 1)
-            segmentPosition = TimelineSegmentView.Position.LAST;
+            segmentPosition = ItemPosition.LAST;
 
         TimelineSegment segment = getItem(position);
-        view.setTag(position);
-        view.displaySegment(segment, segmentPosition);
-        view.setLayoutParams(new RecyclerView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, calculateHeight(position, segment)));
+        segmentViewHolder.displaySegment(segment, segmentPosition);
+        segmentViewHolder.itemView.setMinimumHeight(calculateHeight(position, segment));
     }
 
 
     public final class SegmentViewHolder extends RecyclerView.ViewHolder {
+        private HorizontalBarGraphView graphView;
+        private View stripe;
+        private ImageView eventTypeImage;
+        private TextView eventType;
+
         public SegmentViewHolder(View itemView) {
             super(itemView);
+
+            this.graphView = (HorizontalBarGraphView) itemView.findViewById(R.id.view_timeline_segment_graph);
+            this.stripe = itemView.findViewById(R.id.view_timeline_segment_event_stripe);
+            this.eventTypeImage = (ImageView) itemView.findViewById(R.id.view_timeline_segment_image_event_type);
+            this.eventType = (TextView) itemView.findViewById(R.id.view_timeline_segment_event_type);
         }
+
+        //region Displaying Data
+
+        public @NonNull Drawable createRoundedDrawable(int color, float[] radii) {
+            RoundRectShape shape = new RoundRectShape(radii, null, null);
+            ShapeDrawable drawable = new ShapeDrawable(shape);
+            drawable.getPaint().setColor(color);
+            return drawable;
+        }
+
+        public void displaySegment(@NonNull TimelineSegment segment, @NonNull ItemPosition position) {
+            int sleepDepth = segment.getSleepDepth() < 0 ? 0 : segment.getSleepDepth();
+            graphView.setFillColor(context.getResources().getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth)));
+            graphView.setValue(sleepDepth);
+
+            int colorRes = Styles.getSleepDepthColorRes(sleepDepth);
+            if (position == ItemPosition.FIRST) {
+                float[] radii = {
+                        stripeCornerRadius, stripeCornerRadius, stripeCornerRadius, stripeCornerRadius,
+                        0f, 0f, 0f, 0f,
+                };
+                stripe.setBackground(createRoundedDrawable(context.getResources().getColor(colorRes), radii));
+            } else if (position == ItemPosition.LAST) {
+                float[] radii = {
+                        0f, 0f, 0f, 0f,
+                        stripeCornerRadius, stripeCornerRadius, stripeCornerRadius, stripeCornerRadius,
+                };
+                stripe.setBackground(createRoundedDrawable(context.getResources().getColor(colorRes), radii));
+            } else {
+                stripe.setBackgroundResource(colorRes);
+            }
+
+            if (segment.getEventType() != null) {
+                eventTypeImage.setImageResource(segment.getEventType().iconRes);
+                eventType.setText(segment.getEventType().nameString);
+
+                eventTypeImage.setVisibility(View.VISIBLE);
+                eventType.setVisibility(View.VISIBLE);
+            } else {
+                eventTypeImage.setImageDrawable(null);
+
+                eventTypeImage.setVisibility(View.GONE);
+                eventType.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    public enum ItemPosition {
+        FIRST,
+        MIDDLE,
+        LAST,
     }
 
 
