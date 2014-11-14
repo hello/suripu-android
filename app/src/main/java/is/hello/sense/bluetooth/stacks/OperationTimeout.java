@@ -2,6 +2,7 @@ package is.hello.sense.bluetooth.stacks;
 
 import android.support.annotation.NonNull;
 
+import is.hello.sense.bluetooth.stacks.util.Recyclable;
 import rx.Scheduler;
 import rx.functions.Action0;
 
@@ -13,7 +14,7 @@ import rx.functions.Action0;
  * <p/>
  * <em>Important:</em> OperationTimeout implementations are not guaranteed to be thread-safe.
  */
-public interface OperationTimeout {
+public interface OperationTimeout extends Recyclable {
     public static final String LOG_TAG = "Bluetooth." + OperationTimeout.class.getSimpleName();
 
     /**

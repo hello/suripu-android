@@ -26,7 +26,7 @@ public class SensePacketHandlerTests extends TestCase {
         SequencedPacket sequencedPacket = packetHandler.createSequencedPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, packet);
         assertEquals(sequencedPacket.sequenceNumber, 0);
         assertTrue(Arrays.equals(sequencedPacket.payload, new byte[] { 0x01, 0x01 }));
-        
+
         SequencedPacket sequencedPacket2 = packetHandler.createSequencedPacket(UUID.randomUUID(), packet);
         assertEquals(sequencedPacket2.sequenceNumber, -1);
         assertTrue(Arrays.equals(sequencedPacket2.payload, packet));

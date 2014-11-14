@@ -30,6 +30,7 @@ import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
+import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
@@ -414,9 +415,11 @@ public class AndroidPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
-        if (getConnectionStatus() != STATUS_CONNECTED)
+    public Observable<Collection<PeripheralService>> discoverServices(@NonNull @TakesOwnership OperationTimeout timeout) {
+        if (getConnectionStatus() != STATUS_CONNECTED) {
+            timeout.recycle();
             return Observable.error(new PeripheralConnectionError());
+        }
 
         return stack.newConfiguredObservable(s -> {
             setupTimeout(OperationTimeoutError.Operation.DISCOVER_SERVICES, timeout, s);
@@ -445,6 +448,7 @@ public class AndroidPeripheral implements Peripheral {
             if (gatt.discoverServices()) {
                 timeout.schedule();
             } else {
+                timeout.recycle();
                 s.onError(new PeripheralServiceDiscoveryFailedError());
             }
         });
@@ -475,9 +479,11 @@ public class AndroidPeripheral implements Peripheral {
     public Observable<UUID> subscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                   @NonNull UUID characteristicIdentifier,
                                                   @NonNull UUID descriptorIdentifier,
-                                                  @NonNull OperationTimeout timeout) {
-        if (getConnectionStatus() != STATUS_CONNECTED)
+                                                  @NonNull @TakesOwnership OperationTimeout timeout) {
+        if (getConnectionStatus() != STATUS_CONNECTED) {
+            timeout.recycle();
             return Observable.error(new PeripheralConnectionError());
+        }
 
         return stack.newConfiguredObservable(s -> {
             setupTimeout(OperationTimeoutError.Operation.SUBSCRIBE_NOTIFICATION, timeout, s);
@@ -507,9 +513,11 @@ public class AndroidPeripheral implements Peripheral {
                 if (gatt.writeDescriptor(descriptorToWrite)) {
                     timeout.schedule();
                 } else {
+                    timeout.recycle();
                     s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE));
                 }
             } else {
+                timeout.recycle();
                 s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
         });
@@ -520,9 +528,11 @@ public class AndroidPeripheral implements Peripheral {
     public Observable<UUID> unsubscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                     @NonNull UUID characteristicIdentifier,
                                                     @NonNull UUID descriptorIdentifier,
-                                                    @NonNull OperationTimeout timeout) {
-        if (getConnectionStatus() != STATUS_CONNECTED)
+                                                    @NonNull @TakesOwnership OperationTimeout timeout) {
+        if (getConnectionStatus() != STATUS_CONNECTED) {
+            timeout.recycle();
             return Observable.error(new PeripheralConnectionError());
+        }
 
         return stack.newConfiguredObservable(s -> {
             setupTimeout(OperationTimeoutError.Operation.UNSUBSCRIBE_NOTIFICATION, timeout, s);
@@ -530,7 +540,7 @@ public class AndroidPeripheral implements Peripheral {
             BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
             gattDispatcher.onDescriptorWrite = (gatt, descriptor, status) -> {
-                if (!Arrays.equals(descriptor.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE))
+                if (!Arrays.equals(descriptor.getValue(), BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE))
                     return;
 
                 timeout.unschedule();
@@ -551,10 +561,11 @@ public class AndroidPeripheral implements Peripheral {
                 gattDispatcher.onDescriptorWrite = null;
             };
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(descriptorIdentifier);
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
             if (gatt.writeDescriptor(descriptor)) {
                 timeout.schedule();
             } else {
+                timeout.recycle();
                 s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
         });
@@ -565,9 +576,11 @@ public class AndroidPeripheral implements Peripheral {
     public Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService,
                                          @NonNull UUID identifier,
                                          @NonNull byte[] payload,
-                                         @NonNull OperationTimeout timeout) {
-        if (getConnectionStatus() != STATUS_CONNECTED)
+                                         @NonNull @TakesOwnership OperationTimeout timeout) {
+        if (getConnectionStatus() != STATUS_CONNECTED) {
+            timeout.recycle();
             return Observable.error(new PeripheralConnectionError());
+        }
 
         return stack.newConfiguredObservable(s -> {
             setupTimeout(OperationTimeoutError.Operation.WRITE_COMMAND, timeout, s);
@@ -591,6 +604,7 @@ public class AndroidPeripheral implements Peripheral {
             if (gatt.writeCharacteristic(characteristic)) {
                 timeout.schedule();
             } else {
+                timeout.recycle();
                 s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
         });
