@@ -56,13 +56,22 @@ public class SensePacketDataHandler extends PacketDataHandler<MorpheusBle.Morphe
             this.buffer = new byte[PacketHandler.HEADER_PACKET_PAYLOAD_LEN + PacketHandler.PACKET_PAYLOAD_LEN * (this.totalPackets - 1)];
         } else {
             this.packets.add(blePacket);
+
             this.actualDataLength += blePacket.payload.length;
         }
 
-        final SequencedPacket lastPacket = this.packets.getLast();
         // copy data in packets to a continues payload buffer.
-        for (int i = 0; (this.bufferOffsetIndex < this.buffer.length && i < lastPacket.payload.length); i++, this.bufferOffsetIndex++) {
-            this.buffer[this.bufferOffsetIndex] = lastPacket.payload[i];
+        if (this.bufferOffsetIndex < this.buffer.length) {
+            final SequencedPacket lastPacket = this.packets.getLast();
+            System.arraycopy(
+                /* src */ lastPacket.payload,
+                /* srcStart */ 0,
+                /* dest */ buffer,
+                /* destStart */ bufferOffsetIndex,
+                /* length */ lastPacket.payload.length
+            );
+
+            bufferOffsetIndex += lastPacket.payload.length;
         }
 
         if (this.packets.size() == this.totalPackets) {
