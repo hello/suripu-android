@@ -19,7 +19,7 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
     /**
      * One timeout for stack operations, one timeout for a wrapper interface.
      */
-    private static final int OBJECT_POOL_SIZE = 2;
+    static final int OBJECT_POOL_SIZE = 2;
 
     private String name;
     private long durationMs;
