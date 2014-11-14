@@ -45,7 +45,6 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceDetailsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
-import is.hello.sense.ui.widget.TimelineSegmentView;
 import is.hello.sense.ui.widget.TimestampTextView;
 import is.hello.sense.util.BuildValues;
 
@@ -78,7 +77,6 @@ import is.hello.sense.util.BuildValues;
         TimelineFragment.class,
         TimelinePresenter.class,
         TimelineEventDialogFragment.class,
-        TimelineSegmentView.class,
 
         QuestionsPresenter.class,
         QuestionsFragment.class,
