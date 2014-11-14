@@ -39,10 +39,53 @@ public class HeaderFooterRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
 
 
     //region Overrides
+
     public int getPositionInWrapper(int position) {
         return Math.max(0, position - headerViews.size());
     }
 
+
+    /**
+     * Returns whether or not a given viewType encodes a header or footer view index.
+     * <p/>
+     * All negative view types are reserved for the header-footer recycler adapter.
+     */
+    private boolean isViewTypeHeaderOrFooterIndex(int viewType) {
+        return viewType < 0;
+    }
+
+    /**
+     * Returns whether or not a given viewType integer encodes a header view index or a footer view index.
+     *
+     * @see #getHeaderIndexFromViewType(int)
+     * @see #getFooterIndexFromViewType(int)
+     */
+    private boolean isViewTypeHeader(int viewType) {
+        return viewType >= -headerViews.size();
+    }
+
+    /**
+     * Converts a given viewType integer into an index for the headerViews list.
+     * <p/>
+     * Headers are encoded as negative numbers decrementing from -1.
+     * This means -1 is index 0 in headerViews, 0 is index 1, and so forth.
+     * This leaves all positive view types available for the wrapped adapter.
+     */
+    private int getHeaderIndexFromViewType(int viewType) {
+        return -(viewType - HEADER_TYPE_START);
+    }
+
+    /**
+     * Converts a given viewType integer into an index for the footerViews list.
+     * <p/>
+     * Footers are encoded as negative numbers incrementing from Integer.MIN_VALUE.
+     * This means that Integer.MIN_VALUE is index 0 footerViews, Integer.MIN_VALUE + 1
+     * is index 1, and so forth. This leaves all positive view types available for
+     * the wrapped adapter.
+     */
+    private int getFooterIndexFromViewType(int viewType) {
+        return viewType - FOOTER_TYPE_START;
+    }
 
     @Override
     public int getItemViewType(int position) {
@@ -62,11 +105,11 @@ public class HeaderFooterRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        if (viewType < 0) {
-            if (viewType >= -headerViews.size()) {
-                return new HeaderFooterViewHolder(headerViews.get(-(viewType - HEADER_TYPE_START)));
+        if (isViewTypeHeaderOrFooterIndex(viewType)) {
+            if (isViewTypeHeader(viewType)) {
+                return new HeaderFooterViewHolder(headerViews.get(getHeaderIndexFromViewType(viewType)));
             } else {
-                return new HeaderFooterViewHolder(footerViews.get(viewType - FOOTER_TYPE_START));
+                return new HeaderFooterViewHolder(footerViews.get(getFooterIndexFromViewType(viewType)));
             }
         } else {
             return wrappedAdapter.onCreateViewHolder(viewGroup, viewType);
