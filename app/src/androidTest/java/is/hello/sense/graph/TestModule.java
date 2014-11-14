@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.File;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -20,7 +18,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TransientApiSessionManager;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.TestBluetoothStack;
-import is.hello.sense.graph.annotations.CacheDirectoryFile;
+import is.hello.sense.bluetooth.stacks.TestBluetoothStackConfig;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
@@ -41,8 +39,6 @@ import is.hello.sense.graph.presenters.TimelinePresenterTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.CachedObjectTests;
 import is.hello.sense.util.DateFormatterTests;
-
-import static junit.framework.Assert.assertNotNull;
 
 @Module(
     library = true,
@@ -110,7 +106,11 @@ public final class TestModule {
         return new TransientApiSessionManager();
     }
 
-    @Provides @Singleton BluetoothStack providesBluetoothStack() {
-        return new TestBluetoothStack();
+    @Singleton @Provides TestBluetoothStackConfig provideBluetoothStackConfig() {
+        return new TestBluetoothStackConfig();
+    }
+
+    @Provides @Singleton BluetoothStack providesBluetoothStack(@NonNull TestBluetoothStackConfig stackConfig) {
+        return new TestBluetoothStack(stackConfig);
     }
 }
