@@ -68,7 +68,7 @@ public class HeaderFooterRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
      * Converts a given viewType integer into an index for the headerViews list.
      * <p/>
      * Headers are encoded as negative numbers decrementing from -1.
-     * This means -1 is index 0 in headerViews, 0 is index 1, and so forth.
+     * This means -1 is index 0 in headerViews, -2 is index 1, and so forth.
      * This leaves all positive view types available for the wrapped adapter.
      */
     private int getHeaderIndexFromViewType(int viewType) {
