@@ -7,7 +7,7 @@ import java.util.Set;
 public class ScanResponseTests extends TestCase {
     private static final byte[] TEST_PAYLOAD = {
             // Advertisement payload size
-            (byte) 0x02,
+            (byte) 0x03,
 
             // Advertisement data type
             (byte) ScanResponse.TYPE_LIST_OF_16_BIT_SERVICE_CLASS_UUIDS,
