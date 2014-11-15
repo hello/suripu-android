@@ -102,6 +102,7 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
         TimelineSegment segment = getItem(position);
         segmentViewHolder.displaySegment(segment, segmentPosition);
         segmentViewHolder.itemView.setMinimumHeight(calculateHeight(position, segment));
+        segmentViewHolder.itemView.setTag(position);
     }
 
     @Override
