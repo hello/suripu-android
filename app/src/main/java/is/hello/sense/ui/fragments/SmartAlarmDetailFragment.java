@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalTime;
 
 import javax.inject.Inject;
@@ -32,6 +33,16 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public static final int RESULT_DELETE = 0xD3;
 
     private static final int TIME_REQUEST_CODE = 0x747;
+    private static final int[] DAY_TAGS = {
+            DateTimeConstants.SUNDAY,
+            DateTimeConstants.MONDAY,
+            DateTimeConstants.TUESDAY,
+            DateTimeConstants.WEDNESDAY,
+            DateTimeConstants.THURSDAY,
+            DateTimeConstants.FRIDAY,
+            DateTimeConstants.SATURDAY,
+    };
+
     public static final String ARG_ALARM = SmartAlarmDetailFragment.class.getName() + ".ARG_ALARM";
     public static final String ARG_INDEX = SmartAlarmDetailFragment.class.getName() + ".ARG_INDEX";
 
@@ -83,11 +94,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         ViewGroup repeat = (ViewGroup) view.findViewById(R.id.fragment_smart_alarm_detail_repeat);
         View.OnClickListener dayClickListener = this::dayButtonClicked;
         for (int i = 0, count = repeat.getChildCount(); i < count; i++) {
-            int day = i + 1;
+            int day = DAY_TAGS[i];
             ToggleButton dayButton = (ToggleButton) repeat.getChildAt(i);
-            dayButton.setTag(day);
             dayButton.setOnClickListener(dayClickListener);
             dayButton.setChecked(smartAlarm.getDaysOfWeek().contains(day));
+            dayButton.setTag(day);
         }
 
         ToggleButton enabled = (ToggleButton) view.findViewById(R.id.fragment_smart_alarm_detail_enabled);
