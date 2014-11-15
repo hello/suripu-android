@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import android.widget.EditText;
 
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
+
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -31,6 +34,8 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 
 public class OnboardingRegisterFragment extends InjectionFragment {
+    private static final Pattern EMAIL = Pattern.compile("^.+@.+\\..+$");
+
     private EditText nameText;
     private EditText emailText;
     private EditText passwordText;
@@ -72,15 +77,35 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
 
     public void register() {
-        String name = nameText.getText().toString();
-        String email = emailText.getText().toString();
-        String password = passwordText.getText().toString();
+        String name = nameText.getText().toString().trim();
+        nameText.setText(name);
 
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-            ErrorDialogFragment.presentError(getFragmentManager(), new Throwable(getString(R.string.dialog_error_generic_form_issue)));
+        String email = emailText.getText().toString().trim();
+        emailText.setText(email);
 
+        if (TextUtils.isEmpty(name)) {
+            ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_invalid_register_name));
+            errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            nameText.requestFocus();
             return;
         }
+
+        if (TextUtils.isEmpty(email) || !EMAIL.matcher(email).matches()) {
+            ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_invalid_register_email));
+            errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            emailText.requestFocus();
+            return;
+        }
+
+
+        String password = passwordText.getText().toString();
+        if (password.length() <= 3) {
+            ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_invalid_register_password));
+            errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            passwordText.requestFocus();
+            return;
+        }
+
 
         newAccount.setName(name);
         newAccount.setEmail(email);

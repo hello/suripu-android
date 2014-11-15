@@ -29,8 +29,8 @@ public class OnboardingSignInFragment extends InjectionFragment {
     @Inject ApiService apiService;
     @Inject ApiEnvironment environment;
 
-    private EditText email;
-    private EditText password;
+    private EditText emailText;
+    private EditText passwordText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,9 +45,9 @@ public class OnboardingSignInFragment extends InjectionFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_sign_in, container, false);
 
-        this.email = (EditText) view.findViewById(R.id.fragment_onboarding_email);
-        this.password = (EditText) view.findViewById(R.id.fragment_onboarding_password);
-        password.setOnEditorActionListener(new EditorActionHandler(this::signIn));
+        this.emailText = (EditText) view.findViewById(R.id.fragment_onboarding_email);
+        this.passwordText = (EditText) view.findViewById(R.id.fragment_onboarding_password);
+        passwordText.setOnEditorActionListener(new EditorActionHandler(this::signIn));
 
         Button signIn = (Button) view.findViewById(R.id.fragment_onboarding_sign_in_go);
         signIn.setOnClickListener(ignored -> signIn());
@@ -62,10 +62,14 @@ public class OnboardingSignInFragment extends InjectionFragment {
 
 
     public void signIn() {
-        String email = this.email.getText().toString();
-        String password = this.password.getText().toString();
+        String email = this.emailText.getText().toString().trim();
+        this.emailText.setText(email);
+
+        String password = this.passwordText.getText().toString();
+
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-            ErrorDialogFragment.presentError(getFragmentManager(), new Throwable(getString(R.string.dialog_error_generic_form_issue)));
+            ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_account_incomplete_credentials));
+            errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
             return;
         }
 
