@@ -259,7 +259,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SENSE);
 
-        showFragment(OnboardingPairPillFragment.newInstance(selectedColorIndex), null, true);
+        showFragment(OnboardingPairPillFragment.newInstance(selectedColorIndex), null, false);
     }
 
     public void showPillInstructions() {

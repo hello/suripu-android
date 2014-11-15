@@ -38,6 +38,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     private static final long STACK_OPERATION_TIMEOUT_S = 30;
     private static final long SIMPLE_COMMAND_TIMEOUT_S = 45;
+    private static final long PAIR_PILL_TIMEOUT_S = 90; //Per Pang
     private static final long SET_WIFI_TIMEOUT_S = 90;
     private static final long WIFI_SCAN_TIMEOUT_S = 30;
 
@@ -108,6 +109,10 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     protected @NonNull OperationTimeout createScanWifiTimeout() {
         return SchedulerOperationTimeout.acquire("Scan Wifi", WIFI_SCAN_TIMEOUT_S, TimeUnit.SECONDS);
+    }
+
+    protected @NonNull OperationTimeout createPairPillTimeout() {
+        return SchedulerOperationTimeout.acquire("Pair Pill", PAIR_PILL_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command,
@@ -285,7 +290,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .setVersion(COMMAND_VERSION)
                 .setAccountId(accountToken)
                 .build();
-        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(MorpheusCommand::getDeviceId);
+        return performSimpleCommand(morpheusCommand, createPairPillTimeout()).map(MorpheusCommand::getDeviceId);
     }
 
     public Observable<Void> linkAccount(final String accountToken) {
