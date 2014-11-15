@@ -25,17 +25,14 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_xlarge"
-            android:layout_marginBottom="@dimen/gap_xlarge"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/gap_medium"
+            android:layout_marginBottom="@dimen/gap_medium"
             android:adjustViewBounds="true"
+            android:scaleType="centerInside"
             android:src="@drawable/shake_pill"
             android:contentDescription="@string/info_pair_pill"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 
         <is.hello.sense.ui.widget.TintedProgressBar
             android:id="@+id/fragment_onboarding_pair_pill_activity"
