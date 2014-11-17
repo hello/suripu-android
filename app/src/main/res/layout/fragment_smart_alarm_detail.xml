@@ -167,21 +167,6 @@
 
         </LinearLayout>
 
-        <View style="@style/Divider.Horizontal" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <Button
-            android:id="@+id/fragment_smart_alarm_detail_save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/gap_outer"
-            android:text="@string/action_done"
-            style="@style/AppTheme.Button.Rounded"/>
-
     </LinearLayout>
 
 </ScrollView>

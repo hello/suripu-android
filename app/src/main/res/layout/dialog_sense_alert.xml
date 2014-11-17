@@ -38,8 +38,9 @@
         <Button
             android:id="@+id/dialog_sense_alert_cancel"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:padding="@dimen/gap_medium"
             android:text="@android:string/cancel"
             android:visibility="gone"
@@ -48,8 +49,9 @@
         <Button
             android:id="@+id/dialog_sense_alert_ok"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:padding="@dimen/gap_medium"
             android:text="@android:string/ok"
             android:visibility="gone"

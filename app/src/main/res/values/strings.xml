@@ -235,6 +235,9 @@
     <string name="error_invalid_register_name">You must provide a name.</string>
     <string name="error_invalid_register_email">You must provide a valid email address.</string>
     <string name="error_invalid_register_password">You must provide a password with 4 or more characters.</string>
+    <string name="action_exit">Exit</string>
+    <string name="dialog_title_smart_alarm_edit_cancel">Do you really want to exit?</string>
+    <string name="dialog_message_smart_alarm_edit_cancel">There are unsaved changes to this alarm.</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

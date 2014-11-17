@@ -20,8 +20,6 @@ public class SenseAlertDialog extends Dialog {
     private Button negativeButton;
     private Button positiveButton;
 
-    private boolean isDestructive = false;
-
     public SenseAlertDialog(Context context) {
         super(context, R.style.AppTheme_Dialog_Simple);
         initialize();
@@ -105,8 +103,6 @@ public class SenseAlertDialog extends Dialog {
     }
 
     public void setDestructive(boolean isDestructive) {
-        this.isDestructive = isDestructive;
-
         if (isDestructive) {
             positiveButton.setTextColor(getContext().getResources().getColor(R.color.sensor_warning));
         } else {

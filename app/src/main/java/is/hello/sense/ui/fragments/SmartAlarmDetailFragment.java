@@ -69,7 +69,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.smartAlarm = (SmartAlarm) getArguments().getSerializable(ARG_ALARM);
+        if (savedInstanceState == null) {
+            this.smartAlarm = (SmartAlarm) getArguments().getSerializable(ARG_ALARM);
+        } else {
+            this.smartAlarm = (SmartAlarm) savedInstanceState.getSerializable(ARG_ALARM);
+        }
         this.index = getArguments().getInt(ARG_INDEX);
 
         if (smartAlarm.getSound() == null) {
@@ -112,9 +116,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             view.findViewById(R.id.fragment_smart_alarm_detail_delete_container).setVisibility(View.GONE);
         }
 
-        Button save = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_save);
-        save.setOnClickListener(this::saveAlarm);
-
         return view;
     }
 
@@ -138,6 +139,13 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             smartAlarm.setTime(new LocalTime(hour, minute));
             updateTime();
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(ARG_ALARM, smartAlarm);
     }
 
     public void updateTime() {
@@ -174,7 +182,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         popFromBackStack(RESULT_DELETE, response);
     }
 
-    public void saveAlarm(@NonNull View sender) {
+    public void saveAlarm() {
         Intent response = new Intent();
         response.putExtra(ARG_INDEX, index);
         response.putExtra(ARG_ALARM, smartAlarm);

@@ -13,6 +13,8 @@ import is.hello.sense.R;
 import is.hello.sense.ui.activities.SenseActivity;
 
 public abstract class FragmentNavigationActivity extends SenseActivity implements FragmentNavigation, FragmentManager.OnBackStackChangedListener {
+    private boolean wantsTitleUpdates = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,14 +75,16 @@ public abstract class FragmentNavigationActivity extends SenseActivity implement
 
     @Override
     public void onBackStackChanged() {
-        int entryCount = getFragmentManager().getBackStackEntryCount();
-        if (entryCount > 0) {
-            FragmentManager.BackStackEntry entry = getFragmentManager().getBackStackEntryAt(entryCount - 1);
-            //noinspection ConstantConditions
-            getActionBar().setTitle(entry.getBreadCrumbTitle());
-        } else {
-            //noinspection ConstantConditions
-            getActionBar().setTitle(getDefaultTitle());
+        if (getWantsTitleUpdates()) {
+            int entryCount = getFragmentManager().getBackStackEntryCount();
+            if (entryCount > 0) {
+                FragmentManager.BackStackEntry entry = getFragmentManager().getBackStackEntryAt(entryCount - 1);
+                //noinspection ConstantConditions
+                getActionBar().setTitle(entry.getBreadCrumbTitle());
+            } else {
+                //noinspection ConstantConditions
+                getActionBar().setTitle(getDefaultTitle());
+            }
         }
     }
 
@@ -89,4 +93,12 @@ public abstract class FragmentNavigationActivity extends SenseActivity implement
     }
 
     protected abstract @StringRes int getDefaultTitle();
+
+    public boolean getWantsTitleUpdates() {
+        return wantsTitleUpdates;
+    }
+
+    public void setWantsTitleUpdates(boolean wantsTitleUpdates) {
+        this.wantsTitleUpdates = wantsTitleUpdates;
+    }
 }

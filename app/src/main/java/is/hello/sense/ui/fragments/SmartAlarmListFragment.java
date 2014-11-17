@@ -24,6 +24,7 @@ import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
+import is.hello.sense.ui.activities.SmartAlarmActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -91,6 +92,8 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == EDIT_REQUEST_CODE) {
+            ((SmartAlarmActivity) getActivity()).finishEditing();
+
             int index = data.getIntExtra(SmartAlarmDetailFragment.ARG_INDEX, 0);
             if (resultCode == Activity.RESULT_OK) {
                 SmartAlarm alarm = (SmartAlarm) data.getSerializableExtra(SmartAlarmDetailFragment.ARG_ALARM);
@@ -131,6 +134,8 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
 
     private void editAlarm(@NonNull SmartAlarm alarm, int index) {
+        ((SmartAlarmActivity) getActivity()).beginEditing();
+
         SmartAlarmDetailFragment fragment = SmartAlarmDetailFragment.newInstance(alarm, index);
         fragment.setTargetFragment(this, EDIT_REQUEST_CODE);
         ((FragmentNavigation) getActivity()).showFragment(fragment, getString(R.string.action_new_alarm), true);
