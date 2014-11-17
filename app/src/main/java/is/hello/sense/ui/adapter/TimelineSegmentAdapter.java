@@ -87,7 +87,6 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
     @Override
     public SegmentViewHolder onCreateViewHolder(ViewGroup viewGroup, int itemType) {
         View segmentView = inflater.inflate(R.layout.item_timeline_segment, viewGroup, false);
-        segmentView.setOnClickListener(this);
         return new SegmentViewHolder(segmentView);
     }
 
@@ -103,6 +102,7 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
         segmentViewHolder.displaySegment(segment, segmentPosition);
         segmentViewHolder.itemView.setMinimumHeight(calculateHeight(position, segment));
         segmentViewHolder.itemView.setTag(position);
+        segmentViewHolder.itemView.setOnClickListener(this);
     }
 
     @Override
