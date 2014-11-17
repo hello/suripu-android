@@ -3,6 +3,7 @@ package is.hello.sense.bluetooth.stacks.android;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -24,10 +25,10 @@ import rx.Subscription;
 final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>>, BluetoothAdapter.LeScanCallback {
     private final @NonNull AndroidBluetoothStack deviceCenter;
     private final @NonNull ScanCriteria scanCriteria;
-    private final Map<String, Pair<BluetoothDevice, Integer>> results = new HashMap<>();
+    private final @NonNull Map<String, Pair<BluetoothDevice, Integer>> results = new HashMap<>();
 
-    private Subscriber<? super List<Peripheral>> subscriber;
-    private Subscription timeout;
+    private @Nullable Subscriber<? super List<Peripheral>> subscriber;
+    private @Nullable Subscription timeout;
 
     PeripheralScanner(@NonNull AndroidBluetoothStack deviceCenter,
                       @NonNull ScanCriteria scanCriteria) {
@@ -72,8 +73,10 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
     public void onConcludeScan() {
         deviceCenter.adapter.stopLeScan(this);
 
-        timeout.unsubscribe();
-        this.timeout = null;
+        if (timeout != null) {
+            timeout.unsubscribe();
+            this.timeout = null;
+        }
 
         List<Peripheral> peripherals = new ArrayList<>();
         for (Pair<BluetoothDevice, Integer> scanRecord : results.values()) {
@@ -81,7 +84,11 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
         }
         Logger.info(BluetoothStack.LOG_TAG, "Completed Scan " + peripherals);
 
-        subscriber.onNext(peripherals);
-        subscriber.onCompleted();
+        if (subscriber != null) {
+            subscriber.onNext(peripherals);
+            subscriber.onCompleted();
+        } else {
+            Logger.warn(BluetoothStack.LOG_TAG, "PeripheralScanner invoked without a subscriber, ignoring.");
+        }
     }
 }
