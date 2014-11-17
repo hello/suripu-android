@@ -73,6 +73,15 @@ public final class Functions {
         return sortedCopy;
     }
 
+    public static @Nullable <T> T findFirst(@NonNull Iterable<T> haystack, @NonNull Function<T, Boolean> needle) {
+        for (T value : haystack) {
+            if (needle.apply(value))
+                return value;
+        }
+
+        return null;
+    }
+
     //endregion
 
 }

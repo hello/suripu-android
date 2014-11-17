@@ -168,7 +168,19 @@ public class SmartAlarm extends ApiResponse {
 
 
         public static @NonNull Sound none() {
-            return new Sound(0, "NotReal");
+            return new Sound(0, "None");
+        }
+
+        public static @NonNull List<Sound> testSounds() {
+            List<Sound> sounds = new ArrayList<>();
+
+            sounds.add(Sound.none());
+            sounds.add(new Sound(1, "Bells"));
+            sounds.add(new Sound(2, "Birdsong"));
+            sounds.add(new Sound(3, "Chime"));
+            sounds.add(new Sound(4, "Waterfall"));
+
+            return sounds;
         }
 
 

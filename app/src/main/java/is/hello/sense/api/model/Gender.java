@@ -25,32 +25,4 @@ public enum Gender {
     public static Gender fromString(@Nullable String string) {
         return Enums.fromString(string, values(), OTHER);
     }
-
-    public static class Adapter extends ArrayAdapter<Gender> {
-        private final LayoutInflater inflater;
-
-        public Adapter(Context context) {
-            super(context, R.layout.item_simple_text, Gender.values());
-
-            this.inflater = LayoutInflater.from(context);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            TextView view = (TextView) convertView;
-            if (view == null) {
-                view = (TextView) inflater.inflate(R.layout.item_simple_text, parent, false);
-            }
-
-            Gender item = getItem(position);
-            view.setText(item.nameRes);
-
-            return view;
-        }
-
-        @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-            return getView(position, convertView, parent);
-        }
-    }
 }
