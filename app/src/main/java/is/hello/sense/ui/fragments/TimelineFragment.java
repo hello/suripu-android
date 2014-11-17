@@ -143,8 +143,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         });
 
 
-        listView.setAdapter(segmentAdapter);
+        this.insightsContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_before_sleep, listView, false);
+        insightsContainer.setVisibility(View.GONE);
+        listView.addFooterView(insightsContainer);
 
+        // Always do this after adding headers and footer views,
+        // we have to support Android versions under 4.4 KitKat.
+        listView.setAdapter(segmentAdapter);
 
         return view;
     }
@@ -199,23 +204,24 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     public void showInsights(@NonNull List<PreSleepInsight> preSleepInsights) {
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        if (preSleepInsights.isEmpty()) {
+            insightsContainer.setVisibility(View.GONE);
+        } else {
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
 
-        if (insightsContainer != null) {
             int childCount = insightsContainer.getChildCount();
             if (childCount > 2) {
                 insightsContainer.removeViews(2, childCount - 2);
             }
-        } else {
-            this.insightsContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_before_sleep, listView, false);
-            listView.addFooterView(insightsContainer);
-        }
 
-        for (PreSleepInsight preSleepInsight : preSleepInsights) {
-            TextView insightText = (TextView) inflater.inflate(R.layout.item_before_sleep, insightsContainer, false);
-            insightText.setCompoundDrawablesRelativeWithIntrinsicBounds(preSleepInsight.getIconResource(), 0, 0, 0);
-            insightText.setText(preSleepInsight.getMessage());
-            insightsContainer.addView(insightText);
+            for (PreSleepInsight preSleepInsight : preSleepInsights) {
+                TextView insightText = (TextView) inflater.inflate(R.layout.item_before_sleep, insightsContainer, false);
+                insightText.setCompoundDrawablesRelativeWithIntrinsicBounds(preSleepInsight.getIconResource(), 0, 0, 0);
+                insightText.setText(preSleepInsight.getMessage());
+                insightsContainer.addView(insightText);
+            }
+
+            insightsContainer.setVisibility(View.VISIBLE);
         }
     }
 
