@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -20,6 +18,7 @@ import android.widget.ListView;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+import is.hello.sense.ui.common.ListViewUtil;
 import is.hello.sense.ui.common.ViewUtil;
 import is.hello.sense.util.Constants;
 
@@ -31,7 +30,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     private FrameLayout topViewContainer;
     private View topView;
     private float topViewY;
-    private RecyclerView recyclerView;
+    private ListView listView;
 
     private VelocityTracker velocityTracker;
     private boolean isTrackingTouchEvents = false;
@@ -117,7 +116,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         requestLayout();
 
         this.isOpen = true;
-        this.recyclerView = null;
+        this.listView = null;
     }
 
     public void open() {
@@ -255,12 +254,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         return null;
     }
 
-    protected boolean isRecyclerViewAtTop(@Nullable RecyclerView recyclerView) {
-        if (recyclerView == null)
-            return true;
-
-        LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        return (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0);
+    protected boolean isListViewAtTop(@Nullable ListView listView) {
+        return listView == null || (ListViewUtil.getScrollY(listView) == 0);
     }
 
     //endregion
@@ -283,7 +278,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
                         this.isOpen = true;
-                        this.recyclerView = null;
+                        this.listView = null;
                     }
                 })
                 .start();
@@ -297,7 +292,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
                         this.isOpen = false;
-                        this.recyclerView = null;
+                        this.listView = null;
 
                         if (onInteractionListener != null)
                             onInteractionListener.onUserDidPushUpTopView();
@@ -363,7 +358,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
             case MotionEvent.ACTION_DOWN: {
                 this.lastEventX = ViewUtil.getNormalizedX(event);
                 this.lastEventY = ViewUtil.getNormalizedY(event);
-                this.recyclerView = findFirstViewIn(RecyclerView.class, this);
+                this.listView = findFirstViewIn(ListView.class, this);
 
                 this.topView = getChildAt(1);
                 this.topViewY = topView.getY();
@@ -386,7 +381,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 float deltaX = x - lastEventX;
                 float deltaY = y - lastEventY;
                 if (Math.abs(deltaY) >= touchSlop && Math.abs(deltaY) > Math.abs(deltaX) &&
-                        (!isOpen && deltaY > 0.0) && isRecyclerViewAtTop(recyclerView)) {
+                        (!isOpen && deltaY > 0.0) && isListViewAtTop(listView)) {
                     this.isTrackingTouchEvents = true;
 
                     if (onInteractionListener != null)

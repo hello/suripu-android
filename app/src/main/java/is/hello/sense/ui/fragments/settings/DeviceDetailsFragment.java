@@ -20,7 +20,6 @@ import is.hello.sense.api.model.Device;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
-import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -33,8 +32,6 @@ import is.hello.sense.ui.widget.SensorStateView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
-
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class DeviceDetailsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     private static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";

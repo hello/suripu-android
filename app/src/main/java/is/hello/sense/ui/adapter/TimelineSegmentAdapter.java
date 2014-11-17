@@ -7,11 +7,11 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,14 +22,10 @@ import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.common.Styles;
 import is.hello.sense.ui.widget.HorizontalBarGraphView;
 
-public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment, TimelineSegmentAdapter.SegmentViewHolder> implements View.OnClickListener {
-    public static final int VIEW_ITEM_TYPE = 0;
-
+public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     private static final int NUMBER_HOURS_ON_SCREEN = 20;
 
-    private final Context context;
     private final LayoutInflater inflater;
-    private final OnItemClickedListener onItemClickedListener;
 
     private final int itemHeight;
     private final int eventImageHeight;
@@ -37,12 +33,10 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
 
     //region Lifecycle
 
-    public TimelineSegmentAdapter(@NonNull Context context, @NonNull OnItemClickedListener onItemClickedListener) {
-        super();
+    public TimelineSegmentAdapter(@NonNull Context context) {
+        super(context, R.layout.item_timeline_segment);
 
-        this.context = context;
         this.inflater = LayoutInflater.from(context);
-        this.onItemClickedListener = onItemClickedListener;
 
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
@@ -50,8 +44,6 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
         this.itemHeight = size.y / NUMBER_HOURS_ON_SCREEN;
         this.eventImageHeight = context.getResources().getDimensionPixelSize(R.dimen.event_image_height);
         this.stripeCornerRadius = context.getResources().getDimensionPixelOffset(R.dimen.timeline_stripe_corner_radius);
-
-        setHasStableIds(true);
     }
 
     //endregion
@@ -76,7 +68,7 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
         if (segment.getEventType() != null) {
             int itemHeight = this.eventImageHeight + (this.itemHeight * 2);
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
-        } else if (position == 0 || position == getItemCount() - 1) {
+        } else if (position == 0 || position == getCount() - 1) {
             int itemHeight = this.stripeCornerRadius;
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
         } else {
@@ -85,40 +77,38 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
     }
 
     @Override
-    public SegmentViewHolder onCreateViewHolder(ViewGroup viewGroup, int itemType) {
-        View segmentView = inflater.inflate(R.layout.item_timeline_segment, viewGroup, false);
-        return new SegmentViewHolder(segmentView);
-    }
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = convertView;
+        if (view == null) {
+            view = inflater.inflate(R.layout.item_timeline_segment, parent, false);
+            view.setTag(new SegmentViewHolder(view));
+        }
 
-    @Override
-    public void onBindViewHolder(SegmentViewHolder segmentViewHolder, int position) {
+        SegmentViewHolder segmentViewHolder = (SegmentViewHolder) view.getTag();
+
         ItemPosition segmentPosition = ItemPosition.MIDDLE;
         if (position == 0)
             segmentPosition = ItemPosition.FIRST;
-        else if (position == getItemCount() - 1)
+        else if (position == getCount() - 1)
             segmentPosition = ItemPosition.LAST;
 
         TimelineSegment segment = getItem(position);
         segmentViewHolder.displaySegment(segment, segmentPosition);
         segmentViewHolder.itemView.setMinimumHeight(calculateHeight(position, segment));
-        segmentViewHolder.itemView.setTag(position);
-        segmentViewHolder.itemView.setOnClickListener(this);
+
+        return view;
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return VIEW_ITEM_TYPE;
-    }
+    final class SegmentViewHolder {
+        final View itemView;
 
-    public final class SegmentViewHolder extends RecyclerView.ViewHolder {
-        private HorizontalBarGraphView graphView;
-        private View stripe;
-        private ImageView eventTypeImage;
-        private TextView eventType;
+        final HorizontalBarGraphView graphView;
+        final View stripe;
+        final ImageView eventTypeImage;
+        final TextView eventType;
 
-        public SegmentViewHolder(View itemView) {
-            super(itemView);
-
+        SegmentViewHolder(@NonNull View itemView) {
+            this.itemView = itemView;
             this.graphView = (HorizontalBarGraphView) itemView.findViewById(R.id.view_timeline_segment_graph);
             this.stripe = itemView.findViewById(R.id.view_timeline_segment_event_stripe);
             this.eventTypeImage = (ImageView) itemView.findViewById(R.id.view_timeline_segment_image_event_type);
@@ -136,7 +126,7 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
 
         public void displaySegment(@NonNull TimelineSegment segment, @NonNull ItemPosition position) {
             int sleepDepth = segment.getSleepDepth() < 0 ? 0 : segment.getSleepDepth();
-            graphView.setFillColor(context.getResources().getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth)));
+            graphView.setFillColor(getContext().getResources().getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth)));
             graphView.setValue(sleepDepth);
 
             int colorRes = Styles.getSleepDepthColorRes(sleepDepth);
@@ -145,13 +135,13 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
                         stripeCornerRadius, stripeCornerRadius, stripeCornerRadius, stripeCornerRadius,
                         0f, 0f, 0f, 0f,
                 };
-                stripe.setBackground(createRoundedDrawable(context.getResources().getColor(colorRes), radii));
+                stripe.setBackground(createRoundedDrawable(getContext().getResources().getColor(colorRes), radii));
             } else if (position == ItemPosition.LAST) {
                 float[] radii = {
                         0f, 0f, 0f, 0f,
                         stripeCornerRadius, stripeCornerRadius, stripeCornerRadius, stripeCornerRadius,
                 };
-                stripe.setBackground(createRoundedDrawable(context.getResources().getColor(colorRes), radii));
+                stripe.setBackground(createRoundedDrawable(getContext().getResources().getColor(colorRes), radii));
             } else {
                 stripe.setBackgroundResource(colorRes);
             }
@@ -175,16 +165,5 @@ public class TimelineSegmentAdapter extends ArrayRecyclerAdapter<TimelineSegment
         FIRST,
         MIDDLE,
         LAST,
-    }
-
-
-    @Override
-    public void onClick(@NonNull View view) {
-        int position = (Integer) view.getTag();
-        onItemClickedListener.onItemClicked(position);
-    }
-
-    public interface OnItemClickedListener {
-        void onItemClicked(int position);
     }
 }
