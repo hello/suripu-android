@@ -87,9 +87,9 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
             throw new IllegalStateException("Cannot unschedule a time out that has no action");
         }
 
-        Logger.info(LOG_TAG, "Unscheduling time out '" + name + "'");
-
         if (subscription != null) {
+            Logger.info(LOG_TAG, "Unscheduling time out '" + name + "'");
+
             subscription.unsubscribe();
             this.subscription = null;
         }

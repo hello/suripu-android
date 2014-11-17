@@ -22,6 +22,7 @@ import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.bluetooth.stacks.util.ScanResponse;
+import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Observer;
@@ -133,7 +134,12 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 onCommandResponse.call(timeoutResponse, s, timeout);
             }, peripheral.getStack().getScheduler());
 
-            Action1<Throwable> onError = s::onError;
+            Action1<Throwable> onError = error -> {
+                timeout.unschedule();
+                timeout.recycle();
+
+                s.onError(error);
+            };
             Observable<UUID> subscribe = subscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Subscribe"));
             subscribe.subscribe(subscribedCharacteristic -> {
                 dataHandler.onResponse = response -> {
@@ -142,11 +148,10 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 };
                 dataHandler.onError = dataError -> {
                     timeout.unschedule();
-                    timeout.recycle();
 
                     Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                     Logger.error(Peripheral.LOG_TAG, "Could not complete command " + command, dataError);
-                    unsubscribe.subscribe(ignored -> s.onError(dataError), onError);
+                    unsubscribe.subscribe(ignored -> onError.call(dataError), onError);
                 };
 
                 Logger.info(Peripheral.LOG_TAG, "Writing command " + command);
@@ -162,7 +167,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     }
 
     protected Observable<MorpheusCommand> performSimpleCommand(@NonNull MorpheusCommand command,
-                                                               @NonNull OperationTimeout commandTimeout) {
+                                                               @NonNull @TakesOwnership OperationTimeout commandTimeout) {
         return performCommand(command, commandTimeout, (response, s, timeout) -> {
             timeout.unschedule();
             timeout.recycle();
@@ -325,6 +330,13 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         //noinspection MismatchedQueryAndUpdateOfCollection
         List<MorpheusBle.wifi_endpoint> endpoints = new ArrayList<>();
         return performCommand(morpheusCommand, createScanWifiTimeout(), (response, subscriber, timeout) -> {
+            Action1<Throwable> onError = e -> {
+                timeout.unschedule();
+                timeout.recycle();
+
+                subscriber.onError(e);
+            };
+
             if (response.getType() == CommandType.MORPHEUS_COMMAND_START_WIFISCAN) {
                 timeout.reschedule();
 
@@ -333,25 +345,24 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 }
             } else if (response.getType() == CommandType.MORPHEUS_COMMAND_STOP_WIFISCAN) {
                 timeout.unschedule();
-                timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> {
+                    timeout.recycle();
+
                     subscriber.onNext(response);
                     subscriber.onCompleted();
-                }, subscriber::onError);
+                }, onError);
             } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
                 timeout.unschedule();
-                timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
-                unsubscribe.subscribe(ignored -> subscriber.onError(new SensePeripheralError(response.getError())), subscriber::onError);
+                unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(response.getError())), onError);
             } else {
                 timeout.unschedule();
-                timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
-                unsubscribe.subscribe(ignored -> subscriber.onError(new SensePeripheralError(MorpheusBle.ErrorType.INTERNAL_DATA_ERROR)), subscriber::onError);
+                unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(MorpheusBle.ErrorType.INTERNAL_DATA_ERROR)), onError);
             }
         }).map(ignored -> endpoints);
     }
