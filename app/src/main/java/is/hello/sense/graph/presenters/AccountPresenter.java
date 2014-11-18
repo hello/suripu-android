@@ -15,10 +15,10 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.observables.BlockingObservable;
 
-public class AccountPresenter extends Presenter {
+public class AccountPresenter extends UpdatablePresenter<Account> {
     @Inject ApiService apiService;
 
-    public final PresenterSubject<Account> account = PresenterSubject.create();
+    public final PresenterSubject<Account> account = this.subject;
 
     @Override
     public @Nullable Parcelable onSaveState() {
@@ -45,8 +45,20 @@ public class AccountPresenter extends Presenter {
         }
     }
 
-    public void update() {
-        apiService.getAccount().subscribe(account);
+
+    @Override
+    protected boolean isDataDisposable() {
+        return true;
+    }
+
+    @Override
+    protected boolean canUpdate() {
+        return true;
+    }
+
+    @Override
+    protected Observable<Account> provideUpdateObservable() {
+        return apiService.getAccount();
     }
 
 

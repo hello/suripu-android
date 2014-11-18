@@ -12,28 +12,27 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import rx.Observable;
 
-@Singleton public class CurrentConditionsPresenter extends Presenter {
+@Singleton public class CurrentConditionsPresenter extends UpdatablePresenter<CurrentConditionsPresenter.Result> {
     @Inject ApiService apiService;
     @Inject UnitFormatter unitFormatter;
 
-    public final PresenterSubject<Result> currentConditions = PresenterSubject.create();
+    public final PresenterSubject<Result> currentConditions = this.subject;
 
     @Override
-    protected void onReloadForgottenData() {
-        update();
-    }
-
-    @Override
-    protected boolean onForgetDataForLowMemory() {
-        currentConditions.forget();
+    protected boolean isDataDisposable() {
         return true;
     }
 
-    public void update() {
-        Observable<Result> result = Observable.combineLatest(apiService.currentRoomConditions(),
-                                                             unitFormatter.unitSystem,
-                                                             Result::new);
-        result.subscribe(currentConditions);
+    @Override
+    protected boolean canUpdate() {
+        return true;
+    }
+
+    @Override
+    protected Observable<Result> provideUpdateObservable() {
+        return Observable.combineLatest(apiService.currentRoomConditions(),
+                                        unitFormatter.unitSystem,
+                                        Result::new);
     }
 
     public static final class Result {

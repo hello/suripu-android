@@ -22,31 +22,28 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscription;
 
-public class SmartAlarmPresenter extends Presenter {
+public class SmartAlarmPresenter extends UpdatablePresenter<List<SmartAlarm>> {
     private final ApiService apiService;
 
-    public final PresenterSubject<List<SmartAlarm>> alarms = PresenterSubject.create();
+    public final PresenterSubject<List<SmartAlarm>> alarms = this.subject;
 
     @Inject SmartAlarmPresenter(@NonNull ApiService apiService) {
         this.apiService = apiService;
     }
 
     @Override
-    protected void onReloadForgottenData() {
-        update();
-    }
-
-    @Override
-    protected boolean onForgetDataForLowMemory() {
-        alarms.forget();
+    protected boolean isDataDisposable() {
         return true;
     }
 
+    @Override
+    protected boolean canUpdate() {
+        return true;
+    }
 
-    public void update() {
-        logEvent("update()");
-
-        apiService.smartAlarms().subscribe(alarms);
+    @Override
+    protected Observable<List<SmartAlarm>> provideUpdateObservable() {
+        return apiService.smartAlarms();
     }
 
     public Observable<VoidResponse> save(@NonNull List<SmartAlarm> updatedAlarms) {

@@ -14,13 +14,11 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.graph.PresenterSubject;
-import is.hello.sense.graph.SafeObserverWrapper;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import rx.Observable;
-import rx.Subscription;
 
-public class SensorHistoryPresenter extends Presenter {
+public class SensorHistoryPresenter extends UpdatablePresenter<Pair<List<SensorHistory>, UnitSystem>> {
     public static final int MODE_WEEK = 0;
     public static final int MODE_DAY = 1;
 
@@ -30,9 +28,7 @@ public class SensorHistoryPresenter extends Presenter {
     private String sensorName;
     private int mode;
 
-    private @Nullable Subscription updateSubscription;
-
-    public final PresenterSubject<Pair<List<SensorHistory>, UnitSystem>> history = PresenterSubject.create();
+    public final PresenterSubject<Pair<List<SensorHistory>, UnitSystem>> history = this.subject;
 
     @Override
     public void onRestoreState(@NonNull Parcelable savedState) {
@@ -56,32 +52,24 @@ public class SensorHistoryPresenter extends Presenter {
     }
 
     @Override
-    protected void onReloadForgottenData() {
-        update();
-    }
-
-    @Override
-    protected boolean onForgetDataForLowMemory() {
-        history.forget();
+    protected boolean isDataDisposable() {
         return true;
     }
 
-    public void update() {
-        if (updateSubscription != null && !updateSubscription.isUnsubscribed()) {
-            updateSubscription.unsubscribe();
-            this.updateSubscription = null;
-        }
+    @Override
+    protected boolean canUpdate() {
+        return !TextUtils.isEmpty(getSensorName());
+    }
 
-        if (!TextUtils.isEmpty(getSensorName())) {
-            Observable<List<SensorHistory>> newHistory;
-            if (getMode() == MODE_DAY) {
-                newHistory = apiService.sensorHistoryForDay(getSensorName(), SensorHistory.timeForLatest());
-            } else {
-                newHistory = apiService.sensorHistoryForWeek(getSensorName(), SensorHistory.timeForLatest());
-            }
-            Observable<Pair<List<SensorHistory>, UnitSystem>> result = Observable.combineLatest(newHistory, unitFormatter.unitSystem, Pair::new);
-            this.updateSubscription = result.subscribe(new SafeObserverWrapper<>(history));
+    @Override
+    protected Observable<Pair<List<SensorHistory>, UnitSystem>> provideUpdateObservable() {
+        Observable<List<SensorHistory>> newHistory;
+        if (getMode() == MODE_DAY) {
+            newHistory = apiService.sensorHistoryForDay(getSensorName(), SensorHistory.timeForLatest());
+        } else {
+            newHistory = apiService.sensorHistoryForWeek(getSensorName(), SensorHistory.timeForLatest());
         }
+        return Observable.combineLatest(newHistory, unitFormatter.unitSystem, Pair::new);
     }
 
 

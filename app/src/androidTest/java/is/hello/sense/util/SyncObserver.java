@@ -95,7 +95,7 @@ public final class SyncObserver<T> implements Observer<T> {
         return results;
     }
 
-    public @Nullable T getSingle() {
+    public T getSingle() {
         if (results.size() > 1)
             throw new IllegalStateException("getSingle called with multiple results");
         else if (results.isEmpty())
@@ -104,7 +104,7 @@ public final class SyncObserver<T> implements Observer<T> {
             return results.get(0);
     }
 
-    public @Nullable T getLast() {
+    public T getLast() {
         if (results.isEmpty())
             return null;
         else

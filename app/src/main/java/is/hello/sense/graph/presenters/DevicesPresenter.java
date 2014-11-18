@@ -12,24 +12,24 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
-public class DevicesPresenter extends Presenter {
+public class DevicesPresenter extends UpdatablePresenter<List<Device>> {
     @Inject ApiService apiService;
 
-    public final PresenterSubject<List<Device>> devices = PresenterSubject.create();
+    public final PresenterSubject<List<Device>> devices = this.subject;
 
     @Override
-    protected void onReloadForgottenData() {
-        update();
-    }
-
-    @Override
-    protected boolean onForgetDataForLowMemory() {
-        devices.forget();
+    protected boolean isDataDisposable() {
         return true;
     }
 
-    public void update() {
-        apiService.registeredDevices().subscribe(devices);
+    @Override
+    protected boolean canUpdate() {
+        return true;
+    }
+
+    @Override
+    protected Observable<List<Device>> provideUpdateObservable() {
+        return apiService.registeredDevices();
     }
 
     public Observable<VoidResponse> unregisterDevice(@NonNull Device device) {
