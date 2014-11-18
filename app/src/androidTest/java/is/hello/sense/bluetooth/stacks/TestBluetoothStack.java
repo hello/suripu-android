@@ -44,6 +44,11 @@ public class TestBluetoothStack implements BluetoothStack {
     }
 
     @Override
+    public OperationTimeout acquireOperationTimeout(@NonNull String name, long duration, TimeUnit timeUnit) {
+        return TestOperationTimeout.acquire(name);
+    }
+
+    @Override
     public Observable<Boolean> isEnabled() {
         return behavior.enabled;
     }

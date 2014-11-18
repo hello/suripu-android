@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import rx.Observable;
@@ -42,6 +43,18 @@ public interface BluetoothStack {
      * Vends an observable configured appropriately for use with the BluetoothStack.
      */
     <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe);
+
+    /**
+     * Vends an operation timeout object for use with a Peripheral created by this stack.
+     * <p/>
+     * An object pool is recommended for implementations of {@see OperationTimeout}.
+     * Typical high level uses require at most two concurrent instances.
+     * @param name      The name of the timeout.
+     * @param duration  The duration of the timeout.
+     * @param timeUnit  The unit of the duration.
+     * @return An object implementing OperationTimeout ready for use.
+     */
+    OperationTimeout acquireOperationTimeout(@NonNull String name, long duration, TimeUnit timeUnit);
 
     /**
      * Returns an observable that will continuously report the enabled state of the bluetooth stack.

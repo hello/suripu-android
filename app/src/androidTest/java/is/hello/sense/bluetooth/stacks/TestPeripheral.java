@@ -27,13 +27,14 @@ public class TestPeripheral implements Peripheral {
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     private <T> Observable<T> createResponseWith(@NonNull Either<T, Throwable> value, @Nullable OperationTimeout timeout) {
-        Observable<T> observable = value.<Observable<T>>map(Observable::just, Observable::error);
-        Observable<T> delayedObservable = observable.delay(behavior.latency, TimeUnit.MILLISECONDS);
+        // This isn't really the intended order here, but
+        // `finallyDo` appears to be non-deterministic.
         if (timeout != null) {
-            return delayedObservable.finallyDo(timeout::recycle);
-        } else {
-            return delayedObservable;
+            timeout.recycle();
         }
+
+        Observable<T> observable = value.<Observable<T>>map(Observable::just, Observable::error);
+        return observable.delay(behavior.latency, TimeUnit.MILLISECONDS);
     }
 
     @Override

@@ -101,19 +101,19 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     }
 
     protected @NonNull OperationTimeout createOperationTimeout(@NonNull String name) {
-        return SchedulerOperationTimeout.acquire(name, STACK_OPERATION_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.getStack().acquireOperationTimeout(name, STACK_OPERATION_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createSimpleCommandTimeout() {
-        return SchedulerOperationTimeout.acquire("Simple Command", SIMPLE_COMMAND_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.getStack().acquireOperationTimeout("Simple Command", SIMPLE_COMMAND_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createScanWifiTimeout() {
-        return SchedulerOperationTimeout.acquire("Scan Wifi", WIFI_SCAN_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.getStack().acquireOperationTimeout("Scan Wifi", WIFI_SCAN_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createPairPillTimeout() {
-        return SchedulerOperationTimeout.acquire("Pair Pill", PAIR_PILL_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.getStack().acquireOperationTimeout("Pair Pill", PAIR_PILL_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command,

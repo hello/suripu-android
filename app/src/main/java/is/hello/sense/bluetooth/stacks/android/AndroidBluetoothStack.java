@@ -10,11 +10,14 @@ import android.support.annotation.Nullable;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
+import is.hello.sense.bluetooth.stacks.OperationTimeout;
+import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.functional.Functions;
@@ -64,6 +67,11 @@ public class AndroidBluetoothStack implements BluetoothStack {
     @Override
     public <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe) {
         return Observable.create(onSubscribe).subscribeOn(getScheduler());
+    }
+
+    @Override
+    public OperationTimeout acquireOperationTimeout(@NonNull String name, long duration, TimeUnit timeUnit) {
+        return SchedulerOperationTimeout.acquire(name, duration, timeUnit);
     }
 
     @Override

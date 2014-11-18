@@ -67,7 +67,6 @@ public class PresenterSubjectTests extends TestCase {
         subject.onNext(9000);
         observer.ignore(1).await();
 
-        assertNull(observer.getError());
         assertEquals(9000, (int) observer.getSingle());
     }
 
