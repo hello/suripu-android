@@ -144,7 +144,7 @@ public class AndroidPeripheral implements Peripheral {
                     this.bluetoothStateSubscription = bluetoothStateObserver.subscribe(intent -> {
                         Logger.info(LOG_TAG, "User disabled bluetooth radio, abandoning connection");
 
-                        if (!stack.adapter.isEnabled()) {
+                        if (!stack.getAdapter().isEnabled()) {
                             gatt.disconnect();
                         }
                     }, e -> Logger.error(LOG_TAG, "Bluetooth state observation error", e));

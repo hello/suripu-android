@@ -23,16 +23,16 @@ import rx.Subscriber;
 import rx.Subscription;
 
 final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>>, BluetoothAdapter.LeScanCallback {
-    private final @NonNull AndroidBluetoothStack deviceCenter;
+    private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull ScanCriteria scanCriteria;
     private final @NonNull Map<String, Pair<BluetoothDevice, Integer>> results = new HashMap<>();
 
     private @Nullable Subscriber<? super List<Peripheral>> subscriber;
     private @Nullable Subscription timeout;
 
-    PeripheralScanner(@NonNull AndroidBluetoothStack deviceCenter,
+    PeripheralScanner(@NonNull AndroidBluetoothStack stack,
                       @NonNull ScanCriteria scanCriteria) {
-        this.deviceCenter = deviceCenter;
+        this.stack = stack;
         this.scanCriteria = scanCriteria;
     }
 
@@ -43,8 +43,8 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
 
         this.subscriber = subscriber;
 
-        deviceCenter.adapter.startLeScan(this);
-        this.timeout = deviceCenter.scheduler
+        stack.getAdapter().startLeScan(this);
+        this.timeout = stack.scheduler
                                    .createWorker()
                                    .schedule(this::onConcludeScan, scanCriteria.duration, TimeUnit.MILLISECONDS);
     }
@@ -71,7 +71,7 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
     }
 
     public void onConcludeScan() {
-        deviceCenter.adapter.stopLeScan(this);
+        stack.getAdapter().stopLeScan(this);
 
         if (timeout != null) {
             timeout.unsubscribe();
@@ -80,7 +80,7 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
 
         List<Peripheral> peripherals = new ArrayList<>();
         for (Pair<BluetoothDevice, Integer> scanRecord : results.values()) {
-            peripherals.add(new AndroidPeripheral(deviceCenter, scanRecord.first, scanRecord.second));
+            peripherals.add(new AndroidPeripheral(stack, scanRecord.first, scanRecord.second));
         }
         Logger.info(BluetoothStack.LOG_TAG, "Completed Scan " + peripherals);
 

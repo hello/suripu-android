@@ -21,6 +21,7 @@ import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Scheduler;
 import rx.subjects.ReplaySubject;
@@ -32,7 +33,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
     final @NonNull Scheduler scheduler;
 
     final @NonNull BluetoothManager bluetoothManager;
-    final @NonNull BluetoothAdapter adapter;
+    private final @Nullable BluetoothAdapter adapter;
 
     final @NonNull ReplaySubject<Boolean> enabled = ReplaySubject.createWithSize(1);
 
@@ -42,16 +43,30 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
         this.bluetoothManager = (BluetoothManager) applicationContext.getSystemService(Context.BLUETOOTH_SERVICE);
         this.adapter = bluetoothManager.getAdapter();
-
-        Observable<Intent> stateChanged = fromBroadcast(applicationContext, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-        stateChanged.observeOn(getScheduler()).subscribe(ignored -> enabled.onNext(adapter.isEnabled()), Functions.LOG_ERROR);
-        enabled.onNext(adapter.isEnabled());
+        if (adapter != null) {
+            Observable<Intent> stateChanged = fromBroadcast(applicationContext, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+            stateChanged.observeOn(getScheduler()).subscribe(ignored -> enabled.onNext(adapter.isEnabled()), Functions.LOG_ERROR);
+            enabled.onNext(adapter.isEnabled());
+        } else {
+            Logger.warn(LOG_TAG, "Host device has no bluetooth hardware!");
+            enabled.onNext(false);
+        }
     }
+
+
+    @NonNull BluetoothAdapter getAdapter() {
+        if (adapter == null) {
+            throw new NullPointerException("Host device has no bluetooth hardware!");
+        }
+
+        return adapter;
+    }
+
 
     @NonNull
     @Override
     public Observable<List<Peripheral>> discoverPeripherals(@NonNull ScanCriteria scanCriteria) {
-        if (adapter.isEnabled()) {
+        if (adapter != null && adapter.isEnabled()) {
             return newConfiguredObservable(new PeripheralScanner(this, scanCriteria));
         } else {
             return Observable.error(new BluetoothDisabledError());
