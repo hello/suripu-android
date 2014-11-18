@@ -12,6 +12,9 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 
+import static is.hello.sense.functional.Functions.filteredList;
+import static is.hello.sense.functional.Functions.mapList;
+
 public class TestBluetoothStack implements BluetoothStack {
     private final TestBluetoothStackBehavior behavior;
 
@@ -19,10 +22,13 @@ public class TestBluetoothStack implements BluetoothStack {
         this.behavior = behavior;
     }
 
+    @SuppressWarnings("RedundantCast")
     @NonNull
     @Override
     public Observable<List<Peripheral>> discoverPeripherals(@NonNull ScanCriteria scanCriteria) {
         return Observable.just(behavior.peripheralsInRange)
+                         .map(ps -> filteredList(ps, p -> scanCriteria.matches(p.scanResponse)))
+                         .map(ps -> mapList(ps, p -> (Peripheral) new TestPeripheral(this, p)))
                          .delay(behavior.latency, TimeUnit.SECONDS);
     }
 

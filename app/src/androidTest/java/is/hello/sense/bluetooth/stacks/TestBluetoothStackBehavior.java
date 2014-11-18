@@ -8,7 +8,7 @@ import java.util.List;
 import rx.subjects.ReplaySubject;
 
 public class TestBluetoothStackBehavior {
-    final List<Peripheral> peripheralsInRange = new ArrayList<>();
+    final List<TestPeripheralBehavior> peripheralsInRange = new ArrayList<>();
     final ReplaySubject<Boolean> enabled = ReplaySubject.createWithSize(1);
     long latency;
 
@@ -16,8 +16,8 @@ public class TestBluetoothStackBehavior {
         this.enabled.onNext(true);
     }
 
-    public TestBluetoothStackBehavior addPeripheralInRange(@NonNull BluetoothStack stack, @NonNull TestPeripheralBehavior config) {
-        peripheralsInRange.add(new TestPeripheral(stack, config));
+    public TestBluetoothStackBehavior addPeripheralInRange(@NonNull TestPeripheralBehavior behavior) {
+        peripheralsInRange.add(behavior);
         return this;
     }
 

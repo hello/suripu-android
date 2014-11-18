@@ -52,7 +52,7 @@ public final class Functions {
         return accumulator;
     }
 
-    public static <T, K> List<List<T>> segmentList(@NonNull Function<T, K> keyProducer, @NonNull List<T> source) {
+    public static <T, K> List<List<T>> segmentList(@NonNull Function<T, K> keyProducer, @NonNull Iterable<T> source) {
         LinkedHashMap<K, List<T>> result = new LinkedHashMap<>();
         for (T value : source) {
             K key = keyProducer.apply(value);
@@ -71,6 +71,15 @@ public final class Functions {
         sortedCopy.addAll(toSort);
         Collections.sort(sortedCopy);
         return sortedCopy;
+    }
+
+    public static <T> List<T> filteredList(@NonNull Iterable<T> toFilter, @NonNull Function<T, Boolean> predicate) {
+        List<T> results = new ArrayList<>();
+        for (T value : toFilter) {
+            if (predicate.apply(value))
+                results.add(value);
+        }
+        return results;
     }
 
     public static @Nullable <T> T findFirst(@NonNull Iterable<T> haystack, @NonNull Function<T, Boolean> needle) {
