@@ -21,7 +21,6 @@ import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
-import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 
@@ -52,7 +51,7 @@ public class ErrorDialogFragment extends DialogFragment {
         } else if (e instanceof OperationTimeoutError) {
             message = context.getString(R.string.error_generic_bluetooth_timeout);
         } else if (e instanceof PeripheralBondAlterationError) {
-            message = context.getString(R.string.error_bluetooth_bonding_change);
+            message = context.getString(R.string.error_bluetooth_bonding_change_fmt, e.toString());
         } else if (e instanceof PeripheralConnectionError) {
             message = context.getString(R.string.error_bluetooth_no_connection);
         } else if (e instanceof PeripheralServiceDiscoveryFailedError) {

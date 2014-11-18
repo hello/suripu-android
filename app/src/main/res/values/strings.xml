@@ -227,7 +227,7 @@
     <string name="error_bluetooth_disabled">Please enable Bluetooth to continue.</string>
     <string name="error_bluetooth_gatt_failure_fmt">An internal Bluetooth error has occurred (%1$s)</string>
     <string name="error_generic_bluetooth_timeout">Bluetooth operation timed out</string>
-    <string name="error_bluetooth_bonding_change">Could not modify bond with Sense</string>
+    <string name="error_bluetooth_bonding_change_fmt">Could not modify bond with Sense (%1$s)</string>
     <string name="error_bluetooth_no_connection">Operation could not be completed because you are not connected to a Sense</string>
     <string name="error_bluetooth_service_discovery_failed">Could not resolve services offered by Sense device</string>
     <string name="error_sense_already_paired">Your Sense is already linked to this account.</string>

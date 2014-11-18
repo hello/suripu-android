@@ -323,9 +323,11 @@ public class AndroidPeripheral implements Peripheral {
 
                 @Override
                 public void onNext(Intent intent) {
-                    Logger.info(Peripheral.LOG_TAG, "Bond status change " + intent.getAction() + ": " + intent.getExtras());
-
                     int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+                    int previousState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
+
+                    Logger.info(Peripheral.LOG_TAG, "Bond status changed from " + PeripheralBondAlterationError.getBondStateString(previousState) + " to " + PeripheralBondAlterationError.getBondStateString(state));
+
                     if (state == BluetoothDevice.BOND_BONDED) {
                         Logger.info(LOG_TAG, "Bonding succeeded.");
 
@@ -333,10 +335,10 @@ public class AndroidPeripheral implements Peripheral {
                         s.onCompleted();
 
                         unsubscribe();
-                    } else if (state == BluetoothDevice.ERROR) {
-                        Logger.error(LOG_TAG, "Bonding failed.");
-
-                        s.onError(new PeripheralBondAlterationError());
+                    } else if (state == BluetoothDevice.ERROR || state == BOND_NONE && previousState == BOND_BONDING) {
+                        int reason = intent.getIntExtra(PeripheralBondAlterationError.EXTRA_REASON, PeripheralBondAlterationError.REASON_UNKNOWN_FAILURE);
+                        Logger.error(LOG_TAG, "Bonding failed for reason " + PeripheralBondAlterationError.getReasonString(reason));
+                        s.onError(new PeripheralBondAlterationError(reason));
 
                         unsubscribe();
                     }
@@ -347,7 +349,7 @@ public class AndroidPeripheral implements Peripheral {
                 Logger.error(LOG_TAG, "createBond failed.");
 
                 subscription.unsubscribe();
-                s.onError(new PeripheralBondAlterationError());
+                s.onError(new PeripheralBondAlterationError(PeripheralBondAlterationError.REASON_ANDROID_API_CHANGED));
             }
         });
     }
@@ -376,10 +378,12 @@ public class AndroidPeripheral implements Peripheral {
 
                     @Override
                     public void onNext(Intent intent) {
-                        Logger.info(Peripheral.LOG_TAG, "Bond status change " + intent.getAction() + ": " + intent.getExtras());
-
                         int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-                        if (state == BluetoothDevice.BOND_NONE) {
+                        int previousState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
+
+                        Logger.info(Peripheral.LOG_TAG, "Bond status changed from " + PeripheralBondAlterationError.getBondStateString(previousState) + " to " + PeripheralBondAlterationError.getBondStateString(state));
+
+                        if (state == BOND_NONE) {
                             Logger.info(LOG_TAG, "Unbonding succeeded.");
 
                             s.onNext(AndroidPeripheral.this);
@@ -387,9 +391,9 @@ public class AndroidPeripheral implements Peripheral {
 
                             unsubscribe();
                         } else if (state == BluetoothDevice.ERROR) {
-                            Logger.error(LOG_TAG, "Unbonding failed.");
-
-                            s.onError(new PeripheralBondAlterationError());
+                            int reason = intent.getIntExtra(PeripheralBondAlterationError.EXTRA_REASON, PeripheralBondAlterationError.REASON_UNKNOWN_FAILURE);
+                            Logger.error(LOG_TAG, "Unbonding failed for reason " + PeripheralBondAlterationError.getReasonString(reason));
+                            s.onError(new PeripheralBondAlterationError(reason));
 
                             unsubscribe();
                         }
@@ -398,7 +402,7 @@ public class AndroidPeripheral implements Peripheral {
             } else {
                 Logger.error(LOG_TAG, "removeBond failed.");
 
-                s.onError(new PeripheralBondAlterationError());
+                s.onError(new PeripheralBondAlterationError(PeripheralBondAlterationError.REASON_ANDROID_API_CHANGED));
             }
         });
     }

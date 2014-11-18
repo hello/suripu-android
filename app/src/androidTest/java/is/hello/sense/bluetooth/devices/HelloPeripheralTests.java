@@ -120,7 +120,7 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
         peripheralBehavior.reset();
         peripheralBehavior.setConnectResponse(successResponse)
-                        .setCreateBondResponse(Either.right(new PeripheralBondAlterationError()));
+                        .setCreateBondResponse(Either.right(new PeripheralBondAlterationError(PeripheralBondAlterationError.REASON_ANDROID_API_CHANGED)));
 
         SyncObserver<HelloPeripheral.ConnectStatus> connect2 = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, peripheral.connect());
         connect2.await();
