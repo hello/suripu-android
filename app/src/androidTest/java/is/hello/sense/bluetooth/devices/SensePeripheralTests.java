@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.TestBluetoothStackBehavior;
@@ -26,7 +27,8 @@ public class SensePeripheralTests extends InjectionTestCase {
     @Inject TestBluetoothStackBehavior stackBehavior;
     @Inject BluetoothStack stack;
 
-    private TestPeripheralBehavior peripheralBehavior = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
+    private final SensePacketHandler packetHandler = new SensePacketHandler();
+    private final TestPeripheralBehavior peripheralBehavior = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
     private SensePeripheral peripheral;
 
     @Override
@@ -79,17 +81,9 @@ public class SensePeripheralTests extends InjectionTestCase {
     }
 
 
-    public void testPerformCommand() throws Exception {
-        fail();
-    }
-
-    public void testPerformSimpleCommand() throws Exception {
-        fail();
-    }
-
     public void testWriteLargeCommand() throws Exception {
         //noinspection ConstantConditions
-        peripheralBehavior.setWriteCommandResponse(Either.left(null));
+        peripheralBehavior.setWriteCommandResponse(Either.left(null)); // Void could use a singleton instance...
 
         MorpheusCommand command = MorpheusCommand.newBuilder()
                 .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)

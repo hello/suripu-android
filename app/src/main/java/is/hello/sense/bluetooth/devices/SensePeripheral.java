@@ -381,7 +381,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     //endregion
 
 
-    private interface OnCommandResponse extends Action3<MorpheusCommand, Subscriber<? super MorpheusCommand>, OperationTimeout> {}
+    interface OnCommandResponse extends Action3<MorpheusCommand, Subscriber<? super MorpheusCommand>, OperationTimeout> {}
 
 
     public final class SenseWifiNetwork {
