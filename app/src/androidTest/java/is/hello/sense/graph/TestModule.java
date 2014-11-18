@@ -17,6 +17,7 @@ import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TransientApiSessionManager;
 import is.hello.sense.bluetooth.devices.HelloPeripheralTests;
+import is.hello.sense.bluetooth.devices.SensePeripheralTests;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.TestBluetoothStack;
 import is.hello.sense.bluetooth.stacks.TestBluetoothStackBehavior;
@@ -73,6 +74,7 @@ import is.hello.sense.util.DateFormatterTests;
         UnitFormatterTests.class,
 
         HelloPeripheralTests.class,
+        SensePeripheralTests.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

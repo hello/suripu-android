@@ -34,7 +34,7 @@ import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.MorpheusCommand.CommandType;
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.wifi_connection_state;
 
-public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
+public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     private static int COMMAND_VERSION = 0;
 
     private static final long STACK_OPERATION_TIMEOUT_S = 30;
@@ -67,7 +67,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         });
     }
 
-    public static List<SensePeripheral> fromDevices(@NonNull List<Peripheral> peripherals) {
+    static List<SensePeripheral> fromDevices(@NonNull List<Peripheral> peripherals) {
         List<SensePeripheral> mapped = new ArrayList<>();
         for (Peripheral peripheral : peripherals) {
             mapped.add(new SensePeripheral(peripheral));
@@ -116,9 +116,9 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         return SchedulerOperationTimeout.acquire("Pair Pill", PAIR_PILL_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
-    protected Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command,
-                                                         @NonNull OperationTimeout timeout,
-                                                         @NonNull OnCommandResponse onCommandResponse) {
+    Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command,
+                                               @NonNull OperationTimeout timeout,
+                                               @NonNull OnCommandResponse onCommandResponse) {
         return peripheral.getStack().newConfiguredObservable(s -> {
             timeout.setTimeoutAction(() -> {
                 Logger.error(Peripheral.LOG_TAG, "Command timed out " + command);
@@ -166,8 +166,8 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         });
     }
 
-    protected Observable<MorpheusCommand> performSimpleCommand(@NonNull MorpheusCommand command,
-                                                               @NonNull @TakesOwnership OperationTimeout commandTimeout) {
+    Observable<MorpheusCommand> performSimpleCommand(@NonNull MorpheusCommand command,
+                                                     @NonNull @TakesOwnership OperationTimeout commandTimeout) {
         return performCommand(command, commandTimeout, (response, s, timeout) -> {
             timeout.unschedule();
             timeout.recycle();
@@ -190,7 +190,7 @@ public class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     //region Operations
 
-    private Observable<Void> writeLargeCommand(UUID commandUUID, byte[] commandData) {
+    Observable<Void> writeLargeCommand(UUID commandUUID, byte[] commandData) {
         List<byte[]> blePackets = packetHandler.createPackets(commandData);
         LinkedList<byte[]> remainingPackets = new LinkedList<>(blePackets);
 
