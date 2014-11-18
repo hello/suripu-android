@@ -27,6 +27,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.HelpUtil;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -94,6 +95,9 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
         Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_continue);
         continueButton.setOnClickListener(ignored -> sendWifiCredentials());
+
+        Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
+        helpButton.setOnClickListener(ignored -> HelpUtil.showHelp(getActivity()));
 
         if (network != null) {
             this.networkName.setText(network.getSsid());

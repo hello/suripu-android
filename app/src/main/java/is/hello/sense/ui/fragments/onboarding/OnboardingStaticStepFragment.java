@@ -12,6 +12,7 @@ import android.widget.Button;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.HelpUtil;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingStaticStepFragment extends Fragment {
@@ -41,7 +42,7 @@ public class OnboardingStaticStepFragment extends Fragment {
         next.setOnClickListener(this::next);
 
         Button help = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        help.setOnClickListener(this::next);
+        help.setOnClickListener(this::help);
 
         return view;
     }
@@ -57,6 +58,10 @@ public class OnboardingStaticStepFragment extends Fragment {
         } catch (ClassNotFoundException | java.lang.InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Could not resolve next step fragment class", e);
         }
+    }
+
+    public void help(@NonNull View sender) {
+        HelpUtil.showHelp(getActivity());
     }
 
 

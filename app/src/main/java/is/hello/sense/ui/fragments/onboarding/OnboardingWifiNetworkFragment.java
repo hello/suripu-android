@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -25,6 +24,7 @@ import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
+import is.hello.sense.ui.common.HelpUtil;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
@@ -84,7 +84,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         });
 
         this.helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        helpButton.setOnClickListener(v -> Toast.makeText(v.getContext().getApplicationContext(), "Hang in there...", Toast.LENGTH_SHORT).show());
+        helpButton.setOnClickListener(ignored -> HelpUtil.showHelp(getActivity()));
 
         return view;
     }

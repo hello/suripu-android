@@ -3,6 +3,7 @@ package is.hello.sense.ui.activities;
 import android.app.Fragment;
 import android.app.ListFragment;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,6 +21,7 @@ import is.hello.sense.SenseApplication;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
+import is.hello.sense.ui.common.HelpUtil;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
@@ -117,6 +119,7 @@ public class SettingsActivity extends FragmentNavigationActivity {
             adapter.addItem(getString(R.string.label_account), null, () -> getSettingsActivity().showFragment(new AccountSettingsFragment(), getString(R.string.label_account), true));
             adapter.addItem(getString(R.string.label_units_and_time), null, () -> getSettingsActivity().showSettings(R.xml.settings_units_and_time, R.string.label_units_and_time));
             adapter.addItem(getString(R.string.label_devices), null, () -> getSettingsActivity().showFragment(new DeviceListFragment(), getString(R.string.label_devices), true));
+            adapter.addItem(getString(R.string.action_help), null, this::showHelp);
             adapter.addItem(getString(R.string.action_log_out), null, this::logOut);
             setListAdapter(adapter);
         }
@@ -134,6 +137,10 @@ public class SettingsActivity extends FragmentNavigationActivity {
 
         private SettingsActivity getSettingsActivity() {
             return (SettingsActivity) getActivity();
+        }
+
+        public void showHelp() {
+            HelpUtil.showHelp(getActivity());
         }
 
         public void logOut() {
