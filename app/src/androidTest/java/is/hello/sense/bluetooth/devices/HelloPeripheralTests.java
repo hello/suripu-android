@@ -173,11 +173,53 @@ public class HelloPeripheralTests extends InjectionTestCase {
     }
 
     public void testSubscribe() throws Exception {
-        fail();
+        UUID id = SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE;
+        TestOperationTimeout timeout = TestOperationTimeout.acquire("Subscribe");
+
+        peripheralBehavior.setSubscriptionResponse(Either.left(id));
+
+        SyncObserver<UUID> subscribe1 = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, peripheral.subscribe(id, timeout));
+        subscribe1.await();
+
+        assertNull(subscribe1.getError());
+        assertEquals(id, subscribe1.getSingle());
+        assertTrue(timeout.wasRecycled());
+
+
+        peripheralBehavior.reset();
+        peripheralBehavior.setSubscriptionResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION)));
+
+        SyncObserver<UUID> subscribe2 = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, peripheral.subscribe(id, timeout));
+        subscribe2.await();
+
+        assertNotNull(subscribe2.getError());
+        assertTrue(subscribe2.getError() instanceof BluetoothGattError);
+        assertTrue(timeout.wasRecycled());
     }
 
     public void testUnsubscribe() throws Exception {
-        fail();
+        UUID id = SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE;
+        TestOperationTimeout timeout = TestOperationTimeout.acquire("Unsubscribe");
+
+        peripheralBehavior.setUnsubscriptionResponse(Either.left(id));
+
+        SyncObserver<UUID> subscribe1 = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, peripheral.unsubscribe(id, timeout));
+        subscribe1.await();
+
+        assertNull(subscribe1.getError());
+        assertEquals(id, subscribe1.getSingle());
+        assertTrue(timeout.wasRecycled());
+
+
+        peripheralBehavior.reset();
+        peripheralBehavior.setUnsubscriptionResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION)));
+
+        SyncObserver<UUID> subscribe2 = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, peripheral.unsubscribe(id, timeout));
+        subscribe2.await();
+
+        assertNotNull(subscribe2.getError());
+        assertTrue(subscribe2.getError() instanceof BluetoothGattError);
+        assertTrue(timeout.wasRecycled());
     }
 
     //endregion
