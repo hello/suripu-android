@@ -17,9 +17,9 @@ import is.hello.sense.util.ResumeScheduler;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.android.operators.OperatorConditionalBinding;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.operators.OperatorConditionalBinding;
 
 public class InjectionFragment extends SenseFragment implements ObservableContainer, PresenterContainer, ResumeScheduler.Resumable {
     protected ArrayList<Subscription> subscriptions = new ArrayList<>();

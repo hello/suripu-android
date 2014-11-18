@@ -89,8 +89,8 @@ dependencies {
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.squareup.dagger:dagger:1.2.2'
 
-    compile 'com.netflix.rxjava:rxjava-core:0.20.4'
-    compile 'com.netflix.rxjava:rxjava-android:0.20.4'
+    compile 'io.reactivex:rxjava:1.0.0'
+    compile 'io.reactivex:rxandroid:0.23.0'
 
     compile 'com.squareup.retrofit:retrofit:1.6.1'
     compile 'com.squareup.retrofit:converter-jackson:1.6.1'
