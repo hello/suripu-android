@@ -72,7 +72,7 @@ public class SensePacketDataHandler extends PacketDataHandler<MorpheusBle.Morphe
 
             bufferOffset += lastPacket.payload.length;
         }
-        packetsProcessed++;
+        this.packetsProcessed++;
 
         if (this.packetsProcessed == this.totalPackets) {
             final MorpheusBle.MorpheusCommand data;

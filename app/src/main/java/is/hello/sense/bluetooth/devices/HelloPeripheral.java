@@ -7,6 +7,7 @@ import java.util.UUID;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
+import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.functions.Action1;
@@ -47,7 +48,7 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
      * an operation timeout object.
      * @param timeout   A timeout object to apply to the service discovery portion of connection.
      */
-    protected Observable<ConnectStatus> connect(@NonNull OperationTimeout timeout) {
+    protected Observable<ConnectStatus> connect(@NonNull @TakesOwnership OperationTimeout timeout) {
         return peripheral.getStack().newConfiguredObservable(s -> {
             Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
 
@@ -99,7 +100,7 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
     }
 
     protected Observable<UUID> subscribe(@NonNull UUID characteristicIdentifier,
-                                         @NonNull OperationTimeout timeout) {
+                                         @NonNull @TakesOwnership OperationTimeout timeout) {
         Logger.info(Peripheral.LOG_TAG, "Subscribing to " + characteristicIdentifier);
 
         return peripheral.subscribeNotification(getTargetService(),
@@ -109,7 +110,7 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
     }
 
     protected Observable<UUID> unsubscribe(@NonNull UUID characteristicIdentifier,
-                                           @NonNull OperationTimeout timeout) {
+                                           @NonNull @TakesOwnership OperationTimeout timeout) {
         Logger.info(Peripheral.LOG_TAG, "Unsubscribing from " + characteristicIdentifier);
 
         return peripheral.unsubscribeNotification(getTargetService(),

@@ -16,9 +16,10 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TransientApiSessionManager;
+import is.hello.sense.bluetooth.devices.HelloPeripheralTests;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.TestBluetoothStack;
-import is.hello.sense.bluetooth.stacks.TestBluetoothStackConfig;
+import is.hello.sense.bluetooth.stacks.TestBluetoothStackBehavior;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
@@ -70,6 +71,8 @@ import is.hello.sense.util.DateFormatterTests;
 
         DateFormatterTests.class,
         UnitFormatterTests.class,
+
+        HelloPeripheralTests.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -106,11 +109,12 @@ public final class TestModule {
         return new TransientApiSessionManager();
     }
 
-    @Singleton @Provides TestBluetoothStackConfig provideBluetoothStackConfig() {
-        return new TestBluetoothStackConfig();
+    @Singleton @Provides
+    TestBluetoothStackBehavior provideBluetoothStackConfig() {
+        return new TestBluetoothStackBehavior();
     }
 
-    @Provides @Singleton BluetoothStack providesBluetoothStack(@NonNull TestBluetoothStackConfig stackConfig) {
+    @Provides @Singleton BluetoothStack providesBluetoothStack(@NonNull TestBluetoothStackBehavior stackConfig) {
         return new TestBluetoothStack(stackConfig);
     }
 }

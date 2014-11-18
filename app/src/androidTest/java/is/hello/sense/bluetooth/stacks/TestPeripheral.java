@@ -9,44 +9,46 @@ import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
+import is.hello.sense.functional.Either;
+import is.hello.sense.functional.Functions;
 import rx.Observable;
 
 public class TestPeripheral implements Peripheral {
     final BluetoothStack stack;
-    final TestPeripheralConfig peripheralConfig;
+    final TestPeripheralBehavior behavior;
 
     PacketHandler dataHandler;
 
     public TestPeripheral(@NonNull BluetoothStack stack,
-                          @NonNull TestPeripheralConfig peripheralConfig) {
+                          @NonNull TestPeripheralBehavior peripheralBehavior) {
         this.stack = stack;
-        this.peripheralConfig = peripheralConfig;
+        this.behavior = peripheralBehavior;
     }
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-    private <T> Observable<T> createResponseWith(T value, @Nullable OperationTimeout timeout) {
-        Observable<T> observable;
-        if (peripheralConfig.currentError == null) {
-            observable = Observable.just(value);
+    private <T> Observable<T> createResponseWith(@NonNull Either<T, Throwable> value, @Nullable OperationTimeout timeout) {
+        Observable<T> observable = value.<Observable<T>>map(Observable::just, Observable::error);
+        Observable<T> delayedObservable = observable.delay(behavior.latency, TimeUnit.MILLISECONDS);
+        if (timeout != null) {
+            return delayedObservable.finallyDo(timeout::recycle);
         } else {
-            observable = Observable.error(peripheralConfig.currentError);
+            return delayedObservable;
         }
-        return observable.delay(peripheralConfig.latency, TimeUnit.MILLISECONDS).finallyDo(timeout::recycle);
     }
 
     @Override
     public int getScanTimeRssi() {
-        return peripheralConfig.scanTimeRssi;
+        return behavior.scanTimeRssi;
     }
 
     @Override
     public String getAddress() {
-        return peripheralConfig.address;
+        return behavior.address;
     }
 
     @Override
     public String getName() {
-        return peripheralConfig.name;
+        return behavior.name;
     }
 
     @Override
@@ -57,47 +59,56 @@ public class TestPeripheral implements Peripheral {
     @NonNull
     @Override
     public Observable<Peripheral> connect() {
-        return createResponseWith(this, null);
+        behavior.trackMethodCall(TestPeripheralBehavior.Method.CONNECT);
+        return createResponseWith(behavior.connectResponse, null);
     }
 
     @NonNull
     @Override
     public Observable<Peripheral> disconnect() {
-        return createResponseWith(this, null);
+        behavior.trackMethodCall(TestPeripheralBehavior.Method.DISCONNECT);
+        return createResponseWith(behavior.disconnectResponse, null);
     }
 
     @Override
     public int getConnectionStatus() {
-        return peripheralConfig.connectionStatus;
+        return behavior.connectionStatus;
     }
 
     @NonNull
     @Override
     public Observable<Peripheral> createBond() {
-        return createResponseWith(this, null);
+        behavior.trackMethodCall(TestPeripheralBehavior.Method.CREATE_BOND);
+        return createResponseWith(behavior.createBondResponse, null);
     }
 
     @NonNull
     @Override
     public Observable<Peripheral> removeBond() {
-        return createResponseWith(this, null);
+        behavior.trackMethodCall(TestPeripheralBehavior.Method.REMOVE_BOND);
+        return createResponseWith(behavior.removeBondResponse, null);
     }
 
     @Override
     public int getBondStatus() {
-        return peripheralConfig.bondStatus;
+        return behavior.bondStatus;
     }
 
     @NonNull
     @Override
     public Observable<Collection<PeripheralService>> discoverServices(@NonNull @TakesOwnership OperationTimeout timeout) {
-        return createResponseWith(peripheralConfig.services.values(), timeout);
+        behavior.trackMethodCall(TestPeripheralBehavior.Method.DISCOVER_SERVICES);
+        return createResponseWith(behavior.servicesResponse, timeout);
     }
 
     @Nullable
     @Override
     public PeripheralService getService(@NonNull UUID serviceIdentifier) {
-        return peripheralConfig.services.get(serviceIdentifier);
+        if (behavior.servicesResponse != null && behavior.servicesResponse.isLeft()) {
+            return Functions.findFirst(behavior.servicesResponse.getLeft(), s -> s.getUuid().equals(serviceIdentifier));
+        } else {
+            return null;
+        }
     }
 
     @NonNull
@@ -106,7 +117,8 @@ public class TestPeripheral implements Peripheral {
                                                   @NonNull UUID characteristicIdentifier,
                                                   @NonNull UUID descriptorIdentifier,
                                                   @NonNull @TakesOwnership OperationTimeout timeout) {
-        return createResponseWith(peripheralConfig.subscriptionResponse, timeout);
+        behavior.trackMethodCall(TestPeripheralBehavior.Method.SUBSCRIBE);
+        return createResponseWith(behavior.subscriptionResponse, timeout);
     }
 
     @NonNull
@@ -115,7 +127,8 @@ public class TestPeripheral implements Peripheral {
                                                     @NonNull UUID characteristicIdentifier,
                                                     @NonNull UUID descriptorIdentifier,
                                                     @NonNull @TakesOwnership OperationTimeout timeout) {
-        return createResponseWith(peripheralConfig.subscriptionResponse, timeout);
+        behavior.trackMethodCall(TestPeripheralBehavior.Method.UNSUBSCRIBE);
+        return createResponseWith(behavior.unsubscriptionResponse, timeout);
     }
 
     @NonNull
@@ -124,7 +137,8 @@ public class TestPeripheral implements Peripheral {
                                          @NonNull UUID identifier,
                                          @NonNull byte[] payload,
                                          @NonNull @TakesOwnership OperationTimeout timeout) {
-        return createResponseWith(null, timeout);
+        behavior.trackMethodCall(TestPeripheralBehavior.Method.WRITE_COMMAND);
+        return createResponseWith(behavior.writeCommandResponse, timeout);
     }
 
     @Override

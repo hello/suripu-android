@@ -13,17 +13,17 @@ import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 
 public class TestBluetoothStack implements BluetoothStack {
-    private final TestBluetoothStackConfig stackConfig;
+    private final TestBluetoothStackBehavior behavior;
 
-    public TestBluetoothStack(@NonNull TestBluetoothStackConfig stackConfig) {
-        this.stackConfig = stackConfig;
+    public TestBluetoothStack(@NonNull TestBluetoothStackBehavior behavior) {
+        this.behavior = behavior;
     }
 
     @NonNull
     @Override
     public Observable<List<Peripheral>> discoverPeripherals(@NonNull ScanCriteria scanCriteria) {
-        return Observable.just(stackConfig.peripheralsInRange)
-                         .delay(stackConfig.latency, TimeUnit.SECONDS);
+        return Observable.just(behavior.peripheralsInRange)
+                         .delay(behavior.latency, TimeUnit.SECONDS);
     }
 
     @NonNull
@@ -39,7 +39,7 @@ public class TestBluetoothStack implements BluetoothStack {
 
     @Override
     public Observable<Boolean> isEnabled() {
-        return stackConfig.enabled;
+        return behavior.enabled;
     }
 
     @Override
