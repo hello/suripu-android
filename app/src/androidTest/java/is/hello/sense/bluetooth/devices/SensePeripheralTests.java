@@ -6,13 +6,19 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.TestBluetoothStackBehavior;
+import is.hello.sense.bluetooth.stacks.TestPeripheral;
 import is.hello.sense.bluetooth.stacks.TestPeripheralBehavior;
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.bluetooth.stacks.util.ScanResponse;
+import is.hello.sense.functional.Either;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.SyncObserver;
+import rx.Observable;
+
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.MorpheusCommand;
 
 public class SensePeripheralTests extends InjectionTestCase {
     private static final String TEST_DEVICE_ID = "ca154ffa";
@@ -20,11 +26,18 @@ public class SensePeripheralTests extends InjectionTestCase {
     @Inject TestBluetoothStackBehavior stackBehavior;
     @Inject BluetoothStack stack;
 
+    private TestPeripheralBehavior peripheralBehavior = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
+    private SensePeripheral peripheral;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
         stackBehavior.reset();
+
+        if (peripheral == null) {
+            this.peripheral = new SensePeripheral(new TestPeripheral(stack, peripheralBehavior));
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -75,6 +88,22 @@ public class SensePeripheralTests extends InjectionTestCase {
     }
 
     public void testWriteLargeCommand() throws Exception {
-        fail();
+        //noinspection ConstantConditions
+        peripheralBehavior.setWriteCommandResponse(Either.left(null));
+
+        MorpheusCommand command = MorpheusCommand.newBuilder()
+                .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
+                .setVersion(0)
+                .setWifiName("Mostly Radiation")
+                .setWifiSSID("00:00:00:00:00:00")
+                .setSecurityType(MorpheusBle.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN)
+                .build();
+        Observable<Void> write = peripheral.writeLargeCommand(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND, command.toByteArray());
+        SyncObserver<Void> writeObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, write);
+        writeObserver.await();
+
+        assertNull(writeObserver.getError());
+        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.WRITE_COMMAND));
+        assertEquals(3, peripheralBehavior.getCalledMethods().size());
     }
 }

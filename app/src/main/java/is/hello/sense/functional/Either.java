@@ -14,21 +14,23 @@ import rx.functions.Func1;
  * @param <Right>   The right value type. An error value by convention.
  */
 public final class Either<Left, Right> {
-    private @Nullable Left left;
-    private @Nullable Right right;
+    private final boolean isLeft;
+    private final @Nullable Left left;
+    private final @Nullable Right right;
 
 
     //region Creation
 
     public static <Left, Right> Either<Left, Right> left(@NonNull Left value) {
-        return new Either<>(value, null);
+        return new Either<>(true, value, null);
     }
 
     public static <Left, Right> Either<Left, Right> right(@NonNull Right value) {
-        return new Either<>(null, value);
+        return new Either<>(false, null, value);
     }
 
-    private Either(@Nullable Left left, @Nullable Right right) {
+    private Either(boolean isLeft, @Nullable Left left, @Nullable Right right) {
+        this.isLeft = isLeft;
         this.left = left;
         this.right = right;
     }
@@ -39,19 +41,19 @@ public final class Either<Left, Right> {
     //region Introspection
 
     public boolean isLeft() {
-        return (left != null && right == null);
+        return isLeft;
     }
 
-    public @NonNull Left getLeft() {
-        if (left == null) {
+    public Left getLeft() {
+        if (!isLeft()) {
             throw new NullPointerException();
         }
 
         return left;
     }
 
-    public @NonNull Right getRight() {
-        if (right == null) {
+    public Right getRight() {
+        if (isLeft()) {
             throw new NullPointerException();
         }
 
@@ -94,23 +96,19 @@ public final class Either<Left, Right> {
 
     @Override
     public int hashCode() {
-        if (left != null) {
-            return left.hashCode();
-        } else if (right != null) {
-            return right.hashCode();
+        if (isLeft()) {
+            return left != null ? left.hashCode() : 0;
         } else {
-            return 0;
+            return right != null ? right.hashCode() : 0;
         }
     }
 
     @Override
     public String toString() {
-        if (left != null) {
+        if (isLeft()) {
             return "{Either left=" + left + "}";
-        } else if (right != null) {
-            return "{Either right=" + right + "}";
         } else {
-            return "{Either invalid}";
+            return "{Either right=" + right + "}";
         }
     }
 
