@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
@@ -214,7 +215,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
                     segmentKeyProducer = sensorHistory -> sensorHistory.getTime().withZone(timeZone).getDayOfMonth();
                 } else {
-                    segmentKeyProducer = sensorHistory -> sensorHistory.getTime().withZone(timeZone).getHourOfDay() / 6;
+                    segmentKeyProducer = sensorHistory -> {
+                        DateTime shiftedTime = sensorHistory.getTime().withZone(timeZone);
+                        return (shiftedTime.getDayOfMonth() * 100) + (shiftedTime.getHourOfDay() / 6);
+                    };
                 }
                 List<List<SensorHistory>> segments = segmentList(segmentKeyProducer, history);
                 List<Section> sections = mapList(segments, Section::new);
