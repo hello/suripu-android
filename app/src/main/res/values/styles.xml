@@ -182,9 +182,10 @@
     </style>
 
     <style name="AppTheme.Button.ModeSelector">
-        <item name="android:background">@drawable/mode_selector_button_selector</item>
+        <item name="android:background">@drawable/button_selector_dark</item>
         <item name="android:textColor">@drawable/toggle_button_text_selector</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
+        <item name="android:textAppearance">@style/AppTheme.Text.Body.Bold</item>
+        <item name="android:padding">@dimen/gap_medium</item>
     </style>
 
     <style name="AppTheme.Button.SmartAlarmDay">

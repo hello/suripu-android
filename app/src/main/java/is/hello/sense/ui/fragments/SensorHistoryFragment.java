@@ -51,10 +51,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     @Inject PreferencesPresenter preferences;
 
     private TextView readingText;
-    private TextView messageTitleText;
     private TextView messageText;
     private LineGraphView graphView;
     private ProgressBar loadingIndicator;
+    private TextView insightText;
     private Adapter adapter = new Adapter();
     private String sensor;
 
@@ -77,10 +77,11 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         View view = inflater.inflate(R.layout.fragment_sensor_history, container, false);
 
         this.readingText = (TextView) view.findViewById(R.id.fragment_sensor_history_reading);
-        this.messageTitleText = (TextView) view.findViewById(R.id.fragment_sensor_history_message_title);
         this.messageText = (TextView) view.findViewById(R.id.fragment_sensor_history_message);
         this.graphView = (LineGraphView) view.findViewById(R.id.fragment_sensor_history_graph);
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_sensor_history_loading);
+        this.insightText = (TextView) view.findViewById(R.id.fragment_sensor_history_insight);
+
         graphView.setAdapter(adapter);
 
         SelectorLinearLayout historyMode = (SelectorLinearLayout) view.findViewById(R.id.fragment_sensor_history_mode);
@@ -115,7 +116,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void bindConditions(@Nullable CurrentConditionsPresenter.Result result) {
         if (result == null) {
             readingText.setText(R.string.missing_data_placeholder);
-            messageTitleText.setText(R.string.missing_data_placeholder);
+            messageText.setText(R.string.missing_data_placeholder);
+            insightText.setText(R.string.missing_data_placeholder);
         } else {
             SensorState condition = result.conditions.getSensorStateWithName(sensor);
             if (condition != null) {
@@ -131,9 +133,14 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                     readingText.setText(formattedValue);
                 else
                     readingText.setText(R.string.missing_data_placeholder);
+                readingText.setTextColor(getResources().getColor(condition.getCondition().colorRes));
 
-                messageTitleText.setText(sensor);
                 messageText.setText(condition.getMessage());
+                insightText.setText("Consider living somewhere better.");
+            } else {
+                readingText.setText(R.string.missing_data_placeholder);
+                messageText.setText(R.string.missing_data_placeholder);
+                insightText.setText(R.string.missing_data_placeholder);
             }
         }
     }
@@ -141,8 +148,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void conditionUnavailable(@NonNull Throwable e) {
         Logger.error(SensorHistoryFragment.class.getSimpleName(), "Could not load conditions", e);
         readingText.setText(R.string.missing_data_placeholder);
-        messageTitleText.setText(R.string.dialog_error_title);
         messageText.setText(e.getMessage());
+        insightText.setText(R.string.missing_data_placeholder);
     }
 
 

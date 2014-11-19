@@ -8,9 +8,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SelectorLinearLayout extends LinearLayout implements View.OnClickListener {
     public static final int EMPTY_SELECTION = -1;
 
+    private final List<ToggleButton> toggleButtons = new ArrayList<>();
     private int selectedIndex = EMPTY_SELECTION;
     private OnSelectionChangedListener onSelectionChangedListener;
     private ButtonStyler buttonStyler;
@@ -32,15 +36,15 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
 
     @Override
     public void addView(@NonNull View child, int index, ViewGroup.LayoutParams params) {
-        if (!(child instanceof ToggleButton)) {
-            throw new IllegalArgumentException("SelectorLinearLayout does not support non-ToggleButton children.");
+        if (child instanceof ToggleButton) {
+            ToggleButton button = (ToggleButton) child;
+            int buttonIndex = toggleButtons.size();
+            button.setOnClickListener(this);
+            button.setTag(buttonIndex);
+            if (button.isChecked())
+                this.selectedIndex = buttonIndex;
+            toggleButtons.add(button);
         }
-
-        int normalizedIndex = index == -1 ? getChildCount() : index;
-        child.setOnClickListener(this);
-        child.setTag(normalizedIndex);
-        if (((ToggleButton) child).isChecked())
-            this.selectedIndex = normalizedIndex;
 
         super.addView(child, index, params);
     }
@@ -55,8 +59,8 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
     }
 
     private void synchronizeButtonStates() {
-        for (int index = 0, count = getChildCount(); index < count; index++) {
-            ToggleButton button = (ToggleButton) getChildAt(index);
+        for (ToggleButton button : toggleButtons) {
+            int index = (Integer) button.getTag();
             boolean isSelected = (index == selectedIndex);
             if (buttonStyler != null) {
                 buttonStyler.styleButton(button, isSelected);

@@ -1,89 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/fragment_sensor_history_reading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.BigScore"
-        android:text="@string/missing_data_placeholder"/>
-
-    <is.hello.sense.ui.widget.SelectorLinearLayout
-        android:id="@+id/fragment_sensor_history_mode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textOn="@string/title_time_frame_week"
-            android:textOff="@string/title_time_frame_week"
-            android:checked="true"
-            style="@style/AppTheme.Button.ModeSelector"/>
-
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textOn="@string/title_time_frame_24_hrs"
-            android:textOff="@string/title_time_frame_24_hrs"
-            style="@style/AppTheme.Button.ModeSelector"/>
-
-    </is.hello.sense.ui.widget.SelectorLinearLayout>
-
-    <is.hello.sense.ui.widget.LineGraphView
-        android:id="@+id/fragment_sensor_history_graph"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@drawable/background_line_graph"
-        app:fill="@color/transparent"
-        app:gridDrawable="@drawable/graph_grid_fill"
-        app:topLineHeight="2dp">
-
-        <is.hello.sense.ui.widget.TintedProgressBar
-            android:id="@+id/fragment_sensor_history_loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            style="@android:style/Widget.Holo.Light.ProgressBar"/>
-
-    </is.hello.sense.ui.widget.LineGraphView>
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_outer"
         android:orientation="vertical"
-        android:padding="@dimen/gap_medium"
-        android:background="@drawable/raised_item_background">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/fragment_sensor_history_message_title"
+            android:id="@+id/fragment_sensor_history_reading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_medium"
-            android:textAppearance="@style/AppTheme.Text.SectionHeading.Accent"
-            android:text="@string/dialog_loading_message"/>
+            android:layout_marginTop="@dimen/gap_small"
+            android:layout_marginLeft="@dimen/gap_outer"
+            android:layout_marginRight="@dimen/gap_outer"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.BigScore"
+            android:text="@string/missing_data_placeholder"/>
 
         <TextView
             android:id="@+id/fragment_sensor_history_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_tiny"
+            android:layout_marginBottom="@dimen/gap_medium"
+            android:layout_marginLeft="@dimen/gap_outer"
+            android:layout_marginRight="@dimen/gap_outer"
+            android:textAppearance="@style/AppTheme.Text.Body"
+            android:lineSpacingMultiplier="1.3"
+            android:text="@string/dialog_loading_message"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="@drawable/background_line_graph">
+
+            <is.hello.sense.ui.widget.SelectorLinearLayout
+                android:id="@+id/fragment_sensor_history_mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ToggleButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textOn="@string/title_time_frame_week"
+                    android:textOff="@string/title_time_frame_week"
+                    android:checked="true"
+                    style="@style/AppTheme.Button.ModeSelector"/>
+
+                <View
+                    android:layout_marginTop="@dimen/gap_medium"
+                    android:layout_marginBottom="@dimen/gap_medium"
+                    style="@style/Divider.Vertical" />
+
+                <ToggleButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textOn="@string/title_time_frame_24_hrs"
+                    android:textOff="@string/title_time_frame_24_hrs"
+                    style="@style/AppTheme.Button.ModeSelector"/>
+
+            </is.hello.sense.ui.widget.SelectorLinearLayout>
+
+            <is.hello.sense.ui.widget.LineGraphView
+                android:id="@+id/fragment_sensor_history_graph"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="@dimen/sensor_history_graph_min_height"
+                app:fill="@color/transparent"
+                app:gridDrawable="@drawable/graph_grid_fill"
+                app:topLineHeight="2dp">
+
+                <is.hello.sense.ui.widget.TintedProgressBar
+                    android:id="@+id/fragment_sensor_history_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    style="@android:style/Widget.Holo.Light.ProgressBar"/>
+
+            </is.hello.sense.ui.widget.LineGraphView>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/fragment_sensor_history_insight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap_outer"
             android:textAppearance="@style/AppTheme.Text.Body"
             android:lineSpacingMultiplier="1.3"/>
 
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>
