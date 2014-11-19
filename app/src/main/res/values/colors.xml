@@ -36,9 +36,9 @@
     <color name="sleep_score_average">#f1e57f</color>
     <color name="sleep_score_bad">#cc5651</color>
 
-    <color name="sensor_alert">#f47b1f</color>
-    <color name="sensor_warning">#f43821</color>
-    <color name="sensor_ideal">#44d774</color>
+    <color name="sensor_alert">#FF9A00</color>
+    <color name="sensor_warning">#FF0000</color>
+    <color name="sensor_ideal">#36D8AB</color>
     <color name="sensor_unknown">#565961</color>
 
     <color name="sleep_light">#009CFF</color>

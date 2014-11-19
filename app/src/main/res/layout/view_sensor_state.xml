@@ -20,7 +20,7 @@
         android:drawableStart="@drawable/icon_sensor_temperature"
         android:drawablePadding="@dimen/gap_outer"
         android:singleLine="true"
-        android:textSize="@dimen/text_size_large"
+        android:gravity="start|center_vertical"
         android:textAppearance="@style/AppTheme.Text.Body.Light"
         android:text="@string/condition_temperature"/>
 
@@ -29,17 +29,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/gap_outer"
-        android:minWidth="32dp"
+        android:minWidth="56dp"
         android:gravity="center"
         android:paddingLeft="@dimen/gap_medium"
         android:paddingRight="@dimen/gap_medium"
-        android:paddingTop="@dimen/gap_tiny"
+        android:paddingTop="@dimen/gap_xsmall"
         android:paddingBottom="@dimen/gap_xsmall"
         android:singleLine="true"
-        android:textSize="@dimen/text_size_large"
         android:textAppearance="@style/AppTheme.Text.Body.Light"
         android:textColor="@color/sensor_unknown"
         android:text="@string/missing_data_placeholder"
-        android:background="@drawable/raised_item_background"/>
+        android:background="@drawable/non_raised_item_background"/>
 
 </LinearLayout>

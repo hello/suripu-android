@@ -47,12 +47,12 @@
 
     <style name="AppTheme.Text.Body">
         <item name="android:textSize">@dimen/text_size_medium</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Light">
-        <item name="android:textSize">@dimen/text_size_medium</item>
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
+
+    <!-- All body text is light right now, leaving
+         this if we want to distinguish again. -->
+    <style name="AppTheme.Text.Body.Light" />
 
     <style name="AppTheme.Text.Body.Light.Small">
         <item name="android:textSize">@dimen/text_size_small</item>

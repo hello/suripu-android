@@ -12,7 +12,7 @@
     <!-- Text -->
 
     <dimen name="text_size_small">11sp</dimen>
-    <dimen name="text_size_medium">15sp</dimen>
+    <dimen name="text_size_medium">16sp</dimen>
     <dimen name="text_size_large">20sp</dimen>
     <dimen name="text_size_xlarge">26sp</dimen>
     <dimen name="text_size_xxlarge">32sp</dimen>
