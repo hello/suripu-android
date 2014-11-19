@@ -13,14 +13,12 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.SparseIntArray;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
@@ -35,8 +33,9 @@ public final class LineGraphView extends FrameLayout {
     private boolean wantsHeaders = true;
     private boolean wantsFooters = true;
 
-    private float cachedPeakMagnitude = 0f;
-    private final List<Integer> cachedSectionCounts = new ArrayList<>();
+    private float baseMagnitude = 0f;
+    private float peakMagnitude = 0f;
+    private final SparseIntArray sectionCounts = new SparseIntArray();
 
     private float topLineHeight;
 
@@ -130,11 +129,11 @@ public final class LineGraphView extends FrameLayout {
     //region Drawing
 
     private float getSectionWidth() {
-        return getMeasuredWidth() / cachedSectionCounts.size();
+        return getMeasuredWidth() / sectionCounts.size();
     }
 
     private float getSegmentWidth(int section) {
-        return getSectionWidth() / cachedSectionCounts.get(section);
+        return getSectionWidth() / sectionCounts.get(section);
     }
 
     private float absoluteSegmentX(float sectionWidth, float segmentWidth, int section, int position) {
@@ -142,14 +141,16 @@ public final class LineGraphView extends FrameLayout {
     }
 
     private float absoluteSegmentY(float height, int section, int position) {
-        return Math.round(height - (height * (adapter.getMagnitudeAt(section, position) / this.cachedPeakMagnitude)));
+        float magnitude = adapter.getMagnitudeAt(section, position);
+        float percentage = (magnitude - baseMagnitude) / (peakMagnitude - baseMagnitude);
+        return Math.round(height * percentage);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        int sectionCount = cachedSectionCounts.size();
+        int sectionCount = sectionCounts.size();
         int minX = 0, minY = 0;
         int height = getMeasuredHeight() - minY, width = getMeasuredWidth() - minX;
 
@@ -181,7 +182,7 @@ public final class LineGraphView extends FrameLayout {
 
             float sectionWidth = width / sectionCount;
             for (int section = 0; section < sectionCount; section++) {
-                int pointCount = cachedSectionCounts.get(section);
+                int pointCount = sectionCounts.get(section);
                 if (pointCount == 0)
                     continue;
 
@@ -257,13 +258,14 @@ public final class LineGraphView extends FrameLayout {
     }
 
     public void notifyDataChanged() {
-        this.cachedSectionCounts.clear();
+        this.sectionCounts.clear();
 
         if (adapter != null) {
-            this.cachedPeakMagnitude = adapter.getPeakMagnitude();
+            this.baseMagnitude = adapter.getBaseMagnitude();
+            this.peakMagnitude = adapter.getPeakMagnitude();
             for (int section = 0, sections = adapter.getSectionCount(); section < sections; section++) {
                 int count = adapter.getSectionPointCount(section);
-                cachedSectionCounts.add(count);
+                sectionCounts.append(section, count);
             }
         }
 
@@ -320,12 +322,12 @@ public final class LineGraphView extends FrameLayout {
     //region Event Handling
 
     private int getSectionAtX(float x) {
-        int limit = cachedSectionCounts.size();
+        int limit = sectionCounts.size();
         return (int) Math.min(limit - 1, Math.floor(x / getSectionWidth()));
     }
 
     private int getSegmentAtX(int section, float x) {
-        int limit = cachedSectionCounts.get(section);
+        int limit = sectionCounts.get(section);
         float sectionMinX = getSectionWidth() * section;
         float segmentWidth = getSegmentWidth(section);
         float xInSection = x - sectionMinX;
@@ -334,7 +336,7 @@ public final class LineGraphView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-        if (adapter == null || cachedSectionCounts.size() == 0)
+        if (adapter == null || sectionCounts.size() == 0)
             return false;
 
         float x = ViewUtil.getNormalizedX(event);
@@ -377,6 +379,7 @@ public final class LineGraphView extends FrameLayout {
     //endregion
 
     public interface Adapter {
+        float getBaseMagnitude();
         float getPeakMagnitude();
         int getSectionCount();
         int getSectionPointCount(int section);

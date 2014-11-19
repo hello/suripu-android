@@ -197,7 +197,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
     public class Adapter implements LineGraphView.Adapter {
         private List<Section> sections = new ArrayList<>();
-        private float peakMagnitude = 100;
+        private float baseMagnitude = 0f;
+        private float peakMagnitude = 0f;
         private UnitSystem unitSystem;
         private boolean use24Time = false;
 
@@ -209,7 +210,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 return;
             }
 
-            Observable<Pair<List<Section>, Float>> generateSeries = Observable.create((Observable.OnSubscribe<Pair<List<Section>, Float>>) s -> {
+            Observable<Result> generateSeries = Observable.create((Observable.OnSubscribe<Result>) s -> {
                 Function<SensorHistory, Integer> segmentKeyProducer;
                 DateTimeZone timeZone = dateFormatter.getTargetTimeZone();
                 if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
@@ -223,16 +224,21 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 List<List<SensorHistory>> segments = segmentList(segmentKeyProducer, history);
                 List<Section> sections = mapList(segments, Section::new);
 
-                float peak = Collections.max(history, (l, r) -> Float.compare(l.getValue(), r.getValue())).getValue();
-                s.onNext(Pair.create(sections, peak));
+                Collections.sort(history, (l, r) -> Float.compare(l.getValue(), r.getValue()));
+
+                float peak = history.get(0).getValue();
+                float base = history.get(history.size() - 1).getValue();
+
+                s.onNext(new Result(sections, peak, base));
                 s.onCompleted();
             }).subscribeOn(Schedulers.computation());
 
-            bindAndSubscribe(generateSeries, segmentsAndPeak -> {
+            bindAndSubscribe(generateSeries, result -> {
                 Log.i(SensorHistoryFragment.class.getSimpleName(), "segments delivered");
 
-                this.sections.addAll(segmentsAndPeak.first);
-                this.peakMagnitude = segmentsAndPeak.second;
+                this.sections.addAll(result.sections);
+                this.peakMagnitude = result.peak;
+                this.baseMagnitude = result.base;
 
                 graphView.setNumberOfLines(sections.size());
                 graphView.notifyDataChanged();
@@ -267,6 +273,11 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             graphView.notifyDataChanged();
         }
 
+
+        @Override
+        public float getBaseMagnitude() {
+            return baseMagnitude;
+        }
 
         @Override
         public float getPeakMagnitude() {
@@ -338,6 +349,18 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         public String getSectionFooter(int section) {
             float value = sections.get(section).getAverage();
             return formatSensorValue(value);
+        }
+
+        private class Result {
+            final @NonNull List<Section> sections;
+            final float peak;
+            final float base;
+
+            Result(@NonNull List<Section> sections, float peak, float base) {
+                this.sections = sections;
+                this.peak = peak;
+                this.base = base;
+            }
         }
     }
 
