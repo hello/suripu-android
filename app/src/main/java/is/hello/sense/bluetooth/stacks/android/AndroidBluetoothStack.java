@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
+import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
@@ -96,12 +97,34 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
     @Override
     public boolean errorRequiresReconnect(@Nullable Throwable e) {
-        return e != null && (e instanceof OperationTimeoutError || e instanceof BluetoothGattError);
+        return (e != null && (e instanceof OperationTimeoutError ||
+                e instanceof BluetoothGattError ||
+                e instanceof PeripheralBondAlterationError));
     }
 
     @Override
     public boolean isErrorFatal(@Nullable Throwable e) {
-        return e != null && (e instanceof BluetoothGattError && ((BluetoothGattError) e).statusCode == BluetoothGattError.STACK_ERROR);
+        if (e == null) {
+            return false;
+        }
+
+        if (e instanceof BluetoothGattError) {
+            // If STACK_ERROR/133 is reported more than once, the gatt
+            // layer is unstable, and won't be fixed until the user
+            // power cycles their phone's wireless radios.
+            int statusCode = ((BluetoothGattError) e).statusCode;
+            return (statusCode == BluetoothGattError.STACK_ERROR);
+        }
+
+        if (e instanceof PeripheralBondAlterationError) {
+            // If REASON_REMOVED/9 is reported, it indicates that the
+            // bond state of the bluetooth device has gotten into a broken
+            // state, and won't be until the user restarts their phone.
+            int reason = ((PeripheralBondAlterationError) e).reason;
+            return (reason == PeripheralBondAlterationError.REASON_REMOVED);
+        }
+
+        return false;
     }
 
     @Override
