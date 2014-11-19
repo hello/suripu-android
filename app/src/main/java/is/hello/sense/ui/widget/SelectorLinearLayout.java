@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SelectorLinearLayout extends LinearLayout implements View.OnClickListener {
+    private static final int TAG_KEY_INDEX = -1;
+    private static final int TAG_KEY_USER = -2;
+
     public static final int EMPTY_SELECTION = -1;
 
     private final List<ToggleButton> toggleButtons = new ArrayList<>();
@@ -40,7 +43,7 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
             ToggleButton button = (ToggleButton) child;
             int buttonIndex = toggleButtons.size();
             button.setOnClickListener(this);
-            button.setTag(buttonIndex);
+            button.setTag(TAG_KEY_INDEX, buttonIndex);
             if (button.isChecked())
                 this.selectedIndex = buttonIndex;
             toggleButtons.add(button);
@@ -51,7 +54,7 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
 
     @Override
     public void onClick(@NonNull View view) {
-        this.selectedIndex = (Integer) view.getTag();
+        this.selectedIndex = (Integer) view.getTag(TAG_KEY_INDEX);
         synchronizeButtonStates();
         if (getOnSelectionChangedListener() != null) {
             getOnSelectionChangedListener().onSelectionChanged(selectedIndex);
@@ -60,7 +63,7 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
 
     private void synchronizeButtonStates() {
         for (ToggleButton button : toggleButtons) {
-            int index = (Integer) button.getTag();
+            int index = (Integer) button.getTag(TAG_KEY_INDEX);
             boolean isSelected = (index == selectedIndex);
             if (buttonStyler != null) {
                 buttonStyler.styleButton(button, isSelected);
@@ -94,12 +97,12 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
         }
 
         for (int i = 0, count = tags.length; i < count; i++) {
-            toggleButtons.get(i).setTag(tags[i]);
+            toggleButtons.get(i).setTag(TAG_KEY_USER, tags[i]);
         }
     }
 
     public Object getButtonTag(int index) {
-        return toggleButtons.get(index).getTag();
+        return toggleButtons.get(index).getTag(TAG_KEY_USER);
     }
 
     public void setButtonStyler(ButtonStyler buttonStyler) {
