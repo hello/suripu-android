@@ -14,13 +14,20 @@ public final class Constants {
      */
     public static final float OPEN_VELOCITY_THRESHOLD = 350f;
 
-    public static final int BLE_DEFAULT_TIMEOUT_MS = 20000;
-    public static final int BLE_SCAN_TIMEOUT_MS = 10000;
-    public static final int BLE_SET_WIFI_TIMEOUT_MS = 60000; // firmware suggestion
-
     public static final int ONBOARDING_CHECKPOINT_NONE = 0;
     public static final int ONBOARDING_CHECKPOINT_ACCOUNT = 1;
     public static final int ONBOARDING_CHECKPOINT_QUESTIONS = 2;
     public static final int ONBOARDING_CHECKPOINT_SENSE = 3;
     public static final int ONBOARDING_CHECKPOINT_PILL = 4;
+
+
+    public static final String TYPEFACE_BLACK = "fonts/AvenirLTCom-Black.ttf";
+    public static final String TYPEFACE_BLACK_OBLIQUE = "fonts/AvenirLTCom-BlackOblique.ttf";
+    public static final String TYPEFACE_HEAVY = "fonts/AvenirLTCom-Heavy.ttf";
+    public static final String TYPEFACE_HEAVY_OBLIQUE = "fonts/AvenirLTCom-HeavyOblique.ttf";
+    public static final String TYPEFACE_ULTRA_LIGHT = "fonts/AvenirNextLTPro-UltLt.ttf";
+    public static final String TYPEFACE_LIGHT = "fonts/AvenirLTCom-Light.ttf";
+    public static final String TYPEFACE_LIGHT_OBLIQUE = "fonts/AvenirLTCom-LightOblique.ttf";
+    public static final String TYPEFACE_ROMAN = "fonts/AvenirLTCom-Roman.ttf";
+    public static final String TYPEFACE_OBLIQUE = "fonts/AvenirLTCom-Oblique.ttf";
 }

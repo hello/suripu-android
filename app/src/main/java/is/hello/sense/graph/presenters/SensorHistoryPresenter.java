@@ -26,7 +26,7 @@ public class SensorHistoryPresenter extends UpdatablePresenter<Pair<List<SensorH
     @Inject UnitFormatter unitFormatter;
 
     private String sensorName;
-    private int mode;
+    private int mode = MODE_DAY;
 
     public final PresenterSubject<Pair<List<SensorHistory>, UnitSystem>> history = this.subject;
 

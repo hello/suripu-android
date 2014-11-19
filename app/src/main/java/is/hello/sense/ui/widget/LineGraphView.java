@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -26,6 +25,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.ViewUtil;
+import is.hello.sense.util.Constants;
 
 public final class LineGraphView extends FrameLayout {
     private Adapter adapter;
@@ -41,7 +41,8 @@ public final class LineGraphView extends FrameLayout {
     private float topLineHeight;
 
     private final Paint topLinePaint = new Paint();
-    private final Paint textPaint = new Paint();
+    private final Paint headerTextPaint = new Paint();
+    private final Paint footerTextPaint = new Paint();
 
     private final Path topLinePath = new Path();
     private final Path fillPath = new Path();
@@ -80,11 +81,16 @@ public final class LineGraphView extends FrameLayout {
         topLinePaint.setStrokeCap(Paint.Cap.ROUND);
         topLinePaint.setStrokeWidth(topLineHeight);
 
-        textPaint.setAntiAlias(true);
-        textPaint.setSubpixelText(true);
-        setTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_small));
-        setTypeface(Typeface.createFromAsset(getResources().getAssets(), "fonts/AvenirLTCom-Light.ttf"));
-        setTextColor(resources.getColor(R.color.text_dark));
+        headerTextPaint.setAntiAlias(true);
+        headerTextPaint.setSubpixelText(true);
+        footerTextPaint.setAntiAlias(true);
+        footerTextPaint.setSubpixelText(true);
+
+        setHeaderTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_small));
+        setHeaderTypeface(Typeface.createFromAsset(getResources().getAssets(), Constants.TYPEFACE_HEAVY));
+
+        setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_medium));
+        setFooterTypeface(Typeface.createFromAsset(getResources().getAssets(), Constants.TYPEFACE_LIGHT));
 
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.LineGraphView, defStyleAttr, 0);
@@ -162,14 +168,15 @@ public final class LineGraphView extends FrameLayout {
             fillPath.reset();
             markersPath.reset();
 
-            int headerFooterHeight = (int) textPaint.getTextSize() + (headerFooterPadding * 2);
+            int headerHeight = (int) headerTextPaint.getTextSize() + (headerFooterPadding * 2);
             if (wantsHeaders) {
-                minY += headerFooterHeight;
-                height -= headerFooterHeight;
+                minY += headerHeight;
+                height -= headerHeight;
             }
 
+            int footerHeight = (int) footerTextPaint.getTextSize() + (headerFooterPadding * 2);
             if (wantsFooters) {
-                height -= headerFooterHeight;
+                height -= footerHeight;
             }
 
             float sectionWidth = width / sectionCount;
@@ -181,23 +188,27 @@ public final class LineGraphView extends FrameLayout {
                 float segmentWidth = sectionWidth / (float) pointCount;
 
                 if (wantsHeaders) {
+                    headerTextPaint.setColor(adapter.getSectionTextColor(section));
+
                     String text = adapter.getSectionHeader(section);
-                    textPaint.getTextBounds(text, 0, text.length(), textRect);
+                    headerTextPaint.getTextBounds(text, 0, text.length(), textRect);
 
                     float sectionMidX = (sectionWidth * section) + (sectionWidth / 2);
                     float textX = Math.round(sectionMidX - textRect.centerX());
-                    float textY = Math.round((headerFooterHeight / 2) - textRect.centerY());
-                    canvas.drawText(text, textX, textY, textPaint);
+                    float textY = Math.round((headerHeight / 2) - textRect.centerY());
+                    canvas.drawText(text, textX, textY, headerTextPaint);
                 }
 
                 if (wantsFooters) {
+                    footerTextPaint.setColor(adapter.getSectionTextColor(section));
+
                     String text = adapter.getSectionFooter(section);
-                    textPaint.getTextBounds(text, 0, text.length(), textRect);
+                    footerTextPaint.getTextBounds(text, 0, text.length(), textRect);
 
                     float sectionMidX = (sectionWidth * section) + (sectionWidth / 2);
                     float textX = Math.round(sectionMidX - textRect.centerX());
-                    float textY = Math.round((minY + height) + ((headerFooterHeight / 2) - textRect.centerY()));
-                    canvas.drawText(text, textX, textY, textPaint);
+                    float textY = Math.round((minY + height) + ((footerHeight / 2) - textRect.centerY()));
+                    canvas.drawText(text, textX, textY, footerTextPaint);
                 }
 
                 for (int position = 0; position < pointCount; position++) {
@@ -283,18 +294,23 @@ public final class LineGraphView extends FrameLayout {
         invalidate();
     }
 
-    public void setTypeface(@NonNull Typeface typeface) {
-        textPaint.setTypeface(typeface);
+    public void setHeaderTypeface(@NonNull Typeface typeface) {
+        headerTextPaint.setTypeface(typeface);
         invalidate();
     }
 
-    public void setTextSize(int size) {
-        textPaint.setTextSize(size);
+    public void setFooterTypeface(@NonNull Typeface typeface) {
+        footerTextPaint.setTypeface(typeface);
         invalidate();
     }
 
-    public void setTextColor(int color) {
-        textPaint.setColor(color);
+    public void setHeaderTextSize(int size) {
+        headerTextPaint.setTextSize(size);
+        invalidate();
+    }
+
+    public void setFooterTextSize(int size) {
+        footerTextPaint.setTextSize(size);
         invalidate();
     }
 
@@ -364,6 +380,7 @@ public final class LineGraphView extends FrameLayout {
         float getPeakMagnitude();
         int getSectionCount();
         int getSectionPointCount(int section);
+        int getSectionTextColor(int section);
         float getMagnitudeAt(int section, int position);
         @NonNull CharSequence getFormattedMagnitudeAt(int section, int position);
         String getSectionHeader(int section);

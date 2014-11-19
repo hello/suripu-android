@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -59,6 +60,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
     private TextView readingText;
     private TextView messageText;
+    private SelectorLinearLayout historyModeSelector;
     private LineGraphView graphView;
     private ProgressBar loadingIndicator;
     private TextView insightText;
@@ -91,8 +93,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         graphView.setAdapter(adapter);
 
-        SelectorLinearLayout historyMode = (SelectorLinearLayout) view.findViewById(R.id.fragment_sensor_history_mode);
-        historyMode.setOnSelectionChangedListener(this);
+        this.historyModeSelector = (SelectorLinearLayout) view.findViewById(R.id.fragment_sensor_history_mode);
+        historyModeSelector.setOnSelectionChangedListener(this);
+        historyModeSelector.setButtonTags(SensorHistoryPresenter.MODE_DAY, SensorHistoryPresenter.MODE_WEEK);
 
         return view;
     }
@@ -185,7 +188,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 .scale(1f)
                 .start();
         adapter.clear();
-        sensorHistoryPresenter.setMode(newSelectionIndex);
+
+        int newMode = (Integer) historyModeSelector.getButtonTag(newSelectionIndex);
+        sensorHistoryPresenter.setMode(newMode);
     }
 
 
@@ -272,6 +277,15 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public int getSectionPointCount(int section) {
             return sections.get(section).size();
+        }
+
+        @Override
+        public int getSectionTextColor(int section) {
+            if (section == sections.size() - 1) {
+                return Color.BLACK;
+            } else {
+                return Color.GRAY;
+            }
         }
 
         @Override

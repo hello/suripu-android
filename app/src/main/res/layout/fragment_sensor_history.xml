@@ -51,8 +51,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textOn="@string/title_time_frame_week"
-                    android:textOff="@string/title_time_frame_week"
+                    android:textOn="@string/title_time_frame_24_hrs"
+                    android:textOff="@string/title_time_frame_24_hrs"
                     android:checked="true"
                     style="@style/AppTheme.Button.ModeSelector"/>
 
@@ -65,8 +65,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textOn="@string/title_time_frame_24_hrs"
-                    android:textOff="@string/title_time_frame_24_hrs"
+                    android:textOn="@string/title_time_frame_week"
+                    android:textOff="@string/title_time_frame_week"
                     style="@style/AppTheme.Button.ModeSelector"/>
 
             </is.hello.sense.ui.widget.SelectorLinearLayout>

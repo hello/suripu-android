@@ -37,7 +37,7 @@ public class SenseApplication extends Application {
         this.buildValues = new BuildValues(this);
 
         JodaTimeAndroid.init(this);
-        CalligraphyConfig.initDefault("fonts/AvenirLTCom-Roman.ttf", R.attr.fontPath);
+        CalligraphyConfig.initDefault(Constants.TYPEFACE_ROMAN, R.attr.fontPath);
         if (buildValues.debugScreenEnabled) {
             SessionLogger.init(this);
         }

@@ -88,6 +88,20 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
         this.onSelectionChangedListener = onSelectionChangedListener;
     }
 
+    public void setButtonTags(Object... tags) {
+        if (tags.length != toggleButtons.size()) {
+            throw new IllegalArgumentException("Expected " + toggleButtons.size() + " tags, got " + tags.length);
+        }
+
+        for (int i = 0, count = tags.length; i < count; i++) {
+            toggleButtons.get(i).setTag(tags[i]);
+        }
+    }
+
+    public Object getButtonTag(int index) {
+        return toggleButtons.get(index).getTag();
+    }
+
     public void setButtonStyler(ButtonStyler buttonStyler) {
         this.buttonStyler = buttonStyler;
     }
