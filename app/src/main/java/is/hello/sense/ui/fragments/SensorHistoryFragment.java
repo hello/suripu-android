@@ -3,6 +3,12 @@ package is.hello.sense.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.SpannedString;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.AlignmentSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -37,6 +43,7 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.SuperscriptSpanAdjuster;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -129,10 +136,26 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 }
 
                 String formattedValue = condition.getFormattedValue(formatter);
-                if (formattedValue != null)
-                    readingText.setText(formattedValue);
-                else
+                if (formattedValue != null) {
+                    SpannableString formattableString = new SpannableString(formattedValue);
+                    if (!SensorHistory.SENSOR_NAME_PARTICULATES.equals(sensor)) {
+                        boolean isTemperature = SensorHistory.SENSOR_NAME_TEMPERATURE.equals(sensor);
+                        float unitScale = isTemperature ? 0.5f : 0.25f;
+                        float adjustment = isTemperature ? 0.75f : 2.2f;
+                        formattableString.setSpan(new RelativeSizeSpan(unitScale),
+                                                  formattableString.length() - 1,
+                                                  formattableString.length(),
+                                                  Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                        formattableString.setSpan(new SuperscriptSpanAdjuster(adjustment),
+                                                  formattableString.length() - 1,
+                                                  formattableString.length(),
+                                                  Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                    }
+
+                    readingText.setText(formattableString);
+                } else {
                     readingText.setText(R.string.missing_data_placeholder);
+                }
                 readingText.setTextColor(getResources().getColor(condition.getCondition().colorRes));
 
                 messageText.setText(condition.getMessage());
