@@ -65,7 +65,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:text="@string/title_security"
-                android:textSize="@dimen/text_size_medium"
+                android:textSize="@dimen/text_size_body"
                 android:textColor="?android:textColorHint"/>
 
             <Spinner

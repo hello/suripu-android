@@ -8,5 +8,5 @@
     android:textOn="@string/app_name"
     android:textOff="@string/app_name"
     android:textAppearance="@style/AppTheme.Text.Body.Bold"
-    android:textSize="@dimen/text_size_large"
+    android:textSize="@dimen/text_size_large_button"
     style="@style/AppTheme.Button.Borderless.Toggle"/>

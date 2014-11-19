@@ -5,7 +5,7 @@
     <style name="AppTheme" parent="android:Theme.Holo.Light">
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@color/background</item>
-        <item name="android:textAppearance">@style/AppTheme.Text</item>"
+        <item name="android:textAppearance">@style/AppTheme.Text</item>
 
         <item name="android:actionBarItemBackground">@drawable/app_theme_selectable_background</item>
         <item name="android:popupMenuStyle">@style/AppTheme.PopupMenu</item>
@@ -50,7 +50,9 @@
 
     <!-- Action Bar -->
 
-    <style name="AppTheme.ActionBar.Solid" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
+    <style name="AppTheme.ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid" />
+
+    <style name="AppTheme.ActionBar.Solid">
         <item name="android:background">@drawable/app_theme_ab_solid</item>
         <item name="android:backgroundStacked">@drawable/app_theme_ab_stacked_solid</item>
         <item name="android:backgroundSplit">@drawable/app_theme_ab_bottom_solid</item>
@@ -70,12 +72,13 @@
     </style>
 
     <style name="AppTheme.Text.ActionBar">
-        <item name="android:textSize">@dimen/action_bar_text_size</item>
+        <item name="android:textSize">@dimen/action_bar_title_text_size</item>
         <item name="android:textColor">@color/text_dark</item>
+        <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
 
     <style name="AppTheme.Text.ActionMenu">
-        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
         <item name="android:textAllCaps">false</item>
     </style>
     
@@ -169,7 +172,7 @@
     </style>
 
     <style name="AppTheme.Button.Borderless.White.Thin">
-        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textSize">@dimen/text_size_large_button</item>
         <item name="android:textAllCaps">true</item>
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
@@ -177,7 +180,7 @@
     <style name="AppTheme.Button.Rounded">
         <item name="android:background">@drawable/selector_button_rounded</item>
         <item name="android:textColor">@color/light_accent</item>
-        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textSize">@dimen/text_size_large_button</item>
         <item name="android:textStyle">normal</item>
     </style>
 
@@ -197,7 +200,7 @@
         <item name="android:background">@drawable/smart_alarm_day_toggle_selector</item>
         <item name="android:textColor">@drawable/toggle_button_text_selector</item>
         <item name="android:textAppearance">@style/AppTheme.Text</item>
-        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textSize">@dimen/text_size_section_heading</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:paddingTop">@dimen/gap_medium</item>
         <item name="android:paddingBottom">@dimen/gap_large</item>
@@ -266,12 +269,12 @@
 
         <item name="android:background">@drawable/edit_text_selector</item>
 
-        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="AppTheme.Text.EditText.Onboarding">
-        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textSize">@dimen/text_size_subheading</item>
     </style>
 
     <style name="AppTheme.Text.EditText.Onboarding.Metric">

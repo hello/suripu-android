@@ -85,10 +85,10 @@ public final class LineGraphView extends FrameLayout {
         footerTextPaint.setAntiAlias(true);
         footerTextPaint.setSubpixelText(true);
 
-        setHeaderTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_small));
+        setHeaderTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_section_heading));
         setHeaderTypeface(Typeface.createFromAsset(getResources().getAssets(), Constants.TYPEFACE_HEAVY));
 
-        setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_medium));
+        setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_body));
         setFooterTypeface(Typeface.createFromAsset(getResources().getAssets(), Constants.TYPEFACE_LIGHT));
 
         if (attrs != null) {
@@ -111,7 +111,7 @@ public final class LineGraphView extends FrameLayout {
 
         this.highlightedValueText = new TextView(getContext());
         highlightedValueText.setGravity(Gravity.CENTER);
-        highlightedValueText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelOffset(R.dimen.text_size_small));
+        highlightedValueText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelOffset(R.dimen.text_size_section_heading));
         highlightedValueText.setBackgroundResource(R.drawable.timestamp_background);
         highlightedValueText.setTextColor(Color.WHITE);
         int padding = getResources().getDimensionPixelSize(R.dimen.gap_small);
@@ -143,7 +143,7 @@ public final class LineGraphView extends FrameLayout {
     private float absoluteSegmentY(float height, int section, int position) {
         float magnitude = adapter.getMagnitudeAt(section, position);
         float percentage = (magnitude - baseMagnitude) / (peakMagnitude - baseMagnitude);
-        return Math.round(height * percentage);
+        return (height * percentage);
     }
 
     @Override

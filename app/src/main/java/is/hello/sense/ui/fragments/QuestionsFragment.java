@@ -144,7 +144,7 @@ public class QuestionsFragment extends InjectionFragment {
 
     public void displayThankYou() {
         titleText.setGravity(Gravity.CENTER);
-        titleText.setTextSize(getResources().getDimensionPixelOffset(R.dimen.text_size_large));
+        titleText.setTextSize(getResources().getDimensionPixelOffset(R.dimen.text_size_large_button));
         titleText.setText(R.string.title_thank_you);
         superContainer.addView(titleText);
 

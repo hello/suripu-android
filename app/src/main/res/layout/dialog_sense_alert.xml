@@ -26,7 +26,7 @@
         android:layout_marginTop="@dimen/gap_medium"
         android:layout_marginBottom="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Body.Light"
-        android:lineSpacingMultiplier="1.3"/>
+        android:lineSpacingMultiplier="@dimen/body_text_line_multiple"/>
 
     <View style="@style/Divider.Horizontal" />
 

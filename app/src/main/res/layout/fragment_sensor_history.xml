@@ -15,7 +15,7 @@
             android:id="@+id/fragment_sensor_history_reading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_small"
+            android:layout_marginTop="@dimen/gap_medium"
             android:layout_marginLeft="@dimen/gap_outer"
             android:layout_marginRight="@dimen/gap_outer"
             android:gravity="center"
@@ -26,12 +26,12 @@
             android:id="@+id/fragment_sensor_history_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_tiny"
+            android:layout_marginTop="@dimen/gap_xsmall"
             android:layout_marginBottom="@dimen/gap_medium"
             android:layout_marginLeft="@dimen/gap_outer"
             android:layout_marginRight="@dimen/gap_outer"
             android:textAppearance="@style/AppTheme.Text.Body"
-            android:lineSpacingMultiplier="1.3"
+            android:lineSpacingMultiplier="@dimen/body_text_line_multiple"
             android:text="@string/dialog_loading_message"/>
 
         <LinearLayout
@@ -54,6 +54,7 @@
                     android:textOn="@string/title_time_frame_24_hrs"
                     android:textOff="@string/title_time_frame_24_hrs"
                     android:checked="true"
+                    android:textAllCaps="true"
                     style="@style/AppTheme.Button.ModeSelector"/>
 
                 <View
@@ -67,6 +68,7 @@
                     android:layout_weight="1"
                     android:textOn="@string/title_time_frame_week"
                     android:textOff="@string/title_time_frame_week"
+                    android:textAllCaps="true"
                     style="@style/AppTheme.Button.ModeSelector"/>
 
             </is.hello.sense.ui.widget.SelectorLinearLayout>
@@ -95,9 +97,12 @@
             android:id="@+id/fragment_sensor_history_insight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/gap_outer"
+            android:layout_marginLeft="@dimen/gap_outer"
+            android:layout_marginRight="@dimen/gap_outer"
+            android:layout_marginTop="@dimen/gap_medium"
+            android:layout_marginBottom="@dimen/gap_medium"
             android:textAppearance="@style/AppTheme.Text.Body"
-            android:lineSpacingMultiplier="1.3"/>
+            android:lineSpacingMultiplier="@dimen/body_text_line_multiple"/>
 
     </LinearLayout>
 

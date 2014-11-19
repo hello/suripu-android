@@ -23,6 +23,6 @@
         android:text="@string/mock_event_message"
         android:ellipsize="end"
         android:maxLines="2"
-        android:lineSpacingMultiplier="1.3"/>
+        android:lineSpacingMultiplier="@dimen/body_text_line_multiple"/>
 
 </LinearLayout>

@@ -8,7 +8,7 @@
 
     <style name="AppTheme.Text.Heading">
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
-        <item name="android:textSize">@dimen/text_size_xlarge</item>
+        <item name="android:textSize">@dimen/text_size_heading</item>
         <item name="android:lineSpacingMultiplier">1.2</item>
         <item name="android:textColor">@color/text_dark</item>
     </style>
@@ -19,7 +19,7 @@
 
     <style name="AppTheme.Text.Subheading">
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
-        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textSize">@dimen/text_size_subheading</item>
         <item name="android:lineSpacingMultiplier">1.7</item>
         <item name="android:textColor">@color/text_dark</item>
     </style>
@@ -30,7 +30,7 @@
 
     <style name="AppTheme.Text.SectionHeading">
         <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
-        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textSize">@dimen/text_size_section_heading</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/text_section_header</item>
     </style>
@@ -41,12 +41,13 @@
 
 
     <style name="AppTheme.Text.ScreenTitle">
-        <item name="android:textSize">@dimen/action_bar_text_size</item>
+        <item name="android:textSize">@dimen/action_bar_title_text_size</item>
         <item name="android:textColor">@color/text_dark</item>
+        <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
 
     <style name="AppTheme.Text.Body">
-        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
 
@@ -55,7 +56,7 @@
     <style name="AppTheme.Text.Body.Light" />
 
     <style name="AppTheme.Text.Body.Light.Small">
-        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textSize">@dimen/text_size_section_heading</item>
     </style>
 
     <style name="AppTheme.Text.Body.Bold">
@@ -69,11 +70,11 @@
 
     <style name="AppTheme.Text.FieldLabel">
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
     </style>
 
     <style name="AppTheme.Text.Button">
-        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textSize">@dimen/text_size_button</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -81,13 +82,13 @@
     <!-- Non-generic -->
 
     <style name="AppTheme.Text.BigScore">
-        <item name="android:textSize">@dimen/text_size_giant</item>
+        <item name="android:textSize">@dimen/text_size_big_score</item>
         <item name="fontPath">fonts/AvenirNextLTPro-UltLt.ttf</item>
     </style>
 
     <style name="AppTheme.Text.Condition">
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
-        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textSize">@dimen/text_size_subheading</item>
     </style>
 
     <style name="AppTheme.Text.Timestamp">
@@ -104,7 +105,7 @@
 
     <style name="AppTheme.Text.SmartAlarm.Time">
         <item name="fontPath">fonts/AvenirNextLTPro-UltLt.ttf</item>
-        <item name="android:textSize">@dimen/text_size_xxlarge</item>
+        <item name="android:textSize">@dimen/text_size_smart_alarm_time</item>
     </style>
 
     <style name="AppTheme.Text.SmartAlarm.Time.Period">
@@ -112,13 +113,13 @@
     </style>
 
     <style name="AppTheme.Text.SmartAlarm.Repeat">
-        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textSize">@dimen/text_size_section_heading</item>
         <item name="android:textAllCaps">true</item>
     </style>
 
     <style name="AppTheme.Text.SmartAlarm.Time.Big">
         <item name="android:textColor">@color/light_accent</item>
-        <item name="android:textSize">@dimen/text_size_giant</item>
+        <item name="android:textSize">@dimen/text_size_big_score</item>
     </style>
 
 </resources>
