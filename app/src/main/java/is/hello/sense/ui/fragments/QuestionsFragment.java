@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,8 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -24,6 +24,7 @@ import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
+import static android.widget.LinearLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class QuestionsFragment extends InjectionFragment {
@@ -42,10 +43,7 @@ public class QuestionsFragment extends InjectionFragment {
             super.handleMessage(msg);
 
             questionsPresenter.questionsAcknowledged();
-
-            Activity activity = getActivity();
-            if (activity != null)
-                activity.finish();
+            getFragmentManager().popBackStack();
         }
     };
 
@@ -143,8 +141,6 @@ public class QuestionsFragment extends InjectionFragment {
 
 
     public void displayThankYou() {
-        titleText.setGravity(Gravity.CENTER);
-        titleText.setTextSize(getResources().getDimensionPixelOffset(R.dimen.text_size_large_button));
         titleText.setText(R.string.title_thank_you);
         superContainer.addView(titleText);
 
@@ -201,28 +197,25 @@ public class QuestionsFragment extends InjectionFragment {
 
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             View.OnClickListener onClickListener = this::choiceSelected;
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.bottomMargin = (int) getResources().getDimension(R.dimen.gap_small);
-            long delay = 0;
-            for (Question.Choice choice : question.getChoices()) {
-                Button choiceButton = (Button) inflater.inflate(R.layout.sub_fragment_button_choice, choicesContainer, false);
+            LayoutParams choiceLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            LayoutParams dividerLayoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.divider_height));
+            dividerLayoutParams.leftMargin = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+            dividerLayoutParams.rightMargin = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+
+            List<Question.Choice> choices = question.getChoices();
+            for (int i = 0; i < choices.size(); i++) {
+                Question.Choice choice = choices.get(i);
+                Button choiceButton = (Button) inflater.inflate(R.layout.item_question_choice, choicesContainer, false);
                 choiceButton.setText(choice.getText());
                 choiceButton.setTag(choice);
                 choiceButton.setOnClickListener(onClickListener);
-                choicesContainer.addView(choiceButton, layoutParams);
+                choicesContainer.addView(choiceButton, choiceLayoutParams);
 
-                choiceButton.setScaleX(0.5f);
-                choiceButton.setScaleY(0.5f);
-                choiceButton.setAlpha(0f);
-                animate(choiceButton)
-                        .scale(1f)
-                        .alpha(1f)
-                        .setStartDelay(delay)
-                        .setApplyChangesToView(true)
-                        .start();
-
-                delay += DELAY_INCREMENT;
+                if (i < choices.size() - 1) {
+                    View divider = new View(getActivity());
+                    divider.setBackgroundResource(R.color.light_accent);
+                    choicesContainer.addView(divider, dividerLayoutParams);
+                }
             }
         }
     }

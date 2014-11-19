@@ -1,6 +1,7 @@
 package is.hello.sense.ui.activities;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.fragments.HomeUndersideFragment;
+import is.hello.sense.ui.fragments.QuestionsFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
@@ -278,8 +280,14 @@ public class HomeActivity
     }
 
     public void showQuestions(@NonNull View sender) {
-        startActivity(new Intent(this, QuestionsActivity.class));
-        hideQuestionsButton();
+        getFragmentManager()
+                .beginTransaction()
+                .add(R.id.activity_home_container, new QuestionsFragment())
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(QuestionsFragment.class.getSimpleName())
+                .commit();
+
+        // hideQuestionsButton();
     }
 
     //endregion

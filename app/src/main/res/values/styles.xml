@@ -164,6 +164,17 @@
         <item name="android:background">@drawable/button_selector_dark</item>
     </style>
 
+    <style name="AppTheme.Button.Borderless.Question">
+        <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
+        <item name="android:padding">@dimen/gap_outer</item>
+        <item name="android:textColor">@color/text_dim</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="AppTheme.Button.Borderless.Question.Choice">
+        <item name="android:textColor">@color/light_accent</item>
+    </style>
+
     <style name="AppTheme.Button.Borderless.Toggle">
         <item name="android:background">@drawable/button_selector_borderless_toggle</item>
     </style>
@@ -257,8 +268,8 @@
         <item name="android:layout_marginBottom">@dimen/gap_small</item>
     </style>
 
-    <style name="Divider.Horizontal.White">
-        <item name="android:background">@color/white</item>
+    <style name="Divider.Horizontal.Accent">
+        <item name="android:background">@color/light_accent</item>
     </style>
 
     <style name="Divider.Vertical">
