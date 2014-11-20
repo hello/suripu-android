@@ -91,6 +91,10 @@ public class OnboardingPairPillFragment extends InjectionFragment {
 
 
     public void pairPill() {
+        if (isPairing) {
+            return;
+        }
+
         beginPairing();
 
         if (hardwarePresenter.getPeripheral() == null) {

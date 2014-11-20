@@ -78,7 +78,12 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
         if (subscription != null && !subscription.isUnsubscribed())
             unschedule();
 
-        this.subscription = scheduler.createWorker().schedule(action, durationMs, TimeUnit.MILLISECONDS);
+        this.subscription = scheduler.createWorker().schedule(() -> {
+            action.call();
+
+            unschedule();
+            recycle();
+        }, durationMs, TimeUnit.MILLISECONDS);
     }
 
     @Override

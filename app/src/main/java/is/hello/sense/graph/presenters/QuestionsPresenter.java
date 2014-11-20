@@ -100,12 +100,12 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     public void update() {
-        /*if (isUpdateTooSoon()) {
+        if (isUpdateTooSoon()) {
             logEvent("redundant update requested, ignoring.");
             return;
         }
 
-        if (isLastAcknowledgedBeforeToday()) */{
+        if (isLastAcknowledgedBeforeToday()) {
             logEvent("loading today's questions");
             String timestamp = DateTime.now().toString("yyyy-MM-dd");
             apiService.questions(timestamp)
@@ -114,11 +114,11 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                           this.lastUpdated = DateTime.now();
                           updateCurrentQuestion();
                       }, questions::onError);
-        }/* else {
+        } else {
             logEvent("questions already updated today");
             this.questions.onNext(Collections.emptyList());
             this.currentQuestion.onNext(null);
-        }*/
+        }
     }
 
     public void updateCurrentQuestion() {
@@ -192,7 +192,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     public void skipQuestion() {
-        currentQuestion.take(1).subscribe(question -> apiService.skipQuestion(question.getId()).subscribe(), Functions.LOG_ERROR);
+        currentQuestion.take(1).subscribe(question -> apiService.skipQuestion(question.getId()).subscribe(ignored ->
+                                       logEvent("skipped question"), Functions.LOG_ERROR), Functions.LOG_ERROR);
         nextQuestion();
     }
 
