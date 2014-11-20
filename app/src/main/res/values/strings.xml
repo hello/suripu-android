@@ -238,6 +238,7 @@
     <string name="action_exit">Exit</string>
     <string name="dialog_title_smart_alarm_edit_cancel">Do you really want to exit?</string>
     <string name="dialog_message_smart_alarm_edit_cancel">There are unsaved changes to this alarm.</string>
+    <string name="action_answer">Answer</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

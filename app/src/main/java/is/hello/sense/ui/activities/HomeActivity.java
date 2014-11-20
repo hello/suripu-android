@@ -8,25 +8,26 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.TextView;
 
 import net.hockeyapp.android.UpdateManager;
 
 import org.joda.time.DateTime;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Question;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.common.ViewUtil;
 import is.hello.sense.ui.fragments.HomeUndersideFragment;
 import is.hello.sense.ui.fragments.QuestionsFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
@@ -40,12 +41,13 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
-import static rx.android.observables.AndroidObservable.bindActivity;
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends InjectionActivity
         implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener {
+    private static final String TAG_ANSWER_QUESTION = QuestionsFragment.class.getSimpleName();
+
     public static final String EXTRA_IS_NOTIFICATION = HomeActivity.class.getName() + ".EXTRA_IS_NOTIFICATION";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
@@ -53,9 +55,9 @@ public class HomeActivity
     @Inject PreferencesPresenter preferences;
     @Inject BuildValues buildValues;
 
-    private ViewGroup homeContainer;
+    private ViewGroup homeContentContainer;
     private SlidingLayersView slidingLayersView;
-    private Button newQuestionButton;
+    private ViewGroup newQuestionContainer;
     private FragmentPageView<TimelineFragment> viewPager;
 
     private boolean isFirstActivityRun;
@@ -69,10 +71,7 @@ public class HomeActivity
 
         this.isFirstActivityRun = (savedInstanceState == null);
 
-        this.homeContainer = (ViewGroup) findViewById(R.id.activity_home_container);
-
-        this.newQuestionButton = (Button) findViewById(R.id.activity_home_new_question_button);
-        newQuestionButton.setOnClickListener(this::showQuestions);
+        this.homeContentContainer = (ViewGroup) findViewById(R.id.activity_home_content_container);
 
 
         // noinspection unchecked
@@ -109,17 +108,21 @@ public class HomeActivity
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        Observable<Boolean> noQuestions = bindActivity(this, questionsPresenter.questions.map(List::isEmpty));
-        track(noQuestions.subscribe(none -> {
-            if (none)
-                hideQuestionsButton();
+        bindAndSubscribe(questionsPresenter.currentQuestion, currentQuestion -> {
+            if (currentQuestion == null || isAnswerQuestionOpen())
+                hideNewQuestion();
             else
-                showQuestionsButton();
-        }, ignored -> newQuestionButton.setVisibility(View.INVISIBLE)));
+                showNewQuestion(currentQuestion);
+        }, ignored -> {
+            if (newQuestionContainer != null) {
+                homeContentContainer.removeView(newQuestionContainer);
+                this.newQuestionContainer = null;
+            }
+        });
 
         // This is probably not what we want to happen.
-        Observable<Intent> logOut = bindActivity(this, fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT)));
-        track(logOut.subscribe(ignored -> {
+        Observable<Intent> onLogOut = fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        bindAndSubscribe(onLogOut, ignored -> {
             preferences
                     .edit()
                     .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)
@@ -128,7 +131,7 @@ public class HomeActivity
 
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
-        }));
+        }, Functions.LOG_ERROR);
     }
 
     @Override
@@ -167,7 +170,7 @@ public class HomeActivity
 
         NotificationType type = NotificationType.fromString(intent.getStringExtra(NotificationReceiver.EXTRA_TYPE));
         if (type == NotificationType.QUESTION && intent.hasExtra(NotificationReceiver.EXTRA_QUESTION_ID)) {
-            showQuestions(newQuestionButton);
+            answerQuestion();
         }
     }
 
@@ -224,70 +227,81 @@ public class HomeActivity
 
     //region Questions
 
-    public void showQuestionsButton() {
-        if (newQuestionButton.getVisibility() == View.VISIBLE)
-            return;
+    public void showNewQuestion(@NonNull Question question) {
+        if (newQuestionContainer == null) {
+            int containerHeight = homeContentContainer.getMeasuredHeight();
+            if (containerHeight == 0) {
+                ViewUtil.onGlobalLayout(homeContentContainer).take(1).subscribe(ignored -> showNewQuestion(question));
+                return;
+            }
 
-        int containerHeight = homeContainer.getMeasuredHeight();
-        if (containerHeight == 0) {
-            homeContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    showQuestionsButton();
-                    homeContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
+            getLayoutInflater().inflate(R.layout.sub_fragment_new_question, homeContentContainer, true);
+            this.newQuestionContainer = (ViewGroup) findViewById(R.id.sub_fragment_new_question);
+            newQuestionContainer.setVisibility(View.INVISIBLE);
+
+            Button skipQuestion = (Button) newQuestionContainer.findViewById(R.id.sub_fragment_new_question_skip);
+            skipQuestion.setOnClickListener(ignored -> questionsPresenter.skipQuestion());
+
+            Button answerQuestion = (Button) newQuestionContainer.findViewById(R.id.sub_fragment_new_question_answer);
+            answerQuestion.setOnClickListener(ignored -> answerQuestion());
+
+            ViewUtil.onGlobalLayout(homeContentContainer).take(1).subscribe(ignored -> {
+                int newQuestionContainerHeight = newQuestionContainer.getMeasuredHeight();
+
+                newQuestionContainer.setY((float) containerHeight);
+                newQuestionContainer.setVisibility(View.VISIBLE);
+
+                animate(newQuestionContainer)
+                        .y(containerHeight - newQuestionContainerHeight)
+                        .setApplyChangesToView(true)
+                        .start();
             });
-
-            return;
         }
 
-        int buttonHeight = newQuestionButton.getMeasuredHeight();
-
-        newQuestionButton.setY((float) containerHeight);
-        newQuestionButton.setVisibility(View.VISIBLE);
-
-        animate(newQuestionButton)
-                .y(containerHeight - buttonHeight)
-                .setApplyChangesToView(true)
-                .addOnAnimationCompleted(finished -> {
-                    ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) viewPager.getLayoutParams();
-                    layoutParams.bottomMargin = buttonHeight;
-                    slidingLayersView.getParent().requestLayout();
-                })
-                .start();
+        TextView answerTitle = (TextView) newQuestionContainer.findViewById(R.id.sub_fragment_new_question_title);
+        answerTitle.setText(question.getText());
     }
 
-    public void hideQuestionsButton() {
-        if (newQuestionButton.getVisibility() == View.INVISIBLE)
+    public void hideNewQuestion() {
+        if (newQuestionContainer == null)
             return;
 
-        int containerHeight = homeContainer.getMeasuredHeight();
-        int buttonHeight = newQuestionButton.getMeasuredHeight();
+        int containerHeight = homeContentContainer.getMeasuredHeight();
+        int buttonHeight = newQuestionContainer.getMeasuredHeight();
 
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) viewPager.getLayoutParams();
         layoutParams.bottomMargin = 0;
         viewPager.getParent().requestLayout();
 
         if (containerHeight == 0) {
-            newQuestionButton.setVisibility(View.INVISIBLE);
+            homeContentContainer.removeView(newQuestionContainer);
+            this.newQuestionContainer = null;
+
             return;
         }
 
-        animate(newQuestionButton)
+        animate(newQuestionContainer)
                 .y(containerHeight + buttonHeight)
-                .addOnAnimationCompleted(finished -> newQuestionButton.setVisibility(View.INVISIBLE))
+                .addOnAnimationCompleted(finished -> {
+                    homeContentContainer.removeView(newQuestionContainer);
+                    this.newQuestionContainer = null;
+                })
                 .start();
     }
 
-    public void showQuestions(@NonNull View sender) {
+    public boolean isAnswerQuestionOpen() {
+        return (getFragmentManager().findFragmentByTag(TAG_ANSWER_QUESTION) != null);
+    }
+
+    public void answerQuestion() {
         getFragmentManager()
                 .beginTransaction()
-                .add(R.id.activity_home_container, new QuestionsFragment())
+                .add(R.id.activity_home_container, new QuestionsFragment(), TAG_ANSWER_QUESTION)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(QuestionsFragment.class.getSimpleName())
                 .commit();
 
-        // hideQuestionsButton();
+        hideNewQuestion();
     }
 
     //endregion

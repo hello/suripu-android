@@ -37,15 +37,7 @@ public class QuestionsFragment extends InjectionFragment {
     private TextView titleText;
     private ViewGroup choicesContainer;
 
-    private final Handler dismissHandler = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-
-            questionsPresenter.questionsAcknowledged();
-            getFragmentManager().popBackStack();
-        }
-    };
+    private final Handler dismissHandler = new Handler(Looper.getMainLooper());
 
     private boolean hasClearedAllViews = false;
 
@@ -150,7 +142,10 @@ public class QuestionsFragment extends InjectionFragment {
                 .setApplyChangesToView(true)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
-                        dismissHandler.sendEmptyMessageDelayed(0, DISMISS_DELAY);
+                        dismissHandler.postDelayed(() -> {
+                            questionsPresenter.questionsAcknowledged();
+                            getFragmentManager().popBackStack();
+                        }, DISMISS_DELAY);
                     }
                 })
                 .start();
