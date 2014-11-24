@@ -163,7 +163,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 readingText.setTextColor(getResources().getColor(condition.getCondition().colorRes));
 
                 messageText.setText(condition.getMessage());
-                insightText.setText("Consider living somewhere better.");
+                insightText.setText("[placeholder] current conditions text");
             } else {
                 readingText.setText(R.string.missing_data_placeholder);
                 messageText.setText(R.string.missing_data_placeholder);
