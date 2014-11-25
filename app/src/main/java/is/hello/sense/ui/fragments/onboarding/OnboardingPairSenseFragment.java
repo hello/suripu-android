@@ -99,10 +99,10 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     private void finishedPairing() {
         loadingDialogFragment.setTitle(getString(R.string.title_checking_connectivity));
         bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
-                LoadingDialogFragment.close(getFragmentManager());
             if (network.connectionState == MorpheusBle.wifi_connection_state.IP_RETRIEVED) {
                 linkAccount();
             } else {
+                LoadingDialogFragment.close(getFragmentManager());
                 ((OnboardingActivity) getActivity()).showSelectWifiNetwork(true);
             }
         }, e -> {
@@ -116,6 +116,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     private void linkAccount() {
         loadingDialogFragment.setTitle(getString(R.string.title_linking_account));
         bindAndSubscribe(hardwarePresenter.linkAccount(), ignored -> {
+            LoadingDialogFragment.close(getFragmentManager());
             ((OnboardingActivity) getActivity()).showPairPill(-1);
         }, error -> {
             Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not link Sense to account", error);
