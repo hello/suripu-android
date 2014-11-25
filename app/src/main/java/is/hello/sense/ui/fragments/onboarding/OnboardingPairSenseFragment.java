@@ -101,7 +101,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
                 LoadingDialogFragment.close(getFragmentManager());
             if (network.connectionState == MorpheusBle.wifi_connection_state.IP_RETRIEVED) {
-                ((OnboardingActivity) getActivity()).showPairPill(-1);
+                linkAccount();
             } else {
                 ((OnboardingActivity) getActivity()).showSelectWifiNetwork(true);
             }
@@ -113,13 +113,26 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         });
     }
 
+    private void linkAccount() {
+        loadingDialogFragment.setTitle(getString(R.string.title_linking_account));
+        bindAndSubscribe(hardwarePresenter.linkAccount(), ignored -> {
+            ((OnboardingActivity) getActivity()).showPairPill(-1);
+        }, error -> {
+            Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not link Sense to account", error);
+            pairingFailed(error);
+        });
+    }
 
     public void next(View ignored) {
         if (bluetoothAdapter.isEnabled()) {
             beginPairing();
 
-            Observable<SensePeripheral> device = hardwarePresenter.scanForDevices().map(hardwarePresenter::getClosestPeripheral);
-            bindAndSubscribe(device, this::pairWith, this::pairingFailed);
+            if (hardwarePresenter.getPeripheral() == null) {
+                Observable<SensePeripheral> device = hardwarePresenter.scanForDevices().map(hardwarePresenter::getClosestPeripheral);
+                bindAndSubscribe(device, this::pairWith, this::pairingFailed);
+            } else {
+                finishedPairing();
+            }
         } else {
             startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
         }
