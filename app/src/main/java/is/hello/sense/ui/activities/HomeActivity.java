@@ -55,6 +55,7 @@ public class HomeActivity
     @Inject PreferencesPresenter preferences;
     @Inject BuildValues buildValues;
 
+    private ViewGroup rootContainer;
     private ViewGroup homeContentContainer;
     private SlidingLayersView slidingLayersView;
     private ViewGroup newQuestionContainer;
@@ -71,6 +72,7 @@ public class HomeActivity
 
         this.isFirstActivityRun = (savedInstanceState == null);
 
+        this.rootContainer = (ViewGroup) findViewById(R.id.activity_home_container);
         this.homeContentContainer = (ViewGroup) findViewById(R.id.activity_home_content_container);
 
 
@@ -231,12 +233,11 @@ public class HomeActivity
         if (newQuestionContainer == null) {
             int containerHeight = homeContentContainer.getMeasuredHeight();
             if (containerHeight == 0) {
-                ViewUtil.onGlobalLayout(homeContentContainer).take(1).subscribe(ignored -> showNewQuestion(question));
+                ViewUtil.onGlobalLayout(rootContainer).take(1).subscribe(ignored -> showNewQuestion(question));
                 return;
             }
 
-            getLayoutInflater().inflate(R.layout.sub_fragment_new_question, homeContentContainer, true);
-            this.newQuestionContainer = (ViewGroup) findViewById(R.id.sub_fragment_new_question);
+            this.newQuestionContainer = (ViewGroup) getLayoutInflater().inflate(R.layout.sub_fragment_new_question, homeContentContainer, false);
             newQuestionContainer.setVisibility(View.INVISIBLE);
 
             Button skipQuestion = (Button) newQuestionContainer.findViewById(R.id.sub_fragment_new_question_skip);
@@ -256,6 +257,8 @@ public class HomeActivity
                         .setApplyChangesToView(true)
                         .start();
             });
+
+            homeContentContainer.addView(newQuestionContainer);
         }
 
         TextView answerTitle = (TextView) newQuestionContainer.findViewById(R.id.sub_fragment_new_question_title);

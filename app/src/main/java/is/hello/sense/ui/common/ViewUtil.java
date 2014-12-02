@@ -3,6 +3,7 @@ package is.hello.sense.ui.common;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
 import rx.Observable;
