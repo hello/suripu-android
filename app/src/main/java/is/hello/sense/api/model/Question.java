@@ -4,8 +4,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 
 import java.util.List;
 
@@ -13,11 +17,18 @@ public class Question extends ApiResponse {
     @JsonProperty("id")
     private long id;
 
+    @JsonProperty("account_question_id")
+    private long accountId;
+
     @JsonProperty("text")
     private String text;
 
     @JsonProperty("type")
     private Type type;
+
+    @JsonProperty("ask_local_date")
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    private LocalDateTime askDate;
 
     @JsonProperty("choices")
     @JsonDeserialize(contentAs = Choice.class)
@@ -28,12 +39,20 @@ public class Question extends ApiResponse {
         return id;
     }
 
+    public long getAccountId() {
+        return accountId;
+    }
+
     public String getText() {
         return text;
     }
 
     public Type getType() {
         return type;
+    }
+
+    public LocalDateTime getAskDate() {
+        return askDate;
     }
 
     public List<Choice> getChoices() {
@@ -45,12 +64,13 @@ public class Question extends ApiResponse {
     public String toString() {
         return "Question{" +
                 "id=" + id +
+                ", accountId=" + accountId +
                 ", text='" + text + '\'' +
                 ", type=" + type +
+                ", askDate=" + askDate +
                 ", choices=" + choices +
                 '}';
     }
-
 
     public static class Choice {
         @JsonProperty("id")
