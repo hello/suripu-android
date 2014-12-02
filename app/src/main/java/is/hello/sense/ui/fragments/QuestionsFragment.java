@@ -96,6 +96,8 @@ public class QuestionsFragment extends InjectionFragment {
 
     public void choiceSelected(@NonNull View sender) {
         clearQuestions(true, () -> {
+            displayThankYou();
+            if (0==0)return;
             Question.Choice choice = (Question.Choice) sender.getTag();
             bindAndSubscribe(questionsPresenter.answerQuestion(choice),
                     unused -> questionsPresenter.nextQuestion(),

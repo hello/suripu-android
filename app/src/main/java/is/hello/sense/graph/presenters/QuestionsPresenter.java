@@ -24,6 +24,7 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
@@ -113,7 +114,12 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                           this.questions.onNext(questions);
                           this.lastUpdated = DateTime.now();
                           updateCurrentQuestion();
-                      }, questions::onError);
+                      }, e -> {
+                          Logger.error(QuestionsPresenter.class.getSimpleName(), "Could not load questions.", e);
+
+                          this.questions.onError(e);
+                          this.currentQuestion.onError(e);
+                      });
         } else {
             logEvent("questions already updated today");
             this.questions.onNext(Collections.emptyList());
