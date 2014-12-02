@@ -21,6 +21,8 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
      */
     static final int OBJECT_POOL_SIZE = 2;
 
+    private boolean isInPool = true;
+
     private String name;
     private long durationMs;
 
@@ -38,6 +40,7 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
     private SchedulerOperationTimeout init(@NonNull String name, long duration, @NonNull TimeUnit timeUnit) {
         this.name = name;
         this.durationMs = timeUnit.toMillis(duration);
+        this.isInPool = false;
 
         return this;
     }
@@ -75,23 +78,17 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
 
         Logger.info(LOG_TAG, "Scheduling time out '" + name + "'");
 
-        if (subscription != null && !subscription.isUnsubscribed())
+        if (subscription != null && !subscription.isUnsubscribed()) {
             unschedule();
+        }
 
-        this.subscription = scheduler.createWorker().schedule(() -> {
-            action.call();
-
-            unschedule();
-            recycle();
-        }, durationMs, TimeUnit.MILLISECONDS);
+        // It's the responsibility of the scheduler of the timeout
+        // to clean up after it when a timeout condition occurs.
+        this.subscription = scheduler.createWorker().schedule(action, durationMs, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void unschedule() {
-        if (action == null || scheduler == null) {
-            throw new IllegalStateException("Cannot unschedule a time out that has no action");
-        }
-
         if (subscription != null) {
             Logger.info(LOG_TAG, "Unscheduling time out '" + name + "'");
 
@@ -114,6 +111,10 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
 
     @Override
     public void recycle() {
+        if (isInPool) {
+            throw new IllegalStateException("Recycle called on already recycled timeout");
+        }
+
         Logger.info(LOG_TAG, "Recycling time out '" + name + "'");
 
         if (subscription != null) {
@@ -126,7 +127,9 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
         this.action = null;
         this.scheduler = null;
 
+        this.isInPool = true;
         pool.add(0, this);
+
         Logger.info(LOG_TAG, "Pool now contains " + pool.size() + " available objects");
     }
 

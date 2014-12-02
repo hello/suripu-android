@@ -256,7 +256,10 @@ public class AndroidPeripheral implements Peripheral {
             }
 
             disconnect().subscribe(ignored -> subscriber.onError(new OperationTimeoutError(operation)),
-                    e -> subscriber.onError(new OperationTimeoutError(operation, e)));
+                                   e -> subscriber.onError(new OperationTimeoutError(operation, e)));
+
+            timeout.unschedule();
+            timeout.recycle();
         }, stack.scheduler);
     }
 

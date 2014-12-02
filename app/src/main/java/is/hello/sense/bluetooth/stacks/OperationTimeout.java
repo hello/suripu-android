@@ -27,6 +27,9 @@ public interface OperationTimeout extends Recyclable {
     /**
      * Called by the bluetooth stack. Unschedules the timeout timer.
      * <p/>
+     * It is a valid condition for this method to be called multiple times,
+     * it should become a no-op after the first call.
+     * <p/>
      * This method is not assumed to be safe to call until after {@see #setTimeoutAction} is called.
      */
     void unschedule();
@@ -41,7 +44,8 @@ public interface OperationTimeout extends Recyclable {
     /**
      * Called by the bluetooth stack. Specifies an action to run when
      * the timeout expires that will allow the stack to clean up any
-     * resources.
+     * resources. The client should unschedule and recycle the timeout
+     * after it has finished running its clean up code.
      * <p/>
      * Client code should check the state of a peripheral after a timeout
      * has expired. It is implementation-specific what state the peripheral

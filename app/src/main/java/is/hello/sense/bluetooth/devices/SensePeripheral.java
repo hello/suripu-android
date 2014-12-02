@@ -330,12 +330,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         //noinspection MismatchedQueryAndUpdateOfCollection
         List<MorpheusBle.wifi_endpoint> endpoints = new ArrayList<>();
         return performCommand(morpheusCommand, createScanWifiTimeout(), (response, subscriber, timeout) -> {
-            Action1<Throwable> onError = e -> {
-                timeout.unschedule();
-                timeout.recycle();
-
-                subscriber.onError(e);
-            };
+            Action1<Throwable> onError = subscriber::onError;
 
             if (response.getType() == CommandType.MORPHEUS_COMMAND_START_WIFISCAN) {
                 timeout.reschedule();
@@ -345,21 +340,22 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 }
             } else if (response.getType() == CommandType.MORPHEUS_COMMAND_STOP_WIFISCAN) {
                 timeout.unschedule();
+                timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> {
-                    timeout.recycle();
-
                     subscriber.onNext(response);
                     subscriber.onCompleted();
                 }, onError);
             } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
                 timeout.unschedule();
+                timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(response.getError())), onError);
             } else {
                 timeout.unschedule();
+                timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(MorpheusBle.ErrorType.INTERNAL_DATA_ERROR)), onError);
