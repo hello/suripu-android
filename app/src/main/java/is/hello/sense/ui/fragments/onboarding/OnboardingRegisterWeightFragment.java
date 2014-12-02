@@ -59,7 +59,11 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment {
         nextButton.setOnClickListener(ignored -> next());
 
         Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
-        skipButton.setOnClickListener(ignored -> getContainer().onAccountUpdated(this));
+        if (getWantsSkipButton()) {
+            skipButton.setOnClickListener(ignored -> getContainer().onAccountUpdated(this));
+        } else {
+            skipButton.setVisibility(View.INVISIBLE);
+        }
 
         return view;
     }

@@ -128,24 +128,28 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
 
     public void changeBirthDate() {
         OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
+        fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().showFragment(fragment, getString(R.string.label_dob), true);
     }
 
     public void changeGender() {
         OnboardingRegisterGenderFragment fragment = new OnboardingRegisterGenderFragment();
+        fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().showFragment(fragment, getString(R.string.label_dob), true);
     }
 
     public void changeHeight() {
         OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
+        fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().showFragment(fragment, getString(R.string.label_dob), true);
     }
 
     public void changeWeight() {
         OnboardingRegisterWeightFragment fragment = new OnboardingRegisterWeightFragment();
+        fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().showFragment(fragment, getString(R.string.label_dob), true);
     }
