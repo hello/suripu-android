@@ -47,6 +47,16 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
         nextButton.setOnClickListener(ignored -> getContainer().onAccountUpdated(this));
 
+        Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
+        if (getWantsSkipButton()) {
+            skipButton.setOnClickListener(ignored -> {
+                account.setGender(Gender.OTHER);
+                getContainer().onAccountUpdated(this);
+            });
+        } else {
+            skipButton.setVisibility(View.INVISIBLE);
+        }
+
         return view;
     }
 
