@@ -1,10 +1,8 @@
 package is.hello.sense.graph;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import rx.Subscriber;
 import rx.subjects.Subject;
@@ -89,7 +87,21 @@ public final class PresenterSubject<T> extends Subject<T, T> {
 
 
     private static class SubscriptionManager<T> implements OnSubscribe<T> {
-        private final List<Subscriber<? super T>> subscribers = new ArrayList<>();
+        /*
+            Have to use a concurrent collection to back the subscription manager,
+            multiple threads can be creating and destroying subscriptions.
+
+            ConcurrentLinkedQueue should generally result in behavior consistent
+            with the Subject classes shipped with RxJava. There is a possible
+            race condition where a subscription can be removed and still be
+            notified due to unsubscription operations being asynchronous, all
+            of the RxJava Subjects display this same behavior, so it's better
+            to be consistent with the library than be 'correct'.
+
+            UPDATE this comment if the type of `subscribers` changes.
+        */
+        private final ConcurrentLinkedQueue<Subscriber<? super T>> subscribers = new ConcurrentLinkedQueue<>();
+
         private T value = null;
         private Throwable error = null;
 
