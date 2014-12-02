@@ -47,6 +47,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        smartAlarmPresenter.update();
         addPresenter(smartAlarmPresenter);
 
         setRetainInstance(true);
@@ -78,13 +79,6 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         Observable<Boolean> use24Time = preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false);
         bindAndSubscribe(use24Time, adapter::setUse24Time, Functions.LOG_ERROR);
         bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::alarmsUnavailable);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        smartAlarmPresenter.update();
     }
 
     @Override
