@@ -298,7 +298,7 @@ public class HomeActivity
                 .beginTransaction()
                 .add(R.id.activity_home_container, new QuestionsFragment(), TAG_ANSWER_QUESTION)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .addToBackStack(QuestionsFragment.class.getSimpleName())
+                .addToBackStack(QuestionsFragment.BACK_STACK_NAME)
                 .commit();
 
         hideNewQuestion();

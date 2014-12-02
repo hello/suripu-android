@@ -1,12 +1,11 @@
 package is.hello.sense.ui.fragments;
 
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +27,8 @@ import static android.widget.LinearLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class QuestionsFragment extends InjectionFragment {
+    public static final String BACK_STACK_NAME = QuestionsFragment.class.getSimpleName();
+
     private static final long DELAY_INCREMENT = 20;
     private static final long DISMISS_DELAY = 1000;
 
@@ -77,13 +78,6 @@ public class QuestionsFragment extends InjectionFragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        dismissHandler.removeMessages(0);
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -96,8 +90,6 @@ public class QuestionsFragment extends InjectionFragment {
 
     public void choiceSelected(@NonNull View sender) {
         clearQuestions(true, () -> {
-            displayThankYou();
-            if (0==0)return;
             Question.Choice choice = (Question.Choice) sender.getTag();
             bindAndSubscribe(questionsPresenter.answerQuestion(choice),
                     unused -> questionsPresenter.nextQuestion(),
@@ -146,7 +138,10 @@ public class QuestionsFragment extends InjectionFragment {
                     if (finished) {
                         dismissHandler.postDelayed(() -> {
                             questionsPresenter.questionsAcknowledged();
-                            getFragmentManager().popBackStack();
+                            FragmentManager fragmentManager = getFragmentManager();
+                            if (fragmentManager != null) {
+                                fragmentManager.popBackStack(BACK_STACK_NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                            }
                         }, DISMISS_DELAY);
                     }
                 })
