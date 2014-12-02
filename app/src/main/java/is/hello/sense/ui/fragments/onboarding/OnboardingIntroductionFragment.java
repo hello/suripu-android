@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.fragments.VideoPlayerActivity;
 import is.hello.sense.util.Analytics;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -55,7 +57,7 @@ public class OnboardingIntroductionFragment extends Fragment {
 
 
         this.play = (ImageView) view.findViewById(R.id.fragment_onboarding_intro_play);
-        play.setOnClickListener(ignored -> Analytics.event(Analytics.EVENT_PLAY_VIDEO, null));
+        play.setOnClickListener(this::playIntroVideo);
 
 
         this.accountActions = (ViewGroup) view.findViewById(R.id.fragment_onboarding_intro_account_actions);
@@ -106,6 +108,15 @@ public class OnboardingIntroductionFragment extends Fragment {
                 .andThen()
                 .fadeIn()
                 .start();
+    }
+
+    public void playIntroVideo(@NonNull View sender) {
+        Analytics.event(Analytics.EVENT_PLAY_VIDEO, null);
+
+        Bundle arguments = VideoPlayerActivity.getArguments(Uri.parse("http://player.vimeo.com/external/101139949.hd.mp4?s=28ac378e29847b77e9fb7431f05d2772"));
+        Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);
+        intent.putExtras(arguments);
+        startActivity(intent);
     }
 
     public void buySense(@NonNull View sender) {
