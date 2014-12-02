@@ -145,7 +145,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.insightsContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_before_sleep, listView, false);
         insightsContainer.setVisibility(View.GONE);
-        listView.addFooterView(insightsContainer);
+        listView.addFooterView(insightsContainer, null, false);
 
         // Always do this after adding headers and footer views,
         // we have to support Android versions under 4.4 KitKat.
