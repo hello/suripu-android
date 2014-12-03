@@ -366,11 +366,17 @@ public final class LineGraphView extends FrameLayout {
 
         float x = ViewUtil.getNormalizedX(event);
         int section = getSectionAtX(x);
-        int segment = getSegmentAtX(section, x);
-        highlightedValueText.setText(adapter.getFormattedMagnitudeAt(section, segment));
+        int position = getSegmentAtX(section, x);
+        highlightedValueText.setText(adapter.getFormattedMagnitudeAt(section, position));
+
+        float segmentX = absoluteSegmentX(getSectionWidth(), getSegmentWidth(section), section, position);
+        float segmentY = absoluteSegmentY(getMeasuredHeight(), section, position);
+
+        highlightedValueText.setX(segmentX);
+        highlightedValueText.setY(segmentY);
 
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_DOWN: {
                 highlightedValueText.setAlpha(0f);
                 highlightedValueText.setScaleX(0f);
                 highlightedValueText.setScaleY(0f);
@@ -382,12 +388,14 @@ public final class LineGraphView extends FrameLayout {
                         .setApplyChangesToView(true)
                         .start();
                 break;
+            }
 
-            case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_MOVE: {
                 break;
+            }
 
             case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_UP: {
                 PropertyAnimatorProxy.animate(highlightedValueText)
                         .alpha(0f)
                         .scaleX(0f)
@@ -396,11 +404,13 @@ public final class LineGraphView extends FrameLayout {
                         .addOnAnimationCompleted(finished -> highlightedValueText.setVisibility(INVISIBLE))
                         .start();
                 break;
+            }
         }
         return true;
     }
 
     //endregion
+
 
     public interface Adapter {
         float getBaseMagnitude();
