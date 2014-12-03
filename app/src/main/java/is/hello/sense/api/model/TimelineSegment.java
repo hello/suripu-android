@@ -100,7 +100,8 @@ public class TimelineSegment extends ApiResponse {
         SLEEP(R.drawable.asleep, R.string.event_type_sleep),
         SUNSET(R.drawable.sunset, R.string.event_type_sunset),
         SUNRISE(R.drawable.sunrise, R.string.event_type_sunrise),
-        PARTNER_MOTION(R.drawable.movement_medium, R.string.event_type_partner_motion),
+        PARTNER_MOTION(R.drawable.movement_medium, R.string.event_type_wake_up),
+        WAKE_UP(R.drawable.wakeup, R.string.event_type_wake_up),
         UNKNOWN(R.drawable.movement_medium, R.string.event_type_unknown);
 
         @JsonCreator
