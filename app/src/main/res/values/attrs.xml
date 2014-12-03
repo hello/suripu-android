@@ -21,7 +21,6 @@
     <declare-styleable name="LineGraphView">
         <attr name="lineCount" format="integer" />
         <attr name="gridDrawable" format="integer" />
-        <attr name="topLineColor" format="color" />
         <attr name="topLineHeight" format="dimension" />
         <attr name="fill" format="integer" />
         <attr name="wantsHeaders" format="boolean" />

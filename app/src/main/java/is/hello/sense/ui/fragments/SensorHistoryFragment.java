@@ -295,6 +295,11 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         }
 
         @Override
+        public int getSectionLineColor(int section) {
+            return getResources().getColor(R.color.grey);
+        }
+
+        @Override
         public int getSectionTextColor(int section) {
             if (section == sections.size() - 1) {
                 return Color.BLACK;

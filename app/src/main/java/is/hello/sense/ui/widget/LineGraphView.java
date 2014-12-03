@@ -20,6 +20,9 @@ import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.ViewUtil;
@@ -43,7 +46,7 @@ public final class LineGraphView extends FrameLayout {
     private final Paint headerTextPaint = new Paint();
     private final Paint footerTextPaint = new Paint();
 
-    private final Path topLinePath = new Path();
+    private final List<Path> sectionLinePaths = new ArrayList<>();
     private final Path fillPath = new Path();
     private final Path markersPath = new Path();
 
@@ -86,14 +89,13 @@ public final class LineGraphView extends FrameLayout {
         footerTextPaint.setSubpixelText(true);
 
         setHeaderTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_section_heading));
-        setHeaderTypeface(Typeface.createFromAsset(getResources().getAssets(), Constants.TYPEFACE_HEAVY));
+        setHeaderTypeface(Typeface.createFromAsset(resources.getAssets(), Constants.TYPEFACE_HEAVY));
 
         setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_body));
-        setFooterTypeface(Typeface.createFromAsset(getResources().getAssets(), Constants.TYPEFACE_LIGHT));
+        setFooterTypeface(Typeface.createFromAsset(resources.getAssets(), Constants.TYPEFACE_LIGHT));
 
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.LineGraphView, defStyleAttr, 0);
-            setTopLineColor(styles.getColor(R.styleable.LineGraphView_topLineColor, resources.getColor(R.color.grey)));
             setTopLineHeight(styles.getDimensionPixelOffset(R.styleable.LineGraphView_topLineHeight, resources.getDimensionPixelSize(R.dimen.divider_height)));
             setFillDrawable(styles.getDrawable(R.styleable.LineGraphView_fill));
 
@@ -103,7 +105,6 @@ public final class LineGraphView extends FrameLayout {
             this.wantsHeaders = styles.getBoolean(R.styleable.LineGraphView_wantsHeaders, true);
             this.wantsFooters = styles.getBoolean(R.styleable.LineGraphView_wantsFooters, true);
         } else {
-            setTopLineColor(resources.getColor(R.color.grey));
             setTopLineHeight(resources.getDimensionPixelSize(R.dimen.divider_height));
         }
 
@@ -143,13 +144,11 @@ public final class LineGraphView extends FrameLayout {
     private float absoluteSegmentY(float height, int section, int position) {
         float magnitude = adapter.getMagnitudeAt(section, position);
         float percentage = (magnitude - baseMagnitude) / (peakMagnitude - baseMagnitude);
-        return (height * percentage);
+        return Math.round(height * percentage);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
         int sectionCount = sectionCounts.size();
         int minX = 0, minY = 0;
         int height = getMeasuredHeight() - minY, width = getMeasuredWidth() - minX;
@@ -165,7 +164,6 @@ public final class LineGraphView extends FrameLayout {
         }
 
         if (adapter != null && sectionCount > 0) {
-            topLinePath.reset();
             fillPath.reset();
             markersPath.reset();
 
@@ -212,18 +210,24 @@ public final class LineGraphView extends FrameLayout {
                     canvas.drawText(text, textX, textY, footerTextPaint);
                 }
 
+                Path sectionPath = sectionLinePaths.get(section);
+                sectionPath.reset();
                 for (int position = 0; position < pointCount; position++) {
-                    if (section == 0 && position == 0) {
-                        float firstPointY = minY + absoluteSegmentY(height, section, position);
-                        fillPath.moveTo(minX, firstPointY);
-                        topLinePath.moveTo(minX, firstPointY);
-                    }
-
                     float segmentX = absoluteSegmentX(sectionWidth, segmentWidth, section, position);
                     float segmentY = minY + absoluteSegmentY(height, section, position);
 
-                    topLinePath.lineTo(segmentX, segmentY);
+                    if (position == 0) {
+                        fillPath.moveTo(minX, segmentY);
+                        sectionPath.moveTo(segmentX, segmentY);
+                    } else {
+                        sectionPath.lineTo(segmentX, segmentY);
+                    }
                     fillPath.lineTo(segmentX, segmentY - topLineHeight / 2f);
+                }
+
+                if (section < sectionCount - 1) {
+                    float closingSegmentY = minY + absoluteSegmentY(height, section + 1, 0);
+                    sectionPath.lineTo(sectionWidth * (section + 1), closingSegmentY);
                 }
             }
 
@@ -239,7 +243,12 @@ public final class LineGraphView extends FrameLayout {
                 }
                 canvas.restore();
             }
-            canvas.drawPath(topLinePath, topLinePaint);
+
+            for (int section = 0; section < sectionCount; section++) {
+                Path sectionPath = sectionLinePaths.get(section);
+                topLinePaint.setColor(adapter.getSectionLineColor(section));
+                canvas.drawPath(sectionPath, topLinePaint);
+            }
         }
     }
 
@@ -247,6 +256,22 @@ public final class LineGraphView extends FrameLayout {
 
 
     //region Properties
+
+    private void recreateSectionPaths(int oldSize, int newSize) {
+        if (newSize == 0) {
+            sectionLinePaths.clear();
+        } else if (newSize < oldSize) {
+            int delta = oldSize - newSize;
+            for (int i = 0; i < delta; i++) {
+                sectionLinePaths.remove(i);
+            }
+        } else {
+            int delta = newSize - oldSize;
+            for (int i = 0; i < delta; i++) {
+                sectionLinePaths.add(new Path());
+            }
+        }
+    }
 
     public Adapter getAdapter() {
         return adapter;
@@ -258,6 +283,7 @@ public final class LineGraphView extends FrameLayout {
     }
 
     public void notifyDataChanged() {
+        int oldSize = sectionCounts.size();
         this.sectionCounts.clear();
 
         if (adapter != null) {
@@ -268,6 +294,9 @@ public final class LineGraphView extends FrameLayout {
                 sectionCounts.append(section, count);
             }
         }
+
+        int newSize = sectionCounts.size();
+        recreateSectionPaths(oldSize, newSize);
 
         invalidate();
     }
@@ -280,10 +309,6 @@ public final class LineGraphView extends FrameLayout {
     public void setGridDrawable(Drawable gridDrawable) {
         this.gridDrawable = gridDrawable;
         invalidate();
-    }
-
-    public void setTopLineColor(int color) {
-        topLinePaint.setColor(color);
     }
 
     public void setTopLineHeight(int height) {
@@ -375,7 +400,6 @@ public final class LineGraphView extends FrameLayout {
         return true;
     }
 
-
     //endregion
 
     public interface Adapter {
@@ -383,6 +407,7 @@ public final class LineGraphView extends FrameLayout {
         float getPeakMagnitude();
         int getSectionCount();
         int getSectionPointCount(int section);
+        int getSectionLineColor(int section);
         int getSectionTextColor(int section);
         float getMagnitudeAt(int section, int position);
         @NonNull CharSequence getFormattedMagnitudeAt(int section, int position);
