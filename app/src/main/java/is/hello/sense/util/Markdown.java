@@ -1,10 +1,17 @@
 package is.hello.sense.util;
 
+import android.content.res.ColorStateList;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.MetricAffectingSpan;
+import android.text.style.StyleSpan;
+import android.text.style.TextAppearanceSpan;
 
 import org.markdownj.MarkdownProcessor;
 
@@ -47,6 +54,45 @@ import rx.Observable;
                 s.onCompleted();
             } catch (Exception e) {
                 s.onError(e);
+            }
+        });
+    }
+
+    public @NonNull Observable<CharSequence> renderWithEmphasisColor(int color, @Nullable String markdown) {
+        return render(markdown).map(maybeSpanned -> {
+            if (maybeSpanned instanceof Spanned) {
+                Spanned spanned = (Spanned) maybeSpanned;
+                SpannableString result = new SpannableString(spanned.toString());
+
+                MetricAffectingSpan[] spans = spanned.getSpans(0, spanned.length(), MetricAffectingSpan.class);
+                ColorStateList colors = ColorStateList.valueOf(color);
+                for (MetricAffectingSpan span : spans) {
+                    int spanStart = spanned.getSpanStart(span);
+                    int spanEnd = spanned.getSpanEnd(span);
+                    int spanFlags = spanned.getSpanFlags(span);
+
+                    if (span instanceof TextAppearanceSpan) {
+                        TextAppearanceSpan appearanceSpan = (TextAppearanceSpan) span;
+                        if (appearanceSpan.getTextStyle() != Typeface.NORMAL) {
+                            TextAppearanceSpan updatedSpan = new TextAppearanceSpan(appearanceSpan.getFamily(), appearanceSpan.getTextStyle(), appearanceSpan.getTextSize(), colors, colors);
+                            result.setSpan(updatedSpan, spanStart, spanEnd, spanFlags);
+
+                            continue;
+                        }
+                    } else if (span instanceof StyleSpan) {
+                        StyleSpan styleSpan = (StyleSpan) span;
+                        result.setSpan(styleSpan, spanStart, spanEnd, spanFlags);
+                        result.setSpan(new ForegroundColorSpan(color), spanStart, spanEnd, spanFlags);
+
+                        continue;
+                    }
+
+                    result.setSpan(span, spanned.getSpanStart(span), spanned.getSpanEnd(span), spanned.getSpanFlags(span));
+                }
+
+                return result;
+            } else {
+                return maybeSpanned;
             }
         });
     }

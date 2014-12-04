@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments;
 
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,6 +43,7 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -55,6 +55,7 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 public class SensorHistoryFragment extends InjectionFragment implements SelectorLinearLayout.OnSelectionChangedListener {
     @Inject CurrentConditionsPresenter conditionsPresenter;
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
+    @Inject Markdown markdown;
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
 
@@ -167,9 +168,13 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 } else {
                     readingText.setText(R.string.missing_data_placeholder);
                 }
-                readingText.setTextColor(getResources().getColor(condition.getCondition().colorRes));
 
-                messageText.setText(condition.getMessage());
+                int sensorColor = getResources().getColor(condition.getCondition().colorRes);
+                readingText.setTextColor(sensorColor);
+
+                bindAndSubscribe(markdown.renderWithEmphasisColor(sensorColor, condition.getMessage()),
+                                 messageText::setText,
+                                 e -> messageText.setText(condition.getMessage()));
                 insightText.setText("[placeholder] current conditions text");
             } else {
                 readingText.setText(R.string.missing_data_placeholder);
