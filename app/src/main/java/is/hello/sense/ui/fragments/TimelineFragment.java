@@ -59,7 +59,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private TimestampTextView timeScrubber;
     private int totalHeaderHeight = 0;
-    private int totalFooterHeight = 0;
     private int listViewContentHeight = 0;
 
     private View headerView;
@@ -248,8 +247,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
                 bindAndSubscribe(ViewUtil.onGlobalLayout(headerView).take(1), view -> {
                     this.totalHeaderHeight = headerView.getMeasuredHeight() + timelineEventsHeader.getMeasuredHeight();
-                    this.totalFooterHeight = spacingFooter.getMeasuredHeight() + insightsContainer.getMeasuredHeight();
-                    this.listViewContentHeight = listView.getMeasuredHeight() - totalHeaderHeight - totalFooterHeight;
+                    this.listViewContentHeight = listView.getMeasuredHeight() - totalHeaderHeight - spacingFooter.getMeasuredHeight();
 
                     updateTimeScrubber();
                     timeScrubber.requestLayout(); // This is not happening implicitly.

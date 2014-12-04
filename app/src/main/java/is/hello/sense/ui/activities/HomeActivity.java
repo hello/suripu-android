@@ -82,7 +82,7 @@ public class HomeActivity
         viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
         if (viewPager.getCurrentFragment() == null) {
-            TimelineFragment fragment = TimelineFragment.newInstance(new DateTime(2014, 11, 19, 0, 0));
+            TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight());
             viewPager.setCurrentFragment(fragment);
         }
 

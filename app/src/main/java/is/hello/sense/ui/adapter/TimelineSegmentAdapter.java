@@ -54,7 +54,10 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
     //region Item Heights
 
-    private int calculateHeight(int position, @NonNull TimelineSegment segment) {
+    /**
+     * Calculates the height required to display the item at a given position.
+     */
+    private int calculateItemHeight(int position, @NonNull TimelineSegment segment) {
         if (segment.getEventType() != null) {
             int itemHeight = this.itemEventImageHeight + (this.baseItemHeight * 2);
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
@@ -66,28 +69,49 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         }
     }
 
+    /**
+     * Calculates the sizing information for a given list of timeline
+     * segments, and caches it into the adapter for later use.
+     */
     private void calculateItemHeights(@NonNull List<TimelineSegment> segments) {
         this.itemHeights = new float[segments.size()];
         this.totalItemHeight = 0;
 
         for (int i = 0, size = itemHeights.length; i < size; i++) {
-            int height = calculateHeight(i, segments.get(i));
+            int height = calculateItemHeight(i, segments.get(i));
             this.itemHeights[i] = height;
             this.totalItemHeight += height;
         }
     }
 
+    /**
+     * Returns the total height of all of the items contained in the adapter.
+     * <p/>
+     * Returns in Constant time.
+     */
     public float getTotalItemHeight() {
         return totalItemHeight;
     }
 
+    /**
+     * Returns the height of the item at a given position in the adapter.
+     * <p/>
+     * Returns in Constant time.
+     */
     public float getItemHeight(int position) {
         return itemHeights[position];
     }
 
+    /**
+     * Calculates the total height of a series of items contained in the range {start, end} <em>inclusive</em>.
+     *
+     * @param start The index of the first item in the range.
+     * @param end The index of the last item in the range, included in the final sum.
+     * @param endScaleFactor The amount of the last item that is currently visible.
+     */
     public float getHeightOfItems(int start, int end, float endScaleFactor) {
         if (start == end) {
-            return (itemHeights[end] * endScaleFactor);
+            return itemHeights[start] * endScaleFactor;
         } else {
             float sum = 0;
             for (int i = start; i < end; i++) {
