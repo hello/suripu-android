@@ -252,8 +252,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                     this.totalHeaderHeight = headerView.getMeasuredHeight() + timelineEventsHeader.getMeasuredHeight();
                     this.listViewContentHeight = (listView.getMeasuredHeight() -
                                                   totalHeaderHeight -
-                                                  spacingFooter.getMeasuredHeight() -
-                                                  timeScrubberTopMargin / 2);
+                                                  spacingFooter.getMeasuredHeight());
 
                     updateTimeScrubber();
                     timeScrubber.forceLayout(); // This is not happening implicitly.
@@ -347,7 +346,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         float timestampY = (timeScrubberTopMargin + headerView.getMeasuredHeight()) + (listViewContentHeight * multiple);
         if (insightsContainer.getParent() != null) {
             int insightsVisibleHeight = listView.getMeasuredHeight() - insightsContainer.getTop();
-            timestampY -= insightsVisibleHeight;
+            int amountVisible = insightsVisibleHeight / insightsContainer.getMeasuredHeight();
+            float extraMarginFraction = timeScrubberTopMargin * amountVisible;
+            timestampY -= insightsVisibleHeight + extraMarginFraction;
         }
         timeScrubber.setY(timestampY);
 
