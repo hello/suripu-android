@@ -27,9 +27,12 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
     private final LayoutInflater inflater;
 
-    private final int itemHeight;
-    private final int eventImageHeight;
+    private final int baseItemHeight;
+    private final int itemEventImageHeight;
     private final int stripeCornerRadius;
+
+    private int[] itemHeights;
+    private int totalItemHeight;
 
     //region Lifecycle
 
@@ -41,9 +44,59 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
         windowManager.getDefaultDisplay().getSize(size);
-        this.itemHeight = size.y / NUMBER_HOURS_ON_SCREEN;
-        this.eventImageHeight = context.getResources().getDimensionPixelSize(R.dimen.event_image_height);
+        this.baseItemHeight = size.y / NUMBER_HOURS_ON_SCREEN;
+        this.itemEventImageHeight = context.getResources().getDimensionPixelSize(R.dimen.event_image_height);
         this.stripeCornerRadius = context.getResources().getDimensionPixelOffset(R.dimen.timeline_stripe_corner_radius);
+    }
+
+    //endregion
+
+
+    //region Item Heights
+
+    private int calculateHeight(int position, @NonNull TimelineSegment segment) {
+        if (segment.getEventType() != null) {
+            int itemHeight = this.itemEventImageHeight + (this.baseItemHeight * 2);
+            return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
+        } else if (position == 0 || position == getCount() - 1) {
+            int itemHeight = this.stripeCornerRadius;
+            return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
+        } else {
+            return (int) ((segment.getDuration() / 3600f) * this.baseItemHeight);
+        }
+    }
+
+    private void calculateItemHeights(@NonNull List<TimelineSegment> segments) {
+        this.itemHeights = new int[segments.size()];
+        this.totalItemHeight = 0;
+
+        for (int i = 0, size = itemHeights.length; i < size; i++) {
+            int height = calculateHeight(i, segments.get(i));
+            this.itemHeights[i] = height;
+            this.totalItemHeight += height;
+        }
+    }
+
+    public int getTotalItemHeight() {
+        return totalItemHeight;
+    }
+
+    public int getItemHeight(int position) {
+        return itemHeights[position];
+    }
+
+    public int getHeightOfItems(int start, int end, float endScaleFactor) {
+        if (start == end) {
+            return (int) (itemHeights[end] * endScaleFactor);
+        } else {
+            int sum = 0;
+            for (int i = start; i < end - 1; i++) {
+                sum += itemHeights[i];
+            }
+            sum += (int) (itemHeights[end - 1] * endScaleFactor);
+
+            return sum;
+        }
     }
 
     //endregion
@@ -55,25 +108,17 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         clear();
 
         if (segments != null) {
+            calculateItemHeights(segments);
             addAll(segments);
+        } else {
+            this.itemHeights = null;
+            this.totalItemHeight = 0;
         }
     }
 
     @SuppressWarnings("UnusedParameters")
     public void handleError(@NonNull Throwable ignored) {
         clear();
-    }
-
-    private int calculateHeight(int position, @NonNull TimelineSegment segment) {
-        if (segment.getEventType() != null) {
-            int itemHeight = this.eventImageHeight + (this.itemHeight * 2);
-            return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
-        } else if (position == 0 || position == getCount() - 1) {
-            int itemHeight = this.stripeCornerRadius;
-            return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
-        } else {
-            return (int) ((segment.getDuration() / 3600f) * this.itemHeight);
-        }
     }
 
     @Override
@@ -87,14 +132,15 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         SegmentViewHolder segmentViewHolder = (SegmentViewHolder) view.getTag();
 
         ItemPosition segmentPosition = ItemPosition.MIDDLE;
-        if (position == 0)
+        if (position == 0) {
             segmentPosition = ItemPosition.FIRST;
-        else if (position == getCount() - 1)
+        } else if (position == getCount() - 1) {
             segmentPosition = ItemPosition.LAST;
+        }
 
         TimelineSegment segment = getItem(position);
         segmentViewHolder.displaySegment(segment, segmentPosition);
-        segmentViewHolder.itemView.setMinimumHeight(calculateHeight(position, segment));
+        segmentViewHolder.itemView.setMinimumHeight(getItemHeight(position));
 
         return view;
     }

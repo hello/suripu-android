@@ -57,6 +57,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private TimelineSegmentAdapter segmentAdapter;
 
     private TimestampTextView timeScrubber;
+    private int totalHeaderHeight = 0;
+    private int totalContentHeight = 0;
     private float timeScrubberMargin;
 
     private View headerView;
@@ -244,6 +246,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 messageText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 
                 bindAndSubscribe(ViewUtil.onGlobalLayout(headerView).take(1), view -> {
+                    this.totalHeaderHeight = headerView.getMeasuredHeight() + timelineEventsHeader.getMeasuredHeight();
+                    this.totalContentHeight = totalHeaderHeight + insightsContainer.getMeasuredHeight() + segmentAdapter.getTotalItemHeight();
+
                     updateTimeScrubber();
                     timeScrubber.requestLayout(); // This is not happening implicitly.
                     animate(timeScrubber)
@@ -313,14 +318,26 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private void updateTimeScrubber() {
         int firstVisiblePosition = listView.getFirstVisiblePosition();
-        if (firstVisiblePosition == 0) {
-            timeScrubber.setY(timeScrubberMargin + headerView.getBottom());
-        } else {
-            timeScrubber.setY(timeScrubberMargin);
-        }
+        int firstVisibleSegment = firstVisiblePosition < 2 ? 0 : firstVisiblePosition - 2;
+        int listViewHeight = listView.getMeasuredHeight();
+        View topView = listView.getChildAt(0);
 
-        int normalizedPosition = firstVisiblePosition < 2 ? 0 : firstVisiblePosition - 2;
-        TimelineSegment segment = segmentAdapter.getItem(normalizedPosition);
+        int scrolledAmount;
+        if (firstVisiblePosition == 0) {
+            scrolledAmount = -topView.getTop();
+        } else if (firstVisiblePosition == 1) {
+            scrolledAmount = headerView.getMeasuredHeight() + -topView.getTop();
+        } else {
+            float scaleFactor = -topView.getTop() / (float) topView.getMeasuredHeight();
+            scrolledAmount = totalHeaderHeight + segmentAdapter.getHeightOfItems(0, firstVisibleSegment, scaleFactor);
+        }
+        float multiple = (scrolledAmount / (float) (segmentAdapter.getTotalItemHeight()));
+        float timestampY = timeScrubberMargin + listViewHeight * multiple;
+        timeScrubber.setY(timestampY);
+
+        View rowView = ViewUtil.findViewAt(listView, 0, (int) timestampY);
+        int itemPosition = rowView == listView ? firstVisibleSegment : Math.min(listView.getPositionForView(rowView), segmentAdapter.getCount() - 1);
+        TimelineSegment segment = segmentAdapter.getItem(itemPosition);
         timeScrubber.setDateTime(segment.getTimestamp());
     }
 

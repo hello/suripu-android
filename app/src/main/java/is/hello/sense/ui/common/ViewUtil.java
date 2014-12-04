@@ -26,6 +26,23 @@ public final class ViewUtil {
     }
 
     /**
+     * Searches the children of a given view group for a child that contains a given {x, y}
+     * coordinate pair, returns the view group if no matching child could be found.
+     * <p/>
+     * <em>Important:</em> This method does not take transformations into account.
+     */
+    public static @NonNull View findViewAt(@NonNull ViewGroup view, int x, int y) {
+        for (int i = 0, count = view.getChildCount(); i < count; i++) {
+            View child = view.getChildAt(i);
+            if (x >= child.getLeft() && x <= child.getRight() && y >= child.getTop() && y <= child.getBottom()) {
+                return child;
+            }
+        }
+
+        return view;
+    }
+
+    /**
      * A continuous signal that will notify observers of a given view's global layout events.
      */
     public static <T extends View> Observable<T> onGlobalLayout(@NonNull T view) {
