@@ -58,6 +58,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private TimelineSegmentAdapter segmentAdapter;
 
     private TimestampTextView timeScrubber;
+    private int timeScrubberTopMargin;
     private int totalHeaderHeight = 0;
     private int listViewContentHeight = 0;
 
@@ -92,6 +93,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         addPresenter(timelinePresenter);
 
         this.segmentAdapter = new TimelineSegmentAdapter(getActivity());
+        this.timeScrubberTopMargin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
 
         setRetainInstance(true);
     }
@@ -224,6 +226,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             }
 
             insightsContainer.setVisibility(View.VISIBLE);
+            insightsContainer.forceLayout();
         }
     }
 
@@ -245,12 +248,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 messageTextLabel.setVisibility(View.VISIBLE);
                 messageText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 
-                bindAndSubscribe(ViewUtil.onGlobalLayout(headerView).take(1), view -> {
+                bindAndSubscribe(ViewUtil.onGlobalLayout(listView).take(1), ignore -> {
                     this.totalHeaderHeight = headerView.getMeasuredHeight() + timelineEventsHeader.getMeasuredHeight();
-                    this.listViewContentHeight = listView.getMeasuredHeight() - totalHeaderHeight - spacingFooter.getMeasuredHeight();
+                    this.listViewContentHeight = (listView.getMeasuredHeight() -
+                                                  totalHeaderHeight -
+                                                  spacingFooter.getMeasuredHeight() -
+                                                  timeScrubberTopMargin / 2);
 
                     updateTimeScrubber();
-                    timeScrubber.requestLayout(); // This is not happening implicitly.
+                    timeScrubber.forceLayout(); // This is not happening implicitly.
                     animate(timeScrubber)
                             .fadeIn()
                             .start();
@@ -317,11 +323,18 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     private void updateTimeScrubber() {
+        View topView = listView.getChildAt(0);
+
+        // OnScrollListener will fire immediately after rotation before
+        // the list view has laid itself out, have to guard against that.
+        if (topView == null) {
+            return;
+        }
+
         int firstVisiblePosition = listView.getFirstVisiblePosition();
         int firstVisibleSegment = ListViewUtil.getAdapterPosition(listView, firstVisiblePosition);
 
         float scrolledAmount;
-        View topView = listView.getChildAt(0);
         if (firstVisiblePosition == 0) {
             scrolledAmount = -topView.getTop();
         } else if (firstVisiblePosition == 1) {
@@ -331,7 +344,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             scrolledAmount = totalHeaderHeight + segmentAdapter.getHeightOfItems(0, firstVisibleSegment, scaleFactor);
         }
         float multiple = (scrolledAmount / segmentAdapter.getTotalItemHeight());
-        float timestampY = totalHeaderHeight + (listViewContentHeight * multiple);
+        float timestampY = (timeScrubberTopMargin + headerView.getMeasuredHeight()) + (listViewContentHeight * multiple);
+        if (insightsContainer.getParent() != null) {
+            int insightsVisibleHeight = listView.getMeasuredHeight() - insightsContainer.getTop();
+            timestampY -= insightsVisibleHeight;
+        }
         timeScrubber.setY(timestampY);
 
         int itemPosition = ListViewUtil.getPositionForY(listView, timestampY);
@@ -351,10 +368,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         @Override
         public void onScroll(AbsListView listView, int firstVisiblePosition, int visibleItemCount, int totalItemCount) {
             if (segmentAdapter.getCount() > 0) {
-                int normalizedPosition = firstVisiblePosition < 2 ? 0 : firstVisiblePosition - 2;
-                TimelineSegment segment = segmentAdapter.getItem(normalizedPosition);
-                timeScrubber.setDateTime(segment.getTimestamp());
-
                 updateTimeScrubber();
             }
         }
