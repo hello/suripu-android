@@ -233,7 +233,7 @@ public class HomeActivity
         if (newQuestionContainer == null) {
             int containerHeight = homeContentContainer.getMeasuredHeight();
             if (containerHeight == 0) {
-                ViewUtil.onGlobalLayout(rootContainer).take(1).subscribe(ignored -> showNewQuestion(question));
+                ViewUtil.observeNextLayout(rootContainer).subscribe(ignored -> showNewQuestion(question));
                 return;
             }
 
@@ -246,7 +246,7 @@ public class HomeActivity
             Button answerQuestion = (Button) newQuestionContainer.findViewById(R.id.sub_fragment_new_question_answer);
             answerQuestion.setOnClickListener(ignored -> answerQuestion());
 
-            ViewUtil.onGlobalLayout(homeContentContainer).take(1).subscribe(ignored -> {
+            ViewUtil.observeNextLayout(homeContentContainer).subscribe(ignored -> {
                 int newQuestionContainerHeight = newQuestionContainer.getMeasuredHeight();
 
                 newQuestionContainer.setY((float) containerHeight);

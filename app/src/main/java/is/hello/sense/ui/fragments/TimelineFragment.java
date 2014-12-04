@@ -58,7 +58,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private TimelineSegmentAdapter segmentAdapter;
 
     private TimestampTextView timeScrubber;
-    private int timeScrubberTopMargin;
+    private int timeScrubberTopMargin = 0;
+    private boolean headerTallerThanList = false;
     private int totalHeaderHeight = 0;
     private int listViewContentHeight = 0;
 
@@ -73,7 +74,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private TextView timelineEventsHeader;
     private LinearLayout insightsContainer;
-    private View spacingFooter;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -127,7 +127,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         timelineEventsHeader.setVisibility(View.INVISIBLE);
         listView.addHeaderView(timelineEventsHeader, null, false);
 
-        this.spacingFooter = new View(getActivity());
+        View spacingFooter = new View(getActivity());
         spacingFooter.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.gap_outer));
         listView.addFooterView(spacingFooter, null, false);
 
@@ -248,17 +248,18 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 messageTextLabel.setVisibility(View.VISIBLE);
                 messageText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 
-                bindAndSubscribe(ViewUtil.onGlobalLayout(listView).take(1), ignore -> {
+                bindAndSubscribe(ViewUtil.observeNextLayout(listView), ignored -> {
                     this.totalHeaderHeight = headerView.getMeasuredHeight() + timelineEventsHeader.getMeasuredHeight();
-                    this.listViewContentHeight = (listView.getMeasuredHeight() -
-                                                  totalHeaderHeight -
-                                                  spacingFooter.getMeasuredHeight());
+                    this.headerTallerThanList = headerView.getMeasuredHeight() > listView.getMeasuredHeight();
+                    if (headerTallerThanList) {
+                        this.listViewContentHeight = (listView.getMeasuredHeight() - timelineEventsHeader.getMeasuredHeight());
+                    } else {
+                        this.listViewContentHeight = (listView.getMeasuredHeight() - totalHeaderHeight);
+                    }
 
                     updateTimeScrubber();
-                    timeScrubber.forceLayout(); // This is not happening implicitly.
-                    animate(timeScrubber)
-                            .fadeIn()
-                            .start();
+                    timeScrubber.forceLayout(); // Does not happen implicitly
+                    animate(timeScrubber).fadeIn().startAfterLayout();
                 }, Functions.LOG_ERROR);
             }
         } else {
@@ -335,25 +336,30 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         float scrolledAmount;
         if (firstVisiblePosition == 0) {
-            scrolledAmount = -topView.getTop();
+            scrolledAmount = headerTallerThanList ? 0 : -topView.getTop();
         } else if (firstVisiblePosition == 1) {
-            scrolledAmount = headerView.getMeasuredHeight() + -topView.getTop();
+            scrolledAmount = headerTallerThanList ? 0 : (headerView.getMeasuredHeight() + -topView.getTop());
         } else {
             float scaleFactor = -topView.getTop() / (float) topView.getMeasuredHeight();
-            scrolledAmount = totalHeaderHeight + segmentAdapter.getHeightOfItems(0, firstVisibleSegment, scaleFactor);
+            float itemsHeight = segmentAdapter.getHeightOfItems(0, firstVisibleSegment, scaleFactor);
+            scrolledAmount = headerTallerThanList ? itemsHeight : (totalHeaderHeight + itemsHeight);
         }
+
         float multiple = (scrolledAmount / segmentAdapter.getTotalItemHeight());
-        float timestampY = (timeScrubberTopMargin + headerView.getMeasuredHeight()) + (listViewContentHeight * multiple);
+        float headerInset = headerTallerThanList ? headerView.getBottom() : headerView.getMeasuredHeight();
+        float timestampY = (timeScrubberTopMargin + headerInset) + (listViewContentHeight * multiple);
+
         if (insightsContainer.getParent() != null) {
             int insightsVisibleHeight = listView.getMeasuredHeight() - insightsContainer.getTop();
             int amountVisible = insightsVisibleHeight / insightsContainer.getMeasuredHeight();
             float extraMarginFraction = timeScrubberTopMargin * amountVisible;
             timestampY -= insightsVisibleHeight + extraMarginFraction;
         }
-        timeScrubber.setY(timestampY);
+
 
         int itemPosition = ListViewUtil.getPositionForY(listView, timestampY);
         TimelineSegment segment = segmentAdapter.getItem(itemPosition);
+        timeScrubber.setY(timestampY);
         timeScrubber.setDateTime(segment.getTimestamp());
     }
 

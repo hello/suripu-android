@@ -44,11 +44,17 @@ public final class ViewUtil {
     }
 
     /**
-     * A continuous signal that will notify observers of a given view's global layout events.
+     * A one time signal that will notify observers of a given view's next global layout event.
      */
-    public static <T extends View> Observable<T> onGlobalLayout(@NonNull T view) {
+    public static <T extends View> Observable<T> observeNextLayout(@NonNull T view) {
         return Observable.create((Observable.OnSubscribe<T>) s -> {
-            ViewTreeObserver.OnGlobalLayoutListener listener = () -> s.onNext(view);
+            ViewTreeObserver.OnGlobalLayoutListener listener = new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    s.onNext(view);
+                    view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            };
             s.add(Subscriptions.create(() -> view.getViewTreeObserver().removeOnGlobalLayoutListener(listener)));
             view.getViewTreeObserver().addOnGlobalLayoutListener(listener);
         }).subscribeOn(AndroidSchedulers.mainThread());

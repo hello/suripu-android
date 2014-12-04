@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import is.hello.sense.ui.common.ViewUtil;
+
 public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private final View view;
     private final HashMap<String, Float> properties = new HashMap<>();
@@ -195,6 +197,10 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         } else {
             buildAndStart();
         }
+    }
+
+    public void startAfterLayout() {
+        ViewUtil.observeNextLayout(view).subscribe(ignored -> start());
     }
 
     public void cancel() {
