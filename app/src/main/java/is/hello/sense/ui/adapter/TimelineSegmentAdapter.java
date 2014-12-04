@@ -31,8 +31,8 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     private final int itemEventImageHeight;
     private final int stripeCornerRadius;
 
-    private int[] itemHeights;
-    private int totalItemHeight;
+    private float[] itemHeights;
+    private float totalItemHeight;
 
     //region Lifecycle
 
@@ -67,7 +67,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     }
 
     private void calculateItemHeights(@NonNull List<TimelineSegment> segments) {
-        this.itemHeights = new int[segments.size()];
+        this.itemHeights = new float[segments.size()];
         this.totalItemHeight = 0;
 
         for (int i = 0, size = itemHeights.length; i < size; i++) {
@@ -77,23 +77,23 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         }
     }
 
-    public int getTotalItemHeight() {
+    public float getTotalItemHeight() {
         return totalItemHeight;
     }
 
-    public int getItemHeight(int position) {
+    public float getItemHeight(int position) {
         return itemHeights[position];
     }
 
-    public int getHeightOfItems(int start, int end, float endScaleFactor) {
+    public float getHeightOfItems(int start, int end, float endScaleFactor) {
         if (start == end) {
-            return (int) (itemHeights[end] * endScaleFactor);
+            return (itemHeights[end] * endScaleFactor);
         } else {
-            int sum = 0;
-            for (int i = start; i < end - 1; i++) {
+            float sum = 0;
+            for (int i = start; i < end; i++) {
                 sum += itemHeights[i];
             }
-            sum += (int) (itemHeights[end - 1] * endScaleFactor);
+            sum += (itemHeights[end] * endScaleFactor);
 
             return sum;
         }
@@ -140,7 +140,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
         TimelineSegment segment = getItem(position);
         segmentViewHolder.displaySegment(segment, segmentPosition);
-        segmentViewHolder.itemView.setMinimumHeight(getItemHeight(position));
+        segmentViewHolder.itemView.setMinimumHeight((int) getItemHeight(position));
 
         return view;
     }

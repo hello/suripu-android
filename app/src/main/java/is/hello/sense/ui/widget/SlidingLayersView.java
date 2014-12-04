@@ -255,7 +255,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     }
 
     protected boolean isListViewAtTop(@Nullable ListView listView) {
-        return listView == null || (ListViewUtil.getScrollY(listView) == 0);
+        return listView == null || (ListViewUtil.getEstimatedScrollY(listView) == 0);
     }
 
     //endregion
