@@ -124,6 +124,28 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         return (SensorHistoryActivity) getActivity();
     }
 
+    public CharSequence spanFormattedValue(@NonNull String sensor, @NonNull String formattedValue) {
+        if (!SensorHistory.SENSOR_NAME_PARTICULATES.equals(sensor)) {
+            SpannableString spannedValue = new SpannableString(formattedValue);
+
+            boolean isTemperature = SensorHistory.SENSOR_NAME_TEMPERATURE.equals(sensor);
+            float unitScale = isTemperature ? 0.5f : 0.25f;
+            float adjustment = isTemperature ? 0.75f : 2.2f;
+            spannedValue.setSpan(new RelativeSizeSpan(unitScale),
+                                 spannedValue.length() - 1,
+                                 spannedValue.length(),
+                                 Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            spannedValue.setSpan(new SuperscriptSpanAdjuster(adjustment),
+                                 spannedValue.length() - 1,
+                                 spannedValue.length(),
+                                 Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+            return spannedValue;
+        }
+
+        return formattedValue;
+    }
+
     public void bindConditions(@Nullable CurrentConditionsPresenter.Result result) {
         if (result == null) {
             readingText.setText(R.string.missing_data_placeholder);
@@ -141,22 +163,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
                 String formattedValue = condition.getFormattedValue(formatter);
                 if (formattedValue != null) {
-                    SpannableString formattableString = new SpannableString(formattedValue);
-                    if (!SensorHistory.SENSOR_NAME_PARTICULATES.equals(sensor)) {
-                        boolean isTemperature = SensorHistory.SENSOR_NAME_TEMPERATURE.equals(sensor);
-                        float unitScale = isTemperature ? 0.5f : 0.25f;
-                        float adjustment = isTemperature ? 0.75f : 2.2f;
-                        formattableString.setSpan(new RelativeSizeSpan(unitScale),
-                                                  formattableString.length() - 1,
-                                                  formattableString.length(),
-                                                  Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                        formattableString.setSpan(new SuperscriptSpanAdjuster(adjustment),
-                                                  formattableString.length() - 1,
-                                                  formattableString.length(),
-                                                  Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                    }
-
-                    readingText.setText(formattableString);
+                    readingText.setText(spanFormattedValue(sensor, formattedValue));
                 } else {
                     readingText.setText(R.string.missing_data_placeholder);
                 }
@@ -374,7 +381,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public void onGraphValueHighlighted(int section, int position) {
             SensorHistory instant = sections.get(section).get(position);
-            readingText.setText(formatSensorValue(instant.getValue()));
+            readingText.setText(spanFormattedValue(sensor, formatSensorValue(instant.getValue())));
             readingText.setTextColor(getSectionLineColor(section));
             messageText.setText(dateFormatter.formatAsTime(instant.getTime(), use24Time));
         }
