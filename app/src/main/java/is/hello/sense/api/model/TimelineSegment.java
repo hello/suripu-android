@@ -44,6 +44,9 @@ public class TimelineSegment extends ApiResponse {
     @JsonProperty("offset_millis")
     private long offset;
 
+    @JsonProperty("sound")
+    private SoundInfo sound;
+
 
     public String getId() {
         return id;
@@ -77,6 +80,9 @@ public class TimelineSegment extends ApiResponse {
         return offset;
     }
 
+    public SoundInfo getSound() {
+        return sound;
+    }
 
     @Override
     public String toString() {
@@ -87,6 +93,33 @@ public class TimelineSegment extends ApiResponse {
                 ", sleepDepth=" + sleepDepth +
                 ", offset=" + offset +
                 '}';
+    }
+
+
+    public static class SoundInfo {
+        @JsonProperty("url")
+        private String url;
+
+        @JsonProperty("duration_millis")
+        private Integer durationMillis;
+
+
+        public String getUrl() {
+            return url;
+        }
+
+        public Integer getDurationMillis() {
+            return durationMillis;
+        }
+
+
+        @Override
+        public String toString() {
+            return "SoundInfo{" +
+                    "url='" + url + '\'' +
+                    ", durationMillis=" + durationMillis +
+                    '}';
+        }
     }
 
 
