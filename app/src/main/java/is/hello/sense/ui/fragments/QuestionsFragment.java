@@ -29,6 +29,9 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 public class QuestionsFragment extends InjectionFragment {
     public static final String BACK_STACK_NAME = QuestionsFragment.class.getSimpleName();
 
+    private static final int TAG_QUESTION = 1;
+    private static final int TAG_CHOICE = 2;
+
     private static final long DELAY_INCREMENT = 20;
     private static final long DISMISS_DELAY = 1000;
 
@@ -90,8 +93,9 @@ public class QuestionsFragment extends InjectionFragment {
 
     public void choiceSelected(@NonNull View sender) {
         clearQuestions(true, () -> {
-            Question.Choice choice = (Question.Choice) sender.getTag();
-            bindAndSubscribe(questionsPresenter.answerQuestion(choice),
+            Question question = (Question) sender.getTag(TAG_QUESTION);
+            Question.Choice choice = (Question.Choice) sender.getTag(TAG_CHOICE);
+            bindAndSubscribe(questionsPresenter.answerQuestion(question, choice),
                     unused -> questionsPresenter.nextQuestion(),
                     error -> ErrorDialogFragment.presentError(getFragmentManager(), error));
         });
@@ -199,7 +203,8 @@ public class QuestionsFragment extends InjectionFragment {
                 Question.Choice choice = choices.get(i);
                 Button choiceButton = (Button) inflater.inflate(R.layout.item_question_choice, choicesContainer, false);
                 choiceButton.setText(choice.getText());
-                choiceButton.setTag(choice);
+                choiceButton.setTag(TAG_QUESTION, question);
+                choiceButton.setTag(TAG_CHOICE, choice);
                 choiceButton.setOnClickListener(onClickListener);
                 choicesContainer.addView(choiceButton, choiceLayoutParams);
 

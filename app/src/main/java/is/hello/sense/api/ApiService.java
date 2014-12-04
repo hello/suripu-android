@@ -92,10 +92,12 @@ public interface ApiService {
     Observable<List<Question>> questions(@NonNull @Query("date") String timestamp);
 
     @POST("/questions")
-    Observable<VoidResponse> answerQuestion(@NonNull @Body Question.Choice answer);
+    Observable<VoidResponse> answerQuestion(@Query("account_question_id") long accountId,
+                                            @NonNull @Body Question.Choice answer);
 
-    @PUT("/questions/:id/skip")
-    Observable<VoidResponse> skipQuestion(@Path("id") long questionId);
+    @PUT("/questions/skip")
+    Observable<VoidResponse> skipQuestion(@Query("account_question_id") long accountId,
+                                          @Query("id") long questionId);
 
     //endregion
 

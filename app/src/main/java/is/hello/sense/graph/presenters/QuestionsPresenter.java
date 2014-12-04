@@ -193,12 +193,12 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     //region Answering Questions
 
-    public Observable<VoidResponse> answerQuestion(@NonNull Question.Choice answer) {
-        return apiService.answerQuestion(answer);
+    public Observable<VoidResponse> answerQuestion(@NonNull Question question, @NonNull Question.Choice answer) {
+        return apiService.answerQuestion(question.getAccountId(), answer);
     }
 
     public void skipQuestion() {
-        currentQuestion.take(1).subscribe(question -> apiService.skipQuestion(question.getId()).subscribe(ignored ->
+        currentQuestion.take(1).subscribe(question -> apiService.skipQuestion(question.getAccountId(), question.getId()).subscribe(ignored ->
                                        logEvent("skipped question"), Functions.LOG_ERROR), Functions.LOG_ERROR);
         nextQuestion();
     }
