@@ -53,6 +53,7 @@
     <dimen name="timeline_stripe_corner_radius">13dp</dimen>
 
     <dimen name="sensor_history_graph_min_height">200dp</dimen>
+    <dimen name="line_graph_point_size">5dp</dimen>
 
     <!-- Switch -->
 

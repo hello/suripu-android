@@ -1,17 +1,16 @@
 package is.hello.sense.ui.fragments;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.SpannedString;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.AlignmentSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +64,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     private LineGraphView graphView;
     private ProgressBar loadingIndicator;
     private TextView insightText;
-    private Adapter adapter = new Adapter();
+    private SensorDataSource sensorDataSource = new SensorDataSource();
     private String sensor;
 
     @Override
@@ -92,7 +91,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_sensor_history_loading);
         this.insightText = (TextView) view.findViewById(R.id.fragment_sensor_history_insight);
 
-        graphView.setAdapter(adapter);
+        graphView.setAdapter(sensorDataSource);
+        graphView.setOnValueHighlightedListener(sensorDataSource);
 
         this.historyModeSelector = (SelectorLinearLayout) view.findViewById(R.id.fragment_sensor_history_mode);
         historyModeSelector.setOnSelectionChangedListener(this);
@@ -106,8 +106,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         super.onViewCreated(view, savedInstanceState);
 
         bindAndSubscribe(conditionsPresenter.currentConditions, this::bindConditions, this::conditionUnavailable);
-        bindAndSubscribe(sensorHistoryPresenter.history, adapter::bindHistory, adapter::historyUnavailable);
-        bindAndSubscribe(preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false), adapter::setUse24Time, Functions.LOG_ERROR);
+        bindAndSubscribe(sensorHistoryPresenter.history, sensorDataSource::bindHistory, sensorDataSource::historyUnavailable);
+        bindAndSubscribe(preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false), sensorDataSource::setUse24Time, Functions.LOG_ERROR);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         super.onTrimMemory(level);
 
         if (level >= Presenter.BASE_TRIM_LEVEL) {
-            adapter.clear();
+            sensorDataSource.clear();
         }
     }
 
@@ -188,14 +188,14 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 .fadeIn()
                 .scale(1f)
                 .start();
-        adapter.clear();
+        sensorDataSource.clear();
 
         int newMode = (Integer) historyModeSelector.getButtonTag(newSelectionIndex);
         sensorHistoryPresenter.setMode(newMode);
     }
 
 
-    public class Adapter implements LineGraphView.Adapter {
+    public class SensorDataSource implements LineGraphView.Adapter, LineGraphView.OnValueHighlightedListener {
         private List<Section> sections = new ArrayList<>();
         private float baseMagnitude = 0f;
         private float peakMagnitude = 0f;
@@ -273,6 +273,24 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             graphView.notifyDataChanged();
         }
 
+        private String formatSensorValue(float value) {
+            switch (sensor) {
+                case SensorHistory.SENSOR_NAME_TEMPERATURE:
+                    return unitSystem.formatTemperature(value);
+
+                case SensorHistory.SENSOR_NAME_PARTICULATES:
+                    return unitSystem.formatParticulates(value);
+
+                case SensorHistory.SENSOR_NAME_HUMIDITY:
+                    return Integer.toString((int) value) + "%";
+
+                default:
+                    return Integer.toString((int) value);
+            }
+        }
+
+
+        //region Adapter
 
         @Override
         public float getBaseMagnitude() {
@@ -313,30 +331,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             return sections.get(section).get(position).getValue();
         }
 
-        private String formatSensorValue(float value) {
-            switch (sensor) {
-                case SensorHistory.SENSOR_NAME_TEMPERATURE:
-                    return unitSystem.formatTemperature(value);
-
-                case SensorHistory.SENSOR_NAME_PARTICULATES:
-                    return unitSystem.formatParticulates(value);
-
-                case SensorHistory.SENSOR_NAME_HUMIDITY:
-                    return Integer.toString((int) value) + "%";
-
-                default:
-                    return Integer.toString((int) value);
-            }
-        }
-
-        @NonNull
-        @Override
-        public CharSequence getFormattedMagnitudeAt(int section, int position) {
-            SensorHistory instant = sections.get(section).get(position);
-            String formattedValue = formatSensorValue(instant.getValue());
-            return formattedValue + " – " + dateFormatter.formatAsTime(instant.getTime(), use24Time);
-        }
-
         @Override
         public String getSectionHeader(int section) {
             SensorHistory value = sections.get(section).getRepresentativeValue();
@@ -355,6 +349,51 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             float value = sections.get(section).getAverage();
             return formatSensorValue(value);
         }
+
+        //endregion
+
+
+        //region Highlight Listener
+
+        private int savedReadingColor;
+        private CharSequence savedReading;
+        private CharSequence savedMessage;
+
+        @Override
+        public void onGraphHighlightBegin() {
+            this.savedReading = readingText.getText();
+            this.savedReadingColor = readingText.getCurrentTextColor();
+            this.savedMessage = messageText.getText();
+
+            messageText.setGravity(Gravity.CENTER);
+            messageText.setTextColor(getResources().getColor(R.color.text_dim));
+
+            animate(readingText).simplePop().start();
+        }
+
+        @Override
+        public void onGraphValueHighlighted(int section, int position) {
+            SensorHistory instant = sections.get(section).get(position);
+            readingText.setText(formatSensorValue(instant.getValue()));
+            readingText.setTextColor(getSectionLineColor(section));
+            messageText.setText(dateFormatter.formatAsTime(instant.getTime(), use24Time));
+        }
+
+        @Override
+        public void onGraphHighlightEnd() {
+            readingText.setText(savedReading);
+            readingText.setTextColor(savedReadingColor);
+            this.savedReading = null;
+
+            messageText.setText(savedMessage);
+            this.savedMessage = null;
+
+            messageText.setGravity(Gravity.LEFT);
+            messageText.setTextColor(getResources().getColor(R.color.text_dark));
+        }
+
+        //endregion
+
 
         private class Result {
             final @NonNull List<Section> sections;

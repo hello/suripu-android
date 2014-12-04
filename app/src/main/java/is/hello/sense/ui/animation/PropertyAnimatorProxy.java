@@ -5,6 +5,8 @@ import android.animation.TimeInterpolator;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -169,6 +171,15 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
             view.setAlpha(0f);
             view.setVisibility(View.VISIBLE);
         }).alpha(1f).setApplyChangesToView(true);
+    }
+
+    public PropertyAnimatorProxy simplePop() {
+        return setDuration(Animation.DURATION_MINIMUM / 2)
+                .setInterpolator(new AccelerateInterpolator())
+                .scale(1.1f)
+                .andThen()
+                .setInterpolator(new DecelerateInterpolator())
+                .scale(1.0f);
     }
 
     public PropertyAnimatorProxy fadeOut(int targetVisibility) {

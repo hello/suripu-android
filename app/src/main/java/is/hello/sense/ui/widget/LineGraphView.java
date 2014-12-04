@@ -4,31 +4,34 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.SparseIntArray;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.ViewUtil;
 import is.hello.sense.util.Constants;
 
 public final class LineGraphView extends FrameLayout {
+    private @Nullable OnValueHighlightedListener onValueHighlightedListener;
     private Adapter adapter;
     private int numberOfLines = 0;
     private Drawable fillDrawable;
@@ -54,7 +57,8 @@ public final class LineGraphView extends FrameLayout {
 
     private int headerFooterPadding;
 
-    private TextView highlightedValueText;
+    private boolean isValueHighlighted;
+    private HighlightedValueView highlightedValue;
 
     @SuppressWarnings("UnusedDeclaration")
     public LineGraphView(Context context) {
@@ -110,24 +114,22 @@ public final class LineGraphView extends FrameLayout {
 
         this.headerFooterPadding = getResources().getDimensionPixelSize(R.dimen.gap_medium);
 
-        this.highlightedValueText = new TextView(getContext());
-        highlightedValueText.setGravity(Gravity.CENTER);
-        highlightedValueText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelOffset(R.dimen.text_size_section_heading));
-        highlightedValueText.setBackgroundResource(R.drawable.timestamp_background);
-        highlightedValueText.setTextColor(Color.WHITE);
-        int padding = getResources().getDimensionPixelSize(R.dimen.gap_small);
-        highlightedValueText.setPadding(padding, padding, padding, padding);
-        highlightedValueText.setVisibility(INVISIBLE);
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.START);
-        int margin = getResources().getDimensionPixelSize(R.dimen.gap_small);
-        layoutParams.setMargins(margin, margin, margin, margin);
-        addView(highlightedValueText, layoutParams);
+        this.highlightedValue = new HighlightedValueView(getContext());
+        addView(highlightedValue);
 
         setWillNotDraw(false);
     }
 
 
     //region Drawing
+
+    private int calculateHeaderHeight() {
+        return (int) headerTextPaint.getTextSize() + (headerFooterPadding * 2);
+    }
+
+    private int calculateFooterHeight() {
+        return (int) footerTextPaint.getTextSize() + (headerFooterPadding * 2);
+    }
 
     private float getSectionWidth() {
         return getMeasuredWidth() / sectionCounts.size();
@@ -167,13 +169,13 @@ public final class LineGraphView extends FrameLayout {
             fillPath.reset();
             markersPath.reset();
 
-            int headerHeight = (int) headerTextPaint.getTextSize() + (headerFooterPadding * 2);
+            int headerHeight = calculateHeaderHeight();
             if (wantsHeaders) {
                 minY += headerHeight;
                 height -= headerHeight;
             }
 
-            int footerHeight = (int) footerTextPaint.getTextSize() + (headerFooterPadding * 2);
+            int footerHeight = calculateFooterHeight();
             if (wantsFooters) {
                 height -= footerHeight;
             }
@@ -186,7 +188,7 @@ public final class LineGraphView extends FrameLayout {
 
                 float segmentWidth = sectionWidth / (float) pointCount;
 
-                if (wantsHeaders) {
+                if (wantsHeaders && !isValueHighlighted) {
                     headerTextPaint.setColor(adapter.getSectionTextColor(section));
 
                     String text = adapter.getSectionHeader(section);
@@ -273,13 +275,17 @@ public final class LineGraphView extends FrameLayout {
         }
     }
 
-    public Adapter getAdapter() {
+    public @Nullable Adapter getAdapter() {
         return adapter;
     }
 
-    public void setAdapter(Adapter adapter) {
+    public void setAdapter(@Nullable Adapter adapter) {
         this.adapter = adapter;
         notifyDataChanged();
+    }
+
+    public void setOnValueHighlightedListener(@Nullable OnValueHighlightedListener onValueHighlightedListener) {
+        this.onValueHighlightedListener = onValueHighlightedListener;
     }
 
     public void notifyDataChanged() {
@@ -367,42 +373,48 @@ public final class LineGraphView extends FrameLayout {
         float x = ViewUtil.getNormalizedX(event);
         int section = getSectionAtX(x);
         int position = getSegmentAtX(section, x);
-        highlightedValueText.setText(adapter.getFormattedMagnitudeAt(section, position));
-
-        float segmentX = absoluteSegmentX(getSectionWidth(), getSegmentWidth(section), section, position);
-        float segmentY = absoluteSegmentY(getMeasuredHeight(), section, position);
-
-        highlightedValueText.setX(segmentX);
-        highlightedValueText.setY(segmentY);
+        highlightedValue.display(section, position);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                highlightedValueText.setAlpha(0f);
-                highlightedValueText.setScaleX(0f);
-                highlightedValueText.setScaleY(0f);
-                highlightedValueText.setVisibility(VISIBLE);
-                PropertyAnimatorProxy.animate(highlightedValueText)
-                        .alpha(1f)
-                        .scaleX(1f)
-                        .scaleY(1f)
-                        .setApplyChangesToView(true)
+                if (onValueHighlightedListener != null) {
+                    onValueHighlightedListener.onGraphHighlightBegin();
+                    onValueHighlightedListener.onGraphValueHighlighted(section, position);
+                }
+
+                PropertyAnimatorProxy.animate(highlightedValue)
+                        .setDuration(Animation.DURATION_MINIMUM)
+                        .fadeIn()
                         .start();
+
+                this.isValueHighlighted = true;
+                invalidate();
+
                 break;
             }
 
             case MotionEvent.ACTION_MOVE: {
+                if (onValueHighlightedListener != null) {
+                    onValueHighlightedListener.onGraphValueHighlighted(section, position);
+                }
+
                 break;
             }
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                PropertyAnimatorProxy.animate(highlightedValueText)
-                        .alpha(0f)
-                        .scaleX(0f)
-                        .scaleY(0f)
-                        .setApplyChangesToView(true)
-                        .addOnAnimationCompleted(finished -> highlightedValueText.setVisibility(INVISIBLE))
+                if (onValueHighlightedListener != null) {
+                    onValueHighlightedListener.onGraphHighlightEnd();
+                }
+
+                PropertyAnimatorProxy.animate(highlightedValue)
+                        .setDuration(Animation.DURATION_MINIMUM)
+                        .fadeOut(GONE)
                         .start();
+
+                this.isValueHighlighted = false;
+                invalidate();
+
                 break;
             }
         }
@@ -410,6 +422,67 @@ public final class LineGraphView extends FrameLayout {
     }
 
     //endregion
+
+
+    class HighlightedValueView extends View {
+        final Paint backgroundPaint = new Paint();
+        final RectF pointBounds = new RectF();
+        final float pointAreaHalf;
+
+        int section = -1;
+        int segment = -1;
+
+        HighlightedValueView(Context context) {
+            super(context);
+
+            this.pointAreaHalf = getResources().getDimensionPixelSize(R.dimen.line_graph_point_size) / 2f;
+            backgroundPaint.setAntiAlias(true);
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            if (section != -1 && segment != -1) {
+                int minY = 0;
+                int height = getMeasuredHeight();
+
+                int headerHeight = calculateHeaderHeight();
+                if (wantsHeaders) {
+                    minY += headerHeight;
+                    height -= headerHeight;
+                }
+
+                int footerHeight = calculateFooterHeight();
+                if (wantsFooters) {
+                    height -= footerHeight;
+                }
+
+                float segmentX = absoluteSegmentX(getSectionWidth(), getSegmentWidth(section), section, segment);
+                float segmentY = absoluteSegmentY(height, section, segment);
+
+                pointBounds.set(segmentX - pointAreaHalf,
+                                minY + (segmentY - pointAreaHalf),
+                                segmentX + pointAreaHalf,
+                                minY + (segmentY + pointAreaHalf));
+                canvas.drawOval(pointBounds, backgroundPaint);
+
+                canvas.drawRect(pointBounds.centerX(), 0f, pointBounds.centerX() + 1f, minY + height, backgroundPaint);
+            }
+        }
+
+        void display(int section, int segment) {
+            if (adapter != null) {
+                backgroundPaint.setColor(adapter.getSectionLineColor(section));
+
+                this.section = section;
+                this.segment = segment;
+            } else {
+                this.section = -1;
+                this.segment = -1;
+            }
+
+            invalidate();
+        }
+    }
 
 
     public interface Adapter {
@@ -420,8 +493,13 @@ public final class LineGraphView extends FrameLayout {
         int getSectionLineColor(int section);
         int getSectionTextColor(int section);
         float getMagnitudeAt(int section, int position);
-        @NonNull CharSequence getFormattedMagnitudeAt(int section, int position);
         String getSectionHeader(int section);
         String getSectionFooter(int section);
+    }
+
+    public interface OnValueHighlightedListener {
+        void onGraphHighlightBegin();
+        void onGraphValueHighlighted(int section, int position);
+        void onGraphHighlightEnd();
     }
 }
