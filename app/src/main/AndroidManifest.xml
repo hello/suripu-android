@@ -12,6 +12,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
     <permission android:name="is.hello.sense.permission.C2D_MESSAGE" android:protectionLevel="signature" />
     <uses-permission android:name="is.hello.sense.permission.C2D_MESSAGE" />
 
