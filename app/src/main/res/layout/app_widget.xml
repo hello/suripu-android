@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="1dp"
+    android:background="@drawable/raised_item_background">
+
+    <TextView
+        android:id="@+id/app_widget_temperature"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:padding="@dimen/gap_outer"
+        android:drawableTop="@drawable/icon_sensor_temperature"
+        android:drawablePadding="@dimen/gap_medium"
+        android:textAppearance="@style/AppTheme.Text.Body.Light"
+        android:text="@string/mock_temperature"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/app_widget_humidity"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:padding="@dimen/gap_outer"
+        android:drawableTop="@drawable/icon_sensor_humidity"
+        android:drawablePadding="@dimen/gap_medium"
+        android:textAppearance="@style/AppTheme.Text.Body.Light"
+        android:text="@string/mock_humidity"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/app_widget_particulates"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:padding="@dimen/gap_outer"
+        android:drawableTop="@drawable/icon_sensor_particle"
+        android:drawablePadding="@dimen/gap_medium"
+        android:textAppearance="@style/AppTheme.Text.Body.Light"
+        android:text="@string/mock_particulates"
+        android:gravity="center"/>
+
+</LinearLayout>
