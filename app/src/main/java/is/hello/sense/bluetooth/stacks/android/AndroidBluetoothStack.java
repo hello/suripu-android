@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
+import is.hello.sense.bluetooth.errors.BluetoothPowerChangeError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
@@ -98,7 +99,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
     @Override
     public Observable<Void> turnOn() {
         if (adapter == null || !adapter.enable()) {
-            return Observable.error(new BluetoothDisabledError());
+            return Observable.error(new BluetoothPowerChangeError());
         }
 
         return enabled.filter(e -> e).map(ignored -> null);
@@ -107,7 +108,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
     @Override
     public Observable<Void> turnOff() {
         if (adapter == null || !adapter.disable()) {
-            return Observable.error(new BluetoothDisabledError());
+            return Observable.error(new BluetoothPowerChangeError());
         }
 
         return enabled.filter(e -> !e).map(ignored -> null);

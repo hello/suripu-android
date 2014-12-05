@@ -16,6 +16,7 @@ import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
+import is.hello.sense.bluetooth.errors.BluetoothPowerChangeError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
@@ -58,6 +59,8 @@ public class ErrorDialogFragment extends DialogFragment {
             message = context.getString(R.string.error_bluetooth_service_discovery_failed);
         } else if (e instanceof PeripheralNotFoundError) {
             message = context.getString(R.string.error_sense_not_found);
+        } else if (e instanceof BluetoothPowerChangeError) {
+            message = context.getString(R.string.error_bluetooth_power_change);
         } else if (e instanceof SensePeripheralError) {
             MorpheusBle.ErrorType errorType = ((SensePeripheralError) e).errorType;
             switch (errorType) {

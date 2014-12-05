@@ -67,11 +67,15 @@ public interface BluetoothStack {
 
     /**
      * Turns on the device's Bluetooth radio.
+     *
+     * @see is.hello.sense.bluetooth.errors.BluetoothPowerChangeError
      */
     Observable<Void> turnOn();
 
     /**
      * Turns off the device's Bluetooth radio.
+     *
+     * @see is.hello.sense.bluetooth.errors.BluetoothPowerChangeError
      */
     Observable<Void> turnOff();
 

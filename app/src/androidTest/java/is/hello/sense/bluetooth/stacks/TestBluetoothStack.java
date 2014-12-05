@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.sense.bluetooth.errors.BluetoothPowerChangeError;
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import rx.Observable;
 import rx.Scheduler;
@@ -55,12 +56,12 @@ public class TestBluetoothStack implements BluetoothStack {
 
     @Override
     public Observable<Void> turnOn() {
-        return Observable.just(null);
+        return Observable.error(new BluetoothPowerChangeError());
     }
 
     @Override
     public Observable<Void> turnOff() {
-        return Observable.just(null);
+        return Observable.error(new BluetoothPowerChangeError());
     }
 
     @Override
