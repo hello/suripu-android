@@ -34,6 +34,7 @@ import is.hello.sense.ui.fragments.SensorHistoryFragment;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
@@ -96,6 +97,8 @@ import is.hello.sense.util.BuildValues;
         MyInfoFragment.class,
         AccountSettingsFragment.class,
         AccountPresenter.class,
+
+        UnstableBluetoothFragment.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

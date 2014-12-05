@@ -130,12 +130,14 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<VoidResponse> answerQuestion(@NonNull @Body Question.Choice answer) {
+    public Observable<VoidResponse> answerQuestion(@Query("account_question_id") long accountId,
+                                                   @NonNull @Body Question.Choice answer) {
         return unimplemented();
     }
 
     @Override
-    public Observable<VoidResponse> skipQuestion(@Path("id") long questionId) {
+    public Observable<VoidResponse> skipQuestion(@Query("account_question_id") long accountId,
+                                                 @Query("id") long questionId) {
         return unimplemented();
     }
 

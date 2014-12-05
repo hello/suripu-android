@@ -102,7 +102,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
             return Observable.error(new BluetoothPowerChangeError());
         }
 
-        return enabled.filter(e -> e).map(ignored -> null);
+        return enabled.filter(Functions.IS_TRUE).map(Functions.TO_VOID);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
             return Observable.error(new BluetoothPowerChangeError());
         }
 
-        return enabled.filter(e -> !e).map(ignored -> null);
+        return enabled.filter(Functions.IS_FALSE).map(Functions.TO_VOID);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
         if (e instanceof PeripheralBondAlterationError) {
             // If REASON_REMOVED/9 is reported, it indicates that the
             // bond state of the bluetooth device has gotten into a broken
-            // state, and won't be until the user restarts their phone.
+            // state, and won't be fixed until the user restarts their phone.
             int reason = ((PeripheralBondAlterationError) e).reason;
             return (reason == PeripheralBondAlterationError.REASON_REMOVED);
         }

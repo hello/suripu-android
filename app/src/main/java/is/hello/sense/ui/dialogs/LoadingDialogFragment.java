@@ -16,8 +16,9 @@ import is.hello.sense.R;
 public class LoadingDialogFragment extends DialogFragment {
     public static final String TAG = LoadingDialogFragment.class.getSimpleName();
 
-    private static final String ARG_TITLE = LoadingDialogFragment.class.getName() + ".ARG_TITLE";
-    private static final String ARG_WANTS_OPAQUE_BACKGROUND = LoadingDialogFragment.class.getName() + "._ARG_WANTS_OPAQUE_BACKGROUND";
+    protected static final String ARG_TITLE = LoadingDialogFragment.class.getName() + ".ARG_TITLE";
+    protected static final String ARG_WANTS_OPAQUE_BACKGROUND = LoadingDialogFragment.class.getName() + "._ARG_WANTS_OPAQUE_BACKGROUND";
+
     private TextView titleText;
 
     public static @NonNull LoadingDialogFragment show(@NonNull FragmentManager fm,

@@ -193,7 +193,8 @@
     <string name="title_connecting">Connecting with Sense…</string>
     <string name="title_discovering_services">Discovering Services…</string>
     <string name="title_linking_account">Linking Your Account…</string>
-    <string name="error_message_ble_radio_borked">Your phone\'s Bluetooth appears to be unstable. Please turn off both your Wifi and Bluetooth, and turn them back on after a few seconds. If your problems persist, please restart your phone and try again.</string>
+    <string name="error_message_ble_radio_borked">Your phone\'s bluetooth appears to be unstable. Restarting your bluetooth and wifi radios should help fix any issues you are experiencing.\n\nIf issues persist after restarting bluetooth and wifi, it is recommended you restart your phone.</string>
+    <string name="action_restart_radios"><![CDATA[Restart Bluetooth & Wifi]]></string>
     <string name="label_searching_for_pill">Looking for your Sleep Pill</string>
     <string name="title_onboarding_setup_2nd_pill">Set up another Sleep Pill?</string>
     <string name="info_onboarding_setup_2nd_pill">Would you like to set up a second Sleep Pill at this time?\n\nYou can always do this later by visiting Settings.</string>

@@ -13,17 +13,16 @@ import java.util.List;
 
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
+import rx.functions.Func1;
 
 public final class Functions {
 
     //region General
 
-    public static boolean isNotNull(@Nullable Object object) {
-        return (object != null);
-    }
     public static boolean safeClose(@Nullable Closeable closeable) {
-        if (closeable == null)
+        if (closeable == null) {
             return false;
+        }
 
         try {
             closeable.close();
@@ -36,6 +35,9 @@ public final class Functions {
         return (a < b) ? -1 : ((a > b) ? 1 : 0);
     }
     public static final Action1<Throwable> LOG_ERROR = e -> Logger.error("UnexpectedErrors", "An error occurred.", e);
+    public static final Func1<Boolean, Boolean> IS_TRUE = is -> is;
+    public static final Func1<Boolean, Boolean> IS_FALSE = is -> !is;
+    public static final Func1<Object, Void> TO_VOID = ignored -> null;
 
     //endregion
 

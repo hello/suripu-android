@@ -23,6 +23,7 @@ import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.bluetooth.stacks.util.ScanResponse;
 import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Observer;
@@ -238,7 +239,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .setType(commandType)
                 .setVersion(COMMAND_VERSION)
                 .build();
-        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(ignored -> null);
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
 
     public Observable<Void> clearPairedPhone() {
@@ -248,7 +249,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .setType(CommandType.MORPHEUS_COMMAND_ERASE_PAIRED_PHONE)
                 .setVersion(COMMAND_VERSION)
                 .build();
-        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(ignored -> null);
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
 
     public Observable<Void> beginDfu() {
@@ -258,7 +259,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .setType(CommandType.MORPHEUS_COMMAND_MORPHEUS_DFU_BEGIN)
                 .setVersion(COMMAND_VERSION)
                 .build();
-        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(ignored -> null);
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
 
     public Observable<Void> setWifiNetwork(String bssid,
@@ -275,7 +276,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .setWifiPassword(password)
                 .setSecurityType(securityType)
                 .build();
-        return performSimpleCommand(morpheusCommand, SchedulerOperationTimeout.acquire("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS)).map(ignored -> null);
+        return performSimpleCommand(morpheusCommand, SchedulerOperationTimeout.acquire("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS)).map(Functions.TO_VOID);
     }
 
     public Observable<SenseWifiNetwork> getWifiNetwork() {
@@ -306,7 +307,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .setVersion(COMMAND_VERSION)
                 .setAccountId(accountToken)
                 .build();
-        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(ignored -> null);
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
 
     public Observable<Void> factoryReset() {
@@ -316,7 +317,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .setType(CommandType.MORPHEUS_COMMAND_FACTORY_RESET)
                 .setVersion(COMMAND_VERSION)
                 .build();
-        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(ignored -> null);
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
 
     public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks() {
