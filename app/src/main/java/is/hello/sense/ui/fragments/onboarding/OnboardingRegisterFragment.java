@@ -127,12 +127,11 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     public void login(@NonNull Account createdAccount) {
         OAuthCredentials credentials = new OAuthCredentials(environment, emailText.getText().toString(), passwordText.getText().toString());
         bindAndSubscribe(apiService.authorize(credentials), session -> {
-            LoadingDialogFragment.close(getFragmentManager());
-
             sessionManager.setSession(session);
-            getOnboardingActivity().showBirthday(createdAccount);
-
             Analytics.event(Analytics.EVENT_SIGNED_IN, null);
+
+            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
+                    () -> getOnboardingActivity().showBirthday(createdAccount));
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getFragmentManager(), error);

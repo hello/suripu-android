@@ -113,12 +113,14 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        if (currentAccount == null)
+        if (currentAccount == null) {
             return;
+        }
 
         StaticItemAdapter.Item item = (StaticItemAdapter.Item) adapterView.getItemAtPosition(position);
-        if (item.getAction() != null)
+        if (item.getAction() != null) {
             item.getAction().run();
+        }
     }
 
 

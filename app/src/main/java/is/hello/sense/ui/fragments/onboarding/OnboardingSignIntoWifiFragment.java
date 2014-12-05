@@ -156,10 +156,10 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
                               .apply();
                   }, Functions.LOG_ERROR);
 
-        LoadingDialogFragment.close(getFragmentManager());
-
-        OnboardingActivity activity = (OnboardingActivity) getActivity();
-        activity.showPairPill(-1);
+        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
+            OnboardingActivity activity = (OnboardingActivity) getActivity();
+            activity.showPairPill(-1);
+        });
     }
 
     private void sendWifiCredentials() {

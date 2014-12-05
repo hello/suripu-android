@@ -168,29 +168,6 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         }
     }
 
-    public PropertyAnimatorProxy fadeIn() {
-        return setOnAnimationWillStart(() -> {
-            view.setAlpha(0f);
-            view.setVisibility(View.VISIBLE);
-        }).alpha(1f).setApplyChangesToView(true);
-    }
-
-    public PropertyAnimatorProxy simplePop() {
-        return setDuration(Animation.DURATION_MINIMUM / 2)
-                .setInterpolator(new AccelerateInterpolator())
-                .scale(1.1f)
-                .andThen()
-                .setInterpolator(new DecelerateInterpolator())
-                .scale(1.0f);
-    }
-
-    public PropertyAnimatorProxy fadeOut(int targetVisibility) {
-        return alpha(0f).addOnAnimationCompleted(finished -> {
-            if (finished)
-                view.setVisibility(targetVisibility);
-        });
-    }
-
     public void start() {
         if (previousInChain != null) {
             previousInChain.start();
@@ -333,6 +310,45 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     }
 
     //endregion
+
+
+    //region Canned Animations
+
+    public PropertyAnimatorProxy fadeIn() {
+        return setOnAnimationWillStart(() -> {
+            view.setAlpha(0f);
+            view.setVisibility(View.VISIBLE);
+        }).alpha(1f).setApplyChangesToView(true);
+    }
+
+    public PropertyAnimatorProxy simplePop() {
+        return setDuration(Animation.DURATION_MINIMUM / 2)
+                .setInterpolator(new AccelerateInterpolator())
+                .scale(1.1f)
+                .andThen()
+                .setInterpolator(new DecelerateInterpolator())
+                .scale(1.0f);
+    }
+
+    public PropertyAnimatorProxy zoomInFromNothing() {
+        return setOnAnimationWillStart(() -> {
+            view.setAlpha(0f);
+            view.setScaleX(0f);
+            view.setScaleY(0f);
+            view.setVisibility(View.VISIBLE);
+        }).setApplyChangesToView(true).scale(1f).alpha(1f);
+    }
+
+    public PropertyAnimatorProxy fadeOut(int targetVisibility) {
+        return alpha(0f).addOnAnimationCompleted(finished -> {
+            if (finished) {
+                view.setVisibility(targetVisibility);
+            }
+        });
+    }
+
+    //endregion
+
 
     public interface OnAnimationCompleted {
         void onAnimationCompleted(boolean finished);

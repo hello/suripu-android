@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     android:background="@color/background_light_overlay">
 
+    <ImageView
+        android:id="@+id/fragment_dialog_loading_check_mark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/loading_done"
+        android:contentDescription="@string/action_done"
+        android:visibility="invisible"/>
+
     <is.hello.sense.ui.widget.TintedProgressBar
         android:id="@+id/fragment_dialog_loading_bar"
         android:layout_width="wrap_content"

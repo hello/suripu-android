@@ -246,10 +246,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         LoadingDialogFragment.show(getFragmentManager());
 
         bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                         ignored -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                             getFragmentManager().popBackStackImmediate();
-                         },
+                         ignored -> LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> getFragmentManager().popBackStackImmediate()),
                          this::presentError);
     }
 
@@ -267,9 +264,10 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         dialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> {
             LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(hardwarePresenter.factoryReset(), ignored -> {
-                LoadingDialogFragment.close(getFragmentManager());
-                apiSessionManager.logOut(getActivity());
-                getActivity().finish();
+                LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
+                    apiSessionManager.logOut(getActivity());
+                    getActivity().finish();
+                });
             }, this::presentError);
         });
         dialog.setDestructive(true);
