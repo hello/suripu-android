@@ -27,6 +27,7 @@ import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.HelpUtil;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.util.Analytics;
 import rx.functions.Action1;
 
@@ -152,7 +153,8 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         helpButton.setVisibility(View.VISIBLE);
 
         if (hardwarePresenter.isErrorFatal(e)) {
-            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+            fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
         } else {
             ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
@@ -169,7 +171,8 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         helpButton.setVisibility(View.VISIBLE);
         
         if (hardwarePresenter.isErrorFatal(e)) {
-            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+            fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
         } else {
             ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }

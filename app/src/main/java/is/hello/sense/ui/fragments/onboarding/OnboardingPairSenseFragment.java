@@ -29,6 +29,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -184,7 +185,8 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
             pairHelpFragment.setTargetFragment(this, REQUEST_CODE_PAIR_HELP);
             ((FragmentNavigation) getActivity()).showFragment(pairHelpFragment, null, true);
         } else if (hardwarePresenter.isErrorFatal(e)) {
-            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+            fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
         } else {
             ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }

@@ -28,6 +28,7 @@ import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SensorStateView;
 import is.hello.sense.util.Analytics;
@@ -207,7 +208,8 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         LoadingDialogFragment.close(getFragmentManager());
 
         if (hardwarePresenter.isErrorFatal(e)) {
-            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+            fragment.show(getFragmentManager(), R.id.activity_fragment_navigation_container);
         } else {
             ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }

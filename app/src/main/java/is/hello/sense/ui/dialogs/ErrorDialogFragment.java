@@ -99,11 +99,6 @@ public class ErrorDialogFragment extends DialogFragment {
         dialogFragment.show(fm, TAG);
     }
 
-    public static void presentFatalBluetoothError(@NonNull FragmentManager fm, @NonNull Context context) {
-        ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(context.getString(R.string.error_message_ble_radio_borked));
-        dialogFragment.show(fm, ErrorDialogFragment.TAG);
-    }
-
     public static ErrorDialogFragment newInstance(@Nullable Throwable e) {
         ErrorDialogFragment fragment = new ErrorDialogFragment();
 

@@ -31,6 +31,7 @@ import is.hello.sense.ui.common.HelpUtil;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
@@ -218,7 +219,8 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         LoadingDialogFragment.close(getFragmentManager());
 
         if (hardwarePresenter.isErrorFatal(e)) {
-            ErrorDialogFragment.presentFatalBluetoothError(getFragmentManager(), getActivity());
+            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+            fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
         } else {
             ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
