@@ -67,7 +67,7 @@
 
     <!-- Widget -->
 
-    <dimen name="widget_min_width">250dp</dimen>
-    <dimen name="widget_min_height">60dp</dimen>
+    <dimen name="widget_room_conditions_min_width">250dp</dimen>
+    <dimen name="widget_room_conditions_min_height">60dp</dimen>
 
 </resources>
