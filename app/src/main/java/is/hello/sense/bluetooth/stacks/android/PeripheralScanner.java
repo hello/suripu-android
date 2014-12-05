@@ -14,9 +14,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.bluetooth.stacks.util.ScanResponse;
-import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
+import is.hello.sense.bluetooth.stacks.util.ScanResponse;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;

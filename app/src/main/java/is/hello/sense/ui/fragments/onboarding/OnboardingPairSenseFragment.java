@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,10 +87,11 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     }
 
     private void updateNextButton() {
-        if (bluetoothAdapter.isEnabled())
+        if (bluetoothAdapter.isEnabled()) {
             nextButton.setText(R.string.action_continue);
-        else
+        } else {
             nextButton.setText(R.string.action_turn_on_ble);
+        }
     }
 
     private void beginPairing() {
@@ -124,7 +126,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         });
     }
 
-    public void next(View ignored) {
+    public void next(@NonNull View sender) {
         if (bluetoothAdapter.isEnabled()) {
             beginPairing();
 
@@ -135,7 +137,16 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
                 finishedPairing();
             }
         } else {
-            startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
+            LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_turning_on), true);
+            bindAndSubscribe(hardwarePresenter.turnOnBluetooth(),
+                             ignored -> {
+                                 LoadingDialogFragment.close(getFragmentManager());
+                                 next(sender);
+                             },
+                             e -> {
+                                 LoadingDialogFragment.close(getFragmentManager());
+                                 pairingFailed(e);
+                             });
         }
     }
 
