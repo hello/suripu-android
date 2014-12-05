@@ -121,6 +121,10 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return Observable.error(new NoConnectedPeripheralException());
     }
 
+    public Observable<Void> turnOnBluetooth() {
+        return bluetoothStack.turnOn();
+    }
+
     public Observable<List<SensePeripheral>> scanForDevices() {
         logEvent("scanForDevices()");
 

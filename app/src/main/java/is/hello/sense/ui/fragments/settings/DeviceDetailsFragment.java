@@ -44,7 +44,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     private ProgressBar pairingActivityIndicator;
     private ViewGroup senseActionsContainer;
     private @Nullable SensorStateView signalStrength;
-    private Button retryButton;
+    private Button actionButton;
 
     private Device device;
     private BluetoothAdapter bluetoothAdapter;
@@ -96,8 +96,14 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             SensorStateView factoryReset = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_factory_reset);
             factoryReset.setOnClickListener(this::factoryReset);
 
-            this.retryButton = (Button) view.findViewById(R.id.fragment_device_details_retry_connect);
-            retryButton.setOnClickListener(ignored -> connectToPeripheral());
+            this.actionButton = (Button) view.findViewById(R.id.fragment_device_details_action);
+            actionButton.setOnClickListener(ignored -> {
+                if (bluetoothAdapter.isEnabled()) {
+                    connectToPeripheral();
+                } else {
+                    enableBluetooth();
+                }
+            });
         }
 
         return view;
@@ -107,9 +113,11 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (device.getType() == Device.Type.SENSE && bluetoothAdapter.isEnabled()) {
+        if (device.getType() == Device.Type.SENSE) {
             bindAndSubscribe(this.hardwarePresenter.bluetoothEnabled, this::onBluetoothStateChanged, Functions.LOG_ERROR);
-            connectToPeripheral();
+            if (bluetoothAdapter.isEnabled()) {
+                connectToPeripheral();
+            }
         }
     }
 
@@ -130,21 +138,39 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
 
     public void onBluetoothStateChanged(boolean isEnabled) {
-        if (!isEnabled) {
+        if (isEnabled) {
+            actionButton.setText(R.string.action_retry);
+        } else {
             if (signalStrength != null) {
                 signalStrength.setReading(getString(R.string.missing_data_placeholder));
                 senseActionsContainer.setVisibility(View.GONE);
                 pairingActivityIndicator.setVisibility(View.GONE);
             }
+
+            actionButton.setVisibility(View.VISIBLE);
+            actionButton.setText(R.string.action_turn_on_ble);
         }
     }
 
     public void connectToPeripheral() {
         pairingActivityIndicator.setVisibility(View.VISIBLE);
         senseActionsContainer.setVisibility(View.GONE);
-        retryButton.setVisibility(View.GONE);
+        actionButton.setVisibility(View.GONE);
 
         bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device), this::bindPeripheral, this::presentError);
+    }
+
+    public void enableBluetooth() {
+        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_turning_on), true);
+        bindAndSubscribe(hardwarePresenter.turnOnBluetooth(),
+                         ignored -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             connectToPeripheral();
+                         },
+                         e -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             presentError(e);
+                         });
     }
 
     public void bindPeripheral(@NonNull SensePeripheral peripheral) {
@@ -192,7 +218,10 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             signalStrength.setReading(getString(R.string.missing_data_placeholder));
             senseActionsContainer.setVisibility(View.GONE);
             pairingActivityIndicator.setVisibility(View.GONE);
-            retryButton.setVisibility(View.VISIBLE);
+        }
+
+        if (actionButton != null) {
+            actionButton.setVisibility(View.VISIBLE);
         }
     }
 
