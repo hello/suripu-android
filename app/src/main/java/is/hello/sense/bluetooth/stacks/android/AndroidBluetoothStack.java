@@ -96,6 +96,24 @@ public class AndroidBluetoothStack implements BluetoothStack {
     }
 
     @Override
+    public Observable<Void> turnOn() {
+        if (adapter == null || !adapter.enable()) {
+            return Observable.error(new BluetoothDisabledError());
+        }
+
+        return enabled.filter(e -> e).map(ignored -> null);
+    }
+
+    @Override
+    public Observable<Void> turnOff() {
+        if (adapter == null || !adapter.disable()) {
+            return Observable.error(new BluetoothDisabledError());
+        }
+
+        return enabled.filter(e -> !e).map(ignored -> null);
+    }
+
+    @Override
     public boolean errorRequiresReconnect(@Nullable Throwable e) {
         return (e != null && (e instanceof OperationTimeoutError ||
                 e instanceof BluetoothGattError ||

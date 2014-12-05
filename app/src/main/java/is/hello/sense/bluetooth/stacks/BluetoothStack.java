@@ -65,6 +65,16 @@ public interface BluetoothStack {
      */
     Observable<Boolean> isEnabled();
 
+    /**
+     * Turns on the device's Bluetooth radio.
+     */
+    Observable<Void> turnOn();
+
+    /**
+     * Turns off the device's Bluetooth radio.
+     */
+    Observable<Void> turnOff();
+
 
     /**
      * Returns a boolean indicating whether or not a given error is

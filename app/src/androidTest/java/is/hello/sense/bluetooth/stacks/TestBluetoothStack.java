@@ -54,6 +54,16 @@ public class TestBluetoothStack implements BluetoothStack {
     }
 
     @Override
+    public Observable<Void> turnOn() {
+        return Observable.just(null);
+    }
+
+    @Override
+    public Observable<Void> turnOff() {
+        return Observable.just(null);
+    }
+
+    @Override
     public boolean errorRequiresReconnect(@Nullable Throwable e) {
         return false;
     }
