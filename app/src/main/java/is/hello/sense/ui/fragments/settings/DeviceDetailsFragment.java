@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ProgressBar;
 
 import javax.inject.Inject;
@@ -43,6 +44,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     private ProgressBar pairingActivityIndicator;
     private ViewGroup senseActionsContainer;
     private @Nullable SensorStateView signalStrength;
+    private Button retryButton;
 
     private Device device;
     private BluetoothAdapter bluetoothAdapter;
@@ -93,6 +95,9 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
             SensorStateView factoryReset = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_factory_reset);
             factoryReset.setOnClickListener(this::factoryReset);
+
+            this.retryButton = (Button) view.findViewById(R.id.fragment_device_details_retry_connect);
+            retryButton.setOnClickListener(ignored -> connectToPeripheral());
         }
 
         return view;
@@ -103,11 +108,8 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         super.onViewCreated(view, savedInstanceState);
 
         if (device.getType() == Device.Type.SENSE && bluetoothAdapter.isEnabled()) {
-            pairingActivityIndicator.setVisibility(View.VISIBLE);
-            senseActionsContainer.setVisibility(View.GONE);
-
-            bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device), this::bindPeripheral, this::presentError);
             bindAndSubscribe(this.hardwarePresenter.bluetoothEnabled, this::onBluetoothStateChanged, Functions.LOG_ERROR);
+            connectToPeripheral();
         }
     }
 
@@ -135,6 +137,14 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
                 pairingActivityIndicator.setVisibility(View.GONE);
             }
         }
+    }
+
+    public void connectToPeripheral() {
+        pairingActivityIndicator.setVisibility(View.VISIBLE);
+        senseActionsContainer.setVisibility(View.GONE);
+        retryButton.setVisibility(View.GONE);
+
+        bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device), this::bindPeripheral, this::presentError);
     }
 
     public void bindPeripheral(@NonNull SensePeripheral peripheral) {
@@ -182,6 +192,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             signalStrength.setReading(getString(R.string.missing_data_placeholder));
             senseActionsContainer.setVisibility(View.GONE);
             pairingActivityIndicator.setVisibility(View.GONE);
+            retryButton.setVisibility(View.VISIBLE);
         }
     }
 
