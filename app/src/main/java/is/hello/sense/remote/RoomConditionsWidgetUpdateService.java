@@ -21,10 +21,10 @@ import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Logger;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class SenseWidgetUpdateService extends Service {
+public class RoomConditionsWidgetUpdateService extends Service {
     @Inject CurrentConditionsPresenter presenter;
 
-    public SenseWidgetUpdateService() {
+    public RoomConditionsWidgetUpdateService() {
         SenseApplication.getInstance().inject(this);
         presenter.update();
     }
@@ -36,12 +36,12 @@ public class SenseWidgetUpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Logger.info(SenseWidgetUpdateService.class.getSimpleName(), "Updating widget");
+        Logger.info(RoomConditionsWidgetUpdateService.class.getSimpleName(), "Updating widget");
 
         presenter.currentConditions
                  .observeOn(AndroidSchedulers.mainThread())
                  .subscribe(this::bindConditions, e -> {
-                     Logger.error(SenseWidgetUpdateService.class.getSimpleName(), "Could not update current conditions", e);
+                     Logger.error(RoomConditionsWidgetUpdateService.class.getSimpleName(), "Could not update current conditions", e);
                      bindConditions(null);
                  });
 
@@ -56,7 +56,7 @@ public class SenseWidgetUpdateService extends Service {
             RoomConditions conditions = results.conditions;
             UnitSystem unitSystem = results.units;
 
-            Logger.info(SenseWidgetUpdateService.class.getSimpleName(), "Updating with conditions " + conditions);
+            Logger.info(RoomConditionsWidgetUpdateService.class.getSimpleName(), "Updating with conditions " + conditions);
 
             SensorState temperature = conditions.getTemperature();
             remoteViews.setTextViewText(R.id.app_widget_temperature, temperature.getFormattedValue(unitSystem::formatTemperature));
@@ -85,11 +85,11 @@ public class SenseWidgetUpdateService extends Service {
     }
 
     private void publishUpdate(@NonNull RemoteViews updateViews) {
-        ComponentName thisWidget = new ComponentName(this, SenseWidgetProvider.class);
+        ComponentName thisWidget = new ComponentName(this, RoomConditionsWidgetProvider.class);
         AppWidgetManager manager = AppWidgetManager.getInstance(this);
         manager.updateAppWidget(thisWidget, updateViews);
 
-        Logger.info(SenseWidgetUpdateService.class.getSimpleName(), "Widget update completed");
+        Logger.info(RoomConditionsWidgetUpdateService.class.getSimpleName(), "Widget update completed");
 
         stopSelf();
     }

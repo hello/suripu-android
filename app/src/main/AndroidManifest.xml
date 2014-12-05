@@ -97,7 +97,7 @@
 
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 
-        <receiver android:name=".remote.SenseWidgetProvider" android:label="Room Conditions">
+        <receiver android:name=".remote.RoomConditionsWidgetProvider" android:label="Room Conditions">
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -109,7 +109,7 @@
 
         </receiver>
 
-        <service android:name=".remote.SenseWidgetUpdateService" />
+        <service android:name=".remote.RoomConditionsWidgetUpdateService" />
 
         <receiver
             android:name=".notifications.NotificationReceiver"

@@ -5,9 +5,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 
-public class SenseWidgetProvider extends AppWidgetProvider {
+public class RoomConditionsWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        context.startService(new Intent(context, SenseWidgetUpdateService.class));
+        context.startService(new Intent(context, RoomConditionsWidgetUpdateService.class));
     }
 }
