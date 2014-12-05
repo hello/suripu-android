@@ -65,4 +65,9 @@
     <dimen name="action_bar_height">60dp</dimen>
     <dimen name="action_bar_title_text_size">20dp</dimen>
 
+    <!-- Widget -->
+
+    <dimen name="widget_min_width">250dp</dimen>
+    <dimen name="widget_min_height">60dp</dimen>
+
 </resources>

@@ -65,7 +65,7 @@ public class UnitSystem {
     }
 
     public String formatParticulates(float particulates) {
-        return String.format("%.3f", particulates);
+        return Long.toString(Math.round(particulates));
     }
 
     //endregion

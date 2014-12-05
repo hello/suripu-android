@@ -36,6 +36,8 @@ public class SenseWidgetUpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Logger.info(SenseWidgetUpdateService.class.getSimpleName(), "Updating widget");
+
         presenter.currentConditions
                  .observeOn(AndroidSchedulers.mainThread())
                  .subscribe(this::bindConditions, e -> {
@@ -48,21 +50,24 @@ public class SenseWidgetUpdateService extends Service {
 
     private void bindConditions(@Nullable CurrentConditionsPresenter.Result results) {
         Resources resources = getResources();
-        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.app_widget);
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.widget_current_conditions);
         if (results != null) {
+
             RoomConditions conditions = results.conditions;
             UnitSystem unitSystem = results.units;
 
+            Logger.info(SenseWidgetUpdateService.class.getSimpleName(), "Updating with conditions " + conditions);
+
             SensorState temperature = conditions.getTemperature();
-            remoteViews.setTextViewText(R.id.app_widget_temperature, unitSystem.formatTemperature(temperature.getValue()));
+            remoteViews.setTextViewText(R.id.app_widget_temperature, temperature.getFormattedValue(unitSystem::formatTemperature));
             remoteViews.setTextColor(R.id.app_widget_temperature, resources.getColor(temperature.getCondition().colorRes));
 
             SensorState humidity = conditions.getHumidity();
-            remoteViews.setTextViewText(R.id.app_widget_humidity, humidity.getValue() + humidity.getUnit());
+            remoteViews.setTextViewText(R.id.app_widget_humidity, humidity.getFormattedValue(null));
             remoteViews.setTextColor(R.id.app_widget_humidity, resources.getColor(humidity.getCondition().colorRes));
 
             SensorState particulates = conditions.getParticulates();
-            remoteViews.setTextViewText(R.id.app_widget_particulates, unitSystem.formatParticulates(particulates.getValue()));
+            remoteViews.setTextViewText(R.id.app_widget_particulates, particulates.getFormattedValue(unitSystem::formatParticulates));
             remoteViews.setTextColor(R.id.app_widget_particulates, resources.getColor(particulates.getCondition().colorRes));
         } else {
             int unknownColor = resources.getColor(R.color.sensor_unknown);
@@ -83,6 +88,9 @@ public class SenseWidgetUpdateService extends Service {
         ComponentName thisWidget = new ComponentName(this, SenseWidgetProvider.class);
         AppWidgetManager manager = AppWidgetManager.getInstance(this);
         manager.updateAppWidget(thisWidget, updateViews);
+
+        Logger.info(SenseWidgetUpdateService.class.getSimpleName(), "Widget update completed");
+
         stopSelf();
     }
 }
