@@ -283,21 +283,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     //endregion
 
 
-    //region Presenting Blocking Work
-
-    @Deprecated
-    public void beginBlockingWork(@StringRes int titleResId) {
-        LoadingDialogFragment.show(getFragmentManager(), getString(titleResId), true);
-    }
-
-    @Deprecated
-    public void finishBlockingWork() {
-        LoadingDialogFragment.close(getFragmentManager());
-    }
-
-    //endregion
-
-
     public void showHomeActivity() {
         preferences
                 .edit()
