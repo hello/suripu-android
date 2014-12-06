@@ -3,7 +3,7 @@
     android:minWidth="@dimen/widget_last_night_min_width"
     android:minHeight="@dimen/widget_last_night_min_height"
     android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="1800000"
+    android:updatePeriodMillis="10800000"
     android:initialLayout="@layout/widget_last_night"
     android:initialKeyguardLayout="@layout/widget_last_night"
     android:widgetCategory="home_screen|keyguard"
