@@ -18,6 +18,7 @@
     <dimen name="text_size_subheading">20sp</dimen>
     <dimen name="text_size_question">24sp</dimen>
     <dimen name="text_size_heading">26sp</dimen>
+    <dimen name="text_size_small_score">40sp</dimen>
     <dimen name="text_size_big_score">72sp</dimen>
     <dimen name="text_size_smart_alarm_time">32sp</dimen>
 
@@ -64,5 +65,13 @@
 
     <dimen name="action_bar_height">60dp</dimen>
     <dimen name="action_bar_title_text_size">20dp</dimen>
+
+    <!-- Widget -->
+
+    <dimen name="widget_room_conditions_min_width">250dp</dimen>
+    <dimen name="widget_room_conditions_min_height">60dp</dimen>
+
+    <dimen name="widget_last_night_min_width">200dp</dimen>
+    <dimen name="widget_last_night_min_height">70dp</dimen>
 
 </resources>

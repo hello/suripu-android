@@ -146,7 +146,7 @@ public class HomeActivity
             UpdateManager.register(this, buildValues.hockeyId);
         }
 
-        if (isFirstActivityRun && getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false)) {
+        if (getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false)) {
             slidingLayersView.openWithoutAnimation();
         }
     }
@@ -164,6 +164,8 @@ public class HomeActivity
 
         if (intent.getBooleanExtra(EXTRA_IS_NOTIFICATION, false)) {
             onNotificationIntent(intent);
+        } else if (isFirstActivityRun && intent.getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false)) {
+            slidingLayersView.openWithoutAnimation();
         }
     }
 

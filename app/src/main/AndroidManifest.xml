@@ -97,6 +97,41 @@
 
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 
+        <!--region Widgets-->
+
+        <receiver
+            android:name=".remote.RoomConditionsWidgetProvider"
+            android:label="@string/widget_label_room_conditions">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/room_conditions_appwidget_info" />
+
+        </receiver>
+
+        <receiver
+            android:name=".remote.LastNightWidgetProvider"
+            android:label="@string/widget_label_last_night">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/last_night_appwidget_info" />
+
+        </receiver>
+
+        <service android:name=".remote.RoomConditionsWidgetProvider$UpdateService" />
+        <service android:name=".remote.LastNightWidgetProvider$LastNightService" />
+
+        <!--endregion-->
+
         <receiver
             android:name=".notifications.NotificationReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
