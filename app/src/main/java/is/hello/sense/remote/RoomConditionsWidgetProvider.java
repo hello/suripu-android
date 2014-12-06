@@ -34,9 +34,11 @@ public class RoomConditionsWidgetProvider extends AppWidgetProvider {
             presenter.update();
             addPresenter(presenter);
         }
+        
         @Override
         protected void startUpdate(int widgetIds[]) {
             presenter.currentConditions
+                     .take(1)
                      .observeOn(AndroidSchedulers.mainThread())
                      .subscribe(r -> bindConditions(widgetIds, r), e -> {
                          Logger.error(UpdateService.class.getSimpleName(), "Could not update current conditions", e);
