@@ -244,6 +244,8 @@
     <string name="video_playback_generic_error">Could not play video.</string>
     <string name="title_turning_on">Turning On</string>
     <string name="error_bluetooth_power_change">We could not turn your Bluetooth on or off.</string>
+    <string name="widget_label_room_conditions">Room Conditions</string>
+    <string name="widget_label_last_night">Last Night</string>
 
     <string-array name="sleep_pill_color_names">
         <item>Red</item>

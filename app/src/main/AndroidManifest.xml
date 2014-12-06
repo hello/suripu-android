@@ -99,7 +99,9 @@
 
         <!--region Widgets-->
 
-        <receiver android:name=".remote.RoomConditionsWidgetProvider" android:label="Room Conditions">
+        <receiver
+            android:name=".remote.RoomConditionsWidgetProvider"
+            android:label="@string/widget_label_room_conditions">
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -111,7 +113,9 @@
 
         </receiver>
 
-        <receiver android:name=".remote.LastNightWidgetProvider" android:label="Last Night">
+        <receiver
+            android:name=".remote.LastNightWidgetProvider"
+            android:label="@string/widget_label_last_night">
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
