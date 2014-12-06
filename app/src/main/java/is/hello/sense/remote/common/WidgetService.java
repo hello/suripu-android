@@ -80,7 +80,7 @@ public abstract class WidgetService extends Service implements PresenterContaine
 
     @Override
     public void addPresenter(@NonNull Presenter presenter) {
-        presenters.remove(presenter);
+        presenters.add(presenter);
     }
 
     @Override
