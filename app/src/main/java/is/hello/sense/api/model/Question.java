@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
 import java.util.List;
@@ -30,6 +29,9 @@ public class Question extends ApiResponse {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private LocalDateTime askDate;
 
+    @JsonProperty("ask_time")
+    private AskTime askTime;
+
     @JsonProperty("choices")
     @JsonDeserialize(contentAs = Choice.class)
     private List<Choice> choices;
@@ -49,6 +51,10 @@ public class Question extends ApiResponse {
 
     public Type getType() {
         return type;
+    }
+
+    public AskTime getAskTime() {
+        return askTime;
     }
 
     public LocalDateTime getAskDate() {
@@ -113,6 +119,19 @@ public class Question extends ApiResponse {
 
         @JsonCreator
         public static Type fromString(@NonNull String string) {
+            return Enums.fromString(string.toUpperCase(), values(), UNKNOWN);
+        }
+    }
+
+    public static enum AskTime {
+        MORNING,
+        AFTERNOON,
+        EVENING,
+        ANYTIME,
+        UNKNOWN;
+
+        @JsonCreator
+        public static AskTime fromString(@NonNull String string) {
             return Enums.fromString(string.toUpperCase(), values(), UNKNOWN);
         }
     }

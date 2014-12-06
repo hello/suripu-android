@@ -11,10 +11,9 @@ import android.widget.ToggleButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectorLinearLayout extends LinearLayout implements View.OnClickListener {
-    private static final int TAG_KEY_INDEX = -1;
-    private static final int TAG_KEY_USER = -2;
+import is.hello.sense.R;
 
+public class SelectorLinearLayout extends LinearLayout implements View.OnClickListener {
     public static final int EMPTY_SELECTION = -1;
 
     private final List<ToggleButton> toggleButtons = new ArrayList<>();
@@ -43,7 +42,7 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
             ToggleButton button = (ToggleButton) child;
             int buttonIndex = toggleButtons.size();
             button.setOnClickListener(this);
-            button.setTag(TAG_KEY_INDEX, buttonIndex);
+            button.setTag(R.id.layout_linear_selector_tag_key_index, buttonIndex);
             if (button.isChecked())
                 this.selectedIndex = buttonIndex;
             toggleButtons.add(button);
@@ -54,7 +53,7 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
 
     @Override
     public void onClick(@NonNull View view) {
-        this.selectedIndex = (Integer) view.getTag(TAG_KEY_INDEX);
+        this.selectedIndex = (Integer) view.getTag(R.id.layout_linear_selector_tag_key_index);
         synchronizeButtonStates();
         if (getOnSelectionChangedListener() != null) {
             getOnSelectionChangedListener().onSelectionChanged(selectedIndex);
@@ -63,7 +62,7 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
 
     private void synchronizeButtonStates() {
         for (ToggleButton button : toggleButtons) {
-            int index = (Integer) button.getTag(TAG_KEY_INDEX);
+            int index = (Integer) button.getTag(R.id.layout_linear_selector_tag_key_index);
             boolean isSelected = (index == selectedIndex);
             if (buttonStyler != null) {
                 buttonStyler.styleButton(button, isSelected);
@@ -97,12 +96,12 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
         }
 
         for (int i = 0, count = tags.length; i < count; i++) {
-            toggleButtons.get(i).setTag(TAG_KEY_USER, tags[i]);
+            toggleButtons.get(i).setTag(R.id.layout_linear_selector_tag_key_user, tags[i]);
         }
     }
 
     public Object getButtonTag(int index) {
-        return toggleButtons.get(index).getTag(TAG_KEY_USER);
+        return toggleButtons.get(index).getTag(R.id.layout_linear_selector_tag_key_user);
     }
 
     public void setButtonStyler(ButtonStyler buttonStyler) {
