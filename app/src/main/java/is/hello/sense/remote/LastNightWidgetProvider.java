@@ -65,9 +65,8 @@ public class LastNightWidgetProvider extends AppWidgetProvider {
             }
 
             Intent intent = new Intent(this, HomeActivity.class);
-            intent.putExtra(HomeActivity.EXTRA_SHOW_UNDERSIDE, false);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            PendingIntent onClick = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent onClick = PendingIntent.getActivity(this, 12, intent, PendingIntent.FLAG_CANCEL_CURRENT);
             remoteViews.setOnClickPendingIntent(R.id.widget_last_night, onClick);
 
             publishUpdate(widgetIds, remoteViews);
