@@ -21,7 +21,8 @@ import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.notifications.NotificationRegistration;
-import is.hello.sense.remote.RoomConditionsWidgetUpdateService;
+import is.hello.sense.remote.LastNightWidgetProvider;
+import is.hello.sense.remote.RoomConditionsWidgetProvider;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
@@ -58,7 +59,8 @@ import is.hello.sense.util.BuildValues;
         PreferencesPresenter.class,
         TimestampTextView.class,
         NotificationRegistration.class,
-        RoomConditionsWidgetUpdateService.class,
+        RoomConditionsWidgetProvider.UpdateService.class,
+        LastNightWidgetProvider.LastNightService.class,
 
         LaunchActivity.class,
         HomeActivity.class,
