@@ -35,8 +35,9 @@ public class InjectionActivity extends SenseActivity implements ObservableContai
         super.onDestroy();
 
         for (Subscription subscription : subscriptions) {
-            if (!subscription.isUnsubscribed())
+            if (!subscription.isUnsubscribed()) {
                 subscription.unsubscribe();
+            }
         }
 
         subscriptions.clear();
@@ -109,11 +110,14 @@ public class InjectionActivity extends SenseActivity implements ObservableContai
         return track(toSubscribe.unsafeSubscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
-
+                unsubscribe();
             }
 
             @Override
             public void onError(Throwable e) {
+                if (isUnsubscribed())
+                    return;
+
                 try {
                     onError.call(e);
                 } catch (Throwable actionError) {
@@ -124,6 +128,9 @@ public class InjectionActivity extends SenseActivity implements ObservableContai
 
             @Override
             public void onNext(T t) {
+                if (isUnsubscribed())
+                    return;
+
                 onNext.call(t);
             }
         }));

@@ -19,7 +19,6 @@ import is.hello.sense.remote.common.WidgetService;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Logger;
-import rx.android.schedulers.AndroidSchedulers;
 
 public class RoomConditionsWidgetProvider extends AppWidgetProvider {
     @Override
@@ -34,16 +33,15 @@ public class RoomConditionsWidgetProvider extends AppWidgetProvider {
             presenter.update();
             addPresenter(presenter);
         }
-        
+
         @Override
         protected void startUpdate(int widgetIds[]) {
-            presenter.currentConditions
-                     .take(1)
-                     .observeOn(AndroidSchedulers.mainThread())
-                     .subscribe(r -> bindConditions(widgetIds, r), e -> {
-                         Logger.error(UpdateService.class.getSimpleName(), "Could not update current conditions", e);
-                         bindConditions(widgetIds, null);
-                     });
+            bindAndSubscribe(presenter.currentConditions,
+                             r -> bindConditions(widgetIds, r),
+                             e -> {
+                                 Logger.error(UpdateService.class.getSimpleName(), "Could not update current conditions", e);
+                                 bindConditions(widgetIds, null);
+                             });
         }
 
         private void bindConditions(int widgetIds[], @Nullable CurrentConditionsPresenter.Result results) {

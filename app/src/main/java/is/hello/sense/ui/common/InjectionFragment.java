@@ -197,8 +197,9 @@ public class InjectionFragment extends SenseFragment implements ObservableContai
     @NonNull
     @Override
     public List<Presenter> getPresenters() {
-        if (presenters == null)
+        if (presenters == null) {
             this.presenters = new ArrayList<>();
+        }
 
         return presenters;
     }

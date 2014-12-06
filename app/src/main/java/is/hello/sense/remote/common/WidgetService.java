@@ -13,11 +13,17 @@ import java.util.List;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
+import is.hello.sense.ui.common.ObservableContainer;
 import is.hello.sense.util.Logger;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
-public abstract class WidgetService extends Service implements PresenterContainer {
+public abstract class WidgetService extends Service implements PresenterContainer, ObservableContainer {
     public static final String EXTRA_WIDGET_IDS = WidgetService.class.getName() + ".EXTRA_WIDGET_IDS";
 
+    private final List<Subscription> subscriptions = new ArrayList<>();
     private final List<Presenter> presenters = new ArrayList<>();
 
     //region Lifecycle
@@ -42,6 +48,14 @@ public abstract class WidgetService extends Service implements PresenterContaine
         for (Presenter presenter : presenters) {
             presenter.onContainerDestroyed();
         }
+
+        for (Subscription subscription : subscriptions) {
+            if (!subscription.isUnsubscribed()) {
+                subscription.unsubscribe();
+            }
+        }
+
+        subscriptions.clear();
     }
 
     //endregion
@@ -93,6 +107,42 @@ public abstract class WidgetService extends Service implements PresenterContaine
     public List<Presenter> getPresenters() {
         return presenters;
     }
+
+    //endregion
+
+
+    //region Observable Container
+
+    @Override
+    public boolean hasSubscriptions() {
+        return !subscriptions.isEmpty();
+    }
+
+    @Override
+    public @NonNull Subscription track(@NonNull Subscription subscription) {
+        subscriptions.add(subscription);
+        return subscription;
+    }
+
+    @NonNull
+    @Override
+    public <T> Observable<T> bind(@NonNull Observable<T> toBind) {
+        return toBind.observeOn(AndroidSchedulers.mainThread())
+                     .take(1);
+    }
+
+    @NonNull
+    @Override
+    public <T> Subscription subscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
+        return track(toSubscribe.subscribe(onNext, onError));
+    }
+
+    @NonNull
+    @Override
+    public <T> Subscription bindAndSubscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
+        return subscribe(bind(toSubscribe), onNext, onError);
+    }
+
 
     //endregion
 }

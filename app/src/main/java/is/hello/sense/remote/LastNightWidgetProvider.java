@@ -41,11 +41,12 @@ public class LastNightWidgetProvider extends AppWidgetProvider {
         @Override
         protected void startUpdate(int widgetIds[]) {
             Observable<Pair<Timeline, CharSequence>> update = Observable.combineLatest(presenter.mainTimeline.take(1), presenter.renderedTimelineMessage.take(1), Pair::new);
-            update.observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(r -> bindConditions(widgetIds, r), e -> {
-                      Logger.error(LastNightWidgetProvider.class.getSimpleName(), "Could not fetch last night's timeline", e);
-                      bindConditions(widgetIds, null);
-                  });
+            bindAndSubscribe(update,
+                             r -> bindConditions(widgetIds, r),
+                             e -> {
+                                 Logger.error(LastNightWidgetProvider.class.getSimpleName(), "Could not fetch last night's timeline", e);
+                                 bindConditions(widgetIds, null);
+                             });
         }
 
         private void bindConditions(int widgetIds[], @Nullable Pair<Timeline, CharSequence> result) {
