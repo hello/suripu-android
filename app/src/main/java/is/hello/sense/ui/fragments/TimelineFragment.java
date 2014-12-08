@@ -301,13 +301,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Override
     public void onUserWillPullDownTopView() {
         menuButton.setImageResource(R.drawable.icon_menu_open);
-        shareButton.setImageResource(R.drawable.icon_share_disabled);
+        dateText.setTextColor(getResources().getColor(R.color.text_dim));
+        shareButton.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void onUserDidPushUpTopView() {
         menuButton.setImageResource(R.drawable.icon_menu_closed);
-        shareButton.setImageResource(R.drawable.icon_share_enabled);
+        dateText.setTextColor(getResources().getColor(R.color.text_dark));
+        shareButton.setVisibility(View.VISIBLE);
     }
 
 
