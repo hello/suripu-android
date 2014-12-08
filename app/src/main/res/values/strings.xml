@@ -197,7 +197,7 @@
     <string name="action_restart_radios"><![CDATA[Restart Bluetooth & Wifi]]></string>
     <string name="label_searching_for_pill">Looking for your Sleep Pill</string>
     <string name="title_onboarding_setup_2nd_pill">Set up another Sleep Pill?</string>
-    <string name="info_onboarding_setup_2nd_pill">Would you like to set up a second Sleep Pill at this time?\n\nYou can always do this later by visiting Settings.</string>
+    <string name="info_onboarding_setup_2nd_pill">Would you like to set up a second Sleep Pill for your partner at this time?\n\nYou can always do this later by visiting Settings.</string>
     <string name="action_setup_another_pill">Set up another Sleep Pill</string>
     <string name="action_no_thanks">No Thanks</string>
     <string name="title_onboarding_2nd_pill_info">Have your partner get the app</string>
@@ -224,7 +224,7 @@
     <string name="error_account_incomplete_credentials">You must enter your email address and password.</string>
     <string name="title_checking_connectivity">Checking Connectivity…</string>
     <string name="error_title_sleep_pill_scan_timeout">Pill Pairing Failed</string>
-    <string name="error_message_sleep_pill_scan_timeout">Sense couldn't register your Sleep Pill. Please try pairing again. Try moving your Sleep Pill closer to Sense, and shaking it harder.</string>
+    <string name="error_message_sleep_pill_scan_timeout">Sense couldn\'t register your Sleep Pill. Please try pairing again. Try moving your Sleep Pill closer to Sense, and shaking it harder.</string>
     <string name="error_sense_not_found">We could not connect to your Sense. Please make sure your Sense is plugged in, and nearby.</string>
     <string name="onboarding_register_info_explanation">This information is used to provide personalized sleep insights.</string>
     <string name="error_bluetooth_disabled">Please enable Bluetooth to continue.</string>
