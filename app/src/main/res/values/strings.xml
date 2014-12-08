@@ -139,7 +139,7 @@
     <string name="title_onboarding_sleep_pill_color">Personalize your Sleep Pill</string>
     <string name="info_onboarding_sleep_pill_color">Choose an LED color for your Sleep Pill so you know which one is yours.</string>
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
-    <string name="info_pair_pill">Shake your Sleep Pill for three seconds to pair it with your Sense.</string>
+    <string name="info_pair_pill">Shake your Sleep Pill for three seconds to pair it with your Sense. You may need to shake it quickly for it to register.</string>
     <string name="error_bad_wifi_credentials">The wifi network credentials you entered are incorrect.</string>
     <string name="error_wifi_out_of_range">The wifi network you selected could not be found by Sense.</string>
     <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the wifi network you selected.</string>
