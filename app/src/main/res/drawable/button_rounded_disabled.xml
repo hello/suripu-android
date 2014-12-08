@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners
+                android:radius="60dp" />
+            <stroke
+                android:color="@color/light_accent_dimmed"
+                android:dashWidth="@dimen/button_rounded_border_width"
+                android:width="@dimen/button_rounded_border_width" />
+        </shape>
+    </item>
+</layer-list>

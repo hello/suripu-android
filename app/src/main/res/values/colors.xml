@@ -5,6 +5,7 @@
     <color name="grey">#515151</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="light_accent">#009CFF</color>
+    <color name="light_accent_dimmed">#6ec2fe</color>
 
     <color name="background">#f8f8f8</color>
     <color name="background_light_overlay">#99ffffff</color>
