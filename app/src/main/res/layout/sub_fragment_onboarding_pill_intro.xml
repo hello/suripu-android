@@ -13,11 +13,12 @@
         android:textAppearance="@style/AppTheme.Text.Heading"
         android:text="@string/title_intro_sleep_pill"/>
 
-    <View
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/gap_large"
-        android:background="@color/background_button_dark_pressed" />
+        android:src="@drawable/clip_pill"
+        android:contentDescription="@string/info_intro_sleep_pill"/>
 
     <TextView
         android:layout_width="match_parent"
