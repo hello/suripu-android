@@ -3,6 +3,9 @@ package is.hello.sense.ui.activities;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,6 +27,7 @@ import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
@@ -51,6 +55,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     @Inject ApiService apiService;
     @Inject HardwarePresenter hardwarePresenter;
     @Inject PreferencesPresenter preferences;
+    private BluetoothAdapter bluetoothAdapter;
 
     private Account account;
 
@@ -62,6 +67,9 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         //noinspection ConstantConditions
         getActionBar().setDisplayShowTitleEnabled(false);
         getActionBar().setDisplayShowHomeEnabled(false);
+
+        BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        this.bluetoothAdapter = bluetoothManager.getAdapter();
 
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {
@@ -235,11 +243,15 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public void showSetupSense() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
 
-        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
-        builder.setLayout(R.layout.sub_fragment_onboarding_intro_setup_sense);
-        builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
-        builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_SETUP);
-        showFragment(builder.build(), null, true);
+        if (bluetoothAdapter.isEnabled()) {
+            OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
+            builder.setLayout(R.layout.sub_fragment_onboarding_intro_setup_sense);
+            builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
+            builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_SETUP);
+            showFragment(builder.build(), null, false);
+        } else {
+            showFragment(new OnboardingBluetoothFragment(), null, false);
+        }
     }
 
     public void showSelectWifiNetwork(boolean wantsBackStackEntry) {

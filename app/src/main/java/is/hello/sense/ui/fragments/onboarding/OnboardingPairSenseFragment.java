@@ -38,7 +38,6 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     private static int REQUEST_CODE_PAIR_HELP = 0x19;
 
     @Inject HardwarePresenter hardwarePresenter;
-    private BluetoothAdapter bluetoothAdapter;
 
     private Button nextButton;
     private LoadingDialogFragment loadingDialogFragment;
@@ -46,8 +45,6 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.bluetoothAdapter = ((BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 
         Analytics.event(Analytics.EVENT_ONBOARDING_PAIR_SENSE, null);
 
@@ -61,7 +58,6 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
 
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_step_continue);
         nextButton.setOnClickListener(this::next);
-        updateNextButton();
 
         Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
         helpButton.setOnClickListener(this::next);
@@ -73,7 +69,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        subscribe(hardwarePresenter.bluetoothEnabled, ignored -> updateNextButton(), Functions.LOG_ERROR);
+        subscribe(hardwarePresenter.bluetoothEnabled, nextButton::setEnabled, Functions.LOG_ERROR);
     }
 
     @Override
@@ -83,14 +79,6 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         if (requestCode == REQUEST_CODE_PAIR_HELP && resultCode == OnboardingPairHelpFragment.RESULT_NEW_SENSE) {
             TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
             dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
-        }
-    }
-
-    private void updateNextButton() {
-        if (bluetoothAdapter.isEnabled()) {
-            nextButton.setText(R.string.action_continue);
-        } else {
-            nextButton.setText(R.string.action_turn_on_ble);
         }
     }
 
@@ -128,26 +116,13 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     }
 
     public void next(@NonNull View sender) {
-        if (bluetoothAdapter.isEnabled()) {
-            beginPairing();
+        beginPairing();
 
-            if (hardwarePresenter.getPeripheral() == null) {
-                Observable<SensePeripheral> device = hardwarePresenter.scanForDevices().map(hardwarePresenter::getClosestPeripheral);
-                bindAndSubscribe(device, this::pairWith, this::pairingFailed);
-            } else {
-                finishedPairing();
-            }
+        if (hardwarePresenter.getPeripheral() == null) {
+            Observable<SensePeripheral> device = hardwarePresenter.scanForDevices().map(hardwarePresenter::getClosestPeripheral);
+            bindAndSubscribe(device, this::pairWith, this::pairingFailed);
         } else {
-            LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_turning_on), true);
-            bindAndSubscribe(hardwarePresenter.turnOnBluetooth(),
-                             ignored -> {
-                                 LoadingDialogFragment.close(getFragmentManager());
-                                 next(sender);
-                             },
-                             e -> {
-                                 LoadingDialogFragment.close(getFragmentManager());
-                                 pairingFailed(e);
-                             });
+            finishedPairing();
         }
     }
 

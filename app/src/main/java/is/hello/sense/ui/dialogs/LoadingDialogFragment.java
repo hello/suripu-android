@@ -62,6 +62,8 @@ public class LoadingDialogFragment extends DialogFragment {
         LoadingDialogFragment dialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
         if (dialog != null) {
             dialog.dismissWithDoneTransition(onCompletion);
+        } else {
+            onCompletion.run();
         }
     }
 
