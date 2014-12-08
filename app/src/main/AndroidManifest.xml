@@ -105,6 +105,8 @@
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_ENABLED" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_DELETED" />
             </intent-filter>
 
             <meta-data
@@ -119,6 +121,8 @@
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_ENABLED" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_DELETED" />
             </intent-filter>
 
             <meta-data

@@ -18,12 +18,31 @@ import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.remote.common.WidgetService;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.units.UnitSystem;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class RoomConditionsWidgetProvider extends AppWidgetProvider {
+    private static final String WIDGET_NAME = "Room Conditions";
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         context.startService(new Intent(context, UpdateService.class).putExtra(WidgetService.EXTRA_WIDGET_IDS, appWidgetIds));
+    }
+
+    @Override
+    public void onEnabled(Context context) {
+        super.onEnabled(context);
+
+        Logger.info(getClass().getSimpleName(), "onEnabled()");
+        Analytics.event(Analytics.EVENT_WIDGET_CREATED, Analytics.createProperties(Analytics.PROP_WIDGET_NAME, WIDGET_NAME));
+    }
+
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        super.onDeleted(context, appWidgetIds);
+
+        Logger.info(getClass().getSimpleName(), "onDeleted()");
+        Analytics.event(Analytics.EVENT_WIDGET_DELETED, Analytics.createProperties(Analytics.PROP_WIDGET_NAME, WIDGET_NAME));
     }
 
     public static class UpdateService extends WidgetService {

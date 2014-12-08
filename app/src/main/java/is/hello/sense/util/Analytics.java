@@ -159,6 +159,20 @@ public class Analytics {
     public static final String PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE = "enable pairing mode";
 
 
+    /**
+     * When the user creates their first home screen widget of a certain type.
+     */
+    public static final String EVENT_WIDGET_CREATED = "Widget Created";
+
+    /**
+     * When the user deletes a home screen widget.
+     */
+    public static final String EVENT_WIDGET_DELETED = "Widget Deleted";
+
+    public static final String PROP_WIDGET_NAME = "widget name";
+
+
+
     public static @NonNull JSONObject createProperties(@NonNull Object... pairs) {
         if ((pairs.length % 2) != 0)
             throw new IllegalArgumentException("even number of arguments required");
