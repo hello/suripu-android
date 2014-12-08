@@ -21,7 +21,7 @@ public class OnboardingSetup2ndPillFragment extends Fragment {
         yesButton.setOnClickListener(ignored -> ((OnboardingActivity) getActivity()).show2ndPillPairing());
 
         Button noButton = (Button) view.findViewById(R.id.fragment_onboarding_setup_2nd_pill_no);
-        noButton.setOnClickListener(ignored -> ((OnboardingActivity) getActivity()).showWelcome());
+        noButton.setOnClickListener(ignored -> ((OnboardingActivity) getActivity()).showSenseColorsInfo());
 
         return view;
     }

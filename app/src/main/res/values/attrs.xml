@@ -26,4 +26,8 @@
         <attr name="wantsHeaders" format="boolean" />
         <attr name="wantsFooters" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="SenseHtmlTextView">
+        <attr name="senseHtml" format="integer" />
+    </declare-styleable>
 </resources>

@@ -20,6 +20,7 @@ public class OnboardingStaticStepFragment extends Fragment {
     private static final String ARG_NEXT_CLASS = OnboardingStaticStepFragment.class.getName() + ".ARG_NEXT_CLASS";
     private static final String ARG_ARGUMENTS = OnboardingStaticStepFragment.class.getName() + ".ARG_ARGUMENTS";
     private static final String ARG_ANALYTICS_EVENT = OnboardingStaticStepFragment.class.getName() + ".ARG_ANALYTICS_EVENT";
+    private static final String ARG_HIDE_HELP = OnboardingStaticStepFragment.class.getName() + ".ARG_HIDE_HELP";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,11 @@ public class OnboardingStaticStepFragment extends Fragment {
         next.setOnClickListener(this::next);
 
         Button help = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        help.setOnClickListener(this::help);
+        if (getArguments().getBoolean(ARG_HIDE_HELP, false)) {
+            help.setVisibility(View.GONE);
+        } else {
+            help.setOnClickListener(this::help);
+        }
 
         return view;
     }
@@ -85,6 +90,11 @@ public class OnboardingStaticStepFragment extends Fragment {
 
         public Builder setAnalyticsEvent(@NonNull String event) {
             arguments.putString(ARG_ANALYTICS_EVENT, event);
+            return this;
+        }
+
+        public Builder setHideHelp(boolean hideHelp) {
+            arguments.putBoolean(ARG_HIDE_HELP, hideHelp);
             return this;
         }
 

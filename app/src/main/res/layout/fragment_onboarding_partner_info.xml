@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,12 +13,12 @@
         android:textAppearance="@style/AppTheme.Text.Heading"
         android:text="@string/title_onboarding_partner_info"/>
 
-    <TextView
+    <is.hello.sense.util.SenseHtmlTextView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:textAppearance="@style/AppTheme.Text.Subheading"
-        android:text="@string/info_onboarding_partner_info"/>
+        app:senseHtml="@string/info_onboarding_partner_info"/>
 
     <Button
         android:id="@+id/fragment_onboarding_partner_info_continue"

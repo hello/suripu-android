@@ -28,6 +28,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingDoneFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
@@ -40,7 +41,6 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSetup2ndPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingWelcomeFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
@@ -285,10 +285,14 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(new Onboarding2ndPillInfoFragment(), null, true);
     }
 
-    public void showWelcome() {
+    public void showSenseColorsInfo() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
 
-        showFragment(new OnboardingWelcomeFragment(), null, false);
+        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
+        builder.setLayout(R.layout.sub_fragment_onboarding_sense_colors);
+        builder.setNextFragmentClass(OnboardingDoneFragment.class);
+        builder.setHideHelp(true);
+        showFragment(builder.build(), null, true);
     }
 
     //endregion

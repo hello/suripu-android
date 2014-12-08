@@ -133,13 +133,17 @@
     <string name="action_2nd_sleep_pill">Second Sleep Pill</string>
     <string name="action_1st_sleep_pill">First Sleep Pill</string>
     <string name="title_setup_second_pill">Add a second Sleep Pill</string>
-    <string name="info_setup_second_pill"><![CDATA[To connect a second sleep pill, Sense needs to be put into pairing mode.\n\nAsk the owner of the first sleeping pill to stand next to Sense and open the Sense app, then go to Settings &gt; Devices &gt; Sense and tap \'Put Sense into Pairing Mode\'.\n\nSense will glow blue when it is in pairing mode.]]></string>
+    <string name="info_setup_second_pill"><![CDATA[To connect a second sleep pill, Sense needs to be put into pairing mode.<br><br>Ask the owner of the first sleeping pill to stand next to Sense and open the Sense app, then go to Settings &gt; Devices &gt; Sense and tap &#39;Put Sense into Pairing Mode&#39;.<br><br>Sense will glow blue when it is in pairing mode.]]></string>
     <string name="title_intro_sleep_pill">Attach Sleep Pill to your Pillow</string>
     <string name="info_intro_sleep_pill">Clip your Sleep Pill to the pillowcase you sleep on.</string>
     <string name="title_onboarding_sleep_pill_color">Personalize your Sleep Pill</string>
     <string name="info_onboarding_sleep_pill_color">Choose an LED color for your Sleep Pill so you know which one is yours.</string>
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
     <string name="info_pair_pill">Shake your Sleep Pill for three seconds to pair it with your Sense. You may need to shake it quickly for it to register.</string>
+    <string name="title_sense_colors">Before you sleep</string>
+    <string name="info_sense_colors"><![CDATA[Before you go to bed, you’ll want to check that everything’s set for a good nights sleep. Simply wave your hand over Sense, and instantly you’ll know about the conditions in your room. <b>Go ahead, give it a try now.</b><br><br><b><color-green>Green</color-green></b> means everything’s good. <b><color-orange>Orange</color-orange></b> means something’s a little off and <b><color-red>red</color-red></b> means you should adjust something before sleep.]]></string>
+    <string name="onboarding_done_message_1">You’re all set up.\nWell done.</string>
+    <string name="onboarding_done_message_2">All you need to do now is sleep.</string>
     <string name="error_bad_wifi_credentials">The wifi network credentials you entered are incorrect.</string>
     <string name="error_wifi_out_of_range">The wifi network you selected could not be found by Sense.</string>
     <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the wifi network you selected.</string>
@@ -210,7 +214,7 @@
     <string name="info_fragment_onboarding_pair_help">Are you adding a second Sleep Pill to a Sense that has been set up previously, or are you setting up Sense for the first time?</string>
     <string name="title_fragment_onboarding_pair_help_2nd_pill">I\'m adding a second sleep pill</string>
     <string name="title_fragment_onboarding_pair_help_new_sense">I\'m setting up a new Sense</string>
-    <string name="info_onboarding_partner_info"><![CDATA[To connect a second Sleep Pill, Sense needs to be put into pairing mode.\n\nAsk the owner of the first Sleep Pill to stand next to Sense and open the Sense app, then go to Settings > Devices > Sense and tap \'Put Sense into Pairing Mode\'.\n\nSense will glow purple when it is in pairing mode.]]></string>
+    <string name="info_onboarding_partner_info"><![CDATA[To connect a second Sleep Pill, Sense needs to be put into pairing mode.<br><br>Ask the owner of the first Sleep Pill to stand next to Sense and open the Sense app, then go to <b>Settings &gt; Devices &gt; Sense</b> and tap <b>\'Put Sense into Pairing Mode\'</b>.<br><br>.Sense will glow <color-purple>purple</color-purple> when it is in pairing mode.]]></string>
     <string name="title_onboarding_partner_info">Add a second Sleep Pill</string>
     <string name="title_security">Security</string>
     <string name="sec_type_wpa2">WPA2</string>

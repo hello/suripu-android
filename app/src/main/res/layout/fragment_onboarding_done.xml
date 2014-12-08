@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_dialog_loading_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/background_onboarding">
+
+    <ImageView
+        android:id="@+id/fragment_onboarding_done_glyph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/onboarding_done_check"
+        android:contentDescription="@string/action_done" />
+
+    <TextView
+        android:id="@+id/fragment_onboarding_done_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_large"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:text="@string/onboarding_done_message_1"
+        android:lineSpacingMultiplier="@dimen/subheading_text_line_multiple"/>
+
+</LinearLayout>

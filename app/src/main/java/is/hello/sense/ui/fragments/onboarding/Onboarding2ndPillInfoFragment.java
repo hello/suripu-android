@@ -33,7 +33,7 @@ public class Onboarding2ndPillInfoFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_2nd_pill_info, container, false);
 
         Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_2nd_pill_info_continue);
-        continueButton.setOnClickListener(ignored -> ((OnboardingActivity) getActivity()).showWelcome());
+        continueButton.setOnClickListener(ignored -> ((OnboardingActivity) getActivity()).showSenseColorsInfo());
 
         return view;
     }
