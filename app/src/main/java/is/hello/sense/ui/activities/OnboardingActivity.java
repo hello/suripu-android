@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -92,7 +91,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_SENSE:
-                    showPairPill(-1);
+                    showPairPill();
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_PILL:
@@ -251,7 +250,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(OnboardingSignIntoWifiFragment.newInstance(network), null, true);
     }
 
-    public void showPairPill(int selectedColorIndex) {
+    public void showPairPill() {
         if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {
             finish();
             return;
@@ -259,7 +258,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SENSE);
 
-        showFragment(OnboardingPairPillFragment.newInstance(selectedColorIndex), null, false);
+        showFragment(new OnboardingPairPillFragment(), null, false);
     }
 
     public void showPillInstructions() {

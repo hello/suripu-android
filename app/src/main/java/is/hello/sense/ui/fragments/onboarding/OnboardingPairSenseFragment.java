@@ -120,7 +120,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         loadingDialogFragment.setTitle(getString(R.string.title_linking_account));
         bindAndSubscribe(hardwarePresenter.linkAccount(), ignored -> {
             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
-                    () -> ((OnboardingActivity) getActivity()).showPairPill(-1));
+                    () -> ((OnboardingActivity) getActivity()).showPairPill());
         }, error -> {
             Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not link Sense to account", error);
             pairingFailed(error);

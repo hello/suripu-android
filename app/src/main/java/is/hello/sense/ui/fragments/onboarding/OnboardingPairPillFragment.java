@@ -25,8 +25,6 @@ import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingPairPillFragment extends InjectionFragment {
-    private static final String ARG_COLOR_INDEX = OnboardingPairPillFragment.class.getName() + ".ARG_COLOR_INDEX";
-
     @Inject HardwarePresenter hardwarePresenter;
 
     private ProgressBar activityIndicator;
@@ -34,16 +32,6 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     private Button retryButton;
 
     private boolean isPairing = false;
-
-    public static OnboardingPairPillFragment newInstance(int colorIndex) {
-        OnboardingPairPillFragment fragment = new OnboardingPairPillFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putInt(ARG_COLOR_INDEX, colorIndex);
-        fragment.setArguments(arguments);
-
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

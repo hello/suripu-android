@@ -158,7 +158,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
         LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
             OnboardingActivity activity = (OnboardingActivity) getActivity();
-            activity.showPairPill(-1);
+            activity.showPairPill();
         });
     }
 
