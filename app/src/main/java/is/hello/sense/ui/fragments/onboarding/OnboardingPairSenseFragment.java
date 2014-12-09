@@ -2,9 +2,6 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -31,6 +28,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
@@ -38,6 +36,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     private static int REQUEST_CODE_PAIR_HELP = 0x19;
 
     @Inject HardwarePresenter hardwarePresenter;
+    @Inject BuildValues buildValues;
 
     private Button nextButton;
     private LoadingDialogFragment loadingDialogFragment;
@@ -120,36 +119,49 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
 
         if (hardwarePresenter.getPeripheral() == null) {
             Observable<SensePeripheral> device = hardwarePresenter.scanForDevices().map(hardwarePresenter::getClosestPeripheral);
-            bindAndSubscribe(device, this::pairWith, this::pairingFailed);
+            bindAndSubscribe(device, this::tryToPairWith, this::pairingFailed);
         } else {
             finishedPairing();
         }
     }
 
-    public void pairWith(@Nullable SensePeripheral device) {
+    public void tryToPairWith(@Nullable SensePeripheral device) {
         if (device != null) {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(device), status -> {
-                switch (status) {
-                    case CONNECTING:
-                        loadingDialogFragment.setTitle(getString(R.string.title_connecting));
-                        break;
-
-                    case BONDING:
-                        loadingDialogFragment.setTitle(getString(R.string.title_pairing));
-                        break;
-
-                    case DISCOVERING_SERVICES:
-                        loadingDialogFragment.setTitle(getString(R.string.title_discovering_services));
-                        break;
-
-                    case CONNECTED:
-                        finishedPairing();
-                        break;
-                }
-            }, this::pairingFailed);
+            if (buildValues.isDebugBuild()) {
+                SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+                dialog.setTitle(R.string.debug_title_confirm_sense_pair);
+                dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
+                dialog.setPositiveButton(android.R.string.ok, (sender, which) -> pairWith(device));
+                dialog.setNegativeButton(android.R.string.cancel, null);
+                dialog.show();
+            } else {
+                pairWith(device);
+            }
         } else {
             pairingFailed(new PeripheralConnectionError());
         }
+    }
+
+    public void pairWith(@NonNull SensePeripheral device) {
+        bindAndSubscribe(hardwarePresenter.connectToPeripheral(device), status -> {
+            switch (status) {
+                case CONNECTING:
+                    loadingDialogFragment.setTitle(getString(R.string.title_connecting));
+                    break;
+
+                case BONDING:
+                    loadingDialogFragment.setTitle(getString(R.string.title_pairing));
+                    break;
+
+                case DISCOVERING_SERVICES:
+                    loadingDialogFragment.setTitle(getString(R.string.title_discovering_services));
+                    break;
+
+                case CONNECTED:
+                    finishedPairing();
+                    break;
+            }
+        }, this::pairingFailed);
     }
 
     public void pairingFailed(Throwable e) {
