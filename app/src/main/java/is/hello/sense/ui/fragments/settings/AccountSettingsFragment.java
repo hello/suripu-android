@@ -25,6 +25,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     private StaticItemAdapter.Item nameItem;
     private StaticItemAdapter.Item emailItem;
 
+    private @Nullable String accountEmail;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +73,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
 
     public void bindAccount(@NonNull Account account) {
+        this.accountEmail = account.getEmail();
+
         nameItem.setValue(account.getName());
         emailItem.setValue(account.getEmail());
     }
@@ -81,6 +85,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
 
     public void changePassword() {
-        ((FragmentNavigation) getActivity()).showFragment(new ChangePasswordFragment(), getString(R.string.title_change_password), true);
+        if (accountEmail != null) {
+            FragmentNavigation navigation = (FragmentNavigation) getActivity();
+            navigation.showFragment(ChangePasswordFragment.newInstance(accountEmail), getString(R.string.title_change_password), true);
+        }
     }
 }

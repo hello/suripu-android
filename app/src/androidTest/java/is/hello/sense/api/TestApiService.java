@@ -14,6 +14,7 @@ import java.util.List;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
+import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
@@ -66,7 +67,7 @@ public final class TestApiService implements ApiService {
 
 
     @Override
-    public Observable<OAuthSession> authorize(@Body OAuthCredentials request) {
+    public Observable<OAuthSession> authorize(@NonNull @Body OAuthCredentials request) {
         return unimplemented();
     }
 
@@ -76,13 +77,18 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Account> createAccount(@Body Account account) {
+    public Observable<Account> createAccount(@NonNull @Body Account account) {
         return unimplemented();
     }
 
     @Override
-    public Observable<Account> updateAccount(@Body Account account) {
+    public Observable<Account> updateAccount(@NonNull @Body Account account) {
         return Observable.just(account);
+    }
+
+    @Override
+    public Observable<VoidResponse> changePassword(@NonNull @Body PasswordUpdate passwordUpdate) {
+        return unimplemented();
     }
 
     @Override
@@ -91,7 +97,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<VoidResponse> registerForNotifications(@Body PushRegistration registration) {
+    public Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration) {
         return unimplemented();
     }
 

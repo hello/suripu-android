@@ -7,6 +7,7 @@ import java.util.List;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
+import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
@@ -32,7 +33,7 @@ public interface ApiService {
     //region OAuth
 
     @POST("/oauth2/token")
-    Observable<OAuthSession> authorize(@Body OAuthCredentials request);
+    Observable<OAuthSession> authorize(@NonNull @Body OAuthCredentials request);
 
     //endregion
 
@@ -43,13 +44,16 @@ public interface ApiService {
     Observable<Account> getAccount();
 
     @POST("/account")
-    Observable<Account> createAccount(@Body Account account);
+    Observable<Account> createAccount(@NonNull @Body Account account);
 
     @PUT("/account")
-    Observable<Account> updateAccount(@Body Account account);
+    Observable<Account> updateAccount(@NonNull @Body Account account);
+
+    @POST("/account/password")
+    Observable<VoidResponse> changePassword(@NonNull @Body PasswordUpdate passwordUpdate);
 
     @POST("/notifications/registration")
-    Observable<VoidResponse> registerForNotifications(@Body PushRegistration registration);
+    Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration);
 
     @POST("/timezone")
     Observable<SenseTimeZone> updateTimeZone(@NonNull @Body SenseTimeZone senseTimeZone);
