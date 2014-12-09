@@ -40,7 +40,6 @@ public final class ScanCriteria {
      */
     public long duration = DEFAULT_DURATION_MS;
 
-
     /**
      * Returns a configured criteria that will search for one instance of a given address.
      */

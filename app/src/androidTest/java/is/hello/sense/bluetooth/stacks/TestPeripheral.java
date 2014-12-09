@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import is.hello.sense.functional.Either;
-import is.hello.sense.functional.Functions;
+import is.hello.sense.functional.Lists;
 import rx.Observable;
 
 public class TestPeripheral implements Peripheral {
@@ -106,7 +106,7 @@ public class TestPeripheral implements Peripheral {
     @Override
     public PeripheralService getService(@NonNull UUID serviceIdentifier) {
         if (behavior.servicesResponse != null && behavior.servicesResponse.isLeft()) {
-            return Functions.findFirst(behavior.servicesResponse.getLeft(), s -> s.getUuid().equals(serviceIdentifier));
+            return Lists.findFirst(behavior.servicesResponse.getLeft(), s -> s.getUuid().equals(serviceIdentifier));
         } else {
             return null;
         }

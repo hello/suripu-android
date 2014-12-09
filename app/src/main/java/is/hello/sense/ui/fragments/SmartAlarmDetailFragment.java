@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ChooseSoundDialogFragment;
@@ -152,7 +153,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         } else if (requestCode == SOUND_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             long selectedId = data.getLongExtra(ChooseSoundDialogFragment.ARG_SELECTED_ID, 0);
             List<SmartAlarm.Sound> sounds = SmartAlarm.Sound.testSounds();
-            SmartAlarm.Sound selectedSound = Functions.findFirst(sounds, s -> s.id == selectedId);
+            SmartAlarm.Sound selectedSound = Lists.findFirst(sounds, s -> s.id == selectedId);
             if (selectedSound == null) {
                 selectedSound = SmartAlarm.Sound.none();
             }

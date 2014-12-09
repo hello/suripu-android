@@ -13,8 +13,8 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static is.hello.sense.functional.Functions.filteredList;
-import static is.hello.sense.functional.Functions.mapList;
+import static is.hello.sense.functional.Lists.filteredList;
+import static is.hello.sense.functional.Lists.mapList;
 
 public class TestBluetoothStack implements BluetoothStack {
     private final TestBluetoothStackBehavior behavior;

@@ -48,8 +48,8 @@ import is.hello.sense.util.SuperscriptSpanAdjuster;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static is.hello.sense.functional.Functions.mapList;
-import static is.hello.sense.functional.Functions.segmentList;
+import static is.hello.sense.functional.Lists.mapList;
+import static is.hello.sense.functional.Lists.segmentList;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class SensorHistoryFragment extends InjectionFragment implements SelectorLinearLayout.OnSelectionChangedListener {

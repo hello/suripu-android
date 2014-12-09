@@ -102,8 +102,9 @@ public class HomeActivity
             }
         }
 
-        if (!buildValues.isDebugBuild() && buildValues.debugScreenEnabled)
+        if (!buildValues.isDebugBuild() && buildValues.debugScreenEnabled) {
             UpdateManager.register(this, getString(R.string.build_hockey_id));
+        }
     }
 
     @Override
