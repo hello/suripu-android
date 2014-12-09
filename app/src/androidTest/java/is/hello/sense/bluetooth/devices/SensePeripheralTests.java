@@ -1,12 +1,9 @@
 package is.hello.sense.bluetooth.devices;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
-import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.TestBluetoothStackBehavior;
@@ -16,6 +13,7 @@ import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.functional.Either;
 import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.util.AdvertisingDataBuilder;
 import is.hello.sense.util.SyncObserver;
 import rx.Observable;
 
@@ -27,7 +25,6 @@ public class SensePeripheralTests extends InjectionTestCase {
     @Inject TestBluetoothStackBehavior stackBehavior;
     @Inject BluetoothStack stack;
 
-    private final SensePacketHandler packetHandler = new SensePacketHandler();
     private final TestPeripheralBehavior peripheralBehavior = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
     private SensePeripheral peripheral;
 
@@ -44,15 +41,16 @@ public class SensePeripheralTests extends InjectionTestCase {
 
     @SuppressWarnings("ConstantConditions")
     public void testDiscovery() throws Exception {
-        Set<AdvertisingData.Payload> scanResponse = new HashSet<>();
-        scanResponse.add(new AdvertisingData.Payload(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT));
+        AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
+        builder.add(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
+        AdvertisingData advertisingData = builder.build();
 
         TestPeripheralBehavior device1 = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
-        device1.setScanResponse(scanResponse);
+        device1.setAdvertisingData(advertisingData);
         stackBehavior.addPeripheralInRange(device1);
 
         TestPeripheralBehavior device2 = new TestPeripheralBehavior("Sense-Test2", "c2:18:4e:fb:b3:0a", -90);
-        device1.setScanResponse(scanResponse);
+        device2.setAdvertisingData(advertisingData);
         stackBehavior.addPeripheralInRange(device2);
 
         PeripheralCriteria peripheralCriteria = new PeripheralCriteria();
@@ -64,12 +62,13 @@ public class SensePeripheralTests extends InjectionTestCase {
     }
 
     public void testRediscovery() throws Exception {
-        Set<AdvertisingData.Payload> scanResponse = new HashSet<>();
-        scanResponse.add(new AdvertisingData.Payload(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT));
-        scanResponse.add(new AdvertisingData.Payload(AdvertisingData.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + TEST_DEVICE_ID));
+        AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
+        builder.add(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
+        builder.add(AdvertisingData.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + TEST_DEVICE_ID);
+        AdvertisingData advertisingData = builder.build();
 
         TestPeripheralBehavior device = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
-        device.setScanResponse(scanResponse);
+        device.setAdvertisingData(advertisingData);
         stackBehavior.addPeripheralInRange(device);
 
         SyncObserver<SensePeripheral> peripherals = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, SensePeripheral.rediscover(stack, TEST_DEVICE_ID));

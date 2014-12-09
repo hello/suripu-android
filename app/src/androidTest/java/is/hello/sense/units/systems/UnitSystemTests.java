@@ -26,8 +26,8 @@ public class UnitSystemTests extends TestCase {
 
     public void testFormatParticulates() throws Exception {
         UnitSystem system = new UnitSystem();
-        assertEquals("0.000", system.formatParticulates(0f));
-        assertEquals("0.004", system.formatParticulates(0.004f));
-        assertEquals("0.650", system.formatParticulates(0.65f));
+        assertEquals("200", system.formatParticulates(200f));
+        assertEquals("40", system.formatParticulates(40f));
+        assertEquals("65", system.formatParticulates(65f));
     }
 }

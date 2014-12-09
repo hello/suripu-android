@@ -28,7 +28,7 @@ public class TestBluetoothStack implements BluetoothStack {
     @Override
     public Observable<List<Peripheral>> discoverPeripherals(@NonNull PeripheralCriteria peripheralCriteria) {
         return Observable.just(behavior.peripheralsInRange)
-                         .map(ps -> filteredList(ps, p -> peripheralCriteria.matches(p.scanResponse)))
+                         .map(ps -> filteredList(ps, p -> peripheralCriteria.matches(p.advertisingData)))
                          .map(ps -> mapList(ps, p -> (Peripheral) new TestPeripheral(this, p)))
                          .delay(behavior.latency, TimeUnit.SECONDS);
     }
