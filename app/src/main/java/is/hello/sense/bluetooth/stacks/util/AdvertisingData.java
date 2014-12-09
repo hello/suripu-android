@@ -7,12 +7,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import rx.functions.Func1;
 
 public final class AdvertisingData {
-    private final Map<Integer, Collection<byte[]>> storage = new HashMap<>();
+    private final Map<Integer, Collection<byte[]>> records = new HashMap<>();
 
     public static @NonNull AdvertisingData parse(byte[] raw) {
         AdvertisingData parsedResponses = new AdvertisingData();
@@ -41,10 +42,10 @@ public final class AdvertisingData {
 
 
     private void add(int type, @NonNull byte[] contents) {
-        Collection<byte[]> typeItems = storage.get(type);
+        Collection<byte[]> typeItems = getRecordsForType(type);
         if (typeItems == null) {
-            typeItems = new ArrayList<>();
-            storage.put(type, typeItems);
+            typeItems = new ArrayList<>(1);
+            records.put(type, typeItems);
         }
 
         typeItems.add(contents);
@@ -52,21 +53,21 @@ public final class AdvertisingData {
 
 
     public boolean isEmpty() {
-        return storage.isEmpty();
+        return records.isEmpty();
     }
 
-    public @Nullable Collection<byte[]> get(int type) {
-        return storage.get(type);
+    public @Nullable Collection<byte[]> getRecordsForType(int type) {
+        return records.get(type);
     }
 
-    public boolean anyMatches(int type, @NonNull Func1<byte[], Boolean> comparator) {
-        Collection<byte[]> payloads = storage.get(type);
-        if (payloads == null) {
+    public boolean anyRecordMatches(int type, @NonNull Func1<byte[], Boolean> comparator) {
+        Collection<byte[]> recordsForType = getRecordsForType(type);
+        if (recordsForType == null) {
             return false;
         }
 
-        for (byte[] contents : payloads) {
-            if (comparator.call(contents)) {
+        for (byte[] payload : recordsForType) {
+            if (comparator.call(payload)) {
                 return true;
             }
         }
@@ -81,26 +82,34 @@ public final class AdvertisingData {
         if (o == null || getClass() != o.getClass()) return false;
 
         AdvertisingData that = (AdvertisingData) o;
-        return storage.equals(that.storage);
+        return records.equals(that.records);
 
     }
 
     @Override
     public int hashCode() {
-        return storage.hashCode();
+        return records.hashCode();
     }
 
     @Override
     public String toString() {
         String string = "{";
-        for (Map.Entry<Integer, Collection<byte[]>> entry : storage.entrySet()) {
+        for (Iterator<Map.Entry<Integer, Collection<byte[]>>> recordIterator = records.entrySet().iterator(); recordIterator.hasNext(); ) {
+            Map.Entry<Integer, Collection<byte[]>> entry = recordIterator.next();
             string += typeToString(entry.getKey());
             string += "=[";
-            for (byte[] contents : entry.getValue()) {
+            for (Iterator<byte[]> entryIterator = entry.getValue().iterator(); entryIterator.hasNext(); ) {
+                byte[] contents = entryIterator.next();
                 string += BluetoothUtils.bytesToString(contents);
-                string += ", ";
+                if (entryIterator.hasNext()) {
+                    string += ", ";
+                }
             }
-            string += "], ";
+            if (recordIterator.hasNext()) {
+                string += "], ";
+            } else {
+                string += "]";
+            }
         }
         string += '}';
         return string;

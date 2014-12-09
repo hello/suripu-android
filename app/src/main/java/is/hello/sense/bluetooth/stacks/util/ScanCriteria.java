@@ -1,11 +1,9 @@
 package is.hello.sense.bluetooth.stacks.util;
 
-import android.net.wifi.ScanResult;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import rx.functions.Func1;
@@ -69,7 +67,7 @@ public final class ScanCriteria {
     }
 
     public ScanCriteria addExactMatchPredicate(int type, @NonNull byte[] toMatch) {
-        return addPredicate(ad -> ad.anyMatches(type, match -> Arrays.equals(match, toMatch)));
+        return addPredicate(ad -> ad.anyRecordMatches(type, match -> Arrays.equals(match, toMatch)));
     }
 
     public ScanCriteria addExactMatchPredicate(int type, @NonNull String toMatch) {
@@ -77,7 +75,7 @@ public final class ScanCriteria {
     }
 
     public ScanCriteria addStartsWithPredicate(int type, @NonNull byte[] prefix) {
-        return addPredicate(ad -> ad.anyMatches(type, match -> BluetoothUtils.bytesStartsWith(match, prefix)));
+        return addPredicate(ad -> ad.anyRecordMatches(type, match -> BluetoothUtils.bytesStartsWith(match, prefix)));
     }
 
     public ScanCriteria addStartsWithPredicate(int type, @NonNull String prefix) {
