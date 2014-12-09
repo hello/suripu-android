@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.errors.BluetoothPowerChangeError;
-import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
+import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import rx.Observable;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
@@ -26,9 +26,9 @@ public class TestBluetoothStack implements BluetoothStack {
     @SuppressWarnings("RedundantCast")
     @NonNull
     @Override
-    public Observable<List<Peripheral>> discoverPeripherals(@NonNull ScanCriteria scanCriteria) {
+    public Observable<List<Peripheral>> discoverPeripherals(@NonNull PeripheralCriteria peripheralCriteria) {
         return Observable.just(behavior.peripheralsInRange)
-                         .map(ps -> filteredList(ps, p -> scanCriteria.matches(p.scanResponse)))
+                         .map(ps -> filteredList(ps, p -> peripheralCriteria.matches(p.scanResponse)))
                          .map(ps -> mapList(ps, p -> (Peripheral) new TestPeripheral(this, p)))
                          .delay(behavior.latency, TimeUnit.SECONDS);
     }

@@ -13,7 +13,7 @@ import is.hello.sense.bluetooth.stacks.TestBluetoothStackBehavior;
 import is.hello.sense.bluetooth.stacks.TestPeripheral;
 import is.hello.sense.bluetooth.stacks.TestPeripheralBehavior;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
-import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
+import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.functional.Either;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.SyncObserver;
@@ -55,8 +55,8 @@ public class SensePeripheralTests extends InjectionTestCase {
         device1.setScanResponse(scanResponse);
         stackBehavior.addPeripheralInRange(device2);
 
-        ScanCriteria scanCriteria = new ScanCriteria();
-        SyncObserver<List<SensePeripheral>> peripherals = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, SensePeripheral.discover(stack, scanCriteria));
+        PeripheralCriteria peripheralCriteria = new PeripheralCriteria();
+        SyncObserver<List<SensePeripheral>> peripherals = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, SensePeripheral.discover(stack, peripheralCriteria));
         peripherals.await();
 
         assertNull(peripherals.getError());

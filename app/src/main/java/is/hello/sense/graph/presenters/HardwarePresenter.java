@@ -8,13 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.google.protobuf.ByteString;
-
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,14 +22,11 @@ import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
-import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
+import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.functional.Functions;
 import rx.Observable;
-import rx.Observer;
-import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
@@ -128,7 +120,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     public Observable<List<SensePeripheral>> scanForDevices() {
         logEvent("scanForDevices()");
 
-        return SensePeripheral.discover(bluetoothStack, new ScanCriteria());
+        return SensePeripheral.discover(bluetoothStack, new PeripheralCriteria());
     }
 
     public @Nullable SensePeripheral getClosestPeripheral(@NonNull List<SensePeripheral> peripherals) {
@@ -158,7 +150,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         if (TextUtils.isEmpty(address)) {
             return Observable.error(new PeripheralNotFoundError());
         } else {
-            this.rediscovery = SensePeripheral.discover(bluetoothStack, ScanCriteria.forAddress(address)).flatMap(peripherals -> {
+            this.rediscovery = SensePeripheral.discover(bluetoothStack, PeripheralCriteria.forAddress(address)).flatMap(peripherals -> {
                 if (!peripherals.isEmpty()) {
                     this.peripheral = peripherals.get(0);
                     this.rediscovery = null;

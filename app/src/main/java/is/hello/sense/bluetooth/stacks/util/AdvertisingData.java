@@ -12,10 +12,15 @@ import java.util.Map;
 
 import rx.functions.Func1;
 
+/**
+ * Parses a raw BLE advertising data blob into a multi-map collection for querying by
+ * predicates contained in a {@see is.hello.sense.bluetooth.stacks.util.PeripheralCriteria}
+ * instance.
+ */
 public final class AdvertisingData {
     private final Map<Integer, Collection<byte[]>> records = new HashMap<>();
 
-    public static @NonNull AdvertisingData parse(byte[] raw) {
+    public static @NonNull AdvertisingData parse(@NonNull byte[] raw) {
         AdvertisingData parsedResponses = new AdvertisingData();
         int index = 0;
         while (index < raw.length) {
@@ -30,7 +35,7 @@ public final class AdvertisingData {
             }
 
             byte[] payload = Arrays.copyOfRange(raw, index + 1, index + dataLength);
-            parsedResponses.add(dataType, payload);
+            parsedResponses.addRecord(dataType, payload);
 
             index += dataLength;
         }
@@ -41,7 +46,7 @@ public final class AdvertisingData {
     }
 
 
-    private void add(int type, @NonNull byte[] contents) {
+    private void addRecord(int type, @NonNull byte[] contents) {
         Collection<byte[]> typeItems = getRecordsForType(type);
         if (typeItems == null) {
             typeItems = new ArrayList<>(1);
@@ -52,22 +57,32 @@ public final class AdvertisingData {
     }
 
 
+    /**
+     * Returns whether or not there are no advertising data records.
+     */
     public boolean isEmpty() {
         return records.isEmpty();
     }
 
+    /**
+     * Returns the records matching a given type.
+     */
     public @Nullable Collection<byte[]> getRecordsForType(int type) {
         return records.get(type);
     }
 
-    public boolean anyRecordMatches(int type, @NonNull Func1<byte[], Boolean> comparator) {
+    /**
+     * Returns whether or not any records in the advertising
+     * data of a given type match a given predicate functor.
+     */
+    public boolean anyRecordMatches(int type, @NonNull Func1<byte[], Boolean> predicate) {
         Collection<byte[]> recordsForType = getRecordsForType(type);
         if (recordsForType == null) {
             return false;
         }
 
         for (byte[] payload : recordsForType) {
-            if (comparator.call(payload)) {
+            if (predicate.call(payload)) {
                 return true;
             }
         }
@@ -83,7 +98,6 @@ public final class AdvertisingData {
 
         AdvertisingData that = (AdvertisingData) o;
         return records.equals(that.records);
-
     }
 
     @Override
@@ -149,7 +163,6 @@ public final class AdvertisingData {
     public static final int TYPE_​SIMPLE_PAIRING_RANDOMIZER_R_256 = 0x1E;
     public static final int TYPE_​3D_INFORMATION_DATA = 0x3D;
     public static final int TYPE_MANUFACTURER_SPECIFIC_DATA = 0xFF;
-
 
     public static @NonNull String typeToString(int type) {
         switch (type) {
