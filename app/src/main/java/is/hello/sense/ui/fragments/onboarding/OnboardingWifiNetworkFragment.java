@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments.onboarding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        this.networkAdapter = new WifiNetworkAdapter(getActivity());
         addPresenter(hardwarePresenter);
 
         Analytics.event(Analytics.EVENT_ONBOARDING_SETUP_WIFI, null);
@@ -71,7 +73,6 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         ((TextView) otherNetworkView.findViewById(R.id.item_wifi_network_name)).setText(R.string.wifi_other_network);
         listView.addFooterView(otherNetworkView, null, true);
 
-        this.networkAdapter = new WifiNetworkAdapter(getActivity());
         listView.setAdapter(networkAdapter);
 
         this.scanningIndicatorLabel = (TextView) view.findViewById(R.id.fragment_onboarding_wifi_networks_scanning_label);
@@ -94,7 +95,16 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rescan();
+        if (networkAdapter.getCount() == 0) {
+            rescan();
+        } else {
+            scanningIndicatorLabel.setVisibility(View.GONE);
+            scanningIndicator.setVisibility(View.GONE);
+            infoLabel.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.VISIBLE);
+            rescanButton.setVisibility(View.VISIBLE);
+            helpButton.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
