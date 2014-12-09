@@ -4,6 +4,7 @@ import android.net.wifi.ScanResult;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -68,11 +69,19 @@ public final class ScanCriteria {
     }
 
     public ScanCriteria addExactMatchPredicate(int type, @NonNull byte[] toMatch) {
-        return addPredicate(ad -> ad.contains(type, toMatch));
+        return addPredicate(ad -> ad.anyMatches(type, match -> Arrays.equals(match, toMatch)));
     }
 
     public ScanCriteria addExactMatchPredicate(int type, @NonNull String toMatch) {
         return addExactMatchPredicate(type, BluetoothUtils.stringToBytes(toMatch));
+    }
+
+    public ScanCriteria addStartsWithPredicate(int type, @NonNull byte[] prefix) {
+        return addPredicate(ad -> ad.anyMatches(type, match -> BluetoothUtils.bytesStartsWith(match, prefix)));
+    }
+
+    public ScanCriteria addStartsWithPredicate(int type, @NonNull String prefix) {
+        return addStartsWithPredicate(type, BluetoothUtils.stringToBytes(prefix));
     }
 
 

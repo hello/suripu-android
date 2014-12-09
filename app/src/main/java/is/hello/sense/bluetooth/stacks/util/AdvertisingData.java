@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import rx.functions.Func1;
+
 public final class AdvertisingData {
     private final Map<Integer, Collection<byte[]>> storage = new HashMap<>();
 
@@ -57,14 +59,14 @@ public final class AdvertisingData {
         return storage.get(type);
     }
 
-    public boolean contains(int type, @NonNull byte[] payload) {
+    public boolean anyMatches(int type, @NonNull Func1<byte[], Boolean> comparator) {
         Collection<byte[]> payloads = storage.get(type);
         if (payloads == null) {
             return false;
         }
 
         for (byte[] contents : payloads) {
-            if (Arrays.equals(contents, payload)) {
+            if (comparator.call(contents)) {
                 return true;
             }
         }

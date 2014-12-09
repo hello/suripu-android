@@ -58,7 +58,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         ScanCriteria criteria = new ScanCriteria();
         criteria.setLimit(1);
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
-        criteria.addExactMatchPredicate(AdvertisingData.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId);
+        criteria.addStartsWithPredicate(AdvertisingData.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId);
         return discover(bluetoothStack, criteria).flatMap(ds -> {
             if (ds.isEmpty()) {
                 return Observable.error(new PeripheralNotFoundError());
