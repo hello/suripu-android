@@ -242,6 +242,7 @@
     <string name="error_invalid_register_name">You must provide a name.</string>
     <string name="error_invalid_register_email">You must provide a valid email address.</string>
     <string name="error_invalid_register_password">You must provide a password with 4 or more characters.</string>
+    <string name="error_mismatching_new_passwords">The passwords you entered do not match.</string>
     <string name="action_exit">Exit</string>
     <string name="dialog_title_smart_alarm_edit_cancel">Do you really want to exit?</string>
     <string name="dialog_message_smart_alarm_edit_cancel">There are unsaved changes to this alarm.</string>
@@ -254,4 +255,8 @@
     <string name="info_turn_on_bluetooth">Sense uses Bluetooth to communicate with your mobile device. Please turn on your Bluetooth to continue.</string>
     <string name="debug_title_confirm_sense_pair">Pair With Sense</string>
     <string name="debug_message_confirm_sense_pair_fmt">Are you sure you want to pair with ‘%1$s’?</string>
+    <string name="title_change_password">Change Password</string>
+    <string name="label_current_password">Current Password</string>
+    <string name="label_new_password">New Password</string>
+    <string name="label_confirm_new_password">Confirm New Password</string>
 </resources>

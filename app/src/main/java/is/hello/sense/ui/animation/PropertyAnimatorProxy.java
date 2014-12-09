@@ -321,10 +321,10 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         }).alpha(1f).setApplyChangesToView(true);
     }
 
-    public PropertyAnimatorProxy simplePop() {
+    public PropertyAnimatorProxy simplePop(float amount) {
         return setDuration(Animation.DURATION_MINIMUM / 2)
                 .setInterpolator(new AccelerateInterpolator())
-                .scale(1.1f)
+                .scale(amount)
                 .andThen()
                 .setInterpolator(new DecelerateInterpolator())
                 .scale(1.0f);

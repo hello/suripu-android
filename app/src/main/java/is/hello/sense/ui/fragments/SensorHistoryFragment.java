@@ -380,7 +380,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             messageText.setGravity(Gravity.CENTER);
             messageText.setTextColor(getResources().getColor(R.color.text_dim));
 
-            animate(readingText).simplePop().start();
+            animate(readingText).simplePop(1.1f).start();
         }
 
         @Override

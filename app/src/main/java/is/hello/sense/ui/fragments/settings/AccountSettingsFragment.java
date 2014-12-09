@@ -15,6 +15,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
@@ -45,6 +46,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         String placeholder = getString(R.string.missing_data_placeholder);
         this.nameItem = adapter.addItem(getString(R.string.label_name), placeholder);
         this.emailItem = adapter.addItem(getString(R.string.label_email), placeholder);
+        adapter.addItem(getString(R.string.title_change_password), null, this::changePassword);
 
         listView.setAdapter(adapter);
 
@@ -75,5 +77,10 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     public void accountUnavailable(Throwable e) {
         ErrorDialogFragment.presentError(getFragmentManager(), e);
+    }
+
+
+    public void changePassword() {
+        ((FragmentNavigation) getActivity()).showFragment(new ChangePasswordFragment(), getString(R.string.title_change_password), true);
     }
 }
