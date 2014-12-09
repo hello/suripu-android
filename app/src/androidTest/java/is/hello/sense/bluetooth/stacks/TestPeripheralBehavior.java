@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import is.hello.sense.bluetooth.stacks.util.ScanResponse;
+import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import is.hello.sense.functional.Either;
 
 public class TestPeripheralBehavior {
@@ -19,7 +19,7 @@ public class TestPeripheralBehavior {
     final @NonNull String address;
     final int scanTimeRssi;
 
-    Set<ScanResponse> scanResponse = Collections.emptySet();
+    Set<AdvertisingData.Payload> scanResponse = Collections.emptySet();
 
     int connectionStatus = Peripheral.STATUS_DISCONNECTED;
     int bondStatus = Peripheral.BOND_NONE;
@@ -39,7 +39,7 @@ public class TestPeripheralBehavior {
         this.scanTimeRssi = scanTimeRssi;
     }
 
-    public TestPeripheralBehavior setScanResponse(@NonNull Set<ScanResponse> scanResponse) {
+    public TestPeripheralBehavior setScanResponse(@NonNull Set<AdvertisingData.Payload> scanResponse) {
         this.scanResponse = scanResponse;
         return this;
     }

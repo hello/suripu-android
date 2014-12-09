@@ -10,13 +10,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
-import is.hello.sense.bluetooth.stacks.util.ScanResponse;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
@@ -51,7 +50,7 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
 
     @Override
     public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanResponse) {
-        Set<ScanResponse> parsedResponses = ScanResponse.parse(scanResponse);
+        AdvertisingData parsedResponses = AdvertisingData.parse(scanResponse);
         Logger.info(BluetoothStack.LOG_TAG, "Found device " + bluetoothDevice.getName() + " - " + bluetoothDevice.getAddress() + " " + parsedResponses);
 
         if (!scanCriteria.matches(parsedResponses)) {

@@ -1,44 +1,75 @@
 package is.hello.sense.bluetooth.stacks.util;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public final class ScanResponse {
-    public final int type;
-    public final byte[] payload;
+public final class AdvertisingData {
+    private final Map<Integer, Collection<byte[]>> storage = new HashMap<>();
 
-    public static @NonNull Set<ScanResponse> parse(byte[] rawResponse) {
-        Set<ScanResponse> parsedResponses = new HashSet<>();
+    public static @NonNull AdvertisingData parse(byte[] raw) {
+        AdvertisingData parsedResponses = new AdvertisingData();
         int index = 0;
-        while (index < rawResponse.length) {
-            byte dataLength = rawResponse[index++];
+        while (index < raw.length) {
+            byte dataLength = raw[index++];
             if (dataLength == 0) {
                 break;
             }
 
-            int dataType = rawResponse[index];
+            int dataType = raw[index];
             if (dataType == 0) {
                 break;
             }
 
-            byte[] payload = Arrays.copyOfRange(rawResponse, index + 1, index + dataLength);
-            parsedResponses.add(new ScanResponse(dataType, payload));
+            byte[] payload = Arrays.copyOfRange(raw, index + 1, index + dataLength);
+            parsedResponses.add(dataType, payload);
 
             index += dataLength;
         }
         return parsedResponses;
     }
 
-    public ScanResponse(int type, @NonNull String string) {
-        this(type, BluetoothUtils.stringToBytes(string));
+    private AdvertisingData() {
     }
 
-    public ScanResponse(int type, @NonNull byte[] payload) {
-        this.type = type;
-        this.payload = payload;
+
+    private void add(int type, @NonNull byte[] contents) {
+        Collection<byte[]> typeItems = storage.get(type);
+        if (typeItems == null) {
+            typeItems = new ArrayList<>();
+            storage.put(type, typeItems);
+        }
+
+        typeItems.add(contents);
+    }
+
+
+    public boolean isEmpty() {
+        return storage.isEmpty();
+    }
+
+    public @Nullable Collection<byte[]> get(int type) {
+        return storage.get(type);
+    }
+
+    public boolean contains(int type, @NonNull byte[] payload) {
+        Collection<byte[]> payloads = storage.get(type);
+        if (payloads == null) {
+            return false;
+        }
+
+        for (byte[] contents : payloads) {
+            if (Arrays.equals(contents, payload)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -47,25 +78,30 @@ public final class ScanResponse {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ScanResponse that = (ScanResponse) o;
+        AdvertisingData that = (AdvertisingData) o;
+        return storage.equals(that.storage);
 
-        return type == that.type && Arrays.equals(payload, that.payload);
     }
 
     @Override
     public int hashCode() {
-        int result = type;
-        result = 31 * result + Arrays.hashCode(payload);
-        return result;
+        return storage.hashCode();
     }
-
 
     @Override
     public String toString() {
-        return "AdvertisingData{" +
-                "type=" + typeToString(type) +
-                ", payload=" + BluetoothUtils.bytesToString(payload) +
-                '}';
+        String string = "{";
+        for (Map.Entry<Integer, Collection<byte[]>> entry : storage.entrySet()) {
+            string += typeToString(entry.getKey());
+            string += "=[";
+            for (byte[] contents : entry.getValue()) {
+                string += BluetoothUtils.bytesToString(contents);
+                string += ", ";
+            }
+            string += "], ";
+        }
+        string += '}';
+        return string;
     }
 
 
@@ -102,6 +138,7 @@ public final class ScanResponse {
     public static final int TYPE_​SIMPLE_PAIRING_RANDOMIZER_R_256 = 0x1E;
     public static final int TYPE_​3D_INFORMATION_DATA = 0x3D;
     public static final int TYPE_MANUFACTURER_SPECIFIC_DATA = 0xFF;
+
 
     public static @NonNull String typeToString(int type) {
         switch (type) {

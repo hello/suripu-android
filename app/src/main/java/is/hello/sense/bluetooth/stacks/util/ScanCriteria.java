@@ -1,10 +1,13 @@
 package is.hello.sense.bluetooth.stacks.util;
 
+import android.net.wifi.ScanResult;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+
+import rx.functions.Func1;
 
 /**
  * Describes what a BluetoothStack should be looking for when performing a Peripheral discovery operation.
@@ -23,12 +26,12 @@ public final class ScanCriteria {
     public final List<String> peripheralAddresses = new ArrayList<>();
 
     /**
-     * Advertising data to match against when a device is discovered.
-     * <p/>
-     * This list being empty has the effect of advertising data
-     * not being used to determine what devices are acceptable.
+     * A list of predicate functions that will be called to determine
+     * whether or not a collection of advertising data matches this
+     * scan criteria object. <em>All predicates must evaluate to true
+     * for the scan criteria to match a potential peripheral.</em>
      */
-    public final List<ScanResponse> constraints = new ArrayList<>();
+    public final List<Func1<AdvertisingData, Boolean>> predicates = new ArrayList<>();
 
     /**
      * The maximum number of peripherals to scan before stopping.
@@ -58,10 +61,20 @@ public final class ScanCriteria {
         return this;
     }
 
-    public ScanCriteria addConstraint(@NonNull ScanResponse scanResponse) {
-        constraints.add(scanResponse);
+
+    public ScanCriteria addPredicate(@NonNull Func1<AdvertisingData, Boolean> predicate) {
+        predicates.add(predicate);
         return this;
     }
+
+    public ScanCriteria addExactMatchPredicate(int type, @NonNull byte[] toMatch) {
+        return addPredicate(ad -> ad.contains(type, toMatch));
+    }
+
+    public ScanCriteria addExactMatchPredicate(int type, @NonNull String toMatch) {
+        return addExactMatchPredicate(type, BluetoothUtils.stringToBytes(toMatch));
+    }
+
 
     public ScanCriteria setLimit(int limit) {
         this.limit = limit;
@@ -75,7 +88,13 @@ public final class ScanCriteria {
 
     //endregion
 
-    public boolean matches(@NonNull Set<ScanResponse> scanResponses) {
-        return scanResponses.isEmpty() || scanResponses.containsAll(constraints);
+    public boolean matches(@NonNull AdvertisingData scanResponses) {
+        for (Func1<AdvertisingData, Boolean> predicate : predicates) {
+            if (!predicate.call(scanResponses)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

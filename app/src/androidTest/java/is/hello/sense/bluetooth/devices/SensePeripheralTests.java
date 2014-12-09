@@ -12,8 +12,8 @@ import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.TestBluetoothStackBehavior;
 import is.hello.sense.bluetooth.stacks.TestPeripheral;
 import is.hello.sense.bluetooth.stacks.TestPeripheralBehavior;
+import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
-import is.hello.sense.bluetooth.stacks.util.ScanResponse;
 import is.hello.sense.functional.Either;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.SyncObserver;
@@ -44,8 +44,8 @@ public class SensePeripheralTests extends InjectionTestCase {
 
     @SuppressWarnings("ConstantConditions")
     public void testDiscovery() throws Exception {
-        Set<ScanResponse> scanResponse = new HashSet<>();
-        scanResponse.add(new ScanResponse(ScanResponse.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT));
+        Set<AdvertisingData.Payload> scanResponse = new HashSet<>();
+        scanResponse.add(new AdvertisingData.Payload(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT));
 
         TestPeripheralBehavior device1 = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
         device1.setScanResponse(scanResponse);
@@ -64,9 +64,9 @@ public class SensePeripheralTests extends InjectionTestCase {
     }
 
     public void testRediscovery() throws Exception {
-        Set<ScanResponse> scanResponse = new HashSet<>();
-        scanResponse.add(new ScanResponse(ScanResponse.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT));
-        scanResponse.add(new ScanResponse(ScanResponse.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + TEST_DEVICE_ID));
+        Set<AdvertisingData.Payload> scanResponse = new HashSet<>();
+        scanResponse.add(new AdvertisingData.Payload(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT));
+        scanResponse.add(new AdvertisingData.Payload(AdvertisingData.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + TEST_DEVICE_ID));
 
         TestPeripheralBehavior device = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
         device.setScanResponse(scanResponse);
