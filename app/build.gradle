@@ -28,7 +28,7 @@ def generateVersionCode() {
 
 android {
     compileSdkVersion 20
-    buildToolsVersion "21.0.2"
+    buildToolsVersion "21.1.1"
 
     defaultConfig {
         applicationId "is.hello.sense"
@@ -50,13 +50,13 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
-            runProguard false // when we hit the 0xffff method limit, switch this to true
+            minifyEnabled false // when we hit the 0xffff method limit, switch this to true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
         release {
             signingConfig signingConfigs.release
 
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
     }
