@@ -115,39 +115,45 @@ public class LoadingDialogFragment extends DialogFragment {
 
     public void setTitle(@Nullable String title) {
         getArguments().putString(ARG_TITLE, title);
-        titleText.setText(title);
+        if (titleText != null) {
+            titleText.setText(title);
+        }
     }
 
     public void dismissWithDoneTransition(@NonNull Runnable onCompletion) {
-        animate(titleText)
-                .setDuration(Animation.DURATION_MINIMUM)
-                .fadeOut(View.INVISIBLE)
-                .addOnAnimationCompleted(finished -> {
-                    if (!finished)
-                        return;
+        if (titleText != null) {
+            animate(titleText)
+                    .setDuration(Animation.DURATION_MINIMUM)
+                    .fadeOut(View.INVISIBLE)
+                    .addOnAnimationCompleted(finished -> {
+                        if (!finished)
+                            return;
 
-                    animate(activityIndicator)
-                            .fadeOut(View.INVISIBLE)
-                            .start();
+                        animate(activityIndicator)
+                                .fadeOut(View.INVISIBLE)
+                                .start();
 
-                    animate(checkMark)
-                            .zoomInFromNothing()
-                            .start();
+                        animate(checkMark)
+                                .zoomInFromNothing()
+                                .start();
 
-                    titleText.setText(R.string.action_done);
-                    animate(titleText)
-                            .fadeIn()
-                            .addOnAnimationCompleted(finished1 -> {
-                                if (!finished1)
-                                    return;
+                        titleText.setText(R.string.action_done);
+                        animate(titleText)
+                                .fadeIn()
+                                .addOnAnimationCompleted(finished1 -> {
+                                    if (!finished1)
+                                        return;
 
-                                new Handler().postDelayed(() -> {
-                                    onCompletion.run();
-                                    dismiss();
-                                }, DURATION_DONE_MESSAGE);
-                            })
-                            .start();
-                })
-                .start();
+                                    new Handler().postDelayed(() -> {
+                                        onCompletion.run();
+                                        dismiss();
+                                    }, DURATION_DONE_MESSAGE);
+                                })
+                                .start();
+                    })
+                    .start();
+        } else if (isAdded()) {
+            dismiss();
+        }
     }
 }
