@@ -277,13 +277,7 @@ public class AndroidPeripheral implements Peripheral {
                 });
     }
 
-    static boolean hasFailedOnce = false;
     private boolean tryCreateBond() {
-        if (!hasFailedOnce) {
-            hasFailedOnce = true;
-            return false;
-        }
-
         try {
             Method method = bluetoothDevice.getClass().getMethod("createBond", (Class[]) null);
             method.invoke(bluetoothDevice, (Object[]) null);
