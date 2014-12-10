@@ -33,11 +33,11 @@ public class OnboardingPairHelpFragment extends SenseFragment {
 
     public void setupSecondPill(@NonNull View sender) {
         FragmentNavigation navigation = (FragmentNavigation) getActivity();
-        popFromBackStack(Activity.RESULT_OK, null);
+        finishWithResult(Activity.RESULT_OK, null);
         navigation.showFragment(new OnboardingPillPartnerInfoFragment(), null, true);
     }
 
     public void setupNewSense(@NonNull View sender) {
-        popFromBackStack(RESULT_NEW_SENSE, null);
+        finishWithResult(RESULT_NEW_SENSE, null);
     }
 }

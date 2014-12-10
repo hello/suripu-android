@@ -8,12 +8,15 @@ import android.text.style.ForegroundColorSpan;
 import android.view.MenuItem;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 
 public class SmartAlarmActivity extends FragmentNavigationActivity {
+    public static final String EXTRA_SHOW_CREATE_ONLY = SmartAlarmActivity.class.getName() + ".EXTRA_SHOW_CREATE_ONLY";
+
     private boolean editing = false;
 
     @Override
@@ -21,14 +24,20 @@ public class SmartAlarmActivity extends FragmentNavigationActivity {
         super.onCreate(savedInstanceState);
 
         setWantsTitleUpdates(false);
-        if (savedInstanceState != null) {
-            this.editing = savedInstanceState.getBoolean("editing", false);
-        }
+        if (getIntent().getBooleanExtra(EXTRA_SHOW_CREATE_ONLY, false)) {
+            this.editing = true;
 
-        if (savedInstanceState == null) {
-            showFragment(new SmartAlarmListFragment(), getString(R.string.action_alarm), false);
-        }
+            SmartAlarmDetailFragment detailFragment = SmartAlarmDetailFragment.newInstance(new SmartAlarm(), SmartAlarmDetailFragment.INDEX_NEW);
+            showFragment(detailFragment, getString(R.string.action_new_alarm), false);
+        } else {
+            if (savedInstanceState != null) {
+                this.editing = savedInstanceState.getBoolean("editing", false);
+            }
 
+            if (savedInstanceState == null) {
+                showFragment(new SmartAlarmListFragment(), getString(R.string.action_alarm), false);
+            }
+        }
         updateActionBar();
     }
 

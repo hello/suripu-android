@@ -18,7 +18,7 @@ public class OnboardingPillPartnerInfoFragment extends SenseFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_partner_info, container, false);
 
         Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_partner_info_continue);
-        continueButton.setOnClickListener(ignored -> popFromBackStack(Activity.RESULT_OK, null));
+        continueButton.setOnClickListener(ignored -> finishWithResult(Activity.RESULT_OK, null));
 
         return view;
     }

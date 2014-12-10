@@ -28,13 +28,15 @@ public class OnboardingDoneFragment extends Fragment {
             super.handleMessage(msg);
 
             switch (msg.what) {
-                case SHOW_SECOND_MESSAGE:
+                case SHOW_SECOND_MESSAGE: {
                     showSecondMessage();
                     break;
+                }
 
-                case SHOW_COMPLETE_MESSAGE:
+                case SHOW_COMPLETE_MESSAGE: {
                     showCompleteMessage();
                     break;
+                }
             }
         }
     };

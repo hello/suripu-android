@@ -40,6 +40,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSetup2ndPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -103,7 +104,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_PILL:
-                    showHomeActivity();
+                    showSenseColorsInfo();
                     break;
             }
         }
@@ -290,9 +291,17 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
         OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
         builder.setLayout(R.layout.sub_fragment_onboarding_sense_colors);
-        builder.setNextFragmentClass(OnboardingDoneFragment.class);
+        builder.setNextFragmentClass(OnboardingSmartAlarmFragment.class);
         builder.setHideHelp(true);
-        showFragment(builder.build(), null, true);
+        showFragment(builder.build(), null, false);
+    }
+
+    public void showSmartAlarmInfo() {
+        showFragment(new OnboardingSmartAlarmFragment(), null, true);
+    }
+
+    public void showDone() {
+        showFragment(new OnboardingDoneFragment(), null, false);
     }
 
     //endregion

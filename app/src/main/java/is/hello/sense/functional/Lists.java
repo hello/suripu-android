@@ -11,6 +11,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Lists {
+    @SafeVarargs
+    public static <T> ArrayList<T> newArrayList(T... values) {
+        ArrayList<T> list = new ArrayList<>(values.length);
+        Collections.addAll(list, values);
+        return list;
+    }
+
     public static <T, R> List<R> map(@NonNull Iterable<T> source, @NonNull Function<T, R> mapper) {
         List<R> accumulator = new ArrayList<>();
         for (T value : source) {

@@ -202,13 +202,13 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void deleteAlarm(@NonNull View sender) {
         Intent response = new Intent();
         response.putExtra(ARG_INDEX, index);
-        popFromBackStack(RESULT_DELETE, response);
+        finishWithResult(RESULT_DELETE, response);
     }
 
     public void saveAlarm() {
         Intent response = new Intent();
         response.putExtra(ARG_INDEX, index);
         response.putExtra(ARG_ALARM, smartAlarm);
-        popFromBackStack(Activity.RESULT_OK, response);
+        finishWithResult(Activity.RESULT_OK, response);
     }
 }
