@@ -22,6 +22,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
@@ -34,13 +35,15 @@ import is.hello.sense.ui.widget.SensorStateView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
+import rx.functions.Action0;
 
 public class DeviceDetailsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
-    private static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
+    public static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
 
     @Inject ApiSessionManager apiSessionManager;
     @Inject DateFormatter dateFormatter;
     @Inject HardwarePresenter hardwarePresenter;
+    @Inject DevicesPresenter devicesPresenter;
 
     private ProgressBar pairingActivityIndicator;
     private ViewGroup senseActionsContainer;
@@ -66,6 +69,11 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
         this.device = (Device) getArguments().getSerializable(ARG_DEVICE);
         addPresenter(hardwarePresenter);
+
+        if (device.getType() == Device.Type.SENSE) {
+            devicesPresenter.update();
+            addPresenter(devicesPresenter);
+        }
 
         this.bluetoothAdapter = ((BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 
@@ -254,8 +262,9 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     public void factoryReset(@NonNull View sender) {
         Analytics.event(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_FACTORY_RESTORE));
 
-        if (hardwarePresenter.getPeripheral() == null)
+        if (hardwarePresenter.getPeripheral() == null) {
             return;
+        }
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
         dialog.setTitle(R.string.dialog_title_factory_reset);
@@ -263,11 +272,22 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         dialog.setNegativeButton(android.R.string.cancel, null);
         dialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> {
             LoadingDialogFragment.show(getFragmentManager());
-            bindAndSubscribe(hardwarePresenter.factoryReset(), ignored -> {
-                LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-                    apiSessionManager.logOut(getActivity());
-                    getActivity().finish();
-                });
+            bindAndSubscribe(hardwarePresenter.factoryReset(), device -> {
+                Logger.info(getClass().getSimpleName(), "Completed Sense factory reset");
+                Action0 finish = () -> {
+                    LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
+                        apiSessionManager.logOut(getActivity());
+                        getActivity().finish();
+                    });
+                };
+                bindAndSubscribe(devicesPresenter.unregisterAllDevices(),
+                                 ignored -> {
+                                     finish.call();
+                                 },
+                                 e -> {
+                                     Logger.error(getClass().getSimpleName(), "Could not unregister all devices, ignoring.", e);
+                                     finish.call();
+                                 });
             }, this::presentError);
         });
         dialog.setDestructive(true);

@@ -46,7 +46,7 @@ public class SensePacketDataHandlerTests extends TestCase {
 
         List<byte[]> rawPackets = packetHandler.createPackets(morpheusCommand.toByteArray());
 
-        List<SequencedPacket> packets = Lists.mapList(rawPackets, payload ->
+        List<SequencedPacket> packets = Lists.map(rawPackets, payload ->
                 packetHandler.createSequencedPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, payload));
 
 

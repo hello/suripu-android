@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
@@ -44,5 +45,12 @@ public class DevicesPresenter extends UpdatablePresenter<List<Device>> {
             default:
                 return Observable.error(new Exception("Unknown device type '" + device.getType() + "'"));
         }
+    }
+
+    public Observable<Void> unregisterAllDevices() {
+        return devices.flatMap(devices -> {
+            List<Observable<VoidResponse>> unregisterCalls = Lists.map(devices, this::unregisterDevice);
+            return Observable.combineLatest(unregisterCalls, ignored -> null);
+        });
     }
 }

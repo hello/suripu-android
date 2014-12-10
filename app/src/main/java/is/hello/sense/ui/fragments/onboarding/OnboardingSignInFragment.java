@@ -78,9 +78,21 @@ public class OnboardingSignInFragment extends InjectionFragment {
         OAuthCredentials credentials = new OAuthCredentials(environment, email, password);
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             apiSessionManager.setSession(session);
-            getOnboardingActivity().showHomeActivity();
-
             Analytics.event(Analytics.EVENT_SIGNED_IN, null);
+
+            bindAndSubscribe(apiService.registeredDevices(),
+                             devices -> {
+                                 if (devices.isEmpty()) {
+                                     LoadingDialogFragment.close(getFragmentManager());
+                                     getOnboardingActivity().showSetupSense();
+                                 } else {
+                                     getOnboardingActivity().showHomeActivity();
+                                 }
+                             },
+                             e -> {
+                                 LoadingDialogFragment.close(getFragmentManager());
+                                 ErrorDialogFragment.presentError(getFragmentManager(), e);
+                             });
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             if (ApiException.statusEquals(error, 401)) {

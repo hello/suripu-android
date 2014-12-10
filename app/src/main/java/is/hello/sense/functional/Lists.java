@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Lists {
-    public static <T, R> List<R> mapList(@NonNull Iterable<T> source, @NonNull Function<T, R> mapper) {
+    public static <T, R> List<R> map(@NonNull Iterable<T> source, @NonNull Function<T, R> mapper) {
         List<R> accumulator = new ArrayList<>();
         for (T value : source) {
             accumulator.add(mapper.apply(value));
@@ -19,7 +19,7 @@ public class Lists {
         return accumulator;
     }
 
-    public static <T, K> List<List<T>> segmentList(@NonNull Function<T, K> keyProducer, @NonNull Iterable<T> source) {
+    public static <T, K> List<List<T>> segment(@NonNull Function<T, K> keyProducer, @NonNull Iterable<T> source) {
         LinkedHashMap<K, List<T>> result = new LinkedHashMap<>();
         for (T value : source) {
             K key = keyProducer.apply(value);
@@ -33,14 +33,14 @@ public class Lists {
         return new ArrayList<>(result.values());
     }
 
-    public static <T extends Comparable<T>> List<T> sortedList(@NonNull Collection<T> toSort, @NonNull Comparator<T> comparator) {
+    public static <T extends Comparable<T>> List<T> sorted(@NonNull Collection<T> toSort, @NonNull Comparator<T> comparator) {
         List<T> sortedCopy = new ArrayList<>(toSort.size());
         sortedCopy.addAll(toSort);
         Collections.sort(sortedCopy, comparator);
         return sortedCopy;
     }
 
-    public static <T> List<T> filteredList(@NonNull Iterable<T> toFilter, @NonNull Function<T, Boolean> predicate) {
+    public static <T> List<T> filtered(@NonNull Iterable<T> toFilter, @NonNull Function<T, Boolean> predicate) {
         List<T> results = new ArrayList<>();
         for (T value : toFilter) {
             if (predicate.apply(value))

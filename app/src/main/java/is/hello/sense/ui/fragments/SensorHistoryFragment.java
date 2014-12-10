@@ -48,8 +48,8 @@ import is.hello.sense.util.SuperscriptSpanAdjuster;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static is.hello.sense.functional.Lists.mapList;
-import static is.hello.sense.functional.Lists.segmentList;
+import static is.hello.sense.functional.Lists.map;
+import static is.hello.sense.functional.Lists.segment;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class SensorHistoryFragment extends InjectionFragment implements SelectorLinearLayout.OnSelectionChangedListener {
@@ -233,8 +233,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                         return (shiftedTime.getDayOfMonth() * 100) + (shiftedTime.getHourOfDay() / 6);
                     };
                 }
-                List<List<SensorHistory>> segments = segmentList(segmentKeyProducer, history);
-                List<Section> sections = mapList(segments, Section::new);
+                List<List<SensorHistory>> segments = segment(segmentKeyProducer, history);
+                List<Section> sections = map(segments, Section::new);
 
                 Collections.sort(history, (l, r) -> Float.compare(l.getValue(), r.getValue()));
 

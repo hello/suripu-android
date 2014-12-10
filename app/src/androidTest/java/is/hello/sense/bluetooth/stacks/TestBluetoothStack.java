@@ -13,8 +13,8 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static is.hello.sense.functional.Lists.filteredList;
-import static is.hello.sense.functional.Lists.mapList;
+import static is.hello.sense.functional.Lists.filtered;
+import static is.hello.sense.functional.Lists.map;
 
 public class TestBluetoothStack implements BluetoothStack {
     private final TestBluetoothStackBehavior behavior;
@@ -28,8 +28,8 @@ public class TestBluetoothStack implements BluetoothStack {
     @Override
     public Observable<List<Peripheral>> discoverPeripherals(@NonNull PeripheralCriteria peripheralCriteria) {
         return Observable.just(behavior.peripheralsInRange)
-                         .map(ps -> filteredList(ps, p -> peripheralCriteria.matches(p.advertisingData)))
-                         .map(ps -> mapList(ps, p -> (Peripheral) new TestPeripheral(this, p)))
+                         .map(ps -> filtered(ps, p -> peripheralCriteria.matches(p.advertisingData)))
+                         .map(ps -> map(ps, p -> (Peripheral) new TestPeripheral(this, p)))
                          .delay(behavior.latency, TimeUnit.SECONDS);
     }
 

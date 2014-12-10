@@ -11,6 +11,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.util.BuildValues;
+import is.hello.sense.util.Constants;
 
 
 public class LaunchActivity extends InjectionActivity {
@@ -47,6 +48,14 @@ public class LaunchActivity extends InjectionActivity {
         if (sessionManager.hasSession() && preferences.getBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)) {
             showHomeActivity();
         } else {
+            if (!sessionManager.hasSession()) {
+                preferences
+                        .edit()
+                        .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)
+                        .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE)
+                        .apply();
+            }
+
             showOnboardingActivity();
         }
 
