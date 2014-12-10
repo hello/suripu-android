@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +29,6 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
-import is.hello.sense.util.Logger;
 import rx.Observable;
 
 public class PiruPeaActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
@@ -61,6 +59,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         peripheralActions.addItem("Disconnect", null, this::disconnect);
         peripheralActions.addItem("Pairing Mode", null, this::putIntoPairingMode);
         peripheralActions.addItem("Normal Mode", null, this::putIntoNormalMode);
+        peripheralActions.addItem("Clear Paired Phone", null, this::clearPairedPhone);
         peripheralActions.addItem("Factory Reset", null, this::factoryReset);
         peripheralActions.addItem("Get WiFi Network", null, this::getWifiNetwork);
         peripheralActions.addItem("Set WiFi Network", null, this::setWifiNetwork);
@@ -150,6 +149,10 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
     public void putIntoNormalMode() {
         runSimpleCommand(selectedPeripheral.setPairingModeEnabled(false));
+    }
+
+    public void clearPairedPhone() {
+        runSimpleCommand(selectedPeripheral.clearPairedPhone());
     }
 
     public void factoryReset() {

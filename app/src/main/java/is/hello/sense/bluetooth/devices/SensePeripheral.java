@@ -40,7 +40,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     private static final long STACK_OPERATION_TIMEOUT_S = 30;
     private static final long SIMPLE_COMMAND_TIMEOUT_S = 45;
-    private static final long PAIR_PILL_TIMEOUT_S = 90; //Per Pang
+    private static final long PAIR_PILL_TIMEOUT_S = 90; // Per Pang
     private static final long SET_WIFI_TIMEOUT_S = 90;
     private static final long WIFI_SCAN_TIMEOUT_S = 30;
 
@@ -252,16 +252,6 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
 
-    public Observable<Void> beginDfu() {
-        Logger.info(Peripheral.LOG_TAG, "beginDfu()");
-
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(CommandType.MORPHEUS_COMMAND_MORPHEUS_DFU_BEGIN)
-                .setVersion(COMMAND_VERSION)
-                .build();
-        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
-    }
-
     public Observable<Void> setWifiNetwork(String bssid,
                                            String ssid,
                                            MorpheusBle.wifi_endpoint.sec_type securityType,
@@ -362,17 +352,6 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(MorpheusBle.ErrorType.INTERNAL_DATA_ERROR)), onError);
             }
         }).map(ignored -> endpoints);
-    }
-
-    public Observable<String> deviceId() {
-        Logger.info(Peripheral.LOG_TAG, "deviceId()");
-
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(CommandType.MORPHEUS_COMMAND_GET_DEVICE_ID)
-                .setVersion(COMMAND_VERSION)
-                .build();
-
-        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(MorpheusCommand::getDeviceId);
     }
 
     //endregion
