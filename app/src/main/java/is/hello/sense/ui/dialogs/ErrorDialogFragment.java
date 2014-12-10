@@ -64,10 +64,6 @@ public class ErrorDialogFragment extends DialogFragment {
         } else if (e instanceof SensePeripheralError) {
             MorpheusBle.ErrorType errorType = ((SensePeripheralError) e).errorType;
             switch (errorType) {
-                default:
-                    message = errorType.toString();
-                    break;
-
                 case DEVICE_ALREADY_PAIRED:
                     message = context.getString(R.string.error_sense_already_paired);
                     break;
@@ -91,6 +87,10 @@ public class ErrorDialogFragment extends DialogFragment {
 
                 case FAIL_TO_OBTAIN_IP:
                     message = context.getString(R.string.error_wifi_ip_failure);
+                    break;
+
+                default:
+                    message = errorType.toString();
                     break;
             }
         }

@@ -1,6 +1,7 @@
 package is.hello.sense.debug;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,24 +17,32 @@ import android.widget.TextView;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.util.Logger;
+import rx.Observable;
 
 public class PiruPeaActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject BluetoothStack stack;
+    @Inject ApiSessionManager apiSessionManager;
+    @Inject HardwarePresenter hardwarePresenter;
 
     private SensePeripheral selectedPeripheral;
 
     private PeripheralAdapter scannedPeripheralsAdapter;
     private StaticItemAdapter peripheralActions;
     private ListView listView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +58,25 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         this.peripheralActions = new StaticItemAdapter(this);
 
         peripheralActions.addItem("Disconnect", null, this::disconnect);
-        peripheralActions.addItem("Pairing Mode", null);
-        peripheralActions.addItem("Normal Mode", null);
-        peripheralActions.addItem("Get Device ID", null);
-        peripheralActions.addItem("Factory Reset", null);
-        peripheralActions.addItem("Get WiFi Network", null);
-        peripheralActions.addItem("Set WiFi Network", null);
-        peripheralActions.addItem("Pair Pill", null);
-        peripheralActions.addItem("Link Account", null);
+        peripheralActions.addItem("Pairing Mode", null, this::putIntoPairingMode);
+        peripheralActions.addItem("Normal Mode", null, this::putIntoNormalMode);
+        peripheralActions.addItem("Factory Reset", null, this::factoryReset);
+        peripheralActions.addItem("Get WiFi Network", null, this::getWifiNetwork);
+        peripheralActions.addItem("Set WiFi Network", null, this::setWifiNetwork);
+        peripheralActions.addItem("Pair Pill Mode", null, this::pairPillMode);
+        peripheralActions.addItem("Link Account", null, this::linkAccount);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (selectedPeripheral != null) {
+            selectedPeripheral.disconnect().subscribe(ignored -> {}, Functions.LOG_ERROR);
+            hardwarePresenter.setPeripheral(null);
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -84,11 +103,11 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
         LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(SensePeripheral.discover(stack, new PeripheralCriteria()),
-                peripherals -> {
-                    scannedPeripheralsAdapter.addAll(peripherals);
-                    LoadingDialogFragment.close(getFragmentManager());
-                },
-                this::presentError);
+                         peripherals -> {
+                             scannedPeripheralsAdapter.addAll(peripherals);
+                             LoadingDialogFragment.close(getFragmentManager());
+                         },
+                         this::presentError);
     }
 
     public void presentError(@Nullable Throwable e) {
@@ -101,13 +120,60 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
     //region Actions
 
+    public <T> void runSimpleCommand(@NonNull Observable<T> command) {
+        LoadingDialogFragment.show(getFragmentManager());
+        bindAndSubscribe(command,
+                         ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                         this::presentError);
+    }
+
     public void disconnect() {
         if (selectedPeripheral != null) {
             selectedPeripheral.disconnect().subscribe(ignored -> {}, Functions.LOG_ERROR);
+            hardwarePresenter.setPeripheral(null);
             this.selectedPeripheral = null;
         }
 
         listView.setAdapter(scannedPeripheralsAdapter);
+    }
+
+    public void putIntoPairingMode() {
+        runSimpleCommand(selectedPeripheral.setPairingModeEnabled(true));
+    }
+
+    public void putIntoNormalMode() {
+        runSimpleCommand(selectedPeripheral.setPairingModeEnabled(false));
+    }
+
+    public void factoryReset() {
+        runSimpleCommand(selectedPeripheral.factoryReset());
+    }
+
+    public void getWifiNetwork() {
+        LoadingDialogFragment.show(getFragmentManager());
+        bindAndSubscribe(selectedPeripheral.getWifiNetwork(),
+                         network -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             MessageDialogFragment dialogFragment = MessageDialogFragment.newInstance("Wifi Network", network.ssid + "\n" + network.connectionState);
+                             dialogFragment.show(getFragmentManager(), MessageDialogFragment.TAG);
+                         },
+                         this::presentError);
+    }
+
+    public void setWifiNetwork() {
+        hardwarePresenter.setPeripheral(selectedPeripheral);
+
+        Intent intent = new Intent(this, OnboardingActivity.class);
+        intent.putExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, true);
+        startActivity(intent);
+    }
+
+    public void pairPillMode() {
+        runSimpleCommand(selectedPeripheral.pairPill(apiSessionManager.getAccessToken()));
+    }
+
+    public void linkAccount() {
+        runSimpleCommand(selectedPeripheral.linkAccount(apiSessionManager.getAccessToken()));
     }
 
     //endregion

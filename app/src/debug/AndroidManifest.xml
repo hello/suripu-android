@@ -8,7 +8,7 @@
             android:name="is.hello.sense.debug.PiruPeaActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Underside"
-            android:label="Piru Pea" />
+            android:label="Piru-Pea" />
 
     </application>
 
