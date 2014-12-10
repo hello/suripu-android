@@ -29,6 +29,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
 
 public class PiruPeaActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
@@ -60,7 +61,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         peripheralActions.addItem("Pairing Mode", null, this::putIntoPairingMode);
         peripheralActions.addItem("Normal Mode", null, this::putIntoNormalMode);
         peripheralActions.addItem("Clear Paired Phone", null, this::clearPairedPhone);
-        peripheralActions.addItem("Factory Reset", null, this::factoryReset);
+        peripheralActions.addItem("Device Factory Reset", null, this::factoryReset);
         peripheralActions.addItem("Get WiFi Network", null, this::getWifiNetwork);
         peripheralActions.addItem("Set WiFi Network", null, this::setWifiNetwork);
         peripheralActions.addItem("Pair Pill Mode", null, this::pairPillMode);
@@ -156,7 +157,13 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     }
 
     public void factoryReset() {
-        runSimpleCommand(selectedPeripheral.factoryReset());
+        SenseAlertDialog alertDialog = new SenseAlertDialog(this);
+        alertDialog.setTitle(R.string.dialog_title_factory_reset);
+        alertDialog.setMessage("This is a device only factory reset, all paired accounts in API will persist. Use the ‘Devices’ screen to perform a full factory reset.");
+        alertDialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> runSimpleCommand(selectedPeripheral.factoryReset()));
+        alertDialog.setNegativeButton(android.R.string.cancel, null);
+        alertDialog.setDestructive(true);
+        alertDialog.show();
     }
 
     public void getWifiNetwork() {
