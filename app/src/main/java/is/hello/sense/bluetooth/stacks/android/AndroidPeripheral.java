@@ -277,7 +277,13 @@ public class AndroidPeripheral implements Peripheral {
                 });
     }
 
+    static boolean hasFailedOnce = false;
     private boolean tryCreateBond() {
+        if (!hasFailedOnce) {
+            hasFailedOnce = true;
+            return false;
+        }
+
         try {
             Method method = bluetoothDevice.getClass().getMethod("createBond", (Class[]) null);
             method.invoke(bluetoothDevice, (Object[]) null);
@@ -455,6 +461,8 @@ public class AndroidPeripheral implements Peripheral {
             if (gatt.discoverServices()) {
                 timeout.schedule();
             } else {
+                gattDispatcher.onServicesDiscovered = null;
+
                 timeout.recycle();
                 s.onError(new PeripheralServiceDiscoveryFailedError());
             }
@@ -520,6 +528,8 @@ public class AndroidPeripheral implements Peripheral {
                 if (gatt.writeDescriptor(descriptorToWrite)) {
                     timeout.schedule();
                 } else {
+                    gattDispatcher.onDescriptorWrite = null;
+
                     timeout.recycle();
                     s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE));
                 }
@@ -572,6 +582,8 @@ public class AndroidPeripheral implements Peripheral {
             if (gatt.writeDescriptor(descriptor)) {
                 timeout.schedule();
             } else {
+                gattDispatcher.onDescriptorWrite = null;
+
                 timeout.recycle();
                 s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
@@ -603,6 +615,8 @@ public class AndroidPeripheral implements Peripheral {
                     s.onNext(null);
                     s.onCompleted();
                 }
+
+                gattDispatcher.onCharacteristicWrite = null;
             };
 
             BluetoothGattService service = getGattService(onPeripheralService);
@@ -611,6 +625,8 @@ public class AndroidPeripheral implements Peripheral {
             if (gatt.writeCharacteristic(characteristic)) {
                 timeout.schedule();
             } else {
+                gattDispatcher.onCharacteristicWrite = null;
+
                 timeout.recycle();
                 s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }

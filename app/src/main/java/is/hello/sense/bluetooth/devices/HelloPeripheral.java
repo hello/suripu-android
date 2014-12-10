@@ -53,17 +53,11 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
             Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
 
             s.onNext(ConnectStatus.CONNECTING);
-            Action1<Throwable> onError = e -> {
-                timeout.unschedule();
-                timeout.recycle();
-
-                s.onError(e);
-            };
             peripheral.connect().subscribe(peripheral -> {
                 Logger.info(Peripheral.LOG_TAG, "connected to " + toString());
 
                 s.onNext(ConnectStatus.BONDING);
-                peripheral.createBond().subscribe(ignored -> {
+                peripheral.createBond().subscribe(peripheral1 -> {
                     Logger.info(Peripheral.LOG_TAG, "bonded to " + toString());
 
                     s.onNext(ConnectStatus.DISCOVERING_SERVICES);
@@ -73,9 +67,38 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
                         this.peripheralService = peripheral.getService(getTargetServiceIdentifier());
                         s.onNext(ConnectStatus.CONNECTED);
                         s.onCompleted();
-                    }, s::onError);
-                }, onError);
-            }, onError);
+                    }, e -> {
+                        // discoverServices took ownership of timeout,
+                        // we don't need to worry about it anymore.
+
+                        Logger.error(Peripheral.LOG_TAG, "Disconnecting due to service discovery failure", e);
+                        disconnect().subscribe(ignored -> {
+                            Logger.info(Peripheral.LOG_TAG, "Disconnected from service discovery failure");
+                            s.onError(e);
+                        }, disconnectError -> {
+                            Logger.error(Peripheral.LOG_TAG, "Could not disconnect for service discovery failure", disconnectError);
+                            s.onError(e);
+                        });
+                    });
+                }, e -> {
+                    timeout.unschedule();
+                    timeout.recycle();
+
+                    Logger.error(Peripheral.LOG_TAG, "Disconnecting due to bond change failure", e);
+                    disconnect().subscribe(ignored -> {
+                        Logger.info(Peripheral.LOG_TAG, "Disconnected from bond change failure");
+                        s.onError(e);
+                    }, disconnectError -> {
+                        Logger.error(Peripheral.LOG_TAG, "Could not disconnect for bond change failure", disconnectError);
+                        s.onError(e);
+                    });
+                });
+            }, e -> {
+                timeout.unschedule();
+                timeout.recycle();
+
+                s.onError(e);
+            });
         });
     }
 

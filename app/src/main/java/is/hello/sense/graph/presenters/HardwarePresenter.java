@@ -19,6 +19,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
@@ -27,6 +28,7 @@ import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.subjects.ReplaySubject;
 
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
@@ -35,8 +37,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     private final ApiSessionManager apiSessionManager;
     private final BluetoothStack bluetoothStack;
 
-    private @Nullable Observable<SensePeripheral> rediscovery;
-    private @Nullable Observable<SensePeripheral.ConnectStatus> connectingToPeripheral;
+    private @Nullable ReplaySubject<SensePeripheral> rediscovery;
+    private @Nullable ReplaySubject<SensePeripheral.ConnectStatus> connectingToPeripheral;
     private @Nullable SensePeripheral peripheral;
 
     private final Action1<Throwable> respondToError;
@@ -154,18 +156,22 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         if (TextUtils.isEmpty(address)) {
             return Observable.error(new PeripheralNotFoundError());
         } else {
-            this.rediscovery = SensePeripheral.discover(bluetoothStack, PeripheralCriteria.forAddress(address)).flatMap(peripherals -> {
+            Observable<SensePeripheral> rediscovery = SensePeripheral.discover(bluetoothStack, PeripheralCriteria.forAddress(address)).flatMap(peripherals -> {
+                this.rediscovery = null;
+
                 if (!peripherals.isEmpty()) {
                     this.peripheral = peripherals.get(0);
-                    this.rediscovery = null;
-
                     logEvent("rediscoveredDevice(" + peripheral + ")");
+
                     return Observable.just(peripheral);
                 } else {
                     return Observable.error(new PeripheralNotFoundError());
                 }
             });
-            return rediscovery;
+
+            this.rediscovery = ReplaySubject.createWithSize(1);
+            rediscovery.subscribe(this.rediscovery);
+            return this.rediscovery;
         }
     }
 
@@ -181,18 +187,22 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
             return Observable.just(this.peripheral);
         }
 
-        if (rediscovery != null) {
+        if (this.rediscovery != null) {
             return rediscovery;
         }
 
-        this.rediscovery = SensePeripheral.rediscover(bluetoothStack, device.getDeviceId()).flatMap(peripheral -> {
+        Observable<SensePeripheral> rediscovery = SensePeripheral.rediscover(bluetoothStack, device.getDeviceId()).flatMap(peripheral -> {
             logEvent("rediscoveredPeripheralForDevice(" + peripheral + ")");
             this.peripheral = peripheral;
             this.rediscovery = null;
 
             return Observable.just(this.peripheral);
         });
-        return rediscovery;
+
+
+        this.rediscovery = ReplaySubject.createWithSize(1);
+        rediscovery.subscribe(this.rediscovery);
+        return this.rediscovery;
     }
 
     public Observable<HelloPeripheral.ConnectStatus> connectToPeripheral(@NonNull SensePeripheral peripheral) {
@@ -208,15 +218,20 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
             return Observable.just(null);
         }
 
-        this.connectingToPeripheral = peripheral.connect().doOnCompleted(() -> {
+        Observable<SensePeripheral.ConnectStatus> connecting = peripheral.connect().doOnCompleted(() -> {
             logEvent("pairedWithPeripheral(" + peripheral + ")");
             setLastPeripheralAddress(peripheral.getAddress());
             this.peripheral = peripheral;
 
             this.connectingToPeripheral = null;
+        }).doOnError(e -> {
+            logEvent("failed to pair with peripheral " + peripheral + ": " + e);
+            this.connectingToPeripheral = null;
         });
 
-        return connectingToPeripheral;
+        this.connectingToPeripheral = ReplaySubject.createWithSize(1);
+        connecting.subscribe(connectingToPeripheral);
+        return this.connectingToPeripheral;
     }
 
     public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks() {
@@ -326,7 +341,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
 
-    public static class NoConnectedPeripheralException extends Exception {
+    public static class NoConnectedPeripheralException extends BluetoothError {
         public NoConnectedPeripheralException() {
             super("HardwarePresenter peripheral method called without paired peripheral.", new NullPointerException());
         }

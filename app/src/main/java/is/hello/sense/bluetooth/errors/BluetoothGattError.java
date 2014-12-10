@@ -58,9 +58,9 @@ public class BluetoothGattError extends BluetoothError {
         }
     }
 
-    public BluetoothGattError(int status) {
-        super(statusToString(status));
+    public BluetoothGattError(int statusCode) {
+        super(statusToString(statusCode));
 
-        this.statusCode = status;
+        this.statusCode = statusCode;
     }
 }

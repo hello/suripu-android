@@ -72,6 +72,10 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
 
     @Override
     public void schedule() {
+        if (isInPool) {
+            throw new IllegalStateException("Cannot schedule a recycled time out");
+        }
+
         if (action == null || scheduler == null) {
             throw new IllegalStateException("Cannot schedule a time out that has no action");
         }
