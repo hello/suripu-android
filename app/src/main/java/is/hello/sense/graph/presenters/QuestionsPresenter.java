@@ -31,6 +31,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 @Singleton public final class QuestionsPresenter extends Presenter {
     private final ApiService apiService;
+    private final ApiSessionManager apiSessionManager;
 
     public final PresenterSubject<List<Question>> questions = PresenterSubject.create();
     public final PresenterSubject<Question> currentQuestion = PresenterSubject.create();
@@ -44,9 +45,11 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     //region Lifecycle
 
     @Inject public QuestionsPresenter(@NonNull ApiService apiService,
+                                      @NonNull ApiSessionManager apiSessionManager,
                                       @NonNull Context context,
                                       @NonNull PreferencesPresenter preferences) {
         this.apiService = apiService;
+        this.apiSessionManager = apiSessionManager;
         this.preferences = preferences;
 
         Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
@@ -101,6 +104,11 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     public void update() {
+        if (!apiSessionManager.hasSession()) {
+            logEvent("skipping questions update, no api session.");
+            return;
+        }
+
         if (isUpdateTooSoon()) {
             logEvent("redundant update requested, ignoring.");
             return;
