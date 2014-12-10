@@ -29,6 +29,7 @@ import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
+import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
@@ -47,7 +48,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.simple_list_view);
+        setContentView(R.layout.activity_piru_pea);
 
         this.listView = (ListView) findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
@@ -110,9 +111,15 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
                          this::presentError);
     }
 
-    public void presentError(@Nullable Throwable e) {
+    public void presentError(Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+
+        if (hardwarePresenter.isErrorFatal(e)) {
+            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+            fragment.show(getFragmentManager(), R.id.activity_piru_pea_container);
+        } else {
+            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), this, e);
+        }
     }
 
     //endregion
