@@ -2,23 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- PARTIAL -->
 
-    <permission android:name="is.hello.sense.debug.permission.C2D_MESSAGE" android:protectionLevel="signature" />
-    <uses-permission android:name="is.hello.sense.debug.permission.C2D_MESSAGE" />
+    <permission android:name="is.hello.sense.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <uses-permission android:name="is.hello.sense.permission.C2D_MESSAGE" />
 
     <application>
-
-        <activity
-            android:name="is.hello.sense.debug.PiruPeaActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Underside"
-            android:label="Piru-Pea" />
 
         <receiver
             android:name="is.hello.sense.notifications.NotificationReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="is.hello.sense.debug" />
+                <category android:name="is.hello.sense" />
             </intent-filter>
         </receiver>
 
