@@ -1,44 +1,93 @@
 package is.hello.sense.bluetooth.stacks.util;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-public final class ScanResponse {
-    public final int type;
-    public final byte[] payload;
+import rx.functions.Func1;
 
-    public static @NonNull Set<ScanResponse> parse(byte[] rawResponse) {
-        Set<ScanResponse> parsedResponses = new HashSet<>();
+/**
+ * Parses a raw BLE advertising data blob into a multi-map collection for querying by
+ * predicates contained in a {@see is.hello.sense.bluetooth.stacks.util.PeripheralCriteria}
+ * instance.
+ */
+public final class AdvertisingData {
+    private final Map<Integer, Collection<byte[]>> records = new HashMap<>();
+
+    public static @NonNull AdvertisingData parse(@NonNull byte[] raw) {
+        AdvertisingData parsedResponses = new AdvertisingData();
         int index = 0;
-        while (index < rawResponse.length) {
-            byte dataLength = rawResponse[index++];
+        while (index < raw.length) {
+            byte dataLength = raw[index++];
             if (dataLength == 0) {
                 break;
             }
 
-            int dataType = rawResponse[index];
+            int dataType = raw[index];
             if (dataType == 0) {
                 break;
             }
 
-            byte[] payload = Arrays.copyOfRange(rawResponse, index + 1, index + dataLength);
-            parsedResponses.add(new ScanResponse(dataType, payload));
+            byte[] payload = Arrays.copyOfRange(raw, index + 1, index + dataLength);
+            parsedResponses.addRecord(dataType, payload);
 
             index += dataLength;
         }
         return parsedResponses;
     }
 
-    public ScanResponse(int type, @NonNull String string) {
-        this(type, BluetoothUtils.stringToBytes(string));
+    private AdvertisingData() {
     }
 
-    public ScanResponse(int type, @NonNull byte[] payload) {
-        this.type = type;
-        this.payload = payload;
+
+    private void addRecord(int type, @NonNull byte[] contents) {
+        Collection<byte[]> typeItems = getRecordsForType(type);
+        if (typeItems == null) {
+            typeItems = new ArrayList<>(1);
+            records.put(type, typeItems);
+        }
+
+        typeItems.add(contents);
+    }
+
+
+    /**
+     * Returns whether or not there are no advertising data records.
+     */
+    public boolean isEmpty() {
+        return records.isEmpty();
+    }
+
+    /**
+     * Returns the records matching a given type.
+     */
+    public @Nullable Collection<byte[]> getRecordsForType(int type) {
+        return records.get(type);
+    }
+
+    /**
+     * Returns whether or not any records in the advertising
+     * data of a given type match a given predicate functor.
+     */
+    public boolean anyRecordMatches(int type, @NonNull Func1<byte[], Boolean> predicate) {
+        Collection<byte[]> recordsForType = getRecordsForType(type);
+        if (recordsForType == null) {
+            return false;
+        }
+
+        for (byte[] payload : recordsForType) {
+            if (predicate.call(payload)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -47,25 +96,37 @@ public final class ScanResponse {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ScanResponse that = (ScanResponse) o;
-
-        return type == that.type && Arrays.equals(payload, that.payload);
+        AdvertisingData that = (AdvertisingData) o;
+        return records.equals(that.records);
     }
 
     @Override
     public int hashCode() {
-        int result = type;
-        result = 31 * result + Arrays.hashCode(payload);
-        return result;
+        return records.hashCode();
     }
-
 
     @Override
     public String toString() {
-        return "AdvertisingData{" +
-                "type=" + typeToString(type) +
-                ", payload=" + BluetoothUtils.bytesToString(payload) +
-                '}';
+        String string = "{";
+        for (Iterator<Map.Entry<Integer, Collection<byte[]>>> recordIterator = records.entrySet().iterator(); recordIterator.hasNext(); ) {
+            Map.Entry<Integer, Collection<byte[]>> entry = recordIterator.next();
+            string += typeToString(entry.getKey());
+            string += "=[";
+            for (Iterator<byte[]> entryIterator = entry.getValue().iterator(); entryIterator.hasNext(); ) {
+                byte[] contents = entryIterator.next();
+                string += BluetoothUtils.bytesToString(contents);
+                if (entryIterator.hasNext()) {
+                    string += ", ";
+                }
+            }
+            if (recordIterator.hasNext()) {
+                string += "], ";
+            } else {
+                string += "]";
+            }
+        }
+        string += '}';
+        return string;
     }
 
 

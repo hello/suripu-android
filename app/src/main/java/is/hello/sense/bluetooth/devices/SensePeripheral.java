@@ -20,8 +20,8 @@ import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
-import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
-import is.hello.sense.bluetooth.stacks.util.ScanResponse;
+import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
+import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.util.Logger;
@@ -48,17 +48,17 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     private final PacketHandler packetHandler;
 
     public static Observable<List<SensePeripheral>> discover(@NonNull BluetoothStack bluetoothStack,
-                                                             @NonNull ScanCriteria criteria) {
-        criteria.addConstraint(new ScanResponse(ScanResponse.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT));
-        return bluetoothStack.discoverPeripherals(criteria)
-                .map(SensePeripheral::fromDevices);
+                                                             @NonNull PeripheralCriteria criteria) {
+        criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
+        return bluetoothStack.discoverPeripherals(criteria).map(SensePeripheral::fromDevices);
     }
 
     public static Observable<SensePeripheral> rediscover(@NonNull BluetoothStack bluetoothStack,
                                                          @NonNull String deviceId) {
-        ScanCriteria criteria = new ScanCriteria();
+        PeripheralCriteria criteria = new PeripheralCriteria();
         criteria.setLimit(1);
-        criteria.addConstraint(new ScanResponse(ScanResponse.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId));
+        criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
+        criteria.addStartsWithPredicate(AdvertisingData.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId);
         return discover(bluetoothStack, criteria).flatMap(ds -> {
             if (ds.isEmpty()) {
                 return Observable.error(new PeripheralNotFoundError());

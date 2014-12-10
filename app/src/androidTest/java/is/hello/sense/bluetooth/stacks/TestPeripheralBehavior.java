@@ -4,12 +4,10 @@ import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
-import is.hello.sense.bluetooth.stacks.util.ScanResponse;
+import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import is.hello.sense.functional.Either;
 
 public class TestPeripheralBehavior {
@@ -19,7 +17,7 @@ public class TestPeripheralBehavior {
     final @NonNull String address;
     final int scanTimeRssi;
 
-    Set<ScanResponse> scanResponse = Collections.emptySet();
+    AdvertisingData advertisingData = AdvertisingData.parse(new byte[0]);
 
     int connectionStatus = Peripheral.STATUS_DISCONNECTED;
     int bondStatus = Peripheral.BOND_NONE;
@@ -39,8 +37,8 @@ public class TestPeripheralBehavior {
         this.scanTimeRssi = scanTimeRssi;
     }
 
-    public TestPeripheralBehavior setScanResponse(@NonNull Set<ScanResponse> scanResponse) {
-        this.scanResponse = scanResponse;
+    public TestPeripheralBehavior setAdvertisingData(@NonNull AdvertisingData advertisingData) {
+        this.advertisingData = advertisingData;
         return this;
     }
 

@@ -16,15 +16,12 @@ import android.util.AttributeSet;
 import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
-import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.ViewUtil;

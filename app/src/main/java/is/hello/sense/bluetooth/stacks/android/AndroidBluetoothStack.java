@@ -21,7 +21,7 @@ import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
-import is.hello.sense.bluetooth.stacks.util.ScanCriteria;
+import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -67,9 +67,9 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
     @NonNull
     @Override
-    public Observable<List<Peripheral>> discoverPeripherals(@NonNull ScanCriteria scanCriteria) {
+    public Observable<List<Peripheral>> discoverPeripherals(@NonNull PeripheralCriteria peripheralCriteria) {
         if (adapter != null && adapter.isEnabled()) {
-            return newConfiguredObservable(new PeripheralScanner(this, scanCriteria));
+            return newConfiguredObservable(new PeripheralScanner(this, peripheralCriteria));
         } else {
             return Observable.error(new BluetoothDisabledError());
         }

@@ -24,4 +24,18 @@ public final class BluetoothUtils {
         return bytes;
     }
 
+    public static boolean bytesStartsWith(@NonNull byte[] haystack, @NonNull byte[] needle) {
+        if (haystack.length < needle.length) {
+            return false;
+        }
+
+        for (int i = 0, length = needle.length; i < length; i++) {
+            if (haystack[i] != needle[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }
