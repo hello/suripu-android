@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- PARTIAL -->
+
+    <application>
+
+        <activity
+            android:name="is.hello.sense.debug.PiruPeaActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Underside"
+            android:label="Piru Pea" />
+
+    </application>
+
+</manifest>
