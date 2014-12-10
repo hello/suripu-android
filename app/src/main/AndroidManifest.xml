@@ -15,9 +15,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
-    <permission android:name="is.hello.sense.permission.C2D_MESSAGE" android:protectionLevel="signature" />
-    <uses-permission android:name="is.hello.sense.permission.C2D_MESSAGE" />
-
     <instrumentation
         android:name="com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
         android:targetPackage="is.hello.sense" />
@@ -135,15 +132,6 @@
         <service android:name=".remote.LastNightWidgetProvider$LastNightService" />
 
         <!--endregion-->
-
-        <receiver
-            android:name=".notifications.NotificationReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="is.hello.sense" />
-            </intent-filter>
-        </receiver>
 
         <activity
             android:name="net.hockeyapp.android.UpdateActivity" />

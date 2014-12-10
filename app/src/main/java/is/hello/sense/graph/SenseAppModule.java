@@ -54,7 +54,7 @@ import is.hello.sense.ui.widget.TimestampTextView;
 import is.hello.sense.util.BuildValues;
 
 @Module(
-    includes = {ApiModule.class, BluetoothModule.class},
+    includes = {ApiModule.class, BluetoothModule.class, DebugModule.class},
     injects = {
         BuildValues.class,
         DebugActivity.class,

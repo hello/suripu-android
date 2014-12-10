@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -32,10 +33,10 @@ public class Lists {
         return new ArrayList<>(result.values());
     }
 
-    public static <T extends Comparable<T>> List<T> sortedList(@NonNull Collection<T> toSort) {
+    public static <T extends Comparable<T>> List<T> sortedList(@NonNull Collection<T> toSort, @NonNull Comparator<T> comparator) {
         List<T> sortedCopy = new ArrayList<>(toSort.size());
         sortedCopy.addAll(toSort);
-        Collections.sort(sortedCopy);
+        Collections.sort(sortedCopy, comparator);
         return sortedCopy;
     }
 

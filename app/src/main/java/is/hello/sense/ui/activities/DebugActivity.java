@@ -29,6 +29,7 @@ import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
@@ -78,6 +79,14 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     }
 
     private void addActions() {
+        debugItems.addItem("Piru-Pea", null, () -> {
+            try {
+                startActivity(new Intent(this, Class.forName("is.hello.sense.debug.PiruPeaActivity")));
+            } catch (ClassNotFoundException e) {
+                MessageDialogFragment dialog = MessageDialogFragment.newInstance("Piru-Pea Unavailable", "Bluetooth debugging is only available in internal builds.");
+                dialog.show(getFragmentManager(), MessageDialogFragment.TAG);
+            }
+        });
         debugItems.addItem("Environment", currentEnvironment.toString(), this::changeEnvironment);
         debugItems.addItem("View Log", null, this::viewLog);
         debugItems.addItem("Clear Log", null, this::clearLog);

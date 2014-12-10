@@ -101,6 +101,10 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
 
+    public void setPeripheral(@Nullable SensePeripheral peripheral) {
+        this.peripheral = peripheral;
+    }
+
     public @Nullable SensePeripheral getPeripheral() {
         return peripheral;
     }
