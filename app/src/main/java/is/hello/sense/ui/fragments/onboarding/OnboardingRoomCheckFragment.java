@@ -312,6 +312,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
     public void conditionsUnavailable(Throwable e) {
         ErrorDialogFragment.presentError(getFragmentManager(), e);
+        showComplete(true);
     }
 
 
