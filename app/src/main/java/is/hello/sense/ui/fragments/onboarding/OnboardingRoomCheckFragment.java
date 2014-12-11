@@ -70,6 +70,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     private final List<UnitFormatter.Formatter> conditionFormatters = new ArrayList<>();
 
     private boolean animationCompleted = false;
+    private @Nullable ValueAnimator currentValueAnimator = null;
 
     private LinearLayout conditionsContainer;
 
@@ -119,14 +120,17 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (animationCompleted) {
-            for (int i = 0, size = conditionsContainer.getChildCount(); i < size; i++) {
-                ImageView image = (ImageView) conditionsContainer.getChildAt(i);
-                image.setImageResource(ACTIVE_STATE_IMAGES[i]);
-            }
-            showComplete(true);
+            jumpToEnd();
         } else {
             bindAndSubscribe(currentConditionsPresenter.currentConditions, this::bindConditions, this::conditionsUnavailable);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        jumpToEnd();
     }
 
     @Override
@@ -135,6 +139,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
         outState.putBoolean("animationCompleted", animationCompleted);
     }
+
 
     //region Displaying Conditions
 
@@ -161,6 +166,10 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     }
 
     public void showConditionAt(int position) {
+        if (endContainer.getParent() != null) {
+            return;
+        }
+
         if (position < conditions.size()) {
             conditionsContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
 
@@ -184,8 +193,8 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 if (condition.getValue() == 0f) {
                     deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
                 } else {
-                    ValueAnimator animator = Animation.Properties.DEFAULT.apply(ValueAnimator.ofFloat(0f, condition.getValue()));
-                    animator.addUpdateListener(a -> {
+                    this.currentValueAnimator = Animation.Properties.DEFAULT.apply(ValueAnimator.ofFloat(0f, condition.getValue()));
+                    currentValueAnimator.addUpdateListener(a -> {
                         float value = (Float) a.getAnimatedValue();
                         if (formatter != null) {
                             conditionItemValue.setText(formatter.format(value));
@@ -193,17 +202,47 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                             conditionItemContainer.setTag(value + condition.getValue());
                         }
                     });
-                    animator.addListener(new AnimatorListenerAdapter() {
+                    currentValueAnimator.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
+                            OnboardingRoomCheckFragment.this.currentValueAnimator = null;
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            OnboardingRoomCheckFragment.this.currentValueAnimator = null;
                         }
                     });
-                    animator.start();
+                    currentValueAnimator.start();
                 }
             });
         } else {
             deferWorker.schedule(() -> showComplete(true));
+        }
+    }
+
+    public void jumpToEnd() {
+        LayoutTransition layoutTransition = conditionsContainer.getLayoutTransition();
+        layoutTransition.disableTransitionType(LayoutTransition.CHANGE_APPEARING);
+        layoutTransition.disableTransitionType(LayoutTransition.APPEARING);
+        layoutTransition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+        layoutTransition.disableTransitionType(LayoutTransition.DISAPPEARING);
+
+        if (this.currentValueAnimator != null) {
+            currentValueAnimator.cancel();
+        }
+
+        if (conditionItemContainer.getParent() != null) {
+            conditionsContainer.removeView(conditionItemContainer);
+        }
+
+        if (endContainer.getParent() == null) {
+            for (int i = 0, size = conditionsContainer.getChildCount(); i < size; i++) {
+                ImageView image = (ImageView) conditionsContainer.getChildAt(i);
+                image.setImageResource(ACTIVE_STATE_IMAGES[i]);
+            }
+            showComplete(true);
         }
     }
 
@@ -246,6 +285,10 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
 
     public void bindConditions(@NonNull CurrentConditionsPresenter.Result result) {
+        if (endContainer.getParent() != null) {
+            return;
+        }
+
         UnitSystem unitSystem = result.units;
         RoomConditions roomConditions = result.conditions;
 
