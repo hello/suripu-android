@@ -141,7 +141,7 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
 
         // ---- //
-        
+
 
         peripheralBehavior.reset();
         peripheralBehavior.setConnectResponse(successResponse);

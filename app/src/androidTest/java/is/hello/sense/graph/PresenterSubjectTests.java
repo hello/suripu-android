@@ -54,18 +54,18 @@ public class PresenterSubjectTests extends TestCase {
         assertNull(observer.getError());
         assertEquals(42, (int) observer.getSingle());
 
-        observer.reset().subscribeTo(subject);
+        observer.reset();
 
         subject.onError(new IllegalStateException());
-        observer.await();
+        observer.subscribeTo(subject).await();
 
         assertNotNull(observer.getError());
         assertEquals(IllegalStateException.class, observer.getError().getClass());
 
-        observer.reset().subscribeTo(subject);
+        observer.reset();
 
         subject.onNext(9000);
-        observer.await();
+        observer.subscribeTo(subject).await();
 
         assertEquals(9000, (int) observer.getLast());
     }
