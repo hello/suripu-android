@@ -87,6 +87,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_room_check, container, false);
 
         this.conditionsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_container);
+        Animation.Properties.DEFAULT.apply(conditionsContainer.getLayoutTransition(), false);
 
         this.conditionItemContainer = inflater.inflate(R.layout.item_room_check_condition, container, false);
         this.conditionItemTitle = (TextView) conditionItemContainer.findViewById(R.id.item_room_check_condition_title);
