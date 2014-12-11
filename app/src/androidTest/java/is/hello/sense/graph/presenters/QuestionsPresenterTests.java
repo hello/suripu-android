@@ -27,11 +27,12 @@ public class QuestionsPresenterTests extends InjectionTestCase {
     }
 
     public void testUpdate() throws Exception {
+        presenter.update();
         SyncObserver<List<Question>> questions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.questions);
         questions.await();
 
         assertNull(questions.getError());
-        assertNotNull(questions.getSingle());
+        assertNotNull(questions.getLast());
     }
 
     public void testCurrentQuestion() throws Exception {

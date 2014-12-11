@@ -2,12 +2,15 @@ package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.SparseBooleanArray;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -44,6 +47,21 @@ public class SmartAlarmPresenter extends UpdatablePresenter<List<SmartAlarm>> {
     @Override
     protected Observable<List<SmartAlarm>> provideUpdateObservable() {
         return apiService.smartAlarms();
+    }
+
+    public boolean validateAlarms(@NonNull List<SmartAlarm> alarms) {
+        Set<Integer> alarmDays = new HashSet<>();
+        for (SmartAlarm alarm : alarms) {
+            for (Integer dayOfWeek : alarm.getDaysOfWeek()) {
+                if (alarmDays.contains(dayOfWeek)) {
+                    return false;
+                } else {
+                    alarmDays.add(dayOfWeek);
+                }
+            }
+        }
+
+        return true;
     }
 
     public Observable<VoidResponse> save(@NonNull List<SmartAlarm> updatedAlarms) {

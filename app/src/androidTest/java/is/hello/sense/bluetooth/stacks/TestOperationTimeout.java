@@ -31,7 +31,7 @@ public final class TestOperationTimeout implements OperationTimeout {
     @Override
     public void schedule() {
         if (action == null || scheduler == null) {
-            throw new NullPointerException();
+            throw new IllegalStateException("Cannot schedule a time out that has no action");
         }
 
         this.wasScheduled = true;
@@ -39,10 +39,6 @@ public final class TestOperationTimeout implements OperationTimeout {
 
     @Override
     public void unschedule() {
-        if (action == null || scheduler == null) {
-            throw new NullPointerException();
-        }
-
         this.wasUnscheduled = true;
     }
 

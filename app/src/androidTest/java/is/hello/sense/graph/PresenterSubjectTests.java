@@ -65,9 +65,9 @@ public class PresenterSubjectTests extends TestCase {
         observer.reset().subscribeTo(subject);
 
         subject.onNext(9000);
-        observer.ignore(1).await();
+        observer.await();
 
-        assertEquals(9000, (int) observer.getSingle());
+        assertEquals(9000, (int) observer.getLast());
     }
 
     public void testNonCompletion() throws Exception {

@@ -105,6 +105,7 @@ public class HelloPeripheralTests extends InjectionTestCase {
         Either<Peripheral, Throwable> successResponse = Either.left(peripheral.peripheral);
 
         peripheralBehavior.setConnectResponse(Either.right(new BluetoothDisabledError()));
+        peripheralBehavior.setDisconnectResponse(successResponse);
 
         SyncObserver<HelloPeripheral.ConnectStatus> connect1 = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, peripheral.connect());
         connect1.await();
@@ -118,9 +119,13 @@ public class HelloPeripheralTests extends InjectionTestCase {
         assertFalse(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCOVER_SERVICES));
 
 
+        // ---- //
+
+
         peripheralBehavior.reset();
-        peripheralBehavior.setConnectResponse(successResponse)
-                        .setCreateBondResponse(Either.right(new PeripheralBondAlterationError(PeripheralBondAlterationError.REASON_ANDROID_API_CHANGED)));
+        peripheralBehavior.setConnectResponse(successResponse);
+        peripheralBehavior.setCreateBondResponse(Either.right(new PeripheralBondAlterationError(PeripheralBondAlterationError.REASON_ANDROID_API_CHANGED)));
+        peripheralBehavior.setDisconnectResponse(successResponse);
 
         SyncObserver<HelloPeripheral.ConnectStatus> connect2 = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, peripheral.connect());
         connect2.await();
@@ -132,12 +137,17 @@ public class HelloPeripheralTests extends InjectionTestCase {
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CONNECT));
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CREATE_BOND));
         assertFalse(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCOVER_SERVICES));
+        assertFalse(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
 
+
+        // ---- //
+        
 
         peripheralBehavior.reset();
-        peripheralBehavior.setConnectResponse(successResponse)
-                        .setCreateBondResponse(successResponse)
-                        .setServicesResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_FAILURE)));
+        peripheralBehavior.setConnectResponse(successResponse);
+        peripheralBehavior.setCreateBondResponse(successResponse);
+        peripheralBehavior.setServicesResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_FAILURE)));
+        peripheralBehavior.setDisconnectResponse(successResponse);
 
         SyncObserver<HelloPeripheral.ConnectStatus> connect3 = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, peripheral.connect());
         connect3.await();
@@ -149,6 +159,7 @@ public class HelloPeripheralTests extends InjectionTestCase {
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CONNECT));
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CREATE_BOND));
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCOVER_SERVICES));
+        assertFalse(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
     }
 
     public void testDisconnect() throws Exception {
