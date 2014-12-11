@@ -108,7 +108,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         this.conditionItemMessage = (TextView) conditionItemContainer.findViewById(R.id.item_room_check_condition_message);
         this.conditionItemValue = (TextView) conditionItemContainer.findViewById(R.id.item_room_check_condition_value);
 
-        this.endContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_room_check_end, container, false);
+        this.endContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, container, false);
         Button continueButton = (Button) endContainer.findViewById(R.id.sub_fragment_room_check_end_continue);
         continueButton.setOnClickListener(this::continueOnboarding);
 

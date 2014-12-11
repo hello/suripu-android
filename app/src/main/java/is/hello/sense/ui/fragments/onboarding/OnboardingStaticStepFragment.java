@@ -18,7 +18,7 @@ import is.hello.sense.util.Analytics;
 public class OnboardingStaticStepFragment extends Fragment {
     private static final String ARG_SUB_LAYOUT_ID = OnboardingStaticStepFragment.class.getName() + ".ARG_SUB_LAYOUT_ID";
     private static final String ARG_NEXT_CLASS = OnboardingStaticStepFragment.class.getName() + ".ARG_NEXT_CLASS";
-    private static final String ARG_ARGUMENTS = OnboardingStaticStepFragment.class.getName() + ".ARG_ARGUMENTS";
+    private static final String ARG_NEXT_ARGUMENTS = OnboardingStaticStepFragment.class.getName() + ".ARG_NEXT_ARGUMENTS";
     private static final String ARG_ANALYTICS_EVENT = OnboardingStaticStepFragment.class.getName() + ".ARG_ANALYTICS_EVENT";
     private static final String ARG_HIDE_HELP = OnboardingStaticStepFragment.class.getName() + ".ARG_HIDE_HELP";
 
@@ -58,7 +58,7 @@ public class OnboardingStaticStepFragment extends Fragment {
             //noinspection unchecked
             Class<Fragment> fragmentClass = (Class<Fragment>) Class.forName(getArguments().getString(ARG_NEXT_CLASS));
             Fragment fragment = fragmentClass.newInstance();
-            fragment.setArguments(getArguments().getParcelable(ARG_ARGUMENTS));
+            fragment.setArguments(getArguments().getParcelable(ARG_NEXT_ARGUMENTS));
             ((OnboardingActivity) getActivity()).showFragment(fragment, null, true);
         } catch (ClassNotFoundException | java.lang.InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Could not resolve next step fragment class", e);
@@ -83,8 +83,8 @@ public class OnboardingStaticStepFragment extends Fragment {
             return this;
         }
 
-        public Builder setNextFragmentArguments(@NonNull Bundle arguments) {
-            arguments.putParcelable(ARG_ARGUMENTS, arguments);
+        public Builder setNextFragmentArguments(@NonNull Bundle nextFragmentArguments) {
+            arguments.putParcelable(ARG_NEXT_ARGUMENTS, nextFragmentArguments);
             return this;
         }
 

@@ -9,7 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:fadingEdge="vertical"
+        android:requiresFadingEdge="vertical"
+        android:fadingEdgeLength="@dimen/shadow_height"
+        android:background="@color/shadow_end">
 
         <FrameLayout
             android:id="@+id/fragment_onboarding_static_step_container"

@@ -273,4 +273,6 @@
     <string name="room_condition_checking_light">Checking Light</string>
     <string name="onboarding_room_check_title_success">Success!</string>
     <string name="onboarding_room_check_info_success">Everything is working well and looks great. Now let’s set your first Smart Alarm.</string>
+    <string name="onboarding_title_room_check">Room Check</string>
+    <string name="onboarding_info_room_check">Sense will now check the conditions in the room to assure functionality of the sensors.</string>
 </resources>

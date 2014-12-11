@@ -73,7 +73,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         this.bluetoothAdapter = bluetoothManager.getAdapter();
 
-        showFragment(new OnboardingRoomCheckFragment(), null, false);
+        showSenseColorsInfo();
 
         if(0==0)return;
 
@@ -294,11 +294,18 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public void showSenseColorsInfo() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
 
-        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
-        builder.setLayout(R.layout.sub_fragment_onboarding_sense_colors);
-        builder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
-        builder.setHideHelp(true);
-        showFragment(builder.build(), null, false);
+        OnboardingStaticStepFragment.Builder senseColorsBuilder = new OnboardingStaticStepFragment.Builder();
+        senseColorsBuilder.setLayout(R.layout.sub_fragment_onboarding_sense_colors);
+        senseColorsBuilder.setHideHelp(true);
+
+        OnboardingStaticStepFragment.Builder introBuilder = new OnboardingStaticStepFragment.Builder();
+        introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
+        introBuilder.setLayout(R.layout.sub_fragment_onboarding_room_check_intro);
+        introBuilder.setHideHelp(true);
+        senseColorsBuilder.setNextFragmentArguments(introBuilder.arguments);
+        senseColorsBuilder.setNextFragmentClass(OnboardingStaticStepFragment.class);
+
+        showFragment(senseColorsBuilder.build(), null, false);
     }
 
     public void showSmartAlarmInfo() {
