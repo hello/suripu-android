@@ -25,9 +25,9 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private boolean animationEnded = false;
     private boolean animationCanceled = false;
 
-    private long duration = Animation.DURATION_DEFAULT;
+    private long duration = Animations.DURATION_DEFAULT;
     private long startDelay = 0;
-    private TimeInterpolator interpolator = Animation.INTERPOLATOR_DEFAULT;
+    private TimeInterpolator interpolator = Animations.INTERPOLATOR_DEFAULT;
     private Runnable onAnimationWillStart;
 
 
@@ -272,7 +272,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     }
 
     public PropertyAnimatorProxy simplePop(float amount) {
-        return setDuration(Animation.DURATION_MINIMUM / 2)
+        return setDuration(Animations.DURATION_MINIMUM / 2)
                 .setInterpolator(new AccelerateInterpolator())
                 .scale(amount)
                 .andThen()
@@ -289,17 +289,18 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         }).scale(1f).alpha(1f);
     }
 
-    public PropertyAnimatorProxy slideY(float startDelta, float endDelta) {
+    public PropertyAnimatorProxy slideAndFade(float startDeltaY, float endDeltaY,
+                                              float startAlpha, float endAlpha) {
         return setOnAnimationWillStart(() -> {
             float y = view.getY();
-            float startY = y + startDelta;
-            float endY = y + endDelta;
+            float startY = y + startDeltaY;
+            float endY = y + endDeltaY;
 
-            view.setAlpha(0f);
+            view.setAlpha(startAlpha);
             view.setY(startY);
 
             y(endY);
-            alpha(1f);
+            alpha(endAlpha);
         });
     }
 

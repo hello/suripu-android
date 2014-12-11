@@ -32,7 +32,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
-import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ListViewUtil;
 import is.hello.sense.ui.common.Styles;
@@ -196,7 +196,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         scoreGraph.setFillColor(getResources().getColor(Styles.getSleepScoreColorRes(sleepScore)));
-        ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animation.Properties.createWithDelay(250));
+        ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animations.Properties.createWithDelay(250));
         if (updateAnimation != null) {
             updateAnimation.addUpdateListener(a -> {
                 String score = a.getAnimatedValue().toString();

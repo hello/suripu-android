@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.Views;
 import is.hello.sense.util.Constants;
@@ -380,7 +380,7 @@ public final class LineGraphView extends FrameLayout {
                 }
 
                 PropertyAnimatorProxy.animate(highlightedValue)
-                        .setDuration(Animation.DURATION_MINIMUM)
+                        .setDuration(Animations.DURATION_MINIMUM)
                         .fadeIn()
                         .start();
 
@@ -405,7 +405,7 @@ public final class LineGraphView extends FrameLayout {
                 }
 
                 PropertyAnimatorProxy.animate(highlightedValue)
-                        .setDuration(Animation.DURATION_MINIMUM)
+                        .setDuration(Animations.DURATION_MINIMUM)
                         .fadeOut(GONE)
                         .start();
 

@@ -16,7 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.ListViewUtil;
 import is.hello.sense.ui.common.Views;
@@ -133,7 +133,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         if (onInteractionListener != null)
             onInteractionListener.onUserWillPullDownTopView();
 
-        animateOpen(Animation.DURATION_DEFAULT);
+        animateOpen(Animations.DURATION_DEFAULT);
     }
 
     public void close() {
@@ -146,7 +146,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
         PropertyAnimatorProxy.stop(topView);
 
-        animateClosed(Animation.DURATION_DEFAULT);
+        animateClosed(Animations.DURATION_DEFAULT);
     }
 
     public void toggle() {
@@ -335,11 +335,11 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
                 if (velocityTracker == null) {
-                    animateClosed(Animation.DURATION_DEFAULT);
+                    animateClosed(Animations.DURATION_DEFAULT);
                 } else {
                     velocityTracker.computeCurrentVelocity(1000);
                     float velocity = Math.abs(velocityTracker.getYVelocity());
-                    long duration = Animation.calculateDuration(velocity, getMeasuredHeight());
+                    long duration = Animations.calculateDuration(velocity, getMeasuredHeight());
                     if (shouldSnapOpen(velocity)) {
                         animateOpen(duration);
                     } else {

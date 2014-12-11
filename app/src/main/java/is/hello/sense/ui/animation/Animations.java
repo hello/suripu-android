@@ -9,7 +9,7 @@ import android.view.animation.Interpolator;
 
 import rx.functions.Func1;
 
-public class Animation {
+public class Animations {
     public static final long DURATION_MINIMUM = 150;
     public static final long DURATION_MAXIMUM = 350;
     public static final long DURATION_DEFAULT = 250;
@@ -17,7 +17,7 @@ public class Animation {
 
     public static long calculateDuration(float velocity, float totalArea) {
         long rawDuration = (long) (totalArea / velocity) * 1000 / 2;
-        return Math.max(Animation.DURATION_MINIMUM, Math.min(Animation.DURATION_MAXIMUM, rawDuration));
+        return Math.max(Animations.DURATION_MINIMUM, Math.min(Animations.DURATION_MAXIMUM, rawDuration));
     }
 
     public static final class Properties {

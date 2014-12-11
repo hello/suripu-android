@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.Animations;
 
 @SuppressWarnings("UnusedDeclaration")
 public class GraphView extends LinearLayout {
@@ -74,7 +74,7 @@ public class GraphView extends LinearLayout {
         postInvalidate();
     }
 
-    public @Nullable ValueAnimator animationForNewValue(int newValue, @NonNull Animation.Properties animationProperties) {
+    public @Nullable ValueAnimator animationForNewValue(int newValue, @NonNull Animations.Properties animationProperties) {
         if (newValue == getValue())
             return null;
 

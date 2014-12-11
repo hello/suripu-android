@@ -31,7 +31,7 @@ import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.Views;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -102,7 +102,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_room_check, container, false);
 
         this.conditionsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_container);
-        Animation.Properties.DEFAULT.apply(conditionsContainer.getLayoutTransition(), false);
+        Animations.Properties.DEFAULT.apply(conditionsContainer.getLayoutTransition(), false);
 
         this.conditionItemContainer = (LinearLayout) inflater.inflate(R.layout.item_room_check_condition, container, false);
         this.conditionItemTitle = (TextView) conditionItemContainer.findViewById(R.id.item_room_check_condition_title);
@@ -195,7 +195,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 if (condition.getValue() == 0f) {
                     deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
                 } else {
-                    this.currentValueAnimator = Animation.Properties.DEFAULT.apply(ValueAnimator.ofFloat(0f, condition.getValue()));
+                    this.currentValueAnimator = Animations.Properties.DEFAULT.apply(ValueAnimator.ofFloat(0f, condition.getValue()));
                     currentValueAnimator.addUpdateListener(a -> {
                         float value = (Float) a.getAnimatedValue();
                         if (formatter != null) {
@@ -270,7 +270,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                     for (View child : Views.children(endContainer)) {
                         animate(child)
                                 .setStartDelay(delay)
-                                .slideY(slideAmount, 0f)
+                                .slideAndFade(slideAmount, 0f, 0f, 1f)
                                 .start();
 
                         delay -= END_CONTAINER_DELAY_MS;

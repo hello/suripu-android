@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.Animations;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
@@ -123,7 +123,7 @@ public class LoadingDialogFragment extends DialogFragment {
     public void dismissWithDoneTransition(@NonNull Runnable onCompletion) {
         if (titleText != null) {
             animate(titleText)
-                    .setDuration(Animation.DURATION_MINIMUM)
+                    .setDuration(Animations.DURATION_MINIMUM)
                     .fadeOut(View.INVISIBLE)
                     .addOnAnimationCompleted(finished -> {
                         if (!finished)

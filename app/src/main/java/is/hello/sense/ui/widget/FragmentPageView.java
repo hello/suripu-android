@@ -16,7 +16,7 @@ import android.widget.EdgeEffect;
 import android.widget.FrameLayout;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.util.Constants;
 
@@ -26,7 +26,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private Adapter<TFragment> adapter;
     private OnTransitionObserver<TFragment> onTransitionObserver;
     private FragmentManager fragmentManager;
-    private Animation.Properties animationProperties = Animation.Properties.create(p -> {
+    private Animations.Properties animationProperties = Animations.Properties.create(p -> {
         p.interpolator = new DecelerateInterpolator();
         return null;
     });
@@ -440,7 +440,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     velocityTracker.computeCurrentVelocity(1000);
                     float rawVelocity = velocityTracker.getXVelocity();
                     float velocity = Math.abs(rawVelocity);
-                    long duration = Animation.calculateDuration(velocity, getMeasuredWidth());
+                    long duration = Animations.calculateDuration(velocity, getMeasuredWidth());
 
                     if (shouldCompleteTransition(viewX, rawVelocity))
                         completeTransition(currentPosition, duration);

@@ -12,6 +12,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
@@ -24,6 +27,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.common.Views;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
@@ -47,6 +51,8 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
+
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class OnboardingActivity extends InjectionActivity implements FragmentNavigation, AccountEditingFragment.Container {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
@@ -302,6 +308,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
         introBuilder.setLayout(R.layout.sub_fragment_onboarding_room_check_intro);
         introBuilder.setHideHelp(true);
+        introBuilder.setExitAnimationName(ANIMATION_ROOM_CHECK);
         senseColorsBuilder.setNextFragmentArguments(introBuilder.arguments);
         senseColorsBuilder.setNextFragmentClass(OnboardingStaticStepFragment.class);
 
@@ -332,4 +339,38 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         startActivity(intent);
         finish();
     }
+
+
+    //region Static Step Animation
+
+    public static final String ANIMATION_ROOM_CHECK = "room_check";
+
+    public @Nullable OnboardingStaticStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
+        switch (name) {
+            case ANIMATION_ROOM_CHECK: {
+                return (container, onCompletion) -> {
+                    float endDelta = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+
+                    View continueButton = container.findViewById(R.id.fragment_onboarding_step_continue);
+                    animate(continueButton)
+                            .slideAndFade(0f, endDelta, 1f, 0f)
+                            .addOnAnimationCompleted(finished -> onCompletion.run())
+                            .start();
+
+                    ViewGroup introContainer = (ViewGroup) container.findViewById(R.id.sub_fragment_onboarding_room_check_intro_container);
+                    for (View child : Views.children(introContainer)) {
+                        animate(child)
+                                .slideAndFade(0f, -endDelta, 1f, 0f)
+                                .start();
+                    }
+                };
+            }
+
+            default: {
+                return null;
+            }
+        }
+    }
+
+    //endregion
 }

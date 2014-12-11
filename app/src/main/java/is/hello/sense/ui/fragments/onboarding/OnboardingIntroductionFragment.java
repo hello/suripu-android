@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,7 +16,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.fragments.VideoPlayerActivity;
 import is.hello.sense.util.Analytics;
 
@@ -99,7 +98,7 @@ public class OnboardingIntroductionFragment extends Fragment {
                 .start();
 
         animate(titleText)
-                .setDuration(Animation.DURATION_DEFAULT / 2)
+                .setDuration(Animations.DURATION_DEFAULT / 2)
                 .fadeOut(View.INVISIBLE)
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.welcome);
@@ -150,7 +149,7 @@ public class OnboardingIntroductionFragment extends Fragment {
                 .start();
 
         animate(titleText)
-                .setDuration(Animation.DURATION_DEFAULT/2)
+                .setDuration(Animations.DURATION_DEFAULT/2)
                 .fadeOut(View.INVISIBLE)
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.title_introduction);
