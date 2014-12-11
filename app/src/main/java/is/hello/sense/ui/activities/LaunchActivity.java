@@ -45,7 +45,7 @@ public class LaunchActivity extends InjectionActivity {
     }
 
     private void bounce() {
-        if (sessionManager.hasSession() && preferences.getBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)) {
+        /*if (sessionManager.hasSession() && preferences.getBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)) {
             showHomeActivity();
         } else {
             if (!sessionManager.hasSession()) {
@@ -54,10 +54,10 @@ public class LaunchActivity extends InjectionActivity {
                         .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)
                         .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE)
                         .apply();
-            }
+            }*/
 
             showOnboardingActivity();
-        }
+        //}
 
         finish();
     }

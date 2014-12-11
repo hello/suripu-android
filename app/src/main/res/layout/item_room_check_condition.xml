@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/gap_outer">
+
+    <TextView
+        android:id="@+id/item_room_check_condition_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.SectionHeading.Accent"
+        android:text="@string/condition_temperature"/>
+
+    <TextView
+        android:id="@+id/item_room_check_condition_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:text="@string/mock_event_message"
+        android:lineSpacingMultiplier="@dimen/body_text_line_multiple"/>
+
+    <TextView
+        android:id="@+id/item_room_check_condition_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.BigScore"
+        android:text="@string/mock_temperature"
+        android:textColor="@color/sensor_ideal"/>
+
+</LinearLayout>

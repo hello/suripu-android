@@ -64,6 +64,14 @@ public class UnitSystem {
         return (long) (Math.round(distance)) + "cm";
     }
 
+    public String formatDecibels(float decibels) {
+        return (long) (Math.round(decibels)) + "db";
+    }
+
+    public String formatLux(float lux) {
+        return (long) (Math.round(lux)) + "lux";
+    }
+
     public String formatParticulates(float particulates) {
         return Long.toString(Math.round(particulates));
     }

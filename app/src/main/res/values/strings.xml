@@ -263,4 +263,12 @@
     <string name="onboarding_info_smart_alarm">The Sense Smart Alarm knows where you are in your sleep cycle and will wake you up at the right time for you. Just wave your hand over Sense to turn it off.</string>
     <string name="action_do_later">I\'ll do this later</string>
     <string name="action_set_smart_alarm_now">Set a Smart Alarm now</string>
+    <string name="condition_sound">Sound</string>
+    <string name="condition_light">Light</string>
+
+    <string name="room_condition_checking_temperature">Checking Temperature</string>
+    <string name="room_condition_checking_humidity">Checking Humidity</string>
+    <string name="room_condition_checking_particulates">Checking Particulates</string>
+    <string name="room_condition_checking_sound">Checking Sound</string>
+    <string name="room_condition_checking_light">Checking Light</string>
 </resources>
