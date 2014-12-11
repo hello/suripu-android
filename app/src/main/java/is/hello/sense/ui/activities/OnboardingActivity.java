@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
@@ -78,10 +77,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         this.bluetoothAdapter = bluetoothManager.getAdapter();
-
-        showSenseColorsInfo();
-
-        if(0==0)return;
 
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {

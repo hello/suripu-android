@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -233,10 +234,16 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 int sensorConditionColor = getResources().getColor(condition.getCondition().colorRes);
 
                 itemTitle.setText(CONDITION_TITLES[position]);
-                itemMessage.setText(condition.getMessage());
-                bindAndSubscribe(markdown.renderWithEmphasisColor(sensorConditionColor, condition.getMessage()),
-                                 itemMessage::setText,
-                                 Functions.LOG_ERROR);
+
+                String message = condition.getMessage();
+                if (TextUtils.isEmpty(message)) {
+                    itemMessage.setText(R.string.missing_data_placeholder);
+                } else {
+                    itemMessage.setText(message);
+                    bindAndSubscribe(markdown.renderWithEmphasisColor(sensorConditionColor, message),
+                                     itemMessage::setText,
+                                     Functions.LOG_ERROR);
+                }
 
                 itemValue.setTextColor(sensorConditionColor);
                 itemValue.setText("0");
