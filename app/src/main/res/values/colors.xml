@@ -18,6 +18,7 @@
     <color name="background_dialog_buttons">#9BD4FF</color>
 
     <color name="border">#dcdcdc</color>
+    <color name="shadow_end">#18000000</color>
 
     <color name="text_dark">#4D4D4D</color>
     <color name="text_dim">#77000000</color>

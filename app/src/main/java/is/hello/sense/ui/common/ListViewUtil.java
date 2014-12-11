@@ -46,7 +46,7 @@ public final class ListViewUtil {
      * Returns the corresponding adapter position at a given Y coordinate.
      */
     public static int getPositionForY(@NonNull ListView listView, float y) {
-        View view = ViewUtil.findChildAtY(listView, y);
+        View view = Views.findChildAtY(listView, y);
         int lastItem = getLastAdapterPosition(listView);
         if (view == null) {
             return lastItem;

@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -18,9 +20,14 @@ import is.hello.sense.util.Analytics;
 public class OnboardingStaticStepFragment extends Fragment {
     private static final String ARG_SUB_LAYOUT_ID = OnboardingStaticStepFragment.class.getName() + ".ARG_SUB_LAYOUT_ID";
     private static final String ARG_NEXT_CLASS = OnboardingStaticStepFragment.class.getName() + ".ARG_NEXT_CLASS";
-    private static final String ARG_ARGUMENTS = OnboardingStaticStepFragment.class.getName() + ".ARG_ARGUMENTS";
+    private static final String ARG_NEXT_ARGUMENTS = OnboardingStaticStepFragment.class.getName() + ".ARG_NEXT_ARGUMENTS";
     private static final String ARG_ANALYTICS_EVENT = OnboardingStaticStepFragment.class.getName() + ".ARG_ANALYTICS_EVENT";
     private static final String ARG_HIDE_HELP = OnboardingStaticStepFragment.class.getName() + ".ARG_HIDE_HELP";
+    private static final String ARG_EXIT_ANIMATION_NAME = OnboardingStaticStepFragment.class.getName() + ".ARG_EXIT_ANIMATION_NAME";
+    private static final String ARG_NEXT_WANTS_BACK_STACK = OnboardingStaticStepFragment.class.getName() + ".ARG_NEXT_WANTS_BACK_STACK";
+
+    private LinearLayout container;
+    private @Nullable ExitAnimationProvider exitAnimationProvider;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,6 +36,12 @@ public class OnboardingStaticStepFragment extends Fragment {
         if (savedInstanceState == null && getArguments().containsKey(ARG_ANALYTICS_EVENT)) {
             Analytics.event(getArguments().getString(ARG_ANALYTICS_EVENT), null);
         }
+
+        String animationName = getArguments().getString(ARG_EXIT_ANIMATION_NAME);
+        if (!TextUtils.isEmpty(animationName)) {
+            OnboardingActivity onboardingActivity = (OnboardingActivity) getActivity();
+            this.exitAnimationProvider = onboardingActivity.getExitAnimationProviderNamed(animationName);
+        }
     }
 
     @Nullable
@@ -36,8 +49,10 @@ public class OnboardingStaticStepFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_static_step, container, false);
 
-        ViewGroup subcontainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_static_step_container);
-        inflater.inflate(getArguments().getInt(ARG_SUB_LAYOUT_ID), subcontainer, true);
+        this.container = (LinearLayout) view.findViewById(R.id.fragment_onboarding_static_step_container);
+
+        ViewGroup contentContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_static_step_content);
+        inflater.inflate(getArguments().getInt(ARG_SUB_LAYOUT_ID), contentContainer, true);
 
         Button next = (Button) view.findViewById(R.id.fragment_onboarding_step_continue);
         next.setOnClickListener(this::next);
@@ -53,15 +68,27 @@ public class OnboardingStaticStepFragment extends Fragment {
     }
 
 
-    public void next(@NonNull View sender) {
+    public void showNextFragment() {
         try {
             //noinspection unchecked
             Class<Fragment> fragmentClass = (Class<Fragment>) Class.forName(getArguments().getString(ARG_NEXT_CLASS));
             Fragment fragment = fragmentClass.newInstance();
-            fragment.setArguments(getArguments().getParcelable(ARG_ARGUMENTS));
-            ((OnboardingActivity) getActivity()).showFragment(fragment, null, true);
+
+            Bundle arguments = getArguments().getParcelable(ARG_NEXT_ARGUMENTS);
+            fragment.setArguments(arguments);
+
+            boolean wantsBackStackEntry = getArguments().getBoolean(ARG_NEXT_WANTS_BACK_STACK, true);
+            ((OnboardingActivity) getActivity()).showFragment(fragment, null, wantsBackStackEntry);
         } catch (ClassNotFoundException | java.lang.InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Could not resolve next step fragment class", e);
+        }
+    }
+
+    public void next(@NonNull View sender) {
+        if (exitAnimationProvider != null) {
+            exitAnimationProvider.executeAnimation(container, this::showNextFragment);
+        } else {
+            showNextFragment();
         }
     }
 
@@ -83,8 +110,8 @@ public class OnboardingStaticStepFragment extends Fragment {
             return this;
         }
 
-        public Builder setNextFragmentArguments(@NonNull Bundle arguments) {
-            arguments.putParcelable(ARG_ARGUMENTS, arguments);
+        public Builder setNextFragmentArguments(@NonNull Bundle nextFragmentArguments) {
+            arguments.putParcelable(ARG_NEXT_ARGUMENTS, nextFragmentArguments);
             return this;
         }
 
@@ -98,10 +125,43 @@ public class OnboardingStaticStepFragment extends Fragment {
             return this;
         }
 
+        public Builder setExitAnimationName(@NonNull String name) {
+            arguments.putString(ARG_EXIT_ANIMATION_NAME, name);
+            return this;
+        }
+
+        public Builder setNextWantsBackStackEntry(boolean wantsEntry) {
+            arguments.putBoolean(ARG_NEXT_WANTS_BACK_STACK, wantsEntry);
+            return this;
+        }
+
         public @NonNull OnboardingStaticStepFragment build() {
             OnboardingStaticStepFragment fragment = new OnboardingStaticStepFragment();
             fragment.setArguments(arguments);
             return fragment;
         }
+    }
+
+
+    /**
+     * Provides a dynamic animation on a static step's contents
+     * before the step is exited by the user pressing continue.
+     *
+     * @see is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment.Builder#setExitAnimationName(String)
+     */
+    public interface ExitAnimationProvider {
+        /**
+         * Performs an animation on a given static step container.
+         * <p/>
+         * The provider must run the provided onComplete
+         * Runnable after all animation is completed.
+         *
+         * @param container     The container to perform the animation on.
+         * @param onComplete    The completion handler provided by the static step fragment.
+         *
+         * @see is.hello.sense.R.id#fragment_onboarding_step_continue
+         * @see is.hello.sense.R.id#fragment_onboarding_step_help
+         */
+        void executeAnimation(@NonNull LinearLayout container, @NonNull Runnable onComplete);
     }
 }

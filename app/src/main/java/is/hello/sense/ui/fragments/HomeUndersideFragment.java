@@ -24,7 +24,7 @@ import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.activities.SmartAlarmActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
-import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.InsightDialogFragment;
 import is.hello.sense.ui.widget.SensorStateView;
@@ -67,7 +67,7 @@ public class HomeUndersideFragment extends InjectionFragment implements ViewPage
         insightsPager.setOffscreenPageLimit(3);
         insightsPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.gap_small));
         insightsPager.setAdapter(insightsAdapter);
-        Animation.Properties.DEFAULT.apply(insightsPager.getLayoutTransition(), false);
+        Animations.Properties.DEFAULT.apply(insightsPager.getLayoutTransition(), false);
 
         this.temperatureState = (SensorStateView) view.findViewById(R.id.fragment_underside_temperature);
         temperatureState.setOnClickListener(ignored -> showSensorHistory(SensorHistory.SENSOR_NAME_TEMPERATURE));

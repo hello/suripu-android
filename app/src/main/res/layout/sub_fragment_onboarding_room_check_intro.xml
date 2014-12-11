@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sub_fragment_onboarding_room_check_intro_container"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/gap_outer"
+    android:background="@color/background_onboarding">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/onboarding_room_check"
+        android:contentDescription="@string/onboarding_title_room_check"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="@dimen/gap_large"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Heading"
+        android:text="@string/onboarding_title_room_check"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:text="@string/onboarding_info_room_check"
+        android:lineSpacingMultiplier="@dimen/body_text_line_multiple"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="@dimen/gap_large"/>
+
+</LinearLayout>

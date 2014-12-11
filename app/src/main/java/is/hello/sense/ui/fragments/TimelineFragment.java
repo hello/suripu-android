@@ -32,11 +32,11 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
-import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ListViewUtil;
 import is.hello.sense.ui.common.Styles;
-import is.hello.sense.ui.common.ViewUtil;
+import is.hello.sense.ui.common.Views;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
 import is.hello.sense.ui.widget.SlidingLayersView;
@@ -196,7 +196,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         scoreGraph.setFillColor(getResources().getColor(Styles.getSleepScoreColorRes(sleepScore)));
-        ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animation.Properties.createWithDelay(250));
+        ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animations.Properties.createWithDelay(250));
         if (updateAnimation != null) {
             updateAnimation.addUpdateListener(a -> {
                 String score = a.getAnimatedValue().toString();
@@ -248,7 +248,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 messageTextLabel.setVisibility(View.VISIBLE);
                 messageText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 
-                bindAndSubscribe(ViewUtil.observeNextLayout(listView), ignored -> {
+                bindAndSubscribe(Views.observeNextLayout(listView), ignored -> {
                     this.totalHeaderHeight = headerView.getMeasuredHeight() + timelineEventsHeader.getMeasuredHeight();
                     this.headerTallerThanList = headerView.getMeasuredHeight() > listView.getMeasuredHeight();
                     if (headerTallerThanList) {

@@ -16,10 +16,10 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.ListViewUtil;
-import is.hello.sense.ui.common.ViewUtil;
+import is.hello.sense.ui.common.Views;
 import is.hello.sense.util.Constants;
 
 public class SlidingLayersView extends FrameLayout implements GestureInterceptingView {
@@ -133,7 +133,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         if (onInteractionListener != null)
             onInteractionListener.onUserWillPullDownTopView();
 
-        animateOpen(Animation.DURATION_DEFAULT);
+        animateOpen(Animations.DURATION_DEFAULT);
     }
 
     public void close() {
@@ -146,7 +146,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
         PropertyAnimatorProxy.stop(topView);
 
-        animateClosed(Animation.DURATION_DEFAULT);
+        animateClosed(Animations.DURATION_DEFAULT);
     }
 
     public void toggle() {
@@ -274,7 +274,6 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         PropertyAnimatorProxy.animate(topView)
                 .y(getMeasuredHeight() - topViewOpenHeight)
                 .setDuration(duration)
-                .setApplyChangesToView(true)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
                         this.isAnimating = false;
@@ -290,7 +289,6 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         PropertyAnimatorProxy.animate(topView)
                 .y(-shadowHeight)
                 .setDuration(duration)
-                .setApplyChangesToView(true)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
                         this.isAnimating = false;
@@ -320,7 +318,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
                     velocityTracker.addMovement(event);
 
-                    float y = ViewUtil.getNormalizedY(event);
+                    float y = Views.getNormalizedY(event);
                     float deltaY = y - lastEventY;
                     float newY = Math.max(-shadowHeight, topViewY + deltaY);
 
@@ -328,8 +326,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                     topViewY = newY;
                 }
 
-                this.lastEventX = ViewUtil.getNormalizedX(event);
-                this.lastEventY = ViewUtil.getNormalizedY(event);
+                this.lastEventX = Views.getNormalizedX(event);
+                this.lastEventY = Views.getNormalizedY(event);
 
                 break;
             }
@@ -337,11 +335,11 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
                 if (velocityTracker == null) {
-                    animateClosed(Animation.DURATION_DEFAULT);
+                    animateClosed(Animations.DURATION_DEFAULT);
                 } else {
                     velocityTracker.computeCurrentVelocity(1000);
                     float velocity = Math.abs(velocityTracker.getYVelocity());
-                    long duration = Animation.calculateDuration(velocity, getMeasuredHeight());
+                    long duration = Animations.calculateDuration(velocity, getMeasuredHeight());
                     if (shouldSnapOpen(velocity)) {
                         animateOpen(duration);
                     } else {
@@ -369,8 +367,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                this.lastEventX = ViewUtil.getNormalizedX(event);
-                this.lastEventY = ViewUtil.getNormalizedY(event);
+                this.lastEventX = Views.getNormalizedX(event);
+                this.lastEventY = Views.getNormalizedY(event);
                 this.listView = findFirstViewIn(ListView.class, this);
 
                 this.topView = getChildAt(1);
@@ -392,7 +390,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                     return false;
                 }
 
-                float x = ViewUtil.getNormalizedX(event), y = ViewUtil.getNormalizedY(event);
+                float x = Views.getNormalizedX(event), y = Views.getNormalizedY(event);
                 float deltaX = x - lastEventX;
                 float deltaY = y - lastEventY;
                 if (Math.abs(deltaY) >= touchSlop && Math.abs(deltaY) > Math.abs(deltaX) &&
