@@ -9,10 +9,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -54,10 +54,15 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     private final List<UnitFormatter.Formatter> unitFormatters = new ArrayList<>();
 
     private LinearLayout conditionsContainer;
-    private View roomConditionItem;
+
+    private View roomConditionContainer;
+    private View roomConditionTopDivider;
+    private View roomConditionBottomDivider;
     private TextView roomConditionTitle;
     private TextView roomConditionMessage;
     private TextView roomConditionValue;
+
+    private View endContainer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,10 +81,16 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
         this.conditionsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check);
 
-        this.roomConditionItem = inflater.inflate(R.layout.item_room_check_condition, container, false);
-        this.roomConditionTitle = (TextView) roomConditionItem.findViewById(R.id.item_room_check_condition_title);
-        this.roomConditionMessage = (TextView) roomConditionItem.findViewById(R.id.item_room_check_condition_message);
-        this.roomConditionValue = (TextView) roomConditionItem.findViewById(R.id.item_room_check_condition_value);
+        this.roomConditionContainer = inflater.inflate(R.layout.item_room_check_condition, container, false);
+        this.roomConditionTopDivider = roomConditionContainer.findViewById(R.id.item_room_check_condition_divider_top);
+        this.roomConditionBottomDivider = roomConditionContainer.findViewById(R.id.item_room_check_condition_divider_bottom);
+        this.roomConditionTitle = (TextView) roomConditionContainer.findViewById(R.id.item_room_check_condition_title);
+        this.roomConditionMessage = (TextView) roomConditionContainer.findViewById(R.id.item_room_check_condition_message);
+        this.roomConditionValue = (TextView) roomConditionContainer.findViewById(R.id.item_room_check_condition_value);
+
+        this.endContainer = inflater.inflate(R.layout.sub_fragment_room_check_end, container, false);
+        Button continueButton = (Button) endContainer.findViewById(R.id.sub_fragment_room_check_end_continue);
+        continueButton.setOnClickListener(this::continueOnboarding);
 
         return view;
     }
@@ -95,26 +106,26 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     //region Displaying Conditions
 
     public void showConditionsAt(int position, @NonNull Runnable onBefore, @NonNull Runnable onFinish) {
-        if (roomConditionItem.getParent() != null) {
-            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.DISAPPEARING, roomConditionItem) {
+        if (roomConditionContainer.getParent() != null) {
+            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.DISAPPEARING, roomConditionContainer) {
                 @Override
                 protected void onEnd() {
                     showConditionsAt(position, onBefore, onFinish);
                 }
             };
             conditionsContainer.getLayoutTransition().addTransitionListener(listener);
-            conditionsContainer.removeView(roomConditionItem);
+            conditionsContainer.removeView(roomConditionContainer);
         } else {
             onBefore.run();
 
-            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, roomConditionItem) {
+            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, roomConditionContainer) {
                 @Override
                 protected void onEnd() {
                     onFinish.run();
                 }
             };
             conditionsContainer.getLayoutTransition().addTransitionListener(listener);
-            conditionsContainer.addView(roomConditionItem, position);
+            conditionsContainer.addView(roomConditionContainer, position);
         }
     }
 
@@ -133,6 +144,15 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
                 roomConditionValue.setTextColor(sensorConditionColor);
                 roomConditionValue.setText("0");
+
+                if (position == 0) {
+                    roomConditionTopDivider.setVisibility(View.GONE);
+                } else if (position == conditions.size() - 1) {
+                    roomConditionBottomDivider.setVisibility(View.GONE);
+                } else {
+                    roomConditionTopDivider.setVisibility(View.VISIBLE);
+                    roomConditionBottomDivider.setVisibility(View.VISIBLE);
+                }
             }, () -> {
                 if (condition.getValue() == 0f) {
                     deferrer.postDelayed(() -> showConditionAt(position + 1), CONDITION_VISIBLE_DURATION);
@@ -143,13 +163,12 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                         if (formatter != null) {
                             roomConditionValue.setText(formatter.format(value));
                         } else {
-                            roomConditionItem.setTag(value + condition.getValue());
+                            roomConditionContainer.setTag(value + condition.getValue());
                         }
                     });
                     animator.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
                             deferrer.postDelayed(() -> showConditionAt(position + 1), CONDITION_VISIBLE_DURATION);
                         }
                     });
@@ -157,15 +176,13 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 }
             });
         } else {
-            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.DISAPPEARING, roomConditionItem) {
-                @Override
-                protected void onEnd() {
-                    complete();
-                }
-            };
-            conditionsContainer.getLayoutTransition().addTransitionListener(listener);
-            conditionsContainer.removeView(roomConditionItem);
+            showComplete();
         }
+    }
+
+    public void showComplete() {
+        conditionsContainer.removeView(roomConditionContainer);
+        conditionsContainer.addView(endContainer);
     }
 
     //endregion
@@ -198,12 +215,12 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     }
 
 
-    public void complete() {
+    public void continueOnboarding(@NonNull View sender) {
         ((OnboardingActivity) getActivity()).showSmartAlarmInfo();
     }
 
 
-    private class SimpleTransitionListener implements LayoutTransition.TransitionListener {
+    private static abstract class SimpleTransitionListener implements LayoutTransition.TransitionListener {
         private final int targetTransition;
         private final View targetView;
 
