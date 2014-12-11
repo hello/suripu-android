@@ -5,8 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
 import android.animation.ValueAnimator;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
@@ -22,6 +20,7 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -38,25 +37,29 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Markdown;
+import is.hello.sense.util.ResumeScheduler;
+import rx.Scheduler;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class OnboardingRoomCheckFragment extends InjectionFragment {
-    private static final int CONDITION_VISIBLE_DURATION = 2000;
-    private static final long END_CONTAINER_VIEW_DELAY = 50;
+    private static final long CONDITION_VISIBLE_MS = 2000;
+    private static final long END_CONTAINER_DELAY_MS = 50;
 
     @Inject CurrentConditionsPresenter currentConditionsPresenter;
     @Inject Markdown markdown;
 
-    private final Handler deferrer = new Handler(Looper.getMainLooper());
-    private final int[] conditionTitles = {
+    private final ResumeScheduler scheduler = new ResumeScheduler(this);
+    private final Scheduler.Worker deferWorker = scheduler.createWorker();
+
+    private final int[] CONDITION_TITLES = {
             R.string.room_condition_checking_temperature,
             R.string.room_condition_checking_humidity,
             R.string.room_condition_checking_particulates,
             R.string.room_condition_checking_sound,
             R.string.room_condition_checking_light,
     };
-    private final int[] endStateImages = {
+    private final int[] ACTIVE_STATE_IMAGES = {
             R.drawable.room_check_temperature_blue,
             R.drawable.room_check_humidity_blue,
             R.drawable.room_check_particulates_blue,
@@ -64,7 +67,9 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             R.drawable.room_check_light_blue,
     };
     private final List<SensorState> conditions = new ArrayList<>();
-    private final List<UnitFormatter.Formatter> unitFormatters = new ArrayList<>();
+    private final List<UnitFormatter.Formatter> conditionFormatters = new ArrayList<>();
+
+    private boolean animationCompleted = false;
 
     private LinearLayout conditionsContainer;
 
@@ -78,6 +83,10 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            this.animationCompleted = savedInstanceState.getBoolean("animationCompleted", false);
+        }
 
         currentConditionsPresenter.update();
         addPresenter(currentConditionsPresenter);
@@ -109,9 +118,23 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(currentConditionsPresenter.currentConditions, this::bindConditions, this::conditionsUnavailable);
+        if (animationCompleted) {
+            for (int i = 0, size = conditionsContainer.getChildCount(); i < size; i++) {
+                ImageView image = (ImageView) conditionsContainer.getChildAt(i);
+                image.setImageResource(ACTIVE_STATE_IMAGES[i]);
+            }
+            showComplete(true);
+        } else {
+            bindAndSubscribe(currentConditionsPresenter.currentConditions, this::bindConditions, this::conditionsUnavailable);
+        }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("animationCompleted", animationCompleted);
+    }
 
     //region Displaying Conditions
 
@@ -142,12 +165,12 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             conditionsContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
 
             SensorState condition = conditions.get(position);
-            UnitFormatter.Formatter formatter = unitFormatters.get(position);
+            UnitFormatter.Formatter formatter = conditionFormatters.get(position);
 
             showConditionsAt(position + 1, () -> {
                 int sensorConditionColor = getResources().getColor(condition.getCondition().colorRes);
 
-                conditionItemTitle.setText(conditionTitles[position]);
+                conditionItemTitle.setText(CONDITION_TITLES[position]);
                 bindAndSubscribe(markdown.renderWithEmphasisColor(sensorConditionColor, condition.getMessage()),
                                  conditionItemMessage::setText,
                                  ignored -> conditionItemMessage.setText(condition.getMessage()));
@@ -156,10 +179,10 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 conditionItemValue.setText("0");
 
                 ImageView conditionImage = (ImageView) conditionsContainer.getChildAt(position);
-                conditionImage.setImageResource(endStateImages[position]);
+                conditionImage.setImageResource(ACTIVE_STATE_IMAGES[position]);
             }, () -> {
                 if (condition.getValue() == 0f) {
-                    deferrer.postDelayed(() -> showConditionAt(position + 1), CONDITION_VISIBLE_DURATION);
+                    deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
                 } else {
                     ValueAnimator animator = Animation.Properties.DEFAULT.apply(ValueAnimator.ofFloat(0f, condition.getValue()));
                     animator.addUpdateListener(a -> {
@@ -173,44 +196,50 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                     animator.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            deferrer.postDelayed(() -> showConditionAt(position + 1), CONDITION_VISIBLE_DURATION);
+                            deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
                         }
                     });
                     animator.start();
                 }
             });
         } else {
-            showComplete();
+            deferWorker.schedule(() -> showComplete(true));
         }
     }
 
-    public void showComplete() {
+    public void showComplete(boolean animate) {
+        this.animationCompleted = true;
+
         conditionsContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
         conditionsContainer.removeView(conditionItemContainer);
 
-        SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, endContainer) {
-            @Override
-            protected void onStart() {
-                for (View child : Views.children(endContainer)) {
-                    child.setAlpha(0f);
+        if (animate) {
+            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, endContainer) {
+                @Override
+                protected void onStart() {
+                    for (View child : Views.children(endContainer)) {
+                        child.setAlpha(0f);
+                    }
                 }
-            }
 
-            @Override
-            protected void onEnd() {
-                float slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_outer);
-                long delay = (END_CONTAINER_VIEW_DELAY * endContainer.getChildCount());
-                for (View child : Views.children(endContainer)) {
-                    animate(child)
-                            .setStartDelay(delay)
-                            .slideY(slideAmount, 0f)
-                            .start();
+                @Override
+                protected void onEnd() {
+                    float slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+                    long delay = (END_CONTAINER_DELAY_MS * endContainer.getChildCount());
+                    for (View child : Views.children(endContainer)) {
+                        animate(child)
+                                .setStartDelay(delay)
+                                .slideY(slideAmount, 0f)
+                                .start();
 
-                    delay -= END_CONTAINER_VIEW_DELAY;
+                        delay -= END_CONTAINER_DELAY_MS;
+                    }
                 }
-            }
-        };
-        withTransitionListener(listener).addView(endContainer);
+            };
+            withTransitionListener(listener).addView(endContainer);
+        } else {
+            conditionsContainer.addView(endContainer);
+        }
     }
 
     //endregion
@@ -221,19 +250,19 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         RoomConditions roomConditions = result.conditions;
 
         this.conditions.add(roomConditions.getTemperature());
-        this.unitFormatters.add(unitSystem::formatTemperature);
+        this.conditionFormatters.add(unitSystem::formatTemperature);
 
         this.conditions.add(roomConditions.getHumidity());
-        this.unitFormatters.add(null);
+        this.conditionFormatters.add(null);
 
         this.conditions.add(roomConditions.getParticulates());
-        this.unitFormatters.add(unitSystem::formatParticulates);
+        this.conditionFormatters.add(unitSystem::formatParticulates);
 
         this.conditions.add(new SensorState(70, "[placeholder] It's a bit loud.", Condition.ALERT, "db", DateTime.now()));
-        this.unitFormatters.add(unitSystem::formatDecibels);
+        this.conditionFormatters.add(unitSystem::formatDecibels);
 
         this.conditions.add(new SensorState(200, "[placeholder] It’s really bright in your room right now, but that’s ok. It’s only midday!", Condition.WARNING, "lux", DateTime.now()));
-        this.unitFormatters.add(unitSystem::formatDecibels);
+        this.conditionFormatters.add(unitSystem::formatDecibels);
 
         showConditionAt(0);
     }
