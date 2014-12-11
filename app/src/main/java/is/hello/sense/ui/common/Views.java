@@ -7,11 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.Subscriptions;
 
-public final class ViewUtil {
+public final class Views {
     /**
      * Returns a given motion events X-coordinate, constrained to 0f or greater.
      */
@@ -58,5 +61,43 @@ public final class ViewUtil {
             s.add(Subscriptions.create(() -> view.getViewTreeObserver().removeOnGlobalLayoutListener(listener)));
             view.getViewTreeObserver().addOnGlobalLayoutListener(listener);
         }).subscribeOn(AndroidSchedulers.mainThread());
+    }
+
+
+    public static Iterable<View> children(@NonNull ViewGroup view) {
+        return new Iterable<View>() {
+            @Override
+            public Iterator<View> iterator() {
+                return new ChildIterator(view);
+            }
+        };
+    }
+
+    public static class ChildIterator implements Iterator<View> {
+        private final ViewGroup view;
+        private int pointer = 0;
+
+        public ChildIterator(@NonNull ViewGroup view) {
+            this.view = view;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return (pointer < view.getChildCount());
+        }
+
+        @Override
+        public View next() {
+            if (hasNext()) {
+                return view.getChildAt(pointer++);
+            } else {
+                throw new NoSuchElementException();
+            }
+        }
+
+        @Override
+        public void remove() {
+            view.removeViewAt(--pointer);
+        }
     }
 }

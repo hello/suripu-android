@@ -110,7 +110,6 @@ public class QuestionsFragment extends InjectionFragment {
 
                 PropertyAnimatorProxy animator = animate(child);
                 animator.alpha(0f);
-                animator.setApplyChangesToView(true);
                 if (isLast) {
                     animator.addOnAnimationCompleted(finished -> {
                         if (finished) {
@@ -134,7 +133,6 @@ public class QuestionsFragment extends InjectionFragment {
         titleText.setAlpha(0f);
         animate(titleText)
                 .alpha(1f)
-                .setApplyChangesToView(true)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
                         dismissHandler.postDelayed(() -> {

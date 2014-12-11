@@ -27,7 +27,7 @@ import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.ui.common.InjectionActivity;
-import is.hello.sense.ui.common.ViewUtil;
+import is.hello.sense.ui.common.Views;
 import is.hello.sense.ui.fragments.HomeUndersideFragment;
 import is.hello.sense.ui.fragments.QuestionsFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
@@ -236,7 +236,7 @@ public class HomeActivity
         if (newQuestionContainer == null) {
             int containerHeight = homeContentContainer.getMeasuredHeight();
             if (containerHeight == 0) {
-                ViewUtil.observeNextLayout(rootContainer).subscribe(ignored -> showNewQuestion(question));
+                Views.observeNextLayout(rootContainer).subscribe(ignored -> showNewQuestion(question));
                 return;
             }
 
@@ -249,7 +249,7 @@ public class HomeActivity
             Button answerQuestion = (Button) newQuestionContainer.findViewById(R.id.sub_fragment_new_question_answer);
             answerQuestion.setOnClickListener(ignored -> answerQuestion());
 
-            ViewUtil.observeNextLayout(homeContentContainer).subscribe(ignored -> {
+            Views.observeNextLayout(homeContentContainer).subscribe(ignored -> {
                 int newQuestionContainerHeight = newQuestionContainer.getMeasuredHeight();
 
                 newQuestionContainer.setY((float) containerHeight);
@@ -257,7 +257,6 @@ public class HomeActivity
 
                 animate(newQuestionContainer)
                         .y(containerHeight - newQuestionContainerHeight)
-                        .setApplyChangesToView(true)
                         .start();
             });
 

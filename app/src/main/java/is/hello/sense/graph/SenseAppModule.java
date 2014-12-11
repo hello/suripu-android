@@ -42,6 +42,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
@@ -78,6 +79,7 @@ import is.hello.sense.util.BuildValues;
         OnboardingSignIntoWifiFragment.class,
         OnboardingPairPillFragment.class,
         Onboarding2ndPillInfoFragment.class,
+        OnboardingRoomCheckFragment.class,
         OnboardingSmartAlarmFragment.class,
 
         DeviceListFragment.class,

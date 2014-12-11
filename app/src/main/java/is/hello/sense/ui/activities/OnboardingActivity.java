@@ -12,6 +12,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import javax.inject.Inject;
 
@@ -24,6 +26,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.common.Views;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
@@ -37,6 +40,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSetup2ndPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
@@ -46,6 +50,8 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
+
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class OnboardingActivity extends InjectionActivity implements FragmentNavigation, AccountEditingFragment.Container {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
@@ -289,15 +295,25 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public void showSenseColorsInfo() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
 
-        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
-        builder.setLayout(R.layout.sub_fragment_onboarding_sense_colors);
-        builder.setNextFragmentClass(OnboardingSmartAlarmFragment.class);
-        builder.setHideHelp(true);
-        showFragment(builder.build(), null, false);
+        OnboardingStaticStepFragment.Builder senseColorsBuilder = new OnboardingStaticStepFragment.Builder();
+        senseColorsBuilder.setLayout(R.layout.sub_fragment_onboarding_sense_colors);
+        senseColorsBuilder.setHideHelp(true);
+        senseColorsBuilder.setNextWantsBackStackEntry(false);
+
+        OnboardingStaticStepFragment.Builder introBuilder = new OnboardingStaticStepFragment.Builder();
+        introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
+        introBuilder.setLayout(R.layout.sub_fragment_onboarding_room_check_intro);
+        introBuilder.setHideHelp(true);
+        introBuilder.setExitAnimationName(ANIMATION_ROOM_CHECK);
+        introBuilder.setNextWantsBackStackEntry(false);
+        senseColorsBuilder.setNextFragmentArguments(introBuilder.arguments);
+        senseColorsBuilder.setNextFragmentClass(OnboardingStaticStepFragment.class);
+
+        showFragment(senseColorsBuilder.build(), null, false);
     }
 
     public void showSmartAlarmInfo() {
-        showFragment(new OnboardingSmartAlarmFragment(), null, true);
+        showFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
     public void showDone() {
@@ -320,4 +336,38 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         startActivity(intent);
         finish();
     }
+
+
+    //region Static Step Animation
+
+    public static final String ANIMATION_ROOM_CHECK = "room_check";
+
+    public @Nullable OnboardingStaticStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
+        switch (name) {
+            case ANIMATION_ROOM_CHECK: {
+                return (container, onCompletion) -> {
+                    float endDelta = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+
+                    View continueButton = container.findViewById(R.id.fragment_onboarding_step_continue);
+                    animate(continueButton)
+                            .slideAndFade(0f, endDelta, 1f, 0f)
+                            .addOnAnimationCompleted(finished -> onCompletion.run())
+                            .start();
+
+                    ViewGroup introContainer = (ViewGroup) container.findViewById(R.id.sub_fragment_onboarding_room_check_intro_container);
+                    for (View child : Views.children(introContainer)) {
+                        animate(child)
+                                .slideAndFade(0f, -endDelta, 1f, 0f)
+                                .start();
+                    }
+                };
+            }
+
+            default: {
+                return null;
+            }
+        }
+    }
+
+    //endregion
 }
