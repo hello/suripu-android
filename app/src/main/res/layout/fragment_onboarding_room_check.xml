@@ -1,45 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_onboarding_room_check"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:animateLayoutChanges="true"
-    android:gravity="center">
+    android:fillViewport="true">
 
-    <ImageView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/fragment_onboarding_room_check_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_small"
-        android:src="@drawable/room_check_temperature"
-        android:contentDescription="@string/condition_temperature"/>
+        android:orientation="vertical"
+        android:animateLayoutChanges="true"
+        android:gravity="center"
+        android:paddingTop="@dimen/gap_outer"
+        android:paddingBottom="@dimen/gap_outer">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_small"
-        android:src="@drawable/room_check_humidity"
-        android:contentDescription="@string/condition_humidity"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap_small"
+            android:src="@drawable/room_check_temperature"
+            android:contentDescription="@string/condition_temperature"/>
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_small"
-        android:src="@drawable/room_check_particulates"
-        android:contentDescription="@string/condition_particulates"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap_small"
+            android:src="@drawable/room_check_humidity"
+            android:contentDescription="@string/condition_humidity"/>
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_small"
-        android:src="@drawable/room_check_sound"
-        android:contentDescription="@string/condition_sound"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap_small"
+            android:src="@drawable/room_check_particulates"
+            android:contentDescription="@string/condition_particulates"/>
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_small"
-        android:src="@drawable/room_check_light"
-        android:contentDescription="@string/condition_light"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap_small"
+            android:src="@drawable/room_check_sound"
+            android:contentDescription="@string/condition_sound"/>
 
-</LinearLayout>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap_small"
+            android:src="@drawable/room_check_light"
+            android:contentDescription="@string/condition_light"/>
+
+    </LinearLayout>
+
+</ScrollView>

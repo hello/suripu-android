@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,10 +56,10 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
     private LinearLayout conditionsContainer;
 
-    private View roomConditionContainer;
-    private TextView roomConditionTitle;
-    private TextView roomConditionMessage;
-    private TextView roomConditionValue;
+    private View conditionItemContainer;
+    private TextView conditionItemTitle;
+    private TextView conditionItemMessage;
+    private TextView conditionItemValue;
 
     private View endContainer;
 
@@ -77,12 +78,12 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_room_check, container, false);
 
-        this.conditionsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check);
+        this.conditionsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_container);
 
-        this.roomConditionContainer = inflater.inflate(R.layout.item_room_check_condition, container, false);
-        this.roomConditionTitle = (TextView) roomConditionContainer.findViewById(R.id.item_room_check_condition_title);
-        this.roomConditionMessage = (TextView) roomConditionContainer.findViewById(R.id.item_room_check_condition_message);
-        this.roomConditionValue = (TextView) roomConditionContainer.findViewById(R.id.item_room_check_condition_value);
+        this.conditionItemContainer = inflater.inflate(R.layout.item_room_check_condition, container, false);
+        this.conditionItemTitle = (TextView) conditionItemContainer.findViewById(R.id.item_room_check_condition_title);
+        this.conditionItemMessage = (TextView) conditionItemContainer.findViewById(R.id.item_room_check_condition_message);
+        this.conditionItemValue = (TextView) conditionItemContainer.findViewById(R.id.item_room_check_condition_value);
 
         this.endContainer = inflater.inflate(R.layout.sub_fragment_room_check_end, container, false);
         Button continueButton = (Button) endContainer.findViewById(R.id.sub_fragment_room_check_end_continue);
@@ -102,44 +103,46 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     //region Displaying Conditions
 
     public void showConditionsAt(int position, @NonNull Runnable onBefore, @NonNull Runnable onFinish) {
-        if (roomConditionContainer.getParent() != null) {
-            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.DISAPPEARING, roomConditionContainer) {
+        if (conditionItemContainer.getParent() != null) {
+            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.DISAPPEARING, conditionItemContainer) {
                 @Override
                 protected void onEnd() {
                     showConditionsAt(position, onBefore, onFinish);
                 }
             };
             conditionsContainer.getLayoutTransition().addTransitionListener(listener);
-            conditionsContainer.removeView(roomConditionContainer);
+            conditionsContainer.removeView(conditionItemContainer);
         } else {
             onBefore.run();
 
-            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, roomConditionContainer) {
+            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, conditionItemContainer) {
                 @Override
                 protected void onEnd() {
                     onFinish.run();
                 }
             };
             conditionsContainer.getLayoutTransition().addTransitionListener(listener);
-            conditionsContainer.addView(roomConditionContainer, position);
+            conditionsContainer.addView(conditionItemContainer, position);
         }
     }
 
     public void showConditionAt(int position) {
         if (position < conditions.size()) {
+            conditionsContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+
             SensorState condition = conditions.get(position);
             UnitFormatter.Formatter formatter = unitFormatters.get(position);
 
             showConditionsAt(position + 1, () -> {
                 int sensorConditionColor = getResources().getColor(condition.getCondition().colorRes);
 
-                roomConditionTitle.setText(conditionTitles[position]);
+                conditionItemTitle.setText(conditionTitles[position]);
                 bindAndSubscribe(markdown.renderWithEmphasisColor(sensorConditionColor, condition.getMessage()),
-                                 roomConditionMessage::setText,
-                                 ignored -> roomConditionMessage.setText(condition.getMessage()));
+                                 conditionItemMessage::setText,
+                                 ignored -> conditionItemMessage.setText(condition.getMessage()));
 
-                roomConditionValue.setTextColor(sensorConditionColor);
-                roomConditionValue.setText("0");
+                conditionItemValue.setTextColor(sensorConditionColor);
+                conditionItemValue.setText("0");
             }, () -> {
                 if (condition.getValue() == 0f) {
                     deferrer.postDelayed(() -> showConditionAt(position + 1), CONDITION_VISIBLE_DURATION);
@@ -148,9 +151,9 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                     animator.addUpdateListener(a -> {
                         float value = (Float) a.getAnimatedValue();
                         if (formatter != null) {
-                            roomConditionValue.setText(formatter.format(value));
+                            conditionItemValue.setText(formatter.format(value));
                         } else {
-                            roomConditionContainer.setTag(value + condition.getValue());
+                            conditionItemContainer.setTag(value + condition.getValue());
                         }
                     });
                     animator.addListener(new AnimatorListenerAdapter() {
@@ -168,7 +171,8 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     }
 
     public void showComplete() {
-        conditionsContainer.removeView(roomConditionContainer);
+        conditionsContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
+        conditionsContainer.removeView(conditionItemContainer);
         conditionsContainer.addView(endContainer);
     }
 
