@@ -6,10 +6,6 @@
     android:layout_marginTop="@dimen/gap_large"
     android:layout_marginBottom="@dimen/gap_large">
 
-    <View
-        android:id="@+id/item_room_check_condition_divider_top"
-        style="@style/Divider.Horizontal" />
-
     <TextView
         android:id="@+id/item_room_check_condition_title"
         android:layout_width="match_parent"
@@ -46,9 +42,5 @@
         android:textAppearance="@style/AppTheme.Text.BigScore"
         android:text="@string/mock_temperature"
         android:textColor="@color/sensor_ideal"/>
-
-    <View
-        android:id="@+id/item_room_check_condition_divider_bottom"
-        style="@style/Divider.Horizontal" />
 
 </LinearLayout>

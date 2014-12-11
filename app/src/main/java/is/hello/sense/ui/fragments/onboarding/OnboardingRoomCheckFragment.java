@@ -56,8 +56,6 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     private LinearLayout conditionsContainer;
 
     private View roomConditionContainer;
-    private View roomConditionTopDivider;
-    private View roomConditionBottomDivider;
     private TextView roomConditionTitle;
     private TextView roomConditionMessage;
     private TextView roomConditionValue;
@@ -82,8 +80,6 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         this.conditionsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check);
 
         this.roomConditionContainer = inflater.inflate(R.layout.item_room_check_condition, container, false);
-        this.roomConditionTopDivider = roomConditionContainer.findViewById(R.id.item_room_check_condition_divider_top);
-        this.roomConditionBottomDivider = roomConditionContainer.findViewById(R.id.item_room_check_condition_divider_bottom);
         this.roomConditionTitle = (TextView) roomConditionContainer.findViewById(R.id.item_room_check_condition_title);
         this.roomConditionMessage = (TextView) roomConditionContainer.findViewById(R.id.item_room_check_condition_message);
         this.roomConditionValue = (TextView) roomConditionContainer.findViewById(R.id.item_room_check_condition_value);
@@ -144,15 +140,6 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
                 roomConditionValue.setTextColor(sensorConditionColor);
                 roomConditionValue.setText("0");
-
-                if (position == 0) {
-                    roomConditionTopDivider.setVisibility(View.GONE);
-                } else if (position == conditions.size() - 1) {
-                    roomConditionBottomDivider.setVisibility(View.GONE);
-                } else {
-                    roomConditionTopDivider.setVisibility(View.VISIBLE);
-                    roomConditionBottomDivider.setVisibility(View.VISIBLE);
-                }
             }, () -> {
                 if (condition.getValue() == 0f) {
                     deferrer.postDelayed(() -> showConditionAt(position + 1), CONDITION_VISIBLE_DURATION);
