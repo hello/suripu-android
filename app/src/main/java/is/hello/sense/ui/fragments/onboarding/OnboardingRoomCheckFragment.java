@@ -123,7 +123,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         if (animationCompleted) {
             jumpToEnd();
         } else {
-            bindAndSubscribe(currentConditionsPresenter.currentConditions, this::bindConditions, this::conditionsUnavailable);
+            bindAndSubscribe(currentConditionsPresenter.currentConditions.take(1), this::bindConditions, this::conditionsUnavailable);
         }
     }
 
@@ -132,6 +132,17 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         super.onPause();
 
         jumpToEnd();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (this.currentValueAnimator != null) {
+            currentValueAnimator.cancel();
+        }
+
+        deferWorker.unsubscribe();
     }
 
     @Override
@@ -167,7 +178,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     }
 
     public void showConditionAt(int position) {
-        if (endContainer.getParent() != null) {
+        if (endContainer.getParent() != null || isDetached()) {
             return;
         }
 

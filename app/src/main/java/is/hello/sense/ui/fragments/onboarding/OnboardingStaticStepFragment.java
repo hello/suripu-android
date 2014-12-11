@@ -24,6 +24,7 @@ public class OnboardingStaticStepFragment extends Fragment {
     private static final String ARG_ANALYTICS_EVENT = OnboardingStaticStepFragment.class.getName() + ".ARG_ANALYTICS_EVENT";
     private static final String ARG_HIDE_HELP = OnboardingStaticStepFragment.class.getName() + ".ARG_HIDE_HELP";
     private static final String ARG_EXIT_ANIMATION_NAME = OnboardingStaticStepFragment.class.getName() + ".ARG_EXIT_ANIMATION_NAME";
+    private static final String ARG_NEXT_WANTS_BACK_STACK = OnboardingStaticStepFragment.class.getName() + ".ARG_NEXT_WANTS_BACK_STACK";
 
     private LinearLayout container;
     private @Nullable ExitAnimationProvider exitAnimationProvider;
@@ -72,8 +73,12 @@ public class OnboardingStaticStepFragment extends Fragment {
             //noinspection unchecked
             Class<Fragment> fragmentClass = (Class<Fragment>) Class.forName(getArguments().getString(ARG_NEXT_CLASS));
             Fragment fragment = fragmentClass.newInstance();
-            fragment.setArguments(getArguments().getParcelable(ARG_NEXT_ARGUMENTS));
-            ((OnboardingActivity) getActivity()).showFragment(fragment, null, true);
+
+            Bundle arguments = getArguments().getParcelable(ARG_NEXT_ARGUMENTS);
+            fragment.setArguments(arguments);
+
+            boolean wantsBackStackEntry = getArguments().getBoolean(ARG_NEXT_WANTS_BACK_STACK, true);
+            ((OnboardingActivity) getActivity()).showFragment(fragment, null, wantsBackStackEntry);
         } catch (ClassNotFoundException | java.lang.InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Could not resolve next step fragment class", e);
         }
@@ -122,6 +127,11 @@ public class OnboardingStaticStepFragment extends Fragment {
 
         public Builder setExitAnimationName(@NonNull String name) {
             arguments.putString(ARG_EXIT_ANIMATION_NAME, name);
+            return this;
+        }
+
+        public Builder setNextWantsBackStackEntry(boolean wantsEntry) {
+            arguments.putBoolean(ARG_NEXT_WANTS_BACK_STACK, wantsEntry);
             return this;
         }
 
