@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import is.hello.sense.ui.common.ViewUtil;
+import is.hello.sense.ui.common.Views;
 
 public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private final View view;
@@ -28,9 +28,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private long duration = Animation.DURATION_DEFAULT;
     private long startDelay = 0;
     private TimeInterpolator interpolator = Animation.INTERPOLATOR_DEFAULT;
-    private boolean applyChangesToView = false;
     private Runnable onAnimationWillStart;
-    private Runnable onAnimationStarted;
 
 
     //region Creation
@@ -68,10 +66,6 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     public PropertyAnimatorProxy setInterpolator(TimeInterpolator interpolator) {
         this.interpolator = interpolator;
         return this;
-    }
-
-    public TimeInterpolator getInterpolator() {
-        return interpolator;
     }
 
     public PropertyAnimatorProxy x(float value) {
@@ -119,8 +113,9 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     }
 
     private void buildAndStart() {
-        if (onAnimationWillStart != null)
+        if (onAnimationWillStart != null) {
             onAnimationWillStart.run();
+        }
 
         ViewPropertyAnimator animator = view.animate();
         animator.setDuration(duration);
@@ -177,7 +172,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     }
 
     public void startAfterLayout() {
-        ViewUtil.observeNextLayout(view).subscribe(ignored -> start());
+        Views.observeNextLayout(view).subscribe(ignored -> start());
     }
 
     public void cancel() {
@@ -198,18 +193,8 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         return this;
     }
 
-    public PropertyAnimatorProxy setOnAnimationStarted(@NonNull Runnable onAnimationStarted) {
-        this.onAnimationStarted = onAnimationStarted;
-        return this;
-    }
-
     public PropertyAnimatorProxy addOnAnimationCompleted(@NonNull OnAnimationCompleted onAnimationCompleted) {
         this.onAnimationCompletedListeners.add(onAnimationCompleted);
-        return this;
-    }
-
-    public PropertyAnimatorProxy setApplyChangesToView(boolean applyChangesToView) {
-        this.applyChangesToView = applyChangesToView;
         return this;
     }
 
@@ -223,10 +208,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         if (animationStarted)
             return;
 
-        animationStarted = true;
-
-        if (onAnimationStarted != null)
-            onAnimationStarted.run();
+        this.animationStarted = true;
     }
 
     @Override
@@ -234,48 +216,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         if (animationEnded)
             return;
 
-        animationEnded = true;
-
-        if (applyChangesToView) {
-            for (Map.Entry<String, Float> property : properties.entrySet()) {
-                switch (property.getKey()) {
-                    case "x":
-                        getView().setX(property.getValue());
-                        break;
-
-                    case "y":
-                        getView().setY(property.getValue());
-                        break;
-
-                    case "scaleX":
-                        getView().setScaleX(property.getValue());
-                        break;
-
-                    case "scaleY":
-                        getView().setScaleY(property.getValue());
-                        break;
-
-                    case "translationX":
-                        getView().setTranslationX(property.getValue());
-                        break;
-
-                    case "translationY":
-                        getView().setTranslationY(property.getValue());
-                        break;
-
-                    case "rotation":
-                        getView().setRotation(property.getValue());
-                        break;
-
-                    case "alpha":
-                        getView().setAlpha(property.getValue());
-                        break;
-
-                    default:
-                        throw new IllegalStateException("Unknown animation property " + property.getKey());
-                }
-            }
-        }
+        this.animationEnded = true;
 
         for (OnAnimationCompleted listener : onAnimationCompletedListeners)
             listener.onAnimationCompleted(!animationCanceled);
@@ -286,7 +227,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         if (animationCanceled || !animationStarted)
             return;
 
-        animationCanceled = true;
+        this.animationCanceled = true;
     }
 
     @Override
@@ -302,8 +243,9 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         nextAnimation.setDuration(duration);
         nextAnimation.setInterpolator(interpolator);
         addOnAnimationCompleted(finished -> {
-            if (finished)
+            if (finished) {
                 nextAnimation.buildAndStart();
+            }
         });
         nextAnimation.previousInChain = this;
         return nextAnimation;
@@ -318,7 +260,15 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         return setOnAnimationWillStart(() -> {
             view.setAlpha(0f);
             view.setVisibility(View.VISIBLE);
-        }).alpha(1f).setApplyChangesToView(true);
+        }).alpha(1f);
+    }
+
+    public PropertyAnimatorProxy fadeOut(int targetVisibility) {
+        return alpha(0f).addOnAnimationCompleted(finished -> {
+            if (finished) {
+                view.setVisibility(targetVisibility);
+            }
+        });
     }
 
     public PropertyAnimatorProxy simplePop(float amount) {
@@ -336,14 +286,20 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
             view.setScaleX(0f);
             view.setScaleY(0f);
             view.setVisibility(View.VISIBLE);
-        }).setApplyChangesToView(true).scale(1f).alpha(1f);
+        }).scale(1f).alpha(1f);
     }
 
-    public PropertyAnimatorProxy fadeOut(int targetVisibility) {
-        return alpha(0f).addOnAnimationCompleted(finished -> {
-            if (finished) {
-                view.setVisibility(targetVisibility);
-            }
+    public PropertyAnimatorProxy slideY(float startDelta, float endDelta) {
+        return setOnAnimationWillStart(() -> {
+            float y = view.getY();
+            float startY = y + startDelta;
+            float endY = y + endDelta;
+
+            view.setAlpha(0f);
+            view.setY(startY);
+
+            y(endY);
+            alpha(1f);
         });
     }
 

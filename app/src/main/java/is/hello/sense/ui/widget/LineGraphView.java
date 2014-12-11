@@ -24,7 +24,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
-import is.hello.sense.ui.common.ViewUtil;
+import is.hello.sense.ui.common.Views;
 import is.hello.sense.util.Constants;
 
 public final class LineGraphView extends FrameLayout {
@@ -367,7 +367,7 @@ public final class LineGraphView extends FrameLayout {
         if (adapter == null || sectionCounts.size() == 0)
             return false;
 
-        float x = ViewUtil.getNormalizedX(event);
+        float x = Views.getNormalizedX(event);
         int section = getSectionAtX(x);
         int position = getSegmentAtX(section, x);
         highlightedValue.display(section, position);

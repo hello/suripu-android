@@ -11,10 +11,10 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/gap_xlarge"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_large"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Heading"
         android:text="@string/onboarding_room_check_title_success"/>
@@ -25,7 +25,7 @@
 
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_large"
+        android:layout_marginBottom="@dimen/gap_xlarge"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/onboarding_room_check_info_success"
@@ -37,6 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginBottom="@dimen/gap_outer"
         android:text="@string/action_continue"
         style="@style/AppTheme.Button.Rounded"/>
 

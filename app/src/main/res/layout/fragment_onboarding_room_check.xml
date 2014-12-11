@@ -11,8 +11,7 @@
         android:orientation="vertical"
         android:animateLayoutChanges="true"
         android:gravity="center"
-        android:paddingTop="@dimen/gap_outer"
-        android:paddingBottom="@dimen/gap_outer">
+        android:paddingTop="@dimen/gap_outer">
 
         <ImageView
             android:layout_width="wrap_content"
