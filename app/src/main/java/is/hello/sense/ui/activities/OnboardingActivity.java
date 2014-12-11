@@ -318,7 +318,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void showSmartAlarmInfo() {
-        showFragment(new OnboardingSmartAlarmFragment(), null, true);
+        showFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
     public void showDone() {

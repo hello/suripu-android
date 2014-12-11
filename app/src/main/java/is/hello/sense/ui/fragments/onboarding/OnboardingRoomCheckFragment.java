@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
 import android.animation.ValueAnimator;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -41,6 +42,7 @@ import is.hello.sense.util.Markdown;
 import is.hello.sense.util.ResumeScheduler;
 import rx.Scheduler;
 
+import static android.widget.LinearLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class OnboardingRoomCheckFragment extends InjectionFragment {
@@ -75,10 +77,13 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
     private LinearLayout conditionsContainer;
 
-    private LinearLayout conditionItemContainer;
-    private TextView conditionItemTitle;
-    private TextView conditionItemMessage;
-    private TextView conditionItemValue;
+    private LinearLayout itemContainer;
+    private TextView itemTitle;
+    private TextView itemMessage;
+    private TextView itemValue;
+
+    private View topDivider;
+    private View bottomDivider;
 
     private LinearLayout endContainer;
 
@@ -104,10 +109,13 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         this.conditionsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_container);
         Animations.Properties.DEFAULT.apply(conditionsContainer.getLayoutTransition(), false);
 
-        this.conditionItemContainer = (LinearLayout) inflater.inflate(R.layout.item_room_check_condition, container, false);
-        this.conditionItemTitle = (TextView) conditionItemContainer.findViewById(R.id.item_room_check_condition_title);
-        this.conditionItemMessage = (TextView) conditionItemContainer.findViewById(R.id.item_room_check_condition_message);
-        this.conditionItemValue = (TextView) conditionItemContainer.findViewById(R.id.item_room_check_condition_value);
+        this.itemContainer = (LinearLayout) inflater.inflate(R.layout.item_room_check_condition, container, false);
+        this.itemTitle = (TextView) itemContainer.findViewById(R.id.item_room_check_condition_title);
+        this.itemMessage = (TextView) itemContainer.findViewById(R.id.item_room_check_condition_message);
+        this.itemValue = (TextView) itemContainer.findViewById(R.id.item_room_check_condition_value);
+
+        this.topDivider = createDivider();
+        this.bottomDivider = createDivider();
 
         this.endContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, container, false);
         Button continueButton = (Button) endContainer.findViewById(R.id.sub_fragment_room_check_end_continue);
@@ -153,27 +161,60 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     }
 
 
+    private View createDivider() {
+        View divider = new View(getActivity());
+        divider.setBackgroundResource(R.color.border);
+
+        Resources resources = getResources();
+        int dividerMargin = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        int dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_height);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, dividerHeight);
+        layoutParams.setMargins(0, dividerMargin, 0, dividerMargin);
+        divider.setLayoutParams(layoutParams);
+
+        return divider;
+    }
+
+
     //region Displaying Conditions
 
     public void showConditionsAt(int position, @NonNull Runnable onBefore, @NonNull Runnable onFinish) {
-        if (conditionItemContainer.getParent() != null) {
-            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.DISAPPEARING, conditionItemContainer) {
+        if (itemContainer.getParent() != null) {
+            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.DISAPPEARING, itemContainer) {
                 @Override
                 protected void onEnd() {
                     showConditionsAt(position, onBefore, onFinish);
                 }
             };
-            withTransitionListener(listener).removeView(conditionItemContainer);
+            withTransitionListener(listener).removeView(itemContainer);
+
+            if (topDivider.getParent() != null) {
+                conditionsContainer.removeView(topDivider);
+            }
+
+            if (bottomDivider.getParent() != null) {
+                conditionsContainer.removeView(bottomDivider);
+            }
         } else {
             onBefore.run();
 
-            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, conditionItemContainer) {
+            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, itemContainer) {
                 @Override
                 protected void onEnd() {
                     onFinish.run();
                 }
             };
-            withTransitionListener(listener).addView(conditionItemContainer, position);
+            withTransitionListener(listener).addView(itemContainer, position);
+
+            int bottomDividerPosition = position + 1;
+            if (position > 1) {
+                conditionsContainer.addView(topDivider, position - 1);
+                bottomDividerPosition++;
+            }
+
+            if (position < conditions.size()) {
+                conditionsContainer.addView(bottomDivider, bottomDividerPosition);
+            }
         }
     }
 
@@ -191,14 +232,14 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             showConditionsAt(position + 1, () -> {
                 int sensorConditionColor = getResources().getColor(condition.getCondition().colorRes);
 
-                conditionItemTitle.setText(CONDITION_TITLES[position]);
-                conditionItemMessage.setText(condition.getMessage());
+                itemTitle.setText(CONDITION_TITLES[position]);
+                itemMessage.setText(condition.getMessage());
                 bindAndSubscribe(markdown.renderWithEmphasisColor(sensorConditionColor, condition.getMessage()),
-                                 conditionItemMessage::setText,
+                                 itemMessage::setText,
                                  Functions.LOG_ERROR);
 
-                conditionItemValue.setTextColor(sensorConditionColor);
-                conditionItemValue.setText("0");
+                itemValue.setTextColor(sensorConditionColor);
+                itemValue.setText("0");
 
                 ImageView conditionImage = (ImageView) conditionsContainer.getChildAt(position);
                 conditionImage.setImageResource(ACTIVE_STATE_IMAGES[position]);
@@ -210,9 +251,9 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                     currentValueAnimator.addUpdateListener(a -> {
                         float value = (Float) a.getAnimatedValue();
                         if (formatter != null) {
-                            conditionItemValue.setText(formatter.format(value));
+                            itemValue.setText(formatter.format(value));
                         } else {
-                            conditionItemContainer.setTag(value + condition.getValue());
+                            itemContainer.setTag(value + condition.getValue());
                         }
                     });
                     currentValueAnimator.addListener(new AnimatorListenerAdapter() {
@@ -246,8 +287,8 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             currentValueAnimator.cancel();
         }
 
-        if (conditionItemContainer.getParent() != null) {
-            conditionsContainer.removeView(conditionItemContainer);
+        if (itemContainer.getParent() != null) {
+            conditionsContainer.removeView(itemContainer);
         }
 
         if (endContainer.getParent() == null) {
@@ -263,7 +304,9 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         this.animationCompleted = true;
 
         conditionsContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
-        conditionsContainer.removeView(conditionItemContainer);
+        conditionsContainer.removeView(itemContainer);
+        conditionsContainer.removeView(topDivider);
+        conditionsContainer.removeView(bottomDivider);
 
         if (animate) {
             SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, endContainer) {
