@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -50,6 +51,13 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             R.string.room_condition_checking_particulates,
             R.string.room_condition_checking_sound,
             R.string.room_condition_checking_light,
+    };
+    private final int[] endStateImages = {
+            R.drawable.room_check_temperature_blue,
+            R.drawable.room_check_humidity_blue,
+            R.drawable.room_check_particulates_blue,
+            R.drawable.room_check_sound_blue,
+            R.drawable.room_check_light_blue,
     };
     private final List<SensorState> conditions = new ArrayList<>();
     private final List<UnitFormatter.Formatter> unitFormatters = new ArrayList<>();
@@ -143,6 +151,9 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
                 conditionItemValue.setTextColor(sensorConditionColor);
                 conditionItemValue.setText("0");
+
+                ImageView conditionImage = (ImageView) conditionsContainer.getChildAt(position);
+                conditionImage.setImageResource(endStateImages[position]);
             }, () -> {
                 if (condition.getValue() == 0f) {
                     deferrer.postDelayed(() -> showConditionAt(position + 1), CONDITION_VISIBLE_DURATION);
