@@ -28,6 +28,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorState;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animation;
@@ -180,9 +181,10 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 int sensorConditionColor = getResources().getColor(condition.getCondition().colorRes);
 
                 conditionItemTitle.setText(CONDITION_TITLES[position]);
+                conditionItemMessage.setText(condition.getMessage());
                 bindAndSubscribe(markdown.renderWithEmphasisColor(sensorConditionColor, condition.getMessage()),
                                  conditionItemMessage::setText,
-                                 ignored -> conditionItemMessage.setText(condition.getMessage()));
+                                 Functions.LOG_ERROR);
 
                 conditionItemValue.setTextColor(sensorConditionColor);
                 conditionItemValue.setText("0");
