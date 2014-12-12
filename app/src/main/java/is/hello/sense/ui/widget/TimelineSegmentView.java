@@ -21,11 +21,11 @@ import is.hello.sense.R;
 import is.hello.sense.ui.common.Styles;
 
 public final class TimelineSegmentView extends View {
-    private int leftInset;
-    private int rightInset;
-    private int stripeWidth;
-    private int ovalInset;
-    private int textLeftInset;
+    private float leftInset;
+    private float rightInset;
+    private float stripeWidth;
+    private float ovalInset;
+    private float textLeftInset;
     private float[] topRadii;
     private float[] bottomRadii;
 
@@ -71,13 +71,13 @@ public final class TimelineSegmentView extends View {
         eventOvalPaint.setAntiAlias(true);
         eventOvalPaint.setColor(Color.WHITE);
 
-        this.leftInset = resources.getDimensionPixelSize(R.dimen.widget_timeline_segment_left_inset);
-        this.rightInset = resources.getDimensionPixelSize(R.dimen.widget_timeline_segment_right_inset);
-        this.stripeWidth = resources.getDimensionPixelSize(R.dimen.event_stripe_width);
-        this.ovalInset = resources.getDimensionPixelSize(R.dimen.widget_timeline_segment_oval_inset);
-        this.textLeftInset = resources.getDimensionPixelOffset(R.dimen.widget_timeline_segment_left_inset);
+        this.leftInset = resources.getDimension(R.dimen.widget_timeline_segment_left_inset);
+        this.rightInset = resources.getDimension(R.dimen.widget_timeline_segment_right_inset);
+        this.stripeWidth = resources.getDimension(R.dimen.event_stripe_width);
+        this.ovalInset = resources.getDimension(R.dimen.widget_timeline_segment_oval_inset);
+        this.textLeftInset = resources.getDimension(R.dimen.widget_timeline_segment_left_inset);
 
-        int stripeCornerRadius = resources.getDimensionPixelSize(R.dimen.widget_timeline_segment_corner_radius);
+        float stripeCornerRadius = resources.getDimension(R.dimen.widget_timeline_segment_corner_radius);
         this.topRadii = new float[] {
                 stripeCornerRadius, stripeCornerRadius, stripeCornerRadius, stripeCornerRadius,
                 0f, 0f, 0f, 0f,
@@ -93,10 +93,12 @@ public final class TimelineSegmentView extends View {
     protected void onDraw(Canvas canvas) {
         stripePath.reset();
 
-        int width = canvas.getWidth() - (leftInset + rightInset);
-        int height = canvas.getHeight();
-        int minX = leftInset;
-        int minY = 0, midY = (minY + height) / 2, maxY = minY + height;
+        float width = canvas.getWidth() - (leftInset + rightInset);
+        float height = canvas.getHeight();
+        float minX = leftInset;
+        float minY = 0,
+              midY = (minY + height) / 2,
+              maxY = minY + height;
 
         float stripeMaxX = minX + stripeWidth;
         rect.set(minX, minY, stripeMaxX, maxY);
@@ -125,19 +127,19 @@ public final class TimelineSegmentView extends View {
         canvas.drawPath(stripePath, stripePaint);
 
         if (eventDrawable != null) {
-            int stripeMidX = (int) (minX + stripeMidPoint);
-            int drawableWidth = eventDrawable.getIntrinsicWidth();
-            int drawableHeight = eventDrawable.getIntrinsicHeight();
+            float stripeMidX = (int) (minX + stripeMidPoint);
+            float drawableWidth = eventDrawable.getIntrinsicWidth();
+            float drawableHeight = eventDrawable.getIntrinsicHeight();
 
-            rect.set(minX, midY - stripeWidth / 2, stripeMaxX, midY + stripeWidth / 2);
+            rect.set(minX, midY - stripeMidPoint, stripeMaxX, midY + stripeMidPoint);
             rect.inset(ovalInset, ovalInset);
             canvas.drawOval(rect, eventOvalPaint);
 
             eventDrawable.setBounds(
-                    stripeMidX - drawableWidth / 2,
-                    midY - drawableHeight / 2,
-                    stripeMidX + drawableWidth / 2,
-                    midY + drawableHeight / 2
+                    Math.round(stripeMidX - drawableWidth / 2f),
+                    Math.round(midY - drawableHeight / 2f),
+                    Math.round(stripeMidX + drawableWidth / 2f),
+                    Math.round(midY + drawableHeight / 2f)
             );
             eventDrawable.draw(canvas);
         }
