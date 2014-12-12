@@ -114,7 +114,11 @@ public class Question extends ApiResponse {
 
     public static enum Type {
         CHOICE,
-        YES_NO,
+        CHECKBOX,
+        QUANTITY,
+        DURATION,
+        TIME,
+        TEXT,
         UNKNOWN;
 
         @JsonCreator

@@ -10,6 +10,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.joda.time.chrono.ISOChronology;
 
 import java.util.Collections;
@@ -29,7 +31,7 @@ import rx.Observable;
 
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
-@Singleton public final class QuestionsPresenter extends Presenter {
+@Singleton public class QuestionsPresenter extends Presenter {
     private final ApiService apiService;
     private final ApiSessionManager apiSessionManager;
 
@@ -99,6 +101,11 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     //region Updating
 
+    protected Observable<List<Question>> currentQuestions() {
+        String timestamp = DateTime.now().toString("yyyy-MM-dd");
+        return apiService.questions(timestamp);
+    }
+
     void clearUpdateGuards() {
         this.lastUpdated = null;
         setLastAcknowledged(null);
@@ -108,7 +115,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return lastUpdated != null && !lastUpdated.isAfter(lastUpdated.plusMinutes(2));
     }
 
-    public void update() {
+    public final void update() {
         if (!apiSessionManager.hasSession()) {
             logEvent("skipping questions update, no api session.");
             return;
@@ -121,18 +128,16 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
         if (isLastAcknowledgedBeforeToday()) {
             logEvent("loading today's questions");
-            String timestamp = DateTime.now().toString("yyyy-MM-dd");
-            apiService.questions(timestamp)
-                      .subscribe(questions -> {
-                          this.questions.onNext(questions);
-                          this.lastUpdated = DateTime.now();
-                          updateCurrentQuestion();
-                      }, e -> {
-                          Logger.error(QuestionsPresenter.class.getSimpleName(), "Could not load questions.", e);
+            currentQuestions().subscribe(questions -> {
+                this.questions.onNext(questions);
+                this.lastUpdated = DateTime.now();
+                updateCurrentQuestion();
+            }, e -> {
+                Logger.error(QuestionsPresenter.class.getSimpleName(), "Could not load questions.", e);
 
-                          this.questions.onError(e);
-                          this.currentQuestion.onError(e);
-                      });
+                this.questions.onError(e);
+                this.currentQuestion.onError(e);
+            });
         } else {
             logEvent("questions already updated today");
             this.questions.onNext(Collections.emptyList());
@@ -206,8 +211,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     //region Answering Questions
 
-    public Observable<VoidResponse> answerQuestion(@NonNull Question question, @NonNull Question.Choice answer) {
-        return apiService.answerQuestion(question.getAccountId(), answer);
+    public Observable<VoidResponse> answerQuestion(@NonNull Question question, @NonNull List<Question.Choice> answers) {
+        return apiService.answerQuestion(question.getAccountId(), answers);
     }
 
     public void skipQuestion() {

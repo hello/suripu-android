@@ -7,7 +7,7 @@
     <ImageButton
         android:id="@+id/dialog_fragment_timeline_event_close"
         android:layout_width="50dp"
-        android:layout_height="40dp"
+        android:layout_height="@dimen/button_min_size"
         android:layout_marginTop="@dimen/gap_small"
         android:layout_alignParentEnd="true"
         android:src="@drawable/icon_dialog_close"

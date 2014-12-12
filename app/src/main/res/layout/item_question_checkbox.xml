@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToggleButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:drawablePadding="@dimen/gap_small"
+    android:textOn="@string/mock_question_title"
+    android:textOff="@string/mock_question_title"
+    android:textColor="@drawable/text_color_selector_question_checkbox"
+    android:background="@null"
+    style="@style/AppTheme.Button.Borderless.Question"/>
