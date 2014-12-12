@@ -95,7 +95,7 @@ public interface ApiService {
     @GET("/questions")
     Observable<List<Question>> questions(@NonNull @Query("date") String timestamp);
 
-    @POST("/questions")
+    @POST("/questions/save")
     Observable<VoidResponse> answerQuestion(@Query("account_question_id") long accountId,
                                             @NonNull @Body List<Question.Choice> answers);
 
