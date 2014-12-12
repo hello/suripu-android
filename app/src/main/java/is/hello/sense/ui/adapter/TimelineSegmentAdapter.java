@@ -28,7 +28,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     //region Lifecycle
 
     public TimelineSegmentAdapter(@NonNull Context context) {
-        super(context, R.layout.item_timeline_segment);
+        super(context, R.layout.item_simple_text);
 
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
@@ -48,7 +48,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
      */
     private int calculateItemHeight(int position, @NonNull TimelineSegment segment) {
         if (segment.getEventType() != null) {
-            int itemHeight = this.itemEventImageHeight + (this.baseItemHeight * 2);
+            int itemHeight = this.itemEventImageHeight + this.baseItemHeight;
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
         } else if (position == 0 || position == getCount() - 1) {
             int itemHeight = this.stripeCornerRadius;
