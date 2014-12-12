@@ -197,6 +197,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
             this.rediscovery = null;
 
             return Observable.just(this.peripheral);
+        }).doOnError(ignored -> {
+            this.rediscovery = null;
         });
 
 

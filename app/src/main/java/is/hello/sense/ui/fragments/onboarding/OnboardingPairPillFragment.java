@@ -12,7 +12,6 @@ import android.widget.TextView;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
@@ -20,6 +19,7 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.util.Analytics;
@@ -32,6 +32,8 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     private Button retryButton;
 
     private boolean isPairing = false;
+
+    private LoadingDialogFragment loadingDialogFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,28 +78,57 @@ public class OnboardingPairPillFragment extends InjectionFragment {
         hardwarePresenter.clearPeripheral();
 
         OnboardingActivity activity = (OnboardingActivity) getActivity();
-        activity.showPillInstructions();
+        if (activity.getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false)) {
+            hardwarePresenter.clearPeripheral();
+            activity.finish();
+        } else {
+            activity.showPillInstructions();
+        }
+    }
+
+
+    public void showLoadingDialog() {
+        if (loadingDialogFragment == null) {
+            this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_scanning_for_sense), true);
+        }
+    }
+
+    public void dismissLoadingDialog() {
+        LoadingDialogFragment.close(getFragmentManager());
+        this.loadingDialogFragment = null;
     }
 
 
     public void pairPill() {
-        if (isPairing) {
-            return;
-        }
-
         beginPairing();
 
         if (hardwarePresenter.getPeripheral() == null) {
+            showLoadingDialog();
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(), ignored -> pairPill(), this::presentError);
             return;
         }
 
         if (!hardwarePresenter.getPeripheral().isConnected()) {
+            showLoadingDialog();
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(hardwarePresenter.getPeripheral()), status -> {
-                if (status != HelloPeripheral.ConnectStatus.CONNECTED)
-                    return;
+                switch (status) {
+                    case CONNECTING:
+                        loadingDialogFragment.setTitle(getString(R.string.title_connecting));
+                        break;
 
-                pairPill();
+                    case BONDING:
+                        loadingDialogFragment.setTitle(getString(R.string.title_pairing));
+                        break;
+
+                    case DISCOVERING_SERVICES:
+                        loadingDialogFragment.setTitle(getString(R.string.title_discovering_services));
+                        break;
+
+                    case CONNECTED:
+                        dismissLoadingDialog();
+                        pairPill();
+                        break;
+                }
             }, this::presentError);
             return;
         }
@@ -107,6 +138,8 @@ public class OnboardingPairPillFragment extends InjectionFragment {
 
     public void presentError(Throwable e) {
         this.isPairing = false;
+
+        dismissLoadingDialog();
 
         activityIndicator.setVisibility(View.GONE);
         activityStatus.setVisibility(View.GONE);

@@ -58,6 +58,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
     public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
     public static final String EXTRA_WIFI_CHANGE_ONLY = OnboardingActivity.class.getName() + ".EXTRA_WIFI_CHANGE_ONLY";
+    public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
 
     @Inject ApiService apiService;
     @Inject HardwarePresenter hardwarePresenter;

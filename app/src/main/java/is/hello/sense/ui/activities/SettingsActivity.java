@@ -56,6 +56,7 @@ public class SettingsActivity extends FragmentNavigationActivity {
             case R.id.pair_new_sense: {
                 Intent onboarding = new Intent(this, OnboardingActivity.class);
                 onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
+                onboarding.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
                 startActivity(onboarding);
                 return true;
             }
@@ -63,6 +64,7 @@ public class SettingsActivity extends FragmentNavigationActivity {
             case R.id.pair_new_pill: {
                 Intent onboarding = new Intent(this, OnboardingActivity.class);
                 onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
+                onboarding.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
                 startActivity(onboarding);
                 return true;
             }
