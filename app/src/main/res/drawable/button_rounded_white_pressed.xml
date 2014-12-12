@@ -4,7 +4,7 @@
     <item>
         <shape android:shape="rectangle">
             <corners
-                android:radius="60dp" />
+                android:radius="@dimen/button_corner_radius" />
             <stroke
                 android:color="@color/white"
                 android:dashWidth="@dimen/button_rounded_border_width"

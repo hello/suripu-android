@@ -7,6 +7,7 @@
     <color name="purple">#7d2ff9</color>
     <color name="light_accent">#009CFF</color>
     <color name="light_accent_dimmed">#6ec2fe</color>
+    <color name="light_accent_darkened">#0c67c0</color>
 
     <color name="background">#f8f8f8</color>
     <color name="background_light_overlay">#99ffffff</color>
@@ -28,9 +29,9 @@
     <color name="edit_text_bottom_line_disabled">#cacaca</color>
     <color name="edit_text_bottom_line_focused">@color/light_accent</color>
 
-    <color name="background_button_normal">#eaeaea</color>
-    <color name="background_button_pressed">#d5d5d5</color>
-    <color name="background_button_disabled">#88eaeaea</color>
+    <color name="white_button_normal">#eaeaea</color>
+    <color name="white_button_pressed">#d5d5d5</color>
+    <color name="white_button_disabled">#88eaeaea</color>
 
     <color name="background_button_white_pressed">#33ffffff</color>
     <color name="background_button_dark_pressed">#335785f5</color>
