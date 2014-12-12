@@ -1,12 +1,17 @@
 package is.hello.sense.ui.fragments;
 
 import android.app.FragmentManager;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,10 +28,12 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
+import static android.view.View.INVISIBLE;
 import static android.widget.LinearLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
@@ -49,6 +56,11 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
 
     private boolean hasClearedAllViews = false;
 
+    private Drawable checkedDrawable;
+    private Drawable emptyCheckedDrawable;
+    private Drawable uncheckedDrawable;
+    private Drawable emptyUncheckedDrawable;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +68,14 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
         if (savedInstanceState != null) {
             this.hasClearedAllViews = savedInstanceState.getBoolean("hasClearedAllViews", false);
         }
+
+        this.checkedDrawable = getResources().getDrawable(R.drawable.questions_check);
+        this.emptyCheckedDrawable = new ColorDrawable();
+        emptyCheckedDrawable.setBounds(checkedDrawable.copyBounds());
+
+        this.uncheckedDrawable = getResources().getDrawable(R.drawable.questions_circle);
+        this.emptyUncheckedDrawable = new ColorDrawable();
+        emptyUncheckedDrawable.setBounds(uncheckedDrawable.copyBounds());
 
         addPresenter(questionsPresenter);
         setRetainInstance(true);
@@ -98,13 +118,31 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
     //region Animations
 
     public void showNextButton(boolean animate) {
-        skipButton.setVisibility(View.GONE);
-        nextButton.setVisibility(View.VISIBLE);
+        if (nextButton.getVisibility() == View.VISIBLE) {
+            return;
+        }
+
+        if (animate) {
+            animate(skipButton).fadeOut(View.INVISIBLE).start();
+            animate(nextButton).fadeIn().start();
+        } else {
+            skipButton.setVisibility(View.INVISIBLE);
+            nextButton.setVisibility(View.VISIBLE);
+        }
     }
 
     public void showSkipButton(boolean animate) {
-        skipButton.setVisibility(View.VISIBLE);
-        nextButton.setVisibility(View.GONE);
+        if (skipButton.getVisibility() == View.VISIBLE) {
+            return;
+        }
+
+        if (animate) {
+            animate(nextButton).fadeOut(View.INVISIBLE).start();
+            animate(skipButton).fadeIn().start();
+        } else {
+            nextButton.setVisibility(View.INVISIBLE);
+            skipButton.setVisibility(View.VISIBLE);
+        }
     }
 
     public void updateCallToAction(boolean animate) {
@@ -112,6 +150,20 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
             showSkipButton(animate);
         } else {
             showNextButton(animate);
+        }
+    }
+
+    public void flipChoiceDrawables(@NonNull CompoundButton choiceButton) {
+        boolean checked = choiceButton.isChecked();
+        for (Drawable drawable : choiceButton.getCompoundDrawables()) {
+            if (drawable instanceof TransitionDrawable) {
+                TransitionDrawable transitionDrawable = (TransitionDrawable) drawable;
+                if (checked) {
+                    transitionDrawable.startTransition(Animations.DURATION_MINIMUM);
+                } else {
+                    transitionDrawable.reverseTransition(Animations.DURATION_MINIMUM);
+                }
+            }
         }
     }
 
@@ -251,6 +303,7 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
             choiceButton.setTag(R.id.fragment_questions_tag_question, question);
             choiceButton.setTag(R.id.fragment_questions_tag_choice, choice);
             choiceButton.setOnClickListener(onClickListener);
+            choiceButton.setOnTouchListener(POP_LISTENER);
             choicesContainer.addView(choiceButton, choiceLayoutParams);
 
             if (i < choices.size() - 1) {
@@ -273,9 +326,18 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
             ToggleButton choiceButton = (ToggleButton) inflater.inflate(R.layout.item_question_checkbox, choicesContainer, false);
             choiceButton.setTextOn(choice.getText());
             choiceButton.setTextOff(choice.getText());
+            choiceButton.setChecked(false);
             choiceButton.setTag(R.id.fragment_questions_tag_question, question);
             choiceButton.setTag(R.id.fragment_questions_tag_choice, choice);
             choiceButton.setOnCheckedChangeListener(this);
+
+            TransitionDrawable left = new TransitionDrawable(new Drawable[] {uncheckedDrawable, emptyUncheckedDrawable});
+            left.setCrossFadeEnabled(true);
+            TransitionDrawable right = new TransitionDrawable(new Drawable[] {emptyCheckedDrawable, checkedDrawable});
+            right.setCrossFadeEnabled(true);
+            choiceButton.setCompoundDrawablesWithIntrinsicBounds(left, null, right, null);
+            choiceButton.setOnTouchListener(POP_LISTENER);
+
             choicesContainer.addView(choiceButton, choiceLayoutParams);
 
             if (i < choices.size() - 1) {
@@ -324,18 +386,39 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-        Question.Choice choice = (Question.Choice) compoundButton.getTag(R.id.fragment_questions_tag_choice);
+    public void onCheckedChanged(CompoundButton choiceButton, boolean checked) {
+        Question.Choice choice = (Question.Choice) choiceButton.getTag(R.id.fragment_questions_tag_choice);
         if (checked) {
-            compoundButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.questions_check, 0);
             selectedAnswers.add(choice);
         } else {
-            compoundButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.questions_circle, 0, 0, 0);
             selectedAnswers.remove(choice);
         }
 
+        flipChoiceDrawables(choiceButton);
         updateCallToAction(true);
     }
+
+    private final View.OnTouchListener POP_LISTENER = (View view, MotionEvent motionEvent) -> {
+        switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN: {
+                animate(view)
+                        .scale(0.7f)
+                        .start();
+                break;
+            }
+
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP: {
+                PropertyAnimatorProxy.stop(view);
+                animate(view)
+                        .simplePop(1.3f)
+                        .start();
+                break;
+            }
+        }
+
+        return false;
+    };
 
     //endregion
 }

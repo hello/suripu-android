@@ -35,22 +35,29 @@
             android:orientation="vertical"
             android:gravity="center" />
 
-        <Button
-            android:id="@+id/fragment_questions_next"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/gap_outer"
-            android:layout_marginRight="@dimen/gap_outer"
-            android:text="@string/action_done"
-            android:visibility="gone"
-            style="@style/AppTheme.Button.Rounded" />
+            android:layout_height="70dp">
 
-        <Button
-            android:id="@+id/fragment_questions_skip"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/AppTheme.Button.Borderless.Question"
-            android:text="@string/action_skip_question"/>
+            <Button
+                android:id="@+id/fragment_questions_next"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/gap_outer"
+                android:layout_marginRight="@dimen/gap_outer"
+                android:layout_gravity="center"
+                android:text="@string/action_done"
+                android:visibility="invisible"
+                style="@style/AppTheme.Button.Rounded" />
+
+            <Button
+                android:id="@+id/fragment_questions_skip"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                style="@style/AppTheme.Button.Borderless.Question"
+                android:text="@string/action_skip_question"/>
+
+        </FrameLayout>
 
     </LinearLayout>
 
