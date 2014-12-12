@@ -137,7 +137,7 @@ public class HelloPeripheralTests extends InjectionTestCase {
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CONNECT));
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CREATE_BOND));
         assertFalse(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCOVER_SERVICES));
-        assertFalse(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
+        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
 
 
         // ---- //
@@ -159,7 +159,7 @@ public class HelloPeripheralTests extends InjectionTestCase {
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CONNECT));
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CREATE_BOND));
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCOVER_SERVICES));
-        assertFalse(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
+        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
     }
 
     public void testDisconnect() throws Exception {
