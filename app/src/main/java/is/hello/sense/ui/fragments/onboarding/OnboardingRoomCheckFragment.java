@@ -251,7 +251,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 ImageView conditionImage = (ImageView) conditionsContainer.getChildAt(position);
                 conditionImage.setImageResource(ACTIVE_STATE_IMAGES[position]);
             }, () -> {
-                if (condition.getValue() == 0f) {
+                if (condition.getValue() == null || condition.getValue() == 0f) {
                     deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
                 } else {
                     this.currentValueAnimator = Animations.Properties.DEFAULT.apply(ValueAnimator.ofFloat(0f, condition.getValue()));
