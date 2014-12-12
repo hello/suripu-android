@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments;
 
+import android.animation.LayoutTransition;
 import android.app.FragmentManager;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -88,6 +89,11 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
         this.superContainer = (ViewGroup) view.findViewById(R.id.fragment_questions_container);
         this.titleText = (TextView) view.findViewById(R.id.fragment_questions_title);
         this.choicesContainer = (ViewGroup) view.findViewById(R.id.fragment_questions_choices);
+
+        LayoutTransition transition = choicesContainer.getLayoutTransition();
+        Animations.Properties.DEFAULT.apply(transition, false);
+        transition.disableTransitionType(LayoutTransition.DISAPPEARING);
+        transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 
         this.skipButton = (Button) view.findViewById(R.id.fragment_questions_skip);
         skipButton.setOnClickListener(this::skipQuestion);
@@ -411,7 +417,7 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
             case MotionEvent.ACTION_UP: {
                 PropertyAnimatorProxy.stop(view);
                 animate(view)
-                        .simplePop(1.3f)
+                        .simplePop(1.15f)
                         .start();
                 break;
             }

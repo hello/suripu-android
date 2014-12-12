@@ -23,8 +23,7 @@
             android:layout_marginLeft="@dimen/gap_outer"
             android:layout_marginRight="@dimen/gap_outer"
             android:textAppearance="@style/AppTheme.Text.Question"
-            android:gravity="center"
-            android:text="@string/mock_question_title"/>
+            android:gravity="center"/>
 
         <LinearLayout
             android:id="@+id/fragment_questions_choices"
@@ -33,7 +32,8 @@
             android:layout_weight="1"
             android:layout_marginBottom="@dimen/gap_large"
             android:orientation="vertical"
-            android:gravity="center" />
+            android:gravity="center"
+            android:animateLayoutChanges="true"/>
 
         <FrameLayout
             android:layout_width="match_parent"
