@@ -4,11 +4,9 @@
     <item>
         <shape android:shape="rectangle">
             <corners
-                android:radius="60dp" />
-            <stroke
-                android:color="@color/light_accent"
-                android:dashWidth="@dimen/button_rounded_border_width"
-                android:width="@dimen/button_rounded_border_width" />
+                android:radius="@dimen/button_corner_radius" />
+            <solid
+                android:color="@color/light_accent"/>
         </shape>
     </item>
 </layer-list>
