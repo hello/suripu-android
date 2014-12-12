@@ -36,6 +36,16 @@
             android:gravity="center" />
 
         <Button
+            android:id="@+id/fragment_questions_next"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/gap_outer"
+            android:layout_marginRight="@dimen/gap_outer"
+            android:text="@string/action_done"
+            android:visibility="gone"
+            style="@style/AppTheme.Button.Rounded" />
+
+        <Button
             android:id="@+id/fragment_questions_skip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

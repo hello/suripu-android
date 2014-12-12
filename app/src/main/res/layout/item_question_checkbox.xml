@@ -2,9 +2,9 @@
 <ToggleButton xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:drawableStart="@drawable/questions_circle"
-    android:drawableEnd="@drawable/questions_check"
     android:drawablePadding="@dimen/gap_small"
     android:textOn="@string/mock_question_title"
     android:textOff="@string/mock_question_title"
-    style="@style/AppTheme.Button.Borderless.Toggle"/>
+    android:textColor="@drawable/text_color_selector_question_checkbox"
+    android:background="@null"
+    style="@style/AppTheme.Button.Borderless.Question"/>

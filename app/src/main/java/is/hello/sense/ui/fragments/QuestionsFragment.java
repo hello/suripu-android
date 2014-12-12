@@ -10,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -28,7 +30,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import static android.widget.LinearLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class QuestionsFragment extends InjectionFragment {
+public class QuestionsFragment extends InjectionFragment implements CompoundButton.OnCheckedChangeListener {
     public static final String BACK_STACK_NAME = QuestionsFragment.class.getSimpleName();
 
     private static final long DELAY_INCREMENT = 20;
@@ -39,8 +41,11 @@ public class QuestionsFragment extends InjectionFragment {
     private ViewGroup superContainer;
     private TextView titleText;
     private ViewGroup choicesContainer;
+    private Button skipButton;
+    private Button nextButton;
 
     private final Handler dismissHandler = new Handler(Looper.getMainLooper());
+    private final List<Question.Choice> selectedAnswers = new ArrayList<>();
 
     private boolean hasClearedAllViews = false;
 
@@ -64,8 +69,11 @@ public class QuestionsFragment extends InjectionFragment {
         this.titleText = (TextView) view.findViewById(R.id.fragment_questions_title);
         this.choicesContainer = (ViewGroup) view.findViewById(R.id.fragment_questions_choices);
 
-        Button skipButton = (Button) view.findViewById(R.id.fragment_questions_skip);
+        this.skipButton = (Button) view.findViewById(R.id.fragment_questions_skip);
         skipButton.setOnClickListener(this::skipQuestion);
+
+        this.nextButton = (Button) view.findViewById(R.id.fragment_questions_next);
+        nextButton.setOnClickListener(this::nextQuestion);
 
         return view;
     }
@@ -86,20 +94,26 @@ public class QuestionsFragment extends InjectionFragment {
         outState.putBoolean("hasClearedAllViews", hasClearedAllViews);
     }
 
-    public void skipQuestion(@NonNull View sender) {
-        questionsPresenter.skipQuestion();
+
+    //region Animations
+
+    public void showNextButton(boolean animate) {
+        skipButton.setVisibility(View.GONE);
+        nextButton.setVisibility(View.VISIBLE);
     }
 
-    public void singleChoiceSelected(@NonNull View sender) {
-        clearQuestions(true, () -> {
-            Question question = (Question) sender.getTag(R.id.fragment_questions_tag_question);
-            Question.Choice choice = (Question.Choice) sender.getTag(R.id.fragment_questions_tag_choice);
-            bindAndSubscribe(questionsPresenter.answerQuestion(question, Lists.newArrayList(choice)),
-                    unused -> questionsPresenter.nextQuestion(),
-                    error -> ErrorDialogFragment.presentError(getFragmentManager(), error));
-        });
+    public void showSkipButton(boolean animate) {
+        skipButton.setVisibility(View.VISIBLE);
+        nextButton.setVisibility(View.GONE);
     }
 
+    public void updateCallToAction(boolean animate) {
+        if (selectedAnswers.isEmpty()) {
+            showSkipButton(animate);
+        } else {
+            showNextButton(animate);
+        }
+    }
 
     public void animateOutAllViews(@NonNull Runnable onCompletion) {
         if (hasClearedAllViews) {
@@ -127,7 +141,6 @@ public class QuestionsFragment extends InjectionFragment {
         }
     }
 
-
     public void displayThankYou() {
         titleText.setText(R.string.title_thank_you);
         superContainer.addView(titleText);
@@ -149,8 +162,9 @@ public class QuestionsFragment extends InjectionFragment {
                 .start();
     }
 
-
     public void clearQuestions(boolean animate, @Nullable Runnable onCompletion) {
+        showSkipButton(animate);
+
         if (animate) {
             long delay = 0;
             for (int index = 0, count = choicesContainer.getChildCount(); index < count; index++) {
@@ -179,6 +193,11 @@ public class QuestionsFragment extends InjectionFragment {
                 onCompletion.run();
         }
     }
+
+    //endregion
+
+
+    //region Binding Questions
 
     public void bindQuestion(@Nullable Question question) {
         if (question == null) {
@@ -256,6 +275,7 @@ public class QuestionsFragment extends InjectionFragment {
             choiceButton.setTextOff(choice.getText());
             choiceButton.setTag(R.id.fragment_questions_tag_question, question);
             choiceButton.setTag(R.id.fragment_questions_tag_choice, choice);
+            choiceButton.setOnCheckedChangeListener(this);
             choicesContainer.addView(choiceButton, choiceLayoutParams);
 
             if (i < choices.size() - 1) {
@@ -270,4 +290,52 @@ public class QuestionsFragment extends InjectionFragment {
         choicesContainer.removeAllViews();
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
+
+    //endregion
+
+
+    //region Button Callbacks
+
+    public void nextQuestion(@NonNull View sender) {
+        clearQuestions(true, () -> {
+            Question question = (Question) sender.getTag(R.id.fragment_questions_tag_question);
+            bindAndSubscribe(questionsPresenter.answerQuestion(question, selectedAnswers),
+                             unused -> {
+                                 selectedAnswers.clear();
+                                 questionsPresenter.nextQuestion();
+                             },
+                             error -> ErrorDialogFragment.presentError(getFragmentManager(), error));
+        });
+    }
+
+    public void skipQuestion(@NonNull View sender) {
+        questionsPresenter.skipQuestion();
+    }
+
+
+    public void singleChoiceSelected(@NonNull View sender) {
+        clearQuestions(true, () -> {
+            Question question = (Question) sender.getTag(R.id.fragment_questions_tag_question);
+            Question.Choice choice = (Question.Choice) sender.getTag(R.id.fragment_questions_tag_choice);
+            bindAndSubscribe(questionsPresenter.answerQuestion(question, Lists.newArrayList(choice)),
+                    unused -> questionsPresenter.nextQuestion(),
+                    error -> ErrorDialogFragment.presentError(getFragmentManager(), error));
+        });
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+        Question.Choice choice = (Question.Choice) compoundButton.getTag(R.id.fragment_questions_tag_choice);
+        if (checked) {
+            compoundButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.questions_check, 0);
+            selectedAnswers.add(choice);
+        } else {
+            compoundButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.questions_circle, 0, 0, 0);
+            selectedAnswers.remove(choice);
+        }
+
+        updateCallToAction(true);
+    }
+
+    //endregion
 }
