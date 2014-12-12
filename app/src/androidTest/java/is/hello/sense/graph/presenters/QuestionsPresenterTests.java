@@ -12,22 +12,35 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.SyncObserver;
 
 public class QuestionsPresenterTests extends InjectionTestCase {
+    @Inject ApiSessionManager apiSessionManager;
     @Inject QuestionsPresenter presenter;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        presenter.setLastAcknowledged(null);
+        apiSessionManager.setSession(new OAuthSession());
+
+        presenter.clearUpdateGuards();
         presenter.update();
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+
+        presenter.questions.forget();
+        presenter.currentQuestion.forget();
+
+        apiSessionManager.setSession(null);
+    }
+
     public void testUpdate() throws Exception {
-        presenter.update();
         SyncObserver<List<Question>> questions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.questions);
         questions.await();
 

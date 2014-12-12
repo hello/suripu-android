@@ -111,8 +111,7 @@ public final class TestModule {
         return new TransientApiSessionManager();
     }
 
-    @Singleton @Provides
-    TestBluetoothStackBehavior provideBluetoothStackConfig() {
+    @Singleton @Provides TestBluetoothStackBehavior provideBluetoothStackConfig() {
         return new TestBluetoothStackBehavior();
     }
 

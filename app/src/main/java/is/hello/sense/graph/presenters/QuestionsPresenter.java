@@ -99,6 +99,11 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     //region Updating
 
+    void clearUpdateGuards() {
+        this.lastUpdated = null;
+        setLastAcknowledged(null);
+    }
+
     public boolean isUpdateTooSoon() {
         return lastUpdated != null && !lastUpdated.isAfter(lastUpdated.plusMinutes(2));
     }
