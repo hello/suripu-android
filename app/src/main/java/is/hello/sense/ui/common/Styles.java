@@ -6,6 +6,16 @@ import android.support.annotation.DrawableRes;
 import is.hello.sense.R;
 
 public final class Styles {
+    public static final String TYPEFACE_BLACK = "fonts/AvenirLTCom-Black.ttf";
+    public static final String TYPEFACE_BLACK_OBLIQUE = "fonts/AvenirLTCom-BlackOblique.ttf";
+    public static final String TYPEFACE_HEAVY = "fonts/AvenirLTCom-Heavy.ttf";
+    public static final String TYPEFACE_HEAVY_OBLIQUE = "fonts/AvenirLTCom-HeavyOblique.ttf";
+    public static final String TYPEFACE_ULTRA_LIGHT = "fonts/AvenirNextLTPro-UltLt.ttf";
+    public static final String TYPEFACE_LIGHT = "fonts/AvenirLTCom-Light.ttf";
+    public static final String TYPEFACE_LIGHT_OBLIQUE = "fonts/AvenirLTCom-LightOblique.ttf";
+    public static final String TYPEFACE_ROMAN = "fonts/AvenirLTCom-Roman.ttf";
+    public static final String TYPEFACE_OBLIQUE = "fonts/AvenirLTCom-Oblique.ttf";
+
     public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth) {
         if (sleepDepth == 0)
             return R.color.sleep_awake;

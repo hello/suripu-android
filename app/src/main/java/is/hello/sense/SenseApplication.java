@@ -14,6 +14,7 @@ import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.SenseAppModule;
+import is.hello.sense.ui.common.Styles;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.SessionLogger;
@@ -37,7 +38,7 @@ public class SenseApplication extends Application {
         this.buildValues = new BuildValues(this);
 
         JodaTimeAndroid.init(this);
-        CalligraphyConfig.initDefault(Constants.TYPEFACE_ROMAN, R.attr.fontPath);
+        CalligraphyConfig.initDefault(Styles.TYPEFACE_ROMAN, R.attr.fontPath);
         if (buildValues.debugScreenEnabled) {
             SessionLogger.init(this);
         }
