@@ -12,10 +12,10 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.Logger;
 
 
 public class LaunchActivity extends InjectionActivity {
-
     @Inject ApiSessionManager sessionManager;
     @Inject PreferencesPresenter preferences;
     @Inject BuildValues buildValues;
@@ -24,8 +24,15 @@ public class LaunchActivity extends InjectionActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!buildValues.isDebugBuild())
+        if (!buildValues.isDebugBuild()) {
             Crashlytics.start(this);
+
+            if (sessionManager.getSession() != null) {
+                String accountId = sessionManager.getSession().getAccountId();
+                Crashlytics.setUserIdentifier(accountId);
+                Logger.info(ApiSessionManager.class.getSimpleName(), "Began session for " + accountId);
+            }
+        }
     }
 
     @Override
