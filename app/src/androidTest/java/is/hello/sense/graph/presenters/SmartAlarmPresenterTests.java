@@ -42,11 +42,25 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
     }
 
     public void testSave() throws Exception {
-        List<SmartAlarm> alarms = Collections.emptyList();
-        SyncObserver<VoidResponse> saveAlarms = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, presenter.save(alarms));
-        saveAlarms.await();
+        List<SmartAlarm> goodAlarms = Collections.emptyList();
+        SyncObserver<VoidResponse> good = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, presenter.save(goodAlarms));
+        good.await();
 
-        assertNull(saveAlarms.getError());
-        assertNotNull(saveAlarms.getSingle());
+        assertNull(good.getError());
+        assertNotNull(good.getSingle());
+
+
+        // --- //
+
+
+        SmartAlarm sunday = new SmartAlarm();
+        sunday.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
+        List<SmartAlarm> badAlarms = Lists.newArrayList(sunday, sunday);
+
+        SyncObserver<VoidResponse> bad = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, presenter.save(badAlarms));
+        bad.await();
+
+        assertNotNull(bad.getError());
+        assertNull(bad.getSingle());
     }
 }

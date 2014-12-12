@@ -54,7 +54,12 @@ public class OnboardingSmartAlarmFragment extends InjectionFragment {
                              ignored -> complete(),
                              e -> {
                                  LoadingDialogFragment.close(getFragmentManager());
-                                 ErrorDialogFragment.presentError(getFragmentManager(), e);
+                                 if (e instanceof SmartAlarmPresenter.DayOverlapError) {
+                                     ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_day_overlap));
+                                     dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+                                 } else {
+                                     ErrorDialogFragment.presentError(getFragmentManager(), e);
+                                 }
                              });
         }
     }

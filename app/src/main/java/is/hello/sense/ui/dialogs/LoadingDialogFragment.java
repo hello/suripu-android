@@ -34,11 +34,9 @@ public class LoadingDialogFragment extends DialogFragment {
     public static @NonNull LoadingDialogFragment show(@NonNull FragmentManager fm,
                                                       @Nullable String title,
                                                       boolean wantsOpaqueBackground) {
-        Fragment preexistingDialog = fm.findFragmentByTag(TAG);
+        LoadingDialogFragment preexistingDialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
         if (preexistingDialog != null) {
-            fm.beginTransaction()
-              .remove(preexistingDialog)
-              .commit();
+            preexistingDialog.dismiss();
         }
 
         LoadingDialogFragment dialog = LoadingDialogFragment.newInstance(title, wantsOpaqueBackground);

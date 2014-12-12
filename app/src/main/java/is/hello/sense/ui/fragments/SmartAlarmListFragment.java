@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,6 @@ import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
 
@@ -39,6 +39,8 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
     @Inject SmartAlarmPresenter smartAlarmPresenter;
     @Inject PreferencesPresenter preferences;
+
+    private ProgressBar activityIndicator;
 
     private List<SmartAlarm> currentAlarms = new ArrayList<>();
     private SmartAlarmAdapter adapter;
@@ -58,6 +60,8 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_smart_alarm_list, container, false);
 
+        this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_smart_alarm_list_activity);
+
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         this.adapter = new SmartAlarmAdapter(getActivity(), this);
         listView.setAdapter(adapter);
@@ -74,11 +78,9 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        LoadingDialogFragment.show(getFragmentManager());
-
         Observable<Boolean> use24Time = preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false);
         bindAndSubscribe(use24Time, adapter::setUse24Time, Functions.LOG_ERROR);
-        bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::alarmsUnavailable);
+        bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::presentError);
     }
 
     @Override
@@ -106,10 +108,10 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
             currentAlarms.remove(position);
         }
 
-        LoadingDialogFragment.show(getFragmentManager());
+        activityIndicator.setVisibility(View.VISIBLE);
         bindAndSubscribe(smartAlarmPresenter.save(currentAlarms),
-                ignored -> LoadingDialogFragment.close(getFragmentManager()),
-                this::alarmsUnavailable);
+                ignored -> activityIndicator.setVisibility(View.GONE),
+                this::presentError);
     }
 
     public void bindAlarms(@NonNull List<SmartAlarm> alarms) {
@@ -118,12 +120,18 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         adapter.clear();
         adapter.addAll(alarms);
 
-        LoadingDialogFragment.close(getFragmentManager());
+        activityIndicator.setVisibility(View.GONE);
     }
 
-    public void alarmsUnavailable(Throwable e) {
-        LoadingDialogFragment.close(getFragmentManager());
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+    public void presentError(Throwable e) {
+        activityIndicator.setVisibility(View.GONE);
+
+        if (e instanceof SmartAlarmPresenter.DayOverlapError) {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_day_overlap));
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
     }
 
 
@@ -153,10 +161,10 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     public void onAlarmEnabledChanged(int position, boolean enabled) {
         currentAlarms.get(position).setEnabled(enabled);
 
-        LoadingDialogFragment.show(getFragmentManager());
+        activityIndicator.setVisibility(View.VISIBLE);
         bindAndSubscribe(smartAlarmPresenter.save(currentAlarms),
-                ignored -> LoadingDialogFragment.close(getFragmentManager()),
-                this::alarmsUnavailable);
+                ignored -> activityIndicator.setVisibility(View.GONE),
+                this::presentError);
     }
 
     public void newAlarm(@NonNull View sender) {

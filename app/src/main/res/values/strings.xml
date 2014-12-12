@@ -275,4 +275,5 @@
     <string name="onboarding_room_check_info_success">Everything is working well and looks great. Now let’s set your first Smart Alarm.</string>
     <string name="onboarding_title_room_check">Room Check</string>
     <string name="onboarding_info_room_check">Sense will now check the conditions in the room to assure functionality of the sensors.</string>
+    <string name="error_smart_alarm_day_overlap">You cannot set more than one smart alarm per day of the week.</string>
 </resources>
