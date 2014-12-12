@@ -97,7 +97,7 @@ public interface ApiService {
 
     @POST("/questions")
     Observable<VoidResponse> answerQuestion(@Query("account_question_id") long accountId,
-                                            @NonNull @Body Question.Choice answer);
+                                            @NonNull @Body List<Question.Choice> answers);
 
     @PUT("/questions/skip")
     Observable<VoidResponse> skipQuestion(@Query("account_question_id") long accountId,

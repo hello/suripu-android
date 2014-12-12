@@ -10,6 +10,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.joda.time.chrono.ISOChronology;
 
 import java.util.Collections;
@@ -206,8 +208,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     //region Answering Questions
 
-    public Observable<VoidResponse> answerQuestion(@NonNull Question question, @NonNull Question.Choice answer) {
-        return apiService.answerQuestion(question.getAccountId(), answer);
+    public Observable<VoidResponse> answerQuestion(@NonNull Question question, @NonNull List<Question.Choice> answers) {
+        return apiService.answerQuestion(question.getAccountId(), answers);
     }
 
     public void skipQuestion() {

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -88,11 +90,11 @@ public class QuestionsFragment extends InjectionFragment {
         questionsPresenter.skipQuestion();
     }
 
-    public void choiceSelected(@NonNull View sender) {
+    public void singleChoiceSelected(@NonNull View sender) {
         clearQuestions(true, () -> {
             Question question = (Question) sender.getTag(R.id.fragment_questions_tag_question);
             Question.Choice choice = (Question.Choice) sender.getTag(R.id.fragment_questions_tag_choice);
-            bindAndSubscribe(questionsPresenter.answerQuestion(question, choice),
+            bindAndSubscribe(questionsPresenter.answerQuestion(question, Lists.newArrayList(choice)),
                     unused -> questionsPresenter.nextQuestion(),
                     error -> ErrorDialogFragment.presentError(getFragmentManager(), error));
         });
@@ -186,28 +188,80 @@ public class QuestionsFragment extends InjectionFragment {
 
             clearQuestions(false, null);
 
-            LayoutInflater inflater = LayoutInflater.from(getActivity());
-            View.OnClickListener onClickListener = this::choiceSelected;
-            LayoutParams choiceLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            LayoutParams dividerLayoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.divider_height));
-            dividerLayoutParams.leftMargin = getResources().getDimensionPixelSize(R.dimen.gap_outer);
-            dividerLayoutParams.rightMargin = getResources().getDimensionPixelSize(R.dimen.gap_outer);
-
-            List<Question.Choice> choices = question.getChoices();
-            for (int i = 0; i < choices.size(); i++) {
-                Question.Choice choice = choices.get(i);
-                Button choiceButton = (Button) inflater.inflate(R.layout.item_question_choice, choicesContainer, false);
-                choiceButton.setText(choice.getText());
-                choiceButton.setTag(R.id.fragment_questions_tag_question, question);
-                choiceButton.setTag(R.id.fragment_questions_tag_choice, choice);
-                choiceButton.setOnClickListener(onClickListener);
-                choicesContainer.addView(choiceButton, choiceLayoutParams);
-
-                if (i < choices.size() - 1) {
-                    View divider = new View(getActivity());
-                    divider.setBackgroundResource(R.color.light_accent);
-                    choicesContainer.addView(divider, dividerLayoutParams);
+            switch (question.getType()) {
+                case CHOICE: {
+                    bindSingleChoiceQuestion(question);
+                    break;
                 }
+
+                case CHECKBOX: {
+                    bindMultipleChoiceQuestion(question);
+                    break;
+                }
+
+                default: {
+                    break;
+                }
+            }
+        }
+    }
+
+    public LayoutParams createChoiceLayoutParams() {
+        return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+    }
+
+    public LayoutParams createDividerLayoutParams() {
+        int margin = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+        LayoutParams dividerLayoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.divider_height));
+        dividerLayoutParams.setMargins(margin, 0, margin, 0);
+        return dividerLayoutParams;
+    }
+
+    public void bindSingleChoiceQuestion(@NonNull Question question) {
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        LayoutParams choiceLayoutParams = createChoiceLayoutParams();
+        LayoutParams dividerLayoutParams = createDividerLayoutParams();
+        View.OnClickListener onClickListener = this::singleChoiceSelected;
+
+        List<Question.Choice> choices = question.getChoices();
+        for (int i = 0; i < choices.size(); i++) {
+            Question.Choice choice = choices.get(i);
+
+            Button choiceButton = (Button) inflater.inflate(R.layout.item_question_single_choice, choicesContainer, false);
+            choiceButton.setText(choice.getText());
+            choiceButton.setTag(R.id.fragment_questions_tag_question, question);
+            choiceButton.setTag(R.id.fragment_questions_tag_choice, choice);
+            choiceButton.setOnClickListener(onClickListener);
+            choicesContainer.addView(choiceButton, choiceLayoutParams);
+
+            if (i < choices.size() - 1) {
+                View divider = new View(getActivity());
+                divider.setBackgroundResource(R.color.light_accent);
+                choicesContainer.addView(divider, dividerLayoutParams);
+            }
+        }
+    }
+
+    public void bindMultipleChoiceQuestion(@NonNull Question question) {
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        LayoutParams choiceLayoutParams = createChoiceLayoutParams();
+        LayoutParams dividerLayoutParams = createDividerLayoutParams();
+
+        List<Question.Choice> choices = question.getChoices();
+        for (int i = 0; i < choices.size(); i++) {
+            Question.Choice choice = choices.get(i);
+
+            ToggleButton choiceButton = (ToggleButton) inflater.inflate(R.layout.item_question_checkbox, choicesContainer, false);
+            choiceButton.setTextOn(choice.getText());
+            choiceButton.setTextOff(choice.getText());
+            choiceButton.setTag(R.id.fragment_questions_tag_question, question);
+            choiceButton.setTag(R.id.fragment_questions_tag_choice, choice);
+            choicesContainer.addView(choiceButton, choiceLayoutParams);
+
+            if (i < choices.size() - 1) {
+                View divider = new View(getActivity());
+                divider.setBackgroundResource(R.color.light_accent);
+                choicesContainer.addView(divider, dividerLayoutParams);
             }
         }
     }
