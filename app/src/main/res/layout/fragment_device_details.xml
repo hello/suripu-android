@@ -73,6 +73,13 @@
                 app:wantsReading="false"/>
 
             <is.hello.sense.ui.widget.SensorStateView
+                android:id="@+id/fragment_device_details_sense_pair_new_pill"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:sensorTitle="@string/action_pair_new_sense"
+                app:wantsReading="false"/>
+
+            <is.hello.sense.ui.widget.SensorStateView
                 android:id="@+id/fragment_device_details_sense_factory_reset"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

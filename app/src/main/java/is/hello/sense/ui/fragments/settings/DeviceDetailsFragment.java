@@ -33,6 +33,7 @@ import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SensorStateView;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.functions.Action0;
@@ -101,6 +102,9 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
             SensorStateView enterPairingMode = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_pairing_mode);
             enterPairingMode.setOnClickListener(this::putIntoPairingMode);
+
+            SensorStateView pairNewPill = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_pair_new_pill);
+            pairNewPill.setOnClickListener(this::pairNewPill);
 
             SensorStateView factoryReset = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_factory_reset);
             factoryReset.setOnClickListener(this::factoryReset);
@@ -256,6 +260,16 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
                          ignored -> LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> getFragmentManager().popBackStackImmediate()),
                          this::presentError);
+    }
+
+    public void pairNewPill(@NonNull View sender) {
+        if (hardwarePresenter.getPeripheral() == null)
+            return;
+
+        Intent onboarding = new Intent(getActivity(), OnboardingActivity.class);
+        onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
+        onboarding.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+        startActivity(onboarding);
     }
 
     @SuppressWarnings("CodeBlock2Expr")

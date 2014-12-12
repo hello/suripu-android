@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -21,9 +24,11 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -56,7 +61,15 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         this.adapter = new DevicesAdapter(getActivity(), dateFormatter);
         listView.setAdapter(adapter);
 
-        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_settings_devices_progress);
+        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_settings_device_list_progress);
+
+        ImageButton addDevice = (ImageButton) view.findViewById(R.id.fragment_settings_device_list_add);
+        addDevice.setOnClickListener(ignored -> {
+            Intent onboarding = new Intent(getActivity(), OnboardingActivity.class);
+            onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
+            onboarding.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+            startActivity(onboarding);
+        });
 
         return view;
     }

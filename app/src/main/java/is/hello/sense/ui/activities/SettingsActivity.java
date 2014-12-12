@@ -1,16 +1,9 @@
 package is.hello.sense.ui.activities;
 
-import android.app.Fragment;
 import android.app.ListFragment;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.XmlRes;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
@@ -28,11 +21,8 @@ import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.fragments.settings.SettingsFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 
 public class SettingsActivity extends FragmentNavigationActivity {
-    private boolean isDeviceMenuVisible = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,58 +32,8 @@ public class SettingsActivity extends FragmentNavigationActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (isDeviceMenuVisible) {
-            getMenuInflater().inflate(R.menu.settings, menu);
-        }
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.pair_new_sense: {
-                Intent onboarding = new Intent(this, OnboardingActivity.class);
-                onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
-                onboarding.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
-                startActivity(onboarding);
-                return true;
-            }
-
-            case R.id.pair_new_pill: {
-                Intent onboarding = new Intent(this, OnboardingActivity.class);
-                onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
-                onboarding.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
-                startActivity(onboarding);
-                return true;
-            }
-
-            default: {
-                return super.onOptionsItemSelected(item);
-            }
-        }
-    }
-
-    @Override
     protected int getDefaultTitle() {
         return R.string.action_settings;
-    }
-
-    @Override
-    public void showFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
-        super.showFragment(fragment, title, wantsBackStackEntry);
-
-        this.isDeviceMenuVisible = (fragment instanceof DeviceListFragment);
-        invalidateOptionsMenu();
-    }
-
-    @Override
-    public void onBackStackChanged() {
-        super.onBackStackChanged();
-
-        this.isDeviceMenuVisible = (getTopFragment() instanceof DeviceListFragment);
-        invalidateOptionsMenu();
     }
 
     private void showSettings(@XmlRes int prefsRes, @StringRes int titleRes) {
