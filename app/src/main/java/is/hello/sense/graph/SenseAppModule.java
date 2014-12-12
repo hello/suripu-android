@@ -128,4 +128,15 @@ public class SenseAppModule {
     @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(applicationContext);
     }
+
+    /*
+    // FOR TESTING ONLY
+    @Provides @Singleton QuestionsPresenter provideQuestionPresenter(@NonNull ApiService apiService,
+                                                                     @NonNull ApiSessionManager apiSessionManager,
+                                                                     @NonNull Context context,
+                                                                     @NonNull PreferencesPresenter preferences,
+                                                                     @NonNull ObjectMapper objectMapper) {
+        return new FakeQuestionsPresenter(apiService, apiSessionManager, context, preferences, objectMapper);
+    }
+    */
 }

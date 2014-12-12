@@ -2,7 +2,6 @@ package is.hello.sense.ui.fragments;
 
 import android.animation.LayoutTransition;
 import android.app.FragmentManager;
-import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
@@ -34,7 +33,6 @@ import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
-import static android.view.View.INVISIBLE;
 import static android.widget.LinearLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
