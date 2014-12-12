@@ -3,14 +3,17 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -21,36 +24,42 @@ public final class TimelineSegmentView extends View {
     private int leftInset;
     private int rightInset;
     private int stripeWidth;
-    private int stripeCornerRadius;
+    private int ovalInset;
+    private int textLeftInset;
+    private float[] topRadii;
+    private float[] bottomRadii;
 
+    private final RectF rect = new RectF();
+    private final Rect textBounds = new Rect();
     private final Paint textPaint = new Paint();
     private final Paint fillPaint = new Paint();
     private final Path stripePath = new Path();
     private final Paint stripePaint = new Paint();
-    private final RectF arcRect = new RectF();
+    private final Paint eventOvalPaint = new Paint();
 
-    private Drawable eventImage;
+    private boolean hasText = false;
+
+    private Drawable eventDrawable;
     private String text;
     private int sleepDepth;
-    private boolean stripeTopRounded = false;
-    private boolean stripeBottomRounded = false;
+    private StripeRounding stripeRounding = StripeRounding.NONE;
 
     public TimelineSegmentView(Context context) {
         super(context);
-        initialize(null, 0);
+        initialize();
     }
 
     public TimelineSegmentView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initialize(attrs, 0);
+        initialize();
     }
 
     public TimelineSegmentView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initialize(attrs, defStyleAttr);
+        initialize();
     }
 
-    private void initialize(@Nullable AttributeSet attrs, int defStyleAttr) {
+    private void initialize() {
         Resources resources = getResources();
 
         textPaint.setAntiAlias(true);
@@ -59,11 +68,24 @@ public final class TimelineSegmentView extends View {
         textPaint.setTypeface(Typeface.createFromAsset(getContext().getAssets(), Styles.TYPEFACE_LIGHT));
 
         stripePaint.setAntiAlias(true);
+        eventOvalPaint.setAntiAlias(true);
+        eventOvalPaint.setColor(Color.WHITE);
 
         this.leftInset = resources.getDimensionPixelSize(R.dimen.widget_timeline_segment_left_inset);
         this.rightInset = resources.getDimensionPixelSize(R.dimen.widget_timeline_segment_right_inset);
         this.stripeWidth = resources.getDimensionPixelSize(R.dimen.event_stripe_width);
-        this.stripeCornerRadius = resources.getDimensionPixelSize(R.dimen.widget_timeline_segment_corner_radius);
+        this.ovalInset = resources.getDimensionPixelSize(R.dimen.widget_timeline_segment_oval_inset);
+        this.textLeftInset = resources.getDimensionPixelOffset(R.dimen.widget_timeline_segment_left_inset);
+
+        int stripeCornerRadius = resources.getDimensionPixelSize(R.dimen.widget_timeline_segment_corner_radius);
+        this.topRadii = new float[] {
+                stripeCornerRadius, stripeCornerRadius, stripeCornerRadius, stripeCornerRadius,
+                0f, 0f, 0f, 0f,
+        };
+        this.bottomRadii = new float[] {
+                0f, 0f, 0f, 0f,
+                stripeCornerRadius, stripeCornerRadius, stripeCornerRadius, stripeCornerRadius,
+        };
     }
 
 
@@ -74,48 +96,81 @@ public final class TimelineSegmentView extends View {
         int width = canvas.getWidth() - (leftInset + rightInset);
         int height = canvas.getHeight();
         int minX = leftInset;
-        int minY = 0, maxY = minY + height;
+        int minY = 0, midY = (minY + height) / 2, maxY = minY + height;
 
-        float stripeCap = stripeWidth / 2f;
         float stripeMaxX = minX + stripeWidth;
+        rect.set(minX, minY, stripeMaxX, maxY);
+        switch (stripeRounding) {
+            case NONE: {
+                stripePath.addRect(rect, Path.Direction.CW);
+                break;
+            }
 
-        if (stripeTopRounded) {
-            stripePath.moveTo(minX, minY + stripeCap);
-            arcRect.set(minX, minY, stripeMaxX, minY + stripeCap);
-            stripePath.arcTo(arcRect, 180f, 180f);
-        } else {
-            stripePath.moveTo(minX, minY);
-            stripePath.lineTo(minX + stripeWidth, minY);
+            case TOP: {
+                stripePath.addRoundRect(rect, topRadii, Path.Direction.CW);
+                break;
+            }
+
+            case BOTTOM: {
+                stripePath.addRoundRect(rect, bottomRadii, Path.Direction.CW);
+                break;
+            }
         }
 
-        if (stripeBottomRounded) {
-            stripePath.lineTo(stripeMaxX, maxY - stripeCap);
-            arcRect.set(minX, maxY - stripeCap, stripeMaxX, maxY);
-            stripePath.arcTo(arcRect, 0f, 180f);
-            stripePath.lineTo(minX, minY + stripeCap);
-        } else {
-            stripePath.lineTo(stripeMaxX, maxY);
-            stripePath.lineTo(minX, maxY);
-            stripePath.lineTo(minX, minY);
-        }
+        float stripeMidPoint = (float) Math.ceil(stripeWidth / 2f);
+        float percentage = sleepDepth / 100f;
+        float fillWidth = (width - stripeMidPoint) * percentage;
+        canvas.drawRect(minX + stripeMidPoint, minY, minX + fillWidth, maxY, fillPaint);
 
         canvas.drawPath(stripePath, stripePaint);
+
+        if (eventDrawable != null) {
+            int stripeMidX = (int) (minX + stripeMidPoint);
+            int drawableWidth = eventDrawable.getIntrinsicWidth();
+            int drawableHeight = eventDrawable.getIntrinsicHeight();
+
+            rect.set(minX, midY - stripeWidth / 2, stripeMaxX, midY + stripeWidth / 2);
+            rect.inset(ovalInset, ovalInset);
+            canvas.drawOval(rect, eventOvalPaint);
+
+            eventDrawable.setBounds(
+                    stripeMidX - drawableWidth / 2,
+                    midY - drawableHeight / 2,
+                    stripeMidX + drawableWidth / 2,
+                    midY + drawableHeight / 2
+            );
+            eventDrawable.draw(canvas);
+        }
+
+        if (hasText) {
+            float textX = minX + stripeWidth + textLeftInset;
+            float textY = midY - textBounds.centerY();
+            canvas.drawText(text, textX, textY, textPaint);
+        }
     }
 
 
     //region Attributes
 
-    public void setEventImage(Drawable eventImage) {
-        this.eventImage = eventImage;
+    public void setEventDrawable(@Nullable Drawable eventDrawable) {
+        this.eventDrawable = eventDrawable;
         invalidate();
     }
 
-    public void setEventImage(@DrawableRes int eventImageRes) {
-        setEventImage(getResources().getDrawable(eventImageRes));
+    public void setEventResource(@DrawableRes int eventImageRes) {
+        setEventDrawable(getResources().getDrawable(eventImageRes));
     }
 
-    public void setText(String text) {
+    public void setText(@Nullable String text) {
         this.text = text;
+        this.hasText = !TextUtils.isEmpty(text);
+
+        if (hasText) {
+            textPaint.getTextBounds(text, 0, text.length(), textBounds);
+        } else {
+            textBounds.set(0, 0, 0, 0);
+        }
+
         invalidate();
     }
 
@@ -125,21 +180,26 @@ public final class TimelineSegmentView extends View {
 
     public void setSleepDepth(int sleepDepth) {
         this.sleepDepth = sleepDepth;
-        fillPaint.setColor(Styles.getSleepDepthDimmedColorRes(sleepDepth));
-        stripePaint.setColor(Styles.getSleepDepthColorRes(sleepDepth));
+
+        Resources resources = getResources();
+        fillPaint.setColor(resources.getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth)));
+        stripePaint.setColor(resources.getColor(Styles.getSleepDepthColorRes(sleepDepth)));
+
         invalidate();
     }
 
-    public void setStripeTopRounded(boolean stripeTopRounded) {
-        this.stripeTopRounded = stripeTopRounded;
-        invalidate();
-    }
-
-    public void setStripeBottomRounded(boolean stripeBottomRounded) {
-        this.stripeBottomRounded = stripeBottomRounded;
+    public void setStripeRounding(StripeRounding stripeRounding) {
+        this.stripeRounding = stripeRounding;
         invalidate();
     }
 
     //endregion
+
+
+    public static enum StripeRounding {
+        NONE,
+        TOP,
+        BOTTOM,
+    }
 }
 

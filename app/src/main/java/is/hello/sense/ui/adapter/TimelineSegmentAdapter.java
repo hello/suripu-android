@@ -144,11 +144,11 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
         SegmentViewHolder segmentViewHolder = (SegmentViewHolder) view.getTag();
 
-        ItemPosition segmentPosition = ItemPosition.MIDDLE;
+        TimelineSegmentView.StripeRounding segmentPosition = TimelineSegmentView.StripeRounding.NONE;
         if (position == 0) {
-            segmentPosition = ItemPosition.FIRST;
+            segmentPosition = TimelineSegmentView.StripeRounding.TOP;
         } else if (position == getCount() - 1) {
-            segmentPosition = ItemPosition.LAST;
+            segmentPosition = TimelineSegmentView.StripeRounding.BOTTOM;
         }
 
         TimelineSegment segment = getItem(position);
@@ -167,34 +167,18 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
         //region Displaying Data
 
-        public void displaySegment(@NonNull TimelineSegment segment, @NonNull ItemPosition position) {
+        public void displaySegment(@NonNull TimelineSegment segment, @NonNull TimelineSegmentView.StripeRounding stripeRounding) {
             int sleepDepth = segment.getSleepDepth() < 0 ? 0 : segment.getSleepDepth();
             itemView.setSleepDepth(sleepDepth);
-
-            if (position == ItemPosition.FIRST) {
-                itemView.setStripeTopRounded(true);
-                itemView.setStripeBottomRounded(false);
-            } else if (position == ItemPosition.LAST) {
-                itemView.setStripeTopRounded(false);
-                itemView.setStripeBottomRounded(true);
-            } else {
-                itemView.setStripeTopRounded(false);
-                itemView.setStripeBottomRounded(false);
-            }
+            itemView.setStripeRounding(stripeRounding);
 
             if (segment.getEventType() != null) {
-                itemView.setEventImage(segment.getEventType().iconRes);
+                itemView.setEventResource(segment.getEventType().iconRes);
                 itemView.setText(segment.getEventType().nameString);
             } else {
-                itemView.setEventImage(null);
+                itemView.setEventDrawable(null);
                 itemView.setText(null);
             }
         }
-    }
-
-    public enum ItemPosition {
-        FIRST,
-        MIDDLE,
-        LAST,
     }
 }

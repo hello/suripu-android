@@ -50,7 +50,6 @@
     <dimen name="grand_sleep_summary_width">175dp</dimen>
     <dimen name="grand_sleep_summary_height">175dp</dimen>
 
-
     <dimen name="sensor_history_graph_min_height">200dp</dimen>
     <dimen name="line_graph_point_size">5dp</dimen>
 
@@ -79,8 +78,9 @@
     <dimen name="widget_last_night_min_width">200dp</dimen>
     <dimen name="widget_last_night_min_height">70dp</dimen>
 
-    <dimen name="widget_timeline_segment_left_inset">38dp</dimen>
+    <dimen name="widget_timeline_segment_left_inset">@dimen/gap_outer</dimen>
     <dimen name="widget_timeline_segment_right_inset">@dimen/gap_outer</dimen>
+    <dimen name="widget_timeline_segment_oval_inset">2dp</dimen>
     <dimen name="widget_timeline_segment_corner_radius">13dp</dimen>
 
 </resources>
