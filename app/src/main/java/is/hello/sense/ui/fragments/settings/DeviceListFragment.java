@@ -34,6 +34,8 @@ import is.hello.sense.util.DateFormatter;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class DeviceListFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+    private static final int DEVICE_REQUEST_CODE = 0x14;
+
     @Inject DevicesPresenter devicesPresenter;
     @Inject DateFormatter dateFormatter;
 
@@ -82,9 +84,25 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == DEVICE_REQUEST_CODE && resultCode == DeviceDetailsFragment.RESULT_UNPAIRED_PILL) {
+            adapter.clear();
+
+            animate(loadingIndicator)
+                    .fadeIn()
+                    .start();
+
+            devicesPresenter.update();
+        }
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Device device = (Device) adapterView.getItemAtPosition(position);
         DeviceDetailsFragment fragment = DeviceDetailsFragment.newInstance(device);
+        fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
         ((SettingsActivity) getActivity()).showFragment(fragment, getString(device.getType().nameRes), true);
     }
 

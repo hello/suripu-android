@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import javax.inject.Inject;
@@ -39,6 +40,8 @@ import is.hello.sense.util.Logger;
 import rx.functions.Action0;
 
 public class DeviceDetailsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+    public static final int RESULT_UNPAIRED_PILL = 0x66;
+
     public static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
 
     @Inject ApiSessionManager apiSessionManager;
@@ -46,7 +49,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     @Inject HardwarePresenter hardwarePresenter;
     @Inject DevicesPresenter devicesPresenter;
 
-    private ProgressBar pairingActivityIndicator;
+    private ProgressBar activityIndicator;
     private ViewGroup senseActionsContainer;
     private @Nullable SensorStateView signalStrength;
     private Button actionButton;
@@ -92,8 +95,9 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         SensorStateView version = (SensorStateView) view.findViewById(R.id.fragment_device_details_version);
         version.setReading(device.getFirmwareVersion());
 
+        this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_device_details_activity);
+
         if (device.getType() == Device.Type.SENSE) {
-            this.pairingActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_device_details_sense_pairing);
             this.senseActionsContainer = (ViewGroup) view.findViewById(R.id.fragment_device_details_sense);
             this.signalStrength = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_signal);
 
@@ -117,6 +121,12 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
                     enableBluetooth();
                 }
             });
+        } else if (device.getType() == Device.Type.PILL) {
+            LinearLayout pillActionsContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_pill);
+            pillActionsContainer.setVisibility(View.VISIBLE);
+
+            SensorStateView unpairPill = (SensorStateView) pillActionsContainer.findViewById(R.id.fragment_device_details_pill_unpair);
+            unpairPill.setOnClickListener(this::unpairPill);
         }
 
         return view;
@@ -157,7 +167,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             if (signalStrength != null) {
                 signalStrength.setReading(getString(R.string.missing_data_placeholder));
                 senseActionsContainer.setVisibility(View.GONE);
-                pairingActivityIndicator.setVisibility(View.GONE);
+                activityIndicator.setVisibility(View.GONE);
             }
 
             actionButton.setVisibility(View.VISIBLE);
@@ -166,7 +176,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     }
 
     public void connectToPeripheral() {
-        pairingActivityIndicator.setVisibility(View.VISIBLE);
+        activityIndicator.setVisibility(View.VISIBLE);
         senseActionsContainer.setVisibility(View.GONE);
         actionButton.setVisibility(View.GONE);
 
@@ -203,13 +213,13 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
         if (peripheral.isConnected()) {
             senseActionsContainer.setVisibility(View.VISIBLE);
-            pairingActivityIndicator.setVisibility(View.GONE);
+            activityIndicator.setVisibility(View.GONE);
         } else {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral),
                              status -> {
                                  if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                                      senseActionsContainer.setVisibility(View.VISIBLE);
-                                     pairingActivityIndicator.setVisibility(View.GONE);
+                                     activityIndicator.setVisibility(View.GONE);
                                  }
                              },
                              this::presentError);
@@ -217,6 +227,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     }
 
     public void presentError(@NonNull Throwable e) {
+        activityIndicator.setVisibility(View.GONE);
         LoadingDialogFragment.close(getFragmentManager());
 
         if (hardwarePresenter.isErrorFatal(e)) {
@@ -231,7 +242,6 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         if (signalStrength != null) {
             signalStrength.setReading(getString(R.string.missing_data_placeholder));
             senseActionsContainer.setVisibility(View.GONE);
-            pairingActivityIndicator.setVisibility(View.GONE);
         }
 
         if (actionButton != null) {
@@ -281,6 +291,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         }
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+        dialog.setDestructive(true);
         dialog.setTitle(R.string.dialog_title_factory_reset);
         dialog.setMessage(R.string.dialog_messsage_factory_reset);
         dialog.setNegativeButton(android.R.string.cancel, null);
@@ -295,16 +306,30 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
                     });
                 };
                 bindAndSubscribe(devicesPresenter.unregisterAllDevices(),
-                                 ignored -> {
-                                     finish.call();
-                                 },
-                                 e -> {
-                                     Logger.error(getClass().getSimpleName(), "Could not unregister all devices, ignoring.", e);
-                                     finish.call();
-                                 });
+                        ignored -> {
+                            finish.call();
+                        },
+                        e -> {
+                            Logger.error(getClass().getSimpleName(), "Could not unregister all devices, ignoring.", e);
+                            finish.call();
+                        });
             }, this::presentError);
         });
-        dialog.setDestructive(true);
         dialog.show();
+    }
+
+    public void unpairPill(@NonNull View sender) {
+        SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
+        alertDialog.setDestructive(true);
+        alertDialog.setTitle(R.string.dialog_title_unpair_pill);
+        alertDialog.setMessage(R.string.dialog_message_unpair_pill);
+        alertDialog.setNegativeButton(android.R.string.cancel, null);
+        alertDialog.setPositiveButton(R.string.action_unpair, (d, which) -> {
+            activityIndicator.setVisibility(View.VISIBLE);
+            bindAndSubscribe(devicesPresenter.unregisterDevice(device),
+                    ignored -> finishWithResult(RESULT_UNPAIRED_PILL, null),
+                    this::presentError);
+        });
+        alertDialog.show();
     }
 }

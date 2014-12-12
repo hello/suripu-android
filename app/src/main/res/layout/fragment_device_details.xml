@@ -23,7 +23,7 @@
             app:sensorTitle="@string/title_device_firmware_version"/>
 
         <is.hello.sense.ui.widget.TintedProgressBar
-            android:id="@+id/fragment_device_details_sense_pairing"
+            android:id="@+id/fragment_device_details_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -84,6 +84,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:sensorTitle="@string/action_factory_reset"
+                app:wantsReading="false"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fragment_device_details_pill"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <View style="@style/Divider.Horizontal.Padded" />
+
+            <is.hello.sense.ui.widget.SensorStateView
+                android:id="@+id/fragment_device_details_pill_unpair"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:sensorTitle="@string/action_unpair"
                 app:wantsReading="false"/>
 
         </LinearLayout>

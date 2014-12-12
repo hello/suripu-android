@@ -276,4 +276,7 @@
     <string name="onboarding_title_room_check">Room Check</string>
     <string name="onboarding_info_room_check">Sense will now check the conditions in the room to assure functionality of the sensors.</string>
     <string name="error_smart_alarm_day_overlap">You cannot set more than one smart alarm per day of the week.</string>
+    <string name="action_unpair">Unpair</string>
+    <string name="dialog_title_unpair_pill">Unpair Sleep Pill</string>
+    <string name="dialog_message_unpair_pill">Are you sure you want to unpair this Sleep Pill from your Sense? You can re-pair it with your Sense later from the device details screen.</string>
 </resources>
