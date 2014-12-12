@@ -24,8 +24,8 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+import is.hello.sense.ui.common.Styles;
 import is.hello.sense.ui.common.Views;
-import is.hello.sense.util.Constants;
 
 public final class LineGraphView extends FrameLayout {
     private @Nullable OnValueHighlightedListener onValueHighlightedListener;
@@ -90,10 +90,10 @@ public final class LineGraphView extends FrameLayout {
         footerTextPaint.setSubpixelText(true);
 
         setHeaderTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_section_heading));
-        setHeaderTypeface(Typeface.createFromAsset(resources.getAssets(), Constants.TYPEFACE_HEAVY));
+        setHeaderTypeface(Typeface.createFromAsset(resources.getAssets(), Styles.TYPEFACE_HEAVY));
 
         setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_body));
-        setFooterTypeface(Typeface.createFromAsset(resources.getAssets(), Constants.TYPEFACE_LIGHT));
+        setFooterTypeface(Typeface.createFromAsset(resources.getAssets(), Styles.TYPEFACE_LIGHT));
 
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.LineGraphView, defStyleAttr, 0);

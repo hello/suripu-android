@@ -2,30 +2,21 @@ package is.hello.sense.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RoundRectShape;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
-import is.hello.sense.ui.common.Styles;
-import is.hello.sense.ui.widget.HorizontalBarGraphView;
+import is.hello.sense.ui.widget.TimelineSegmentView;
 
 public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     private static final int NUMBER_HOURS_ON_SCREEN = 20;
-
-    private final LayoutInflater inflater;
 
     private final int baseItemHeight;
     private final int itemEventImageHeight;
@@ -37,16 +28,14 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     //region Lifecycle
 
     public TimelineSegmentAdapter(@NonNull Context context) {
-        super(context, R.layout.item_timeline_segment);
-
-        this.inflater = LayoutInflater.from(context);
+        super(context, R.layout.item_simple_text);
 
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
         windowManager.getDefaultDisplay().getSize(size);
         this.baseItemHeight = size.y / NUMBER_HOURS_ON_SCREEN;
         this.itemEventImageHeight = context.getResources().getDimensionPixelSize(R.dimen.event_image_height);
-        this.stripeCornerRadius = context.getResources().getDimensionPixelOffset(R.dimen.timeline_stripe_corner_radius);
+        this.stripeCornerRadius = context.getResources().getDimensionPixelOffset(R.dimen.widget_timeline_segment_corner_radius);
     }
 
     //endregion
@@ -59,7 +48,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
      */
     private int calculateItemHeight(int position, @NonNull TimelineSegment segment) {
         if (segment.getEventType() != null) {
-            int itemHeight = this.itemEventImageHeight + (this.baseItemHeight * 2);
+            int itemHeight = this.itemEventImageHeight + this.baseItemHeight;
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
         } else if (position == 0 || position == getCount() - 1) {
             int itemHeight = this.stripeCornerRadius;
@@ -87,6 +76,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     /**
      * Returns the total height of all of the items contained in the adapter.
      * <p/>
+     *
      * Returns in Constant time.
      */
     public float getTotalItemHeight() {
@@ -147,19 +137,19 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
+        TimelineSegmentView view = (TimelineSegmentView) convertView;
         if (view == null) {
-            view = inflater.inflate(R.layout.item_timeline_segment, parent, false);
+            view = new TimelineSegmentView(parent.getContext());
             view.setTag(new SegmentViewHolder(view));
         }
 
         SegmentViewHolder segmentViewHolder = (SegmentViewHolder) view.getTag();
 
-        ItemPosition segmentPosition = ItemPosition.MIDDLE;
+        TimelineSegmentView.StripeRounding segmentPosition = TimelineSegmentView.StripeRounding.NONE;
         if (position == 0) {
-            segmentPosition = ItemPosition.FIRST;
+            segmentPosition = TimelineSegmentView.StripeRounding.TOP;
         } else if (position == getCount() - 1) {
-            segmentPosition = ItemPosition.LAST;
+            segmentPosition = TimelineSegmentView.StripeRounding.BOTTOM;
         }
 
         TimelineSegment segment = getItem(position);
@@ -170,70 +160,26 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     }
 
     final class SegmentViewHolder {
-        final View itemView;
+        final TimelineSegmentView itemView;
 
-        final HorizontalBarGraphView graphView;
-        final View stripe;
-        final ImageView eventTypeImage;
-        final TextView eventType;
-
-        SegmentViewHolder(@NonNull View itemView) {
+        SegmentViewHolder(@NonNull TimelineSegmentView itemView) {
             this.itemView = itemView;
-            this.graphView = (HorizontalBarGraphView) itemView.findViewById(R.id.view_timeline_segment_graph);
-            this.stripe = itemView.findViewById(R.id.view_timeline_segment_event_stripe);
-            this.eventTypeImage = (ImageView) itemView.findViewById(R.id.view_timeline_segment_image_event_type);
-            this.eventType = (TextView) itemView.findViewById(R.id.view_timeline_segment_event_type);
         }
 
         //region Displaying Data
 
-        public @NonNull Drawable createRoundedDrawable(int color, float[] radii) {
-            RoundRectShape shape = new RoundRectShape(radii, null, null);
-            ShapeDrawable drawable = new ShapeDrawable(shape);
-            drawable.getPaint().setColor(color);
-            return drawable;
-        }
-
-        public void displaySegment(@NonNull TimelineSegment segment, @NonNull ItemPosition position) {
+        public void displaySegment(@NonNull TimelineSegment segment, @NonNull TimelineSegmentView.StripeRounding stripeRounding) {
             int sleepDepth = segment.getSleepDepth() < 0 ? 0 : segment.getSleepDepth();
-            graphView.setFillColor(getContext().getResources().getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth)));
-            graphView.setValue(sleepDepth);
-
-            int colorRes = Styles.getSleepDepthColorRes(sleepDepth);
-            if (position == ItemPosition.FIRST) {
-                float[] radii = {
-                        stripeCornerRadius, stripeCornerRadius, stripeCornerRadius, stripeCornerRadius,
-                        0f, 0f, 0f, 0f,
-                };
-                stripe.setBackground(createRoundedDrawable(getContext().getResources().getColor(colorRes), radii));
-            } else if (position == ItemPosition.LAST) {
-                float[] radii = {
-                        0f, 0f, 0f, 0f,
-                        stripeCornerRadius, stripeCornerRadius, stripeCornerRadius, stripeCornerRadius,
-                };
-                stripe.setBackground(createRoundedDrawable(getContext().getResources().getColor(colorRes), radii));
-            } else {
-                stripe.setBackgroundResource(colorRes);
-            }
+            itemView.setSleepDepth(sleepDepth);
+            itemView.setStripeRounding(stripeRounding);
 
             if (segment.getEventType() != null) {
-                eventTypeImage.setImageResource(segment.getEventType().iconRes);
-                eventType.setText(segment.getEventType().nameString);
-
-                eventTypeImage.setVisibility(View.VISIBLE);
-                eventType.setVisibility(View.VISIBLE);
+                itemView.setEventResource(segment.getEventType().iconRes);
+                itemView.setText(segment.getEventType().nameString);
             } else {
-                eventTypeImage.setImageDrawable(null);
-
-                eventTypeImage.setVisibility(View.GONE);
-                eventType.setVisibility(View.GONE);
+                itemView.setEventDrawable(null);
+                itemView.setText(null);
             }
         }
-    }
-
-    public enum ItemPosition {
-        FIRST,
-        MIDDLE,
-        LAST,
     }
 }
