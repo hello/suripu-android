@@ -20,7 +20,14 @@ import android.view.View;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.Styles;
 
+/**
+ * Draws a single segment of a user's timeline. This includes the segment's
+ * score level, event icon, and event message. This class replaces a regular
+ * inflated layout for improved scroll performance.
+ */
 public final class TimelineSegmentView extends View {
+    //region Drawing Constants
+
     private float leftInset;
     private float rightInset;
     private float stripeWidth;
@@ -28,6 +35,11 @@ public final class TimelineSegmentView extends View {
     private float textLeftInset;
     private float[] topRadii;
     private float[] bottomRadii;
+
+    //endregion
+
+
+    //region Drawing Structures
 
     private final RectF rect = new RectF();
     private final Rect textBounds = new Rect();
@@ -37,12 +49,22 @@ public final class TimelineSegmentView extends View {
     private final Paint stripePaint = new Paint();
     private final Paint eventOvalPaint = new Paint();
 
+    //endregion
+
+
+    //region Properties
+
     private boolean hasText = false;
 
     private Drawable eventDrawable;
     private String text;
     private int sleepDepth;
     private StripeRounding stripeRounding = StripeRounding.NONE;
+
+    //endregion
+
+
+    //region Creation
 
     public TimelineSegmentView(Context context) {
         super(context);
@@ -88,17 +110,22 @@ public final class TimelineSegmentView extends View {
         };
     }
 
+    //endregion
+
 
     @Override
     protected void onDraw(Canvas canvas) {
-        stripePath.reset();
-
         float width = canvas.getWidth() - (leftInset + rightInset);
         float height = canvas.getHeight();
         float minX = leftInset;
         float minY = 0,
               midY = (minY + height) / 2,
               maxY = minY + height;
+
+
+        //region Stripe Path
+
+        stripePath.reset();
 
         float stripeMaxX = minX + stripeWidth;
         rect.set(minX, minY, stripeMaxX, maxY);
@@ -119,12 +146,22 @@ public final class TimelineSegmentView extends View {
             }
         }
 
+        //endregion
+
+
+        //region Stripe + Background Fills
+
         float stripeMidPoint = (float) Math.ceil(stripeWidth / 2f);
         float percentage = sleepDepth / 100f;
         float fillWidth = (width - stripeMidPoint) * percentage;
         canvas.drawRect(minX + stripeMidPoint, minY, minX + fillWidth, maxY, fillPaint);
 
         canvas.drawPath(stripePath, stripePaint);
+
+        //endregion
+
+
+        //region Event Icon
 
         if (eventDrawable != null) {
             float stripeMidX = (int) (minX + stripeMidPoint);
@@ -144,11 +181,18 @@ public final class TimelineSegmentView extends View {
             eventDrawable.draw(canvas);
         }
 
+        //endregion
+
+
+        //region Text
+
         if (hasText) {
             float textX = minX + stripeWidth + textLeftInset;
             float textY = midY - textBounds.centerY();
             canvas.drawText(text, textX, textY, textPaint);
         }
+
+        //endregion
     }
 
 

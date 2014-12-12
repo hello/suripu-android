@@ -76,6 +76,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     /**
      * Returns the total height of all of the items contained in the adapter.
      * <p/>
+     *
      * Returns in Constant time.
      */
     public float getTotalItemHeight() {
