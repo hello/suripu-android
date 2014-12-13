@@ -26,7 +26,7 @@ import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.InsightDialogFragment;
+import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
 import is.hello.sense.ui.widget.SensorStateView;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
@@ -162,7 +162,7 @@ public class HomeUndersideFragment extends InjectionFragment implements ViewPage
 
     @Override
     public void onItemViewClicked(@NonNull View view, int position) {
-        InsightDialogFragment dialogFragment = InsightDialogFragment.newInstance(insightsAdapter.getItem(position));
-        dialogFragment.show(getFragmentManager(), InsightDialogFragment.TAG);
+        InsightDetailsDialogFragment dialogFragment = InsightDetailsDialogFragment.newInstance(insightsAdapter.getItem(position));
+        dialogFragment.show(getFragmentManager(), InsightDetailsDialogFragment.TAG);
     }
 }

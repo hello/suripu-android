@@ -28,7 +28,7 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SettingsActivity;
-import is.hello.sense.ui.dialogs.InsightDialogFragment;
+import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.fragments.HomeUndersideFragment;
 import is.hello.sense.ui.fragments.QuestionsFragment;
@@ -95,7 +95,7 @@ import is.hello.sense.util.BuildValues;
 
         HomeUndersideFragment.class,
         InsightsPresenter.class,
-        InsightDialogFragment.class,
+        InsightDetailsDialogFragment.class,
         CurrentConditionsPresenter.class,
         SensorHistoryFragment.class,
         SensorHistoryPresenter.class,
