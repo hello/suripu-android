@@ -120,6 +120,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         infoLabel.setVisibility(View.INVISIBLE);
         listView.setVisibility(View.INVISIBLE);
         rescanButton.setVisibility(View.INVISIBLE);
+        rescanButton.setEnabled(false);
         helpButton.setVisibility(View.INVISIBLE);
         networkAdapter.clear();
 
@@ -127,8 +128,9 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
             Action1<Throwable> onError = this::peripheralRediscoveryFailed;
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
                              peripheral -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral), status -> {
-                                 if (status != HelloPeripheral.ConnectStatus.CONNECTED)
+                                 if (status != HelloPeripheral.ConnectStatus.CONNECTED) {
                                      return;
+                                 }
 
                                  rescan();
                              }, onError),
@@ -149,6 +151,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         infoLabel.setVisibility(View.VISIBLE);
         listView.setVisibility(View.VISIBLE);
         rescanButton.setVisibility(View.VISIBLE);
+        rescanButton.setEnabled(true);
         helpButton.setVisibility(View.VISIBLE);
 
         trackScanFinished(true);
@@ -160,6 +163,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         infoLabel.setVisibility(View.VISIBLE);
         listView.setVisibility(View.VISIBLE);
         rescanButton.setVisibility(View.VISIBLE);
+        rescanButton.setEnabled(true);
         helpButton.setVisibility(View.VISIBLE);
 
         if (hardwarePresenter.isErrorFatal(e)) {

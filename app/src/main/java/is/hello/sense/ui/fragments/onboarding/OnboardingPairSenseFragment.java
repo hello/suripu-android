@@ -14,6 +14,7 @@ import android.widget.Button;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
@@ -144,22 +145,10 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
 
     public void pairWith(@NonNull SensePeripheral device) {
         bindAndSubscribe(hardwarePresenter.connectToPeripheral(device), status -> {
-            switch (status) {
-                case CONNECTING:
-                    loadingDialogFragment.setTitle(getString(R.string.title_connecting));
-                    break;
-
-                case BONDING:
-                    loadingDialogFragment.setTitle(getString(R.string.title_pairing));
-                    break;
-
-                case DISCOVERING_SERVICES:
-                    loadingDialogFragment.setTitle(getString(R.string.title_discovering_services));
-                    break;
-
-                case CONNECTED:
-                    finishedPairing();
-                    break;
+            if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
+                finishedPairing();
+            } else {
+                loadingDialogFragment.setTitle(getString(status.messageRes));
             }
         }, this::pairingFailed);
     }

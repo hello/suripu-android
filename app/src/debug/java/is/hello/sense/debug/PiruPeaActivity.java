@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
@@ -203,23 +204,11 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
             LoadingDialogFragment loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(selectedPeripheral.connect(), status -> {
-                switch (status) {
-                    case CONNECTING:
-                        loadingDialogFragment.setTitle(getString(R.string.title_connecting));
-                        break;
-
-                    case BONDING:
-                        loadingDialogFragment.setTitle(getString(R.string.title_pairing));
-                        break;
-
-                    case DISCOVERING_SERVICES:
-                        loadingDialogFragment.setTitle(getString(R.string.title_discovering_services));
-                        break;
-
-                    case CONNECTED:
-                        LoadingDialogFragment.close(getFragmentManager());
-                        listView.setAdapter(peripheralActions);
-                        break;
+                if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
+                    LoadingDialogFragment.close(getFragmentManager());
+                    listView.setAdapter(peripheralActions);
+                } else {
+                    loadingDialogFragment.setTitle(getString(status.messageRes));
                 }
             }, this::presentError);
         } else {

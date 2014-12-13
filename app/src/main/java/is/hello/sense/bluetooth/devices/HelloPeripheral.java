@@ -1,9 +1,11 @@
 package is.hello.sense.bluetooth.devices;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import java.util.UUID;
 
+import is.hello.sense.R;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
@@ -157,9 +159,15 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
 
 
     public static enum ConnectStatus {
-        CONNECTING,
-        BONDING,
-        DISCOVERING_SERVICES,
-        CONNECTED,
+        CONNECTING(R.string.title_connecting),
+        BONDING(R.string.title_pairing),
+        DISCOVERING_SERVICES(R.string.title_discovering_services),
+        CONNECTED(0);
+
+        public final @StringRes int messageRes;
+
+        private ConnectStatus(@StringRes int messageRes) {
+            this.messageRes = messageRes;
+        }
     }
 }
