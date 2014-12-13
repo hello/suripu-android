@@ -309,4 +309,14 @@
         <item name="android:selectAllOnFocus">true</item>
     </style>
 
+    <!-- Other -->
+
+    <style name="AppTheme.FadingScrollView">
+        <item name="android:fillViewport">true</item>
+        <item name="android:fadingEdge">vertical</item>
+        <item name="android:requiresFadingEdge">vertical</item>
+        <item name="android:fadingEdgeLength">@dimen/shadow_height</item>
+        <item name="android:background">@color/shadow_end</item>
+    </style>
+
 </resources>
