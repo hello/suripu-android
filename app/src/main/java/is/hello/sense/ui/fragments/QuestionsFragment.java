@@ -316,6 +316,8 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
                 choicesContainer.addView(divider, dividerLayoutParams);
             }
         }
+
+        nextButton.setTag(R.id.fragment_questions_tag_question, null);
     }
 
     public void bindMultipleChoiceQuestion(@NonNull Question question) {
@@ -331,7 +333,6 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
             choiceButton.setTextOn(choice.getText());
             choiceButton.setTextOff(choice.getText());
             choiceButton.setChecked(false);
-            choiceButton.setTag(R.id.fragment_questions_tag_question, question);
             choiceButton.setTag(R.id.fragment_questions_tag_choice, choice);
             choiceButton.setOnCheckedChangeListener(this);
 
@@ -350,6 +351,8 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
                 choicesContainer.addView(divider, dividerLayoutParams);
             }
         }
+
+        nextButton.setTag(R.id.fragment_questions_tag_question, question);
     }
 
     public void questionUnavailable(@NonNull Throwable e) {
