@@ -33,7 +33,7 @@ public class UndersideFragment extends Fragment {
 
         ViewPager pager = (ViewPager) view.findViewById(R.id.fragment_underside_pager);
         pager.setAdapter(new StaticFragmentAdapter(getFragmentManager(),
-                new Item(Fragment.class, "Room"),
+                new Item(CurrentConditionsFragment.class, "Room"),
                 new Item(Fragment.class, "Trends"),
                 new Item(InsightsFragment.class, "Insights"),
                 new Item(SmartAlarmListFragment.class, "Alarms"),

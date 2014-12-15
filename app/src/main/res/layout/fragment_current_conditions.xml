@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <is.hello.sense.ui.widget.SensorStateView
+        android:id="@+id/fragment_current_conditions_temperature"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:sensorIcon="@drawable/icon_sensor_temperature"
+        app:sensorTitle="@string/condition_temperature" />
+
+    <is.hello.sense.ui.widget.SensorStateView
+        android:id="@+id/fragment_current_conditions_humidity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:sensorIcon="@drawable/icon_sensor_humidity"
+        app:sensorTitle="@string/condition_humidity" />
+
+    <is.hello.sense.ui.widget.SensorStateView
+        android:id="@+id/fragment_current_conditions_particulates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:sensorIcon="@drawable/icon_sensor_particle"
+        app:sensorTitle="@string/condition_particulates" />
+
+</LinearLayout>
