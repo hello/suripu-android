@@ -1,14 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_underside_pager"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <android.support.v4.view.PagerTabStrip
-        android:id="@+id/fragment_underside_pager_strip"
+    <is.hello.sense.ui.widget.SelectorLinearLayout
+        android:id="@+id/fragment_underside_tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/gap_medium"
-        android:paddingBottom="@dimen/gap_medium"/>
+        android:layout_marginBottom="@dimen/shadow_height"
+        android:gravity="center_vertical">
 
-</android.support.v4.view.ViewPager>
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/title_current_conditions"
+            android:textOff="@string/title_current_conditions"
+            android:checked="true"
+            style="@style/AppTheme.Button.ModeSelector"/>
+
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/title_trends"
+            android:textOff="@string/title_trends"
+            android:checked="true"
+            style="@style/AppTheme.Button.ModeSelector"/>
+
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/action_insights"
+            android:textOff="@string/action_insights"
+            android:checked="true"
+            style="@style/AppTheme.Button.ModeSelector"/>
+
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/action_alarm"
+            android:textOff="@string/action_alarm"
+            android:checked="true"
+            style="@style/AppTheme.Button.ModeSelector"/>
+
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/action_settings"
+            android:textOff="@string/action_settings"
+            android:checked="true"
+            style="@style/AppTheme.Button.ModeSelector"/>
+
+    </is.hello.sense.ui.widget.SelectorLinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/fragment_underside_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

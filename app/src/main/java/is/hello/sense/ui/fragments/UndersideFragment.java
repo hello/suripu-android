@@ -1,6 +1,12 @@
 package is.hello.sense.ui.fragments;
 
 import android.app.Fragment;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerTabStrip;
@@ -13,10 +19,13 @@ import android.view.ViewGroup;
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
+import is.hello.sense.ui.widget.SelectorLinearLayout;
 
 import static is.hello.sense.ui.adapter.StaticFragmentAdapter.Item;
 
-public class UndersideFragment extends Fragment {
+public class UndersideFragment extends Fragment implements ViewPager.OnPageChangeListener, SelectorLinearLayout.OnSelectionChangedListener {
+    private SelectorLinearLayout tabs;
+    private BottomLineDrawable tabLine;
     private ViewPager pager;
 
     @Override
@@ -31,13 +40,8 @@ public class UndersideFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_underside, container, false);
 
-        PagerTabStrip tabStrip = (PagerTabStrip) view.findViewById(R.id.fragment_underside_pager_strip);
-        tabStrip.setTabIndicatorColorResource(R.color.light_accent);
-        tabStrip.setBackgroundResource(R.color.white);
-        tabStrip.setTextSpacing(0);
-        tabStrip.setGravity(Gravity.START | Gravity.BOTTOM);
-
         this.pager = (ViewPager) view.findViewById(R.id.fragment_underside_pager);
+        pager.setOnPageChangeListener(this);
         pager.setAdapter(new StaticFragmentAdapter(getFragmentManager(),
                 new Item(CurrentConditionsFragment.class, getString(R.string.title_current_conditions)),
                 new Item(Fragment.class, getString(R.string.title_trends)),
@@ -45,6 +49,13 @@ public class UndersideFragment extends Fragment {
                 new Item(SmartAlarmListFragment.class, getString(R.string.action_alarm)),
                 new Item(AppSettingsFragment.class, getString(R.string.action_settings))
         ));
+
+        this.tabs = (SelectorLinearLayout) view.findViewById(R.id.fragment_underside_tabs);
+        tabs.setOnSelectionChangedListener(this);
+        this.tabLine = new BottomLineDrawable(pager.getAdapter().getCount(), getResources().getDimensionPixelSize(R.dimen.shadow_height));
+        tabLine.setFillColor(getResources().getColor(R.color.light_accent));
+        tabLine.setBackgroundColor(Color.WHITE);
+        tabs.setBackground(tabLine);
 
         return view;
     }
@@ -56,5 +67,98 @@ public class UndersideFragment extends Fragment {
 
     public void jumpToStart() {
         pager.setCurrentItem(0, true);
+    }
+
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        tabLine.setPositionOffset(positionOffset);
+        tabLine.setSelectedItem(position);
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        tabs.setSelectedIndex(position);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    @Override
+    public void onSelectionChanged(int newSelectionIndex) {
+        pager.setCurrentItem(newSelectionIndex, true);
+    }
+
+
+    static class BottomLineDrawable extends Drawable {
+        private final Paint backgroundPaint = new Paint();
+        private final Paint fillPaint = new Paint();
+
+        private final int itemCount;
+        private final int lineHeight;
+
+        private int selectedItem = 0;
+        private float positionOffset = 0f;
+
+        BottomLineDrawable(int itemCount, int lineHeight) {
+            this.itemCount = itemCount;
+            this.lineHeight = lineHeight;
+        }
+
+        @Override
+        public void draw(Canvas canvas) {
+            int width = canvas.getWidth();
+            int height = canvas.getHeight();
+
+            canvas.drawRect(0, 0, width, height, backgroundPaint);
+
+            int itemWidth = width / itemCount;
+            float itemOffset = (itemWidth * selectedItem) + (itemWidth * positionOffset);
+
+            canvas.drawRect(itemOffset, height - lineHeight, itemOffset + itemWidth, height, fillPaint);
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.TRANSLUCENT;
+        }
+
+
+        //region Attributes
+
+        @Override
+        public void setAlpha(int alpha) {
+            fillPaint.setAlpha(alpha);
+            backgroundPaint.setAlpha(alpha);
+        }
+
+        @Override
+        public void setColorFilter(ColorFilter colorFilter) {
+            fillPaint.setColorFilter(colorFilter);
+        }
+
+        public void setSelectedItem(int selectedItem) {
+            this.selectedItem = selectedItem;
+            invalidateSelf();
+        }
+
+        public void setBackgroundColor(int color) {
+            backgroundPaint.setColor(color);
+            invalidateSelf();
+        }
+
+        public void setFillColor(int color) {
+            fillPaint.setColor(color);
+            invalidateSelf();
+        }
+
+        public void setPositionOffset(float positionOffset) {
+            this.positionOffset = positionOffset;
+            invalidateSelf();
+        }
+
+        //endregion
     }
 }
