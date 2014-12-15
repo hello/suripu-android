@@ -71,12 +71,6 @@
             android:theme="@style/AppTheme.Underside" />
 
         <activity
-            android:name=".ui.activities.SettingsActivity"
-            android:label="@string/action_settings"
-            android:parentActivityName=".ui.activities.HomeActivity"
-            android:theme="@style/AppTheme.Underside" />
-
-        <activity
             android:name=".ui.activities.SmartAlarmActivity"
             android:label="@string/action_alarm"
             android:parentActivityName=".ui.activities.HomeActivity"
@@ -91,6 +85,10 @@
             android:name=".ui.fragments.VideoPlayerActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".ui.common.FragmentNavigationActivity"
+            android:theme="@style/AppTheme.Underside" />
 
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 

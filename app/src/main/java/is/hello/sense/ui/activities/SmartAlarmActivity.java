@@ -49,8 +49,8 @@ public class SmartAlarmActivity extends FragmentNavigationActivity {
     }
 
     @Override
-    protected int getDefaultTitle() {
-        return R.string.action_alarm;
+    protected String getDefaultTitle() {
+        return getString(R.string.action_alarm);
     }
 
     @Override

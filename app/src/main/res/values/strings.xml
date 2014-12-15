@@ -165,7 +165,7 @@
     <string name="title_one_pill">One Sleep Pill</string>
     <string name="action_retry">Retry</string>
     <string name="action_share">Share</string>
-    <string name="action_insights">Trends</string>
+    <string name="action_insights">Insights</string>
     <string name="action_new_alarm">New Alarm</string>
 
     <string name="day_monday">Mon</string>
@@ -279,4 +279,6 @@
     <string name="action_unpair">Unpair</string>
     <string name="dialog_title_unpair_pill">Unpair Sleep Pill</string>
     <string name="dialog_message_unpair_pill">Are you sure you want to unpair this Sleep Pill from your Sense? You can re-pair it with your Sense later from the device details screen.</string>
+    <string name="title_trends">Trends</string>
+    <string name="title_current_conditions">Current Conditions</string>
 </resources>

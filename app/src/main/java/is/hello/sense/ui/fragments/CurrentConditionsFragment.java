@@ -87,7 +87,7 @@ public class CurrentConditionsFragment extends InjectionFragment {
     }
 
     public void conditionsUnavailable(@NonNull Throwable e) {
-        Logger.error(HomeUndersideFragment.class.getSimpleName(), "Could not load conditions", e);
+        Logger.error(CurrentConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
 
         temperatureState.displayCondition(Condition.UNKNOWN);
         temperatureState.setReading(getString(R.string.missing_data_placeholder));

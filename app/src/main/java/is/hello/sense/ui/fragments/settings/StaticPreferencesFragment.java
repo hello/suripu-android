@@ -4,16 +4,18 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.annotation.XmlRes;
 
-public class SettingsFragment extends PreferenceFragment {
-    private static final String ARG_XML_RES = SettingsFragment.class.getName() + ".ARG_XML_RES";
+public class StaticPreferencesFragment extends PreferenceFragment {
+    private static final String ARG_XML_RES = StaticPreferencesFragment.class.getName() + ".ARG_XML_RES";
 
-    public static SettingsFragment newInstance(@XmlRes int prefsRes) {
-        SettingsFragment fragment = new SettingsFragment();
-
+    public static Bundle getArguments(@XmlRes int prefsRes) {
         Bundle arguments = new Bundle();
         arguments.putInt(ARG_XML_RES, prefsRes);
-        fragment.setArguments(arguments);
+        return arguments;
+    }
 
+    public static StaticPreferencesFragment newInstance(@XmlRes int prefsRes) {
+        StaticPreferencesFragment fragment = new StaticPreferencesFragment();
+        fragment.setArguments(getArguments(prefsRes));
         return fragment;
     }
 
