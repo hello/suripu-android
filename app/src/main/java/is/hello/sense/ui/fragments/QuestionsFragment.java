@@ -38,6 +38,7 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class QuestionsFragment extends InjectionFragment implements CompoundButton.OnCheckedChangeListener {
     public static final String BACK_STACK_NAME = QuestionsFragment.class.getSimpleName();
+    public static final String TAG = QuestionsFragment.class.getSimpleName();
 
     private static final long DELAY_INCREMENT = 20;
     private static final long DISMISS_DELAY = 1000;

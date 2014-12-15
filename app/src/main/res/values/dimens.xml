@@ -8,6 +8,7 @@
     <dimen name="gap_medium">15dp</dimen>
     <dimen name="gap_large">25dp</dimen>
     <dimen name="gap_xlarge">50dp</dimen>
+    <dimen name="gap_raised_item_bottom">2dp</dimen>
 
     <!-- Text -->
 

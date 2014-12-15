@@ -6,10 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import net.hockeyapp.android.UpdateManager;
 
@@ -18,7 +14,6 @@ import org.joda.time.DateTime;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Question;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -27,7 +22,6 @@ import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.ui.common.InjectionActivity;
-import is.hello.sense.ui.common.Views;
 import is.hello.sense.ui.fragments.QuestionsFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
@@ -40,14 +34,11 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends InjectionActivity
         implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener {
-    private static final String TAG_ANSWER_QUESTION = QuestionsFragment.class.getSimpleName();
-
     public static final String EXTRA_IS_NOTIFICATION = HomeActivity.class.getName() + ".EXTRA_IS_NOTIFICATION";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
@@ -55,10 +46,7 @@ public class HomeActivity
     @Inject PreferencesPresenter preferences;
     @Inject BuildValues buildValues;
 
-    private ViewGroup rootContainer;
-    private ViewGroup homeContentContainer;
     private SlidingLayersView slidingLayersView;
-    private ViewGroup newQuestionContainer;
     private FragmentPageView<TimelineFragment> viewPager;
 
     private boolean isFirstActivityRun;
@@ -71,10 +59,6 @@ public class HomeActivity
         setContentView(R.layout.activity_home);
 
         this.isFirstActivityRun = (savedInstanceState == null);
-
-        this.rootContainer = (ViewGroup) findViewById(R.id.activity_home_container);
-        this.homeContentContainer = (ViewGroup) findViewById(R.id.activity_home_content_container);
-
 
         // noinspection unchecked
         this.viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
@@ -110,18 +94,6 @@ public class HomeActivity
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
-        bindAndSubscribe(questionsPresenter.currentQuestion, currentQuestion -> {
-            if (currentQuestion == null || isAnswerQuestionOpen())
-                hideNewQuestion();
-            else
-                showNewQuestion(currentQuestion);
-        }, ignored -> {
-            if (newQuestionContainer != null) {
-                homeContentContainer.removeView(newQuestionContainer);
-                this.newQuestionContainer = null;
-            }
-        });
 
         // This is probably not what we want to happen.
         Observable<Intent> onLogOut = fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
@@ -237,81 +209,13 @@ public class HomeActivity
 
     //region Questions
 
-    public void showNewQuestion(@NonNull Question question) {
-        if (newQuestionContainer == null) {
-            int containerHeight = homeContentContainer.getMeasuredHeight();
-            if (containerHeight == 0) {
-                Views.observeNextLayout(rootContainer).subscribe(ignored -> showNewQuestion(question));
-                return;
-            }
-
-            this.newQuestionContainer = (ViewGroup) getLayoutInflater().inflate(R.layout.sub_fragment_new_question, homeContentContainer, false);
-            newQuestionContainer.setVisibility(View.INVISIBLE);
-
-            Button skipQuestion = (Button) newQuestionContainer.findViewById(R.id.sub_fragment_new_question_skip);
-            skipQuestion.setOnClickListener(ignored -> questionsPresenter.skipQuestion());
-
-            Button answerQuestion = (Button) newQuestionContainer.findViewById(R.id.sub_fragment_new_question_answer);
-            answerQuestion.setOnClickListener(ignored -> answerQuestion());
-
-            Views.observeNextLayout(homeContentContainer).subscribe(ignored -> {
-                int newQuestionContainerHeight = newQuestionContainer.getMeasuredHeight();
-
-                newQuestionContainer.setY((float) containerHeight);
-                newQuestionContainer.setVisibility(View.VISIBLE);
-
-                animate(newQuestionContainer)
-                        .y(containerHeight - newQuestionContainerHeight)
-                        .start();
-            });
-
-            homeContentContainer.addView(newQuestionContainer);
-        }
-
-        TextView answerTitle = (TextView) newQuestionContainer.findViewById(R.id.sub_fragment_new_question_title);
-        answerTitle.setText(question.getText());
-    }
-
-    public void hideNewQuestion() {
-        if (newQuestionContainer == null)
-            return;
-
-        int containerHeight = homeContentContainer.getMeasuredHeight();
-        int buttonHeight = newQuestionContainer.getMeasuredHeight();
-
-        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) viewPager.getLayoutParams();
-        layoutParams.bottomMargin = 0;
-        viewPager.getParent().requestLayout();
-
-        if (containerHeight == 0) {
-            homeContentContainer.removeView(newQuestionContainer);
-            this.newQuestionContainer = null;
-
-            return;
-        }
-
-        animate(newQuestionContainer)
-                .y(containerHeight + buttonHeight)
-                .addOnAnimationCompleted(finished -> {
-                    homeContentContainer.removeView(newQuestionContainer);
-                    this.newQuestionContainer = null;
-                })
-                .start();
-    }
-
-    public boolean isAnswerQuestionOpen() {
-        return (getFragmentManager().findFragmentByTag(TAG_ANSWER_QUESTION) != null);
-    }
-
     public void answerQuestion() {
         getFragmentManager()
                 .beginTransaction()
-                .add(R.id.activity_home_container, new QuestionsFragment(), TAG_ANSWER_QUESTION)
+                .add(R.id.activity_home_container, new QuestionsFragment(), QuestionsFragment.TAG)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(QuestionsFragment.BACK_STACK_NAME)
                 .commit();
-
-        hideNewQuestion();
     }
 
     //endregion

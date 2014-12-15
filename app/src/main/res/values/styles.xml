@@ -128,7 +128,7 @@
     <style name="AppTheme.Dialog.Simple" parent="android:Theme.Holo.Dialog.MinWidth">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@drawable/raised_item_background</item>
-        <item name="android:paddingBottom">1dp</item>
+        <item name="android:paddingBottom">@dimen/gap_raised_item_bottom</item>
     </style>
 
     <style name="AppTheme.Dialog.FullScreen">

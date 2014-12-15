@@ -3,59 +3,48 @@
     android:id="@+id/sub_fragment_new_question"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/raised_item_background"
+    android:paddingBottom="@dimen/gap_raised_item_bottom">
 
-    <View
+    <TextView
+        android:id="@+id/sub_fragment_new_question_title"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/shadow_height"
-        android:background="@drawable/gradient_top_layer_shadow" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_outer"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginBottom="@dimen/gap_small"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:lineSpacingMultiplier="@dimen/body_text_line_multiple"
+        android:text="@string/mock_question_title"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/sub_fragment_new_question_title"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/sub_fragment_new_question_skip"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_outer"
-            android:layout_marginLeft="@dimen/gap_outer"
-            android:layout_marginRight="@dimen/gap_outer"
-            android:layout_marginBottom="@dimen/gap_small"
-            android:gravity="center"
-            android:textAppearance="@style/AppTheme.Text.Body"
-            android:lineSpacingMultiplier="@dimen/body_text_line_multiple"
-            android:text="@string/mock_question_title"/>
+            android:layout_weight="1"
+            android:text="@string/action_skip"
+            style="@style/AppTheme.Button.Borderless.Question"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <View
+            android:layout_marginTop="@dimen/gap_medium"
+            android:layout_marginBottom="@dimen/gap_medium"
+            style="@style/Divider.Vertical" />
+
+        <Button
+            android:id="@+id/sub_fragment_new_question_answer"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/sub_fragment_new_question_skip"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/action_skip"
-                style="@style/AppTheme.Button.Borderless.Question"/>
-
-            <View
-                android:layout_marginTop="@dimen/gap_medium"
-                android:layout_marginBottom="@dimen/gap_medium"
-                style="@style/Divider.Vertical" />
-
-            <Button
-                android:id="@+id/sub_fragment_new_question_answer"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/action_answer"
-                style="@style/AppTheme.Button.Borderless.Question.Choice"/>
-
-        </LinearLayout>
+            android:layout_weight="1"
+            android:text="@string/action_answer"
+            style="@style/AppTheme.Button.Borderless.Question.Choice"/>
 
     </LinearLayout>
 
