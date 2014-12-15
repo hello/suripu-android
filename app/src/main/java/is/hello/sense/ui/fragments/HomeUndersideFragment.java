@@ -44,7 +44,7 @@ public class HomeUndersideFragment extends InjectionFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_underside, container, false);
+        View view = inflater.inflate(R.layout.fragment_underside_legacy, container, false);
 
         this.temperatureState = (SensorStateView) view.findViewById(R.id.fragment_underside_temperature);
         temperatureState.setOnClickListener(ignored -> showSensorHistory(SensorHistory.SENSOR_NAME_TEMPERATURE));

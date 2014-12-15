@@ -28,9 +28,9 @@ import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.Views;
-import is.hello.sense.ui.fragments.HomeUndersideFragment;
 import is.hello.sense.ui.fragments.QuestionsFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.util.Analytics;
@@ -324,7 +324,7 @@ public class HomeActivity
         if (getFragmentManager().findFragmentById(R.id.activity_home_underside_container) == null) {
             getFragmentManager()
                     .beginTransaction()
-                    .add(R.id.activity_home_underside_container, new HomeUndersideFragment())
+                    .add(R.id.activity_home_underside_container, new UndersideFragment())
                     .commit();
         }
 
