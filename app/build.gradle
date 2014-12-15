@@ -112,6 +112,7 @@ dependencies {
     compile 'com.google.protobuf:protobuf-java:2.5.0'
 
     compile 'com.android.support:support-v13:21.0.3'
+    compile 'com.android.support:cardview-v7:21.0.3'
     //noinspection GradleDynamicVersion
     compile 'com.google.android.gms:play-services-base:6.5.+'
 
