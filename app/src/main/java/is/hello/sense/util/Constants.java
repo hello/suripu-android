@@ -19,4 +19,11 @@ public final class Constants {
     public static final int ONBOARDING_CHECKPOINT_QUESTIONS = 2;
     public static final int ONBOARDING_CHECKPOINT_SENSE = 3;
     public static final int ONBOARDING_CHECKPOINT_PILL = 4;
+
+
+    // From Retrofit
+    public static final int HTTP_CONNECT_TIMEOUT_MILLIS = 15 * 1000; // 15s
+    public static final int HTTP_READ_TIMEOUT_MILLIS = 20 * 1000; // 20s
+    public static final String HTTP_CACHE_NAME = "is.hello.sense.okhttp.cache";
+    public static final int HTTP_CACHE_SIZE = 2024 * 10;
 }

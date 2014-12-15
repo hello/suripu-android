@@ -17,10 +17,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.squareup.okhttp.Cache;
+
 import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Inject;
 
+import is.hello.sense.R;
 import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
@@ -30,6 +34,7 @@ import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
+import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
@@ -37,49 +42,60 @@ import is.hello.sense.util.SessionLogger;
 
 public class DebugActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject ApiSessionManager sessionManager;
+    @Inject Cache httpCache;
     @Inject BuildValues buildValues;
     @Inject ApiEnvironment currentEnvironment;
     @Inject BluetoothStack bluetoothStack;
 
-    private StaticItemAdapter debugItems;
+    private StaticItemAdapter debugActionItems;
+    private StaticItemAdapter buildInfoItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_debug);
 
-        ListView listView = new ListView(this);
-        setContentView(listView);
 
-        this.debugItems = new StaticItemAdapter(this);
-        debugItems.setValueMaxLength(30);
-        listView.setAdapter(debugItems);
+        this.buildInfoItems = new StaticItemAdapter(this);
+        buildInfoItems.setValueMaxLength(30);
+        populateBuildInfoItems();
+
+        this.debugActionItems = new StaticItemAdapter(this);
+        populateDebugActionItems();
+
+
+        ListView listView = (ListView) findViewById(android.R.id.list);
+        listView.setAdapter(debugActionItems);
         listView.setOnItemClickListener(this);
 
-        addDescriptiveItems();
-        addActions();
+
+        SelectorLinearLayout selector = (SelectorLinearLayout) findViewById(R.id.activity_debug_modes);
+        selector.setButtonTags(debugActionItems, buildInfoItems);
+        selector.setSelectedIndex(0);
+        selector.setOnSelectionChangedListener(index -> listView.setAdapter((StaticItemAdapter) selector.getButtonTag(index)));
     }
 
 
-    private void addDescriptiveItems() {
+    private void populateBuildInfoItems() {
         try {
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            debugItems.addItem("App Version", packageInfo.versionName);
-            debugItems.addItem("Build Number", Integer.toString(packageInfo.versionCode));
+            buildInfoItems.addItem("App Version", packageInfo.versionName);
+            buildInfoItems.addItem("Build Number", Integer.toString(packageInfo.versionCode));
         } catch (PackageManager.NameNotFoundException e) {
             Logger.debug(DebugActivity.class.getSimpleName(), "Could not look up app version", e);
         }
-        debugItems.addItem("Build Type", buildValues.type);
-        debugItems.addItem("Device Model", Build.MODEL);
-        debugItems.addItem("BLE Device Support", bluetoothStack.getDeviceSupportLevel().toString());
-        debugItems.addItem("BLE Stack Traits", TextUtils.join(", ", bluetoothStack.getTraits()));
-        debugItems.addItem("Access Token", sessionManager.getAccessToken());
-        debugItems.addItem("GCM ID", getSharedPreferences(Constants.NOTIFICATION_PREFS, 0).getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, "<none>"));
-        debugItems.addItem("Host", currentEnvironment.baseUrl);
-        debugItems.addItem("Client ID", currentEnvironment.clientId);
+        buildInfoItems.addItem("Build Type", buildValues.type);
+        buildInfoItems.addItem("Device Model", Build.MODEL);
+        buildInfoItems.addItem("BLE Device Support", bluetoothStack.getDeviceSupportLevel().toString());
+        buildInfoItems.addItem("BLE Stack Traits", TextUtils.join(", ", bluetoothStack.getTraits()));
+        buildInfoItems.addItem("Access Token", sessionManager.getAccessToken());
+        buildInfoItems.addItem("GCM ID", getSharedPreferences(Constants.NOTIFICATION_PREFS, 0).getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, "<none>"));
+        buildInfoItems.addItem("Host", currentEnvironment.baseUrl);
+        buildInfoItems.addItem("Client ID", currentEnvironment.clientId);
     }
 
-    private void addActions() {
-        debugItems.addItem("Piru-Pea", null, () -> {
+    private void populateDebugActionItems() {
+        debugActionItems.addItem("Piru-Pea", null, () -> {
             try {
                 startActivity(new Intent(this, Class.forName("is.hello.sense.debug.PiruPeaActivity")));
             } catch (ClassNotFoundException e) {
@@ -87,10 +103,11 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
                 dialog.show(getFragmentManager(), MessageDialogFragment.TAG);
             }
         });
-        debugItems.addItem("Environment", currentEnvironment.toString(), this::changeEnvironment);
-        debugItems.addItem("View Log", null, this::viewLog);
-        debugItems.addItem("Clear Log", null, this::clearLog);
-        debugItems.addItem("Share Log", null, this::sendLog);
+        debugActionItems.addItem("Set Environment", currentEnvironment.toString(), this::changeEnvironment);
+        debugActionItems.addItem("View Log", null, this::viewLog);
+        debugActionItems.addItem("Clear Log", null, this::clearLog);
+        debugActionItems.addItem("Share Log", null, this::sendLog);
+        debugActionItems.addItem("Clear Http Cache", null, this::clearHttpCache);
     }
 
 
@@ -136,10 +153,19 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         }, Functions.LOG_ERROR);
     }
 
+    public void clearHttpCache() {
+        try {
+            httpCache.evictAll();
+            Toast.makeText(getApplicationContext(), "Cache Cleared", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
+    }
+
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        StaticItemAdapter.Item item = debugItems.getItem(position);
+        StaticItemAdapter.Item item = debugActionItems.getItem(position);
         if (item.getAction() != null) {
             item.getAction().run();
         } else {

@@ -7,6 +7,12 @@ import android.support.annotation.Nullable;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.squareup.okhttp.Cache;
+import com.squareup.okhttp.OkHttpClient;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
@@ -17,9 +23,10 @@ import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.PersistentApiSessionManager;
 import is.hello.sense.util.BuildValues;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import retrofit.RestAdapter;
-import retrofit.android.AndroidApacheClient;
+import retrofit.client.OkClient;
 import retrofit.converter.JacksonConverter;
 
 @Module(
@@ -61,17 +68,37 @@ public class ApiModule {
         return createConfiguredObjectMapper(buildValues);
     }
 
+    @Singleton @Provides Cache provideCache(@NonNull @ApiAppContext Context context) {
+        File cacheDirectory = new File(context.getExternalCacheDir(), Constants.HTTP_CACHE_NAME);
+        try {
+            return new Cache(cacheDirectory, Constants.HTTP_CACHE_SIZE);
+        } catch (IOException e) {
+            Logger.warn(ApiModule.class.getSimpleName(), "Could not create local cache, ignoring.", e);
+            return null;
+        }
+    }
+
+    @Singleton @Provides OkHttpClient provideHttpClient(@NonNull Cache cache) {
+        OkHttpClient client = new OkHttpClient();
+        client.setCache(cache);
+        client.setConnectTimeout(Constants.HTTP_CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        client.setReadTimeout(Constants.HTTP_READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        return client;
+    }
+
     @Singleton @Provides RestAdapter provideRestAdapter(@NonNull ObjectMapper mapper,
+                                                        @NonNull OkHttpClient httpClient,
                                                         @NonNull ApiSessionManager sessionManager,
                                                         @NonNull BuildValues buildValues) {
         RestAdapter.Builder builder = new RestAdapter.Builder();
-        builder.setClient(new AndroidApacheClient());
+        builder.setClient(new OkClient(httpClient));
         builder.setConverter(new JacksonConverter(mapper));
         builder.setEndpoint(environment.baseUrl);
-        if (buildValues.isDebugBuild())
+        if (buildValues.isDebugBuild()) {
             builder.setLogLevel(RestAdapter.LogLevel.FULL);
-        else
+        } else {
             builder.setLogLevel(RestAdapter.LogLevel.BASIC);
+        }
         builder.setLog(Logger.RETROFIT_LOGGER);
         builder.setErrorHandler(error -> {
             ErrorResponse errorResponse;
