@@ -83,10 +83,6 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
             this.action = action;
         }
 
-        public Item(@NonNull String title, @Nullable String value) {
-            this(title, value, null);
-        }
-
 
         public String getTitle() {
             return title;
