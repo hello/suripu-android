@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
+import net.danlew.android.joda.DateUtils;
+
 import java.util.List;
 
 import is.hello.sense.R;
@@ -48,6 +50,7 @@ public class InsightsAdapter extends ViewPagerAdapter<Insight> {
     protected void configureView(@NonNull View view, int position) {
         TextView title = (TextView) view.findViewById(R.id.item_insight_title);
         TextView body = (TextView) view.findViewById(R.id.item_insight_body);
+        TextView date = (TextView) view.findViewById(R.id.item_insight_date);
 
         Insight insight = getItem(position);
         title.setText(insight.getTitle());
