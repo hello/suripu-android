@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,29 +15,19 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
-import is.hello.sense.graph.presenters.InsightsPresenter;
-import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.activities.SmartAlarmActivity;
-import is.hello.sense.ui.adapter.InsightsAdapter;
-import is.hello.sense.ui.adapter.ViewPagerAdapter;
-import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
 import is.hello.sense.ui.widget.SensorStateView;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.Markdown;
 
-public class HomeUndersideFragment extends InjectionFragment implements ViewPagerAdapter.OnItemViewClickedListener {
-    @Inject InsightsPresenter insightsPresenter;
+@Deprecated
+public class HomeUndersideFragment extends InjectionFragment {
     @Inject CurrentConditionsPresenter currentConditionsPresenter;
-    @Inject Markdown markdown;
     @Inject BuildValues buildValues;
-
-    private InsightsAdapter insightsAdapter;
 
     private SensorStateView temperatureState;
     private SensorStateView humidityState;
@@ -48,7 +37,6 @@ public class HomeUndersideFragment extends InjectionFragment implements ViewPage
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        addPresenter(insightsPresenter);
         addPresenter(currentConditionsPresenter);
 
         setRetainInstance(true);
@@ -57,17 +45,6 @@ public class HomeUndersideFragment extends InjectionFragment implements ViewPage
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_underside, container, false);
-
-        ViewPager insightsPager = (ViewPager) view.findViewById(R.id.fragment_underside_insights);
-        this.insightsAdapter = new InsightsAdapter(getActivity(), markdown, view.findViewById(R.id.fragment_underside_insights_loading));
-        insightsAdapter.onItemViewClickedListener = this;
-        insightsPager.setClipToPadding(false);
-        int padding = getResources().getDimensionPixelSize(R.dimen.gap_outer);
-        insightsPager.setPadding(padding, 0, padding, 0);
-        insightsPager.setOffscreenPageLimit(3);
-        insightsPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.gap_small));
-        insightsPager.setAdapter(insightsAdapter);
-        Animations.Properties.DEFAULT.apply(insightsPager.getLayoutTransition(), false);
 
         this.temperatureState = (SensorStateView) view.findViewById(R.id.fragment_underside_temperature);
         temperatureState.setOnClickListener(ignored -> showSensorHistory(SensorHistory.SENSOR_NAME_TEMPERATURE));
@@ -99,24 +76,13 @@ public class HomeUndersideFragment extends InjectionFragment implements ViewPage
         super.onViewCreated(view, savedInstanceState);
 
         bindAndSubscribe(currentConditionsPresenter.currentConditions, this::bindConditions, this::conditionsUnavailable);
-        bindAndSubscribe(insightsPresenter.insights, insightsAdapter::bindInsights, insightsAdapter::insightsUnavailable);
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        insightsPresenter.update();
         currentConditionsPresenter.update();
-    }
-
-    @Override
-    public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
-
-        if (level >= Presenter.BASE_TRIM_LEVEL) {
-            insightsAdapter.clear();
-        }
     }
 
     //region Displaying Data
@@ -158,11 +124,5 @@ public class HomeUndersideFragment extends InjectionFragment implements ViewPage
         Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
         intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensor);
         startActivity(intent);
-    }
-
-    @Override
-    public void onItemViewClicked(@NonNull View view, int position) {
-        InsightDetailsDialogFragment dialogFragment = InsightDetailsDialogFragment.newInstance(insightsAdapter.getItem(position));
-        dialogFragment.show(getFragmentManager(), InsightDetailsDialogFragment.TAG);
     }
 }
