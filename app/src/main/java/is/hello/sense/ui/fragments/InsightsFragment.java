@@ -61,6 +61,7 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
 
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_insights_refresh_container);
         swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeResources(R.color.grey, R.color.purple, R.color.light_accent);
 
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
