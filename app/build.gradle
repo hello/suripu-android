@@ -7,6 +7,7 @@ buildscript {
     }
     dependencies {
         classpath 'me.tatarka:gradle-retrolambda:2.4.1'
+        //noinspection GradleDynamicVersion
         classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
     }
 }
@@ -50,13 +51,13 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
-            minifyEnabled true // when we hit the 0xffff method limit, switch this to true
+            minifyEnabled false // when we hit the 0xffff method limit, switch this to true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
         release {
             signingConfig signingConfigs.release
 
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
     }
@@ -110,8 +111,9 @@ dependencies {
     compile 'com.amplitude:android-sdk:1.4.1'
     compile 'com.google.protobuf:protobuf-java:2.5.0'
 
-    compile 'com.android.support:support-v13:20.0.0'
-    compile 'com.google.android.gms:play-services:6.1.71'
+    compile 'com.android.support:support-v13:21.0.3'
+    //noinspection GradleDynamicVersion
+    compile 'com.google.android.gms:play-services-base:6.5.+'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
