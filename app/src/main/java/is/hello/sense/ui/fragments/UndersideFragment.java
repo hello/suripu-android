@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments;
 
 import android.app.Fragment;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -9,6 +10,7 @@ import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.text.SpannableString;
@@ -30,7 +32,7 @@ import static is.hello.sense.ui.adapter.StaticFragmentAdapter.Item;
 
 public class UndersideFragment extends Fragment implements ViewPager.OnPageChangeListener, SelectorLinearLayout.OnSelectionChangedListener {
     private SelectorLinearLayout tabs;
-    private BottomLineDrawable tabLine;
+    private TabsBackgroundDrawable tabLine;
     private ViewPager pager;
 
     private static int[] getButtonIcons() {
@@ -55,8 +57,11 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_underside, container, false);
 
+        Resources resources = getResources();
+
         this.pager = (ViewPager) view.findViewById(R.id.fragment_underside_pager);
         pager.setOnPageChangeListener(this);
+        pager.setOffscreenPageLimit(0);
         pager.setAdapter(new StaticFragmentAdapter(getFragmentManager(),
                 new Item(CurrentConditionsFragment.class, getString(R.string.title_current_conditions)),
                 new Item(Fragment.class, getString(R.string.title_trends)),
@@ -80,7 +85,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
             button.setBackground(null);
             button.setTag(R.id.underside_icon, imageSpan.getDrawable());
         }
-        int accentColor = getResources().getColor(R.color.light_accent);
+        int accentColor = resources.getColor(R.color.light_accent);
         tabs.setButtonStyler((button, checked) -> {
             Drawable icon = (Drawable) button.getTag(R.id.underside_icon);
             if (checked) {
@@ -92,9 +97,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         tabs.setSelectedIndex(pager.getCurrentItem());
         tabs.setOnSelectionChangedListener(this);
 
-        this.tabLine = new BottomLineDrawable(pager.getAdapter().getCount(), getResources().getDimensionPixelSize(R.dimen.shadow_height));
-        tabLine.setFillColor(getResources().getColor(R.color.light_accent));
-        tabLine.setBackgroundColor(Color.WHITE);
+        this.tabLine = new TabsBackgroundDrawable(resources, pager.getAdapter().getCount());
         tabs.setBackground(tabLine);
 
         return view;
@@ -132,32 +135,46 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     }
 
 
-    static class BottomLineDrawable extends Drawable {
-        private final Paint backgroundPaint = new Paint();
-        private final Paint fillPaint = new Paint();
+    static class TabsBackgroundDrawable extends Drawable {
+        private final Paint paint = new Paint();
 
         private final int itemCount;
         private final int lineHeight;
+        private final int dividerHeight;
+
+        private final int backgroundColor = Color.WHITE;
+        private final int fillColor;
+        private final int dividerColor;
 
         private int selectedItem = 0;
         private float positionOffset = 0f;
 
-        BottomLineDrawable(int itemCount, int lineHeight) {
+        TabsBackgroundDrawable(@NonNull Resources resources, int itemCount) {
             this.itemCount = itemCount;
-            this.lineHeight = lineHeight;
+            this.lineHeight = resources.getDimensionPixelSize(R.dimen.shadow_height);
+            this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_height);
+            this.fillColor = resources.getColor(R.color.light_accent);
+            this.dividerColor = resources.getColor(R.color.border);
         }
 
         @Override
         public void draw(Canvas canvas) {
             int width = canvas.getWidth();
-            int height = canvas.getHeight();
+            int height = canvas.getHeight() - dividerHeight;
 
-            canvas.drawRect(0, 0, width, height, backgroundPaint);
+            
+            paint.setColor(backgroundColor);
+            canvas.drawRect(0, 0, width, height, paint);
+
 
             int itemWidth = width / itemCount;
             float itemOffset = (itemWidth * selectedItem) + (itemWidth * positionOffset);
+            paint.setColor(fillColor);
+            canvas.drawRect(itemOffset, height - lineHeight, itemOffset + itemWidth, height, paint);
 
-            canvas.drawRect(itemOffset, height - lineHeight, itemOffset + itemWidth, height, fillPaint);
+
+            paint.setColor(dividerColor);
+            canvas.drawRect(0, height, width, height + dividerHeight, paint);
         }
 
         @Override
@@ -170,27 +187,18 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
         @Override
         public void setAlpha(int alpha) {
-            fillPaint.setAlpha(alpha);
-            backgroundPaint.setAlpha(alpha);
+            paint.setAlpha(alpha);
+            invalidateSelf();
         }
 
         @Override
         public void setColorFilter(ColorFilter colorFilter) {
-            fillPaint.setColorFilter(colorFilter);
+            paint.setColorFilter(colorFilter);
+            invalidateSelf();
         }
 
         public void setSelectedItem(int selectedItem) {
             this.selectedItem = selectedItem;
-            invalidateSelf();
-        }
-
-        public void setBackgroundColor(int color) {
-            backgroundPaint.setColor(color);
-            invalidateSelf();
-        }
-
-        public void setFillColor(int color) {
-            fillPaint.setColor(color);
             invalidateSelf();
         }
 

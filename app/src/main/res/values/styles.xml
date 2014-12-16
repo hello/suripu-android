@@ -325,7 +325,7 @@
         <item name="android:divider">@color/transparent</item>
         <item name="android:dividerHeight">@dimen/gap_small</item>
         <item name="android:scrollbars">none</item>
-        <item name="android:listSelector">@null</item>
+        <item name="android:listSelector">@color/transparent</item>
     </style>
 
     <style name="AppTheme.FadingScrollView">

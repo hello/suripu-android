@@ -14,7 +14,7 @@
         android:left="@dimen/gap_small"
         android:right="@dimen/gap_small">
         <shape android:shape="rectangle">
-            <solid android:color="@color/background_underside" />
+            <solid android:color="@color/background" />
         </shape>
     </item>
 </layer-list>

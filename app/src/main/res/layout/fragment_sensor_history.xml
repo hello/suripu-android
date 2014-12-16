@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="@color/background_light">
 
     <LinearLayout
         android:orientation="vertical"
@@ -34,64 +35,58 @@
             android:lineSpacingMultiplier="@dimen/body_text_line_multiple"
             android:text="@string/dialog_loading_message"/>
 
-        <LinearLayout
+        <is.hello.sense.ui.widget.SelectorLinearLayout
+            android:id="@+id/fragment_sensor_history_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ToggleButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOn="@string/title_time_frame_24_hrs"
+                android:textOff="@string/title_time_frame_24_hrs"
+                android:checked="true"
+                android:textAllCaps="true"
+                style="@style/AppTheme.Button.ModeSelector"/>
+
+            <View
+                android:layout_marginTop="@dimen/gap_medium"
+                android:layout_marginBottom="@dimen/gap_medium"
+                style="@style/Divider.Vertical" />
+
+            <ToggleButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOn="@string/title_time_frame_week"
+                android:textOff="@string/title_time_frame_week"
+                android:textAllCaps="true"
+                style="@style/AppTheme.Button.ModeSelector"/>
+
+        </is.hello.sense.ui.widget.SelectorLinearLayout>
+
+        <View style="@style/Divider.Horizontal" />
+
+        <is.hello.sense.ui.widget.LineGraphView
+            android:id="@+id/fragment_sensor_history_graph"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:background="@drawable/background_line_graph">
+            android:minHeight="@dimen/sensor_history_graph_min_height"
+            app:fill="@color/transparent"
+            app:gridDrawable="@drawable/graph_grid_fill"
+            app:topLineHeight="2dp">
 
-            <is.hello.sense.ui.widget.SelectorLinearLayout
-                android:id="@+id/fragment_sensor_history_mode"
-                android:layout_width="match_parent"
+            <is.hello.sense.ui.widget.TintedProgressBar
+                android:id="@+id/fragment_sensor_history_loading"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_gravity="center"
+                style="@android:style/Widget.Holo.Light.ProgressBar"/>
 
-                <ToggleButton
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textOn="@string/title_time_frame_24_hrs"
-                    android:textOff="@string/title_time_frame_24_hrs"
-                    android:checked="true"
-                    android:textAllCaps="true"
-                    style="@style/AppTheme.Button.ModeSelector"/>
-
-                <View
-                    android:layout_marginTop="@dimen/gap_medium"
-                    android:layout_marginBottom="@dimen/gap_medium"
-                    style="@style/Divider.Vertical" />
-
-                <ToggleButton
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textOn="@string/title_time_frame_week"
-                    android:textOff="@string/title_time_frame_week"
-                    android:textAllCaps="true"
-                    style="@style/AppTheme.Button.ModeSelector"/>
-
-            </is.hello.sense.ui.widget.SelectorLinearLayout>
-
-            <is.hello.sense.ui.widget.LineGraphView
-                android:id="@+id/fragment_sensor_history_graph"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:minHeight="@dimen/sensor_history_graph_min_height"
-                app:fill="@color/transparent"
-                app:gridDrawable="@drawable/graph_grid_fill"
-                app:topLineHeight="2dp">
-
-                <is.hello.sense.ui.widget.TintedProgressBar
-                    android:id="@+id/fragment_sensor_history_loading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    style="@android:style/Widget.Holo.Light.ProgressBar"/>
-
-            </is.hello.sense.ui.widget.LineGraphView>
-
-        </LinearLayout>
+        </is.hello.sense.ui.widget.LineGraphView>
 
         <TextView
             android:id="@+id/fragment_sensor_history_insight"

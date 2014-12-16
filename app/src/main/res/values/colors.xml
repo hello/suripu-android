@@ -10,10 +10,10 @@
     <color name="light_accent_darkened">#0c67c0</color>
 
     <color name="background">#f8f8f8</color>
+    <color name="background_light">@color/white</color>
     <color name="background_light_overlay">#99ffffff</color>
     <color name="background_timeline">@color/white</color>
     <color name="background_questions">#F7f8f8f8</color>
-    <color name="background_underside">#F5F5F5</color>
     <color name="background_onboarding">@color/white</color>
 
     <color name="border">#dcdcdc</color>

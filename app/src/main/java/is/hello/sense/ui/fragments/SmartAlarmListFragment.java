@@ -86,6 +86,10 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (resultCode == Activity.RESULT_CANCELED) {
+            return;
+        }
+
         if (requestCode == EDIT_REQUEST_CODE) {
             int index = data.getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, 0);
             if (resultCode == Activity.RESULT_OK) {
