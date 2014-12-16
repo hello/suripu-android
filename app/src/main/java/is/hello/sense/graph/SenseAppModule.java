@@ -31,7 +31,7 @@ import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.fragments.CurrentConditionsFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
-import is.hello.sense.ui.fragments.QuestionsFragment;
+import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.fragments.SensorHistoryFragment;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.SmartAlarmListFragment;
@@ -92,7 +92,7 @@ import is.hello.sense.util.BuildValues;
         TimelineEventDialogFragment.class,
 
         QuestionsPresenter.class,
-        QuestionsFragment.class,
+        QuestionsDialogFragment.class,
 
         InsightsPresenter.class,
         InsightDetailsDialogFragment.class,

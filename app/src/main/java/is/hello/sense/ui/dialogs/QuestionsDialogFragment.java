@@ -1,7 +1,7 @@
-package is.hello.sense.ui.fragments;
+package is.hello.sense.ui.dialogs;
 
 import android.animation.LayoutTransition;
-import android.app.FragmentManager;
+import android.app.Dialog;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
@@ -30,15 +30,13 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
-import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.common.InjectionDialogFragment;
 
 import static android.widget.LinearLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class QuestionsFragment extends InjectionFragment implements CompoundButton.OnCheckedChangeListener {
-    public static final String BACK_STACK_NAME = QuestionsFragment.class.getSimpleName();
-    public static final String TAG = QuestionsFragment.class.getSimpleName();
+public class QuestionsDialogFragment extends InjectionDialogFragment implements CompoundButton.OnCheckedChangeListener {
+    public static final String TAG = QuestionsDialogFragment.class.getSimpleName();
 
     private static final long DELAY_INCREMENT = 20;
     private static final long DISMISS_DELAY = 1000;
@@ -82,6 +80,29 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
     }
 
     @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
+        dialog.setContentView(R.layout.fragment_questions);
+
+        this.superContainer = (ViewGroup) dialog.findViewById(R.id.fragment_questions_container);
+        this.titleText = (TextView) dialog.findViewById(R.id.fragment_questions_title);
+        this.choicesContainer = (ViewGroup) dialog.findViewById(R.id.fragment_questions_choices);
+
+        LayoutTransition transition = choicesContainer.getLayoutTransition();
+        Animations.Properties.DEFAULT.apply(transition, false);
+        transition.disableTransitionType(LayoutTransition.DISAPPEARING);
+        transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+
+        this.skipButton = (Button) dialog.findViewById(R.id.fragment_questions_skip);
+        skipButton.setOnClickListener(this::skipQuestion);
+
+        this.nextButton = (Button) dialog.findViewById(R.id.fragment_questions_next);
+        nextButton.setOnClickListener(this::nextQuestion);
+
+        return dialog;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_questions, container, false);
 
@@ -113,7 +134,7 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("hasClearedAllViews", hasClearedAllViews);
@@ -209,10 +230,7 @@ public class QuestionsFragment extends InjectionFragment implements CompoundButt
                     if (finished) {
                         dismissHandler.postDelayed(() -> {
                             questionsPresenter.questionsAcknowledged();
-                            FragmentManager fragmentManager = getFragmentManager();
-                            if (fragmentManager != null) {
-                                fragmentManager.popBackStack(BACK_STACK_NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                            }
+                            dismiss();
                         }, DISMISS_DELAY);
                     }
                 })

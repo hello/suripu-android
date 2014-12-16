@@ -26,6 +26,7 @@ import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
+import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.util.Markdown;
 
 import static android.widget.AbsListView.LayoutParams;
@@ -165,11 +166,12 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
     }
 
     public boolean isAnswerQuestionOpen() {
-        return (getFragmentManager().findFragmentByTag(QuestionsFragment.TAG) != null);
+        return (getFragmentManager().findFragmentByTag(QuestionsDialogFragment.TAG) != null);
     }
 
     public void answerQuestion() {
-        new QuestionsFragment().show(getFragmentManager(), R.id.activity_home_container, QuestionsFragment.TAG);
+        QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
+        dialogFragment.show(getFragmentManager(), QuestionsDialogFragment.TAG);
         hideNewQuestion();
     }
 

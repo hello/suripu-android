@@ -9,7 +9,7 @@
         android:id="@+id/activity_questions_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="is.hello.sense.ui.fragments.QuestionsFragment"
+        android:name="is.hello.sense.ui.dialogs.QuestionsDialogFragment"
         tools:layout="@layout/fragment_questions" />
 
 </FrameLayout>

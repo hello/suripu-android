@@ -1,7 +1,6 @@
 package is.hello.sense.ui.activities;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -22,7 +21,7 @@ import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.ui.common.InjectionActivity;
-import is.hello.sense.ui.fragments.QuestionsFragment;
+import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
@@ -210,7 +209,8 @@ public class HomeActivity
     //region Questions
 
     public void answerQuestion() {
-        new QuestionsFragment().show(getFragmentManager(), R.id.activity_home_container, QuestionsFragment.TAG);
+        QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
+        dialogFragment.show(getFragmentManager(), QuestionsDialogFragment.TAG);
     }
 
     //endregion

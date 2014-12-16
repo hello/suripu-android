@@ -1,11 +1,13 @@
 package is.hello.sense.ui.common;
 
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import is.hello.sense.SenseApplication;
+import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.util.ResumeScheduler;
 import rx.Observable;
@@ -59,6 +61,17 @@ public class InjectionDialogFragment extends DialogFragment implements Observabl
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // Work around bug: http://code.google.com/p/android/issues/detail?id=17423
+        Dialog dialog = getDialog();
+        if (dialog != null && getRetainInstance()) {
+            dialog.setDismissMessage(null);
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
@@ -93,5 +106,10 @@ public class InjectionDialogFragment extends DialogFragment implements Observabl
     @NonNull
     public <T> Subscription bindAndSubscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
         return observableContainer.bindAndSubscribe(toSubscribe, onNext, onError);
+    }
+
+
+    public void addPresenter(@NonNull Presenter presenter) {
+        presenterContainer.addPresenter(presenter);
     }
 }
