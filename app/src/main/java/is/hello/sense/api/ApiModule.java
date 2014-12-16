@@ -92,7 +92,7 @@ public class ApiModule {
                                                         @NonNull BuildValues buildValues) {
         RestAdapter.Builder builder = new RestAdapter.Builder();
         builder.setClient(new OkClient(httpClient));
-        builder.setConverter(new JacksonConverter(mapper));
+        builder.setConverter(new ApiJacksonConverter(mapper));
         builder.setEndpoint(environment.baseUrl);
         if (buildValues.isDebugBuild()) {
             builder.setLogLevel(RestAdapter.LogLevel.FULL);
