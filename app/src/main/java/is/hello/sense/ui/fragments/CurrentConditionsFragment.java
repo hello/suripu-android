@@ -1,30 +1,41 @@
 package is.hello.sense.ui.fragments;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorHistory;
+import is.hello.sense.api.model.SensorState;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.widget.SensorStateView;
+import is.hello.sense.ui.widget.Styles;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.Markdown;
 
-public class CurrentConditionsFragment extends InjectionFragment {
+public class CurrentConditionsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     @Inject CurrentConditionsPresenter presenter;
+    @Inject Markdown markdown;
 
-    private SensorStateView temperatureState;
-    private SensorStateView humidityState;
-    private SensorStateView particulatesState;
+    private final ConditionData temperature = new ConditionData(SensorHistory.SENSOR_NAME_TEMPERATURE);
+    private final ConditionData humidity = new ConditionData(SensorHistory.SENSOR_NAME_HUMIDITY);
+    private final ConditionData particulates = new ConditionData(SensorHistory.SENSOR_NAME_PARTICULATES);
+    private ConditionsAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,14 +51,12 @@ public class CurrentConditionsFragment extends InjectionFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_current_conditions, container, false);
 
-        this.temperatureState = (SensorStateView) view.findViewById(R.id.fragment_current_conditions_temperature);
-        temperatureState.setOnClickListener(ignored -> showSensorHistory(SensorHistory.SENSOR_NAME_TEMPERATURE));
+        ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        this.humidityState = (SensorStateView) view.findViewById(R.id.fragment_current_conditions_humidity);
-        humidityState.setOnClickListener(ignored -> showSensorHistory(SensorHistory.SENSOR_NAME_HUMIDITY));
-
-        this.particulatesState = (SensorStateView) view.findViewById(R.id.fragment_current_conditions_particulates);
-        particulatesState.setOnClickListener(ignored -> showSensorHistory(SensorHistory.SENSOR_NAME_PARTICULATES));
+        this.adapter = new ConditionsAdapter(getActivity(), new ConditionData[] { temperature, humidity, particulates });
+        Styles.addCardSpacingHeaderAndFooter(listView);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
 
         return view;
     }
@@ -71,32 +80,38 @@ public class CurrentConditionsFragment extends InjectionFragment {
 
     public void bindConditions(@Nullable CurrentConditionsPresenter.Result result) {
         if (result == null) {
-            temperatureState.displayCondition(Condition.UNKNOWN);
-            temperatureState.setReading(getString(R.string.missing_data_placeholder));
+            temperature.formatter = null;
+            temperature.sensorState = null;
 
-            humidityState.displayCondition(Condition.UNKNOWN);
-            humidityState.setReading(getString(R.string.missing_data_placeholder));
+            humidity.sensorState = null;
 
-            particulatesState.displayCondition(Condition.UNKNOWN);
-            particulatesState.setReading(getString(R.string.missing_data_placeholder));
+            particulates.formatter = null;
+            particulates.sensorState = null;
         } else {
-            temperatureState.displayReading(result.conditions.getTemperature(), result.units::formatTemperature);
-            humidityState.displayReading(result.conditions.getHumidity(), null);
-            particulatesState.displayReading(result.conditions.getParticulates(), result.units::formatParticulates);
+            temperature.formatter = result.units::formatTemperature;
+            temperature.sensorState = result.conditions.getTemperature();
+
+            humidity.sensorState = result.conditions.getHumidity();
+
+            particulates.formatter = result.units::formatParticulates;
+            particulates.sensorState = result.conditions.getParticulates();
         }
+
+        adapter.notifyDataSetChanged();
     }
 
     public void conditionsUnavailable(@NonNull Throwable e) {
         Logger.error(CurrentConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
 
-        temperatureState.displayCondition(Condition.UNKNOWN);
-        temperatureState.setReading(getString(R.string.missing_data_placeholder));
+        temperature.formatter = null;
+        temperature.sensorState = null;
 
-        humidityState.displayCondition(Condition.UNKNOWN);
-        humidityState.setReading(getString(R.string.missing_data_placeholder));
+        humidity.sensorState = null;
 
-        particulatesState.displayCondition(Condition.UNKNOWN);
-        particulatesState.setReading(getString(R.string.missing_data_placeholder));
+        particulates.formatter = null;
+        particulates.sensorState = null;
+
+        adapter.notifyDataSetChanged();
     }
 
     //endregion
@@ -106,5 +121,74 @@ public class CurrentConditionsFragment extends InjectionFragment {
         Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
         intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensor);
         startActivity(intent);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        ConditionData condition = adapter.getItem(position);
+        showSensorHistory(condition.sensorName);
+    }
+
+
+    static class ConditionData {
+        final @NonNull String sensorName;
+
+        @Nullable UnitFormatter.Formatter formatter;
+        @Nullable SensorState sensorState;
+
+        ConditionData(@NonNull String sensorName) {
+            this.sensorName = sensorName;
+        }
+    }
+
+    class ConditionsAdapter extends ArrayAdapter<ConditionData> {
+        private final LayoutInflater inflater;
+
+        ConditionsAdapter(Context context, ConditionData[] conditions) {
+            super(context, R.layout.item_sensor_condition, conditions);
+
+            this.inflater = LayoutInflater.from(context);
+        }
+
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            if (view == null) {
+                view = inflater.inflate(R.layout.item_sensor_condition, parent, false);
+                view.setTag(new ViewHolder(view));
+            }
+
+            ConditionData conditionData = getItem(position);
+            ViewHolder holder = (ViewHolder) view.getTag();
+            Resources resources = getContext().getResources();
+            if (conditionData.sensorState != null) {
+                int sensorColor = resources.getColor(conditionData.sensorState.getCondition().colorRes);
+
+                holder.reading.setText(conditionData.sensorState.getFormattedValue(conditionData.formatter));
+                holder.reading.setTextColor(sensorColor);
+
+                String message = conditionData.sensorState.getMessage();
+                holder.message.setText(message);
+                markdown.renderWithEmphasisColor(sensorColor, message)
+                        .subscribe(holder.message::setText, Functions.LOG_ERROR);
+            } else {
+                holder.reading.setText(R.string.missing_data_placeholder);
+                holder.reading.setTextColor(resources.getColor(R.color.sensor_unknown));
+                holder.message.setText(R.string.missing_data_placeholder);
+            }
+            return view;
+        }
+
+
+        class ViewHolder {
+            final TextView reading;
+            final TextView message;
+
+            ViewHolder(@NonNull View view) {
+                this.reading = (TextView) view.findViewById(R.id.item_sensor_condition_reading);
+                this.message = (TextView) view.findViewById(R.id.item_sensor_condition_message);
+            }
+        }
     }
 }

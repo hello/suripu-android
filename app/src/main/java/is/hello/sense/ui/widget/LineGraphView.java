@@ -24,8 +24,6 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
-import is.hello.sense.ui.common.Styles;
-import is.hello.sense.ui.common.Views;
 
 public final class LineGraphView extends FrameLayout {
     private @Nullable OnValueHighlightedListener onValueHighlightedListener;
@@ -432,7 +430,7 @@ public final class LineGraphView extends FrameLayout {
         HighlightedValueView(Context context) {
             super(context);
 
-            this.pointAreaHalf = getResources().getDimensionPixelSize(R.dimen.line_graph_point_size) / 2f;
+            this.pointAreaHalf = getResources().getDimensionPixelSize(R.dimen.view_line_graph_point_size) / 2f;
             backgroundPaint.setAntiAlias(true);
         }
 

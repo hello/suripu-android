@@ -27,6 +27,7 @@ import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
+import is.hello.sense.ui.widget.Styles;
 import is.hello.sense.util.Markdown;
 
 import static android.widget.AbsListView.LayoutParams;
@@ -65,16 +66,7 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
-
-
-        int spacingHeight = getResources().getDimensionPixelSize(R.dimen.gap_outer);
-        View topSpacing = new View(getActivity());
-        topSpacing.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, spacingHeight));
-        listView.addHeaderView(topSpacing, null, false);
-
-        View bottomSpacing = new View(getActivity());
-        bottomSpacing.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, spacingHeight));
-        listView.addFooterView(bottomSpacing, null, false);
+        Styles.addCardSpacingHeaderAndFooter(listView);
 
 
         this.questionContainer = (ViewGroup) inflater.inflate(R.layout.sub_fragment_new_question, listView, false);

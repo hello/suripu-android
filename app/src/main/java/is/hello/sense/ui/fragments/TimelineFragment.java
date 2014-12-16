@@ -34,9 +34,9 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.common.ListViewUtil;
-import is.hello.sense.ui.common.Styles;
-import is.hello.sense.ui.common.Views;
+import is.hello.sense.ui.widget.ListViews;
+import is.hello.sense.ui.widget.Styles;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.widget.PieGraphView;
 import is.hello.sense.ui.widget.SlidingLayersView;
@@ -334,7 +334,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         int firstVisiblePosition = listView.getFirstVisiblePosition();
-        int firstVisibleSegment = ListViewUtil.getAdapterPosition(listView, firstVisiblePosition);
+        int firstVisibleSegment = ListViews.getAdapterPosition(listView, firstVisiblePosition);
 
         float scrolledAmount;
         if (firstVisiblePosition == 0) {
@@ -359,7 +359,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
 
-        int itemPosition = ListViewUtil.getPositionForY(listView, timestampY);
+        int itemPosition = ListViews.getPositionForY(listView, timestampY);
         TimelineSegment segment = segmentAdapter.getItem(itemPosition);
         timeScrubber.setY(timestampY);
         timeScrubber.setDateTime(segment.getTimestamp());

@@ -35,12 +35,11 @@ import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.common.Views;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Markdown;
-import is.hello.sense.util.ResumeScheduler;
 import rx.Scheduler;
 
 import static android.widget.LinearLayout.LayoutParams;

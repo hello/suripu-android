@@ -322,6 +322,17 @@
 
     <!-- Other -->
 
+    <style name="AppTheme.ListView" />
+
+    <style name="AppTheme.ListView.Cards">
+        <item name="android:paddingLeft">@dimen/gap_outer</item>
+        <item name="android:paddingRight">@dimen/gap_outer</item>
+        <item name="android:divider">@color/transparent</item>
+        <item name="android:dividerHeight">@dimen/gap_small</item>
+        <item name="android:scrollbars">none</item>
+        <item name="android:listSelector">@null</item>
+    </style>
+
     <style name="AppTheme.FadingScrollView">
         <item name="android:fillViewport">true</item>
         <item name="android:fadingEdge">vertical</item>

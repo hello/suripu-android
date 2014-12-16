@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import is.hello.sense.ui.common.Views;
+import is.hello.sense.ui.widget.Views;
 
 public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private final View view;

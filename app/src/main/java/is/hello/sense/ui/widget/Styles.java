@@ -1,7 +1,14 @@
-package is.hello.sense.ui.common;
+package is.hello.sense.ui.widget;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
+import android.view.View;
+import android.widget.AbsListView;
+import android.widget.ListView;
+import android.widget.WrapperListAdapter;
 
 import is.hello.sense.R;
 
@@ -45,5 +52,20 @@ public final class Styles {
             return R.color.sensor_alert;
         else
             return R.color.sensor_ideal;
+    }
+
+
+    public static void addCardSpacingHeaderAndFooter(@NonNull ListView listView) {
+        Context context = listView.getContext();
+        Resources resources = listView.getResources();
+
+        int spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_outer);
+        View topSpacing = new View(context);
+        topSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
+        listView.addHeaderView(topSpacing, null, false);
+
+        View bottomSpacing = new View(context);
+        bottomSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
+        listView.addFooterView(bottomSpacing, null, false);
     }
 }

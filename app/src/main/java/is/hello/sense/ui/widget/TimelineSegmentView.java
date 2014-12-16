@@ -18,7 +18,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.common.Styles;
 
 /**
  * Draws a single segment of a user's timeline. This includes the segment's
@@ -93,13 +92,13 @@ public final class TimelineSegmentView extends View {
         eventOvalPaint.setAntiAlias(true);
         eventOvalPaint.setColor(Color.WHITE);
 
-        this.leftInset = resources.getDimension(R.dimen.widget_timeline_segment_left_inset);
-        this.rightInset = resources.getDimension(R.dimen.widget_timeline_segment_right_inset);
-        this.stripeWidth = resources.getDimension(R.dimen.event_stripe_width);
-        this.ovalInset = resources.getDimension(R.dimen.widget_timeline_segment_oval_inset);
-        this.textLeftInset = resources.getDimension(R.dimen.widget_timeline_segment_left_inset);
+        this.leftInset = resources.getDimension(R.dimen.view_timeline_segment_left_inset);
+        this.rightInset = resources.getDimension(R.dimen.view_timeline_segment_right_inset);
+        this.stripeWidth = resources.getDimension(R.dimen.view_timeline_segment_stripe_width);
+        this.ovalInset = resources.getDimension(R.dimen.view_timeline_segment_oval_inset);
+        this.textLeftInset = resources.getDimension(R.dimen.view_timeline_segment_left_inset);
 
-        float stripeCornerRadius = resources.getDimension(R.dimen.widget_timeline_segment_corner_radius);
+        float stripeCornerRadius = resources.getDimension(R.dimen.view_timeline_segment_corner_radius);
         this.topRadii = new float[] {
                 stripeCornerRadius, stripeCornerRadius, stripeCornerRadius, stripeCornerRadius,
                 0f, 0f, 0f, 0f,

@@ -1,10 +1,10 @@
-package is.hello.sense.ui.common;
+package is.hello.sense.ui.widget;
 
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ListView;
 
-public final class ListViewUtil {
+public final class ListViews {
     /**
      * Returns the accessible last position (index) in the list view's adapter,
      * taking into account any headers and footers contained by the list view.
