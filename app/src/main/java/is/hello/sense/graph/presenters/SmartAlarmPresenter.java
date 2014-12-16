@@ -2,6 +2,7 @@ package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,10 +15,10 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
-public class SmartAlarmPresenter extends UpdatablePresenter<List<SmartAlarm>> {
+public class SmartAlarmPresenter extends ValuePresenter<ArrayList<SmartAlarm>> {
     private final ApiService apiService;
 
-    public final PresenterSubject<List<SmartAlarm>> alarms = this.subject;
+    public final PresenterSubject<ArrayList<SmartAlarm>> alarms = this.subject;
 
     @Inject SmartAlarmPresenter(@NonNull ApiService apiService) {
         this.apiService = apiService;
@@ -34,7 +35,7 @@ public class SmartAlarmPresenter extends UpdatablePresenter<List<SmartAlarm>> {
     }
 
     @Override
-    protected Observable<List<SmartAlarm>> provideUpdateObservable() {
+    protected Observable<ArrayList<SmartAlarm>> provideUpdateObservable() {
         return apiService.smartAlarms();
     }
 
@@ -53,7 +54,7 @@ public class SmartAlarmPresenter extends UpdatablePresenter<List<SmartAlarm>> {
         return true;
     }
 
-    public Observable<VoidResponse> save(@NonNull List<SmartAlarm> updatedAlarms) {
+    public Observable<VoidResponse> save(@NonNull ArrayList<SmartAlarm> updatedAlarms) {
         logEvent("save()");
 
         if (validateAlarms(updatedAlarms)) {

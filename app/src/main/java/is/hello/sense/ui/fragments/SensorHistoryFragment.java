@@ -8,7 +8,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,9 +29,9 @@ import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Function;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.Presenter;
+import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -215,10 +214,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         private UnitSystem unitSystem;
         private boolean use24Time = false;
 
-        public void bindHistory(@NonNull Pair<List<SensorHistory>, UnitSystem> historyAndUnits) {
+        public void bindHistory(@NonNull SensorHistoryPresenter.Result historyAndUnits) {
             sections.clear();
 
-            List<SensorHistory> history = historyAndUnits.first;
+            List<SensorHistory> history = historyAndUnits.data;
             if (history.isEmpty()) {
                 return;
             }
@@ -257,7 +256,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 graphView.notifyDataChanged();
             }, Functions.LOG_ERROR);
 
-            this.unitSystem = historyAndUnits.second;
+            this.unitSystem = historyAndUnits.unitSystem;
 
             animate(loadingIndicator)
                     .fadeOut(View.GONE)

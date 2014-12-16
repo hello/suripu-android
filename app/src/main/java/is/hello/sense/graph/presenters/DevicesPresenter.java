@@ -2,6 +2,7 @@ package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -13,10 +14,10 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
-public class DevicesPresenter extends UpdatablePresenter<List<Device>> {
+public class DevicesPresenter extends ValuePresenter<ArrayList<Device>> {
     @Inject ApiService apiService;
 
-    public final PresenterSubject<List<Device>> devices = this.subject;
+    public final PresenterSubject<ArrayList<Device>> devices = this.subject;
 
     @Override
     protected boolean isDataDisposable() {
@@ -29,7 +30,7 @@ public class DevicesPresenter extends UpdatablePresenter<List<Device>> {
     }
 
     @Override
-    protected Observable<List<Device>> provideUpdateObservable() {
+    protected Observable<ArrayList<Device>> provideUpdateObservable() {
         return apiService.registeredDevices();
     }
 

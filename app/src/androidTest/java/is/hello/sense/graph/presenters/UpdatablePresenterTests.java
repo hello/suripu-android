@@ -43,7 +43,7 @@ public class UpdatablePresenterTests extends TestCase {
         assertEquals(2, observer.getLast().intValue());
     }
 
-    static class CounterPresenter extends UpdatablePresenter<Integer> {
+    static class CounterPresenter extends ValuePresenter<Integer> {
         private int counter = 0;
 
         final PresenterSubject<Integer> value = this.subject;

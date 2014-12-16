@@ -12,13 +12,6 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.Styles;
 
 public class TrendsFragment extends InjectionFragment {
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setRetainInstance(true);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

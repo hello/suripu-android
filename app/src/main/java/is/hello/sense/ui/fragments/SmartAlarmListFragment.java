@@ -16,7 +16,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -41,17 +40,18 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
     private ProgressBar activityIndicator;
 
-    private List<SmartAlarm> currentAlarms = new ArrayList<>();
+    private ArrayList<SmartAlarm> currentAlarms = new ArrayList<>();
     private SmartAlarmAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        smartAlarmPresenter.update();
-        addPresenter(smartAlarmPresenter);
+        if (savedInstanceState == null) {
+            smartAlarmPresenter.update();
+        }
 
-        setRetainInstance(true);
+        addPresenter(smartAlarmPresenter);
     }
 
     @Nullable
@@ -115,7 +115,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
                 this::presentError);
     }
 
-    public void bindAlarms(@NonNull List<SmartAlarm> alarms) {
+    public void bindAlarms(@NonNull ArrayList<SmartAlarm> alarms) {
         this.currentAlarms = alarms;
 
         adapter.clear();

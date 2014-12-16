@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,8 +43,6 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
         super.onCreate(savedInstanceState);
 
         addPresenter(presenter);
-
-        setRetainInstance(true);
     }
 
     @Nullable
@@ -66,6 +65,13 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
         super.onViewCreated(view, savedInstanceState);
 
         bindAndSubscribe(presenter.currentConditions, this::bindConditions, this::conditionsUnavailable);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Log.i(getClass().getSimpleName(), "onDestroy");
     }
 
     @Override

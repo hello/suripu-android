@@ -60,13 +60,6 @@ public class InjectionFragment extends SenseFragment implements ObservableContai
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        presenterContainer.onContainerDestroyed();
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
 

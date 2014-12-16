@@ -3,9 +3,9 @@ package is.hello.sense.ui.adapter;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.NonNull;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v13.app.FragmentStatePagerAdapter;
 
-public class StaticFragmentAdapter extends FragmentPagerAdapter {
+public class StaticFragmentAdapter extends FragmentStatePagerAdapter {
     private final Item[] items;
 
     public StaticFragmentAdapter(@NonNull FragmentManager fm,

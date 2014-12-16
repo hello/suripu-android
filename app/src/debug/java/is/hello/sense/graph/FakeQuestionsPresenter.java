@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.ApiService;
@@ -54,11 +55,11 @@ public class FakeQuestionsPresenter extends QuestionsPresenter {
     }
 
     @Override
-    protected Observable<List<Question>> currentQuestions() {
-        return Observable.create((Observable.OnSubscribe<List<Question>>) s -> {
+    protected Observable<ArrayList<Question>> currentQuestions() {
+        return Observable.create((Observable.OnSubscribe<ArrayList<Question>>) s -> {
             try {
                 InputStream inputStream = context.getAssets().open("fake_questions.json");
-                List<Question> questions = objectMapper.readValue(inputStream, new TypeReference<List<Question>>() {});
+                ArrayList<Question> questions = objectMapper.readValue(inputStream, new TypeReference<ArrayList<Question>>() {});
                 s.onNext(questions);
                 s.onCompleted();
             } catch (IOException e) {

@@ -16,6 +16,7 @@ import android.support.v4.view.ViewPager;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,8 +62,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
         this.pager = (ViewPager) view.findViewById(R.id.fragment_underside_pager);
         pager.setOnPageChangeListener(this);
-        pager.setOffscreenPageLimit(0);
-        pager.setAdapter(new StaticFragmentAdapter(getFragmentManager(),
+        pager.setAdapter(new StaticFragmentAdapter(getChildFragmentManager(),
                 new Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                 new Item(TrendsFragment.class, getString(R.string.title_trends)),
                 new Item(InsightsFragment.class, getString(R.string.action_insights)),
@@ -102,7 +102,6 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
         return view;
     }
-
 
     public boolean isAtStart() {
         return (pager.getCurrentItem() == 0);
