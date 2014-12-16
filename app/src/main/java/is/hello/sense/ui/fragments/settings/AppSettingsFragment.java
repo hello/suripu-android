@@ -17,14 +17,17 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.HelpUtil;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.BuildValues;
 
 public class AppSettingsFragment extends ListFragment {
     @Inject ApiSessionManager sessionManager;
+    @Inject BuildValues buildValues;
 
     private StaticItemAdapter adapter;
 
@@ -43,6 +46,11 @@ public class AppSettingsFragment extends ListFragment {
         adapter.addItem(getString(R.string.label_devices), null, () -> showFragment(DeviceListFragment.class, R.string.label_devices, null));
         adapter.addItem(getString(R.string.action_help), null, this::showHelp);
         adapter.addItem(getString(R.string.action_log_out), null, this::logOut);
+
+        if (buildValues.debugScreenEnabled) {
+            adapter.addItem(getString(R.string.activity_debug), null, () -> startActivity(new Intent(getActivity(), DebugActivity.class)));
+        }
+
         setListAdapter(adapter);
     }
 
