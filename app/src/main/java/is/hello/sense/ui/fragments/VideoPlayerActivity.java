@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments;
 
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;

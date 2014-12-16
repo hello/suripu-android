@@ -66,8 +66,8 @@ public interface ApiService {
 
     @GET("/timeline/{year}-{month}-{day}")
     Observable<ArrayList<Timeline>> timelineForDate(@NonNull @Path("year") String year,
-                                               @NonNull @Path("month") String month,
-                                               @NonNull @Path("day") String day);
+                                                    @NonNull @Path("month") String month,
+                                                    @NonNull @Path("day") String day);
 
     @GET("/insights")
     Observable<ArrayList<Insight>> currentInsights();
@@ -82,11 +82,11 @@ public interface ApiService {
 
     @GET("/room/{sensor}/day")
     Observable<ArrayList<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor,
-                                                        @Query("from") long timestamp);
+                                                             @Query("from") long timestamp);
 
     @GET("/room/{sensor}/week")
     Observable<ArrayList<SensorHistory>> sensorHistoryForWeek(@Path("sensor") String sensor,
-                                                         @Query("from") long timestamp);
+                                                              @Query("from") long timestamp);
 
     //endregion
 
