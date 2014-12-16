@@ -71,7 +71,7 @@
             android:theme="@style/AppTheme.Underside" />
 
         <activity
-            android:name=".ui.activities.SmartAlarmActivity"
+            android:name=".ui.activities.SmartAlarmDetailActivity"
             android:label="@string/action_alarm"
             android:parentActivityName=".ui.activities.HomeActivity"
             android:theme="@style/AppTheme.Underside" />

@@ -25,9 +25,8 @@ import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
-import is.hello.sense.ui.activities.SmartAlarmActivity;
+import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -88,18 +87,16 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == EDIT_REQUEST_CODE) {
-            ((SmartAlarmActivity) getActivity()).finishEditing();
-
-            int index = data.getIntExtra(SmartAlarmDetailFragment.ARG_INDEX, 0);
+            int index = data.getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, 0);
             if (resultCode == Activity.RESULT_OK) {
-                SmartAlarm alarm = (SmartAlarm) data.getSerializableExtra(SmartAlarmDetailFragment.ARG_ALARM);
-                if (index == SmartAlarmDetailFragment.INDEX_NEW) {
+                SmartAlarm alarm = (SmartAlarm) data.getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
+                if (index == SmartAlarmDetailActivity.INDEX_NEW) {
                     currentAlarms.add(alarm);
                 } else {
                     currentAlarms.set(index, alarm);
                 }
-            } else if (resultCode == SmartAlarmDetailFragment.RESULT_DELETE) {
-                if (index != SmartAlarmDetailFragment.INDEX_NEW) {
+            } else if (resultCode == SmartAlarmDetailActivity.RESULT_DELETE) {
+                if (index != SmartAlarmDetailActivity.INDEX_NEW) {
                     currentAlarms.remove(index);
                 }
             }
@@ -136,11 +133,10 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
 
     private void editAlarm(@NonNull SmartAlarm alarm, int index) {
-        ((SmartAlarmActivity) getActivity()).beginEditing();
-
-        SmartAlarmDetailFragment fragment = SmartAlarmDetailFragment.newInstance(alarm, index);
-        fragment.setTargetFragment(this, EDIT_REQUEST_CODE);
-        ((FragmentNavigation) getActivity()).showFragment(fragment, getString(R.string.action_new_alarm), true);
+        Bundle arguments = SmartAlarmDetailActivity.getArguments(alarm, index);
+        Intent intent = new Intent(getActivity(), SmartAlarmDetailActivity.class);
+        intent.putExtras(arguments);
+        startActivityForResult(intent, EDIT_REQUEST_CODE);
     }
 
     @Override
@@ -168,7 +164,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     }
 
     public void newAlarm(@NonNull View sender) {
-        editAlarm(new SmartAlarm(), SmartAlarmDetailFragment.INDEX_NEW);
+        editAlarm(new SmartAlarm(), SmartAlarmDetailActivity.INDEX_NEW);
     }
 
 

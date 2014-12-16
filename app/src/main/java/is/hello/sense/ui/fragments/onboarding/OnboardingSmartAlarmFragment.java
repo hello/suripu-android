@@ -17,7 +17,7 @@ import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.activities.SmartAlarmActivity;
+import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -47,7 +47,7 @@ public class OnboardingSmartAlarmFragment extends InjectionFragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            SmartAlarm newAlarm = (SmartAlarm) data.getSerializableExtra(SmartAlarmDetailFragment.ARG_ALARM);
+            SmartAlarm newAlarm = (SmartAlarm) data.getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
 
             LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(smartAlarmPresenter.save(Lists.newArrayList(newAlarm)),
@@ -66,8 +66,7 @@ public class OnboardingSmartAlarmFragment extends InjectionFragment {
 
 
     public void createNewAlarm(@NonNull View sender) {
-        Intent newAlarm = new Intent(getActivity(), SmartAlarmActivity.class);
-        newAlarm.putExtra(SmartAlarmActivity.EXTRA_SHOW_CREATE_ONLY, true);
+        Intent newAlarm = new Intent(getActivity(), SmartAlarmDetailActivity.class);
         startActivityForResult(newAlarm, EDIT_REQUEST_CODE);
     }
 
