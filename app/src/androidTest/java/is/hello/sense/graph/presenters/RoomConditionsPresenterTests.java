@@ -5,9 +5,8 @@ import javax.inject.Inject;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.SyncObserver;
 
-public class CurrentConditionsPresenterTests extends InjectionTestCase {
-    @Inject
-    RoomConditionsPresenter presenter;
+public class RoomConditionsPresenterTests extends InjectionTestCase {
+    @Inject RoomConditionsPresenter presenter;
 
     public void testUpdate() throws Exception {
         SyncObserver<RoomConditionsPresenter.Result> conditions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.currentConditions);
