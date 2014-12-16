@@ -49,6 +49,8 @@ public class Account extends ApiResponse {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private DateTime lastModified;
 
+    @JsonProperty("email_verified")
+    private boolean emailVerified;
 
     @JsonIgnore
     public String getId() {
@@ -140,6 +142,11 @@ public class Account extends ApiResponse {
         this.lastModified = lastModified;
     }
 
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+
     @Override
     public String toString() {
         return "Account{" +
@@ -152,8 +159,9 @@ public class Account extends ApiResponse {
                 ", height=" + height +
                 ", weight=" + weight +
                 ", birthDate=" + birthDate +
-                ", password=" + !TextUtils.isEmpty(password) +
+                ", password='" + password + '\'' +
                 ", lastModified=" + lastModified +
+                ", emailVerified=" + emailVerified +
                 '}';
     }
 }
