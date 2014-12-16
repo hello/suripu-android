@@ -6,18 +6,27 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ToggleButton;
+
+import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.ui.common.Views;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 
@@ -27,6 +36,16 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     private SelectorLinearLayout tabs;
     private BottomLineDrawable tabLine;
     private ViewPager pager;
+
+    private static int[] getButtonIcons() {
+        return new int[] {
+                R.drawable.underside_icon_currently,
+                R.drawable.underside_icon_trends,
+                R.drawable.underside_icon_insights,
+                R.drawable.underside_icon_alarm,
+                R.drawable.underside_icon_settings,
+        };
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +70,32 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         ));
 
         this.tabs = (SelectorLinearLayout) view.findViewById(R.id.fragment_underside_tabs);
+        List<ToggleButton> toggleButtons = tabs.getToggleButtons();
+        int[] iconResources = getButtonIcons();
+        for (int i = 0; i < toggleButtons.size(); i++) {
+            ToggleButton button = toggleButtons.get(i);
+            ImageSpan imageSpan = new ImageSpan(getActivity(), iconResources[i]);
+            SpannableString content = new SpannableString("X");
+            content.setSpan(imageSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            button.setText(content);
+            button.setTextOn(content);
+            button.setTextOff(content);
+            button.setPadding(0, 0, 0, 0);
+            button.setBackground(null);
+            button.setTag(R.id.underside_icon, imageSpan.getDrawable());
+        }
+        int accentColor = getResources().getColor(R.color.light_accent);
+        tabs.setButtonStyler((button, checked) -> {
+            Drawable icon = (Drawable) button.getTag(R.id.underside_icon);
+            if (checked) {
+                icon.setColorFilter(accentColor, PorterDuff.Mode.SRC_ATOP);
+            } else {
+                icon.setColorFilter(null);
+            }
+        });
+        tabs.setSelectedIndex(pager.getCurrentItem());
         tabs.setOnSelectionChangedListener(this);
+
         this.tabLine = new BottomLineDrawable(pager.getAdapter().getCount(), getResources().getDimensionPixelSize(R.dimen.shadow_height));
         tabLine.setFillColor(getResources().getColor(R.color.light_accent));
         tabLine.setBackgroundColor(Color.WHITE);

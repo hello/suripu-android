@@ -68,10 +68,10 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
 
     @Override
     public void styleButton(ToggleButton button, boolean checked) {
-        button.setChecked(checked);
-        if (checked)
+        if (checked) {
             button.setAlpha(1f);
-        else
+        } else {
             button.setAlpha(0.4f);
+        }
     }
 }

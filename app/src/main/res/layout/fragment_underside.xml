@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,53 +8,47 @@
     <is.hello.sense.ui.widget.SelectorLinearLayout
         android:id="@+id/fragment_underside_tabs"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/shadow_height"
-        android:gravity="center_vertical">
+        android:layout_height="@dimen/action_bar_height">
 
         <ToggleButton
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textOn="@string/title_current_conditions"
-            android:textOff="@string/title_current_conditions"
+            android:background="@drawable/underside_icon_currently"
+            android:contentDescription="@string/title_current_conditions"
             android:checked="true"
             style="@style/AppTheme.Button.ModeSelector"/>
 
         <ToggleButton
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textOn="@string/title_trends"
-            android:textOff="@string/title_trends"
-            android:checked="true"
+            android:background="@drawable/underside_icon_trends"
+            android:contentDescription="@string/title_trends"
             style="@style/AppTheme.Button.ModeSelector"/>
 
         <ToggleButton
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textOn="@string/action_insights"
-            android:textOff="@string/action_insights"
-            android:checked="true"
+            android:background="@drawable/underside_icon_insights"
+            android:contentDescription="@string/action_insights"
             style="@style/AppTheme.Button.ModeSelector"/>
 
         <ToggleButton
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textOn="@string/action_alarm"
-            android:textOff="@string/action_alarm"
-            android:checked="true"
+            android:background="@drawable/underside_icon_alarm"
+            android:contentDescription="@string/action_alarm"
             style="@style/AppTheme.Button.ModeSelector"/>
 
         <ToggleButton
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textOn="@string/action_settings"
-            android:textOff="@string/action_settings"
-            android:checked="true"
+            android:background="@drawable/underside_icon_settings"
+            android:contentDescription="@string/action_settings"
             style="@style/AppTheme.Button.ModeSelector"/>
 
     </is.hello.sense.ui.widget.SelectorLinearLayout>
