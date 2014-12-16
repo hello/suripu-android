@@ -49,7 +49,7 @@ public class CurrentConditionsFragment extends InjectionFragment implements Adap
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_current_conditions, container, false);
+        View view = inflater.inflate(R.layout.fragment_underside_list, container, false);
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
