@@ -19,24 +19,36 @@ public class PresenterContainer {
 
     //region Lifecycle
 
+    /**
+     * @see is.hello.sense.graph.presenters.Presenter#onContainerDestroyed()
+     */
     public void onContainerDestroyed() {
         for (Presenter presenter : presenters) {
             presenter.onContainerDestroyed();
         }
     }
 
+    /**
+     * @see is.hello.sense.graph.presenters.Presenter#onContainerResumed()
+     */
     public void onContainerResumed() {
         for (Presenter presenter : presenters) {
             presenter.onContainerResumed();
         }
     }
 
+    /**
+     * @see is.hello.sense.graph.presenters.Presenter#onTrimMemory(int)
+     */
     public void onTrimMemory(int level) {
         for (Presenter presenter : presenters) {
             presenter.onTrimMemory(level);
         }
     }
 
+    /**
+     * @see is.hello.sense.graph.presenters.Presenter#onRestoreState(android.os.Parcelable)
+     */
     public void onRestoreState(@NonNull Bundle inState) {
         for (Presenter presenter : presenters) {
             if (presenter.isStateRestored()) {
@@ -48,6 +60,9 @@ public class PresenterContainer {
         }
     }
 
+    /**
+     * @see is.hello.sense.graph.presenters.Presenter#onSaveState()
+     */
     public void onSaveState(Bundle outState) {
         for (Presenter presenter : presenters) {
             Parcelable savedState = presenter.onSaveState();

@@ -1,11 +1,7 @@
 package is.hello.sense.util;
 
-import android.support.annotation.NonNull;
-
 import junit.framework.TestCase;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Scheduler;
@@ -13,11 +9,13 @@ import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
 public class ResumeSchedulerTests extends TestCase {
-    private final TestResumable resumable = new TestResumable();
-    private final ResumeScheduler scheduler = new ResumeScheduler(resumable, Schedulers.immediate());
+    private boolean isResumed = false;
+    private final ResumeScheduler.Coordinator coordinator = new ResumeScheduler.Coordinator(() -> isResumed);
+    private final ResumeScheduler scheduler = new ResumeScheduler(coordinator, Schedulers.immediate());
 
     public void testResumedBehavior() throws Exception {
-        resumable.onResume();
+        this.isResumed = true;
+        coordinator.resume();
 
         AtomicBoolean called = new AtomicBoolean(false);
         Action0 action = () -> called.set(true);
@@ -28,7 +26,7 @@ public class ResumeSchedulerTests extends TestCase {
     }
 
     public void testPausedBehavior() throws Exception {
-        resumable.onPause();
+        this.isResumed = false;
 
         AtomicBoolean called = new AtomicBoolean(false);
         Action0 action = () -> called.set(true);
@@ -37,48 +35,9 @@ public class ResumeSchedulerTests extends TestCase {
 
         assertFalse(called.get());
 
-        resumable.onResume();
+        this.isResumed = true;
+        coordinator.resume();
 
         assertTrue(called.get());
     }
-
-    public static class TestResumable implements ResumeScheduler.Coordinator {
-        // This is the same code used by SenseActivity and InjectionFragment.
-        private final List<Runnable> onResumeRunnables = new ArrayList<>();
-        private boolean isResumed = false;
-
-        void onPause() {
-            this.isResumed = false;
-        }
-
-        void onResume() {
-            this.isResumed = true;
-
-            synchronized (onResumeRunnables) {
-                for (Runnable runnable : onResumeRunnables) {
-                    runnable.run();
-                }
-                onResumeRunnables.clear();
-            }
-        }
-
-        @Override
-        public void postOnResume(@NonNull Runnable runnable) {
-            if (isResumed) {
-                runnable.run();
-            } else {
-                synchronized (onResumeRunnables) {
-                    onResumeRunnables.add(runnable);
-                }
-            }
-        }
-
-        @Override
-        public void cancelPostOnResume(@NonNull Runnable runnable) {
-            synchronized (onResumeRunnables) {
-                onResumeRunnables.remove(runnable);
-            }
-        }
-    }
-
 }
