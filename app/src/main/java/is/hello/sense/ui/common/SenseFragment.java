@@ -2,11 +2,32 @@ package is.hello.sense.ui.common;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 public class SenseFragment extends Fragment {
+
+    /**
+     * Shows the fragment using a fragment manager within a given container.
+     *
+     * @param fm            The fragment manager to show the fragment from.
+     * @param containerId   The container to show the fragment within.
+     * @param tag           The tag to associate with the fragment.
+     */
+    public void show(@NonNull FragmentManager fm,
+                     @IdRes int containerId,
+                     @NonNull String tag) {
+        fm.beginTransaction()
+                .add(containerId, this, tag)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(tag)
+                .commit();
+    }
 
     /**
      * How this method behaves depends on whether or not there is a target fragment set:

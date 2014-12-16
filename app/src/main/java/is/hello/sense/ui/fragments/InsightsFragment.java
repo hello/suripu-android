@@ -1,6 +1,6 @@
 package is.hello.sense.ui.fragments;
 
-import android.app.FragmentTransaction;
+import android.animation.LayoutTransition;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,6 +23,7 @@ import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.adapter.InsightsAdapter;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
 import is.hello.sense.util.Markdown;
@@ -45,10 +46,7 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        insightsPresenter.update();
         addPresenter(insightsPresenter);
-
-        questionsPresenter.update();
         addPresenter(questionsPresenter);
 
         setRetainInstance(true);
@@ -92,6 +90,7 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
         // ListView doesn't re-layout if you set a header/footer's visibility to
         // GONE, have to wrap the GONE view in question for re-layout to work.
         FrameLayout layoutFix = new FrameLayout(getActivity());
+        layoutFix.setLayoutTransition(Animations.Properties.DEFAULT.apply(new LayoutTransition(), false));
         layoutFix.addView(questionContainer);
         listView.addHeaderView(layoutFix, null, false);
 
@@ -107,7 +106,6 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        swipeRefreshLayout.setRefreshing(true);
         bindAndSubscribe(insightsPresenter.insights, insightsAdapter::bindInsights, insightsAdapter::insightsUnavailable);
 
         bindAndSubscribe(questionsPresenter.currentQuestion, currentQuestion -> {
@@ -117,6 +115,13 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
                 showNewQuestion(currentQuestion);
             }
         }, ignored -> questionContainer.setVisibility(View.GONE));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        onRefresh();
     }
 
     @Override
@@ -164,13 +169,7 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
     }
 
     public void answerQuestion() {
-        getFragmentManager()
-                .beginTransaction()
-                .add(R.id.activity_home_container, new QuestionsFragment(), QuestionsFragment.TAG)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .addToBackStack(QuestionsFragment.BACK_STACK_NAME)
-                .commit();
-
+        new QuestionsFragment().show(getFragmentManager(), R.id.activity_home_container, QuestionsFragment.TAG);
         hideNewQuestion();
     }
 

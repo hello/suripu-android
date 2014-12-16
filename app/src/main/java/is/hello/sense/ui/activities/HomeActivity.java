@@ -210,12 +210,7 @@ public class HomeActivity
     //region Questions
 
     public void answerQuestion() {
-        getFragmentManager()
-                .beginTransaction()
-                .add(R.id.activity_home_container, new QuestionsFragment(), QuestionsFragment.TAG)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .addToBackStack(QuestionsFragment.BACK_STACK_NAME)
-                .commit();
+        new QuestionsFragment().show(getFragmentManager(), R.id.activity_home_container, QuestionsFragment.TAG);
     }
 
     //endregion
