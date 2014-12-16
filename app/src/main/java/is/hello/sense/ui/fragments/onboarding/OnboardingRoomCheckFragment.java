@@ -53,8 +53,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     @Inject CurrentConditionsPresenter currentConditionsPresenter;
     @Inject Markdown markdown;
 
-    private final ResumeScheduler scheduler = new ResumeScheduler(this);
-    private final Scheduler.Worker deferWorker = scheduler.createWorker();
+    private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
 
     private final int[] CONDITION_TITLES = {
             R.string.room_condition_checking_temperature,

@@ -42,7 +42,7 @@ public class ResumeSchedulerTests extends TestCase {
         assertTrue(called.get());
     }
 
-    public static class TestResumable implements ResumeScheduler.Resumable {
+    public static class TestResumable implements ResumeScheduler.Coordinator {
         // This is the same code used by SenseActivity and InjectionFragment.
         private final List<Runnable> onResumeRunnables = new ArrayList<>();
         private boolean isResumed = false;
