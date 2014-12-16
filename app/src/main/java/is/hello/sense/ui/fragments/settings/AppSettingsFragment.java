@@ -2,63 +2,87 @@ package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.ListFragment;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.XmlRes;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ListView;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.SenseApplication;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.activities.DebugActivity;
-import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.HelpUtil;
+import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.BuildValues;
 
-public class AppSettingsFragment extends ListFragment {
+import static android.widget.LinearLayout.LayoutParams;
+
+public class AppSettingsFragment extends InjectionFragment {
     @Inject ApiSessionManager sessionManager;
     @Inject BuildValues buildValues;
 
-    private StaticItemAdapter adapter;
+    private final LayoutParams itemTextLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+    private LayoutParams dividerLayoutParams;
+    private int itemTextHorizontalPadding, itemTextVerticalPadding;
 
-    public AppSettingsFragment() {
-        SenseApplication.getInstance().inject(this);
-    }
+    private LinearLayout itemContainer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.adapter = new StaticItemAdapter(getActivity());
-        adapter.addItem(getString(R.string.label_my_info), null, () -> showFragment(MyInfoFragment.class, R.string.label_my_info, null));
-        adapter.addItem(getString(R.string.label_account), null, () -> showFragment(AccountSettingsFragment.class, R.string.label_account, null));
-        adapter.addItem(getString(R.string.label_units_and_time), null, () -> showFragment(R.xml.settings_units_and_time, R.string.label_units_and_time));
-        adapter.addItem(getString(R.string.label_devices), null, () -> showFragment(DeviceListFragment.class, R.string.label_devices, null));
-        adapter.addItem(getString(R.string.action_help), null, this::showHelp);
-        adapter.addItem(getString(R.string.action_log_out), null, this::logOut);
-
-        if (buildValues.debugScreenEnabled) {
-            adapter.addItem(getString(R.string.activity_debug), null, () -> startActivity(new Intent(getActivity(), DebugActivity.class)));
-        }
-
-        setListAdapter(adapter);
+        Resources resources = getResources();
+        this.dividerLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, resources.getDimensionPixelSize(R.dimen.divider_height));
+        this.itemTextHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_outer);
+        this.itemTextVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
     }
 
+    @Nullable
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        StaticItemAdapter.Item item = adapter.getItem(position);
-        if (item.getAction() != null) {
-            item.getAction().run();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_app_settings, container, false);
+
+        this.itemContainer = (LinearLayout) view.findViewById(R.id.fragment_app_settings_container);
+        addItem(R.string.label_my_info, true, ignored -> showFragment(MyInfoFragment.class, R.string.label_my_info, null));
+        addItem(R.string.label_account, true, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account, null));
+        addItem(R.string.label_units_and_time, true, ignored -> showFragment(R.xml.settings_units_and_time, R.string.label_units_and_time));
+        addItem(R.string.label_devices, true, ignored -> showFragment(DeviceListFragment.class, R.string.label_devices, null));
+        addItem(R.string.action_help, true, this::showHelp);
+        addItem(R.string.action_log_out, buildValues.debugScreenEnabled, this::logOut);
+
+        if (buildValues.debugScreenEnabled) {
+            addItem(R.string.activity_debug, false, ignored -> startActivity(new Intent(getActivity(), DebugActivity.class)));
+        }
+
+        return view;
+    }
+
+
+    public void addItem(@StringRes int titleRes, boolean wantsDivider, @NonNull View.OnClickListener onClick) {
+        TextView itemView = new TextView(getActivity());
+        itemView.setBackgroundResource(R.drawable.button_selector_dark);
+        itemView.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_Light);
+        itemView.setPadding(itemTextHorizontalPadding, itemTextVerticalPadding, itemTextHorizontalPadding, itemTextVerticalPadding);
+        itemView.setText(titleRes);
+        itemView.setOnClickListener(onClick);
+        itemContainer.addView(itemView, itemTextLayoutParams);
+
+        if (wantsDivider) {
+            View divider = new View(getActivity());
+            divider.setBackgroundResource(R.color.border);
+            itemContainer.addView(divider, dividerLayoutParams);
         }
     }
 
@@ -79,11 +103,11 @@ public class AppSettingsFragment extends ListFragment {
         showFragment(StaticPreferencesFragment.class, titleRes, StaticPreferencesFragment.getArguments(prefsRes));
     }
 
-    public void showHelp() {
+    public void showHelp(@NonNull View sender) {
         HelpUtil.showHelp(getActivity());
     }
 
-    public void logOut() {
+    public void logOut(@NonNull View sender) {
         SenseAlertDialog builder = new SenseAlertDialog(getActivity());
         builder.setTitle(R.string.dialog_title_log_out);
         builder.setMessage(R.string.dialog_message_log_out);
