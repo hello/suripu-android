@@ -39,14 +39,9 @@
 
     <dimen name="sliding_layers_open_height">@dimen/action_bar_height</dimen>
 
-    <dimen name="pill_color_size">19dp</dimen>
-
-    <dimen name="insights_height">110dp</dimen>
-
     <dimen name="event_image_width">23dp</dimen>
     <dimen name="event_image_height">23dp</dimen>
     <dimen name="event_stripe_width">27dp</dimen>
-    <dimen name="event_view_min_height">30dp</dimen>
 
     <dimen name="grand_sleep_summary_width">175dp</dimen>
     <dimen name="grand_sleep_summary_height">175dp</dimen>
