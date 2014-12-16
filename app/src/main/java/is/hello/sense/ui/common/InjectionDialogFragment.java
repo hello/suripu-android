@@ -69,6 +69,8 @@ public class InjectionDialogFragment extends DialogFragment implements Observabl
         if (dialog != null && getRetainInstance()) {
             dialog.setDismissMessage(null);
         }
+
+        observableContainer.clearSubscriptions();
     }
 
     @Override
