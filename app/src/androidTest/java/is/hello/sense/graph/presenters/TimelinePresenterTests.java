@@ -2,8 +2,8 @@ package is.hello.sense.graph.presenters;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -16,10 +16,10 @@ public class TimelinePresenterTests extends InjectionTestCase {
     @Inject TimelinePresenter presenter;
 
     public void testUpdate() throws Exception {
-        Observable<List<Timeline>> allTimelines = presenter.timeline;
+        Observable<ArrayList<Timeline>> allTimelines = presenter.timeline;
         presenter.setDate(DateTime.now());
 
-        SyncObserver<List<Timeline>> allObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, allTimelines);
+        SyncObserver<ArrayList<Timeline>> allObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, allTimelines);
         allObserver.await();
 
         assertNull(allObserver.getError());
@@ -41,10 +41,10 @@ public class TimelinePresenterTests extends InjectionTestCase {
     }
 
     public void testMemoryPressure() throws Exception {
-        Observable<List<Timeline>> allTimelines = presenter.timeline;
+        Observable<ArrayList<Timeline>> allTimelines = presenter.timeline;
         presenter.setDate(DateTime.now());
 
-        SyncObserver<List<Timeline>> allObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, allTimelines);
+        SyncObserver<ArrayList<Timeline>> allObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, allTimelines);
         allObserver.await();
 
         assertNull(allObserver.getError());

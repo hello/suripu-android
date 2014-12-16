@@ -18,7 +18,7 @@ import rx.Subscription;
  * @param <T>   The type of data being presented. If T extends Serializable, it will automatically be saved.
  */
 public abstract class ValuePresenter<T extends Serializable> extends Presenter {
-    public final String SAVED_STATE_KEY = "ValuePresenter#saved_state";
+    public static final String SAVED_STATE_KEY = "ValuePresenter#saved_state";
 
     /**
      * The subject of the presenter. Subclasses should expose this

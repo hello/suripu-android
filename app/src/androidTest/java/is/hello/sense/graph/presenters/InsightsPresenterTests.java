@@ -1,6 +1,6 @@
 package is.hello.sense.graph.presenters;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -14,7 +14,7 @@ public class InsightsPresenterTests extends InjectionTestCase {
     public void testUpdate() throws Exception {
         insightsPresenter.update();
 
-        SyncObserver<List<Insight>> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, insightsPresenter.insights);
+        SyncObserver<ArrayList<Insight>> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, insightsPresenter.insights);
         observer.await();
 
         assertNull(observer.getError());

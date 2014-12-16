@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
@@ -102,15 +103,15 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<List<Timeline>> timelineForDate(@NonNull @Path("year") String year,
+    public Observable<ArrayList<Timeline>> timelineForDate(@NonNull @Path("year") String year,
                                                       @NonNull @Path("month") String month,
                                                       @NonNull @Path("day") String day) {
-        return loadResponse("timeline", new TypeReference<List<Timeline>>() {});
+        return loadResponse("timeline", new TypeReference<ArrayList<Timeline>>() {});
     }
 
     @Override
-    public Observable<List<Insight>> currentInsights() {
-        return loadResponse("insights", new TypeReference<List<Insight>>() {});
+    public Observable<ArrayList<Insight>> currentInsights() {
+        return loadResponse("insights", new TypeReference<ArrayList<Insight>>() {});
     }
 
     @Override
@@ -119,20 +120,20 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<List<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor,
+    public Observable<ArrayList<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor,
                                                                @Query("timestamp_millis") long timestamp) {
         return unimplemented();
     }
 
     @Override
-    public Observable<List<SensorHistory>> sensorHistoryForWeek(@Path("sensor") String sensor,
+    public Observable<ArrayList<SensorHistory>> sensorHistoryForWeek(@Path("sensor") String sensor,
                                                                 @Query("timestamp_millis") long timestamp) {
         return unimplemented();
     }
 
     @Override
-    public Observable<List<Question>> questions(@NonNull @Query("date") String timestamp) {
-        return loadResponse("questions", new TypeReference<List<Question>>() {});
+    public Observable<ArrayList<Question>> questions(@NonNull @Query("date") String timestamp) {
+        return loadResponse("questions", new TypeReference<ArrayList<Question>>() {});
     }
 
     @Override
@@ -148,7 +149,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<List<Device>> registeredDevices() {
+    public Observable<ArrayList<Device>> registeredDevices() {
         return unimplemented();
     }
 
@@ -163,8 +164,8 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<List<SmartAlarm>> smartAlarms() {
-        return loadResponse("smart_alarms", new TypeReference<List<SmartAlarm>>() {});
+    public Observable<ArrayList<SmartAlarm>> smartAlarms() {
+        return loadResponse("smart_alarms", new TypeReference<ArrayList<SmartAlarm>>() {});
     }
 
     @Override
