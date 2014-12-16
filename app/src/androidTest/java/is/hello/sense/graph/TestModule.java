@@ -24,7 +24,7 @@ import is.hello.sense.bluetooth.stacks.TestBluetoothStackBehavior;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
-import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
+import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.CurrentConditionsPresenterTests;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.HardwarePresenterTests;
@@ -52,7 +52,7 @@ import is.hello.sense.util.DateFormatterTests;
         QuestionsPresenter.class,
 
         CurrentConditionsPresenterTests.class,
-        CurrentConditionsPresenter.class,
+        RoomConditionsPresenter.class,
 
         HardwarePresenter.class,
         HardwarePresenterTests.class,

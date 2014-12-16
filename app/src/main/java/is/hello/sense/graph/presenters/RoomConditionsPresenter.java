@@ -12,7 +12,7 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import rx.Observable;
 
-@Singleton public class CurrentConditionsPresenter extends UpdatablePresenter<CurrentConditionsPresenter.Result> {
+@Singleton public class RoomConditionsPresenter extends UpdatablePresenter<RoomConditionsPresenter.Result> {
     @Inject ApiService apiService;
     @Inject UnitFormatter unitFormatter;
 

@@ -30,7 +30,7 @@ import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Function;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
+import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
@@ -53,7 +53,8 @@ import static is.hello.sense.functional.Lists.segment;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class SensorHistoryFragment extends InjectionFragment implements SelectorLinearLayout.OnSelectionChangedListener {
-    @Inject CurrentConditionsPresenter conditionsPresenter;
+    @Inject
+    RoomConditionsPresenter conditionsPresenter;
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
     @Inject Markdown markdown;
     @Inject DateFormatter dateFormatter;
@@ -147,7 +148,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         return formattedValue;
     }
 
-    public void bindConditions(@Nullable CurrentConditionsPresenter.Result result) {
+    public void bindConditions(@Nullable RoomConditionsPresenter.Result result) {
         if (result == null) {
             readingText.setText(R.string.missing_data_placeholder);
             messageText.setText(R.string.missing_data_placeholder);

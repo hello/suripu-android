@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorState;
-import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
+import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.remote.common.WidgetService;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.units.UnitSystem;
@@ -46,7 +46,8 @@ public class RoomConditionsWidgetProvider extends AppWidgetProvider {
     }
 
     public static class UpdateService extends WidgetService {
-        @Inject CurrentConditionsPresenter presenter;
+        @Inject
+        RoomConditionsPresenter presenter;
 
         public UpdateService() {
             presenter.update();
@@ -63,7 +64,7 @@ public class RoomConditionsWidgetProvider extends AppWidgetProvider {
                              });
         }
 
-        private void bindConditions(int widgetIds[], @Nullable CurrentConditionsPresenter.Result results) {
+        private void bindConditions(int widgetIds[], @Nullable RoomConditionsPresenter.Result results) {
             Resources resources = getResources();
             RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.widget_current_conditions);
             if (results != null) {

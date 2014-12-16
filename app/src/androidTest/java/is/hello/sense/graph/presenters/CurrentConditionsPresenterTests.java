@@ -6,10 +6,11 @@ import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.SyncObserver;
 
 public class CurrentConditionsPresenterTests extends InjectionTestCase {
-    @Inject CurrentConditionsPresenter presenter;
+    @Inject
+    RoomConditionsPresenter presenter;
 
     public void testUpdate() throws Exception {
-        SyncObserver<CurrentConditionsPresenter.Result> conditions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.currentConditions);
+        SyncObserver<RoomConditionsPresenter.Result> conditions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.currentConditions);
         presenter.update();
         conditions.await();
 

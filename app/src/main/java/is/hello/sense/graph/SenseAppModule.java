@@ -11,7 +11,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
+import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
@@ -29,7 +29,7 @@ import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
-import is.hello.sense.ui.fragments.CurrentConditionsFragment;
+import is.hello.sense.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.fragments.SensorHistoryFragment;
@@ -97,8 +97,8 @@ import is.hello.sense.util.BuildValues;
 
         InsightsPresenter.class,
         InsightDetailsDialogFragment.class,
-        CurrentConditionsFragment.class,
-        CurrentConditionsPresenter.class,
+        RoomConditionsFragment.class,
+        RoomConditionsPresenter.class,
         SensorHistoryFragment.class,
         SensorHistoryPresenter.class,
         InsightsFragment.class,

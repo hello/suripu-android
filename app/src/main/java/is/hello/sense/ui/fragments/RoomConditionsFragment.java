@@ -20,7 +20,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
+import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.Styles;
@@ -28,14 +28,14 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 
-public class CurrentConditionsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
-    @Inject CurrentConditionsPresenter presenter;
+public class RoomConditionsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+    @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
 
-    private final ConditionData temperature = new ConditionData(SensorHistory.SENSOR_NAME_TEMPERATURE);
-    private final ConditionData humidity = new ConditionData(SensorHistory.SENSOR_NAME_HUMIDITY);
-    private final ConditionData particulates = new ConditionData(SensorHistory.SENSOR_NAME_PARTICULATES);
-    private ConditionsAdapter adapter;
+    private final RoomSensor temperature = new RoomSensor(SensorHistory.SENSOR_NAME_TEMPERATURE);
+    private final RoomSensor humidity = new RoomSensor(SensorHistory.SENSOR_NAME_HUMIDITY);
+    private final RoomSensor particulates = new RoomSensor(SensorHistory.SENSOR_NAME_PARTICULATES);
+    private RoomSensorsAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class CurrentConditionsFragment extends InjectionFragment implements Adap
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        this.adapter = new ConditionsAdapter(getActivity(), new ConditionData[] { temperature, humidity, particulates });
+        this.adapter = new RoomSensorsAdapter(getActivity(), new RoomSensor[] { temperature, humidity, particulates });
         Styles.addCardSpacingHeaderAndFooter(listView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
@@ -78,7 +78,7 @@ public class CurrentConditionsFragment extends InjectionFragment implements Adap
 
     //region Displaying Data
 
-    public void bindConditions(@Nullable CurrentConditionsPresenter.Result result) {
+    public void bindConditions(@Nullable RoomConditionsPresenter.Result result) {
         if (result == null) {
             temperature.formatter = null;
             temperature.sensorState = null;
@@ -101,7 +101,7 @@ public class CurrentConditionsFragment extends InjectionFragment implements Adap
     }
 
     public void conditionsUnavailable(@NonNull Throwable e) {
-        Logger.error(CurrentConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
+        Logger.error(RoomConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
 
         temperature.formatter = null;
         temperature.sensorState = null;
@@ -125,27 +125,27 @@ public class CurrentConditionsFragment extends InjectionFragment implements Adap
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        ConditionData condition = adapter.getItem(position);
+        RoomSensor condition = adapter.getItem(position);
         showSensorHistory(condition.sensorName);
     }
 
 
-    static class ConditionData {
+    static class RoomSensor {
         final @NonNull String sensorName;
 
         @Nullable UnitFormatter.Formatter formatter;
         @Nullable SensorState sensorState;
 
-        ConditionData(@NonNull String sensorName) {
+        RoomSensor(@NonNull String sensorName) {
             this.sensorName = sensorName;
         }
     }
 
-    class ConditionsAdapter extends ArrayAdapter<ConditionData> {
+    class RoomSensorsAdapter extends ArrayAdapter<RoomSensor> {
         private final LayoutInflater inflater;
 
-        ConditionsAdapter(Context context, ConditionData[] conditions) {
-            super(context, R.layout.item_sensor_condition, conditions);
+        RoomSensorsAdapter(@NonNull Context context, @NonNull RoomSensor[] conditions) {
+            super(context, R.layout.item_room_sensor_condition, conditions);
 
             this.inflater = LayoutInflater.from(context);
         }
@@ -155,20 +155,20 @@ public class CurrentConditionsFragment extends InjectionFragment implements Adap
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = convertView;
             if (view == null) {
-                view = inflater.inflate(R.layout.item_sensor_condition, parent, false);
+                view = inflater.inflate(R.layout.item_room_sensor_condition, parent, false);
                 view.setTag(new ViewHolder(view));
             }
 
-            ConditionData conditionData = getItem(position);
+            RoomSensor roomSensor = getItem(position);
             ViewHolder holder = (ViewHolder) view.getTag();
             Resources resources = getContext().getResources();
-            if (conditionData.sensorState != null) {
-                int sensorColor = resources.getColor(conditionData.sensorState.getCondition().colorRes);
+            if (roomSensor.sensorState != null) {
+                int sensorColor = resources.getColor(roomSensor.sensorState.getCondition().colorRes);
 
-                holder.reading.setText(conditionData.sensorState.getFormattedValue(conditionData.formatter));
+                holder.reading.setText(roomSensor.sensorState.getFormattedValue(roomSensor.formatter));
                 holder.reading.setTextColor(sensorColor);
 
-                String message = conditionData.sensorState.getMessage();
+                String message = roomSensor.sensorState.getMessage();
                 holder.message.setText(message);
                 markdown.renderWithEmphasisColor(sensorColor, message)
                         .subscribe(holder.message::setText, Functions.LOG_ERROR);
