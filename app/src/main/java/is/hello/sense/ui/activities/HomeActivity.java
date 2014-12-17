@@ -23,6 +23,7 @@ import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
@@ -136,6 +137,15 @@ public class HomeActivity
             Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
             TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight());
             viewPager.setCurrentFragment(fragment);
+
+
+            Fragment navigatorFragment = getFragmentManager().findFragmentByTag(TimelineNavigatorFragment.TAG);
+            if (navigatorFragment != null) {
+                getFragmentManager()
+                        .beginTransaction()
+                        .remove(navigatorFragment)
+                        .commit();
+            }
         }
     }
 
@@ -272,6 +282,16 @@ public class HomeActivity
         }
 
         viewPager.getCurrentFragment().onUserDidPushUpTopView();
+    }
+
+    //endregion
+
+
+    //region Timeline Navigation
+
+    public void showTimelineNavigator(@NonNull DateTime startDate) {
+        TimelineNavigatorFragment navigatorFragment = TimelineNavigatorFragment.newInstance(startDate);
+        navigatorFragment.show(getFragmentManager(), R.id.activity_home_container, TimelineNavigatorFragment.TAG);
     }
 
     //endregion

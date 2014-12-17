@@ -118,6 +118,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
+        dateText.setOnClickListener(ignored -> ((HomeActivity) getActivity()).showTimelineNavigator(getDate()));
 
         listView.addHeaderView(headerView, null, false);
 
@@ -187,6 +188,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onTransitionCompleted() {
         // This is the best place to fire animations.
     }
+
 
     public void showSleepScore(int sleepScore) {
         if (sleepScore > 0) {
