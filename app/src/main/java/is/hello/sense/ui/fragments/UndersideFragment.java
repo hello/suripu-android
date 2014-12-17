@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments;
 
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -27,10 +28,13 @@ import is.hello.sense.R;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.util.Constants;
 
 import static is.hello.sense.ui.adapter.StaticFragmentAdapter.Item;
 
 public class UndersideFragment extends Fragment implements ViewPager.OnPageChangeListener, SelectorLinearLayout.OnSelectionChangedListener {
+    private SharedPreferences preferences;
+
     private SelectorLinearLayout tabs;
     private TabsBackgroundDrawable tabLine;
     private ViewPager pager;
@@ -49,6 +53,8 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        this.preferences = getActivity().getSharedPreferences(Constants.INTERNAL_PREFS, 0);
+
         setRetainInstance(true);
     }
 
@@ -60,7 +66,6 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         Resources resources = getResources();
 
         this.pager = (ViewPager) view.findViewById(R.id.fragment_underside_pager);
-        pager.setOnPageChangeListener(this);
         pager.setAdapter(new StaticFragmentAdapter(getChildFragmentManager(),
                 new Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                 new Item(TrendsFragment.class, getString(R.string.title_trends)),
@@ -68,6 +73,14 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
                 new Item(SmartAlarmListFragment.class, getString(R.string.action_alarm)),
                 new Item(AppSettingsFragment.class, getString(R.string.action_settings))
         ));
+
+        long itemLastUpdated = preferences.getLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, 0);
+        if ((System.currentTimeMillis() - itemLastUpdated) <= Constants.STALE_INTERVAL_MS) {
+            int currentItem = preferences.getInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 0);
+            pager.setCurrentItem(currentItem, false);
+        }
+
+        pager.setOnPageChangeListener(this);
 
         this.tabs = (SelectorLinearLayout) view.findViewById(R.id.fragment_underside_tabs);
         List<ToggleButton> toggleButtons = tabs.getToggleButtons();
@@ -111,6 +124,14 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     }
 
 
+    public void saveCurrentItem(int currentItem) {
+        preferences.edit()
+                   .putInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, currentItem)
+                   .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
+                   .apply();
+    }
+
+
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         tabLine.setPositionOffset(positionOffset);
@@ -120,6 +141,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     @Override
     public void onPageSelected(int position) {
         tabs.setSelectedIndex(position);
+        saveCurrentItem(position);
     }
 
     @Override

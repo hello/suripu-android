@@ -4,6 +4,8 @@ public final class Constants {
     public static final String INTERNAL_PREFS = "internal_prefs";
     public static final String INTERNAL_PREF_API_ENV_NAME = "api_env_name";
     public static final String INTERNAL_PREF_ANALYTICS_USER_ID = "analytics_user_id";
+    public static final String INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM = "underside_current_item";
+    public static final String INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED = "underside_current_item_last_updated";
 
     public static final String NOTIFICATION_PREFS = "notification_prefs";
     public static final String NOTIFICATION_PREF_REGISTRATION_ID = "registration_id";
@@ -21,6 +23,7 @@ public final class Constants {
     public static final int ONBOARDING_CHECKPOINT_SENSE = 3;
     public static final int ONBOARDING_CHECKPOINT_PILL = 4;
 
+    public static final long STALE_INTERVAL_MS = (10 * 60 * 1000); // 10 minutes
 
     // From Retrofit
     public static final int HTTP_CONNECT_TIMEOUT_MILLIS = 15 * 1000; // 15s
