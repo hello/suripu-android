@@ -208,7 +208,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
 
                 String message = roomSensorInfo.sensorState.getMessage();
                 holder.message.setText(message);
-                markdown.renderWithEmphasisColor(sensorColor, message)
+                markdown.render(message)
                         .subscribe(holder.message::setText, Functions.LOG_ERROR);
 
                 holder.lineGraphDrawable.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
