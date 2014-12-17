@@ -39,6 +39,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.graphing.LineGraphView;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.graphing.StyleableGraphAdapter;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.DateFormatter;
@@ -208,7 +209,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     }
 
 
-    public class SensorDataSource implements LineGraphView.Adapter, LineGraphView.OnValueHighlightedListener {
+    public class SensorDataSource implements StyleableGraphAdapter, LineGraphView.OnValueHighlightedListener {
         private List<Section> sections = new ArrayList<>();
         private float baseMagnitude = 0f;
         private float peakMagnitude = 0f;
@@ -343,6 +344,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             return sections.get(section).get(position).getValue();
         }
 
+        @NonNull
         @Override
         public String getSectionHeader(int section) {
             SensorHistory value = sections.get(section).getRepresentativeValue();
@@ -356,6 +358,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             }
         }
 
+        @NonNull
         @Override
         public String getSectionFooter(int section) {
             float value = sections.get(section).getAverage();

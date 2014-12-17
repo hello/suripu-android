@@ -29,7 +29,7 @@ import is.hello.sense.ui.widget.Views;
 
 public final class LineGraphView extends FrameLayout {
     private @Nullable OnValueHighlightedListener onValueHighlightedListener;
-    private Adapter adapter;
+    private StyleableGraphAdapter adapter;
     private int numberOfLines = 0;
     private Drawable fillDrawable;
     private Drawable gridDrawable;
@@ -272,11 +272,11 @@ public final class LineGraphView extends FrameLayout {
         }
     }
 
-    public @Nullable Adapter getAdapter() {
+    public @Nullable StyleableGraphAdapter getAdapter() {
         return adapter;
     }
 
-    public void setAdapter(@Nullable Adapter adapter) {
+    public void setAdapter(@Nullable StyleableGraphAdapter adapter) {
         this.adapter = adapter;
         notifyDataChanged();
     }
@@ -481,18 +481,6 @@ public final class LineGraphView extends FrameLayout {
         }
     }
 
-
-    public interface Adapter {
-        float getBaseMagnitude();
-        float getPeakMagnitude();
-        int getSectionCount();
-        int getSectionPointCount(int section);
-        int getSectionLineColor(int section);
-        int getSectionTextColor(int section);
-        float getMagnitudeAt(int section, int position);
-        String getSectionHeader(int section);
-        String getSectionFooter(int section);
-    }
 
     public interface OnValueHighlightedListener {
         void onGraphHighlightBegin();
