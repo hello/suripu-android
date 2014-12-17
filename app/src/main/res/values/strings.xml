@@ -52,12 +52,14 @@
     <string name="event_type_snoring">Snoring</string>
     <string name="event_type_sleep_talk">Sleep Talk</string>
     <string name="event_type_light">Light</string>
+    <string name="event_type_lights_out">Lights Out</string>
     <string name="event_type_sleep_motion">Sleep Motion</string>
     <string name="event_type_sleep">Sleep</string>
     <string name="event_type_sunset">Sunset</string>
     <string name="event_type_sunrise">Sunrise</string>
     <string name="event_type_partner_motion">Partner Moved</string>
     <string name="event_type_wake_up">Woke Up</string>
+    <string name="event_type_partner_moved">Partner Moved</string>
     <string name="event_type_unknown">Other</string>
 
     <string name="gender_male">Male</string>

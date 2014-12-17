@@ -129,11 +129,12 @@ public class TimelineSegment extends ApiResponse {
         SNORING(R.drawable.sound_medium, R.string.event_type_snoring),
         SLEEP_TALK(R.drawable.sound_medium, R.string.event_type_sleep_talk),
         LIGHT(R.drawable.light_medium, R.string.event_type_light),
+        LIGHTS_OUT(R.drawable.light_good, R.string.event_type_lights_out),
         SLEEP_MOTION(R.drawable.movement_medium, R.string.event_type_sleep_motion),
         SLEEP(R.drawable.asleep, R.string.event_type_sleep),
         SUNSET(R.drawable.sunset, R.string.event_type_sunset),
         SUNRISE(R.drawable.sunrise, R.string.event_type_sunrise),
-        PARTNER_MOTION(R.drawable.movement_medium, R.string.event_type_wake_up),
+        PARTNER_MOTION(R.drawable.movement_medium, R.string.event_type_partner_moved),
         WAKE_UP(R.drawable.wakeup, R.string.event_type_wake_up),
         UNKNOWN(R.drawable.movement_medium, R.string.event_type_unknown);
 
