@@ -45,6 +45,8 @@ public class HomeActivity
     @Inject PreferencesPresenter preferences;
     @Inject BuildValues buildValues;
 
+    private long lastUpdated = Long.MAX_VALUE;
+
     private SlidingLayersView slidingLayersView;
     private FragmentPageView<TimelineFragment> viewPager;
 
@@ -58,6 +60,9 @@ public class HomeActivity
         setContentView(R.layout.activity_home);
 
         this.isFirstActivityRun = (savedInstanceState == null);
+        if (savedInstanceState != null) {
+            this.lastUpdated = savedInstanceState.getLong("lastUpdated");
+        }
 
         // noinspection unchecked
         this.viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
@@ -109,10 +114,15 @@ public class HomeActivity
     }
 
     @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putLong("lastUpdated", lastUpdated);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-
-        questionsPresenter.update();
 
         if (!buildValues.isDebugBuild()) {
             UpdateManager.register(this, buildValues.hockeyId);
@@ -120,6 +130,12 @@ public class HomeActivity
 
         if (getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false)) {
             slidingLayersView.openWithoutAnimation();
+        }
+
+        if ((System.currentTimeMillis() - lastUpdated) > Constants.STALE_INTERVAL_MS && !isCurrentFragmentLastNight()) {
+            Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
+            TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight());
+            viewPager.setCurrentFragment(fragment);
         }
     }
 
@@ -167,6 +183,12 @@ public class HomeActivity
     }
 
 
+    public boolean isCurrentFragmentLastNight() {
+        TimelineFragment currentFragment = viewPager.getCurrentFragment();
+        return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
+    }
+
+
     //region Fragment Adapter
 
     @Override
@@ -199,6 +221,8 @@ public class HomeActivity
 
     @Override
     public void onDidTransitionToFragment(@NonNull FragmentPageView<TimelineFragment> view, @NonNull TimelineFragment fragment) {
+        this.lastUpdated = System.currentTimeMillis();
+
         fragment.onTransitionCompleted();
         Analytics.event(Analytics.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.PROP_TIMELINE_ACTION, Analytics.PROP_TIMELINE_ACTION_CHANGE_DATE));
     }
