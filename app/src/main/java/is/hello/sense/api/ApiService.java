@@ -2,6 +2,7 @@ package is.hello.sense.api;
 
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
@@ -64,12 +65,12 @@ public interface ApiService {
     //region Timeline
 
     @GET("/timeline/{year}-{month}-{day}")
-    Observable<List<Timeline>> timelineForDate(@NonNull @Path("year") String year,
-                                               @NonNull @Path("month") String month,
-                                               @NonNull @Path("day") String day);
+    Observable<ArrayList<Timeline>> timelineForDate(@NonNull @Path("year") String year,
+                                                    @NonNull @Path("month") String month,
+                                                    @NonNull @Path("day") String day);
 
     @GET("/insights")
-    Observable<List<Insight>> currentInsights();
+    Observable<ArrayList<Insight>> currentInsights();
 
     //endregion
 
@@ -80,12 +81,12 @@ public interface ApiService {
     Observable<RoomConditions> currentRoomConditions();
 
     @GET("/room/{sensor}/day")
-    Observable<List<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor,
-                                                        @Query("from") long timestamp);
+    Observable<ArrayList<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor,
+                                                             @Query("from") long timestamp);
 
     @GET("/room/{sensor}/week")
-    Observable<List<SensorHistory>> sensorHistoryForWeek(@Path("sensor") String sensor,
-                                                         @Query("from") long timestamp);
+    Observable<ArrayList<SensorHistory>> sensorHistoryForWeek(@Path("sensor") String sensor,
+                                                              @Query("from") long timestamp);
 
     //endregion
 
@@ -93,7 +94,7 @@ public interface ApiService {
     //region Questions
 
     @GET("/questions")
-    Observable<List<Question>> questions(@NonNull @Query("date") String timestamp);
+    Observable<ArrayList<Question>> questions(@NonNull @Query("date") String timestamp);
 
     @POST("/questions/save")
     Observable<VoidResponse> answerQuestion(@Query("account_question_id") long accountId,
@@ -109,7 +110,7 @@ public interface ApiService {
     //region Devices
 
     @GET("/devices")
-    Observable<List<Device>> registeredDevices();
+    Observable<ArrayList<Device>> registeredDevices();
 
     @DELETE("/devices/pill/{id}")
     Observable<VoidResponse> unregisterPill(@Path("id") @NonNull String pillId);
@@ -123,7 +124,7 @@ public interface ApiService {
     //region Smart Alarms
 
     @GET("/alarms")
-    Observable<List<SmartAlarm>> smartAlarms();
+    Observable<ArrayList<SmartAlarm>> smartAlarms();
 
     @POST("/alarms/{client_time_utc}")
     Observable<VoidResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,

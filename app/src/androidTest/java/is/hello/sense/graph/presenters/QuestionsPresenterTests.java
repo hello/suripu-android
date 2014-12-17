@@ -5,8 +5,8 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -41,7 +41,7 @@ public class QuestionsPresenterTests extends InjectionTestCase {
     }
 
     public void testUpdate() throws Exception {
-        SyncObserver<List<Question>> questions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.questions);
+        SyncObserver<ArrayList<Question>> questions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.questions);
         questions.await();
 
         assertNull(questions.getError());
@@ -65,8 +65,8 @@ public class QuestionsPresenterTests extends InjectionTestCase {
     }
 
     public void testQuestionsAcknowledged() throws Exception {
-        SyncObserver<List<Question>> questions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.questions)
-                                                             .ignore(1);
+        SyncObserver<ArrayList<Question>> questions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.questions)
+                                                                  .ignore(1);
         presenter.questionsAcknowledged();
         questions.await();
 
@@ -93,8 +93,8 @@ public class QuestionsPresenterTests extends InjectionTestCase {
         assertNull(currentQuestion.getLast());
 
 
-        SyncObserver<List<Question>> questions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.questions)
-                                                             .ignore(1);
+        SyncObserver<ArrayList<Question>> questions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.questions)
+                                                                  .ignore(1);
         questions.await();
 
         assertNull(questions.getError());

@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,15 +67,14 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
             boolean isSelected = (index == selectedIndex);
             if (buttonStyler != null) {
                 buttonStyler.styleButton(button, isSelected);
-            } else {
-                button.setChecked(isSelected);
             }
+            button.setChecked(isSelected);
         }
     }
 
 
-    public int getSelectedIndex() {
-        return selectedIndex;
+    public @NonNull List<ToggleButton> getToggleButtons() {
+        return toggleButtons;
     }
 
     public void setSelectedIndex(int selectedIndex) {
@@ -104,7 +104,7 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
         return toggleButtons.get(index).getTag(R.id.layout_linear_selector_tag_key_user);
     }
 
-    public void setButtonStyler(ButtonStyler buttonStyler) {
+    public void setButtonStyler(@Nullable ButtonStyler buttonStyler) {
         this.buttonStyler = buttonStyler;
     }
 

@@ -175,7 +175,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         if (newFragment != null) {
             if (getOnTransitionObserver() != null) {
                 getOnTransitionObserver().onWillTransitionToFragment(this, newFragment);
-                post(() -> getOnTransitionObserver().onWillTransitionToFragment(this, newFragment));
+                post(() -> getOnTransitionObserver().onDidTransitionToFragment(this, newFragment));
             }
 
             if (currentFragment != null) {

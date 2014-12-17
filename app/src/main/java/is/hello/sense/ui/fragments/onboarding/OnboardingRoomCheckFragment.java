@@ -31,16 +31,15 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
+import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.common.Views;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Markdown;
-import is.hello.sense.util.ResumeScheduler;
 import rx.Scheduler;
 
 import static android.widget.LinearLayout.LayoutParams;
@@ -50,11 +49,10 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     private static final long CONDITION_VISIBLE_MS = 2000;
     private static final long END_CONTAINER_DELAY_MS = 50;
 
-    @Inject CurrentConditionsPresenter currentConditionsPresenter;
+    @Inject RoomConditionsPresenter roomConditionsPresenter;
     @Inject Markdown markdown;
 
-    private final ResumeScheduler scheduler = new ResumeScheduler(this);
-    private final Scheduler.Worker deferWorker = scheduler.createWorker();
+    private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
 
     private final int[] CONDITION_TITLES = {
             R.string.room_condition_checking_temperature,
@@ -96,8 +94,8 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             this.animationCompleted = savedInstanceState.getBoolean("animationCompleted", false);
         }
 
-        currentConditionsPresenter.update();
-        addPresenter(currentConditionsPresenter);
+        roomConditionsPresenter.update();
+        addPresenter(roomConditionsPresenter);
 
         setRetainInstance(true);
     }
@@ -132,7 +130,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         if (animationCompleted) {
             jumpToEnd();
         } else {
-            bindAndSubscribe(currentConditionsPresenter.currentConditions.take(1), this::bindConditions, this::conditionsUnavailable);
+            bindAndSubscribe(roomConditionsPresenter.currentConditions.take(1), this::bindConditions, this::conditionsUnavailable);
         }
     }
 
@@ -347,7 +345,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     //endregion
 
 
-    public void bindConditions(@NonNull CurrentConditionsPresenter.Result result) {
+    public void bindConditions(@NonNull RoomConditionsPresenter.Result result) {
         if (endContainer.getParent() != null) {
             return;
         }

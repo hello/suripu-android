@@ -18,8 +18,6 @@ import android.widget.ListView;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
-import is.hello.sense.ui.common.ListViewUtil;
-import is.hello.sense.ui.common.Views;
 import is.hello.sense.util.Constants;
 
 public class SlidingLayersView extends FrameLayout implements GestureInterceptingView {
@@ -253,7 +251,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     }
 
     protected boolean isListViewAtTop(@Nullable ListView listView) {
-        return (listView == null) || (ListViewUtil.getEstimatedScrollY(listView) == 0);
+        return (listView == null) || (ListViews.getEstimatedScrollY(listView) == 0);
     }
 
     //endregion

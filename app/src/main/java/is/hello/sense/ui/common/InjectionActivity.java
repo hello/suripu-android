@@ -2,29 +2,22 @@ package is.hello.sense.ui.common;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import is.hello.sense.SenseApplication;
 import is.hello.sense.ui.activities.SenseActivity;
-import is.hello.sense.util.Logger;
 import is.hello.sense.util.ResumeScheduler;
 import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
-import rx.android.operators.OperatorConditionalBinding;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public class InjectionActivity extends SenseActivity implements ObservableContainer, ResumeScheduler.Resumable {
-    protected ArrayList<Subscription> subscriptions = new ArrayList<>();
-
+public class InjectionActivity extends SenseActivity implements ObservableContainer {
     protected boolean isResumed = false;
-    protected @Nullable List<Runnable> onResumeRunnables; //Synchronize all access to this!
-    protected final ResumeScheduler observeScheduler = new ResumeScheduler(this);
+    protected final ResumeScheduler.Coordinator coordinator = new ResumeScheduler.Coordinator(() -> isResumed);
+    protected final ResumeScheduler observeScheduler = new ResumeScheduler(coordinator);
+
     protected static final Func1<Activity, Boolean> ACTIVITY_VALIDATOR = (activity) -> !activity.isFinishing();
+    protected final DelegateObservableContainer<Activity> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, ACTIVITY_VALIDATOR);
 
     public InjectionActivity() {
         SenseApplication.getInstance().inject(this);
@@ -34,13 +27,7 @@ public class InjectionActivity extends SenseActivity implements ObservableContai
     protected void onDestroy() {
         super.onDestroy();
 
-        for (Subscription subscription : subscriptions) {
-            if (!subscription.isUnsubscribed()) {
-                subscription.unsubscribe();
-            }
-        }
-
-        subscriptions.clear();
+        observableContainer.clearSubscriptions();
     }
 
     @Override
@@ -55,89 +42,36 @@ public class InjectionActivity extends SenseActivity implements ObservableContai
         super.onResume();
 
         this.isResumed = true;
-        synchronized(this) {
-            if (onResumeRunnables != null) {
-                for (Runnable runnable : onResumeRunnables) {
-                    runnable.run();
-                }
-                onResumeRunnables.clear();
-            }
-        }
+        coordinator.resume();
     }
 
-    @Override
-    public void postOnResume(@NonNull Runnable runnable) {
-        if (isResumed) {
-            runnable.run();
-        } else {
-            synchronized(this) {
-                if (onResumeRunnables == null)
-                    onResumeRunnables = new ArrayList<>();
-
-                onResumeRunnables.add(runnable);
-            }
-        }
-    }
-
-    @Override
-    public void cancelPostOnResume(@NonNull Runnable runnable) {
-        synchronized(this) {
-            if (onResumeRunnables != null) {
-                onResumeRunnables.remove(runnable);
-            }
-        }
-    }
 
     @Override
     public boolean hasSubscriptions() {
-        return !subscriptions.isEmpty();
+        return observableContainer.hasSubscriptions();
     }
 
     @Override
-    public @NonNull Subscription track(@NonNull Subscription subscription) {
-        subscriptions.add(subscription);
-        return subscription;
+    @NonNull
+    public Subscription track(@NonNull Subscription subscription) {
+        return observableContainer.track(subscription);
     }
 
     @Override
-    public @NonNull <T> Observable<T> bind(@NonNull Observable<T> toBind) {
-        return toBind.observeOn(observeScheduler)
-                     .lift(new OperatorConditionalBinding<>(this, ACTIVITY_VALIDATOR));
+    @NonNull
+    public <T> Observable<T> bind(@NonNull Observable<T> toBind) {
+        return observableContainer.bind(toBind);
     }
 
     @Override
-    public @NonNull <T> Subscription subscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
-        return track(toSubscribe.unsafeSubscribe(new Subscriber<T>() {
-            @Override
-            public void onCompleted() {
-                unsubscribe();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                if (isUnsubscribed())
-                    return;
-
-                try {
-                    onError.call(e);
-                } catch (Throwable actionError) {
-                    Logger.error(InjectionActivity.class.getSimpleName(), "onError handler threw an exception, crashing", e);
-                    throw actionError;
-                }
-            }
-
-            @Override
-            public void onNext(T t) {
-                if (isUnsubscribed())
-                    return;
-
-                onNext.call(t);
-            }
-        }));
+    @NonNull
+    public <T> Subscription subscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
+        return observableContainer.subscribe(toSubscribe, onNext, onError);
     }
 
     @Override
-    public @NonNull <T> Subscription bindAndSubscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
-        return subscribe(bind(toSubscribe), onNext, onError);
+    @NonNull
+    public <T> Subscription bindAndSubscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
+        return observableContainer.bindAndSubscribe(toSubscribe, onNext, onError);
     }
 }

@@ -14,6 +14,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.chrono.ISOChronology;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,7 +36,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     private final ApiService apiService;
     private final ApiSessionManager apiSessionManager;
 
-    public final PresenterSubject<List<Question>> questions = PresenterSubject.create();
+    public final PresenterSubject<ArrayList<Question>> questions = PresenterSubject.create();
     public final PresenterSubject<Question> currentQuestion = PresenterSubject.create();
 
     private PreferencesPresenter preferences;
@@ -62,7 +63,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         this.lastUpdated = null;
         setLastAcknowledged(null);
 
-        questions.onNext(Collections.emptyList());
+        questions.onNext(new ArrayList<>());
         currentQuestion.onNext(null);
     }
 
@@ -101,7 +102,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     //region Updating
 
-    protected Observable<List<Question>> currentQuestions() {
+    protected Observable<ArrayList<Question>> currentQuestions() {
         String timestamp = DateTime.now().toString("yyyy-MM-dd");
         return apiService.questions(timestamp);
     }
@@ -140,7 +141,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
             });
         } else {
             logEvent("questions already updated today");
-            this.questions.onNext(Collections.emptyList());
+            this.questions.onNext(new ArrayList<>());
             this.currentQuestion.onNext(null);
         }
     }

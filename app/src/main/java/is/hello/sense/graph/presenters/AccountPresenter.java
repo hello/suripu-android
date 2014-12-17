@@ -15,7 +15,7 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.observables.BlockingObservable;
 
-public class AccountPresenter extends UpdatablePresenter<Account> {
+public class AccountPresenter extends ValuePresenter<Account> {
     @Inject ApiService apiService;
 
     public final PresenterSubject<Account> account = this.subject;

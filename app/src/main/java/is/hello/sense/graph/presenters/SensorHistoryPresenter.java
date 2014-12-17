@@ -5,9 +5,9 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Pair;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -18,7 +18,7 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import rx.Observable;
 
-public class SensorHistoryPresenter extends UpdatablePresenter<Pair<List<SensorHistory>, UnitSystem>> {
+public class SensorHistoryPresenter extends ValuePresenter<SensorHistoryPresenter.Result> {
     public static final int MODE_WEEK = 0;
     public static final int MODE_DAY = 1;
 
@@ -28,7 +28,7 @@ public class SensorHistoryPresenter extends UpdatablePresenter<Pair<List<SensorH
     private String sensorName;
     private int mode = MODE_DAY;
 
-    public final PresenterSubject<Pair<List<SensorHistory>, UnitSystem>> history = this.subject;
+    public final PresenterSubject<Result> history = this.subject;
 
     @Override
     public void onRestoreState(@NonNull Parcelable savedState) {
@@ -62,14 +62,14 @@ public class SensorHistoryPresenter extends UpdatablePresenter<Pair<List<SensorH
     }
 
     @Override
-    protected Observable<Pair<List<SensorHistory>, UnitSystem>> provideUpdateObservable() {
-        Observable<List<SensorHistory>> newHistory;
+    protected Observable<Result> provideUpdateObservable() {
+        Observable<ArrayList<SensorHistory>> newHistory;
         if (getMode() == MODE_DAY) {
             newHistory = apiService.sensorHistoryForDay(getSensorName(), SensorHistory.timeForLatest());
         } else {
             newHistory = apiService.sensorHistoryForWeek(getSensorName(), SensorHistory.timeForLatest());
         }
-        return Observable.combineLatest(newHistory, unitFormatter.unitSystem, Pair::new);
+        return Observable.combineLatest(newHistory, unitFormatter.unitSystem, Result::new);
     }
 
 
@@ -89,5 +89,16 @@ public class SensorHistoryPresenter extends UpdatablePresenter<Pair<List<SensorH
     public void setMode(int mode) {
         this.mode = mode;
         update();
+    }
+
+
+    public static class Result implements Serializable {
+        public final ArrayList<SensorHistory> data;
+        public final UnitSystem unitSystem;
+
+        public Result(@NonNull ArrayList<SensorHistory> data, @NonNull UnitSystem unitSystem) {
+            this.data = data;
+            this.unitSystem = unitSystem;
+        }
     }
 }
