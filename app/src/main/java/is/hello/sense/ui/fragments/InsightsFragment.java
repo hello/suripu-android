@@ -156,7 +156,7 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
 
     public void answerQuestion() {
         QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
-        dialogFragment.show(getFragmentManager(), QuestionsDialogFragment.TAG);
+        dialogFragment.show(getActivity().getFragmentManager(), QuestionsDialogFragment.TAG);
         hideNewQuestion();
     }
 
