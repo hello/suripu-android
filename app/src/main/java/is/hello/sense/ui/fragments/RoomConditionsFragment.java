@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -163,8 +164,14 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
             if (roomSensor.sensorState != null) {
                 int sensorColor = resources.getColor(roomSensor.sensorState.getCondition().colorRes);
 
-                holder.reading.setText(roomSensor.sensorState.getFormattedValue(roomSensor.formatter));
-                holder.reading.setTextColor(sensorColor);
+                String readingText = roomSensor.sensorState.getFormattedValue(roomSensor.formatter);
+                if (!TextUtils.isEmpty(readingText)) {
+                    holder.reading.setText(readingText);
+                    holder.reading.setTextColor(sensorColor);
+                } else {
+                    holder.reading.setText(R.string.missing_data_placeholder);
+                    holder.reading.setTextColor(resources.getColor(R.color.sensor_unknown));
+                }
 
                 String message = roomSensor.sensorState.getMessage();
                 holder.message.setText(message);
