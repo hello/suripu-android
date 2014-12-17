@@ -93,7 +93,6 @@
     <orderEntry type="library" exported="" name="jackson-core-2.4.3" level="project" />
     <orderEntry type="library" exported="" name="jackson-databind-2.4.3" level="project" />
     <orderEntry type="library" exported="" name="jackson-datatype-joda-2.4.3" level="project" />
-    <orderEntry type="library" exported="" name="android-sdk-1.4.1" level="project" />
     <orderEntry type="library" exported="" name="okio-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="calligraphy-1.1.0" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.8.0" level="project" />
