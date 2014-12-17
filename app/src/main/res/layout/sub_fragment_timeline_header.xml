@@ -45,7 +45,7 @@
 
     </RelativeLayout>
 
-    <is.hello.sense.ui.widget.PieGraphView
+    <is.hello.sense.ui.widget.graphing.PieGraphView
         android:id="@+id/fragment_timeline_sleep_score_chart"
         android:layout_width="@dimen/grand_sleep_summary_height"
         android:layout_height="@dimen/grand_sleep_summary_width"
@@ -70,7 +70,7 @@
             android:textAppearance="@style/AppTheme.Text.BigScore"
             android:text="@string/missing_data_placeholder"/>
 
-    </is.hello.sense.ui.widget.PieGraphView>
+    </is.hello.sense.ui.widget.graphing.PieGraphView>
 
     <TextView
         android:id="@+id/fragment_timeline_message_label"

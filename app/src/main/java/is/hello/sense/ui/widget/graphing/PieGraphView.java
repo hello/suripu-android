@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget;
+package is.hello.sense.ui.widget.graphing;
 
 import android.content.Context;
 import android.graphics.Canvas;

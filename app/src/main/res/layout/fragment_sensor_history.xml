@@ -69,7 +69,7 @@
 
         <View style="@style/Divider.Horizontal" />
 
-        <is.hello.sense.ui.widget.LineGraphView
+        <is.hello.sense.ui.widget.graphing.LineGraphView
             android:id="@+id/fragment_sensor_history_graph"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -86,7 +86,7 @@
                 android:layout_gravity="center"
                 style="@android:style/Widget.Holo.Light.ProgressBar"/>
 
-        </is.hello.sense.ui.widget.LineGraphView>
+        </is.hello.sense.ui.widget.graphing.LineGraphView>
 
         <TextView
             android:id="@+id/fragment_sensor_history_insight"

@@ -36,7 +36,7 @@ import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.widget.ListViews;
-import is.hello.sense.ui.widget.PieGraphView;
+import is.hello.sense.ui.widget.graphing.PieGraphView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.Styles;
 import is.hello.sense.ui.widget.TimestampTextView;

@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget;
+package is.hello.sense.ui.widget.graphing;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -24,6 +24,8 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+import is.hello.sense.ui.widget.Styles;
+import is.hello.sense.ui.widget.Views;
 
 public final class LineGraphView extends FrameLayout {
     private @Nullable OnValueHighlightedListener onValueHighlightedListener;
