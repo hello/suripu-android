@@ -68,21 +68,6 @@ public class Analytics {
     public static final String EVENT_ONBOARDING_WEIGHT = "Onboarding Weight";
 
     /**
-     * When user lands on Getting Started Screen
-     */
-    public static final String EVENT_ONBOARDING_SETUP_START = "Onboarding Setup Start";
-
-    /**
-     * When user lands on the "First one here?" screen
-     */
-    public static final String EVENT_ONBOARDING_SETUP_TWO_PILL = "Onboarding Setup Two Pill";
-
-    /**
-     * When user lands on the "Add a second Sleep Pill" screen
-     */
-    public static final String EVENT_ONBOARDING_ADD_PILL = "Onboarding Add Pill";
-
-    /**
      * When user lands on the Setting up Sense screen
      */
     public static final String EVENT_ONBOARDING_SENSE_SETUP = "Onboarding Sense Setup";
@@ -91,12 +76,6 @@ public class Analytics {
      * When user lands on the "Pair your Sense" screen
      */
     public static final String EVENT_ONBOARDING_PAIR_SENSE = "Onboarding Pair Sense";
-
-    /**
-     * When user lands on the "Connecting Sense to WiFi" screen
-     */
-    public static final String EVENT_ONBOARDING_SETUP_WIFI = "Onboarding Setup WiFi";
-
     /**
      * When the user lands on the "Enter Wifi Password" screen
      */
@@ -113,11 +92,6 @@ public class Analytics {
     public static final String EVENT_ONBOARDING_WIFI_SCAN_COMPLETED = "Onboarding Wifi Scan Completed";
     public static final String PROP_DURATION = "duration"; //in seconds
     public static final String PROP_FAILED = "failed";
-
-    /**
-     * When user lands on the "Introducing Sleep Pill" screen
-     */
-    public static final String EVENT_ONBOARDING_SETUP_PILL = "Onboarding Setup Pill";
 
     /**
      * When user lands on the "Pairing your Sleep Pill" screen
@@ -222,7 +196,7 @@ public class Analytics {
 
     public static void trackUserSignUp(@Nullable String accountId, @Nullable String name, @NonNull DateTime created) {
         Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId + "', name: '" + name + "', created: '" + created + "' }");
-        
+
         if (accountId == null) {
             accountId = "";
         }

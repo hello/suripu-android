@@ -289,7 +289,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
         builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
         builder.setNextFragmentClass(OnboardingSetup2ndPillFragment.class);
-        builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SETUP_PILL);
         showFragment(builder.build(), null, true);
     }
 

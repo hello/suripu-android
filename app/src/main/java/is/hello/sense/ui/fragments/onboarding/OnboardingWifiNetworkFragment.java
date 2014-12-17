@@ -51,8 +51,6 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
         addPresenter(hardwarePresenter);
 
-        Analytics.event(Analytics.EVENT_ONBOARDING_SETUP_WIFI, null);
-
         setRetainInstance(true);
     }
 
