@@ -8,11 +8,19 @@ import android.support.annotation.Nullable;
 import com.crashlytics.android.Crashlytics;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
+
+    public static final String GLOBAL_PROP_PLATFORM = "Platform";
+    public static final String PLATFORM = "android";
+
+    public static final String GLOBAL_PROP_NAME = "Name";
+    public static final String GLOBAL_PROP_ACCOUNT_ID = "Account Id";
+
 
     /**
      * Anytime an error is encountered, even if it came from server.  MAKE SURE you don't log Error in a loop ... I've seen it happen where 10,000 events get logged :)
@@ -192,8 +200,9 @@ public class Analytics {
         mixpanel.flush();
     }
 
-    public static void identify(@NonNull String userId) {
+    public static void setUserId(@NonNull String userId) {
         String existingUserId = preferences.getString(Constants.INTERNAL_PREF_ANALYTICS_USER_ID, null);
+        mixpanel.getPeople().identify(userId);
         if (existingUserId == null) {
             Logger.info(LOG_TAG, "Identifying user.");
             mixpanel.identify(userId);
@@ -209,6 +218,28 @@ public class Analytics {
         preferences.edit()
                    .putString(Constants.INTERNAL_PREF_ANALYTICS_USER_ID, userId)
                    .apply();
+    }
+
+    public static void trackUserSignUp(@Nullable String accountId, @Nullable String name, @NonNull DateTime created) {
+        Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId + "', name: '" + name + "', created: '" + created + "' }");
+        
+        if (accountId == null) {
+            accountId = "";
+        }
+
+        if (name == null) {
+            name = "";
+        }
+
+        mixpanel.getPeople().set("$name", name);
+        mixpanel.getPeople().set("$created", created.toString());
+        mixpanel.getPeople().set(GLOBAL_PROP_ACCOUNT_ID, accountId);
+        mixpanel.getPeople().set(GLOBAL_PROP_PLATFORM, PLATFORM);
+
+        mixpanel.registerSuperProperties(createProperties(
+                GLOBAL_PROP_NAME, name,
+                GLOBAL_PROP_PLATFORM, PLATFORM
+        ));
     }
 
     public static @NonNull JSONObject createProperties(@NonNull Object... pairs) {
@@ -228,7 +259,7 @@ public class Analytics {
 
     public static void event(@NonNull String event, @Nullable JSONObject properties) {
         mixpanel.track(event, properties);
-        Logger.info(Analytics.class.getSimpleName(), event + ": " + properties);
+        Logger.info(LOG_TAG, event + ": " + properties);
     }
 
     public static void error(@NonNull String message, int code) {

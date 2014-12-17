@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.joda.time.DateTime;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -239,6 +241,8 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         } else if (updatedBy instanceof OnboardingRegisterWeightFragment) {
             LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
             bindAndSubscribe(apiService.updateAccount(account), ignored -> {
+                Analytics.trackUserSignUp(account.getAccountId(), account.getName(), DateTime.now());
+
                 LoadingDialogFragment.close(getFragmentManager());
                 showSetupSense();
             }, e -> {
