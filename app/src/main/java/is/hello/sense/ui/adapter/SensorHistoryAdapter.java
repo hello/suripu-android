@@ -17,6 +17,12 @@ public class SensorHistoryAdapter implements GraphAdapter {
     private float peakMagnitude = 0f;
 
 
+    public void update(@NonNull Update update) {
+        setBaseMagnitude(update.base);
+        setPeakMagnitude(update.peak);
+        setSections(update.sections);
+    }
+
     public void setSections(@NonNull List<Section> sections) {
         this.sections = sections;
         notifyDataChanged();
@@ -81,6 +87,18 @@ public class SensorHistoryAdapter implements GraphAdapter {
         }
     }
 
+
+    public static class Update {
+        final @NonNull List<Section> sections;
+        final float peak;
+        final float base;
+
+        public Update(@NonNull List<Section> sections, float peak, float base) {
+            this.sections = sections;
+            this.peak = peak;
+            this.base = base;
+        }
+    }
 
     public static class Section {
         private final List<SensorHistory> instants;

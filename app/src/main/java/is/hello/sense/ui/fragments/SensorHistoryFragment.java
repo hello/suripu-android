@@ -220,7 +220,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 return;
             }
 
-            Observable<Result> generateSeries = Observable.create((Observable.OnSubscribe<Result>) s -> {
+            Observable<Update> generateSeries = Observable.create((Observable.OnSubscribe<Update>) s -> {
                 Function<SensorHistory, Integer> segmentKeyProducer;
                 DateTimeZone timeZone = dateFormatter.getTargetTimeZone();
                 if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
@@ -238,20 +238,11 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 float peak = Collections.max(history, comparator).getValue();
                 float base = Collections.min(history, comparator).getValue();
 
-                s.onNext(new Result(sections, peak, base));
+                s.onNext(new Update(sections, peak, base));
                 s.onCompleted();
             }).subscribeOn(Schedulers.computation());
 
-            bindAndSubscribe(generateSeries, result -> {
-                Log.i(SensorHistoryFragment.class.getSimpleName(), "segments delivered");
-
-                setSections(result.sections);
-                setPeakMagnitude(result.peak);
-                setBaseMagnitude(result.base);
-
-                graphView.setNumberOfLines(getSectionCount());
-                notifyDataChanged();
-            }, Functions.LOG_ERROR);
+            bindAndSubscribe(generateSeries, this::update, Functions.LOG_ERROR);
 
             this.unitSystem = historyAndUnits.unitSystem;
 
@@ -272,11 +263,20 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         }
 
         @Override
+        public void update(@NonNull Update update) {
+            super.update(update);
+            graphView.setNumberOfLines(getSectionCount());
+        }
+
+        @Override
         public void clear() {
             super.clear();
 
             graphView.setNumberOfLines(0);
         }
+
+
+        //region Styling
 
         public void setUse24Time(boolean use24Time) {
             this.use24Time = use24Time;
@@ -298,9 +298,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                     return Integer.toString((int) value);
             }
         }
-
-
-        //region Adapter
 
         @Override
         public int getSectionLineColor(int section) {
@@ -380,18 +377,5 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         }
 
         //endregion
-
-
-        private class Result {
-            final @NonNull List<Section> sections;
-            final float peak;
-            final float base;
-
-            Result(@NonNull List<Section> sections, float peak, float base) {
-                this.sections = sections;
-                this.peak = peak;
-                this.base = base;
-            }
-        }
     }
 }
