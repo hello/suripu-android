@@ -3,8 +3,7 @@ package is.hello.sense.ui.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,7 +17,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -200,10 +198,16 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
                 holder.message.setText(message);
                 markdown.renderWithEmphasisColor(sensorColor, message)
                         .subscribe(holder.message::setText, Functions.LOG_ERROR);
+
+                holder.lineGraphDrawable.setAdapter(graphAdapter);
+                holder.lineGraphDrawable.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
             } else {
                 holder.reading.setText(R.string.missing_data_placeholder);
                 holder.reading.setTextColor(resources.getColor(R.color.sensor_unknown));
                 holder.message.setText(R.string.missing_data_placeholder);
+
+                holder.lineGraphDrawable.setAdapter(null);
+                holder.lineGraphDrawable.setColorFilter(null);
             }
             return view;
         }
@@ -219,7 +223,6 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
                 this.message = (TextView) view.findViewById(R.id.item_sensor_condition_message);
 
                 this.lineGraphDrawable = new SimpleLineGraphDrawable(getResources());
-                lineGraphDrawable.setAdapter(graphAdapter);
 
                 View graph = view.findViewById(R.id.fragment_room_sensor_condition_graph);
                 graph.setBackground(lineGraphDrawable);

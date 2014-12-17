@@ -2,7 +2,6 @@ package is.hello.sense.ui.widget.graphing;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -23,8 +22,7 @@ public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.Ch
     private final Path fillPath = new Path();
 
     private final float topLineHeight;
-
-    private @Nullable Drawable fillDrawable;
+    private final Drawable fillDrawable;
 
 
     public SimpleLineGraphDrawable(@NonNull Resources resources) {
@@ -33,11 +31,11 @@ public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.Ch
         Styles.applyGraphLineParameters(linePaint);
         linePaint.setStrokeWidth(topLineHeight);
 
-        setLineColor(resources.getColor(R.color.graph_fill_color));
-        setFillDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
-                resources.getColor(R.color.graph_fill_color_dimmed),
-                Color.TRANSPARENT,
-        }));
+        linePaint.setColor(resources.getColor(R.color.graph_fill_color));
+        this.fillDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
+                resources.getColor(R.color.graph_fill_gradient_top),
+                resources.getColor(R.color.graph_fill_gradient_bottom),
+        });
     }
 
 
@@ -47,8 +45,9 @@ public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.Ch
         if (sectionCount > 0) {
             float halfOfTopLine = topLineHeight / 2f;
 
+            int minY = Math.round(halfOfTopLine);
             int width = canvas.getWidth();
-            int height = (int) (canvas.getHeight() - halfOfTopLine);
+            int height = canvas.getHeight() - minY;
 
             fillPath.reset();
             linePath.reset();
@@ -64,7 +63,7 @@ public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.Ch
                 float segmentWidth = sectionWidth / (float) pointCount;
                 for (int position = 0; position < pointCount; position++) {
                     float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, section, position);
-                    float segmentY = adapterCache.calculateSegmentY(height, section, position);
+                    float segmentY = minY + adapterCache.calculateSegmentY(height, section, position);
 
                     if (section == 0 && position == 0) {
                         linePath.moveTo(segmentX, segmentY);
@@ -74,21 +73,19 @@ public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.Ch
                     fillPath.lineTo(segmentX, segmentY - halfOfTopLine);
 
                     if (section == sectionCount - 1 && position == pointCount - 1) {
-                        fillPath.lineTo(segmentX + halfOfTopLine, height);
-                        fillPath.lineTo(0, height);
+                        fillPath.lineTo(segmentX + halfOfTopLine, minY + height);
+                        fillPath.lineTo(0, minY + height);
                     }
                 }
             }
 
-            if (fillDrawable != null) {
-                canvas.save();
-                {
-                    canvas.clipPath(fillPath);
-                    fillDrawable.setBounds(0, 0, width, height);
-                    fillDrawable.draw(canvas);
-                }
-                canvas.restore();
+            canvas.save();
+            {
+                canvas.clipPath(fillPath);
+                fillDrawable.setBounds(0, minY, width, minY + height);
+                fillDrawable.draw(canvas);
             }
+            canvas.restore();
 
             canvas.drawPath(linePath, linePaint);
         }
@@ -100,10 +97,7 @@ public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.Ch
     @Override
     public void setAlpha(int alpha) {
         linePaint.setAlpha(alpha);
-
-        if (fillDrawable != null) {
-            fillDrawable.setAlpha(alpha);
-        }
+        fillDrawable.setAlpha(alpha);
 
         invalidateSelf();
     }
@@ -111,10 +105,7 @@ public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.Ch
     @Override
     public void setColorFilter(ColorFilter colorFilter) {
         linePaint.setColorFilter(colorFilter);
-
-        if (fillDrawable != null) {
-            fillDrawable.setColorFilter(colorFilter);
-        }
+        fillDrawable.setColorFilter(colorFilter);
 
         invalidateSelf();
     }
@@ -135,16 +126,6 @@ public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.Ch
             adapter.registerObserver(this);
         }
 
-        invalidateSelf();
-    }
-
-    public void setLineColor(int color) {
-        linePaint.setColor(color);
-        invalidateSelf();
-    }
-
-    public void setFillDrawable(@Nullable Drawable fillDrawable) {
-        this.fillDrawable = fillDrawable;
         invalidateSelf();
     }
 
