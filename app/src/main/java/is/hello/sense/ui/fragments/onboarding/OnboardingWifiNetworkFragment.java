@@ -12,8 +12,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -35,7 +33,6 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
     @Inject HardwarePresenter hardwarePresenter;
 
     private WifiNetworkAdapter networkAdapter;
-    private long scanStarted = 0;
 
     private TextView infoLabel;
     private TextView scanningIndicatorLabel;
@@ -50,6 +47,8 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
         addPresenter(hardwarePresenter);
+
+        Analytics.event(Analytics.EVENT_ONBOARDING_WIFI, null);
 
         setRetainInstance(true);
     }
@@ -83,7 +82,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         });
 
         this.helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        helpButton.setOnClickListener(ignored -> HelpUtil.showHelp(getActivity()));
+        helpButton.setOnClickListener(ignored -> HelpUtil.showHelp(getActivity(), HelpUtil.Step.ONBOARDING_WIFI_SCAN));
 
         return view;
     }
@@ -135,7 +134,6 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
             return;
         }
 
-        this.scanStarted = System.currentTimeMillis();
         bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), this::bindScanResults, this::scanResultsUnavailable);
     }
 
@@ -150,8 +148,6 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         rescanButton.setVisibility(View.VISIBLE);
         rescanButton.setEnabled(true);
         helpButton.setVisibility(View.VISIBLE);
-
-        trackScanFinished(true);
     }
 
     public void scanResultsUnavailable(Throwable e) {
@@ -169,8 +165,6 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         } else {
             ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
-
-        trackScanFinished(false);
     }
 
     public void peripheralRediscoveryFailed(Throwable e) {
@@ -187,14 +181,6 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         } else {
             ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
-    }
-
-    private void trackScanFinished(boolean succeeded) {
-        long scanFinished = System.currentTimeMillis();
-        long duration = (scanFinished - scanStarted) / 1000;
-        JSONObject properties = Analytics.createProperties(Analytics.PROP_FAILED, !succeeded,
-                                                           Analytics.PROP_DURATION, duration);
-        Analytics.event(Analytics.EVENT_ONBOARDING_WIFI_SCAN_COMPLETED, properties);
     }
 
 

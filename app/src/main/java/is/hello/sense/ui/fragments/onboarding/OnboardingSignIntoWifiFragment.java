@@ -98,7 +98,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         continueButton.setOnClickListener(ignored -> sendWifiCredentials());
 
         Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        helpButton.setOnClickListener(ignored -> HelpUtil.showHelp(getActivity()));
+        helpButton.setOnClickListener(ignored -> HelpUtil.showHelp(getActivity(), HelpUtil.Step.ONBOARDING_SIGN_INTO_WIFI));
 
         if (network != null) {
             this.networkName.setText(network.getSsid());

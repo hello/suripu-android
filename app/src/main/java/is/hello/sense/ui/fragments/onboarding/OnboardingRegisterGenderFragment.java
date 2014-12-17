@@ -11,6 +11,7 @@ import android.widget.ToggleButton;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Gender;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.util.Analytics;
@@ -24,7 +25,7 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
 
         this.account = getContainer().getAccount();
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
             Analytics.event(Analytics.EVENT_ONBOARDING_GENDER, null);
         }
     }

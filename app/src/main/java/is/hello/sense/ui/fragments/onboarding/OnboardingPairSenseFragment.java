@@ -175,6 +175,13 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         public static final int RESULT_HELP = 0x505;
 
         @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            Analytics.event(Analytics.EVENT_ONBOARDING_SECOND_PILL_CHECK, null);
+        }
+
+        @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
 

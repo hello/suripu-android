@@ -31,15 +31,6 @@ public class OnboardingIntroductionFragment extends Fragment {
     private ViewGroup getStartedActions;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            Analytics.event(Analytics.EVENT_ONBOARDING_START, null);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_introduction, container, false);
 
@@ -103,6 +94,8 @@ public class OnboardingIntroductionFragment extends Fragment {
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.welcome);
                     titleText.setGravity(Gravity.CENTER);
+
+                    Analytics.event(Analytics.EVENT_ONBOARDING_START, null);
                 })
                 .andThen()
                 .fadeIn()

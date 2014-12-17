@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Analytics;
@@ -27,7 +28,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment {
 
         this.account = getContainer().getAccount();
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
             Analytics.event(Analytics.EVENT_ONBOARDING_WEIGHT, null);
         }
     }

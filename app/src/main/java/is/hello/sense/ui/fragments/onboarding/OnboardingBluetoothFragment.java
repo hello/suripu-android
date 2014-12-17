@@ -18,6 +18,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
+import is.hello.sense.util.Analytics;
 
 public class OnboardingBluetoothFragment extends InjectionFragment {
     @Inject HardwarePresenter hardwarePresenter;
@@ -25,6 +26,8 @@ public class OnboardingBluetoothFragment extends InjectionFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Analytics.event(Analytics.EVENT_ONBOARDING_NO_BLE, null);
 
         setRetainInstance(true);
     }

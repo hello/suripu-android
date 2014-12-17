@@ -10,8 +10,16 @@ import android.widget.Button;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.util.Analytics;
 
 public class OnboardingPillPartnerInfoFragment extends SenseFragment {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Analytics.event(Analytics.EVENT_ONBOARDING_PAIRING_MODE_OFF, null);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

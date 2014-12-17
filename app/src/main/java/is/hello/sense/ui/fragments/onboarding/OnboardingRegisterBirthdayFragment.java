@@ -12,6 +12,7 @@ import org.joda.time.LocalDate;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.util.Analytics;
 
@@ -24,7 +25,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
 
         this.account = getContainer().getAccount();
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
             Analytics.event(Analytics.EVENT_ONBOARDING_BIRTHDAY, null);
         }
     }
