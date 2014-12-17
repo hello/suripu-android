@@ -3,9 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/raised_item_background"
-    android:paddingBottom="@dimen/gap_raised_item_bottom"
-    android:gravity="center_vertical">
+    style="@style/AppTheme.Card">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,5 +40,11 @@
             android:lineSpacingMultiplier="@dimen/body_text_line_multiple" />
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/fragment_room_sensor_condition_graph"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/condition_graph_height"
+        android:background="@color/white" />
 
 </LinearLayout>

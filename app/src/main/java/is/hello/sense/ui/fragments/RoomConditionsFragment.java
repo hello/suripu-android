@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,23 +16,36 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.joda.time.DateTimeZone;
+
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
+import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
+import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.Styles;
+import is.hello.sense.ui.widget.graphing.SimpleLineGraphDrawable;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
+import rx.Observable;
 
 public class RoomConditionsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
+
+    @Inject ApiService apiService;
+    @Inject DateFormatter dateFormatter;
 
     private final RoomSensorInfo temperature = new RoomSensorInfo(SensorHistory.SENSOR_NAME_TEMPERATURE);
     private final RoomSensorInfo humidity = new RoomSensorInfo(SensorHistory.SENSOR_NAME_HUMIDITY);
@@ -64,6 +78,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        loadSensorGraphs();
         bindAndSubscribe(presenter.currentConditions, this::bindConditions, this::conditionsUnavailable);
     }
 
@@ -76,6 +91,23 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
 
 
     //region Displaying Data
+
+    public void loadSensorGraphs() {
+        long timestamp = SensorHistory.timeForLatest();
+        DateTimeZone timeZone = dateFormatter.getTargetTimeZone();
+        for (int i = 0, size = adapter.getCount(); i < size; i++) {
+            RoomSensorInfo info = adapter.getItem(i);
+
+            Observable<ArrayList<SensorHistory>> history = apiService.sensorHistoryForDay(info.sensorName, timestamp);
+            Observable<SensorHistoryAdapter.Update> graphUpdate = history.flatMap(h -> SensorHistory.createAdapterUpdate(h, SensorHistoryPresenter.MODE_DAY, timeZone));
+            bindAndSubscribe(graphUpdate,
+                             info.graphAdapter::update,
+                             e -> {
+                                 Logger.error(getClass().getSimpleName(), "Could not load sensor history for " + info.sensorName, e);
+                                 info.graphAdapter.clear();
+                             });
+        }
+    }
 
     public void bindConditions(@Nullable RoomConditionsPresenter.Result result) {
         if (result == null) {
@@ -130,6 +162,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
 
 
     static class RoomSensorInfo {
+        final SensorHistoryAdapter graphAdapter = new SensorHistoryAdapter();
         final @NonNull String sensorName;
 
         @Nullable UnitFormatter.Formatter formatter;
@@ -175,12 +208,18 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
 
                 String message = roomSensorInfo.sensorState.getMessage();
                 holder.message.setText(message);
-                markdown.renderWithEmphasisColor(sensorColor, message)
+                markdown.render(message)
                         .subscribe(holder.message::setText, Functions.LOG_ERROR);
+
+                holder.lineGraphDrawable.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
+                holder.lineGraphDrawable.setAdapter(roomSensorInfo.graphAdapter);
             } else {
                 holder.reading.setText(R.string.missing_data_placeholder);
                 holder.reading.setTextColor(resources.getColor(R.color.sensor_unknown));
                 holder.message.setText(R.string.missing_data_placeholder);
+
+                holder.lineGraphDrawable.setColorFilter(null);
+                holder.lineGraphDrawable.setAdapter(null);
             }
             return view;
         }
@@ -189,10 +228,16 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
         class ViewHolder {
             final TextView reading;
             final TextView message;
+            final SimpleLineGraphDrawable lineGraphDrawable;
 
             ViewHolder(@NonNull View view) {
                 this.reading = (TextView) view.findViewById(R.id.item_sensor_condition_reading);
                 this.message = (TextView) view.findViewById(R.id.item_sensor_condition_message);
+
+                this.lineGraphDrawable = new SimpleLineGraphDrawable(getResources());
+
+                View graph = view.findViewById(R.id.fragment_room_sensor_condition_graph);
+                graph.setBackground(lineGraphDrawable);
             }
         }
     }

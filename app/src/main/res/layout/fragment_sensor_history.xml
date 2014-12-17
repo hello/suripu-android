@@ -77,7 +77,7 @@
             android:minHeight="@dimen/sensor_history_graph_min_height"
             app:fill="@color/transparent"
             app:gridDrawable="@drawable/graph_grid_fill"
-            app:topLineHeight="2dp">
+            app:topLineHeight="@dimen/view_line_graph_line_size">
 
             <is.hello.sense.ui.widget.TintedProgressBar
                 android:id="@+id/fragment_sensor_history_loading"

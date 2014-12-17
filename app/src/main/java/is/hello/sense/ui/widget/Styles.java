@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Paint;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -54,6 +55,13 @@ public final class Styles {
             return R.color.sensor_ideal;
     }
 
+
+    public static void applyGraphLineParameters(@NonNull Paint paint) {
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setAntiAlias(true);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+    }
 
     public static void addCardSpacingHeaderAndFooter(@NonNull ListView listView) {
         Context context = listView.getContext();
