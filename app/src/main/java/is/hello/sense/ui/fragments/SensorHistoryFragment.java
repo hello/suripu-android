@@ -21,6 +21,7 @@ import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -236,10 +237,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 List<List<SensorHistory>> segments = segment(segmentKeyProducer, history);
                 List<Section> sections = map(segments, Section::new);
 
-                Collections.sort(history, (l, r) -> Float.compare(l.getValue(), r.getValue()));
-
-                float peak = history.get(0).getValue();
-                float base = history.get(history.size() - 1).getValue();
+                Comparator<SensorHistory> comparator = (l, r) -> Float.compare(r.getValue(), l.getValue());
+                float peak = Collections.max(history, comparator).getValue();
+                float base = Collections.min(history, comparator).getValue();
 
                 s.onNext(new Result(sections, peak, base));
                 s.onCompleted();
