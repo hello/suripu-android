@@ -13,13 +13,9 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animations;
@@ -36,9 +32,7 @@ public final class LineGraphView extends FrameLayout {
     private boolean wantsHeaders = true;
     private boolean wantsFooters = true;
 
-    private float baseMagnitude = 0f;
-    private float peakMagnitude = 0f;
-    private final SparseIntArray sectionCounts = new SparseIntArray();
+    private final GraphAdapterCache adapterCache = new GraphAdapterCache();
 
     private float topLineHeight;
 
@@ -46,7 +40,6 @@ public final class LineGraphView extends FrameLayout {
     private final Paint headerTextPaint = new Paint();
     private final Paint footerTextPaint = new Paint();
 
-    private final List<Path> sectionLinePaths = new ArrayList<>();
     private final Path fillPath = new Path();
     private final Path markersPath = new Path();
 
@@ -129,26 +122,16 @@ public final class LineGraphView extends FrameLayout {
     }
 
     private float getSectionWidth() {
-        return getMeasuredWidth() / sectionCounts.size();
+        return getMeasuredWidth() / adapterCache.getNumberSections();
     }
 
     private float getSegmentWidth(int section) {
-        return getSectionWidth() / sectionCounts.get(section);
-    }
-
-    private float absoluteSegmentX(float sectionWidth, float segmentWidth, int section, int position) {
-        return (sectionWidth * section) + (segmentWidth * position);
-    }
-
-    private float absoluteSegmentY(float height, int section, int position) {
-        float magnitude = adapter.getMagnitudeAt(section, position);
-        float percentage = (magnitude - baseMagnitude) / (peakMagnitude - baseMagnitude);
-        return Math.round(height * percentage);
+        return getSectionWidth() / adapterCache.getSectionCount(section);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        int sectionCount = sectionCounts.size();
+        int sectionCount = adapterCache.getNumberSections();
         int minX = 0, minY = 0;
         int height = getMeasuredHeight() - minY, width = getMeasuredWidth() - minX;
 
@@ -179,7 +162,7 @@ public final class LineGraphView extends FrameLayout {
 
             float sectionWidth = width / sectionCount;
             for (int section = 0; section < sectionCount; section++) {
-                int pointCount = sectionCounts.get(section);
+                int pointCount = adapterCache.getSectionCount(section);
                 if (pointCount == 0)
                     continue;
 
@@ -209,11 +192,11 @@ public final class LineGraphView extends FrameLayout {
                     canvas.drawText(text, textX, textY, footerTextPaint);
                 }
 
-                Path sectionPath = sectionLinePaths.get(section);
+                Path sectionPath = adapterCache.getSectionLinePath(section);
                 sectionPath.reset();
                 for (int position = 0; position < pointCount; position++) {
-                    float segmentX = absoluteSegmentX(sectionWidth, segmentWidth, section, position);
-                    float segmentY = minY + absoluteSegmentY(height, section, position);
+                    float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, section, position);
+                    float segmentY = minY + adapterCache.calculateSegmentY(height, section, position);
 
                     if (position == 0) {
                         fillPath.moveTo(minX, segmentY);
@@ -225,7 +208,7 @@ public final class LineGraphView extends FrameLayout {
                 }
 
                 if (section < sectionCount - 1) {
-                    float closingSegmentY = minY + absoluteSegmentY(height, section + 1, 0);
+                    float closingSegmentY = minY + adapterCache.calculateSegmentY(height, section + 1, 0);
                     sectionPath.lineTo(sectionWidth * (section + 1), closingSegmentY);
                 }
             }
@@ -244,7 +227,7 @@ public final class LineGraphView extends FrameLayout {
             }
 
             for (int section = 0; section < sectionCount; section++) {
-                Path sectionPath = sectionLinePaths.get(section);
+                Path sectionPath = adapterCache.getSectionLinePath(section);
                 topLinePaint.setColor(adapter.getSectionLineColor(section));
                 canvas.drawPath(sectionPath, topLinePaint);
             }
@@ -256,29 +239,14 @@ public final class LineGraphView extends FrameLayout {
 
     //region Properties
 
-    private void recreateSectionPaths(int oldSize, int newSize) {
-        if (newSize == 0) {
-            sectionLinePaths.clear();
-        } else if (newSize < oldSize) {
-            int delta = oldSize - newSize;
-            for (int i = 0; i < delta; i++) {
-                sectionLinePaths.remove(i);
-            }
-        } else {
-            int delta = newSize - oldSize;
-            for (int i = 0; i < delta; i++) {
-                sectionLinePaths.add(new Path());
-            }
-        }
-    }
-
     public @Nullable StyleableGraphAdapter getAdapter() {
         return adapter;
     }
 
     public void setAdapter(@Nullable StyleableGraphAdapter adapter) {
         this.adapter = adapter;
-        notifyDataChanged();
+        adapterCache.setAdapter(adapter);
+        invalidate();
     }
 
     public void setOnValueHighlightedListener(@Nullable OnValueHighlightedListener onValueHighlightedListener) {
@@ -286,21 +254,7 @@ public final class LineGraphView extends FrameLayout {
     }
 
     public void notifyDataChanged() {
-        int oldSize = sectionCounts.size();
-        this.sectionCounts.clear();
-
-        if (adapter != null) {
-            this.baseMagnitude = adapter.getBaseMagnitude();
-            this.peakMagnitude = adapter.getPeakMagnitude();
-            for (int section = 0, sections = adapter.getSectionCount(); section < sections; section++) {
-                int count = adapter.getSectionPointCount(section);
-                sectionCounts.append(section, count);
-            }
-        }
-
-        int newSize = sectionCounts.size();
-        recreateSectionPaths(oldSize, newSize);
-
+        adapterCache.rebuild();
         invalidate();
     }
 
@@ -350,12 +304,12 @@ public final class LineGraphView extends FrameLayout {
     //region Event Handling
 
     private int getSectionAtX(float x) {
-        int limit = sectionCounts.size();
+        int limit = adapterCache.getNumberSections();
         return (int) Math.min(limit - 1, Math.floor(x / getSectionWidth()));
     }
 
     private int getSegmentAtX(int section, float x) {
-        int limit = sectionCounts.get(section);
+        int limit = adapterCache.getSectionCount(section);
         float sectionMinX = getSectionWidth() * section;
         float segmentWidth = getSegmentWidth(section);
         float xInSection = x - sectionMinX;
@@ -364,8 +318,9 @@ public final class LineGraphView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-        if (adapter == null || sectionCounts.size() == 0)
+        if (adapter == null || adapterCache.getNumberSections() == 0) {
             return false;
+        }
 
         float x = Views.getNormalizedX(event);
         int section = getSectionAtX(x);
@@ -453,8 +408,8 @@ public final class LineGraphView extends FrameLayout {
                     height -= footerHeight;
                 }
 
-                float segmentX = absoluteSegmentX(getSectionWidth(), getSegmentWidth(section), section, segment);
-                float segmentY = absoluteSegmentY(height, section, segment);
+                float segmentX = adapterCache.calculateSegmentX(getSectionWidth(), getSegmentWidth(section), section, segment);
+                float segmentY = adapterCache.calculateSegmentY(height, section, segment);
 
                 pointBounds.set(segmentX - pointAreaHalf,
                                 minY + (segmentY - pointAreaHalf),
