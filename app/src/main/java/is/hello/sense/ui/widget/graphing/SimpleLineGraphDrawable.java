@@ -52,7 +52,7 @@ public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.Ch
             fillPath.reset();
             linePath.reset();
 
-            fillPath.moveTo(0, height);
+            fillPath.moveTo(0, minY + height);
 
             float sectionWidth = width / sectionCount;
             for (int section = 0; section < sectionCount; section++) {

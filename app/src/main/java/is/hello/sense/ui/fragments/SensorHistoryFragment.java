@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.RelativeSizeSpan;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,7 +21,6 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
-import is.hello.sense.functional.Function;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.Presenter;
@@ -47,10 +40,7 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
-import static is.hello.sense.functional.Lists.map;
-import static is.hello.sense.functional.Lists.segment;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class SensorHistoryFragment extends InjectionFragment implements SelectorLinearLayout.OnSelectionChangedListener {
@@ -280,7 +270,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         @Override
         public int getSectionLineColor(int section) {
-            return getResources().getColor(R.color.grey);
+            return getResources().getColor(R.color.graph_fill_accent_color);
         }
 
         @Override
@@ -351,7 +341,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             messageText.setText(savedMessage);
             this.savedMessage = null;
 
-            messageText.setGravity(Gravity.LEFT);
+            messageText.setGravity(Gravity.START);
             messageText.setTextColor(getResources().getColor(R.color.text_dark));
         }
 

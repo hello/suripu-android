@@ -145,7 +145,6 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
             fillPath.reset();
             markersPath.reset();
 
-            fillPath.moveTo(0, height);
 
             float halfOfTopLine = topLineHeight / 2f;
 
@@ -159,6 +158,8 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
             if (wantsFooters) {
                 height -= footerHeight;
             }
+
+            fillPath.moveTo(minX, minY + height);
 
             float sectionWidth = width / sectionCount;
             for (int section = 0; section < sectionCount; section++) {
@@ -199,7 +200,10 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
                     float segmentY = minY + adapterCache.calculateSegmentY(height, section, position);
 
                     if (position == 0) {
-                        fillPath.moveTo(minX, segmentY);
+                        if (section == 0) {
+                            fillPath.moveTo(minX, segmentY);
+                        }
+
                         sectionPath.moveTo(segmentX, segmentY);
                     } else {
                         sectionPath.lineTo(segmentX, segmentY);
@@ -207,8 +211,8 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
                     fillPath.lineTo(segmentX, segmentY - halfOfTopLine);
 
                     if (section == sectionCount - 1 && position == pointCount - 1) {
-                        fillPath.lineTo(segmentX + halfOfTopLine, height);
-                        fillPath.lineTo(0, height);
+                        fillPath.lineTo(segmentX + halfOfTopLine, minY + height);
+                        fillPath.lineTo(minX, minY + height);
                     }
                 }
 
@@ -217,9 +221,6 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
                     sectionPath.lineTo(sectionWidth * (section + 1), closingSegmentY);
                 }
             }
-
-            fillPath.lineTo(width, height);
-            fillPath.lineTo(minX, height);
 
             if (fillDrawable != null) {
                 canvas.save();
