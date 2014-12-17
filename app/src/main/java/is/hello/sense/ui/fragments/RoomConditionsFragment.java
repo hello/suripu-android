@@ -16,6 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.joda.time.DateTimeZone;
+
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -42,18 +44,13 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
 
-    @Inject
-    ApiService apiService;
-
-    @Inject
-    DateFormatter dateFormatter;
+    @Inject ApiService apiService;
+    @Inject DateFormatter dateFormatter;
 
     private final RoomSensorInfo temperature = new RoomSensorInfo(SensorHistory.SENSOR_NAME_TEMPERATURE);
     private final RoomSensorInfo humidity = new RoomSensorInfo(SensorHistory.SENSOR_NAME_HUMIDITY);
     private final RoomSensorInfo particulates = new RoomSensorInfo(SensorHistory.SENSOR_NAME_PARTICULATES);
     private Adapter adapter;
-
-    private SensorHistoryAdapter graphAdapter = new SensorHistoryAdapter();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,6 +78,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        loadSensorGraphs();
         bindAndSubscribe(presenter.currentConditions, this::bindConditions, this::conditionsUnavailable);
     }
 
@@ -89,14 +87,27 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
         super.onResume();
 
         presenter.update();
-
-        Observable<ArrayList<SensorHistory>> history = apiService.sensorHistoryForDay(SensorHistory.SENSOR_NAME_TEMPERATURE, SensorHistory.timeForLatest());
-        Observable<SensorHistoryAdapter.Update> graphUpdate = history.flatMap(h -> SensorHistory.createAdapterUpdate(h, SensorHistoryPresenter.MODE_DAY, dateFormatter.getTargetTimeZone()));
-        bindAndSubscribe(graphUpdate, graphAdapter::update, Functions.LOG_ERROR);
     }
 
 
     //region Displaying Data
+
+    public void loadSensorGraphs() {
+        long timestamp = SensorHistory.timeForLatest();
+        DateTimeZone timeZone = dateFormatter.getTargetTimeZone();
+        for (int i = 0, size = adapter.getCount(); i < size; i++) {
+            RoomSensorInfo info = adapter.getItem(i);
+
+            Observable<ArrayList<SensorHistory>> history = apiService.sensorHistoryForDay(info.sensorName, timestamp);
+            Observable<SensorHistoryAdapter.Update> graphUpdate = history.flatMap(h -> SensorHistory.createAdapterUpdate(h, SensorHistoryPresenter.MODE_DAY, timeZone));
+            bindAndSubscribe(graphUpdate,
+                             info.graphAdapter::update,
+                             e -> {
+                                 Logger.error(getClass().getSimpleName(), "Could not load sensor history for " + info.sensorName, e);
+                                 info.graphAdapter.clear();
+                             });
+        }
+    }
 
     public void bindConditions(@Nullable RoomConditionsPresenter.Result result) {
         if (result == null) {
@@ -151,6 +162,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
 
 
     static class RoomSensorInfo {
+        final SensorHistoryAdapter graphAdapter = new SensorHistoryAdapter();
         final @NonNull String sensorName;
 
         @Nullable UnitFormatter.Formatter formatter;
@@ -199,15 +211,15 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
                 markdown.renderWithEmphasisColor(sensorColor, message)
                         .subscribe(holder.message::setText, Functions.LOG_ERROR);
 
-                holder.lineGraphDrawable.setAdapter(graphAdapter);
                 holder.lineGraphDrawable.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
+                holder.lineGraphDrawable.setAdapter(roomSensorInfo.graphAdapter);
             } else {
                 holder.reading.setText(R.string.missing_data_placeholder);
                 holder.reading.setTextColor(resources.getColor(R.color.sensor_unknown));
                 holder.message.setText(R.string.missing_data_placeholder);
 
-                holder.lineGraphDrawable.setAdapter(null);
                 holder.lineGraphDrawable.setColorFilter(null);
+                holder.lineGraphDrawable.setAdapter(null);
             }
             return view;
         }

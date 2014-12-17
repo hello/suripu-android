@@ -117,6 +117,10 @@ public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.Ch
 
 
     public void setAdapter(@Nullable GraphAdapter adapter) {
+        if (adapter == adapterCache.getAdapter()) {
+            return;
+        }
+
         if (adapterCache.getAdapter() != null) {
             adapterCache.getAdapter().unregisterObserver(this);
         }
