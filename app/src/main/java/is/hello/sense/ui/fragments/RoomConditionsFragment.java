@@ -33,10 +33,10 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
 
-    private final RoomSensor temperature = new RoomSensor(SensorHistory.SENSOR_NAME_TEMPERATURE);
-    private final RoomSensor humidity = new RoomSensor(SensorHistory.SENSOR_NAME_HUMIDITY);
-    private final RoomSensor particulates = new RoomSensor(SensorHistory.SENSOR_NAME_PARTICULATES);
-    private RoomSensorsAdapter adapter;
+    private final RoomSensorInfo temperature = new RoomSensorInfo(SensorHistory.SENSOR_NAME_TEMPERATURE);
+    private final RoomSensorInfo humidity = new RoomSensorInfo(SensorHistory.SENSOR_NAME_HUMIDITY);
+    private final RoomSensorInfo particulates = new RoomSensorInfo(SensorHistory.SENSOR_NAME_PARTICULATES);
+    private Adapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,7 +52,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        this.adapter = new RoomSensorsAdapter(getActivity(), new RoomSensor[] { temperature, humidity, particulates });
+        this.adapter = new Adapter(getActivity(), new RoomSensorInfo[] { temperature, humidity, particulates });
         Styles.addCardSpacingHeaderAndFooter(listView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
@@ -124,26 +124,26 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        RoomSensor condition = adapter.getItem(position);
+        RoomSensorInfo condition = (RoomSensorInfo) adapterView.getItemAtPosition(position);
         showSensorHistory(condition.sensorName);
     }
 
 
-    static class RoomSensor {
+    static class RoomSensorInfo {
         final @NonNull String sensorName;
 
         @Nullable UnitFormatter.Formatter formatter;
         @Nullable SensorState sensorState;
 
-        RoomSensor(@NonNull String sensorName) {
+        RoomSensorInfo(@NonNull String sensorName) {
             this.sensorName = sensorName;
         }
     }
 
-    class RoomSensorsAdapter extends ArrayAdapter<RoomSensor> {
+    class Adapter extends ArrayAdapter<RoomSensorInfo> {
         private final LayoutInflater inflater;
 
-        RoomSensorsAdapter(@NonNull Context context, @NonNull RoomSensor[] conditions) {
+        Adapter(@NonNull Context context, @NonNull RoomSensorInfo[] conditions) {
             super(context, R.layout.item_room_sensor_condition, conditions);
 
             this.inflater = LayoutInflater.from(context);
@@ -158,13 +158,13 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
                 view.setTag(new ViewHolder(view));
             }
 
-            RoomSensor roomSensor = getItem(position);
+            RoomSensorInfo roomSensorInfo = getItem(position);
             ViewHolder holder = (ViewHolder) view.getTag();
             Resources resources = getContext().getResources();
-            if (roomSensor.sensorState != null) {
-                int sensorColor = resources.getColor(roomSensor.sensorState.getCondition().colorRes);
+            if (roomSensorInfo.sensorState != null) {
+                int sensorColor = resources.getColor(roomSensorInfo.sensorState.getCondition().colorRes);
 
-                String readingText = roomSensor.sensorState.getFormattedValue(roomSensor.formatter);
+                String readingText = roomSensorInfo.sensorState.getFormattedValue(roomSensorInfo.formatter);
                 if (!TextUtils.isEmpty(readingText)) {
                     holder.reading.setText(readingText);
                     holder.reading.setTextColor(sensorColor);
@@ -173,7 +173,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
                     holder.reading.setTextColor(resources.getColor(R.color.sensor_unknown));
                 }
 
-                String message = roomSensor.sensorState.getMessage();
+                String message = roomSensorInfo.sensorState.getMessage();
                 holder.message.setText(message);
                 markdown.renderWithEmphasisColor(sensorColor, message)
                         .subscribe(holder.message::setText, Functions.LOG_ERROR);
