@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.settings;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -113,10 +112,7 @@ public class AppSettingsFragment extends InjectionFragment {
         builder.setMessage(R.string.dialog_message_log_out);
         builder.setNegativeButton(android.R.string.cancel, null);
         builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-            Activity activity = getActivity();
-            sessionManager.logOut(activity);
-            activity.finish();
-
+            sessionManager.logOut(getActivity());
             Analytics.event(Analytics.EVENT_SIGNED_OUT, null);
         });
         builder.show();
