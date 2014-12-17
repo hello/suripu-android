@@ -18,7 +18,6 @@ import android.widget.TextView;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -35,10 +34,11 @@ import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
+import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.widget.graphing.LineGraphView;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.graphing.LineGraphView;
 import is.hello.sense.ui.widget.graphing.StyleableGraphAdapter;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
@@ -209,18 +209,14 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     }
 
 
-    public class SensorDataSource implements StyleableGraphAdapter, LineGraphView.OnValueHighlightedListener {
-        private List<Section> sections = new ArrayList<>();
-        private float baseMagnitude = 0f;
-        private float peakMagnitude = 0f;
+    public class SensorDataSource extends SensorHistoryAdapter implements LineGraphView.OnValueHighlightedListener, StyleableGraphAdapter {
         private UnitSystem unitSystem;
         private boolean use24Time = false;
 
         public void bindHistory(@NonNull SensorHistoryPresenter.Result historyAndUnits) {
-            sections.clear();
-
             List<SensorHistory> history = historyAndUnits.data;
             if (history.isEmpty()) {
+                clear();
                 return;
             }
 
@@ -249,12 +245,12 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             bindAndSubscribe(generateSeries, result -> {
                 Log.i(SensorHistoryFragment.class.getSimpleName(), "segments delivered");
 
-                this.sections.addAll(result.sections);
-                this.peakMagnitude = result.peak;
-                this.baseMagnitude = result.base;
+                setSections(result.sections);
+                setPeakMagnitude(result.peak);
+                setBaseMagnitude(result.base);
 
-                graphView.setNumberOfLines(sections.size());
-                graphView.notifyDataChanged();
+                graphView.setNumberOfLines(getSectionCount());
+                notifyDataChanged();
             }, Functions.LOG_ERROR);
 
             this.unitSystem = historyAndUnits.unitSystem;
@@ -275,15 +271,16 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                     .start();
         }
 
+        @Override
         public void clear() {
-            sections.clear();
+            super.clear();
+
             graphView.setNumberOfLines(0);
-            graphView.notifyDataChanged();
         }
 
         public void setUse24Time(boolean use24Time) {
             this.use24Time = use24Time;
-            graphView.notifyDataChanged();
+            notifyDataChanged();
         }
 
         private String formatSensorValue(float value) {
@@ -306,48 +303,23 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         //region Adapter
 
         @Override
-        public float getBaseMagnitude() {
-            return baseMagnitude;
-        }
-
-        @Override
-        public float getPeakMagnitude() {
-            return peakMagnitude;
-        }
-
-        @Override
-        public int getSectionCount() {
-            return sections.size();
-        }
-
-        @Override
-        public int getSectionPointCount(int section) {
-            return sections.get(section).size();
-        }
-
-        @Override
         public int getSectionLineColor(int section) {
             return getResources().getColor(R.color.grey);
         }
 
         @Override
         public int getSectionTextColor(int section) {
-            if (section == sections.size() - 1) {
+            if (section == getSectionCount() - 1) {
                 return Color.BLACK;
             } else {
                 return Color.GRAY;
             }
         }
 
-        @Override
-        public float getMagnitudeAt(int section, int position) {
-            return sections.get(section).get(position).getValue();
-        }
-
         @NonNull
         @Override
         public String getSectionHeader(int section) {
-            SensorHistory value = sections.get(section).getRepresentativeValue();
+            SensorHistory value = getSection(section).getRepresentativeValue();
             if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
                 return dateFormatter.formatDateTime(value.getTime(), "E").substring(0, 1);
             } else {
@@ -361,7 +333,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @NonNull
         @Override
         public String getSectionFooter(int section) {
-            float value = sections.get(section).getAverage();
+            float value = getSection(section).getAverage();
             return formatSensorValue(value);
         }
 
@@ -388,7 +360,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         @Override
         public void onGraphValueHighlighted(int section, int position) {
-            SensorHistory instant = sections.get(section).get(position);
+            SensorHistory instant = getSection(section).get(position);
             readingText.setText(spanFormattedValue(sensor, formatSensorValue(instant.getValue())));
             readingText.setTextColor(getSectionLineColor(section));
             messageText.setText(dateFormatter.formatAsTime(instant.getTime(), use24Time));
@@ -420,37 +392,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 this.peak = peak;
                 this.base = base;
             }
-        }
-    }
-
-    private static class Section {
-        private final List<SensorHistory> instants;
-        private final float average;
-
-        private Section(@NonNull List<SensorHistory> instants) {
-            this.instants = instants;
-            float average = 0f;
-            for (SensorHistory instant : instants) {
-                average += instant.getValue();
-            }
-            average /= instants.size();
-            this.average = average;
-        }
-
-        public SensorHistory get(int i) {
-            return instants.get(i);
-        }
-
-        public int size() {
-            return instants.size();
-        }
-
-        public float getAverage() {
-            return average;
-        }
-
-        public SensorHistory getRepresentativeValue() {
-            return instants.get(0);
         }
     }
 }

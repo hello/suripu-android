@@ -23,7 +23,7 @@ import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.Styles;
 import is.hello.sense.ui.widget.Views;
 
-public final class LineGraphView extends FrameLayout {
+public final class LineGraphView extends FrameLayout implements GraphAdapter.ChangeObserver {
     private @Nullable OnValueHighlightedListener onValueHighlightedListener;
     private StyleableGraphAdapter adapter;
     private int numberOfLines = 0;
@@ -71,10 +71,7 @@ public final class LineGraphView extends FrameLayout {
     protected void initialize(@Nullable AttributeSet attrs, int defStyleAttr) {
         Resources resources = getResources();
 
-        topLinePaint.setStyle(Paint.Style.STROKE);
-        topLinePaint.setAntiAlias(true);
-        topLinePaint.setStrokeJoin(Paint.Join.ROUND);
-        topLinePaint.setStrokeCap(Paint.Cap.ROUND);
+        Styles.applyGraphLineParameters(topLinePaint);
         topLinePaint.setStrokeWidth(topLineHeight);
 
         headerTextPaint.setAntiAlias(true);
@@ -244,7 +241,15 @@ public final class LineGraphView extends FrameLayout {
     }
 
     public void setAdapter(@Nullable StyleableGraphAdapter adapter) {
+        if (this.adapter != null) {
+            this.adapter.unregisterObserver(this);
+        }
+
         this.adapter = adapter;
+        if (adapter != null) {
+            adapter.registerObserver(this);
+        }
+
         adapterCache.setAdapter(adapter);
         invalidate();
     }
@@ -253,7 +258,8 @@ public final class LineGraphView extends FrameLayout {
         this.onValueHighlightedListener = onValueHighlightedListener;
     }
 
-    public void notifyDataChanged() {
+    @Override
+    public void onGraphAdapterChanged() {
         adapterCache.rebuild();
         invalidate();
     }
