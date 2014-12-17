@@ -1,5 +1,6 @@
 package is.hello.sense.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -15,12 +16,32 @@ import org.json.JSONObject;
 public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
 
+    private static MixpanelAPI provider;
+    private static SharedPreferences preferences;
+
+
+    //region Global Properties
+
+    /**
+     * iOS | android
+     */
     public static final String GLOBAL_PROP_PLATFORM = "Platform";
     public static final String PLATFORM = "android";
 
+    /**
+     * The actual Name of the user that was set upon registration
+     */
     public static final String GLOBAL_PROP_NAME = "Name";
+
+    /**
+     * The account id of the user
+     */
     public static final String GLOBAL_PROP_ACCOUNT_ID = "Account Id";
 
+    //endregion
+
+
+    //region Errors
 
     /**
      * Anytime an error is encountered, even if it came from server.  MAKE SURE you don't log Error in a loop ... I've seen it happen where 10,000 events get logged :)
@@ -29,6 +50,10 @@ public class Analytics {
     public static final String PROP_ERROR_CODE = "code";
     public static final String PROP_ERROR_MESSAGE = "message";
 
+    //endregion
+
+
+    //region Onboarding
 
     /**
      * Whenever user taps on a "help" button
@@ -142,6 +167,11 @@ public class Analytics {
      */
     public static final String EVENT_ONBOARDING_END = "Onboarding End";
 
+    //endregion
+
+
+    //region In App
+
     /**
      * When the user switches dates in the timeline (swipe, taps an event)
      */
@@ -184,6 +214,10 @@ public class Analytics {
     public static final String PROP_DEVICE_ACTION_FACTORY_RESTORE = "factory restore";
     public static final String PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE = "enable pairing mode";
 
+    //endregion
+
+
+    //region Widgets
 
     /**
      * When the user creates their first home screen widget of a certain type.
@@ -197,31 +231,39 @@ public class Analytics {
 
     public static final String PROP_WIDGET_NAME = "widget name";
 
+    //endregion
 
-    private static MixpanelAPI mixpanel;
-    private static SharedPreferences preferences;
+
+    //region Lifecycle
 
     public static void initialize(@NonNull Context context, @NonNull String apiKey) {
-        Analytics.mixpanel = MixpanelAPI.getInstance(context, apiKey);
+        Analytics.provider = MixpanelAPI.getInstance(context, apiKey);
         Analytics.preferences = context.getSharedPreferences(Constants.INTERNAL_PREFS, 0);
     }
 
-    public static void startSession() {
+    @SuppressWarnings("UnusedParameters")
+    public static void onResume(@NonNull Activity activity) {
     }
 
-    public static void endSession() {
-        mixpanel.flush();
+    @SuppressWarnings("UnusedParameters")
+    public static void onPause(@NonNull Activity activity) {
+        provider.flush();
     }
+
+    //endregion
+
+
+    //region User Identity
 
     public static void setUserId(@NonNull String userId) {
         String existingUserId = preferences.getString(Constants.INTERNAL_PREF_ANALYTICS_USER_ID, null);
-        mixpanel.getPeople().identify(userId);
+        provider.getPeople().identify(userId);
         if (existingUserId == null) {
             Logger.info(LOG_TAG, "Identifying user.");
-            mixpanel.identify(userId);
+            provider.identify(userId);
         } else if (!existingUserId.equals(userId)) {
             Logger.info(LOG_TAG, "Establishing user alias.");
-            mixpanel.alias(userId, existingUserId);
+            provider.alias(userId, existingUserId);
         }
 
         if (Crashlytics.getInstance().isInitialized()) {
@@ -244,16 +286,21 @@ public class Analytics {
             name = "";
         }
 
-        mixpanel.getPeople().set("$name", name);
-        mixpanel.getPeople().set("$created", created.toString());
-        mixpanel.getPeople().set(GLOBAL_PROP_ACCOUNT_ID, accountId);
-        mixpanel.getPeople().set(GLOBAL_PROP_PLATFORM, PLATFORM);
+        provider.getPeople().set("$name", name);
+        provider.getPeople().set("$created", created.toString());
+        provider.getPeople().set(GLOBAL_PROP_ACCOUNT_ID, accountId);
+        provider.getPeople().set(GLOBAL_PROP_PLATFORM, PLATFORM);
 
-        mixpanel.registerSuperProperties(createProperties(
+        provider.registerSuperProperties(createProperties(
                 GLOBAL_PROP_NAME, name,
                 GLOBAL_PROP_PLATFORM, PLATFORM
         ));
     }
+
+    //endregion
+
+
+    //region Events
 
     public static @NonNull JSONObject createProperties(@NonNull Object... pairs) {
         if ((pairs.length % 2) != 0) {
@@ -270,13 +317,14 @@ public class Analytics {
         return properties;
     }
 
-    public static void event(@NonNull String event, @Nullable JSONObject properties) {
-        mixpanel.track(event, properties);
+    public static void trackEvent(@NonNull String event, @Nullable JSONObject properties) {
+        provider.track(event, properties);
         Logger.info(LOG_TAG, event + ": " + properties);
     }
 
-    public static void error(@NonNull String message, int code) {
-        event(EVENT_ERROR, createProperties(PROP_ERROR_MESSAGE, message,
-                                            PROP_ERROR_CODE, code));
+    public static void trackError(@NonNull String message, int code) {
+        trackEvent(EVENT_ERROR, createProperties(PROP_ERROR_MESSAGE, message, PROP_ERROR_CODE, code));
     }
+
+    //endregion
 }

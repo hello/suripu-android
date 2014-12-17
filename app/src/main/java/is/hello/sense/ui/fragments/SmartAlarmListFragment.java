@@ -146,7 +146,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Analytics.event(Analytics.EVENT_ALARM_ACTION, Analytics.createProperties(Analytics.PROP_ALARM_ACTION, Analytics.PROP_ALARM_ACTION_EDIT));
+        Analytics.trackEvent(Analytics.EVENT_ALARM_ACTION, Analytics.createProperties(Analytics.PROP_ALARM_ACTION, Analytics.PROP_ALARM_ACTION_EDIT));
 
         SmartAlarm alarm = (SmartAlarm) adapterView.getItemAtPosition(position);
         editAlarm(alarm, position);
@@ -165,7 +165,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         currentAlarms.get(position).setEnabled(enabled);
 
         if (!enabled) {
-            Analytics.event(Analytics.EVENT_ALARM_ACTION, Analytics.createProperties(Analytics.PROP_ALARM_ACTION, Analytics.PROP_ALARM_ACTION_DISABLE));
+            Analytics.trackEvent(Analytics.EVENT_ALARM_ACTION, Analytics.createProperties(Analytics.PROP_ALARM_ACTION, Analytics.PROP_ALARM_ACTION_DISABLE));
         }
 
         activityIndicator.setVisibility(View.VISIBLE);
@@ -175,7 +175,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     }
 
     public void newAlarm(@NonNull View sender) {
-        Analytics.event(Analytics.EVENT_ALARM_ACTION, Analytics.createProperties(Analytics.PROP_ALARM_ACTION, Analytics.PROP_ALARM_ACTION_ADD));
+        Analytics.trackEvent(Analytics.EVENT_ALARM_ACTION, Analytics.createProperties(Analytics.PROP_ALARM_ACTION, Analytics.PROP_ALARM_ACTION_ADD));
         editAlarm(new SmartAlarm(), SmartAlarmDetailActivity.INDEX_NEW);
     }
 

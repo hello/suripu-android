@@ -29,7 +29,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment {
         this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
-            Analytics.event(Analytics.EVENT_ONBOARDING_WEIGHT, null);
+            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_WEIGHT, null);
         }
     }
 

@@ -24,7 +24,7 @@ public class Onboarding2ndPillInfoFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.event(Analytics.EVENT_ONBOARDING_GET_APP, null);
+        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_GET_APP, null);
 
         putSenseIntoPairingMode();
         setRetainInstance(true);

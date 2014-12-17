@@ -13,7 +13,7 @@ public class HelpUtil {
     private static final String HELP_URL = "https://docs.google.com/document/d/1OEIDKSq6iBgH47-cctQ4TDom-iSlmkxFJfQ5rvegbO8/edit?usp=sharing";
 
     public static void showHelp(@NonNull Context from, @NonNull Step step) {
-        Analytics.event(Analytics.EVENT_HELP, Analytics.createProperties(Analytics.PROP_HELP_STEP, step.toString()));
+        Analytics.trackEvent(Analytics.EVENT_HELP, Analytics.createProperties(Analytics.PROP_HELP_STEP, step.toString()));
         from.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(HELP_URL)));
     }
 

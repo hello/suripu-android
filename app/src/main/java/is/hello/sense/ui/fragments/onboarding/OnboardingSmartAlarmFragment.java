@@ -32,7 +32,7 @@ public class OnboardingSmartAlarmFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.event(Analytics.EVENT_ONBOARDING_FIRST_ALARM, null);
+        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_FIRST_ALARM, null);
     }
 
     @Nullable

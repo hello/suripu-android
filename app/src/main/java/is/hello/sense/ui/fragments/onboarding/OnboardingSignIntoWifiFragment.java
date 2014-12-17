@@ -77,7 +77,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
             this.hasConnectedToNetwork = savedInstanceState.getBoolean("hasConnectedToNetwork", false);
         }
 
-        Analytics.event(Analytics.EVENT_ONBOARDING_WIFI_PASSWORD, null);
+        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_WIFI_PASSWORD, null);
 
         setRetainInstance(true);
     }

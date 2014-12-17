@@ -17,7 +17,7 @@ public class OnboardingPillPartnerInfoFragment extends SenseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.event(Analytics.EVENT_ONBOARDING_PAIRING_MODE_OFF, null);
+        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_PAIRING_MODE_OFF, null);
     }
 
     @Nullable

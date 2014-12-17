@@ -95,7 +95,7 @@ public class OnboardingIntroductionFragment extends Fragment {
                     titleText.setText(R.string.welcome);
                     titleText.setGravity(Gravity.CENTER);
 
-                    Analytics.event(Analytics.EVENT_ONBOARDING_START, null);
+                    Analytics.trackEvent(Analytics.EVENT_ONBOARDING_START, null);
                 })
                 .andThen()
                 .fadeIn()
@@ -103,7 +103,7 @@ public class OnboardingIntroductionFragment extends Fragment {
     }
 
     public void playIntroVideo(@NonNull View sender) {
-        Analytics.event(Analytics.EVENT_PLAY_VIDEO, null);
+        Analytics.trackEvent(Analytics.EVENT_PLAY_VIDEO, null);
 
         Bundle arguments = VideoPlayerActivity.getArguments(Uri.parse("http://player.vimeo.com/external/101139949.hd.mp4?s=28ac378e29847b77e9fb7431f05d2772"));
         Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);

@@ -26,7 +26,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
         this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
-            Analytics.event(Analytics.EVENT_ONBOARDING_BIRTHDAY, null);
+            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_BIRTHDAY, null);
         }
     }
 

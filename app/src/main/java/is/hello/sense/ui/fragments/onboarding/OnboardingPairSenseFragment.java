@@ -46,7 +46,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.event(Analytics.EVENT_ONBOARDING_PAIR_SENSE, null);
+        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_PAIR_SENSE, null);
 
         setRetainInstance(true);
     }
@@ -178,7 +178,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            Analytics.event(Analytics.EVENT_ONBOARDING_SECOND_PILL_CHECK, null);
+            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_SECOND_PILL_CHECK, null);
         }
 
         @Override

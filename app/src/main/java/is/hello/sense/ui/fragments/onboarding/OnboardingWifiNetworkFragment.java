@@ -48,7 +48,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
         addPresenter(hardwarePresenter);
 
-        Analytics.event(Analytics.EVENT_ONBOARDING_WIFI, null);
+        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_WIFI, null);
 
         setRetainInstance(true);
     }
@@ -77,7 +77,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         this.rescanButton = (Button) view.findViewById(R.id.fragment_onboarding_wifi_networks_rescan);
         rescanButton.setEnabled(false);
         rescanButton.setOnClickListener(ignored -> {
-            Analytics.event(Analytics.EVENT_ONBOARDING_WIFI_SCAN, null);
+            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_WIFI_SCAN, null);
             rescan();
         });
 

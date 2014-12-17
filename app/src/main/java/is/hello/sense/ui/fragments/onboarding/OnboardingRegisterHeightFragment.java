@@ -30,7 +30,7 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment {
         this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
-            Analytics.event(Analytics.EVENT_ONBOARDING_HEIGHT, null);
+            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_HEIGHT, null);
         }
     }
 

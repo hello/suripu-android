@@ -36,7 +36,7 @@ public class OnboardingStaticStepFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null && getArguments().containsKey(ARG_ANALYTICS_EVENT)) {
-            Analytics.event(getArguments().getString(ARG_ANALYTICS_EVENT), null);
+            Analytics.trackEvent(getArguments().getString(ARG_ANALYTICS_EVENT), null);
         }
 
         String animationName = getArguments().getString(ARG_EXIT_ANIMATION_NAME);

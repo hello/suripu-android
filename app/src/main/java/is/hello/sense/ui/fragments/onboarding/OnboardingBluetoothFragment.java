@@ -27,7 +27,7 @@ public class OnboardingBluetoothFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.event(Analytics.EVENT_ONBOARDING_NO_BLE, null);
+        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_NO_BLE, null);
 
         setRetainInstance(true);
     }
