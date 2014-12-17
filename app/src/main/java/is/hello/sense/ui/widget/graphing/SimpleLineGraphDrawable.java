@@ -2,21 +2,24 @@ package is.hello.sense.ui.widget.graphing;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.Styles;
 
-public class SimpleLineGraphDrawable extends Drawable {
-    private final GraphAdapterCache adapterCache = new GraphAdapterCache();
+public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.ChangeObserver {
+    private final GraphAdapterCache adapterCache = new GraphAdapterCache(GraphAdapterCache.Type.PLAIN);
 
     private final Paint linePaint = new Paint();
+    private final Path linePath = new Path();
     private final Path fillPath = new Path();
 
     private final float topLineHeight;
@@ -25,21 +28,32 @@ public class SimpleLineGraphDrawable extends Drawable {
 
 
     public SimpleLineGraphDrawable(@NonNull Resources resources) {
-        this.topLineHeight = resources.getDimensionPixelSize(R.dimen.divider_height);
+        this.topLineHeight = resources.getDimensionPixelSize(R.dimen.view_line_graph_line_size);
 
         Styles.applyGraphLineParameters(linePaint);
         linePaint.setStrokeWidth(topLineHeight);
+
+        setLineColor(resources.getColor(R.color.graph_fill_color));
+        setFillDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
+                resources.getColor(R.color.graph_fill_color_dimmed),
+                Color.TRANSPARENT,
+        }));
     }
 
 
     @Override
     public void draw(Canvas canvas) {
         int sectionCount = adapterCache.getNumberSections();
-        int width = canvas.getWidth();
-        int height = canvas.getHeight();
-
         if (sectionCount > 0) {
+            float halfOfTopLine = topLineHeight / 2f;
+
+            int width = canvas.getWidth();
+            int height = (int) (canvas.getHeight() - halfOfTopLine);
+
             fillPath.reset();
+            linePath.reset();
+
+            fillPath.moveTo(0, height);
 
             float sectionWidth = width / sectionCount;
             for (int section = 0; section < sectionCount; section++) {
@@ -48,30 +62,23 @@ public class SimpleLineGraphDrawable extends Drawable {
                     continue;
 
                 float segmentWidth = sectionWidth / (float) pointCount;
-
-                Path sectionPath = adapterCache.getSectionLinePath(section);
-                sectionPath.reset();
                 for (int position = 0; position < pointCount; position++) {
                     float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, section, position);
                     float segmentY = adapterCache.calculateSegmentY(height, section, position);
 
-                    if (position == 0) {
-                        fillPath.moveTo(0, segmentY);
-                        sectionPath.moveTo(segmentX, segmentY);
+                    if (section == 0 && position == 0) {
+                        linePath.moveTo(segmentX, segmentY);
                     } else {
-                        sectionPath.lineTo(segmentX, segmentY);
+                        linePath.lineTo(segmentX, segmentY);
                     }
-                    fillPath.lineTo(segmentX, segmentY - topLineHeight / 2f);
-                }
+                    fillPath.lineTo(segmentX, segmentY - halfOfTopLine);
 
-                if (section < sectionCount - 1) {
-                    float closingSegmentY = adapterCache.calculateSegmentY(height, section + 1, 0);
-                    sectionPath.lineTo(sectionWidth * (section + 1), closingSegmentY);
+                    if (section == sectionCount - 1 && position == pointCount - 1) {
+                        fillPath.lineTo(segmentX + halfOfTopLine, height);
+                        fillPath.lineTo(0, height);
+                    }
                 }
             }
-
-            fillPath.lineTo(width, height);
-            fillPath.lineTo(0, height);
 
             if (fillDrawable != null) {
                 canvas.save();
@@ -83,10 +90,7 @@ public class SimpleLineGraphDrawable extends Drawable {
                 canvas.restore();
             }
 
-            for (int section = 0; section < sectionCount; section++) {
-                Path sectionPath = adapterCache.getSectionLinePath(section);
-                canvas.drawPath(sectionPath, linePaint);
-            }
+            canvas.drawPath(linePath, linePaint);
         }
     }
 
@@ -122,7 +126,15 @@ public class SimpleLineGraphDrawable extends Drawable {
 
 
     public void setAdapter(@Nullable GraphAdapter adapter) {
+        if (adapterCache.getAdapter() != null) {
+            adapterCache.getAdapter().unregisterObserver(this);
+        }
+
         adapterCache.setAdapter(adapter);
+        if (adapter != null) {
+            adapter.registerObserver(this);
+        }
+
         invalidateSelf();
     }
 
@@ -137,4 +149,10 @@ public class SimpleLineGraphDrawable extends Drawable {
     }
 
     //endregion
+
+    @Override
+    public void onGraphAdapterChanged() {
+        adapterCache.rebuild();
+        invalidateSelf();
+    }
 }

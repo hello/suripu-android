@@ -18,6 +18,8 @@
 
     <color name="border">#dcdcdc</color>
     <color name="shadow_end">#18000000</color>
+    <color name="graph_fill_color">#009CFF</color>
+    <color name="graph_fill_color_dimmed">#66009CFF</color>
 
     <color name="text_dark">#4D4D4D</color>
     <color name="text_dim">#77000000</color>

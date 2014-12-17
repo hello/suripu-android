@@ -3,6 +3,8 @@ package is.hello.sense.ui.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,28 +17,45 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
+import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
+import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.Styles;
+import is.hello.sense.ui.widget.graphing.SimpleLineGraphDrawable;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
+import rx.Observable;
 
 public class RoomConditionsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
 
+    @Inject
+    ApiService apiService;
+
+    @Inject
+    DateFormatter dateFormatter;
+
     private final RoomSensorInfo temperature = new RoomSensorInfo(SensorHistory.SENSOR_NAME_TEMPERATURE);
     private final RoomSensorInfo humidity = new RoomSensorInfo(SensorHistory.SENSOR_NAME_HUMIDITY);
     private final RoomSensorInfo particulates = new RoomSensorInfo(SensorHistory.SENSOR_NAME_PARTICULATES);
     private Adapter adapter;
+
+    private SensorHistoryAdapter graphAdapter = new SensorHistoryAdapter();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,6 +91,10 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
         super.onResume();
 
         presenter.update();
+
+        Observable<ArrayList<SensorHistory>> history = apiService.sensorHistoryForDay(SensorHistory.SENSOR_NAME_TEMPERATURE, SensorHistory.timeForLatest());
+        Observable<SensorHistoryAdapter.Update> graphUpdate = history.flatMap(h -> SensorHistory.createAdapterUpdate(h, SensorHistoryPresenter.MODE_DAY, dateFormatter.getTargetTimeZone()));
+        bindAndSubscribe(graphUpdate, graphAdapter::update, Functions.LOG_ERROR);
     }
 
 
@@ -189,10 +212,17 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
         class ViewHolder {
             final TextView reading;
             final TextView message;
+            final SimpleLineGraphDrawable lineGraphDrawable;
 
             ViewHolder(@NonNull View view) {
                 this.reading = (TextView) view.findViewById(R.id.item_sensor_condition_reading);
                 this.message = (TextView) view.findViewById(R.id.item_sensor_condition_message);
+
+                this.lineGraphDrawable = new SimpleLineGraphDrawable(getResources());
+                lineGraphDrawable.setAdapter(graphAdapter);
+
+                View graph = view.findViewById(R.id.fragment_room_sensor_condition_graph);
+                graph.setBackground(lineGraphDrawable);
             }
         }
     }

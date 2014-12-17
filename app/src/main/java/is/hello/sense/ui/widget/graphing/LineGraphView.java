@@ -32,7 +32,7 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
     private boolean wantsHeaders = true;
     private boolean wantsFooters = true;
 
-    private final GraphAdapterCache adapterCache = new GraphAdapterCache();
+    private final GraphAdapterCache adapterCache = new GraphAdapterCache(GraphAdapterCache.Type.STYLEABLE);
 
     private float topLineHeight;
 
@@ -72,7 +72,6 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
         Resources resources = getResources();
 
         Styles.applyGraphLineParameters(topLinePaint);
-        topLinePaint.setStrokeWidth(topLineHeight);
 
         headerTextPaint.setAntiAlias(true);
         headerTextPaint.setSubpixelText(true);
@@ -87,7 +86,7 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
 
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.LineGraphView, defStyleAttr, 0);
-            setTopLineHeight(styles.getDimensionPixelOffset(R.styleable.LineGraphView_topLineHeight, resources.getDimensionPixelSize(R.dimen.divider_height)));
+            setTopLineHeight(styles.getDimensionPixelOffset(R.styleable.LineGraphView_topLineHeight, resources.getDimensionPixelSize(R.dimen.view_line_graph_line_size)));
             setFillDrawable(styles.getDrawable(R.styleable.LineGraphView_fill));
 
             this.numberOfLines = styles.getInt(R.styleable.LineGraphView_lineCount, 0);
@@ -96,7 +95,7 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
             this.wantsHeaders = styles.getBoolean(R.styleable.LineGraphView_wantsHeaders, true);
             this.wantsFooters = styles.getBoolean(R.styleable.LineGraphView_wantsFooters, true);
         } else {
-            setTopLineHeight(resources.getDimensionPixelSize(R.dimen.divider_height));
+            setTopLineHeight(resources.getDimensionPixelSize(R.dimen.view_line_graph_line_size));
         }
 
         this.headerFooterPadding = getResources().getDimensionPixelSize(R.dimen.gap_medium);
@@ -145,6 +144,10 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
         if (adapter != null && sectionCount > 0) {
             fillPath.reset();
             markersPath.reset();
+
+            fillPath.moveTo(0, height);
+
+            float halfOfTopLine = topLineHeight / 2f;
 
             int headerHeight = calculateHeaderHeight();
             if (wantsHeaders) {
@@ -201,7 +204,12 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
                     } else {
                         sectionPath.lineTo(segmentX, segmentY);
                     }
-                    fillPath.lineTo(segmentX, segmentY - topLineHeight / 2f);
+                    fillPath.lineTo(segmentX, segmentY - halfOfTopLine);
+
+                    if (section == sectionCount - 1 && position == pointCount - 1) {
+                        fillPath.lineTo(segmentX + halfOfTopLine, height);
+                        fillPath.lineTo(0, height);
+                    }
                 }
 
                 if (section < sectionCount - 1) {
@@ -276,6 +284,7 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
 
     public void setTopLineHeight(int height) {
         this.topLineHeight = height;
+        topLinePaint.setStrokeWidth(topLineHeight);
         invalidate();
     }
 

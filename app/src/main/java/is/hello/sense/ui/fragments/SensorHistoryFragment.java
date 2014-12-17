@@ -220,29 +220,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 return;
             }
 
-            Observable<Update> generateSeries = Observable.create((Observable.OnSubscribe<Update>) s -> {
-                Function<SensorHistory, Integer> segmentKeyProducer;
-                DateTimeZone timeZone = dateFormatter.getTargetTimeZone();
-                if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
-                    segmentKeyProducer = sensorHistory -> sensorHistory.getTime().withZone(timeZone).getDayOfMonth();
-                } else {
-                    segmentKeyProducer = sensorHistory -> {
-                        DateTime shiftedTime = sensorHistory.getTime().withZone(timeZone);
-                        return (shiftedTime.getDayOfMonth() * 100) + (shiftedTime.getHourOfDay() / 6);
-                    };
-                }
-                List<List<SensorHistory>> segments = segment(segmentKeyProducer, history);
-                List<Section> sections = map(segments, Section::new);
-
-                Comparator<SensorHistory> comparator = (l, r) -> Float.compare(r.getValue(), l.getValue());
-                float peak = Collections.max(history, comparator).getValue();
-                float base = Collections.min(history, comparator).getValue();
-
-                s.onNext(new Update(sections, peak, base));
-                s.onCompleted();
-            }).subscribeOn(Schedulers.computation());
-
-            bindAndSubscribe(generateSeries, this::update, Functions.LOG_ERROR);
+            Observable<Update> update = SensorHistory.createAdapterUpdate(history, sensorHistoryPresenter.getMode(), dateFormatter.getTargetTimeZone());
+            bindAndSubscribe(update, this::update, Functions.LOG_ERROR);
 
             this.unitSystem = historyAndUnits.unitSystem;
 

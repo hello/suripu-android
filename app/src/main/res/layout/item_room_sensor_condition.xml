@@ -43,4 +43,10 @@
 
     </LinearLayout>
 
+    <View
+        android:id="@+id/fragment_room_sensor_condition_graph"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/condition_graph_height"
+        android:background="@color/white" />
+
 </LinearLayout>
