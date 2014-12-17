@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
@@ -26,12 +27,12 @@ public class LaunchActivity extends InjectionActivity {
 
         if (!buildValues.isDebugBuild()) {
             Crashlytics.start(this);
+        }
 
-            if (sessionManager.getSession() != null) {
-                String accountId = sessionManager.getSession().getAccountId();
-                Crashlytics.setUserIdentifier(accountId);
-                Logger.info(ApiSessionManager.class.getSimpleName(), "Began session for " + accountId);
-            }
+        if (sessionManager.getSession() != null) {
+            String accountId = sessionManager.getSession().getAccountId();
+            Analytics.identify(accountId);
+            Logger.info(Analytics.LOG_TAG, "Began session for " + accountId);
         }
     }
 

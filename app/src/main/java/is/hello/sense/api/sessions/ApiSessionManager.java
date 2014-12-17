@@ -6,8 +6,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.amplitude.api.Amplitude;
 import com.crashlytics.android.Crashlytics;
+
+import is.hello.sense.util.Analytics;
 
 public abstract class ApiSessionManager {
     public static final String ACTION_LOGGED_OUT = ApiSessionManager.class.getName() + ".ACTION_LOGGED_OUT";
@@ -25,10 +26,7 @@ public abstract class ApiSessionManager {
     public final void setSession(@Nullable OAuthSession session) {
         storeOAuthSession(session);
         if (session != null) {
-            Amplitude.setUserId(session.getAccountId());
-            if (Crashlytics.getInstance().isInitialized()) {
-                Crashlytics.setUserIdentifier(session.getAccountId());
-            }
+            Analytics.identify(session.getAccountId());
         }
     }
 

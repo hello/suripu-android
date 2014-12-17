@@ -1,14 +1,19 @@
 package is.hello.sense.util;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.amplitude.api.Amplitude;
+import com.crashlytics.android.Crashlytics;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Analytics {
+    public static final String LOG_TAG = Analytics.class.getSimpleName();
+
     /**
      * Anytime an error is encountered, even if it came from server.  MAKE SURE you don't log Error in a loop ... I've seen it happen where 10,000 events get logged :)
      */
@@ -172,10 +177,44 @@ public class Analytics {
     public static final String PROP_WIDGET_NAME = "widget name";
 
 
+    private static MixpanelAPI mixpanel;
+    private static SharedPreferences preferences;
+
+    public static void initialize(@NonNull Context context, @NonNull String apiKey) {
+        Analytics.mixpanel = MixpanelAPI.getInstance(context, apiKey);
+        Analytics.preferences = context.getSharedPreferences(Constants.INTERNAL_PREFS, 0);
+    }
+
+    public static void startSession() {
+    }
+
+    public static void endSession() {
+        mixpanel.flush();
+    }
+
+    public static void identify(@NonNull String userId) {
+        String existingUserId = preferences.getString(Constants.INTERNAL_PREF_ANALYTICS_USER_ID, null);
+        if (existingUserId == null) {
+            Logger.info(LOG_TAG, "Identifying user.");
+            mixpanel.identify(userId);
+        } else if (!existingUserId.equals(userId)) {
+            Logger.info(LOG_TAG, "Establishing user alias.");
+            mixpanel.alias(userId, existingUserId);
+        }
+
+        if (Crashlytics.getInstance().isInitialized()) {
+            Crashlytics.setUserIdentifier(userId);
+        }
+
+        preferences.edit()
+                   .putString(Constants.INTERNAL_PREF_ANALYTICS_USER_ID, userId)
+                   .apply();
+    }
 
     public static @NonNull JSONObject createProperties(@NonNull Object... pairs) {
-        if ((pairs.length % 2) != 0)
+        if ((pairs.length % 2) != 0) {
             throw new IllegalArgumentException("even number of arguments required");
+        }
 
         JSONObject properties = new JSONObject();
         try {
@@ -188,11 +227,7 @@ public class Analytics {
     }
 
     public static void event(@NonNull String event, @Nullable JSONObject properties) {
-        if (properties != null)
-            Amplitude.logEvent(event, properties);
-        else
-            Amplitude.logEvent(event);
-
+        mixpanel.track(event, properties);
         Logger.info(Analytics.class.getSimpleName(), event + ": " + properties);
     }
 

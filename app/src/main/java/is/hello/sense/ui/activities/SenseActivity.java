@@ -3,21 +3,20 @@ package is.hello.sense.ui.activities;
 import android.app.Activity;
 import android.content.Context;
 
-import com.amplitude.api.Amplitude;
-
+import is.hello.sense.util.Analytics;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SenseActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        Amplitude.startSession();
+        Analytics.startSession();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Amplitude.endSession();
+        Analytics.endSession();
     }
 
     @Override

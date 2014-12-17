@@ -92,6 +92,8 @@
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity android:name="com.mixpanel.android.surveys.SurveyActivity" />
+
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 
         <!--region Widgets-->
