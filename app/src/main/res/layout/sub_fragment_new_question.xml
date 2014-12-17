@@ -4,8 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/raised_item_background"
-    android:paddingBottom="@dimen/gap_small">
+    style="@style/AppTheme.Card">
 
     <TextView
         android:layout_width="match_parent"

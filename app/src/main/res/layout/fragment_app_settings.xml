@@ -9,7 +9,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/gap_outer"
         android:orientation="vertical"
-        android:background="@drawable/raised_item_background"
-        android:padding="@dimen/gap_raised_item_bottom"/>
+        style="@style/AppTheme.Card"/>
 
 </ScrollView>

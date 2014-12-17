@@ -6,9 +6,8 @@
     android:layout_gravity="center"
     android:orientation="horizontal"
     android:gravity="center"
-    android:paddingBottom="@dimen/gap_raised_item_bottom"
-    android:background="@drawable/raised_item_background"
-    android:baselineAligned="false">
+    android:baselineAligned="false"
+    style="@style/AppTheme.Card">
 
     <FrameLayout
         android:layout_width="0dp"
