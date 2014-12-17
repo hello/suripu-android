@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.amplitude.api.Amplitude;
-
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import dagger.ObjectGraph;
@@ -14,6 +12,7 @@ import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.SenseAppModule;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.ui.widget.Styles;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
@@ -42,7 +41,7 @@ public class SenseApplication extends Application {
         if (buildValues.debugScreenEnabled) {
             SessionLogger.init(this);
         }
-        Amplitude.initialize(this, getString(R.string.build_amplitude_api_key));
+        Analytics.initialize(this, getString(R.string.build_analytics_api_key));
 
         buildGraph();
 

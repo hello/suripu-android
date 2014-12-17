@@ -3,5 +3,5 @@
     <string name="build_type">debug</string>
     <string name="build_default_api_env">STAGING</string>
     <string name="build_debug_enabled">true</string>
-    <string name="build_amplitude_api_key">b353e69e990cfce15a9557287ce7fbf8</string>
+    <string name="build_analytics_api_key">d62a169fe4856dea26f3a322750613a8</string>
 </resources>
