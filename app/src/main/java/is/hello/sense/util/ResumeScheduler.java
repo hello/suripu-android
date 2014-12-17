@@ -2,55 +2,55 @@ package is.hello.sense.util;
 
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
+import rx.functions.Func0;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
 /**
- * A scheduler that wraps another scheduler, and an object wrapping Resumable.
- * A Resumable object is one on which certain operations are unsafe while it is paused.
- * Examples of a Resumable object are {@see is.hello.sense.ui.activities.SenseActivity}
- * and {@see is.hello.sense.ui.common.InjectionFragment}. The scheduler sends all of
- * its workers through a Resumable object, which will then either run the worker
- * immediately if it's safe, or defer its execution until it's safe to do so.
+ * A scheduler that wraps a work coordinator and another scheduler, and uses these objects
+ * to ensure that work is only run within safe conditions. Used to ensure that no work is
+ * done by activities and fragments that are paused or destroyed.
  *
  * @see is.hello.sense.ui.activities.SenseActivity
  * @see is.hello.sense.ui.common.InjectionFragment
  */
 public class ResumeScheduler extends Scheduler {
-    private final Resumable targetResumable;
+    private final Coordinator targetCoordinator;
     private final Scheduler targetScheduler;
 
-    public ResumeScheduler(@NonNull Resumable targetResumable, @NonNull Scheduler targetScheduler) {
-        this.targetResumable = targetResumable;
+    public ResumeScheduler(@NonNull Coordinator targetCoordinator, @NonNull Scheduler targetScheduler) {
+        this.targetCoordinator = targetCoordinator;
         this.targetScheduler = targetScheduler;
     }
 
     /**
      * Creates a ResumeScheduler targeting the main thread.
      */
-    public ResumeScheduler(@NonNull Resumable targetResumable) {
-        this(targetResumable, AndroidSchedulers.mainThread());
+    public ResumeScheduler(@NonNull Coordinator targetCoordinator) {
+        this(targetCoordinator, AndroidSchedulers.mainThread());
     }
 
     @Override
     public ResumeWorker createWorker() {
-        return new ResumeWorker(targetResumable, targetScheduler.createWorker());
+        return new ResumeWorker(targetCoordinator, targetScheduler.createWorker());
     }
 
 
     private static class ResumeWorker extends Worker {
         private final CompositeSubscription compositeSubscription = new CompositeSubscription();
-        private final Resumable targetResumable;
+        private final Coordinator targetCoordinator;
         private final Worker targetWorker;
 
-        private ResumeWorker(@NonNull Resumable targetResumable, @NonNull Worker targetWorker) {
-            this.targetResumable = targetResumable;
+        private ResumeWorker(@NonNull Coordinator targetCoordinator, @NonNull Worker targetWorker) {
+            this.targetCoordinator = targetCoordinator;
             this.targetWorker = targetWorker;
         }
 
@@ -62,9 +62,9 @@ public class ResumeScheduler extends Scheduler {
         @Override
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             Runnable work = () -> compositeSubscription.add(targetWorker.schedule(action, delayTime, unit));
-            Subscription subscription = Subscriptions.create(() -> targetResumable.cancelPostOnResume(work));
+            Subscription subscription = Subscriptions.create(() -> targetCoordinator.cancelPostOnResume(work));
             compositeSubscription.add(subscription);
-            targetResumable.postOnResume(work);
+            targetCoordinator.postOnResume(work);
             return subscription;
         }
 
@@ -81,24 +81,50 @@ public class ResumeScheduler extends Scheduler {
 
 
     /**
-     * A class which has a paused state where certain work is unsafe.
-     *
-     * @see is.hello.sense.ui.activities.SenseActivity
-     * @see is.hello.sense.ui.common.InjectionFragment
+     * Coordinates work between a resume scheduler, and a containing object
+     * which has a paused state in which some work is deemed unsafe.
      */
-    public interface Resumable {
+    public static class Coordinator {
+        private final Func0<Boolean> isResumed;
+        private final List<Runnable> actions = new ArrayList<>(); //Synchronize all access to this!
+
+        public Coordinator(@NonNull Func0<Boolean> isResumed) {
+            this.isResumed = isResumed;
+        }
+
+        public void resume() {
+            synchronized(actions) {
+                for (Runnable runnable : actions) {
+                    runnable.run();
+                }
+                actions.clear();
+            }
+        }
+
         /**
          * Asks the resumable object to perform a unit of work when it is safe to do so.
          * <p/>
          * The thread this method is called from is not defined.
          */
-        void postOnResume(@NonNull Runnable runnable);
+        public void postOnResume(@NonNull Runnable runnable) {
+            if (isResumed.call()) {
+                runnable.run();
+            } else {
+                synchronized(actions) {
+                    actions.add(runnable);
+                }
+            }
+        }
 
         /**
          * Asks the resumable to cancel a pending unit of work, if applicable.
          * <p/>
          * The thread this method is called from is not defined.
          */
-        void cancelPostOnResume(@NonNull Runnable runnable);
+        public void cancelPostOnResume(@NonNull Runnable runnable) {
+            synchronized(actions) {
+                actions.remove(runnable);
+            }
+        }
     }
 }

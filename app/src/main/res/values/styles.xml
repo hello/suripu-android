@@ -50,11 +50,6 @@
         <item name="android:windowTitleSize">0dp</item>
     </style>
 
-    <style name="AppTheme.Underside">
-        <item name="android:actionBarStyle">@style/AppTheme.ActionBar.Clear</item>
-        <item name="android:windowBackground">@color/background_underside</item>
-    </style>
-
     <!-- Action Bar -->
 
     <style name="AppTheme.ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid" />
@@ -128,7 +123,7 @@
     <style name="AppTheme.Dialog.Simple" parent="android:Theme.Holo.Dialog.MinWidth">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@drawable/raised_item_background</item>
-        <item name="android:paddingBottom">1dp</item>
+        <item name="android:paddingBottom">@dimen/gap_raised_item_bottom</item>
     </style>
 
     <style name="AppTheme.Dialog.FullScreen">
@@ -321,6 +316,17 @@
     </style>
 
     <!-- Other -->
+
+    <style name="AppTheme.ListView" />
+
+    <style name="AppTheme.ListView.Cards">
+        <item name="android:paddingLeft">@dimen/gap_outer</item>
+        <item name="android:paddingRight">@dimen/gap_outer</item>
+        <item name="android:divider">@color/transparent</item>
+        <item name="android:dividerHeight">@dimen/gap_small</item>
+        <item name="android:scrollbars">none</item>
+        <item name="android:listSelector">@color/transparent</item>
+    </style>
 
     <style name="AppTheme.FadingScrollView">
         <item name="android:fillViewport">true</item>

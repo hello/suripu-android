@@ -35,7 +35,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         windowManager.getDefaultDisplay().getSize(size);
         this.baseItemHeight = size.y / NUMBER_HOURS_ON_SCREEN;
         this.itemEventImageHeight = context.getResources().getDimensionPixelSize(R.dimen.event_image_height);
-        this.stripeCornerRadius = context.getResources().getDimensionPixelOffset(R.dimen.widget_timeline_segment_corner_radius);
+        this.stripeCornerRadius = context.getResources().getDimensionPixelOffset(R.dimen.view_timeline_segment_corner_radius);
     }
 
     //endregion

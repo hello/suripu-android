@@ -1,7 +1,9 @@
 package is.hello.sense.graph;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import rx.Subscriber;
@@ -81,6 +83,21 @@ public final class PresenterSubject<T> extends Subject<T, T> {
     public void forget() {
         subscriptionManager.value = null;
         subscriptionManager.error = null;
+    }
+
+
+    /**
+     * Serialize the current value of the presenter subject into a Bundle.
+     * @return true if the value was serialized; false otherwise.
+     */
+    public boolean saveState(@NonNull String key, @NonNull Bundle outState) {
+        T value = subscriptionManager.value;
+        if (value != null && value instanceof Serializable) {
+            outState.putSerializable(key, (Serializable) value);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //endregion

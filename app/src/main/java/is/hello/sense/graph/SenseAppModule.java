@@ -11,7 +11,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.CurrentConditionsPresenter;
+import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
@@ -27,15 +27,16 @@ import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
-import is.hello.sense.ui.fragments.HomeUndersideFragment;
-import is.hello.sense.ui.fragments.QuestionsFragment;
+import is.hello.sense.ui.fragments.RoomConditionsFragment;
+import is.hello.sense.ui.fragments.InsightsFragment;
+import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.fragments.SensorHistoryFragment;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.fragments.TrendsFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
@@ -48,6 +49,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
+import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.fragments.settings.ChangePasswordFragment;
 import is.hello.sense.ui.fragments.settings.DeviceDetailsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
@@ -91,20 +93,22 @@ import is.hello.sense.util.BuildValues;
         TimelineEventDialogFragment.class,
 
         QuestionsPresenter.class,
-        QuestionsFragment.class,
+        QuestionsDialogFragment.class,
 
-        HomeUndersideFragment.class,
         InsightsPresenter.class,
         InsightDetailsDialogFragment.class,
-        CurrentConditionsPresenter.class,
+        RoomConditionsFragment.class,
+        RoomConditionsPresenter.class,
         SensorHistoryFragment.class,
         SensorHistoryPresenter.class,
+        InsightsFragment.class,
+        TrendsFragment.class,
 
         SmartAlarmListFragment.class,
         SmartAlarmDetailFragment.class,
         SmartAlarmPresenter.class,
 
-        SettingsActivity.RootSettingsFragment.class,
+        AppSettingsFragment.class,
         MyInfoFragment.class,
         AccountSettingsFragment.class,
         ChangePasswordFragment.class,

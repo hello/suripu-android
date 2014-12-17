@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -25,7 +24,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.activities.SettingsActivity;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Constants;
@@ -103,7 +102,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         Device device = (Device) adapterView.getItemAtPosition(position);
         DeviceDetailsFragment fragment = DeviceDetailsFragment.newInstance(device);
         fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
-        ((SettingsActivity) getActivity()).showFragment(fragment, getString(device.getType().nameRes), true);
+        ((FragmentNavigation) getActivity()).showFragment(fragment, getString(device.getType().nameRes), true);
     }
 
 

@@ -1,6 +1,6 @@
 package is.hello.sense.graph.presenters;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -9,10 +9,10 @@ import is.hello.sense.api.model.Insight;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
-public class InsightsPresenter extends UpdatablePresenter<List<Insight>> {
+public class InsightsPresenter extends ValuePresenter<ArrayList<Insight>> {
     @Inject ApiService apiService;
 
-    public final PresenterSubject<List<Insight>> insights = this.subject;
+    public final PresenterSubject<ArrayList<Insight>> insights = this.subject;
 
     @Override
     protected boolean isDataDisposable() {
@@ -25,7 +25,7 @@ public class InsightsPresenter extends UpdatablePresenter<List<Insight>> {
     }
 
     @Override
-    protected Observable<List<Insight>> provideUpdateObservable() {
+    protected Observable<ArrayList<Insight>> provideUpdateObservable() {
         return apiService.currentInsights();
     }
 }

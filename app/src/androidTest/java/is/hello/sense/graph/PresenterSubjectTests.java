@@ -1,5 +1,7 @@
 package is.hello.sense.graph;
 
+import android.os.Bundle;
+
 import junit.framework.TestCase;
 
 import is.hello.sense.util.SyncObserver;
@@ -80,5 +82,22 @@ public class PresenterSubjectTests extends TestCase {
 
         assertNull(observer.getError());
         assertEquals(42, (int) observer.getSingle());
+    }
+
+    public void testSerialization() throws Exception {
+        PresenterSubject<Integer> test1 = PresenterSubject.create();
+        test1.onNext(12);
+
+        Bundle state = new Bundle();
+        assertTrue(test1.saveState("test1", state));
+        assertTrue(state.containsKey("test1"));
+        assertEquals(12, state.getSerializable("test1"));
+
+
+        PresenterSubject<Object> test2 = PresenterSubject.create();
+        test2.onNext(new Object());
+
+        assertFalse(test2.saveState("test2", state));
+        assertFalse(state.containsKey("test2"));
     }
 }

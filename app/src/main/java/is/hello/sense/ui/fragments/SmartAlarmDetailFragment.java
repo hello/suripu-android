@@ -25,14 +25,13 @@ import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ChooseSoundDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.util.DateFormatter;
 
 public class SmartAlarmDetailFragment extends InjectionFragment {
-    public static final int RESULT_DELETE = 0xD3;
-
     private static final int TIME_REQUEST_CODE = 0x747;
     private static final int[] DAY_TAGS = {
             DateTimeConstants.SUNDAY,
@@ -46,30 +45,14 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     private static final int SOUND_REQUEST_CODE = 0x50;
 
-    public static final String ARG_ALARM = SmartAlarmDetailFragment.class.getName() + ".ARG_ALARM";
-    public static final String ARG_INDEX = SmartAlarmDetailFragment.class.getName() + ".ARG_INDEX";
-
-    public static final int INDEX_NEW = -1;
-
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
     private SmartAlarm smartAlarm;
-    private int index = INDEX_NEW;
+    private int index = SmartAlarmDetailActivity.INDEX_NEW;
     private boolean use24Time = false;
 
     private TextView time;
     private Button soundButton;
-
-    public static @NonNull SmartAlarmDetailFragment newInstance(@NonNull SmartAlarm smartAlarm, int index) {
-        SmartAlarmDetailFragment detailFragment = new SmartAlarmDetailFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_ALARM, smartAlarm);
-        arguments.putInt(ARG_INDEX, index);
-        detailFragment.setArguments(arguments);
-
-        return detailFragment;
-    }
 
 
     @Override
@@ -77,11 +60,16 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            this.smartAlarm = (SmartAlarm) getArguments().getSerializable(ARG_ALARM);
+            this.smartAlarm = (SmartAlarm) getActivity().getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
         } else {
-            this.smartAlarm = (SmartAlarm) savedInstanceState.getSerializable(ARG_ALARM);
+            this.smartAlarm = (SmartAlarm) savedInstanceState.getSerializable(SmartAlarmDetailActivity.EXTRA_ALARM);
         }
-        this.index = getArguments().getInt(ARG_INDEX);
+
+        if (smartAlarm == null) {
+            this.smartAlarm = new SmartAlarm();
+        }
+
+        this.index = getActivity().getIntent().getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, SmartAlarmDetailActivity.INDEX_NEW);
 
         if (smartAlarm.getSound() == null) {
             smartAlarm.setSound(SmartAlarm.Sound.none());
@@ -124,7 +112,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         Button deleteButton = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_delete);
         deleteButton.setOnClickListener(this::deleteAlarm);
 
-        if (this.index == INDEX_NEW) {
+        if (this.index == SmartAlarmDetailActivity.INDEX_NEW) {
             view.findViewById(R.id.fragment_smart_alarm_detail_delete_container).setVisibility(View.GONE);
         }
 
@@ -167,7 +155,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable(ARG_ALARM, smartAlarm);
+        outState.putSerializable(SmartAlarmDetailActivity.EXTRA_ALARM, smartAlarm);
     }
 
     public void updateTime() {
@@ -201,14 +189,16 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     public void deleteAlarm(@NonNull View sender) {
         Intent response = new Intent();
-        response.putExtra(ARG_INDEX, index);
-        finishWithResult(RESULT_DELETE, response);
+        response.putExtra(SmartAlarmDetailActivity.EXTRA_INDEX, index);
+        getActivity().setResult(SmartAlarmDetailActivity.RESULT_DELETE, response);
+        getActivity().finish();
     }
 
     public void saveAlarm() {
         Intent response = new Intent();
-        response.putExtra(ARG_INDEX, index);
-        response.putExtra(ARG_ALARM, smartAlarm);
-        finishWithResult(Activity.RESULT_OK, response);
+        response.putExtra(SmartAlarmDetailActivity.EXTRA_INDEX, index);
+        response.putExtra(SmartAlarmDetailActivity.EXTRA_ALARM, smartAlarm);
+        getActivity().setResult(Activity.RESULT_OK, response);
+        getActivity().finish();
     }
 }

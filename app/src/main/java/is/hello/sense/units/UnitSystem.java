@@ -2,6 +2,7 @@ package is.hello.sense.units;
 
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -12,7 +13,7 @@ import is.hello.sense.units.systems.UsCustomaryUnitSystem;
 /**
  * An object that converts raw SI units to human readable values.
  */
-public class UnitSystem {
+public class UnitSystem implements Serializable {
     //region Systems
 
     private static final LinkedHashMap<String, Class<? extends UnitSystem>> UNIT_SYSTEMS = new LinkedHashMap<>();

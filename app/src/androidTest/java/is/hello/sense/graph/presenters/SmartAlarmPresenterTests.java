@@ -2,8 +2,7 @@ package is.hello.sense.graph.presenters;
 
 import org.joda.time.DateTimeConstants;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -18,7 +17,7 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
     @Inject SmartAlarmPresenter presenter;
 
     public void testUpdate() throws Exception {
-        SyncObserver<List<SmartAlarm>> smartAlarms = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.alarms);
+        SyncObserver<ArrayList<SmartAlarm>> smartAlarms = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.alarms);
         smartAlarms.ignore(1);
 
         presenter.update();
@@ -42,7 +41,7 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
     }
 
     public void testSave() throws Exception {
-        List<SmartAlarm> goodAlarms = Collections.emptyList();
+        ArrayList<SmartAlarm> goodAlarms = new ArrayList<>();
         SyncObserver<VoidResponse> good = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, presenter.save(goodAlarms));
         good.await();
 
@@ -55,7 +54,7 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
 
         SmartAlarm sunday = new SmartAlarm();
         sunday.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
-        List<SmartAlarm> badAlarms = Lists.newArrayList(sunday, sunday);
+        ArrayList<SmartAlarm> badAlarms = Lists.newArrayList(sunday, sunday);
 
         SyncObserver<VoidResponse> bad = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, presenter.save(badAlarms));
         bad.await();

@@ -14,7 +14,6 @@
     <string name="label_dob">Date of Birth</string>
 
     <string name="action_log_in">Log in</string>
-    <string name="action_change">Change</string>
     <string name="action_register">Sign Up</string>
 
     <string name="device_sense">Sense</string>
@@ -28,7 +27,6 @@
     <string name="dialog_error_title">An Error Occurred</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
     <string name="dialog_error_extended_message_format">%1$s\n\n%2$s (Status: %3$d)</string>
-    <string name="dialog_error_generic_form_issue">One or more required fields is missing.</string>
     <string name="dialog_loading_message">Loading…</string>
     <string name="timeline_error_message">Could not load timeline</string>
 
@@ -39,7 +37,6 @@
     <string name="format_date_placeholder">--</string>
     <string name="format_date_last_night">Last Night</string>
 
-    <string name="event_type_content_description">Event Type</string>
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>
     <string name="condition_humidity">Humidity</string>
@@ -57,7 +54,6 @@
     <string name="event_type_sleep">Sleep</string>
     <string name="event_type_sunset">Sunset</string>
     <string name="event_type_sunrise">Sunrise</string>
-    <string name="event_type_partner_motion">Partner Moved</string>
     <string name="event_type_wake_up">Woke Up</string>
     <string name="event_type_partner_moved">Partner Moved</string>
     <string name="event_type_unknown">Other</string>
@@ -73,11 +69,9 @@
     <string name="action_log_out">Log Out</string>
 
     <string name="action_alarm">Alarm</string>
-    <string name="action_set_alarm">Set Alarm</string>
 
     <string name="action_forgot_password">Forgot Password</string>
 
-    <string name="title_currently">Currently</string>
     <string name="title_register">Introduce yourself.</string>
     <string name="title_introduction">Meet Sense</string>
     <string name="label_my_info">My Info</string>
@@ -100,7 +94,6 @@
     <string name="title_pair_sense">Pairing with Sense</string>
     <string name="info_pair_sense">Now we\'ll pair your phone with Sense. Make sure your Sense is plugged in and nearby, then tap Continue.</string>
     <string name="title_pairing">Pairing</string>
-    <string name="title_scanning">Scanning</string>
     <string name="title_connecting_network">Connecting</string>
     <string name="wifi_network_secured">Secured Network</string>
     <string name="wifi_network_was_scanned">Scanned</string>
@@ -108,7 +101,6 @@
     <string name="info_choose_wifi_network">Please select your WiFi network from the list below:</string>
     <string name="info_sign_into_wifi">Enter your Wifi credentials:</string>
     <string name="wifi_other_network">Other</string>
-    <string name="action_turn_on_wifi">Turn On Wifi</string>
     <string name="label_network_name">Network Name</string>
     <string name="title_welcome">Well done.</string>
     <string name="info_welcome">Your Sense is successfully set up. Take a moment to learn a bit more about how Sense will help you to know more, and sleep better.</string>
@@ -128,17 +120,9 @@
     <string name="default_feet">5</string>
     <string name="default_inches">8</string>
     <string name="default_weight">130</string>
-    <string name="label_pounds">lbs</string>
-    <string name="title_onboarding_which_pill">First one here?</string>
-    <string name="info_onboarding_which_pill">Are you setting up the first Sleep Pill, or the second Sleep Pill?</string>
-    <string name="title_not_sure">I am not sure</string>
-    <string name="action_2nd_sleep_pill">Second Sleep Pill</string>
-    <string name="action_1st_sleep_pill">First Sleep Pill</string>
-    <string name="title_setup_second_pill">Add a second Sleep Pill</string>
-    <string name="info_setup_second_pill"><![CDATA[To connect a second sleep pill, Sense needs to be put into pairing mode.<br><br>Ask the owner of the first sleeping pill to stand next to Sense and open the Sense app, then go to Settings &gt; Devices &gt; Sense and tap &#39;Put Sense into Pairing Mode&#39;.<br><br>Sense will glow blue when it is in pairing mode.]]></string>
+    <string name="label_pounds">lbs</string>>
     <string name="title_intro_sleep_pill">Attach Sleep Pill to your Pillow</string>
     <string name="info_intro_sleep_pill">Clip your Sleep Pill to the pillowcase you sleep on.</string>
-    <string name="title_onboarding_sleep_pill_color">Personalize your Sleep Pill</string>
     <string name="info_onboarding_sleep_pill_color">Choose an LED color for your Sleep Pill so you know which one is yours.</string>
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
     <string name="info_pair_pill">Shake your Sleep Pill for three seconds to pair it with your Sense. You may need to shake it quickly for it to register.</string>
@@ -161,13 +145,9 @@
     <string name="dialog_messsage_factory_reset">This will clear all of Sense\'s settings, and log you out.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave On Boarding?</string>
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
-    <string name="title_onboarding_getting_started">Getting Started</string>
-    <string name="info_onboarding_getting_started">Are you using Sense with one Sleep Pill, or two Sleep Pills?</string>
-    <string name="title_two_pills">Two Sleep Pills</string>
-    <string name="title_one_pill">One Sleep Pill</string>
     <string name="action_retry">Retry</string>
     <string name="action_share">Share</string>
-    <string name="action_insights">Trends</string>
+    <string name="action_insights">Insights</string>
     <string name="action_new_alarm">New Alarm</string>
 
     <string name="day_monday">Mon</string>
@@ -281,4 +261,6 @@
     <string name="action_unpair">Unpair</string>
     <string name="dialog_title_unpair_pill">Unpair Sleep Pill</string>
     <string name="dialog_message_unpair_pill">Are you sure you want to unpair this Sleep Pill from your Sense? You can re-pair it with your Sense later from the device details screen.</string>
+    <string name="title_trends">Trends</string>
+    <string name="title_current_conditions">Current Conditions</string>
 </resources>

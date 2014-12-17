@@ -20,11 +20,11 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
-public abstract class WidgetService extends Service implements PresenterContainer, ObservableContainer {
+public abstract class WidgetService extends Service implements ObservableContainer {
     public static final String EXTRA_WIDGET_IDS = WidgetService.class.getName() + ".EXTRA_WIDGET_IDS";
 
     private final List<Subscription> subscriptions = new ArrayList<>();
-    private final List<Presenter> presenters = new ArrayList<>();
+    private final PresenterContainer presenterContainer = new PresenterContainer();
 
     //region Lifecycle
 
@@ -36,18 +36,14 @@ public abstract class WidgetService extends Service implements PresenterContaine
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
 
-        for (Presenter presenter : presenters) {
-            presenter.onTrimMemory(level);
-        }
+        presenterContainer.onTrimMemory(level);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        for (Presenter presenter : presenters) {
-            presenter.onContainerDestroyed();
-        }
+        presenterContainer.onContainerDestroyed();
 
         for (Subscription subscription : subscriptions) {
             if (!subscription.isUnsubscribed()) {
@@ -92,21 +88,10 @@ public abstract class WidgetService extends Service implements PresenterContaine
 
     //region Presenter Container
 
-    @Override
     public void addPresenter(@NonNull Presenter presenter) {
-        presenters.add(presenter);
+        presenterContainer.addPresenter(presenter);
     }
 
-    @Override
-    public void removePresenter(@NonNull Presenter presenter) {
-        presenters.remove(presenter);
-    }
-
-    @NonNull
-    @Override
-    public List<Presenter> getPresenters() {
-        return presenters;
-    }
 
     //endregion
 
