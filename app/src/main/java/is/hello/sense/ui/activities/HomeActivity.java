@@ -311,7 +311,7 @@ public class HomeActivity
             public void onBackStackChanged() {
                 if (!navigatorFragment.isAdded() && !isDestroyed()) {
                     animate(viewPager)
-                            .zoomInFromNothing()
+                            .zoomInFrom(0.7f)
                             .addOnAnimationCompleted(finished -> {
                                 if (finished) {
                                     undersideContainer.removeView(view);
@@ -327,7 +327,7 @@ public class HomeActivity
         undersideContainer.addView(view, 0);
 
         animate(viewPager)
-                .zoomOutToNothing(View.GONE)
+                .zoomOutTo(View.GONE, 0.7f)
                 .start();
     }
 
