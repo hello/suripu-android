@@ -289,6 +289,18 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         }).scale(1f).alpha(1f);
     }
 
+    public PropertyAnimatorProxy zoomOutToNothing(int targetVisibility) {
+        return scale(0f).alpha(0f).addOnAnimationCompleted(finished -> {
+            if (finished) {
+                view.setVisibility(targetVisibility);
+
+                view.setAlpha(1f);
+                view.setScaleX(1f);
+                view.setScaleY(1f);
+            }
+        });
+    }
+
     public PropertyAnimatorProxy slideAndFade(float startDeltaY, float endDeltaY,
                                               float startAlpha, float endAlpha) {
         return setOnAnimationWillStart(() -> {

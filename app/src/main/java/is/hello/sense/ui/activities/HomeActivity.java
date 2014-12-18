@@ -1,10 +1,13 @@
 package is.hello.sense.ui.activities;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.View;
+import android.view.ViewGroup;
 
 import net.hockeyapp.android.UpdateManager;
 
@@ -34,6 +37,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public class HomeActivity
@@ -290,8 +294,41 @@ public class HomeActivity
     //region Timeline Navigation
 
     public void showTimelineNavigator(@NonNull DateTime startDate) {
+        ViewGroup undersideContainer = (ViewGroup) findViewById(R.id.activity_home_content_container);
+
         TimelineNavigatorFragment navigatorFragment = TimelineNavigatorFragment.newInstance(startDate);
-        navigatorFragment.show(getFragmentManager(), R.id.activity_home_container, TimelineNavigatorFragment.TAG);
+        navigatorFragment.show(getFragmentManager(), 0, TimelineNavigatorFragment.TAG);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.executePendingTransactions();
+
+        View view = navigatorFragment.getView();
+        if (view == null) {
+            throw new IllegalStateException();
+        }
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                if (!navigatorFragment.isAdded() && !isDestroyed()) {
+                    animate(viewPager)
+                            .zoomInFromNothing()
+                            .addOnAnimationCompleted(finished -> {
+                                if (finished) {
+                                    undersideContainer.removeView(view);
+                                }
+                            })
+                            .start();
+
+                    fragmentManager.removeOnBackStackChangedListener(this);
+                }
+            }
+        });
+
+        undersideContainer.addView(view, 0);
+
+        animate(viewPager)
+                .zoomOutToNothing(View.GONE)
+                .start();
     }
 
     //endregion
