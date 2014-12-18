@@ -55,6 +55,22 @@ public final class Styles {
             return R.color.sensor_ideal;
     }
 
+    public static int getSleepScoreColor(@NonNull Context context, int sleepScore) {
+        return context.getResources().getColor(getSleepScoreColorRes(sleepScore));
+    }
+
+    public static @ColorRes @DrawableRes int getSleepScoreBorderColorRes(int sleepScore) {
+        if (sleepScore > 0) {
+            return R.color.transparent;
+        } else {
+            return R.color.border;
+        }
+    }
+
+    public static int getSleepScoreBorderColor(@NonNull Context context, int sleepScore) {
+        return context.getResources().getColor(getSleepScoreBorderColorRes(sleepScore));
+    }
+
 
     public static void applyGraphLineParameters(@NonNull Paint paint) {
         paint.setStyle(Paint.Style.STROKE);

@@ -14,13 +14,16 @@ import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Timeline;
-import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.ObservableLinearLayoutManager;
 import is.hello.sense.ui.widget.Styles;
 import is.hello.sense.ui.widget.Views;
 import is.hello.sense.ui.widget.graphing.SimplePieDrawable;
@@ -32,13 +35,11 @@ public class TimelineNavigatorFragment extends InjectionFragment {
     private static final int NUMBER_ITEMS_ON_SCREEN = 3;
     private static final String ARG_START_DATE = TimelineNavigatorFragment.class.getName() + ".ARG_START_DATE";
 
-    @Inject ApiService apiService;
-
-    private DateTime startTime;
+    @Inject TimelineNavigatorPresenter presenter;
 
     private TextView monthText;
     private RecyclerView recyclerView;
-    private LinearLayoutManager linearLayoutManager;
+    private ObservableLinearLayoutManager linearLayoutManager;
     private Adapter adapter;
 
     public static TimelineNavigatorFragment newInstance(@NonNull DateTime startTime) {
@@ -56,7 +57,9 @@ public class TimelineNavigatorFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.startTime = (DateTime) getArguments().getSerializable(ARG_START_DATE);
+        DateTime startTime = (DateTime) getArguments().getSerializable(ARG_START_DATE);
+        presenter.setStartTime(startTime);
+        addPresenter(presenter);
 
         setRetainInstance(true);
     }
@@ -67,20 +70,17 @@ public class TimelineNavigatorFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_timeline_navigator, container, false);
 
         this.monthText = (TextView) view.findViewById(R.id.fragment_timeline_navigator_month);
-        monthText.setText(startTime.toString("MMMM"));
-
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_navigator_recycler_view);
         ScrollListener scrollListener = new ScrollListener();
         recyclerView.setOnScrollListener(scrollListener);
-        Views.observeNextLayout(recyclerView).subscribe(ignored -> scrollListener.transformChildren());
 
-        this.linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, true);
+        this.linearLayoutManager = new ObservableLinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, true);
+        linearLayoutManager.setOnPostLayout(scrollListener::transformChildren);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         this.adapter = new Adapter(getActivity());
         recyclerView.setAdapter(adapter);
-
 
         Button todayButton = (Button) view.findViewById(R.id.fragment_timeline_navigator_today);
         todayButton.setOnClickListener(this::jumpToToday);
@@ -100,12 +100,24 @@ public class TimelineNavigatorFragment extends InjectionFragment {
 
 
     class Adapter extends RecyclerView.Adapter<Adapter.ItemViewHolder> {
-        private final Context context;
         private final LayoutInflater inflater;
+        private final Set<ItemViewHolder> visibleHolders = new HashSet<>(4);
+        private boolean suspended = false;
 
         Adapter(@NonNull Context context) {
-            this.context = context;
             this.inflater = LayoutInflater.from(context);
+        }
+
+
+        void suspend() {
+            this.suspended = true;
+        }
+
+        void resume() {
+            this.suspended = false;
+            for (ItemViewHolder holder : visibleHolders) {
+                holder.loadTimeline();
+            }
         }
 
 
@@ -121,27 +133,25 @@ public class TimelineNavigatorFragment extends InjectionFragment {
 
         @Override
         public void onBindViewHolder(ItemViewHolder holder, int position) {
-            DateTime date = startTime.plusDays(-position);
+            DateTime date = presenter.getStartTime().plusDays(-position);
 
-            holder.dayNumber.setText(date.toString("M"));
-            holder.dayName.setText(date.toString("EEEE"));
+            holder.date = date;
+            holder.dayNumber.setText(date.toString("d"));
+            holder.dayName.setText(date.toString("EE"));
+            holder.loadTimeline();
 
-            Observable<Timeline> timeline = apiService.timelineForDate(date.year().getAsString(),
-                                                                       date.monthOfYear().getAsString(),
-                                                                       date.dayOfMonth().getAsString())
-                                                      .map(ts -> ts.get(0));
-            bindAndSubscribe(timeline,
-                             t -> {
-                                 int sleepScore = t.getScore();
-                                 holder.score.setText(Integer.toString(sleepScore));
-                                 holder.pieDrawable.setFillColor(getResources().getColor(Styles.getSleepScoreColorRes(sleepScore)));
-                                 holder.pieDrawable.setValue(sleepScore);
-                             },
-                             e -> {
-                                 holder.score.setText(R.string.missing_data_placeholder);
-                                 holder.pieDrawable.setFillColor(getResources().getColor(R.color.sensor_warning));
-                                 holder.pieDrawable.setValue(100);
-                             });
+            visibleHolders.add(holder);
+        }
+
+        @Override
+        public void onViewRecycled(ItemViewHolder holder) {
+            super.onViewRecycled(holder);
+
+            holder.date = null;
+            holder.timelineObservable = null;
+            holder.loaded = false;
+
+            visibleHolders.remove(holder);
         }
 
 
@@ -151,6 +161,10 @@ public class TimelineNavigatorFragment extends InjectionFragment {
             final TextView score;
 
             final SimplePieDrawable pieDrawable;
+
+            @Nullable DateTime date;
+            @Nullable Observable<Timeline> timelineObservable;
+            boolean loaded = false;
 
             ItemViewHolder(View itemView) {
                 super(itemView);
@@ -165,6 +179,31 @@ public class TimelineNavigatorFragment extends InjectionFragment {
 
                 View pieView = itemView.findViewById(R.id.item_timeline_navigator_pie);
                 pieView.setBackground(pieDrawable);
+            }
+
+            void loadTimeline() {
+                if (!suspended && timelineObservable == null && !loaded && date != null) {
+                    this.timelineObservable = presenter.timelineForDate(date);
+                    bindAndSubscribe(timelineObservable,
+                                     t -> {
+                                         this.timelineObservable = null;
+                                         this.loaded = true;
+
+                                         int sleepScore = t.getScore();
+                                         score.setText(Integer.toString(sleepScore));
+                                         pieDrawable.setTrackColor(Styles.getSleepScoreBorderColor(getActivity(), sleepScore));
+                                         pieDrawable.setFillColor(Styles.getSleepScoreColor(getActivity(), sleepScore));
+                                         pieDrawable.setValue(sleepScore);
+                                     },
+                                     e -> {
+                                         this.timelineObservable = null;
+                                         this.loaded = false;
+
+                                         score.setText(R.string.missing_data_placeholder);
+                                         pieDrawable.setFillColor(getResources().getColor(R.color.sensor_warning));
+                                         pieDrawable.setValue(100);
+                                     });
+                }
             }
         }
     }
@@ -182,7 +221,7 @@ public class TimelineNavigatorFragment extends InjectionFragment {
             for (int i = 0, size = recyclerView.getChildCount(); i < size; i++) {
                 View child = recyclerView.getChildAt(i);
 
-                float childCenter = child.getX() + itemWidth / 2f;
+                float childCenter = child.getRight() - itemWidth / 2f;
                 float childDistance = Math.abs(centerX - childCenter);
                 float percentage = 1f / (childDistance / ACTIVE_DISTANCE);
 
@@ -195,6 +234,13 @@ public class TimelineNavigatorFragment extends InjectionFragment {
                     child.setScaleY(scale);
                 }
             }
+
+            Adapter.ItemViewHolder holder = (Adapter.ItemViewHolder) recyclerView.findViewHolderForPosition(linearLayoutManager.findLastVisibleItemPosition());
+            if (holder.date != null) {
+                monthText.setText(holder.date.toString("MMMM"));
+            } else {
+                monthText.setText(null);
+            }
         }
 
         @Override
@@ -204,20 +250,32 @@ public class TimelineNavigatorFragment extends InjectionFragment {
 
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            if (previousState != RecyclerView.SCROLL_STATE_IDLE && newState == RecyclerView.SCROLL_STATE_IDLE) {
+            if (previousState == RecyclerView.SCROLL_STATE_IDLE && newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                adapter.suspend();
+            } else if (previousState != RecyclerView.SCROLL_STATE_IDLE && newState == RecyclerView.SCROLL_STATE_IDLE) {
                 snapToNearestItem(recyclerView);
+                adapter.resume();
             }
 
             this.previousState = newState;
         }
 
         public void snapToNearestItem(RecyclerView recyclerView) {
-            int firstItem = linearLayoutManager.findFirstVisibleItemPosition();
-            int firstCompleteItem = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
-            if (firstItem < firstCompleteItem) {
-                recyclerView.smoothScrollToPosition(firstItem);
-            } else if (firstItem > firstCompleteItem) {
-                recyclerView.smoothScrollToPosition(firstCompleteItem);
+            int lastItem = linearLayoutManager.findLastVisibleItemPosition();
+            int lastCompleteItem = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+            if (lastItem != lastCompleteItem) {
+                View itemView = recyclerView.findViewHolderForPosition(lastItem).itemView;
+                int width = itemView.getMeasuredWidth();
+                int x = Math.abs(itemView.getRight());
+
+                recyclerView.stopScroll();
+                if (x > width / 2) {
+                    recyclerView.smoothScrollToPosition(lastItem);
+                } else {
+                    recyclerView.smoothScrollToPosition(linearLayoutManager.findFirstVisibleItemPosition());
+                }
+            } else {
+                transformChildren();
             }
         }
     }

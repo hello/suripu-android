@@ -95,11 +95,11 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
             button.setTextOff(content);
             button.setPadding(0, 0, 0, 0);
             button.setBackground(null);
-            button.setTag(R.id.underside_icon, imageSpan.getDrawable());
+            button.setTag(R.id.underside_tab_tag_icon, imageSpan.getDrawable());
         }
         int accentColor = resources.getColor(R.color.light_accent);
         tabs.setButtonStyler((button, checked) -> {
-            Drawable icon = (Drawable) button.getTag(R.id.underside_icon);
+            Drawable icon = (Drawable) button.getTag(R.id.underside_tab_tag_icon);
             if (checked) {
                 icon.setColorFilter(accentColor, PorterDuff.Mode.SRC_ATOP);
             } else {

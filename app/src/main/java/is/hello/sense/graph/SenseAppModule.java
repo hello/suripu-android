@@ -19,6 +19,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
+import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.remote.LastNightWidgetProvider;
@@ -93,6 +94,7 @@ import is.hello.sense.util.BuildValues;
         TimelinePresenter.class,
         TimelineEventDialogFragment.class,
         TimelineNavigatorFragment.class,
+        TimelineNavigatorPresenter.class,
 
         QuestionsPresenter.class,
         QuestionsDialogFragment.class,

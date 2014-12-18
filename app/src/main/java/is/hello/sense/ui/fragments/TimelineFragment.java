@@ -2,7 +2,6 @@ package is.hello.sense.ui.fragments;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -191,13 +190,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
 
     public void showSleepScore(int sleepScore) {
-        if (sleepScore > 0) {
-            scoreGraph.setTrackColor(Color.TRANSPARENT);
-        } else {
-            scoreGraph.setTrackColor(getResources().getColor(R.color.border));
-        }
-
-        scoreGraph.setFillColor(getResources().getColor(Styles.getSleepScoreColorRes(sleepScore)));
+        scoreGraph.setTrackColor(Styles.getSleepScoreBorderColor(getActivity(), sleepScore));
+        scoreGraph.setFillColor(Styles.getSleepScoreColor(getActivity(), sleepScore));
         ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animations.Properties.createWithDelay(250));
         if (updateAnimation != null) {
             updateAnimation.addUpdateListener(a -> {
