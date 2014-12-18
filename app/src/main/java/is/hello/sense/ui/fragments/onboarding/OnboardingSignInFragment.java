@@ -37,7 +37,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.event(Analytics.EVENT_SIGN_IN_START, null);
+            Analytics.trackEvent(Analytics.EVENT_SIGN_IN_START, null);
         }
     }
 
@@ -78,7 +78,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         OAuthCredentials credentials = new OAuthCredentials(environment, email, password);
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             apiSessionManager.setSession(session);
-            Analytics.event(Analytics.EVENT_SIGNED_IN, null);
+            Analytics.trackEvent(Analytics.EVENT_SIGNED_IN, null);
 
             bindAndSubscribe(apiService.registeredDevices(),
                              devices -> {

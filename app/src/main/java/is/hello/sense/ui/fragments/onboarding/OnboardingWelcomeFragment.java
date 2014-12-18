@@ -18,7 +18,7 @@ public class OnboardingWelcomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.event(Analytics.EVENT_ONBOARDING_END, null);
+            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_END, null);
         }
     }
 

@@ -103,7 +103,7 @@ public class AppSettingsFragment extends InjectionFragment {
     }
 
     public void showHelp(@NonNull View sender) {
-        HelpUtil.showHelp(getActivity());
+        HelpUtil.showHelp(getActivity(), HelpUtil.Step.SETTINGS);
     }
 
     public void logOut(@NonNull View sender) {
@@ -113,7 +113,7 @@ public class AppSettingsFragment extends InjectionFragment {
         builder.setNegativeButton(android.R.string.cancel, null);
         builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
             sessionManager.logOut(getActivity());
-            Analytics.event(Analytics.EVENT_SIGNED_OUT, null);
+            Analytics.trackEvent(Analytics.EVENT_SIGNED_OUT, null);
         });
         builder.show();
     }

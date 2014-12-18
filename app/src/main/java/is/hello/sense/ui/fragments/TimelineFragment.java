@@ -321,7 +321,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
         }
 
-        Analytics.event(Analytics.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.PROP_TIMELINE_ACTION, Analytics.PROP_TIMELINE_ACTION_TAP_EVENT));
+        Analytics.trackEvent(Analytics.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.PROP_TIMELINE_ACTION, Analytics.PROP_TIMELINE_ACTION_TAP_EVENT));
     }
 
     private void updateTimeScrubber() {
