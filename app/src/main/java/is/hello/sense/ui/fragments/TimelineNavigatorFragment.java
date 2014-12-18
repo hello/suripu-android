@@ -14,15 +14,25 @@ import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.Timeline;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.widget.Styles;
 import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.graphing.SimplePieDrawable;
+import rx.Observable;
 
 public class TimelineNavigatorFragment extends InjectionFragment {
     public static final String TAG = TimelineNavigatorFragment.class.getSimpleName();
 
     private static final int NUMBER_ITEMS_ON_SCREEN = 3;
     private static final String ARG_START_DATE = TimelineNavigatorFragment.class.getName() + ".ARG_START_DATE";
+
+    @Inject ApiService apiService;
 
     private DateTime startTime;
 
@@ -111,21 +121,50 @@ public class TimelineNavigatorFragment extends InjectionFragment {
 
         @Override
         public void onBindViewHolder(ItemViewHolder holder, int position) {
-            holder.day.setText(Integer.toString(position));
+            DateTime date = startTime.plusDays(-position);
+
+            holder.dayNumber.setText(date.toString("M"));
+            holder.dayName.setText(date.toString("EEEE"));
+
+            Observable<Timeline> timeline = apiService.timelineForDate(date.year().getAsString(),
+                                                                       date.monthOfYear().getAsString(),
+                                                                       date.dayOfMonth().getAsString())
+                                                      .map(ts -> ts.get(0));
+            bindAndSubscribe(timeline,
+                             t -> {
+                                 int sleepScore = t.getScore();
+                                 holder.score.setText(Integer.toString(sleepScore));
+                                 holder.pieDrawable.setFillColor(getResources().getColor(Styles.getSleepScoreColorRes(sleepScore)));
+                                 holder.pieDrawable.setValue(sleepScore);
+                             },
+                             e -> {
+                                 holder.score.setText(R.string.missing_data_placeholder);
+                                 holder.pieDrawable.setFillColor(getResources().getColor(R.color.sensor_warning));
+                                 holder.pieDrawable.setValue(100);
+                             });
         }
 
 
         class ItemViewHolder extends RecyclerView.ViewHolder {
-            final TextView day;
-            final TextView month;
+            final TextView dayNumber;
+            final TextView dayName;
+            final TextView score;
+
+            final SimplePieDrawable pieDrawable;
 
             ItemViewHolder(View itemView) {
                 super(itemView);
 
                 itemView.setMinimumWidth(getItemWidth());
 
-                this.day = (TextView) itemView.findViewById(R.id.item_timeline_navigator_day);
-                this.month = (TextView) itemView.findViewById(R.id.item_timeline_navigator_month);
+                this.dayNumber = (TextView) itemView.findViewById(R.id.item_timeline_navigator_day_number);
+                this.dayName = (TextView) itemView.findViewById(R.id.item_timeline_navigator_day_name);
+                this.score = (TextView) itemView.findViewById(R.id.item_timeline_navigator_score);
+
+                this.pieDrawable = new SimplePieDrawable(getResources());
+
+                View pieView = itemView.findViewById(R.id.item_timeline_navigator_pie);
+                pieView.setBackground(pieDrawable);
             }
         }
     }
@@ -145,12 +184,13 @@ public class TimelineNavigatorFragment extends InjectionFragment {
 
                 float childCenter = child.getX() + itemWidth / 2f;
                 float childDistance = Math.abs(centerX - childCenter);
+                float percentage = 1f / (childDistance / ACTIVE_DISTANCE);
 
-                float percentage = Math.max(1f / (childDistance / ACTIVE_DISTANCE), 0.4f);
-                child.setAlpha(percentage);
+                float alpha = Math.max(percentage, 0.4f);
+                child.setAlpha(alpha);
 
                 if (childDistance > ACTIVE_DISTANCE) {
-                    float scale = BASE_SCALE + 0.2f * (1f / (childDistance / ACTIVE_DISTANCE));
+                    float scale = BASE_SCALE + (0.2f * percentage);
                     child.setScaleX(scale);
                     child.setScaleY(scale);
                 }
