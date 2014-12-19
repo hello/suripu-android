@@ -122,7 +122,7 @@
     <string name="default_weight">130</string>
     <string name="label_pounds">lbs</string>>
     <string name="title_intro_sleep_pill">Attach Sleep Pill to your Pillow</string>
-    <string name="info_intro_sleep_pill">Clip your Sleep Pill to the pillowcase you sleep on.</string>
+    <string name="info_intro_sleep_pill">Clip your Sleep Pill to the pillowcase you sleep on. You may need to pull it taught between two hands.</string>
     <string name="info_onboarding_sleep_pill_color">Choose an LED color for your Sleep Pill so you know which one is yours.</string>
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
     <string name="info_pair_pill">Shake your Sleep Pill for three seconds to pair it with your Sense. You may need to shake it quickly for it to register.</string>
