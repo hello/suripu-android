@@ -26,7 +26,7 @@ import is.hello.sense.ui.common.HelpUtil;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import rx.functions.Action1;
 

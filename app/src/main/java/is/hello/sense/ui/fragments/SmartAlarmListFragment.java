@@ -29,7 +29,7 @@ import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 

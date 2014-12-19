@@ -12,7 +12,7 @@ import android.widget.Button;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.SenseFragment;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Views;
 
 public class OnboardingPairHelpFragment extends SenseFragment {
     public static final int RESULT_NEW_SENSE = 0x333;
