@@ -100,9 +100,11 @@ public class TimelineSegment extends ApiResponse {
         @JsonProperty("url")
         private String url;
 
-        @JsonProperty("duration_millis")
+        @JsonProperty("durationMillis")
         private Integer durationMillis;
 
+        @JsonProperty("empty")
+        private boolean empty;
 
         public String getUrl() {
             return url;
@@ -112,12 +114,16 @@ public class TimelineSegment extends ApiResponse {
             return durationMillis;
         }
 
+        public boolean isEmpty() {
+            return empty;
+        }
 
         @Override
         public String toString() {
             return "SoundInfo{" +
                     "url='" + url + '\'' +
                     ", durationMillis=" + durationMillis +
+                    ", empty=" + empty +
                     '}';
         }
     }
