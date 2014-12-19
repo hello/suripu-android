@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.joda.time.DateTime;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -25,6 +27,7 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
+import is.hello.sense.ui.common.HelpUtil;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -239,6 +242,8 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         } else if (updatedBy instanceof OnboardingRegisterWeightFragment) {
             LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
             bindAndSubscribe(apiService.updateAccount(account), ignored -> {
+                Analytics.trackUserSignUp(account.getAccountId(), account.getName(), DateTime.now());
+
                 LoadingDialogFragment.close(getFragmentManager());
                 showSetupSense();
             }, e -> {
@@ -256,6 +261,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             builder.setLayout(R.layout.sub_fragment_onboarding_intro_setup_sense);
             builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
             builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_SETUP);
+            builder.setHelpStep(HelpUtil.Step.ONBOARDING_SETUP_SENSE);
             showFragment(builder.build(), null, false);
         } else {
             showFragment(new OnboardingBluetoothFragment(), null, false);
@@ -285,7 +291,8 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
         builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
         builder.setNextFragmentClass(OnboardingSetup2ndPillFragment.class);
-        builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SETUP_PILL);
+        builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_PILL_PLACEMENT);
+        builder.setHelpStep(HelpUtil.Step.ONBOARDING_PILL_PLACEMENT);
         showFragment(builder.build(), null, true);
     }
 
@@ -300,6 +307,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         senseColorsBuilder.setLayout(R.layout.sub_fragment_onboarding_sense_colors);
         senseColorsBuilder.setHideHelp(true);
         senseColorsBuilder.setNextWantsBackStackEntry(false);
+        senseColorsBuilder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_COLORS);
 
         OnboardingStaticStepFragment.Builder introBuilder = new OnboardingStaticStepFragment.Builder();
         introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
@@ -307,6 +315,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         introBuilder.setHideHelp(true);
         introBuilder.setExitAnimationName(ANIMATION_ROOM_CHECK);
         introBuilder.setNextWantsBackStackEntry(false);
+        introBuilder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_ROOM_CHECK);
         senseColorsBuilder.setNextFragmentArguments(introBuilder.arguments);
         senseColorsBuilder.setNextFragmentClass(OnboardingStaticStepFragment.class);
 

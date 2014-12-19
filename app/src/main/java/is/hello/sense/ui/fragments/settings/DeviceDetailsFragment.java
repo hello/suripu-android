@@ -260,7 +260,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     }
 
     public void putIntoPairingMode(@NonNull View sender) {
-        Analytics.event(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE));
+        Analytics.trackEvent(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE));
 
         if (hardwarePresenter.getPeripheral() == null)
             return;
@@ -284,7 +284,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
     @SuppressWarnings("CodeBlock2Expr")
     public void factoryReset(@NonNull View sender) {
-        Analytics.event(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_FACTORY_RESTORE));
+        Analytics.trackEvent(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_FACTORY_RESTORE));
 
         if (hardwarePresenter.getPeripheral() == null) {
             return;

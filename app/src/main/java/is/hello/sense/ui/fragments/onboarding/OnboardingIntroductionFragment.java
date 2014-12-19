@@ -31,15 +31,6 @@ public class OnboardingIntroductionFragment extends Fragment {
     private ViewGroup getStartedActions;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            Analytics.event(Analytics.EVENT_ONBOARDING_START, null);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_introduction, container, false);
 
@@ -103,6 +94,8 @@ public class OnboardingIntroductionFragment extends Fragment {
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.welcome);
                     titleText.setGravity(Gravity.CENTER);
+
+                    Analytics.trackEvent(Analytics.EVENT_ONBOARDING_START, null);
                 })
                 .andThen()
                 .fadeIn()
@@ -110,7 +103,7 @@ public class OnboardingIntroductionFragment extends Fragment {
     }
 
     public void playIntroVideo(@NonNull View sender) {
-        Analytics.event(Analytics.EVENT_PLAY_VIDEO, null);
+        Analytics.trackEvent(Analytics.EVENT_PLAY_VIDEO, null);
 
         Bundle arguments = VideoPlayerActivity.getArguments(Uri.parse("http://player.vimeo.com/external/101139949.hd.mp4?s=28ac378e29847b77e9fb7431f05d2772"));
         Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);

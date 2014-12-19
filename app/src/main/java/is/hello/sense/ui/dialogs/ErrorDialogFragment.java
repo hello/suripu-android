@@ -168,7 +168,7 @@ public class ErrorDialogFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
 
-        Analytics.error(getMessage(), getResponseStatus());
+        Analytics.trackError(getMessage(), getResponseStatus());
     }
 
     private String getMessage() {
