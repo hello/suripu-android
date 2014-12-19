@@ -58,7 +58,7 @@ public class TimelineNavigatorPresenter extends Presenter {
     }
 
 
-    public void setStartTime(DateTime startTime) {
+    public void setStartTime(@NonNull DateTime startTime) {
         this.startTime = startTime;
         cachedTimelines.evictAll();
     }
