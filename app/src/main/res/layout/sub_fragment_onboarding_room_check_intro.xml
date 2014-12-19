@@ -3,7 +3,7 @@
     android:id="@+id/sub_fragment_onboarding_room_check_intro_container"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:padding="@dimen/gap_outer"
     android:background="@color/background_onboarding">
 
