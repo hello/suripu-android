@@ -24,7 +24,6 @@ import is.hello.sense.ui.widget.TimelineItemDecoration;
 public class TimelineNavigatorFragment extends InjectionFragment implements TimelineNavigatorAdapter.OnItemClickedListener {
     public static final String TAG = TimelineNavigatorFragment.class.getSimpleName();
 
-    private static final int NUMBER_ITEMS_ON_SCREEN = 3;
     private static final String ARG_START_DATE = TimelineNavigatorFragment.class.getName() + ".ARG_START_DATE";
 
     @Inject TimelineNavigatorPresenter presenter;

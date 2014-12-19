@@ -13,17 +13,17 @@ import android.widget.TextView;
 import org.joda.time.DateTime;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Timeline;
-import is.hello.sense.graph.SafeObserverWrapper;
 import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.ui.widget.MiniTimelineView;
 import is.hello.sense.ui.widget.graphing.SimplePieDrawable;
 import is.hello.sense.ui.widget.util.Styles;
-import rx.Observer;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavigatorAdapter.ItemViewHolder> implements View.OnClickListener {
     public static final int TOTAL_DAYS = 366;
+
+    private static final int ERROR_MARKER = -1;
 
     private final Context context;
     private final LayoutInflater inflater;
@@ -39,10 +39,7 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
     }
 
 
-    public void setOnItemClickedListener(@Nullable OnItemClickedListener onItemClickedListener) {
-        this.onItemClickedListener = onItemClickedListener;
-    }
-
+    //region Population
 
     @Override
     public int getItemCount() {
@@ -68,7 +65,14 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
         holder.pieDrawable.setValue(0);
         holder.pieDrawable.setTrackColor(Styles.getSleepScoreBorderColor(context, 0));
         holder.score.setText(R.string.missing_data_placeholder);
-        presenter.post(holder, holder::load);
+        presenter.post(holder, holder::populate);
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(ItemViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+
+        presenter.cancel(holder);
     }
 
     @Override
@@ -79,6 +83,14 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
         holder.reset();
     }
 
+    //endregion
+
+
+    //region Click Listener
+
+    public void setOnItemClickedListener(@Nullable OnItemClickedListener onItemClickedListener) {
+        this.onItemClickedListener = onItemClickedListener;
+    }
 
     @Override
     public void onClick(View view) {
@@ -87,6 +99,13 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
             onItemClickedListener.onItemClicked(view, position);
         }
     }
+
+    public interface OnItemClickedListener {
+        void onItemClicked(@NonNull View itemView, int position);
+    }
+
+    //endregion
+
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         public final TextView dayNumber;
@@ -114,7 +133,21 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
             pieView.setBackground(pieDrawable);
         }
 
-        private void reset() {
+
+        void setSleepScore(int sleepScore) {
+            pieDrawable.setTrackColor(Color.TRANSPARENT);
+            if (sleepScore == ERROR_MARKER) {
+                score.setText(R.string.missing_data_placeholder);
+                pieDrawable.setFillColor(context.getResources().getColor(R.color.sensor_warning));
+                pieDrawable.setValue(100);
+            } else {
+                score.setText(Integer.toString(sleepScore));
+                pieDrawable.setFillColor(Styles.getSleepScoreColor(context, sleepScore));
+                pieDrawable.setValue(sleepScore);
+            }
+        }
+
+        void reset() {
             if (loading != null) {
                 loading.unsubscribe();
                 this.loading = null;
@@ -129,41 +162,12 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
             timeline.setTimelineSegments(null);
         }
 
-        private void load() {
+        void populate() {
             if (loading == null && date != null) {
-                this.loading = presenter.timelineForDate(date).subscribe(new SafeObserverWrapper<>(new Observer<Timeline>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        loading = null;
-
-                        score.setText(R.string.missing_data_placeholder);
-                        pieDrawable.setFillColor(context.getResources().getColor(R.color.sensor_warning));
-                        pieDrawable.setValue(100);
-
-                        timeline.setTimelineSegments(null);
-                    }
-
-                    @Override
-                    public void onNext(Timeline timeline) {
-                        loading = null;
-
-                        int sleepScore = timeline.getScore();
-                        score.setText(Integer.toString(sleepScore));
-                        pieDrawable.setTrackColor(Color.TRANSPARENT);
-                        pieDrawable.setFillColor(Styles.getSleepScoreColor(context, sleepScore));
-                        pieDrawable.setValue(sleepScore);
-                    }
-                }));
+                this.loading = presenter.scoreForDate(date)
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(this::setSleepScore, ignored -> setSleepScore(ERROR_MARKER));
             }
         }
-    }
-
-    public interface OnItemClickedListener {
-        void onItemClicked(@NonNull View itemView, int position);
     }
 }
