@@ -98,6 +98,8 @@ public class TimelineNavigatorPresenter extends Presenter {
         Timeline cachedTimeline = cachedTimelines.get(date);
         if (cachedTimeline != null) {
             return Observable.just(cachedTimeline);
+        } else if (suspended) {
+            return Observable.error(new IllegalStateException("Cannot use timelineForDate when suspended"));
         } else {
             return apiService.timelineForDate(date.year().getAsString(), date.monthOfYear().getAsString(), date.dayOfMonth().getAsString())
                              .flatMap(ts -> ts.isEmpty() ? Observable.error(new IllegalArgumentException()) : Observable.just(ts.get(0)))
@@ -108,4 +110,13 @@ public class TimelineNavigatorPresenter extends Presenter {
     public Observable<Integer> scoreForDate(@NonNull DateTime date) {
         return timelineForDate(date).flatMap(t -> Observable.just(t.getScore()));
     }
+
+
+    //region For Tests
+
+    LruCache<DateTime, Timeline> getCachedTimelines() {
+        return cachedTimelines;
+    }
+
+    //endregion
 }
