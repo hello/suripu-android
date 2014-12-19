@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +27,8 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ObservableLinearLayoutManager;
 import is.hello.sense.ui.widget.MiniTimelineView;
 import is.hello.sense.ui.widget.TimelineItemDecoration;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.graphing.SimplePieDrawable;
+import is.hello.sense.ui.widget.util.Styles;
 import rx.Subscription;
 
 public class TimelineNavigatorFragment extends InjectionFragment {
@@ -103,7 +104,19 @@ public class TimelineNavigatorFragment extends InjectionFragment {
     }
 
 
-    class Adapter extends RecyclerView.Adapter<Adapter.ItemViewHolder> {
+    public void onItemClicked(@NonNull View itemView, int position) {
+        int searchPosition = (recyclerView.getChildCount() == 2) ? 0 : 1;
+        if (recyclerView.getChildAt(searchPosition) == itemView) {
+            Log.i(getClass().getSimpleName(), "center item clicked");
+        } else if (recyclerView.getChildAt(searchPosition + 1) == itemView) {
+            recyclerView.smoothScrollToPosition(searchPosition + 2);
+        } else {
+            recyclerView.smoothScrollToPosition(searchPosition - 2);
+        }
+    }
+
+
+    class Adapter extends RecyclerView.Adapter<Adapter.ItemViewHolder> implements View.OnClickListener {
         private final LayoutInflater inflater;
         private final Set<ItemViewHolder> visibleHolders = new HashSet<>(4);
         private boolean suspended = false;
@@ -132,12 +145,16 @@ public class TimelineNavigatorFragment extends InjectionFragment {
 
         @Override
         public ItemViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
-            return new ItemViewHolder(inflater.inflate(R.layout.item_timeline_navigator, viewGroup, false));
+            View itemView = inflater.inflate(R.layout.item_timeline_navigator, viewGroup, false);
+            itemView.setOnClickListener(this);
+            return new ItemViewHolder(itemView);
         }
 
         @Override
         public void onBindViewHolder(ItemViewHolder holder, int position) {
             DateTime date = presenter.getStartTime().plusDays(-position);
+
+            holder.itemView.setTag(position);
 
             holder.date = date;
             holder.dayNumber.setText(date.toString("d"));
@@ -160,6 +177,12 @@ public class TimelineNavigatorFragment extends InjectionFragment {
             visibleHolders.remove(holder);
         }
 
+
+        @Override
+        public void onClick(View view) {
+            int position = (int) view.getTag();
+            onItemClicked(view, position);
+        }
 
         class ItemViewHolder extends RecyclerView.ViewHolder {
             final TextView dayNumber;
