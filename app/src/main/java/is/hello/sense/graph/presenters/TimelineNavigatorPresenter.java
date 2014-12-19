@@ -24,7 +24,7 @@ public class TimelineNavigatorPresenter extends Presenter {
     private DateTime startTime;
 
     private final Map<Object, Runnable> posted = new HashMap<>();
-    private boolean suspended;
+    private boolean suspended = false;
 
     private final ApiService apiService;
     private final LruCache<DateTime, Timeline> cachedTimelines = new LruCache<>(CACHE_LIMIT);
@@ -63,7 +63,7 @@ public class TimelineNavigatorPresenter extends Presenter {
     }
 
     public @NonNull DateTime getDateTimeAt(int position) {
-        return startTime.plus(-position);
+        return startTime.plusDays(-position);
     }
 
 
