@@ -43,4 +43,13 @@
 
     </FrameLayout>
 
+    <is.hello.sense.ui.widget.MiniTimelineView
+        android:id="@+id/item_timeline_navigator_timeline"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/gap_large"
+        android:layout_marginLeft="@dimen/gap_small"
+        android:layout_marginRight="@dimen/gap_small"
+        android:layout_marginBottom="@dimen/gap_xlarge"/>
+
 </LinearLayout>

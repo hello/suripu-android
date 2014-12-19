@@ -28,7 +28,7 @@
         <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
 
         <item name="android:listDivider">@color/border</item>
-        <item name="android:dividerHeight">@dimen/divider_height</item>
+        <item name="android:dividerHeight">@dimen/divider_size</item>
     </style>
 
     <style name="AppTheme.Launch">
@@ -270,7 +270,7 @@
 
     <style name="Divider.Horizontal">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/divider_height</item>
+        <item name="android:layout_height">@dimen/divider_size</item>
     </style>
 
     <style name="Divider.Horizontal.Padded">
@@ -283,7 +283,7 @@
     </style>
 
     <style name="Divider.Vertical">
-        <item name="android:layout_width">@dimen/divider_height</item>
+        <item name="android:layout_width">@dimen/divider_size</item>
         <item name="android:layout_height">match_parent</item>
     </style>
 
@@ -340,7 +340,7 @@
         <item name="android:fillViewport">true</item>
         <item name="android:fadingEdge">vertical</item>
         <item name="android:requiresFadingEdge">vertical</item>
-        <item name="android:fadingEdgeLength">@dimen/shadow_height</item>
+        <item name="android:fadingEdgeLength">@dimen/shadow_size</item>
         <item name="android:background">@color/shadow_end</item>
     </style>
 

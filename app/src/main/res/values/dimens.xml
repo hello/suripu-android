@@ -28,8 +28,8 @@
 
     <!-- Divisions and Borders -->
 
-    <dimen name="shadow_height">3dp</dimen>
-    <dimen name="divider_height">1px</dimen> <!-- px is not a typo -->
+    <dimen name="shadow_size">3dp</dimen>
+    <dimen name="divider_size">1px</dimen> <!-- px is not a typo -->
     <dimen name="divider_height_edit_text">1dp</dimen>
     <dimen name="smart_alarm_toggle_line_height">2dp</dimen>
     <dimen name="pie_graph_stroke_width">3dp</dimen>
@@ -49,6 +49,7 @@
     <dimen name="item_room_sensor_condition_min_height">100dp</dimen>
     <dimen name="item_room_sensor_condition_reading_min_width">100dp</dimen>
 
+    <dimen name="view_mini_timeline_stripe_width">3dp</dimen>
     <dimen name="timeline_navigator_active_distance">20dp</dimen>
 
     <!-- Graphs -->

@@ -18,6 +18,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Styles;
 
 /**
  * Draws a single segment of a user's timeline. This includes the segment's

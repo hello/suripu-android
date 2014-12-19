@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,19 +21,20 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Timeline;
 import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ObservableLinearLayoutManager;
-import is.hello.sense.ui.widget.Styles;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.MiniTimelineView;
+import is.hello.sense.ui.widget.TimelineItemDecoration;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.graphing.SimplePieDrawable;
-import rx.Observable;
+import rx.Subscription;
 
 public class TimelineNavigatorFragment extends InjectionFragment {
     public static final String TAG = TimelineNavigatorFragment.class.getSimpleName();
 
     private static final int NUMBER_ITEMS_ON_SCREEN = 3;
+    private static final int TOTAL_DAYS = 366;
     private static final String ARG_START_DATE = TimelineNavigatorFragment.class.getName() + ".ARG_START_DATE";
 
     @Inject TimelineNavigatorPresenter presenter;
@@ -72,6 +74,8 @@ public class TimelineNavigatorFragment extends InjectionFragment {
         this.monthText = (TextView) view.findViewById(R.id.fragment_timeline_navigator_month);
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_navigator_recycler_view);
+        recyclerView.addItemDecoration(new TimelineItemDecoration(getResources(), R.drawable.graph_grid_fill, R.dimen.divider_size));
+
         ScrollListener scrollListener = new ScrollListener();
         recyclerView.setOnScrollListener(scrollListener);
 
@@ -90,7 +94,7 @@ public class TimelineNavigatorFragment extends InjectionFragment {
 
 
     public void jumpToToday(@NonNull View sender) {
-
+        recyclerView.smoothScrollToPosition(0);
     }
 
 
@@ -116,14 +120,14 @@ public class TimelineNavigatorFragment extends InjectionFragment {
         void resume() {
             this.suspended = false;
             for (ItemViewHolder holder : visibleHolders) {
-                holder.loadTimeline();
+                holder.load();
             }
         }
 
 
         @Override
         public int getItemCount() {
-            return 24;
+            return TOTAL_DAYS;
         }
 
         @Override
@@ -138,7 +142,12 @@ public class TimelineNavigatorFragment extends InjectionFragment {
             holder.date = date;
             holder.dayNumber.setText(date.toString("d"));
             holder.dayName.setText(date.toString("EE"));
-            holder.loadTimeline();
+            holder.pieDrawable.setValue(0);
+            holder.pieDrawable.setTrackColor(Styles.getSleepScoreBorderColor(getActivity(), 0));
+            holder.score.setText(R.string.missing_data_placeholder);
+            if (!suspended) {
+                holder.load();
+            }
 
             visibleHolders.add(holder);
         }
@@ -147,10 +156,7 @@ public class TimelineNavigatorFragment extends InjectionFragment {
         public void onViewRecycled(ItemViewHolder holder) {
             super.onViewRecycled(holder);
 
-            holder.date = null;
-            holder.timelineObservable = null;
-            holder.loaded = false;
-
+            holder.reset();
             visibleHolders.remove(holder);
         }
 
@@ -159,12 +165,12 @@ public class TimelineNavigatorFragment extends InjectionFragment {
             final TextView dayNumber;
             final TextView dayName;
             final TextView score;
+            final MiniTimelineView timeline;
 
             final SimplePieDrawable pieDrawable;
 
             @Nullable DateTime date;
-            @Nullable Observable<Timeline> timelineObservable;
-            boolean loaded = false;
+            @Nullable Subscription loading;
 
             ItemViewHolder(View itemView) {
                 super(itemView);
@@ -174,6 +180,7 @@ public class TimelineNavigatorFragment extends InjectionFragment {
                 this.dayNumber = (TextView) itemView.findViewById(R.id.item_timeline_navigator_day_number);
                 this.dayName = (TextView) itemView.findViewById(R.id.item_timeline_navigator_day_name);
                 this.score = (TextView) itemView.findViewById(R.id.item_timeline_navigator_score);
+                this.timeline = (MiniTimelineView) itemView.findViewById(R.id.item_timeline_navigator_timeline);
 
                 this.pieDrawable = new SimplePieDrawable(getResources());
 
@@ -181,28 +188,42 @@ public class TimelineNavigatorFragment extends InjectionFragment {
                 pieView.setBackground(pieDrawable);
             }
 
-            void loadTimeline() {
-                if (!suspended && timelineObservable == null && !loaded && date != null) {
-                    this.timelineObservable = presenter.timelineForDate(date);
-                    bindAndSubscribe(timelineObservable,
-                                     t -> {
-                                         this.timelineObservable = null;
-                                         this.loaded = true;
+            void reset() {
+                if (loading != null) {
+                    loading.unsubscribe();
+                    this.loading = null;
+                }
 
-                                         int sleepScore = t.getScore();
-                                         score.setText(Integer.toString(sleepScore));
-                                         pieDrawable.setTrackColor(Styles.getSleepScoreBorderColor(getActivity(), sleepScore));
-                                         pieDrawable.setFillColor(Styles.getSleepScoreColor(getActivity(), sleepScore));
-                                         pieDrawable.setValue(sleepScore);
-                                     },
-                                     e -> {
-                                         this.timelineObservable = null;
-                                         this.loaded = false;
+                this.date = null;
 
-                                         score.setText(R.string.missing_data_placeholder);
-                                         pieDrawable.setFillColor(getResources().getColor(R.color.sensor_warning));
-                                         pieDrawable.setValue(100);
-                                     });
+                pieDrawable.setValue(0);
+                pieDrawable.setTrackColor(getResources().getColor(R.color.border));
+                score.setText(R.string.missing_data_placeholder);
+
+                timeline.setTimelineSegments(null);
+            }
+
+            void load() {
+                if (loading == null && date != null) {
+                    this.loading = bindAndSubscribe(presenter.timelineForDate(date), timeline -> {
+                        this.loading = null;
+
+                        int sleepScore = timeline.getScore();
+                        score.setText(Integer.toString(sleepScore));
+                        pieDrawable.setTrackColor(Color.TRANSPARENT);
+                        pieDrawable.setFillColor(Styles.getSleepScoreColor(getActivity(), sleepScore));
+                        pieDrawable.setValue(sleepScore);
+
+                        this.timeline.setTimelineSegments(timeline.getSegments());
+                    }, error -> {
+                        this.loading = null;
+
+                        score.setText(R.string.missing_data_placeholder);
+                        pieDrawable.setFillColor(getResources().getColor(R.color.sensor_warning));
+                        pieDrawable.setValue(100);
+
+                        timeline.setTimelineSegments(null);
+                    });
                 }
             }
         }

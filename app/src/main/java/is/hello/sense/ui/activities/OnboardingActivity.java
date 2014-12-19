@@ -47,7 +47,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 

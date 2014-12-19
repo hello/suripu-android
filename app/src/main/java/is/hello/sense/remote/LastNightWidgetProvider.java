@@ -17,7 +17,7 @@ import is.hello.sense.api.model.Timeline;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.remote.common.WidgetService;
 import is.hello.sense.ui.activities.HomeActivity;
-import is.hello.sense.ui.widget.Styles;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;

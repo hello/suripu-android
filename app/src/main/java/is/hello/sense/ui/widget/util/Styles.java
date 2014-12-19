@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget;
+package is.hello.sense.ui.widget.util;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -23,6 +23,10 @@ public final class Styles {
     public static final String TYPEFACE_LIGHT_OBLIQUE = "fonts/AvenirLTCom-LightOblique.ttf";
     public static final String TYPEFACE_ROMAN = "fonts/AvenirLTCom-Roman.ttf";
     public static final String TYPEFACE_OBLIQUE = "fonts/AvenirLTCom-Oblique.ttf";
+
+
+    public static final int TIMELINE_HOURS_ON_SCREEN = 20;
+
 
     public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth) {
         if (sleepDepth == 0)
