@@ -1,12 +1,15 @@
 package is.hello.sense.ui.fragments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +31,7 @@ import is.hello.sense.ui.widget.MiniTimelineView;
 import is.hello.sense.ui.widget.TimelineItemDecoration;
 import is.hello.sense.ui.widget.graphing.SimplePieDrawable;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.util.Views;
 import rx.Subscription;
 
 public class TimelineNavigatorFragment extends InjectionFragment {
@@ -104,14 +108,20 @@ public class TimelineNavigatorFragment extends InjectionFragment {
 
 
     public void onItemClicked(@NonNull View itemView, int position) {
-        int searchPosition = (recyclerView.getChildCount() == 2) ? 0 : 1;
-        if (recyclerView.getChildAt(searchPosition) == itemView) {
+        // Tried implementing this using the first/last visible items
+        // from the linear layout manager, the children of the recycler
+        // view, and neither worked 100% of the time. This does.
+        
+        if (itemView.getAlpha() < 1f) {
+            int recyclerViewCenter = recyclerView.getMeasuredWidth() / 2;
+            if (itemView.getRight() < recyclerViewCenter) {
+                recyclerView.smoothScrollBy(-getItemWidth(), 0);
+            } else {
+                recyclerView.smoothScrollBy(getItemWidth(), 0);
+            }
+        } else {
             DateTime newDate = presenter.getStartTime().plusDays(-position);
             ((OnTimelineDateSelectedListener) getActivity()).onTimelineDateSelected(newDate);
-        } else if (recyclerView.getChildAt(searchPosition + 1) == itemView) {
-            recyclerView.smoothScrollBy(-getItemWidth(), 0);
-        } else {
-            recyclerView.smoothScrollBy(getItemWidth(), 0);
         }
     }
 
