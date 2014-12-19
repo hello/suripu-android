@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget;
+package is.hello.sense.ui.widget.util;
 
 import android.support.annotation.NonNull;
 import android.view.View;

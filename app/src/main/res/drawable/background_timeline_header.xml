@@ -6,7 +6,7 @@
         </shape>
     </item>
 
-    <item android:bottom="@dimen/divider_height">
+    <item android:bottom="@dimen/divider_size">
         <shape android:shape="rectangle">
             <gradient
                 android:angle="-90"

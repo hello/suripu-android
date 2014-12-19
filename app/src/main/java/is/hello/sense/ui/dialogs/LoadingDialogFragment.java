@@ -131,7 +131,7 @@ public class LoadingDialogFragment extends DialogFragment {
                                 .start();
 
                         animate(checkMark)
-                                .zoomInFromNothing()
+                                .zoomInFrom(0f)
                                 .start();
 
                         titleText.setText(R.string.action_done);

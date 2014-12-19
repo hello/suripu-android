@@ -33,7 +33,7 @@
         <TextView
             android:id="@+id/fragment_timeline_date"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_toEndOf="@id/fragment_timeline_header_menu"
             android:layout_toStartOf="@id/fragment_timeline_header_share"
             android:layout_centerVertical="true"
@@ -41,7 +41,8 @@
             android:textAppearance="@style/AppTheme.Text.ScreenTitle"
             android:text="@string/format_date_last_night"
             android:singleLine="true"
-            android:ellipsize="end"/>
+            android:ellipsize="end"
+            android:background="@drawable/button_selector_dark"/>
 
     </RelativeLayout>
 

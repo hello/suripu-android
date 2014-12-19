@@ -13,11 +13,10 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.TimelineSegmentView;
 
 public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
-    private static final int NUMBER_HOURS_ON_SCREEN = 20;
-
     private final int baseItemHeight;
     private final int itemEventImageHeight;
     private final int stripeCornerRadius;
@@ -33,7 +32,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
         windowManager.getDefaultDisplay().getSize(size);
-        this.baseItemHeight = size.y / NUMBER_HOURS_ON_SCREEN;
+        this.baseItemHeight = size.y / Styles.TIMELINE_HOURS_ON_SCREEN;
         this.itemEventImageHeight = context.getResources().getDimensionPixelSize(R.dimen.event_image_height);
         this.stripeCornerRadius = context.getResources().getDimensionPixelOffset(R.dimen.view_timeline_segment_corner_radius);
     }

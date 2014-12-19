@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.widget.Styles;
+import is.hello.sense.ui.widget.util.Styles;
 
 public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.ChangeObserver {
     private final GraphAdapterCache adapterCache = new GraphAdapterCache(GraphAdapterCache.Type.PLAIN);

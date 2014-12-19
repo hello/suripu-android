@@ -9,7 +9,7 @@ import android.widget.ListView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.widget.Styles;
+import is.hello.sense.ui.widget.util.Styles;
 
 public class TrendsFragment extends InjectionFragment {
     @Nullable

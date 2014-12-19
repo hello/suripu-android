@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/gap_outer"
+    android:paddingBottom="@dimen/gap_outer">
+
+    <TextView
+        android:id="@+id/item_timeline_navigator_day_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_tiny"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:text="@string/missing_data_placeholder" />
+
+    <TextView
+        android:id="@+id/item_timeline_navigator_day_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Body.Bold"
+        android:textAllCaps="true"
+        android:text="@string/missing_data_placeholder"/>
+
+    <FrameLayout
+        android:id="@+id/item_timeline_navigator_pie"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_marginLeft="@dimen/gap_small"
+        android:layout_marginRight="@dimen/gap_small"
+        android:layout_gravity="center">
+
+        <TextView
+            android:id="@+id/item_timeline_navigator_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAppearance="@style/AppTheme.Text.SmallScore"
+            android:text="@string/format_date_placeholder" />
+
+    </FrameLayout>
+
+    <is.hello.sense.ui.widget.MiniTimelineView
+        android:id="@+id/item_timeline_navigator_timeline"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/gap_large"
+        android:layout_marginLeft="@dimen/gap_small"
+        android:layout_marginRight="@dimen/gap_small"
+        android:layout_marginBottom="@dimen/gap_xlarge"/>
+
+</LinearLayout>

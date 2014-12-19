@@ -2,7 +2,6 @@ package is.hello.sense.ui.fragments;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -35,12 +34,12 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
-import is.hello.sense.ui.widget.ListViews;
+import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.graphing.PieGraphView;
 import is.hello.sense.ui.widget.SlidingLayersView;
-import is.hello.sense.ui.widget.Styles;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.TimestampTextView;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
@@ -118,6 +117,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
+        dateText.setOnClickListener(ignored -> ((HomeActivity) getActivity()).showTimelineNavigator(getDate()));
 
         listView.addHeaderView(headerView, null, false);
 
@@ -188,14 +188,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         // This is the best place to fire animations.
     }
 
-    public void showSleepScore(int sleepScore) {
-        if (sleepScore > 0) {
-            scoreGraph.setTrackColor(Color.TRANSPARENT);
-        } else {
-            scoreGraph.setTrackColor(getResources().getColor(R.color.border));
-        }
 
-        scoreGraph.setFillColor(getResources().getColor(Styles.getSleepScoreColorRes(sleepScore)));
+    public void showSleepScore(int sleepScore) {
+        scoreGraph.setTrackColor(Styles.getSleepScoreBorderColor(getActivity(), sleepScore));
+        scoreGraph.setFillColor(Styles.getSleepScoreColor(getActivity(), sleepScore));
         ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animations.Properties.createWithDelay(250));
         if (updateAnimation != null) {
             updateAnimation.addUpdateListener(a -> {

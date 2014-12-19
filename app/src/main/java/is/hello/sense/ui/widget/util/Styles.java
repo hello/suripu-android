@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget;
+package is.hello.sense.ui.widget.util;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -23,6 +23,10 @@ public final class Styles {
     public static final String TYPEFACE_LIGHT_OBLIQUE = "fonts/AvenirLTCom-LightOblique.ttf";
     public static final String TYPEFACE_ROMAN = "fonts/AvenirLTCom-Roman.ttf";
     public static final String TYPEFACE_OBLIQUE = "fonts/AvenirLTCom-Oblique.ttf";
+
+
+    public static final int TIMELINE_HOURS_ON_SCREEN = 20;
+
 
     public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth) {
         if (sleepDepth == 0)
@@ -53,6 +57,22 @@ public final class Styles {
             return R.color.sensor_alert;
         else
             return R.color.sensor_ideal;
+    }
+
+    public static int getSleepScoreColor(@NonNull Context context, int sleepScore) {
+        return context.getResources().getColor(getSleepScoreColorRes(sleepScore));
+    }
+
+    public static @ColorRes @DrawableRes int getSleepScoreBorderColorRes(int sleepScore) {
+        if (sleepScore > 0) {
+            return R.color.transparent;
+        } else {
+            return R.color.border;
+        }
+    }
+
+    public static int getSleepScoreBorderColor(@NonNull Context context, int sleepScore) {
+        return context.getResources().getColor(getSleepScoreBorderColorRes(sleepScore));
     }
 
 

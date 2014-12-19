@@ -263,4 +263,5 @@
     <string name="dialog_message_unpair_pill">Are you sure you want to unpair this Sleep Pill from your Sense? You can re-pair it with your Sense later from the device details screen.</string>
     <string name="title_trends">Trends</string>
     <string name="title_current_conditions">Current Conditions</string>
+    <string name="action_today">Today</string>
 </resources>

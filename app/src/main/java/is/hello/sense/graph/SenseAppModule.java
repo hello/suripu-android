@@ -19,6 +19,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
+import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.remote.LastNightWidgetProvider;
@@ -36,6 +37,7 @@ import is.hello.sense.ui.fragments.SensorHistoryFragment;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
@@ -91,6 +93,8 @@ import is.hello.sense.util.BuildValues;
         TimelineFragment.class,
         TimelinePresenter.class,
         TimelineEventDialogFragment.class,
+        TimelineNavigatorFragment.class,
+        TimelineNavigatorPresenter.class,
 
         QuestionsPresenter.class,
         QuestionsDialogFragment.class,

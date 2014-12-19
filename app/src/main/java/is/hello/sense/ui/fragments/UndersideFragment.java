@@ -95,11 +95,11 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
             button.setTextOff(content);
             button.setPadding(0, 0, 0, 0);
             button.setBackground(null);
-            button.setTag(R.id.underside_icon, imageSpan.getDrawable());
+            button.setTag(R.id.underside_tab_tag_icon, imageSpan.getDrawable());
         }
         int accentColor = resources.getColor(R.color.light_accent);
         tabs.setButtonStyler((button, checked) -> {
-            Drawable icon = (Drawable) button.getTag(R.id.underside_icon);
+            Drawable icon = (Drawable) button.getTag(R.id.underside_tab_tag_icon);
             if (checked) {
                 icon.setColorFilter(accentColor, PorterDuff.Mode.SRC_ATOP);
             } else {
@@ -171,8 +171,8 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
         TabsBackgroundDrawable(@NonNull Resources resources, int itemCount) {
             this.itemCount = itemCount;
-            this.lineHeight = resources.getDimensionPixelSize(R.dimen.shadow_height);
-            this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_height);
+            this.lineHeight = resources.getDimensionPixelSize(R.dimen.shadow_size);
+            this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
             this.fillColor = resources.getColor(R.color.light_accent);
             this.dividerColor = resources.getColor(R.color.border);
         }

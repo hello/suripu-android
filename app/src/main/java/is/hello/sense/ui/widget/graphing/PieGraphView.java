@@ -65,7 +65,7 @@ public final class PieGraphView extends GraphView {
 
     public void setTrackColor(int trackColor) {
         this.trackColor = trackColor;
-        postInvalidate();
+        invalidate();
     }
 
 

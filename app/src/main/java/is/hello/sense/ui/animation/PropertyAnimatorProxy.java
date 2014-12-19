@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Views;
 
 public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private final View view;
@@ -280,13 +280,25 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
                 .scale(1.0f);
     }
 
-    public PropertyAnimatorProxy zoomInFromNothing() {
+    public PropertyAnimatorProxy zoomInFrom(float startScale) {
         return setOnAnimationWillStart(() -> {
             view.setAlpha(0f);
-            view.setScaleX(0f);
-            view.setScaleY(0f);
+            view.setScaleX(startScale);
+            view.setScaleY(startScale);
             view.setVisibility(View.VISIBLE);
         }).scale(1f).alpha(1f);
+    }
+
+    public PropertyAnimatorProxy zoomOutTo(int targetVisibility, float endScale) {
+        return scale(endScale).alpha(0f).addOnAnimationCompleted(finished -> {
+            if (finished) {
+                view.setVisibility(targetVisibility);
+
+                view.setAlpha(1f);
+                view.setScaleX(1f);
+                view.setScaleY(1f);
+            }
+        });
     }
 
     public PropertyAnimatorProxy slideAndFade(float startDeltaY, float endDeltaY,

@@ -43,7 +43,7 @@ public class AppSettingsFragment extends InjectionFragment {
         super.onCreate(savedInstanceState);
 
         Resources resources = getResources();
-        this.dividerLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, resources.getDimensionPixelSize(R.dimen.divider_height));
+        this.dividerLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, resources.getDimensionPixelSize(R.dimen.divider_size));
         this.itemTextHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_outer);
         this.itemTextVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
     }
