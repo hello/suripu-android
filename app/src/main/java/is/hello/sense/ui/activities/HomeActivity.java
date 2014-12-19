@@ -42,7 +42,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends InjectionActivity
-        implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener {
+        implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener
+{
     public static final String EXTRA_IS_NOTIFICATION = HomeActivity.class.getName() + ".EXTRA_IS_NOTIFICATION";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
@@ -329,6 +330,14 @@ public class HomeActivity
         animate(viewPager)
                 .zoomOutTo(View.GONE, 0.7f)
                 .start();
+    }
+
+    @Override
+    public void onTimelineDateSelected(@NonNull DateTime date) {
+        if (!date.equals(viewPager.getCurrentFragment().getDate())) {
+            viewPager.setCurrentFragment(TimelineFragment.newInstance(date));
+        }
+        getFragmentManager().popBackStack();
     }
 
     //endregion

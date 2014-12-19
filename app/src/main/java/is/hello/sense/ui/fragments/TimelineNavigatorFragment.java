@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,11 +106,12 @@ public class TimelineNavigatorFragment extends InjectionFragment {
     public void onItemClicked(@NonNull View itemView, int position) {
         int searchPosition = (recyclerView.getChildCount() == 2) ? 0 : 1;
         if (recyclerView.getChildAt(searchPosition) == itemView) {
-            Log.i(getClass().getSimpleName(), "center item clicked");
+            DateTime newDate = presenter.getStartTime().plusDays(-position);
+            ((OnTimelineDateSelectedListener) getActivity()).onTimelineDateSelected(newDate);
         } else if (recyclerView.getChildAt(searchPosition + 1) == itemView) {
-            recyclerView.smoothScrollToPosition(searchPosition + 2);
+            recyclerView.smoothScrollBy(-getItemWidth(), 0);
         } else {
-            recyclerView.smoothScrollToPosition(searchPosition - 2);
+            recyclerView.smoothScrollBy(getItemWidth(), 0);
         }
     }
 
@@ -322,5 +322,10 @@ public class TimelineNavigatorFragment extends InjectionFragment {
                 transformChildren();
             }
         }
+    }
+
+
+    public interface OnTimelineDateSelectedListener {
+        void onTimelineDateSelected(@NonNull DateTime date);
     }
 }
