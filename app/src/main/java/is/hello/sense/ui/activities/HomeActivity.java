@@ -146,10 +146,7 @@ public class HomeActivity
 
             Fragment navigatorFragment = getFragmentManager().findFragmentByTag(TimelineNavigatorFragment.TAG);
             if (navigatorFragment != null) {
-                getFragmentManager()
-                        .beginTransaction()
-                        .remove(navigatorFragment)
-                        .commit();
+                getFragmentManager().popBackStack();
             }
         }
     }

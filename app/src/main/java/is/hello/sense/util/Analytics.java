@@ -266,7 +266,11 @@ public class Analytics {
                 provider.identify(userId);
             } else if (!existingUserId.equals(userId)) {
                 Logger.info(LOG_TAG, "Establishing user alias.");
-                provider.alias(userId, existingUserId);
+                try {
+                    provider.alias(userId, existingUserId);
+                } catch (NullPointerException e) {
+                    Logger.error(LOG_TAG, "Mixpanel API is still broken.", e);
+                }
             }
 
             if (Crashlytics.getInstance().isInitialized()) {

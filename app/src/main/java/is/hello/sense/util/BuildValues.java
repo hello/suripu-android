@@ -11,7 +11,6 @@ public class BuildValues {
     public final String type;
     public final String defaultApiEnvironment;
     public final String hockeyId;
-    public final boolean analyticsEnabled;
     public final boolean debugScreenEnabled;
 
     public BuildValues(@NonNull Context context) {
@@ -21,7 +20,6 @@ public class BuildValues {
         this.defaultApiEnvironment = context.getString(R.string.build_default_api_env);
         this.hockeyId = context.getString(R.string.build_hockey_id);
         this.debugScreenEnabled = Boolean.parseBoolean(context.getString(R.string.build_debug_enabled));
-        this.analyticsEnabled = Boolean.parseBoolean(context.getString(R.string.build_analytics_enabled));
     }
 
     public boolean isDebugBuild() {
