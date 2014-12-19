@@ -60,6 +60,7 @@ public class TimelineNavigatorPresenter extends Presenter {
 
     public void setStartTime(DateTime startTime) {
         this.startTime = startTime;
+        cachedTimelines.evictAll();
     }
 
     public @NonNull DateTime getDateTimeAt(int position) {

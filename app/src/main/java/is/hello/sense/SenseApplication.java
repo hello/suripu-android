@@ -41,7 +41,9 @@ public class SenseApplication extends Application {
         if (buildValues.debugScreenEnabled) {
             SessionLogger.init(this);
         }
-        Analytics.initialize(this, getString(R.string.build_analytics_api_key));
+        if (buildValues.analyticsEnabled) {
+            Analytics.initialize(this, getString(R.string.build_analytics_api_key));
+        }
 
         buildGraph();
 
