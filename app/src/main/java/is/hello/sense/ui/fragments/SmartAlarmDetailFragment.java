@@ -173,10 +173,13 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         ToggleButton dayButton = (ToggleButton) sender;
         int day = (Integer) dayButton.getTag();
 
-        if (dayButton.isChecked())
+        if (dayButton.isChecked()) {
             smartAlarm.getDaysOfWeek().add(day);
-        else
+        } else {
             smartAlarm.getDaysOfWeek().remove(day);
+        }
+
+        smartAlarm.setRepeated(smartAlarm.getDaysOfWeek().isEmpty());
     }
 
     public void selectSound(@NonNull View sender) {
