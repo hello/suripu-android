@@ -12,6 +12,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
 
@@ -51,7 +52,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment {
         dialog.setContentView(R.layout.dialog_fragment_timeline_event);
 
         ImageButton closeButton = (ImageButton) dialog.findViewById(R.id.dialog_fragment_timeline_event_close);
-        closeButton.setOnClickListener(ignored -> dismiss());
+        Views.setSafeOnClickListener(closeButton, ignored -> dismiss());
 
         TextView title = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_title);
         String eventName = getString(timelineSegment.getEventType().nameString);

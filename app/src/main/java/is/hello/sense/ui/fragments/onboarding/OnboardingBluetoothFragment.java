@@ -18,6 +18,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingBluetoothFragment extends InjectionFragment {
@@ -38,7 +39,7 @@ public class OnboardingBluetoothFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_bluetooth, container, false);
 
         Button turnOn = (Button) view.findViewById(R.id.fragment_onboarding_bluetooth_turn_on);
-        turnOn.setOnClickListener(this::turnOn);
+        Views.setSafeOnClickListener(turnOn, this::turnOn);
 
         return view;
     }

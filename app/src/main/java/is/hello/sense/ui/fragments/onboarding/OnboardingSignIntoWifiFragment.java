@@ -32,6 +32,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
@@ -95,10 +96,10 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         this.networkSecurity = (Spinner) securityContainer.findViewById(R.id.fragment_onboarding_sign_into_wifi_security);
 
         Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_continue);
-        continueButton.setOnClickListener(ignored -> sendWifiCredentials());
+        Views.setSafeOnClickListener(continueButton, ignored -> sendWifiCredentials());
 
         Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        helpButton.setOnClickListener(ignored -> HelpUtil.showHelp(getActivity(), HelpUtil.Step.ONBOARDING_SIGN_INTO_WIFI));
+        Views.setSafeOnClickListener(helpButton, ignored -> HelpUtil.showHelp(getActivity(), HelpUtil.Step.ONBOARDING_SIGN_INTO_WIFI));
 
         if (network != null) {
             this.networkName.setText(network.getSsid());

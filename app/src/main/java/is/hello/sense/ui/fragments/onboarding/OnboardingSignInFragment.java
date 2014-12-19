@@ -21,6 +21,7 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 
@@ -50,7 +51,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         passwordText.setOnEditorActionListener(new EditorActionHandler(this::signIn));
 
         Button signIn = (Button) view.findViewById(R.id.fragment_onboarding_sign_in_go);
-        signIn.setOnClickListener(ignored -> signIn());
+        Views.setSafeOnClickListener(signIn, ignored -> signIn());
 
         return view;
     }

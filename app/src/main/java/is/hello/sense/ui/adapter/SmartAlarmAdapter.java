@@ -11,10 +11,12 @@ import android.widget.ToggleButton;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.util.SafeOnClickListener;
 
 public class SmartAlarmAdapter extends ArrayAdapter<SmartAlarm> implements View.OnClickListener {
     private final LayoutInflater inflater;
     private final OnAlarmEnabledChanged onAlarmEnabledChanged;
+    private final SafeOnClickListener onClickListener = new SafeOnClickListener(this);
 
     private boolean use24Time = false;
 
@@ -43,7 +45,7 @@ public class SmartAlarmAdapter extends ArrayAdapter<SmartAlarm> implements View.
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.enabled.setTag(position);
         holder.enabled.setChecked(alarm.isEnabled());
-        holder.enabled.setOnClickListener(this);
+        holder.enabled.setOnClickListener(onClickListener);
         if (use24Time) {
             holder.timePeriod.setVisibility(View.GONE);
             holder.time.setText(alarm.getTime().toString("H:mm"));

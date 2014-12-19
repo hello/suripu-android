@@ -23,6 +23,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingPairPillFragment extends InjectionFragment {
@@ -53,7 +54,7 @@ public class OnboardingPairPillFragment extends InjectionFragment {
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_pair_pill_activity);
         this.activityStatus = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_status);
         this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_retry);
-        retryButton.setOnClickListener(ignored -> pairPill());
+        Views.setSafeOnClickListener(retryButton, ignored -> pairPill());
 
         return view;
     }

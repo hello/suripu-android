@@ -28,6 +28,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
@@ -57,10 +58,10 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_pair_sense, container, false);
 
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_step_continue);
-        nextButton.setOnClickListener(this::next);
+        Views.setSafeOnClickListener(nextButton, this::next);
 
         Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        helpButton.setOnClickListener(this::next);
+        Views.setSafeOnClickListener(helpButton, this::next);
 
         return view;
     }

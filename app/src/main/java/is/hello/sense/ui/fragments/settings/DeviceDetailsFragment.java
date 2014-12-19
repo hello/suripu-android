@@ -33,6 +33,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SensorStateView;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
@@ -102,19 +103,19 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             this.signalStrength = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_signal);
 
             SensorStateView changeWifi = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_change_wifi);
-            changeWifi.setOnClickListener(this::changeWifiNetwork);
+            Views.setSafeOnClickListener(changeWifi, this::changeWifiNetwork);
 
             SensorStateView enterPairingMode = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_pairing_mode);
-            enterPairingMode.setOnClickListener(this::putIntoPairingMode);
+            Views.setSafeOnClickListener(enterPairingMode, this::putIntoPairingMode);
 
             SensorStateView pairNewPill = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_pair_new_pill);
-            pairNewPill.setOnClickListener(this::pairNewPill);
+            Views.setSafeOnClickListener(pairNewPill, this::pairNewPill);
 
             SensorStateView factoryReset = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_factory_reset);
-            factoryReset.setOnClickListener(this::factoryReset);
+            Views.setSafeOnClickListener(factoryReset, this::factoryReset);
 
             this.actionButton = (Button) view.findViewById(R.id.fragment_device_details_action);
-            actionButton.setOnClickListener(ignored -> {
+            Views.setSafeOnClickListener(actionButton, ignored -> {
                 if (bluetoothAdapter.isEnabled()) {
                     connectToPeripheral();
                 } else {
@@ -126,7 +127,7 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
             pillActionsContainer.setVisibility(View.VISIBLE);
 
             SensorStateView unpairPill = (SensorStateView) pillActionsContainer.findViewById(R.id.fragment_device_details_pill_unpair);
-            unpairPill.setOnClickListener(this::unpairPill);
+            Views.setSafeOnClickListener(unpairPill, this::unpairPill);
         }
 
         return view;

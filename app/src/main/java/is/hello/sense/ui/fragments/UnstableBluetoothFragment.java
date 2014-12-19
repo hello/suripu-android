@@ -19,6 +19,7 @@ import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 import rx.functions.Action1;
@@ -44,10 +45,10 @@ public class UnstableBluetoothFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_unstable_bluetooth, container, false);
 
         Button restart = (Button) view.findViewById(R.id.fragment_unstable_bluetooth_restart);
-        restart.setOnClickListener(this::restartRadios);
+        Views.setSafeOnClickListener(restart, this::restartRadios);
 
         Button cancel = (Button) view.findViewById(R.id.fragment_unstable_bluetooth_cancel);
-        cancel.setOnClickListener(ignored -> dismiss());
+        Views.setSafeOnClickListener(cancel, ignored -> dismiss());
 
         return view;
     }

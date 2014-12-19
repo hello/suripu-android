@@ -29,6 +29,7 @@ import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 
@@ -69,7 +70,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         listView.setOnItemLongClickListener(this);
 
         ImageButton addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
-        addButton.setOnClickListener(this::newAlarm);
+        Views.setSafeOnClickListener(addButton, this::newAlarm);
 
         return view;
     }

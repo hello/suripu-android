@@ -10,6 +10,7 @@ import android.view.ViewTreeObserver;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.Subscriptions;
@@ -99,5 +100,10 @@ public final class Views {
         public void remove() {
             view.removeViewAt(--pointer);
         }
+    }
+
+
+    public static void setSafeOnClickListener(@NonNull View view, @NonNull View.OnClickListener onClickListener) {
+        view.setOnClickListener(new SafeOnClickListener(onClickListener));
     }
 }

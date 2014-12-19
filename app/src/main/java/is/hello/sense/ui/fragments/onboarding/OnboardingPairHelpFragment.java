@@ -12,6 +12,7 @@ import android.widget.Button;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.ui.widget.Views;
 
 public class OnboardingPairHelpFragment extends SenseFragment {
     public static final int RESULT_NEW_SENSE = 0x333;
@@ -22,10 +23,10 @@ public class OnboardingPairHelpFragment extends SenseFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_pair_help, container, false);
 
         Button secondPill = (Button) view.findViewById(R.id.fragment_onboarding_pair_help_2nd_pill);
-        secondPill.setOnClickListener(this::setupSecondPill);
+        Views.setSafeOnClickListener(secondPill, this::setupSecondPill);
 
         Button newSense = (Button) view.findViewById(R.id.fragment_onboarding_pair_help_new_sense);
-        newSense.setOnClickListener(this::setupNewSense);
+        Views.setSafeOnClickListener(newSense, this::setupNewSense);
 
         return view;
     }
