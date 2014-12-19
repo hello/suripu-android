@@ -10,13 +10,15 @@ public class SenseActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        Analytics.startSession();
+
+        Analytics.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Analytics.endSession();
+
+        Analytics.onPause(this);
     }
 
     @Override

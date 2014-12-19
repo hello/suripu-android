@@ -106,7 +106,6 @@ public class TimelineSegment extends ApiResponse {
         @JsonProperty("empty")
         private boolean empty;
 
-
         public String getUrl() {
             return url;
         }
@@ -118,7 +117,6 @@ public class TimelineSegment extends ApiResponse {
         public boolean isEmpty() {
             return empty;
         }
-
 
         @Override
         public String toString() {

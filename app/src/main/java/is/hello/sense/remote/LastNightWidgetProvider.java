@@ -36,7 +36,7 @@ public class LastNightWidgetProvider extends AppWidgetProvider {
         super.onEnabled(context);
 
         Logger.info(getClass().getSimpleName(), "onEnabled()");
-        Analytics.event(Analytics.EVENT_WIDGET_CREATED, Analytics.createProperties(Analytics.PROP_WIDGET_NAME, WIDGET_NAME));
+        Analytics.trackEvent(Analytics.EVENT_WIDGET_CREATED, Analytics.createProperties(Analytics.PROP_WIDGET_NAME, WIDGET_NAME));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class LastNightWidgetProvider extends AppWidgetProvider {
         super.onDeleted(context, appWidgetIds);
 
         Logger.info(getClass().getSimpleName(), "onDeleted()");
-        Analytics.event(Analytics.EVENT_WIDGET_DELETED, Analytics.createProperties(Analytics.PROP_WIDGET_NAME, WIDGET_NAME));
+        Analytics.trackEvent(Analytics.EVENT_WIDGET_DELETED, Analytics.createProperties(Analytics.PROP_WIDGET_NAME, WIDGET_NAME));
     }
 
     public static class LastNightService extends WidgetService {

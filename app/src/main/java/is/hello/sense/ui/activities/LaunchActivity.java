@@ -31,7 +31,7 @@ public class LaunchActivity extends InjectionActivity {
 
         if (sessionManager.getSession() != null) {
             String accountId = sessionManager.getSession().getAccountId();
-            Analytics.identify(accountId);
+            Analytics.setUserId(accountId);
             Logger.info(Analytics.LOG_TAG, "Began session for " + accountId);
         }
     }

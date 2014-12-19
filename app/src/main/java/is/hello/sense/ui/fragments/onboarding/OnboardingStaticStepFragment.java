@@ -25,8 +25,10 @@ public class OnboardingStaticStepFragment extends Fragment {
     private static final String ARG_HIDE_HELP = OnboardingStaticStepFragment.class.getName() + ".ARG_HIDE_HELP";
     private static final String ARG_EXIT_ANIMATION_NAME = OnboardingStaticStepFragment.class.getName() + ".ARG_EXIT_ANIMATION_NAME";
     private static final String ARG_NEXT_WANTS_BACK_STACK = OnboardingStaticStepFragment.class.getName() + ".ARG_NEXT_WANTS_BACK_STACK";
+    private static final String ARG_HELP_STEP = OnboardingStaticStepFragment.class.getName() + ".ARG_HELP_STEP";
 
     private LinearLayout container;
+    private HelpUtil.Step helpStep;
     private @Nullable ExitAnimationProvider exitAnimationProvider;
 
     @Override
@@ -34,7 +36,7 @@ public class OnboardingStaticStepFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null && getArguments().containsKey(ARG_ANALYTICS_EVENT)) {
-            Analytics.event(getArguments().getString(ARG_ANALYTICS_EVENT), null);
+            Analytics.trackEvent(getArguments().getString(ARG_ANALYTICS_EVENT), null);
         }
 
         String animationName = getArguments().getString(ARG_EXIT_ANIMATION_NAME);
@@ -42,6 +44,9 @@ public class OnboardingStaticStepFragment extends Fragment {
             OnboardingActivity onboardingActivity = (OnboardingActivity) getActivity();
             this.exitAnimationProvider = onboardingActivity.getExitAnimationProviderNamed(animationName);
         }
+
+        String helpStepName = getArguments().getString(ARG_HELP_STEP);
+        this.helpStep = HelpUtil.Step.fromString(helpStepName);
     }
 
     @Nullable
@@ -93,7 +98,7 @@ public class OnboardingStaticStepFragment extends Fragment {
     }
 
     public void help(@NonNull View sender) {
-        HelpUtil.showHelp(getActivity());
+        HelpUtil.showHelp(getActivity(), helpStep);
     }
 
 
@@ -132,6 +137,11 @@ public class OnboardingStaticStepFragment extends Fragment {
 
         public Builder setNextWantsBackStackEntry(boolean wantsEntry) {
             arguments.putBoolean(ARG_NEXT_WANTS_BACK_STACK, wantsEntry);
+            return this;
+        }
+
+        public Builder setHelpStep(@Nullable HelpUtil.Step step) {
+            arguments.putString(ARG_HELP_STEP, step.toString());
             return this;
         }
 

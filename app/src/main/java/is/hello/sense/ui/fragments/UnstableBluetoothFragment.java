@@ -19,6 +19,7 @@ import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.util.Analytics;
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -31,6 +32,8 @@ public class UnstableBluetoothFragment extends InjectionFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Analytics.trackError("Unstable Bluetooth Stack", -1);
 
         setRetainInstance(true);
     }

@@ -14,6 +14,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class Onboarding2ndPillInfoFragment extends InjectionFragment {
@@ -22,6 +23,8 @@ public class Onboarding2ndPillInfoFragment extends InjectionFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_GET_APP, null);
 
         putSenseIntoPairingMode();
         setRetainInstance(true);

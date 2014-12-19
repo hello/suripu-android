@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.crashlytics.android.Crashlytics;
-
 import is.hello.sense.util.Analytics;
 
 public abstract class ApiSessionManager {
@@ -26,7 +24,7 @@ public abstract class ApiSessionManager {
     public final void setSession(@Nullable OAuthSession session) {
         storeOAuthSession(session);
         if (session != null) {
-            Analytics.identify(session.getAccountId());
+            Analytics.setUserId(session.getAccountId());
         }
     }
 

@@ -1,7 +1,5 @@
 package is.hello.sense.api.model;
 
-import android.text.TextUtils;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;

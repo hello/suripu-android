@@ -64,8 +64,7 @@
 
         <activity
             android:name=".ui.activities.SmartAlarmDetailActivity"
-            android:label="@string/action_alarm"
-            android:parentActivityName=".ui.activities.HomeActivity" />
+            android:label="@string/action_alarm" />
 
         <activity
             android:name=".ui.activities.SessionLogViewerActivity"
@@ -78,7 +77,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".ui.common.FragmentNavigationActivity" />
+            android:name=".ui.common.FragmentNavigationActivity"
+            android:parentActivityName=".ui.activities.HomeActivity" />
 
         <activity
             android:name="com.mixpanel.android.surveys.SurveyActivity" />

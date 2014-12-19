@@ -40,7 +40,7 @@ public class OnboardingPairPillFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.event(Analytics.EVENT_ONBOARDING_PAIR_PILL, null);
+        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_PAIR_PILL, null);
 
         setRetainInstance(true);
     }
