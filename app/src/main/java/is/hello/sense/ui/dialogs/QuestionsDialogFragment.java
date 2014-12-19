@@ -228,10 +228,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
                 .alpha(1f)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
-                        dismissHandler.postDelayed(() -> {
-                            questionsPresenter.questionsAcknowledged();
-                            dismiss();
-                        }, DISMISS_DELAY);
+                        dismissHandler.postDelayed(this::dismiss, DISMISS_DELAY);
                     }
                 })
                 .start();

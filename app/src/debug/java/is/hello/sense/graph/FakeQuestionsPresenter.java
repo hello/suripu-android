@@ -30,28 +30,11 @@ public class FakeQuestionsPresenter extends QuestionsPresenter {
     public FakeQuestionsPresenter(@NonNull ApiService apiService,
                                   @NonNull ApiSessionManager apiSessionManager,
                                   @NonNull Context context,
-                                  @NonNull PreferencesPresenter preferences,
                                   @NonNull ObjectMapper objectMapper) {
-        super(apiService, apiSessionManager, context, preferences);
+        super(apiService, apiSessionManager, context);
 
         this.context = context;
         this.objectMapper = objectMapper;
-    }
-
-
-    @Override
-    public boolean isUpdateTooSoon() {
-        return false;
-    }
-
-    @Override
-    public boolean isLastAcknowledgedBeforeToday() {
-        return true;
-    }
-
-    @Override
-    public void setLastAcknowledged(@Nullable DateTime lastUpdated) {
-        // Do nothing
     }
 
     @Override

@@ -138,9 +138,8 @@ public class SenseAppModule {
     @Provides @Singleton QuestionsPresenter provideQuestionPresenter(@NonNull ApiService apiService,
                                                                      @NonNull ApiSessionManager apiSessionManager,
                                                                      @NonNull Context context,
-                                                                     @NonNull PreferencesPresenter preferences,
                                                                      @NonNull ObjectMapper objectMapper) {
-        return new FakeQuestionsPresenter(apiService, apiSessionManager, context, preferences, objectMapper);
+        return new FakeQuestionsPresenter(apiService, apiSessionManager, context, objectMapper);
     }
     */
 }

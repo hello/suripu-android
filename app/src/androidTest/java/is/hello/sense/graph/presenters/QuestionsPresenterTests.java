@@ -3,8 +3,6 @@ package is.hello.sense.graph.presenters;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -26,7 +24,6 @@ public class QuestionsPresenterTests extends InjectionTestCase {
 
         apiSessionManager.setSession(new OAuthSession());
 
-        presenter.clearUpdateGuards();
         presenter.update();
     }
 
@@ -64,25 +61,9 @@ public class QuestionsPresenterTests extends InjectionTestCase {
         assertNull(question2.getLast());
     }
 
-    public void testQuestionsAcknowledged() throws Exception {
-        SyncObserver<ArrayList<Question>> questions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.questions)
-                                                                  .ignore(1);
-        presenter.questionsAcknowledged();
-        questions.await();
-
-        assertEquals(DateTime.now().withTimeAtStartOfDay(), presenter.getLastAcknowledged());
-        assertFalse(presenter.isUpdateTooSoon());
-
-        assertNull(questions.getError());
-        assertEquals(Collections.<Question>emptyList(), questions.getLast());
-    }
-
     public void testLogOutSideEffects() throws Exception {
         LocalBroadcastManager.getInstance(getInstrumentation().getContext())
                              .sendBroadcastSync(new Intent(ApiSessionManager.ACTION_LOGGED_OUT));
-
-        assertFalse(presenter.isUpdateTooSoon());
-        assertTrue(presenter.getLastAcknowledged().isBefore(DateTime.now().withTimeAtStartOfDay()));
 
 
         SyncObserver<Question> currentQuestion = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.currentQuestion)
