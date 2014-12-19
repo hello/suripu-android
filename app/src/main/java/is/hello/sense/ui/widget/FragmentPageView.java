@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+import is.hello.sense.ui.widget.util.GestureInterceptingView;
 import is.hello.sense.util.Constants;
 
 public final class FragmentPageView<TFragment extends Fragment> extends FrameLayout implements GestureInterceptingView {

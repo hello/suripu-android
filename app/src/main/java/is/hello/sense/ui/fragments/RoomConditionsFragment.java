@@ -32,7 +32,7 @@ import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.widget.Styles;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.graphing.SimpleLineGraphDrawable;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.DateFormatter;

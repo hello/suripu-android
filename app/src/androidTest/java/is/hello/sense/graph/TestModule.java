@@ -36,6 +36,8 @@ import is.hello.sense.graph.presenters.QuestionsPresenterTests;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenterTests;
+import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
+import is.hello.sense.graph.presenters.TimelineNavigatorPresenterTests;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
 import is.hello.sense.units.UnitFormatterTests;
@@ -75,6 +77,9 @@ import is.hello.sense.util.DateFormatterTests;
 
         HelloPeripheralTests.class,
         SensePeripheralTests.class,
+
+        TimelineNavigatorPresenterTests.class,
+        TimelineNavigatorPresenter.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

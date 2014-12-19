@@ -305,7 +305,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
 
     public LayoutParams createDividerLayoutParams() {
         int margin = getResources().getDimensionPixelSize(R.dimen.gap_outer);
-        LayoutParams dividerLayoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.divider_height));
+        LayoutParams dividerLayoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.divider_size));
         dividerLayoutParams.setMargins(margin, 0, margin, 0);
         return dividerLayoutParams;
     }

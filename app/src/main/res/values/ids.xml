@@ -9,5 +9,5 @@
     <item name="layout_linear_selector_tag_key_index" type="id" />
     <item name="layout_linear_selector_tag_key_user" type="id" />
 
-    <item name="underside_icon" type="id" />
+    <item name="underside_tab_tag_icon" type="id" />
 </resources>

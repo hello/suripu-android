@@ -16,8 +16,8 @@ import org.json.JSONObject;
 public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
 
-    private static MixpanelAPI provider;
-    private static SharedPreferences preferences;
+    private static @Nullable MixpanelAPI provider;
+    private static @Nullable SharedPreferences preferences;
 
 
     //region Global Properties
@@ -247,7 +247,9 @@ public class Analytics {
 
     @SuppressWarnings("UnusedParameters")
     public static void onPause(@NonNull Activity activity) {
-        provider.flush();
+        if (provider != null) {
+            provider.flush();
+        }
     }
 
     //endregion
@@ -256,45 +258,53 @@ public class Analytics {
     //region User Identity
 
     public static void setUserId(@NonNull String userId) {
-        String existingUserId = preferences.getString(Constants.INTERNAL_PREF_ANALYTICS_USER_ID, null);
-        provider.getPeople().identify(userId);
-        if (existingUserId == null) {
-            Logger.info(LOG_TAG, "Identifying user.");
-            provider.identify(userId);
-        } else if (!existingUserId.equals(userId)) {
-            Logger.info(LOG_TAG, "Establishing user alias.");
-            provider.alias(userId, existingUserId);
-        }
+        if (preferences != null && provider != null) {
+            String existingUserId = preferences.getString(Constants.INTERNAL_PREF_ANALYTICS_USER_ID, null);
+            provider.getPeople().identify(userId);
+            if (existingUserId == null) {
+                Logger.info(LOG_TAG, "Identifying user.");
+                provider.identify(userId);
+            } else if (!existingUserId.equals(userId)) {
+                Logger.info(LOG_TAG, "Establishing user alias.");
+                try {
+                    provider.alias(userId, existingUserId);
+                } catch (NullPointerException e) {
+                    Logger.error(LOG_TAG, "Mixpanel API is still broken.", e);
+                }
+            }
 
-        if (Crashlytics.getInstance().isInitialized()) {
-            Crashlytics.setUserIdentifier(userId);
-        }
+            if (Crashlytics.getInstance().isInitialized()) {
+                Crashlytics.setUserIdentifier(userId);
+            }
 
-        preferences.edit()
-                   .putString(Constants.INTERNAL_PREF_ANALYTICS_USER_ID, userId)
-                   .apply();
+            preferences.edit()
+                    .putString(Constants.INTERNAL_PREF_ANALYTICS_USER_ID, userId)
+                    .apply();
+        }
     }
 
     public static void trackUserSignUp(@Nullable String accountId, @Nullable String name, @NonNull DateTime created) {
         Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId + "', name: '" + name + "', created: '" + created + "' }");
 
-        if (accountId == null) {
-            accountId = "";
+        if (provider != null) {
+            if (accountId == null) {
+                accountId = "";
+            }
+
+            if (name == null) {
+                name = "";
+            }
+
+            provider.getPeople().set("$name", name);
+            provider.getPeople().set("$created", created.toString());
+            provider.getPeople().set(GLOBAL_PROP_ACCOUNT_ID, accountId);
+            provider.getPeople().set(GLOBAL_PROP_PLATFORM, PLATFORM);
+
+            provider.registerSuperProperties(createProperties(
+                    GLOBAL_PROP_NAME, name,
+                    GLOBAL_PROP_PLATFORM, PLATFORM
+            ));
         }
-
-        if (name == null) {
-            name = "";
-        }
-
-        provider.getPeople().set("$name", name);
-        provider.getPeople().set("$created", created.toString());
-        provider.getPeople().set(GLOBAL_PROP_ACCOUNT_ID, accountId);
-        provider.getPeople().set(GLOBAL_PROP_PLATFORM, PLATFORM);
-
-        provider.registerSuperProperties(createProperties(
-                GLOBAL_PROP_NAME, name,
-                GLOBAL_PROP_PLATFORM, PLATFORM
-        ));
     }
 
     //endregion
@@ -318,7 +328,10 @@ public class Analytics {
     }
 
     public static void trackEvent(@NonNull String event, @Nullable JSONObject properties) {
-        provider.track(event, properties);
+        if (provider != null) {
+            provider.track(event, properties);
+        }
+
         Logger.info(LOG_TAG, event + ": " + properties);
     }
 

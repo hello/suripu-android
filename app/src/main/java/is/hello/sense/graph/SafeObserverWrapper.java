@@ -1,5 +1,7 @@
 package is.hello.sense.graph;
 
+import android.support.annotation.NonNull;
+
 import is.hello.sense.util.Logger;
 import rx.Observer;
 import rx.Subscriber;
@@ -16,7 +18,7 @@ import rx.Subscriber;
 public final class SafeObserverWrapper<T> extends Subscriber<T> {
     private final Observer<T> target;
 
-    public SafeObserverWrapper(Observer<T> target) {
+    public SafeObserverWrapper(@NonNull Observer<T> target) {
         super();
 
         this.target = target;

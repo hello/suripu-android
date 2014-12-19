@@ -1,10 +1,13 @@
 package is.hello.sense.ui.activities;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.View;
+import android.view.ViewGroup;
 
 import net.hockeyapp.android.UpdateManager;
 
@@ -23,6 +26,7 @@ import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
@@ -33,11 +37,13 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends InjectionActivity
-        implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener {
+        implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener
+{
     public static final String EXTRA_IS_NOTIFICATION = HomeActivity.class.getName() + ".EXTRA_IS_NOTIFICATION";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
@@ -136,6 +142,12 @@ public class HomeActivity
             Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
             TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight());
             viewPager.setCurrentFragment(fragment);
+
+
+            Fragment navigatorFragment = getFragmentManager().findFragmentByTag(TimelineNavigatorFragment.TAG);
+            if (navigatorFragment != null) {
+                getFragmentManager().popBackStack();
+            }
         }
     }
 
@@ -272,6 +284,57 @@ public class HomeActivity
         }
 
         viewPager.getCurrentFragment().onUserDidPushUpTopView();
+    }
+
+    //endregion
+
+
+    //region Timeline Navigation
+
+    public void showTimelineNavigator(@NonNull DateTime startDate) {
+        ViewGroup undersideContainer = (ViewGroup) findViewById(R.id.activity_home_content_container);
+
+        TimelineNavigatorFragment navigatorFragment = TimelineNavigatorFragment.newInstance(startDate);
+        navigatorFragment.show(getFragmentManager(), 0, TimelineNavigatorFragment.TAG);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.executePendingTransactions();
+
+        View view = navigatorFragment.getView();
+        if (view == null) {
+            throw new IllegalStateException();
+        }
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                if (!navigatorFragment.isAdded() && !isDestroyed()) {
+                    animate(viewPager)
+                            .zoomInFrom(0.7f)
+                            .addOnAnimationCompleted(finished -> {
+                                if (finished) {
+                                    undersideContainer.removeView(view);
+                                }
+                            })
+                            .start();
+
+                    fragmentManager.removeOnBackStackChangedListener(this);
+                }
+            }
+        });
+
+        undersideContainer.addView(view, 0);
+
+        animate(viewPager)
+                .zoomOutTo(View.GONE, 0.7f)
+                .start();
+    }
+
+    @Override
+    public void onTimelineDateSelected(@NonNull DateTime date) {
+        if (!date.equals(viewPager.getCurrentFragment().getDate())) {
+            viewPager.setCurrentFragment(TimelineFragment.newInstance(date));
+        }
+        getFragmentManager().popBackStack();
     }
 
     //endregion

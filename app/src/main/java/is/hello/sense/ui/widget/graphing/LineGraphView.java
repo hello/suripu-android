@@ -20,8 +20,8 @@ import android.widget.FrameLayout;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
-import is.hello.sense.ui.widget.Styles;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.util.Views;
 
 public final class LineGraphView extends FrameLayout implements GraphAdapter.ChangeObserver {
     private @Nullable OnValueHighlightedListener onValueHighlightedListener;

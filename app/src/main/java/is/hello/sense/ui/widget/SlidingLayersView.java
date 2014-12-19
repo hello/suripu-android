@@ -18,6 +18,9 @@ import android.widget.ListView;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+import is.hello.sense.ui.widget.util.GestureInterceptingView;
+import is.hello.sense.ui.widget.util.ListViews;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
 
 public class SlidingLayersView extends FrameLayout implements GestureInterceptingView {
@@ -68,7 +71,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
         this.topViewContainer = new FrameLayout(getContext());
 
-        this.shadowHeight = getResources().getDimensionPixelSize(R.dimen.shadow_height);
+        this.shadowHeight = getResources().getDimensionPixelSize(R.dimen.shadow_size);
         View topShadowView = new View(getContext());
         topShadowView.setBackgroundResource(R.drawable.gradient_top_layer_shadow);
         topViewContainer.addView(topShadowView, new LayoutParams(LayoutParams.MATCH_PARENT, shadowHeight, Gravity.TOP));

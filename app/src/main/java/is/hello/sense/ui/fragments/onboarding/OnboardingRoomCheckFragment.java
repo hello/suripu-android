@@ -36,7 +36,7 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Markdown;
@@ -166,7 +166,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
         Resources resources = getResources();
         int dividerMargin = resources.getDimensionPixelSize(R.dimen.gap_medium);
-        int dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_height);
+        int dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
         LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, dividerHeight);
         layoutParams.setMargins(0, dividerMargin, 0, dividerMargin);
         divider.setLayoutParams(layoutParams);
