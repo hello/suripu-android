@@ -111,7 +111,7 @@ public class TimelineNavigatorFragment extends InjectionFragment {
         // Tried implementing this using the first/last visible items
         // from the linear layout manager, the children of the recycler
         // view, and neither worked 100% of the time. This does.
-        
+
         if (itemView.getAlpha() < 1f) {
             int recyclerViewCenter = recyclerView.getMeasuredWidth() / 2;
             if (itemView.getRight() < recyclerViewCenter) {
@@ -120,7 +120,7 @@ public class TimelineNavigatorFragment extends InjectionFragment {
                 recyclerView.smoothScrollBy(getItemWidth(), 0);
             }
         } else {
-            DateTime newDate = presenter.getStartTime().plusDays(-position);
+            DateTime newDate = presenter.getDateTimeAt(position);
             ((OnTimelineDateSelectedListener) getActivity()).onTimelineDateSelected(newDate);
         }
     }
@@ -128,23 +128,9 @@ public class TimelineNavigatorFragment extends InjectionFragment {
 
     class Adapter extends RecyclerView.Adapter<Adapter.ItemViewHolder> implements View.OnClickListener {
         private final LayoutInflater inflater;
-        private final Set<ItemViewHolder> visibleHolders = new HashSet<>(4);
-        private boolean suspended = false;
 
         Adapter(@NonNull Context context) {
             this.inflater = LayoutInflater.from(context);
-        }
-
-
-        void suspend() {
-            this.suspended = true;
-        }
-
-        void resume() {
-            this.suspended = false;
-            for (ItemViewHolder holder : visibleHolders) {
-                holder.load();
-            }
         }
 
 
@@ -162,7 +148,7 @@ public class TimelineNavigatorFragment extends InjectionFragment {
 
         @Override
         public void onBindViewHolder(ItemViewHolder holder, int position) {
-            DateTime date = presenter.getStartTime().plusDays(-position);
+            DateTime date = presenter.getDateTimeAt(position);
 
             holder.itemView.setTag(position);
 
@@ -172,19 +158,15 @@ public class TimelineNavigatorFragment extends InjectionFragment {
             holder.pieDrawable.setValue(0);
             holder.pieDrawable.setTrackColor(Styles.getSleepScoreBorderColor(getActivity(), 0));
             holder.score.setText(R.string.missing_data_placeholder);
-            if (!suspended) {
-                holder.load();
-            }
-
-            visibleHolders.add(holder);
+            presenter.post(holder, holder::load);
         }
 
         @Override
         public void onViewRecycled(ItemViewHolder holder) {
             super.onViewRecycled(holder);
 
+            presenter.cancel(holder);
             holder.reset();
-            visibleHolders.remove(holder);
         }
 
 
@@ -305,10 +287,10 @@ public class TimelineNavigatorFragment extends InjectionFragment {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             if (previousState == RecyclerView.SCROLL_STATE_IDLE && newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                adapter.suspend();
+                presenter.suspend();
             } else if (previousState != RecyclerView.SCROLL_STATE_IDLE && newState == RecyclerView.SCROLL_STATE_IDLE) {
                 snapToNearestItem(recyclerView);
-                adapter.resume();
+                presenter.resume();
             }
 
             this.previousState = newState;

@@ -8,6 +8,9 @@ import android.util.LruCache;
 
 import org.joda.time.DateTime;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
@@ -19,6 +22,9 @@ public class TimelineNavigatorPresenter extends Presenter {
 
     private static final String STATE_KEY_START_TIME = "startTime";
     private DateTime startTime;
+
+    private final Map<Object, Runnable> posted = new HashMap<>();
+    private boolean suspended;
 
     private final ApiService apiService;
     private final LruCache<DateTime, Timeline> cachedTimelines = new LruCache<>(CACHE_LIMIT);
@@ -52,12 +58,38 @@ public class TimelineNavigatorPresenter extends Presenter {
     }
 
 
-    public DateTime getStartTime() {
-        return startTime;
-    }
-
     public void setStartTime(DateTime startTime) {
         this.startTime = startTime;
+    }
+
+    public @NonNull DateTime getDateTimeAt(int position) {
+        return startTime.plus(-position);
+    }
+
+
+    public void suspend() {
+        this.suspended = true;
+    }
+
+    public void resume() {
+        this.suspended = false;
+
+        for (Runnable task : posted.values()) {
+            task.run();
+        }
+        posted.clear();
+    }
+
+    public void post(@NonNull Object tag, @NonNull Runnable task) {
+        if (suspended) {
+            posted.put(tag, task);
+        } else {
+            task.run();
+        }
+    }
+
+    public void cancel(@NonNull Object tag) {
+        posted.remove(tag);
     }
 
 
