@@ -10,7 +10,7 @@ import android.widget.Button;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Views;
 
 public class OnboardingSetup2ndPillFragment extends Fragment {
     @Nullable

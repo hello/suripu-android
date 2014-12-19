@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Views;
 
 public class SenseAlertDialog extends Dialog {
     private TextView titleText;

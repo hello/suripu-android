@@ -29,7 +29,7 @@ import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ChooseSoundDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.SafeOnClickListener;
 

@@ -31,7 +31,7 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionDialogFragment;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.SafeOnClickListener;
 
 import static android.widget.LinearLayout.LayoutParams;

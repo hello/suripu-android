@@ -10,7 +10,7 @@ import android.widget.Button;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.SenseFragment;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingPillPartnerInfoFragment extends SenseFragment {

@@ -15,7 +15,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.InjectionDialogFragment;
-import is.hello.sense.ui.widget.Views;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Markdown;
 
 public class InsightDetailsDialogFragment extends InjectionDialogFragment {
