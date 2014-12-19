@@ -26,6 +26,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.widget.Styles;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Markdown;
 
 public class InsightsFragment extends InjectionFragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -69,10 +70,10 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
         this.questionAnswerTitle = (TextView) questionContainer.findViewById(R.id.sub_fragment_new_question_title);
 
         Button skipQuestion = (Button) questionContainer.findViewById(R.id.sub_fragment_new_question_skip);
-        skipQuestion.setOnClickListener(ignored -> questionsPresenter.skipQuestion());
+        Views.setSafeOnClickListener(skipQuestion, ignored -> questionsPresenter.skipQuestion());
 
         Button answerQuestion = (Button) questionContainer.findViewById(R.id.sub_fragment_new_question_answer);
-        answerQuestion.setOnClickListener(ignored -> answerQuestion());
+        Views.setSafeOnClickListener(answerQuestion, ignored -> answerQuestion());
 
         // ListView doesn't re-layout if you set a header/footer's visibility to
         // GONE, have to wrap the GONE view in question for re-layout to work.

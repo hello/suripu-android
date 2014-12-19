@@ -14,6 +14,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
@@ -36,7 +37,7 @@ public class Onboarding2ndPillInfoFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_2nd_pill_info, container, false);
 
         Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_2nd_pill_info_continue);
-        continueButton.setOnClickListener(ignored -> ((OnboardingActivity) getActivity()).showSenseColorsInfo());
+        Views.setSafeOnClickListener(continueButton, ignored -> ((OnboardingActivity) getActivity()).showSenseColorsInfo());
 
         return view;
     }

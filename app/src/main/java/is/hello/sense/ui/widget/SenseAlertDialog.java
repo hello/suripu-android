@@ -78,7 +78,7 @@ public class SenseAlertDialog extends Dialog {
         if (title != null) {
             positiveButton.setVisibility(View.VISIBLE);
             positiveButton.setText(title);
-            positiveButton.setOnClickListener(createClickListener(onClickListener, DialogInterface.BUTTON_POSITIVE));
+            Views.setSafeOnClickListener(positiveButton, createClickListener(onClickListener, DialogInterface.BUTTON_POSITIVE));
         } else {
             positiveButton.setVisibility(View.GONE);
         }
@@ -92,7 +92,7 @@ public class SenseAlertDialog extends Dialog {
         if (title != null) {
             negativeButton.setVisibility(View.VISIBLE);
             negativeButton.setText(title);
-            negativeButton.setOnClickListener(createClickListener(onClickListener, DialogInterface.BUTTON_NEGATIVE));
+            Views.setSafeOnClickListener(negativeButton, createClickListener(onClickListener, DialogInterface.BUTTON_NEGATIVE));
         } else {
             positiveButton.setVisibility(View.GONE);
         }

@@ -26,6 +26,7 @@ import is.hello.sense.ui.common.HelpUtil;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 import rx.functions.Action1;
 
@@ -76,13 +77,13 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
         this.rescanButton = (Button) view.findViewById(R.id.fragment_onboarding_wifi_networks_rescan);
         rescanButton.setEnabled(false);
-        rescanButton.setOnClickListener(ignored -> {
+        Views.setSafeOnClickListener(rescanButton, ignored -> {
             Analytics.trackEvent(Analytics.EVENT_ONBOARDING_WIFI_SCAN, null);
             rescan();
         });
 
         this.helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        helpButton.setOnClickListener(ignored -> HelpUtil.showHelp(getActivity(), HelpUtil.Step.ONBOARDING_WIFI_SCAN));
+        Views.setSafeOnClickListener(helpButton, ignored -> HelpUtil.showHelp(getActivity(), HelpUtil.Step.ONBOARDING_WIFI_SCAN));
 
         return view;
     }

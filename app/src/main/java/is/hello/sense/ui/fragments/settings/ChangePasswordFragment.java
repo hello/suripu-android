@@ -22,6 +22,7 @@ import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.EditorActionHandler;
 import rx.Observable;
@@ -71,7 +72,7 @@ public class ChangePasswordFragment extends InjectionFragment {
         confirmNewPassword.setOnEditorActionListener(new EditorActionHandler(this::changePassword));
 
         Button submit = (Button) view.findViewById(R.id.fragment_change_password_submit);
-        submit.setOnClickListener(ignored -> changePassword());
+        Views.setSafeOnClickListener(submit, ignored -> changePassword());
 
         return view;
     }

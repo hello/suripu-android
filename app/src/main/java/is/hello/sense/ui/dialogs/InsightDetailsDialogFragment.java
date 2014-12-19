@@ -15,6 +15,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.InjectionDialogFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Markdown;
 
 public class InsightDetailsDialogFragment extends InjectionDialogFragment {
@@ -55,10 +56,10 @@ public class InsightDetailsDialogFragment extends InjectionDialogFragment {
         this.message = (TextView) dialog.findViewById(R.id.fragment_dialog_insight_details_message);
 
         ImageButton shareButton = (ImageButton) dialog.findViewById(R.id.fragment_dialog_insight_details_share);
-        shareButton.setOnClickListener(this::share);
+        Views.setSafeOnClickListener(shareButton, this::share);
 
         Button doneButton = (Button) dialog.findViewById(R.id.fragment_dialog_insight_details_done);
-        doneButton.setOnClickListener(this::done);
+        Views.setSafeOnClickListener(doneButton, this::done);
 
         title.setText(insight.getTitle());
         message.setText(insight.getMessage());

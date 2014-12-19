@@ -14,6 +14,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditingFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
@@ -43,14 +44,14 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
         }
 
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
-        nextButton.setOnClickListener(ignored -> {
+        Views.setSafeOnClickListener(nextButton, ignored -> {
             account.setBirthDate(new LocalDate(datePicker.getYear(), datePicker.getMonth() + 1, datePicker.getDayOfMonth()));
             getContainer().onAccountUpdated(this);
         });
 
         Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
         if (getWantsSkipButton()) {
-            skipButton.setOnClickListener(ignored -> getContainer().onAccountUpdated(this));
+            Views.setSafeOnClickListener(skipButton, ignored -> getContainer().onAccountUpdated(this));
         } else {
             skipButton.setVisibility(View.INVISIBLE);
         }

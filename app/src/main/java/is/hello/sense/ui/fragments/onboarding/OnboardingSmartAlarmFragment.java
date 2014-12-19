@@ -21,6 +21,7 @@ import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingSmartAlarmFragment extends InjectionFragment {
@@ -41,10 +42,10 @@ public class OnboardingSmartAlarmFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_smart_alarm, container, false);
 
         Button setAlarm = (Button) view.findViewById(R.id.fragment_onboarding_smart_alarm_set);
-        setAlarm.setOnClickListener(this::createNewAlarm);
+        Views.setSafeOnClickListener(setAlarm, this::createNewAlarm);
 
         Button skip = (Button) view.findViewById(R.id.fragment_onboarding_smart_alarm_skip);
-        skip.setOnClickListener(ignored -> complete());
+        Views.setSafeOnClickListener(skip, ignored -> complete());
 
         return view;
     }

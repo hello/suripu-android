@@ -31,6 +31,8 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionDialogFragment;
+import is.hello.sense.ui.widget.Views;
+import is.hello.sense.util.SafeOnClickListener;
 
 import static android.widget.LinearLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -94,10 +96,10 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 
         this.skipButton = (Button) dialog.findViewById(R.id.fragment_questions_skip);
-        skipButton.setOnClickListener(this::skipQuestion);
+        Views.setSafeOnClickListener(skipButton, this::skipQuestion);
 
         this.nextButton = (Button) dialog.findViewById(R.id.fragment_questions_next);
-        nextButton.setOnClickListener(this::nextQuestion);
+        Views.setSafeOnClickListener(nextButton, this::nextQuestion);
 
         return dialog;
     }
@@ -116,10 +118,10 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 
         this.skipButton = (Button) view.findViewById(R.id.fragment_questions_skip);
-        skipButton.setOnClickListener(this::skipQuestion);
+        Views.setSafeOnClickListener(skipButton, this::skipQuestion);
 
         this.nextButton = (Button) view.findViewById(R.id.fragment_questions_next);
-        nextButton.setOnClickListener(this::nextQuestion);
+        Views.setSafeOnClickListener(nextButton, this::nextQuestion);
 
         return view;
     }
@@ -312,7 +314,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LayoutParams choiceLayoutParams = createChoiceLayoutParams();
         LayoutParams dividerLayoutParams = createDividerLayoutParams();
-        View.OnClickListener onClickListener = this::singleChoiceSelected;
+        View.OnClickListener onClickListener = new SafeOnClickListener(this::singleChoiceSelected);
 
         List<Question.Choice> choices = question.getChoices();
         for (int i = 0; i < choices.size(); i++) {

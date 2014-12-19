@@ -10,6 +10,7 @@ import android.widget.Button;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.widget.Views;
 
 public class OnboardingSetup2ndPillFragment extends Fragment {
     @Nullable
@@ -18,10 +19,10 @@ public class OnboardingSetup2ndPillFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_setup_2nd_pill, container, false);
 
         Button yesButton = (Button) view.findViewById(R.id.fragment_onboarding_setup_2nd_pill_yes);
-        yesButton.setOnClickListener(ignored -> ((OnboardingActivity) getActivity()).show2ndPillPairing());
+        Views.setSafeOnClickListener(yesButton, ignored -> ((OnboardingActivity) getActivity()).show2ndPillPairing());
 
         Button noButton = (Button) view.findViewById(R.id.fragment_onboarding_setup_2nd_pill_no);
-        noButton.setOnClickListener(ignored -> ((OnboardingActivity) getActivity()).showSenseColorsInfo());
+        Views.setSafeOnClickListener(noButton, ignored -> ((OnboardingActivity) getActivity()).showSenseColorsInfo());
 
         return view;
     }

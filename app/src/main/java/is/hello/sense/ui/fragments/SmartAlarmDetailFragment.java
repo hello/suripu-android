@@ -29,7 +29,9 @@ import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ChooseSoundDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.SafeOnClickListener;
 
 public class SmartAlarmDetailFragment extends InjectionFragment {
     private static final int TIME_REQUEST_CODE = 0x747;
@@ -84,11 +86,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_smart_alarm_detail, container, false);
 
         this.time = (TextView) view.findViewById(R.id.fragment_smart_alarm_detail_time);
-        time.setOnClickListener(this::selectNewTime);
+        Views.setSafeOnClickListener(time, this::selectNewTime);
         updateTime();
 
         ViewGroup repeatDays = (ViewGroup) view.findViewById(R.id.fragment_smart_alarm_detail_repeat);
-        View.OnClickListener dayClickListener = this::dayButtonClicked;
+        View.OnClickListener dayClickListener = new SafeOnClickListener(this::dayButtonClicked);
         for (int i = 0, count = repeatDays.getChildCount(); i < count; i++) {
             int day = DAY_TAGS[i];
             ToggleButton dayButton = (ToggleButton) repeatDays.getChildAt(i);
@@ -107,10 +109,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         } else {
             soundButton.setText(R.string.no_sound_placeholder);
         }
-        soundButton.setOnClickListener(this::selectSound);
+        Views.setSafeOnClickListener(soundButton, this::selectSound);
 
         Button deleteButton = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_delete);
-        deleteButton.setOnClickListener(this::deleteAlarm);
+        Views.setSafeOnClickListener(deleteButton, this::deleteAlarm);
 
         if (this.index == SmartAlarmDetailActivity.INDEX_NEW) {
             view.findViewById(R.id.fragment_smart_alarm_detail_delete_container).setVisibility(View.GONE);

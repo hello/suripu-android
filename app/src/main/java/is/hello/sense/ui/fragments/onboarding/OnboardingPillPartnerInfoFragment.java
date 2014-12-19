@@ -10,6 +10,7 @@ import android.widget.Button;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingPillPartnerInfoFragment extends SenseFragment {
@@ -26,7 +27,7 @@ public class OnboardingPillPartnerInfoFragment extends SenseFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_partner_info, container, false);
 
         Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_partner_info_continue);
-        continueButton.setOnClickListener(ignored -> finishWithResult(Activity.RESULT_OK, null));
+        Views.setSafeOnClickListener(continueButton, ignored -> finishWithResult(Activity.RESULT_OK, null));
 
         return view;
     }

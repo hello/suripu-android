@@ -118,7 +118,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
         this.endContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, container, false);
         Button continueButton = (Button) endContainer.findViewById(R.id.sub_fragment_room_check_end_continue);
-        continueButton.setOnClickListener(this::continueOnboarding);
+        Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
 
         return view;
     }

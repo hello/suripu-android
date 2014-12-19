@@ -23,6 +23,7 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.HelpUtil;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.BuildValues;
 
@@ -75,7 +76,7 @@ public class AppSettingsFragment extends InjectionFragment {
         itemView.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_Light);
         itemView.setPadding(itemTextHorizontalPadding, itemTextVerticalPadding, itemTextHorizontalPadding, itemTextVerticalPadding);
         itemView.setText(titleRes);
-        itemView.setOnClickListener(onClick);
+        Views.setSafeOnClickListener(itemView, onClick);
         itemContainer.addView(itemView, itemTextLayoutParams);
 
         if (wantsDivider) {

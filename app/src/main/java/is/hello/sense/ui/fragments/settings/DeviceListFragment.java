@@ -27,6 +27,7 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 
@@ -65,7 +66,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_settings_device_list_progress);
 
         ImageButton addDevice = (ImageButton) view.findViewById(R.id.fragment_settings_device_list_add);
-        addDevice.setOnClickListener(ignored -> {
+        Views.setSafeOnClickListener(addDevice, ignored -> {
             Intent onboarding = new Intent(getActivity(), OnboardingActivity.class);
             onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
             onboarding.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);

@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.HelpUtil;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingStaticStepFragment extends Fragment {
@@ -60,13 +61,13 @@ public class OnboardingStaticStepFragment extends Fragment {
         inflater.inflate(getArguments().getInt(ARG_SUB_LAYOUT_ID), contentContainer, true);
 
         Button next = (Button) view.findViewById(R.id.fragment_onboarding_step_continue);
-        next.setOnClickListener(this::next);
+        Views.setSafeOnClickListener(next, this::next);
 
         Button help = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
         if (getArguments().getBoolean(ARG_HIDE_HELP, false)) {
             help.setVisibility(View.GONE);
         } else {
-            help.setOnClickListener(this::help);
+            Views.setSafeOnClickListener(help, this::help);
         }
 
         return view;

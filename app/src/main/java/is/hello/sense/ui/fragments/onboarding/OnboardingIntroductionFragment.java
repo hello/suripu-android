@@ -18,6 +18,7 @@ import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.fragments.VideoPlayerActivity;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -40,26 +41,26 @@ public class OnboardingIntroductionFragment extends Fragment {
         this.getStartedActions = (ViewGroup) view.findViewById(R.id.fragment_onboarding_intro_account_get_started);
 
         Button getStarted = (Button) getStartedActions.findViewById(R.id.fragment_onboarding_intro_get_started);
-        getStarted.setOnClickListener(this::getStarted);
+        Views.setSafeOnClickListener(getStarted, this::getStarted);
 
         Button buySense = (Button) getStartedActions.findViewById(R.id.fragment_onboarding_intro_buy_sense);
-        buySense.setOnClickListener(this::buySense);
+        Views.setSafeOnClickListener(buySense, this::buySense);
 
 
         this.play = (ImageView) view.findViewById(R.id.fragment_onboarding_intro_play);
-        play.setOnClickListener(this::playIntroVideo);
+        Views.setSafeOnClickListener(play, this::playIntroVideo);
 
 
         this.accountActions = (ViewGroup) view.findViewById(R.id.fragment_onboarding_intro_account_actions);
 
         Button register = (Button) accountActions.findViewById(R.id.fragment_onboarding_intro_register);
-        register.setOnClickListener(this::showRegister);
+        Views.setSafeOnClickListener(register, this::showRegister);
 
         Button signIn = (Button) accountActions.findViewById(R.id.fragment_onboarding_intro_sign_in);
-        signIn.setOnClickListener(this::showSignIn);
+        Views.setSafeOnClickListener(signIn, this::showSignIn);
 
         Button cancel = (Button) accountActions.findViewById(R.id.fragment_onboarding_intro_cancel);
-        cancel.setOnClickListener(this::cancel);
+        Views.setSafeOnClickListener(cancel, this::cancel);
 
 
         return view;

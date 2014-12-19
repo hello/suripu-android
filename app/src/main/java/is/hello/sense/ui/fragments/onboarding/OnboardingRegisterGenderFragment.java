@@ -14,6 +14,7 @@ import is.hello.sense.api.model.Gender;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingRegisterGenderFragment extends AccountEditingFragment implements SelectorLinearLayout.OnSelectionChangedListener, SelectorLinearLayout.ButtonStyler {
@@ -46,11 +47,11 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
         }
 
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
-        nextButton.setOnClickListener(ignored -> getContainer().onAccountUpdated(this));
+        Views.setSafeOnClickListener(nextButton, ignored -> getContainer().onAccountUpdated(this));
 
         Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
         if (getWantsSkipButton()) {
-            skipButton.setOnClickListener(ignored -> {
+            Views.setSafeOnClickListener(skipButton, ignored -> {
                 account.setGender(Gender.OTHER);
                 getContainer().onAccountUpdated(this);
             });
