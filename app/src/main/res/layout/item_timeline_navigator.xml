@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="@dimen/gap_outer"
-    android:paddingBottom="@dimen/gap_outer"
-    android:background="@drawable/button_selector_dark">
+    android:paddingBottom="@dimen/gap_outer">
 
     <TextView
         android:id="@+id/item_timeline_navigator_day_number"
