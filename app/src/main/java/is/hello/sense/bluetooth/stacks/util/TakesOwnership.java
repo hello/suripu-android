@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * ensure the object is recycled when appropriate.
  */
 @Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.PARAMETER)
+@Target({ElementType.PARAMETER, ElementType.METHOD})
 @Inherited
 @Documented
 public @interface TakesOwnership {

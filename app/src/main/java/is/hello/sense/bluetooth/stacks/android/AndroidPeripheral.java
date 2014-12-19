@@ -29,6 +29,7 @@ import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
+import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import is.hello.sense.util.Logger;
@@ -41,6 +42,7 @@ import static rx.android.observables.AndroidObservable.fromBroadcast;
 public class AndroidPeripheral implements Peripheral {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull BluetoothDevice bluetoothDevice;
+    private final @NonNull OperationTimeout.Pool operationTimeoutPool;
     private final int scannedRssi;
     private final GattDispatcher gattDispatcher = new GattDispatcher();
 
@@ -53,6 +55,7 @@ public class AndroidPeripheral implements Peripheral {
                       int scannedRssi) {
         this.stack = stack;
         this.bluetoothDevice = bluetoothDevice;
+        this.operationTimeoutPool = new SchedulerOperationTimeout.Pool(getName(), OperationTimeout.Pool.RECOMMENDED_CAPACITY);
         this.scannedRssi = scannedRssi;
 
         gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
@@ -63,7 +66,13 @@ public class AndroidPeripheral implements Peripheral {
     }
 
 
-    //region Introspection
+    //region Attributes
+
+    @Override
+    @NonNull
+    public OperationTimeout.Pool getOperationTimeoutPool() {
+        return operationTimeoutPool;
+    }
 
     @Override
     public int getScanTimeRssi() {

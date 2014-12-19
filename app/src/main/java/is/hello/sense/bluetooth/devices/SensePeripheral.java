@@ -17,7 +17,6 @@ import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
-import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
@@ -102,19 +101,19 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     }
 
     protected @NonNull OperationTimeout createOperationTimeout(@NonNull String name) {
-        return peripheral.getStack().acquireOperationTimeout(name, STACK_OPERATION_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.getOperationTimeoutPool().acquire(name, STACK_OPERATION_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createSimpleCommandTimeout() {
-        return peripheral.getStack().acquireOperationTimeout("Simple Command", SIMPLE_COMMAND_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.getOperationTimeoutPool().acquire("Simple Command", SIMPLE_COMMAND_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createScanWifiTimeout() {
-        return peripheral.getStack().acquireOperationTimeout("Scan Wifi", WIFI_SCAN_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.getOperationTimeoutPool().acquire("Scan Wifi", WIFI_SCAN_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createPairPillTimeout() {
-        return peripheral.getStack().acquireOperationTimeout("Pair Pill", PAIR_PILL_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.getOperationTimeoutPool().acquire("Pair Pill", PAIR_PILL_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command,
@@ -266,7 +265,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .setWifiPassword(password)
                 .setSecurityType(securityType)
                 .build();
-        return performSimpleCommand(morpheusCommand, SchedulerOperationTimeout.acquire("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS)).map(Functions.TO_VOID);
+        return performSimpleCommand(morpheusCommand, peripheral.getOperationTimeoutPool().acquire("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS)).map(Functions.TO_VOID);
     }
 
     public Observable<SenseWifiNetwork> getWifiNetwork() {
