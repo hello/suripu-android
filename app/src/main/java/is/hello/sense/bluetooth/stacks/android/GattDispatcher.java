@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import is.hello.sense.bluetooth.errors.BluetoothEarlyDisconnectError;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
@@ -49,7 +50,7 @@ class GattDispatcher extends BluetoothGattCallback {
             timeout.unschedule();
             timeout.recycle();
 
-            subscriber.onError(new BluetoothGattError(BluetoothGattError.STACK_DISCONNECTED));
+            subscriber.onError(new BluetoothEarlyDisconnectError());
         });
     }
 
@@ -58,18 +59,22 @@ class GattDispatcher extends BluetoothGattCallback {
     }
 
     void dispatchDisconnect() {
-        this.onServicesDiscovered = null;
-        this.onCharacteristicWrite = null;
-        this.onDescriptorWrite = null;
+        dispatcher.post(() -> {
+            Logger.info(Peripheral.LOG_TAG, "dispatchDisconnect()");
 
-        for (Action0 onDisconnect : disconnectListeners) {
-            onDisconnect.call();
-        }
-        disconnectListeners.clear();
+            this.onServicesDiscovered = null;
+            this.onCharacteristicWrite = null;
+            this.onDescriptorWrite = null;
 
-        if (packetHandler != null) {
-            dispatcher.post(packetHandler::onTransportDisconected);
-        }
+            for (Action0 onDisconnect : disconnectListeners) {
+                onDisconnect.call();
+            }
+            disconnectListeners.clear();
+
+            if (packetHandler != null) {
+                packetHandler.onTransportDisconnected();
+            }
+        });
     }
 
     @Override

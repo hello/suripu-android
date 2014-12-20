@@ -91,7 +91,7 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
     @Override
     public void recycle() {
         if (isInPool) {
-            throw new IllegalStateException("Recycle called on already recycled timeout");
+            throw new IllegalStateException("Recycle called on already recycled timeout '" + name + "'");
         }
 
         Logger.info(LOG_TAG, "Recycling time out '" + name + "'");
@@ -101,7 +101,6 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
             throw new IllegalStateException("Recycle called on scheduled operation.");
         }
 
-        this.name = null;
         this.durationMs = 0;
         this.action = null;
         this.scheduler = null;

@@ -209,6 +209,8 @@ public class AndroidPeripheral implements Peripheral {
         Logger.info(LOG_TAG, "Disconnecting " + toString());
 
         return stack.newConfiguredObservable(s -> {
+            gattDispatcher.dispatchDisconnect();
+
             gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
@@ -231,7 +233,6 @@ public class AndroidPeripheral implements Peripheral {
             if (getBondStatus() == BluetoothDevice.BOND_BONDED) {
                 removeBond().subscribe(ignored -> {}, s::onError);
             } else {
-                gattDispatcher.dispatchDisconnect();
                 gatt.disconnect();
             }
         });
