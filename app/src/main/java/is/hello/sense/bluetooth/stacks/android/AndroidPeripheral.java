@@ -36,6 +36,7 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action0;
 
 import static rx.android.observables.AndroidObservable.fromBroadcast;
 
@@ -230,6 +231,7 @@ public class AndroidPeripheral implements Peripheral {
             if (getBondStatus() == BluetoothDevice.BOND_BONDED) {
                 removeBond().subscribe(ignored -> {}, s::onError);
             } else {
+                gattDispatcher.dispatchDisconnect();
                 gatt.disconnect();
             }
         });
@@ -247,7 +249,8 @@ public class AndroidPeripheral implements Peripheral {
 
     private <T> void setupTimeout(@NonNull OperationTimeoutError.Operation operation,
                                   @NonNull OperationTimeout timeout,
-                                  @NonNull Subscriber<T> subscriber) {
+                                  @NonNull Subscriber<T> subscriber,
+                                  @Nullable Action0 disconnectListener) {
         timeout.setTimeoutAction(() -> {
             switch (operation) {
                 case DISCOVER_SERVICES:
@@ -262,6 +265,9 @@ public class AndroidPeripheral implements Peripheral {
                 case WRITE_COMMAND:
                     gattDispatcher.onCharacteristicWrite = null;
                     break;
+            }
+            if (disconnectListener != null) {
+                gattDispatcher.removeDisconnectListener(disconnectListener);
             }
 
             disconnect().subscribe(ignored -> subscriber.onError(new OperationTimeoutError(operation)),
@@ -438,11 +444,14 @@ public class AndroidPeripheral implements Peripheral {
         }
 
         return stack.newConfiguredObservable(s -> {
-            setupTimeout(OperationTimeoutError.Operation.DISCOVER_SERVICES, timeout, s);
+            Action0 onDisconnect = gattDispatcher.addTimeoutDisconnectListener(s, timeout);
+            setupTimeout(OperationTimeoutError.Operation.DISCOVER_SERVICES, timeout, s, onDisconnect);
 
             gattDispatcher.onServicesDiscovered = (gatt, status) -> {
                 timeout.unschedule();
                 timeout.recycle();
+
+                gattDispatcher.removeDisconnectListener(onDisconnect);
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     this.cachedPeripheralServices = AndroidPeripheralService.wrapGattServices(gatt.getServices());
@@ -504,16 +513,17 @@ public class AndroidPeripheral implements Peripheral {
         }
 
         return stack.newConfiguredObservable(s -> {
-            setupTimeout(OperationTimeoutError.Operation.SUBSCRIBE_NOTIFICATION, timeout, s);
 
             BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
             if (gatt.setCharacteristicNotification(characteristic, true)) {
-                BluetoothGattDescriptor descriptorToWrite = characteristic.getDescriptor(descriptorIdentifier);
-                descriptorToWrite.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                Action0 onDisconnect = gattDispatcher.addTimeoutDisconnectListener(s, timeout);
+                setupTimeout(OperationTimeoutError.Operation.SUBSCRIBE_NOTIFICATION, timeout, s, onDisconnect);
+
                 gattDispatcher.onDescriptorWrite = (gatt, descriptor, status) -> {
-                    if (!Arrays.equals(descriptor.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE))
+                    if (!Arrays.equals(descriptor.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)) {
                         return;
+                    }
 
                     timeout.unschedule();
                     timeout.recycle();
@@ -527,11 +537,16 @@ public class AndroidPeripheral implements Peripheral {
                     }
 
                     gattDispatcher.onDescriptorWrite = null;
+                    gattDispatcher.removeDisconnectListener(onDisconnect);
                 };
+
+                BluetoothGattDescriptor descriptorToWrite = characteristic.getDescriptor(descriptorIdentifier);
+                descriptorToWrite.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                 if (gatt.writeDescriptor(descriptorToWrite)) {
                     timeout.schedule();
                 } else {
                     gattDispatcher.onDescriptorWrite = null;
+                    gattDispatcher.removeDisconnectListener(onDisconnect);
 
                     timeout.recycle();
                     s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE));
@@ -555,13 +570,16 @@ public class AndroidPeripheral implements Peripheral {
         }
 
         return stack.newConfiguredObservable(s -> {
-            setupTimeout(OperationTimeoutError.Operation.UNSUBSCRIBE_NOTIFICATION, timeout, s);
-
             BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
+
+            Action0 onDisconnect = gattDispatcher.addTimeoutDisconnectListener(s, timeout);
+            setupTimeout(OperationTimeoutError.Operation.SUBSCRIBE_NOTIFICATION, timeout, s, onDisconnect);
+
             gattDispatcher.onDescriptorWrite = (gatt, descriptor, status) -> {
-                if (!Arrays.equals(descriptor.getValue(), BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE))
+                if (!Arrays.equals(descriptor.getValue(), BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE)) {
                     return;
+                }
 
                 timeout.unschedule();
                 timeout.recycle();
@@ -578,13 +596,16 @@ public class AndroidPeripheral implements Peripheral {
                     s.onError(new BluetoothGattError(status));
                 }
 
+                gattDispatcher.removeDisconnectListener(onDisconnect);
                 gattDispatcher.onDescriptorWrite = null;
             };
+
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(descriptorIdentifier);
             descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
             if (gatt.writeDescriptor(descriptor)) {
                 timeout.schedule();
             } else {
+                gattDispatcher.removeDisconnectListener(onDisconnect);
                 gattDispatcher.onDescriptorWrite = null;
 
                 timeout.recycle();
@@ -605,7 +626,8 @@ public class AndroidPeripheral implements Peripheral {
         }
 
         return stack.newConfiguredObservable(s -> {
-            setupTimeout(OperationTimeoutError.Operation.WRITE_COMMAND, timeout, s);
+            Action0 onDisconnect = gattDispatcher.addTimeoutDisconnectListener(s, timeout);
+            setupTimeout(OperationTimeoutError.Operation.SUBSCRIBE_NOTIFICATION, timeout, s, onDisconnect);
 
             gattDispatcher.onCharacteristicWrite = (gatt, characteristic, status) -> {
                 timeout.unschedule();
@@ -619,6 +641,7 @@ public class AndroidPeripheral implements Peripheral {
                     s.onCompleted();
                 }
 
+                gattDispatcher.removeDisconnectListener(onDisconnect);
                 gattDispatcher.onCharacteristicWrite = null;
             };
 
@@ -628,6 +651,7 @@ public class AndroidPeripheral implements Peripheral {
             if (gatt.writeCharacteristic(characteristic)) {
                 timeout.schedule();
             } else {
+                gattDispatcher.removeDisconnectListener(onDisconnect);
                 gattDispatcher.onCharacteristicWrite = null;
 
                 timeout.recycle();

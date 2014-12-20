@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import is.hello.sense.bluetooth.errors.BluetoothGattError;
+
 /**
  * This is the actual transmission layer wrap on BLE.
  */
@@ -28,6 +30,13 @@ public abstract class PacketHandler {
             }
 
             handler.processPacket(sequencedPacket);
+        }
+    }
+
+    public final void onTransportDisconected() {
+        BluetoothGattError error = new BluetoothGattError(BluetoothGattError.STACK_DISCONNECTED);
+        for (PacketDataHandler<?> handler : dataHandlers) {
+            handler.onError(error);
         }
     }
 

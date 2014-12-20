@@ -18,6 +18,12 @@ public class BluetoothGattError extends BluetoothError {
      */
     public static final int STACK_ERROR = 133;
 
+    /**
+     * This error code is app defined, and indicates that the bluetooth gatt
+     * layer was disconnected before the requested operation could be completed.
+     */
+    public static final int STACK_DISCONNECTED = -9000;
+
     public final int statusCode;
 
     public static @NonNull String statusToString(int status) {
@@ -52,6 +58,9 @@ public class BluetoothGattError extends BluetoothError {
             case -123:
             case STACK_ERROR:
                 return "GATT_STACK_ERROR";
+
+            case STACK_DISCONNECTED:
+                return "STACK_DISCONNECTED";
 
             default:
                 return "UNKNOWN: " + status;
