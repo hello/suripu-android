@@ -29,6 +29,8 @@ public abstract class PacketDataHandler<T> {
 
         if (this.onError != null) {
             this.onError.call(e);
+
+            clearListeners();
         }
     }
 
@@ -38,6 +40,11 @@ public abstract class PacketDataHandler<T> {
         if (this.onResponse != null) {
             this.onResponse.call(data);
         }
+    }
+
+    public void clearListeners() {
+        this.onError = null;
+        this.onResponse = null;
     }
 
     //endregion

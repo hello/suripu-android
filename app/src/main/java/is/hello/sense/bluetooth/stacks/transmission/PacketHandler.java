@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import is.hello.sense.bluetooth.errors.BluetoothEarlyDisconnectError;
+import is.hello.sense.bluetooth.errors.BluetoothGattError;
+import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.util.Logger;
+
 /**
  * This is the actual transmission layer wrap on BLE.
  */
@@ -28,6 +33,15 @@ public abstract class PacketHandler {
             }
 
             handler.processPacket(sequencedPacket);
+        }
+    }
+
+    public final void onTransportDisconnected() {
+        Logger.info(Peripheral.LOG_TAG, "onTransportDisconnected()");
+
+        BluetoothEarlyDisconnectError error = new BluetoothEarlyDisconnectError();
+        for (PacketDataHandler<?> handler : dataHandlers) {
+            handler.onError(error);
         }
     }
 

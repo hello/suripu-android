@@ -12,12 +12,12 @@ import java.util.concurrent.TimeUnit;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketDataHandler;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.errors.BluetoothEarlyDisconnectError;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
-import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
@@ -102,19 +102,19 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     }
 
     protected @NonNull OperationTimeout createOperationTimeout(@NonNull String name) {
-        return peripheral.getStack().acquireOperationTimeout(name, STACK_OPERATION_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.getOperationTimeoutPool().acquire(name, STACK_OPERATION_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createSimpleCommandTimeout() {
-        return peripheral.getStack().acquireOperationTimeout("Simple Command", SIMPLE_COMMAND_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.getOperationTimeoutPool().acquire("Simple Command", SIMPLE_COMMAND_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createScanWifiTimeout() {
-        return peripheral.getStack().acquireOperationTimeout("Scan Wifi", WIFI_SCAN_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.getOperationTimeoutPool().acquire("Scan Wifi", WIFI_SCAN_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createPairPillTimeout() {
-        return peripheral.getStack().acquireOperationTimeout("Pair Pill", PAIR_PILL_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.getOperationTimeoutPool().acquire("Pair Pill", PAIR_PILL_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command,
@@ -124,8 +124,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
             timeout.setTimeoutAction(() -> {
                 Logger.error(Peripheral.LOG_TAG, "Command timed out " + command);
 
-                dataHandler.onResponse = null;
-                dataHandler.onError = null;
+                dataHandler.clearListeners();
 
                 MorpheusCommand timeoutResponse = MorpheusCommand.newBuilder()
                         .setVersion(COMMAND_VERSION)
@@ -150,9 +149,13 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 dataHandler.onError = dataError -> {
                     timeout.unschedule();
 
-                    Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
-                    Logger.error(Peripheral.LOG_TAG, "Could not complete command " + command, dataError);
-                    unsubscribe.subscribe(ignored -> onError.call(dataError), onError);
+                    if (dataError instanceof BluetoothEarlyDisconnectError) {
+                        onError.call(dataError);
+                    } else {
+                        Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+                        Logger.error(Peripheral.LOG_TAG, "Could not complete command " + command, dataError);
+                        unsubscribe.subscribe(ignored -> onError.call(dataError), onError);
+                    }
                 };
 
                 Logger.info(Peripheral.LOG_TAG, "Writing command " + command);
@@ -183,6 +186,8 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 } else {
                     s.onError(new BluetoothError());
                 }
+
+                dataHandler.clearListeners();
             }, s::onError);
         });
     }
@@ -266,7 +271,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .setWifiPassword(password)
                 .setSecurityType(securityType)
                 .build();
-        return performSimpleCommand(morpheusCommand, SchedulerOperationTimeout.acquire("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS)).map(Functions.TO_VOID);
+        return performSimpleCommand(morpheusCommand, peripheral.getOperationTimeoutPool().acquire("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS)).map(Functions.TO_VOID);
     }
 
     public Observable<SenseWifiNetwork> getWifiNetwork() {
@@ -338,18 +343,24 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                     subscriber.onNext(response);
                     subscriber.onCompleted();
                 }, onError);
+
+                dataHandler.clearListeners();
             } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
                 timeout.unschedule();
                 timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(response.getError())), onError);
+
+                dataHandler.clearListeners();
             } else {
                 timeout.unschedule();
                 timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(MorpheusBle.ErrorType.INTERNAL_DATA_ERROR)), onError);
+
+                dataHandler.clearListeners();
             }
         }).map(ignored -> endpoints);
     }

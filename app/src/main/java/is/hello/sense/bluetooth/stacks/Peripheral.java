@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
@@ -101,6 +102,18 @@ public interface Peripheral {
      * @see is.hello.sense.bluetooth.stacks.BluetoothStack#newConfiguredObservable(rx.Observable.OnSubscribe)
      */
     BluetoothStack getStack();
+
+    //endregion
+
+
+    //region Timeouts
+
+    /**
+     * Returns the singleton operation timeout object pool associated with the Peripheral.
+     * <p/>
+     * A finite number of timeouts exist in a pool, a typical limit is 2.
+     */
+    @NonNull OperationTimeout.Pool getOperationTimeoutPool();
 
     //endregion
 

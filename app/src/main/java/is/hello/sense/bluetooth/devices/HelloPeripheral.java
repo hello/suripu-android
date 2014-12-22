@@ -12,7 +12,6 @@ import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import is.hello.sense.util.Logger;
 import rx.Observable;
-import rx.functions.Action1;
 
 /**
  * Semi-high level wrapper around a Peripheral. Provides generic connection and subscription functionality.
