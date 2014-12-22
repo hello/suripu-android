@@ -173,7 +173,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
             itemView.setStripeRounding(stripeRounding);
 
             if (segment.getEventType() != null) {
-                itemView.setEventResource(segment.getEventType().iconRes);
+                itemView.setEventResource(Styles.getTimelineSegmentIconRes(segment));
                 itemView.setText(segment.getEventType().nameString);
             } else {
                 itemView.setEventDrawable(null);

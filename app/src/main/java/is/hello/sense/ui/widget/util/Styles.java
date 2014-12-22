@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.WrapperListAdapter;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.TimelineSegment;
 
 public final class Styles {
     public static final String TYPEFACE_BLACK = "fonts/AvenirLTCom-Black.ttf";
@@ -73,6 +74,64 @@ public final class Styles {
 
     public static int getSleepScoreBorderColor(@NonNull Context context, int sleepScore) {
         return context.getResources().getColor(getSleepScoreBorderColorRes(sleepScore));
+    }
+
+
+    public static @DrawableRes int getTimelineSegmentIconRes(@NonNull TimelineSegment segment) {
+        switch (segment.getEventType()) {
+            case MOTION: {
+                return R.drawable.timeline_movement;
+            }
+
+            case NOISE: {
+                return R.drawable.timeline_sound;
+            }
+
+            case SNORING: {
+                return R.drawable.timeline_sound;
+            }
+
+            case SLEEP_TALK: {
+                return R.drawable.timeline_sound;
+            }
+
+            case LIGHT: {
+                return R.drawable.timeline_light;
+            }
+
+            case LIGHTS_OUT: {
+                return R.drawable.timeline_light;
+            }
+
+            case SLEEP_MOTION: {
+                return R.drawable.timeline_movement;
+            }
+
+            case SLEEP: {
+                return R.drawable.timeline_fell_asleep;
+            }
+
+            case SUNSET: {
+                return R.drawable.timeline_sunset;
+            }
+
+            case SUNRISE: {
+                return R.drawable.timeline_sunrise;
+            }
+
+            case PARTNER_MOTION: {
+                return R.drawable.timeline_movement;
+            }
+
+            case WAKE_UP: {
+                return R.drawable.timeline_movement;
+            }
+
+            default:
+            case UNKNOWN: {
+                return R.drawable.timeline_movement;
+            }
+        }
     }
 
 

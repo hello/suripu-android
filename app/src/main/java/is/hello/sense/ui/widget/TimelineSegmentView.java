@@ -47,7 +47,6 @@ public final class TimelineSegmentView extends View {
     private final Paint fillPaint = new Paint();
     private final Path stripePath = new Path();
     private final Paint stripePaint = new Paint();
-    private final Paint eventOvalPaint = new Paint();
 
     //endregion
 
@@ -90,8 +89,6 @@ public final class TimelineSegmentView extends View {
         textPaint.setTypeface(Typeface.createFromAsset(getContext().getAssets(), Styles.TYPEFACE_LIGHT));
 
         stripePaint.setAntiAlias(true);
-        eventOvalPaint.setAntiAlias(true);
-        eventOvalPaint.setColor(Color.WHITE);
 
         this.leftInset = resources.getDimension(R.dimen.view_timeline_segment_left_inset);
         this.rightInset = resources.getDimension(R.dimen.view_timeline_segment_right_inset);
@@ -169,8 +166,6 @@ public final class TimelineSegmentView extends View {
             float drawableHeight = eventDrawable.getIntrinsicHeight();
 
             rect.set(minX, midY - stripeMidPoint, stripeMaxX, midY + stripeMidPoint);
-            rect.inset(ovalInset, ovalInset);
-            canvas.drawOval(rect, eventOvalPaint);
 
             eventDrawable.setBounds(
                     Math.round(stripeMidX - drawableWidth / 2f),

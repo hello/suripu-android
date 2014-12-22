@@ -100,10 +100,10 @@ public class TimelineSegment extends ApiResponse {
         @JsonProperty("url")
         private String url;
 
-        @JsonProperty("durationMillis")
+        @JsonProperty("duration_millis")
         private Integer durationMillis;
 
-        @JsonProperty("empty")
+        @JsonProperty("is_empty")
         private boolean empty;
 
         public String getUrl() {
@@ -130,19 +130,19 @@ public class TimelineSegment extends ApiResponse {
 
 
     public static enum EventType {
-        MOTION(R.drawable.movement_medium, R.string.event_type_motion),
-        NOISE(R.drawable.sound_medium, R.string.event_type_noise),
-        SNORING(R.drawable.sound_medium, R.string.event_type_snoring),
-        SLEEP_TALK(R.drawable.sound_medium, R.string.event_type_sleep_talk),
-        LIGHT(R.drawable.light_medium, R.string.event_type_light),
-        LIGHTS_OUT(R.drawable.light_good, R.string.event_type_lights_out),
-        SLEEP_MOTION(R.drawable.movement_medium, R.string.event_type_sleep_motion),
-        SLEEP(R.drawable.asleep, R.string.event_type_sleep),
-        SUNSET(R.drawable.sunset, R.string.event_type_sunset),
-        SUNRISE(R.drawable.sunrise, R.string.event_type_sunrise),
-        PARTNER_MOTION(R.drawable.movement_medium, R.string.event_type_partner_moved),
-        WAKE_UP(R.drawable.wakeup, R.string.event_type_wake_up),
-        UNKNOWN(R.drawable.movement_medium, R.string.event_type_unknown);
+        MOTION(R.string.event_type_motion),
+        NOISE(R.string.event_type_noise),
+        SNORING(R.string.event_type_snoring),
+        SLEEP_TALK(R.string.event_type_sleep_talk),
+        LIGHT(R.string.event_type_light),
+        LIGHTS_OUT(R.string.event_type_lights_out),
+        SLEEP_MOTION(R.string.event_type_sleep_motion),
+        SLEEP(R.string.event_type_sleep),
+        SUNSET(R.string.event_type_sunset),
+        SUNRISE(R.string.event_type_sunrise),
+        PARTNER_MOTION(R.string.event_type_partner_moved),
+        WAKE_UP(R.string.event_type_wake_up),
+        UNKNOWN(R.string.event_type_unknown);
 
         @JsonCreator
         @SuppressWarnings("UnusedDeclaration")
@@ -153,11 +153,9 @@ public class TimelineSegment extends ApiResponse {
                 return Enums.fromString(value, values(), UNKNOWN);
         }
 
-        public final @DrawableRes int iconRes;
         public final @StringRes int nameString;
 
-        private EventType(@DrawableRes int iconRes, @StringRes int nameString) {
-            this.iconRes = iconRes;
+        private EventType(@StringRes int nameString) {
             this.nameString = nameString;
         }
     }
