@@ -33,6 +33,7 @@ import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
@@ -109,7 +110,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
-        listView.setOnScrollListener(new TimelineScrollListener());
+        ListViews.setTouchAndScrollListener(listView, new TimelineScrollListener());
         listView.setOnItemClickListener(this);
 
 
@@ -315,7 +316,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     //region Time Scrubber
 
     private void snapInTimeScrubber() {
+        PropertyAnimatorProxy.stop(timeScrubber);
         fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
+
         timeScrubber.setAlpha(1f);
         timeScrubber.setVisibility(View.VISIBLE);
     }
@@ -340,6 +343,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                     .fadeOut(View.INVISIBLE)
                     .start();
         }
+    }
+
+    private void scheduleFadeOutTimeScrubber() {
+        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
+        fadeOutHandler.sendEmptyMessageDelayed(MESSAGE_FADE_OUT, MESSAGE_FADE_OUT_DELAY);
     }
 
     private void updateTimeScrubber() {
@@ -375,34 +383,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
 
-    private class TimelineScrollListener implements AbsListView.OnScrollListener {
+    private class TimelineScrollListener extends ListViews.TouchAndScrollListener {
         @Override
-        public void onScrollStateChanged(AbsListView listView, int newState) {
+        protected void onScrollStateChanged(@NonNull AbsListView absListView, int oldState, int newState) {
             if (segmentAdapter.getCount() > 0) {
-                switch (newState) {
-                    case AbsListView.OnScrollListener.SCROLL_STATE_FLING: {
-                        snapInTimeScrubber();
-
-                        break;
-                    }
-
-                    case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL: {
-                        updateTimeScrubber();
-                        fadeInTimeScrubber();
-
-                        break;
-                    }
-
-                    case AbsListView.OnScrollListener.SCROLL_STATE_IDLE: {
-                        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
-                        fadeOutHandler.sendEmptyMessageDelayed(MESSAGE_FADE_OUT, MESSAGE_FADE_OUT_DELAY);
-
-                        break;
-                    }
-
-                    default: {
-                        break;
-                    }
+                if (newState == SCROLL_STATE_FLING) {
+                    snapInTimeScrubber();
+                } else if (newState == SCROLL_STATE_IDLE && oldState == SCROLL_STATE_FLING) {
+                    scheduleFadeOutTimeScrubber();
                 }
             }
         }
@@ -412,6 +400,16 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             if (segmentAdapter.getCount() > 0) {
                 updateTimeScrubber();
             }
+        }
+
+        @Override
+        protected void onTouchDown(@NonNull AbsListView absListView) {
+            fadeInTimeScrubber();
+        }
+
+        @Override
+        protected void onTouchUp(@NonNull AbsListView absListView) {
+            scheduleFadeOutTimeScrubber();
         }
     }
 

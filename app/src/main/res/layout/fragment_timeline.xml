@@ -11,6 +11,7 @@
         android:divider="@null"
         android:dividerHeight="0dp"
         android:listSelector="@color/transparent"
+        android:scrollbars="none"
         android:background="@color/background_timeline"/>
 
     <is.hello.sense.ui.widget.TimestampTextView
