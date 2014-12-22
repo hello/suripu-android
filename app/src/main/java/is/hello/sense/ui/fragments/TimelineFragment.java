@@ -68,7 +68,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private TextView dateText;
     private PieGraphView scoreGraph;
     private TextView scoreText;
-    private TextView messageTextLabel;
     private TextView messageText;
 
     private TextView timelineEventsHeader;
@@ -112,7 +111,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.scoreGraph = (PieGraphView) headerView.findViewById(R.id.fragment_timeline_sleep_score_chart);
         this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
-        this.messageTextLabel = (TextView) headerView.findViewById(R.id.fragment_timeline_message_label);
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
@@ -166,10 +164,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         subscribe(boundMainTimeline, this::bindTimeline, this::timelineUnavailable);
 
         Observable<List<TimelineSegment>> segments = boundMainTimeline.map(timeline -> {
-            if (timeline != null)
+            if (timeline != null) {
                 return timeline.getSegments();
-            else
+            } else {
                 return Collections.emptyList();
+            }
         });
         subscribe(segments, segmentAdapter::bindSegments, segmentAdapter::handleError);
 
@@ -236,13 +235,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
 
             if (timeline.getSegments().isEmpty()) {
-                messageTextLabel.setVisibility(View.INVISIBLE);
-                messageText.setGravity(Gravity.CENTER);
                 timelineEventsHeader.setVisibility(View.INVISIBLE);
             } else {
                 timelineEventsHeader.setVisibility(View.VISIBLE);
-                messageTextLabel.setVisibility(View.VISIBLE);
-                messageText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 
                 bindAndSubscribe(Views.observeNextLayout(listView), ignored -> {
                     this.totalHeaderHeight = headerView.getMeasuredHeight() + timelineEventsHeader.getMeasuredHeight();
@@ -261,9 +256,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         } else {
             scoreGraph.setTrackColor(getResources().getColor(R.color.border));
 
-            messageTextLabel.setVisibility(View.INVISIBLE);
-            messageText.setGravity(Gravity.CENTER);
-
             showInsights(Collections.emptyList());
             timelineEventsHeader.setVisibility(View.INVISIBLE);
 
@@ -275,9 +267,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         scoreGraph.setTrackColor(getResources().getColor(R.color.border));
         scoreGraph.setValue(0);
         scoreText.setText(R.string.missing_data_placeholder);
-
-        messageTextLabel.setVisibility(View.INVISIBLE);
-        messageText.setGravity(Gravity.CENTER);
 
         if (e != null) {
             messageText.setText(getString(R.string.timeline_error_message, e.getMessage()));
