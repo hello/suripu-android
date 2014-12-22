@@ -4,17 +4,22 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_timeline_footer">
+    android:background="@drawable/background_timeline_before_sleep">
 
     <TextView
         android:id="@+id/fragment_timeline_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/gap_outer"
-        android:paddingLeft="@dimen/gap_outer"
-        android:paddingRight="@dimen/gap_outer"
+        android:padding="@dimen/gap_outer"
         android:textAllCaps="true"
+        android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.SectionHeading"
         android:text="@string/title_before_you_slept"/>
+
+    <LinearLayout
+        android:id="@+id/fragment_timeline_before_sleep_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" />
 
 </LinearLayout>
