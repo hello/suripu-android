@@ -78,6 +78,10 @@ public final class Styles {
 
 
     public static @DrawableRes int getTimelineSegmentIconRes(@NonNull TimelineSegment segment) {
+        if (segment.getEventType() == null) {
+            return 0;
+        }
+
         switch (segment.getEventType()) {
             case MOTION: {
                 return R.drawable.timeline_movement;

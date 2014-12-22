@@ -19,6 +19,8 @@
     <color name="border">#dcdcdc</color>
     <color name="shadow_end">#18000000</color>
 
+    <color name="timeline_segment_stripe">#19009CFF</color>
+
 
     <color name="text_dark">#4D4D4D</color>
     <color name="text_dim">#77000000</color>

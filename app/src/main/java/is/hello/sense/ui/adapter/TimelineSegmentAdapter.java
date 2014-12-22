@@ -144,11 +144,11 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
         SegmentViewHolder segmentViewHolder = (SegmentViewHolder) view.getTag();
 
-        TimelineSegmentView.StripeRounding segmentPosition = TimelineSegmentView.StripeRounding.NONE;
+        TimelineSegmentView.StripeInset segmentPosition = TimelineSegmentView.StripeInset.NONE;
         if (position == 0) {
-            segmentPosition = TimelineSegmentView.StripeRounding.TOP;
+            segmentPosition = TimelineSegmentView.StripeInset.TOP;
         } else if (position == getCount() - 1) {
-            segmentPosition = TimelineSegmentView.StripeRounding.BOTTOM;
+            segmentPosition = TimelineSegmentView.StripeInset.BOTTOM;
         }
 
         TimelineSegment segment = getItem(position);
@@ -167,18 +167,12 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
         //region Displaying Data
 
-        public void displaySegment(@NonNull TimelineSegment segment, @NonNull TimelineSegmentView.StripeRounding stripeRounding) {
+        public void displaySegment(@NonNull TimelineSegment segment, @NonNull TimelineSegmentView.StripeInset stripeInset) {
             int sleepDepth = segment.getSleepDepth() < 0 ? 0 : segment.getSleepDepth();
             itemView.setSleepDepth(sleepDepth);
-            itemView.setStripeRounding(stripeRounding);
-
-            if (segment.getEventType() != null) {
-                itemView.setEventResource(Styles.getTimelineSegmentIconRes(segment));
-                itemView.setText(segment.getEventType().nameString);
-            } else {
-                itemView.setEventDrawable(null);
-                itemView.setText(null);
-            }
+            itemView.setStripeInset(stripeInset);
+            itemView.setRounded(segment.getEventType() != null);
+            itemView.setEventResource(Styles.getTimelineSegmentIconRes(segment));
         }
     }
 }
