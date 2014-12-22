@@ -3,9 +3,9 @@ package is.hello.sense.ui.fragments;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,11 +34,11 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
-import is.hello.sense.ui.widget.util.ListViews;
-import is.hello.sense.ui.widget.graphing.PieGraphView;
 import is.hello.sense.ui.widget.SlidingLayersView;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.TimestampTextView;
+import is.hello.sense.ui.widget.graphing.PieGraphView;
+import is.hello.sense.ui.widget.util.ListViews;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -49,6 +49,8 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
 
+    private static final int MESSAGE_FADE_OUT = 0;
+    private static final long MESSAGE_FADE_OUT_DELAY = 150;
 
     @Inject DateFormatter dateFormatter;
     @Inject TimelinePresenter timelinePresenter;
@@ -72,6 +74,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private TextView timelineEventsHeader;
     private LinearLayout insightsContainer;
+
+    private final Handler fadeOutHandler = new Handler(message -> {
+        fadeOutTimeScrubber();
+        return true;
+    });
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -177,6 +184,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -250,7 +264,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
                     updateTimeScrubber();
                     timeScrubber.forceLayout(); // Does not happen implicitly
-                    animate(timeScrubber).fadeIn().startAfterLayout();
                 }, Functions.LOG_ERROR);
             }
         } else {
@@ -309,6 +322,37 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         Analytics.trackEvent(Analytics.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.PROP_TIMELINE_ACTION, Analytics.PROP_TIMELINE_ACTION_TAP_EVENT));
     }
 
+
+    //region Time Scrubber
+
+    private void snapInTimeScrubber() {
+        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
+        timeScrubber.setAlpha(1f);
+        timeScrubber.setVisibility(View.VISIBLE);
+    }
+
+    private void fadeInTimeScrubber() {
+        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
+
+        if (timeScrubber.getVisibility() == View.INVISIBLE) {
+            animate(timeScrubber)
+                    .setDuration(Animations.DURATION_MINIMUM)
+                    .fadeIn()
+                    .start();
+        }
+    }
+
+    private void fadeOutTimeScrubber() {
+        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
+
+        if (timeScrubber.getAlpha() == 1f) {
+            animate(timeScrubber)
+                    .setDuration(Animations.DURATION_MINIMUM)
+                    .fadeOut(View.INVISIBLE)
+                    .start();
+        }
+    }
+
     private void updateTimeScrubber() {
         View topView = listView.getChildAt(0);
 
@@ -354,8 +398,32 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private class TimelineScrollListener implements AbsListView.OnScrollListener {
         @Override
         public void onScrollStateChanged(AbsListView listView, int newState) {
-            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && segmentAdapter.getCount() > 0) {
-                updateTimeScrubber();
+            if (segmentAdapter.getCount() > 0) {
+                switch (newState) {
+                    case AbsListView.OnScrollListener.SCROLL_STATE_FLING: {
+                        snapInTimeScrubber();
+
+                        break;
+                    }
+
+                    case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL: {
+                        updateTimeScrubber();
+                        fadeInTimeScrubber();
+
+                        break;
+                    }
+
+                    case AbsListView.OnScrollListener.SCROLL_STATE_IDLE: {
+                        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
+                        fadeOutHandler.sendEmptyMessageDelayed(MESSAGE_FADE_OUT, MESSAGE_FADE_OUT_DELAY);
+
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
             }
         }
 
@@ -366,4 +434,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             }
         }
     }
+
+    //endregion
 }
