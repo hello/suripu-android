@@ -55,11 +55,11 @@ public class PreSleepInsight extends ApiResponse {
 
     public static enum Sensor {
         TEMPERATURE(R.drawable.before_sleep_insight_temperature),
-        HUMIDITY(R.drawable.before_sleep_insight_temperature),
-        PARTICULATES(R.drawable.before_sleep_insight_temperature),
-        SOUND(R.drawable.before_sleep_insight_phone),
-        LIGHT(R.drawable.before_sleep_insight_temperature),
-        UNKNOWN(R.drawable.before_sleep_insight_temperature);
+        HUMIDITY(R.drawable.before_sleep_insight_humidity),
+        PARTICULATES(R.drawable.before_sleep_insight_particulates),
+        SOUND(R.drawable.before_sleep_insight_sound),
+        LIGHT(R.drawable.before_sleep_insight_light),
+        UNKNOWN(R.drawable.before_sleep_insight_phone);
 
         public final @DrawableRes int iconRes;
 

@@ -107,10 +107,6 @@ public class TimelineNavigatorPresenter extends Presenter {
         }
     }
 
-    public Observable<Integer> scoreForDate(@NonNull DateTime date) {
-        return timelineForDate(date).flatMap(t -> Observable.just(t.getScore()));
-    }
-
 
     //region For Tests
 

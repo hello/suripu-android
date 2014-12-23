@@ -15,6 +15,7 @@ import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class MiniTimelineView extends View {
+    private final Paint fillPaint = new Paint();
     private final Paint linePaint = new Paint();
     private final int stripeWidth;
 
@@ -33,6 +34,7 @@ public class MiniTimelineView extends View {
         super(context, attrs, defStyleAttr);
 
         this.stripeWidth = getResources().getDimensionPixelSize(R.dimen.view_mini_timeline_stripe_width);
+        linePaint.setColor(getResources().getColor(R.color.timeline_segment_stripe));
     }
 
 
@@ -40,6 +42,7 @@ public class MiniTimelineView extends View {
     protected void onDraw(Canvas canvas) {
         int width = canvas.getWidth();
         int height = canvas.getHeight();
+        float midX = width / 2f;
         Resources resources = getResources();
 
         if (timelineSegments != null && !timelineSegments.isEmpty()) {
@@ -49,25 +52,18 @@ public class MiniTimelineView extends View {
             for (TimelineSegment segment : timelineSegments) {
                 int sleepDepth = segment.getSleepDepth();
                 float segmentWidth = width * (sleepDepth / 100f);
+                float segmentMidX = segmentWidth / 2f;
 
                 int dimmedColor = resources.getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth));
-                linePaint.setColor(dimmedColor);
+                fillPaint.setColor(dimmedColor);
 
-                canvas.drawRect(0f, y, segmentWidth, y + segmentHeight, linePaint);
-
-                int stripeColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
-                linePaint.setColor(stripeColor);
-
-                canvas.drawRect(0f, y, stripeWidth, y + segmentHeight, linePaint);
+                canvas.drawRect(midX - segmentMidX, y, midX + segmentMidX, y + segmentHeight, fillPaint);
 
                 y += segmentHeight;
             }
-        } else {
-            int stripeColor = resources.getColor(R.color.sleep_awake_dimmed);
-            linePaint.setColor(stripeColor);
-
-            canvas.drawRect(0f, 0f, stripeWidth, height, linePaint);
         }
+
+        canvas.drawRect(midX - (stripeWidth / 2f), 0f, midX + (stripeWidth / 2f), height, linePaint);
     }
 
 

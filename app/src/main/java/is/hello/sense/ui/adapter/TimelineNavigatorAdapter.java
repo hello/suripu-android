@@ -13,6 +13,7 @@ import android.widget.TextView;
 import org.joda.time.DateTime;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Timeline;
 import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.ui.widget.MiniTimelineView;
 import is.hello.sense.ui.widget.graphing.SimplePieDrawable;
@@ -133,20 +134,24 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
         }
 
 
-        void setSleepScore(int sleepScore) {
-            pieDrawable.setTrackColor(Color.TRANSPARENT);
-            if (sleepScore == ERROR_MARKER) {
+        void setTimeline(@Nullable Timeline timeline) {
+            if (timeline == null) {
                 int sleepScoreColor = context.getResources().getColor(R.color.sensor_warning);
                 score.setText(R.string.missing_data_placeholder);
                 score.setTextColor(sleepScoreColor);
                 pieDrawable.setFillColor(sleepScoreColor);
                 pieDrawable.setValue(100);
+
+                this.timeline.setTimelineSegments(null);
             } else {
+                int sleepScore = timeline.getScore();
                 int sleepScoreColor = Styles.getSleepScoreColor(context, sleepScore);
                 score.setText(Integer.toString(sleepScore));
                 score.setTextColor(sleepScoreColor);
                 pieDrawable.setFillColor(sleepScoreColor);
                 pieDrawable.setValue(sleepScore);
+
+                this.timeline.setTimelineSegments(timeline.getSegments());
             }
         }
 
@@ -168,9 +173,9 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
 
         void populate() {
             if (loading == null && date != null) {
-                this.loading = presenter.scoreForDate(date)
+                this.loading = presenter.timelineForDate(date)
                                         .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(this::setSleepScore, ignored -> setSleepScore(ERROR_MARKER));
+                                        .subscribe(this::setTimeline, ignored -> setTimeline(null));
             }
         }
     }
