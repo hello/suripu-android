@@ -45,18 +45,6 @@ public interface BluetoothStack {
     <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe);
 
     /**
-     * Vends an operation timeout object for use with a Peripheral created by this stack.
-     * <p/>
-     * An object pool is recommended for implementations of {@see OperationTimeout}.
-     * Typical high level uses require at most two concurrent instances.
-     * @param name      The name of the timeout.
-     * @param duration  The duration of the timeout.
-     * @param timeUnit  The unit of the duration.
-     * @return An object implementing OperationTimeout ready for use.
-     */
-    OperationTimeout acquireOperationTimeout(@NonNull String name, long duration, TimeUnit timeUnit);
-
-    /**
      * Returns an observable that will continuously report the enabled state of the bluetooth stack.
      * <p/>
      * This seems like something that would work predictably outside of the context of the wrapper,

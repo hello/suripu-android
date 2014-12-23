@@ -14,6 +14,8 @@ import is.hello.sense.functional.Lists;
 import rx.Observable;
 
 public class TestPeripheral implements Peripheral {
+    final TestOperationTimeout.Pool pool = new TestOperationTimeout.Pool();
+
     final BluetoothStack stack;
     final TestPeripheralBehavior behavior;
 
@@ -35,6 +37,12 @@ public class TestPeripheral implements Peripheral {
 
         Observable<T> observable = value.<Observable<T>>map(Observable::just, Observable::error);
         return observable.delay(behavior.latency, TimeUnit.MILLISECONDS);
+    }
+
+    @NonNull
+    @Override
+    public OperationTimeout.Pool getOperationTimeoutPool() {
+        return pool;
     }
 
     @Override

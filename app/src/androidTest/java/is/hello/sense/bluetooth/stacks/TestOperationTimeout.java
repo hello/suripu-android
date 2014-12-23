@@ -2,6 +2,8 @@ package is.hello.sense.bluetooth.stacks;
 
 import android.support.annotation.NonNull;
 
+import java.util.concurrent.TimeUnit;
+
 import rx.Scheduler;
 import rx.functions.Action0;
 
@@ -98,5 +100,13 @@ public final class TestOperationTimeout implements OperationTimeout {
                 ", wasUnscheduled=" + wasUnscheduled +
                 ", wasRecycled=" + wasRecycled +
                 '}';
+    }
+
+
+    public static class Pool implements OperationTimeout.Pool {
+        @Override
+        public OperationTimeout acquire(@NonNull String name, long duration, TimeUnit timeUnit) {
+            return new TestOperationTimeout(name);
+        }
     }
 }

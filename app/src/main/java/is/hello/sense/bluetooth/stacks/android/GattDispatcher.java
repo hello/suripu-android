@@ -13,15 +13,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import is.hello.sense.bluetooth.errors.BluetoothEarlyDisconnectError;
+import is.hello.sense.bluetooth.errors.BluetoothGattError;
+import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.util.Logger;
+import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Action2;
 import rx.functions.Action3;
 
 class GattDispatcher extends BluetoothGattCallback {
     private final List<ConnectionStateListener> connectionStateListeners = new ArrayList<>();
+    private final List<Action0> disconnectListeners = new ArrayList<>();
     private final Handler dispatcher = new Handler(Looper.getMainLooper());
 
     @Nullable PacketHandler packetHandler;
@@ -31,6 +36,45 @@ class GattDispatcher extends BluetoothGattCallback {
 
     void addConnectionStateListener(@NonNull ConnectionStateListener changeHandler) {
         connectionStateListeners.add(changeHandler);
+    }
+
+    Action0 addDisconnectListener(@NonNull Action0 disconnectListener) {
+        disconnectListeners.add(disconnectListener);
+        return disconnectListener;
+    }
+
+    <T> Action0 addTimeoutDisconnectListener(@NonNull Subscriber<T> subscriber, @NonNull OperationTimeout timeout) {
+        return addDisconnectListener(() -> {
+            Logger.info(Peripheral.LOG_TAG, "onDisconnectListener(" + subscriber.hashCode() + ")");
+
+            timeout.unschedule();
+            timeout.recycle();
+
+            subscriber.onError(new BluetoothEarlyDisconnectError());
+        });
+    }
+
+    void removeDisconnectListener(@NonNull Action0 disconnectListener) {
+        disconnectListeners.remove(disconnectListener);
+    }
+
+    void dispatchDisconnect() {
+        dispatcher.post(() -> {
+            Logger.info(Peripheral.LOG_TAG, "dispatchDisconnect()");
+
+            this.onServicesDiscovered = null;
+            this.onCharacteristicWrite = null;
+            this.onDescriptorWrite = null;
+
+            for (Action0 onDisconnect : disconnectListeners) {
+                onDisconnect.call();
+            }
+            disconnectListeners.clear();
+
+            if (packetHandler != null) {
+                packetHandler.onTransportDisconnected();
+            }
+        });
     }
 
     @Override

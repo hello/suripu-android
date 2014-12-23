@@ -16,10 +16,7 @@ import rx.functions.Action0;
  * Simple implementation of {@see OperationTimeout} that uses deferred workers.
  */
 public final class SchedulerOperationTimeout implements OperationTimeout {
-    /**
-     * One timeout for stack operations, one timeout for a wrapper interface.
-     */
-    static final int OBJECT_POOL_SIZE = 2;
+    private final Pool pool;
 
     private boolean isInPool = true;
 
@@ -33,8 +30,8 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
 
     //region Lifecycle
 
-    private SchedulerOperationTimeout() {
-
+    private SchedulerOperationTimeout(@NonNull Pool pool) {
+        this.pool = pool;
     }
 
     private SchedulerOperationTimeout init(@NonNull String name, long duration, @NonNull TimeUnit timeUnit) {
@@ -43,28 +40,6 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
         this.isInPool = false;
 
         return this;
-    }
-
-    private static final List<SchedulerOperationTimeout> pool = new ArrayList<>(OBJECT_POOL_SIZE);
-    static {
-        for (int i = 0; i < OBJECT_POOL_SIZE; i++) {
-            pool.add(new SchedulerOperationTimeout());
-        }
-    }
-
-    public static SchedulerOperationTimeout acquire(@NonNull String name, long duration, @NonNull TimeUnit timeUnit) {
-        Logger.info(LOG_TAG, "Vending time out '" + name + "' (" + pool.size() + " objects available)");
-
-        if (pool.isEmpty()) {
-            throw new IllegalStateException("SchedulerOperationTimeout object pool exhausted, cannot vend '" + name + "'");
-        }
-
-        SchedulerOperationTimeout timeout = pool.get(0);
-        pool.remove(0);
-
-        Logger.info(LOG_TAG, "Pool now contains " + pool.size() + " available objects");
-
-        return timeout.init(name, duration, timeUnit);
     }
 
     //endregion
@@ -116,7 +91,7 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
     @Override
     public void recycle() {
         if (isInPool) {
-            throw new IllegalStateException("Recycle called on already recycled timeout");
+            throw new IllegalStateException("Recycle called on already recycled timeout '" + name + "'");
         }
 
         Logger.info(LOG_TAG, "Recycling time out '" + name + "'");
@@ -126,15 +101,12 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
             throw new IllegalStateException("Recycle called on scheduled operation.");
         }
 
-        this.name = null;
         this.durationMs = 0;
         this.action = null;
         this.scheduler = null;
 
         this.isInPool = true;
-        pool.add(0, this);
-
-        Logger.info(LOG_TAG, "Pool now contains " + pool.size() + " available objects");
+        pool.recycle(this);
     }
 
 
@@ -147,5 +119,50 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
                 ", scheduler=" + scheduler +
                 ", subscription=" + subscription +
                 '}';
+    }
+
+
+    public static class Pool implements OperationTimeout.Pool {
+        private final String name;
+        private final List<SchedulerOperationTimeout> timeouts;
+
+        public Pool(@NonNull String name, int size) {
+            this.name = name;
+            this.timeouts = new ArrayList<>(size);
+            for (int i = 0; i < size; i++) {
+                timeouts.add(new SchedulerOperationTimeout(this));
+            }
+        }
+
+
+        @Override
+        public OperationTimeout acquire(@NonNull String name, long duration, TimeUnit timeUnit) {
+            Logger.info(LOG_TAG, "Vending time out '" + name + "' (" + timeouts.size() + " objects available in '" + this.name + "')");
+
+            if (timeouts.isEmpty()) {
+                throw new IllegalStateException("Pool '" + this.name + "' exhausted, cannot vend '" + name + "'");
+            }
+
+            SchedulerOperationTimeout timeout = timeouts.get(0);
+            timeouts.remove(0);
+
+            Logger.info(LOG_TAG, "Pool now contains " + timeouts.size() + " available in '" + this.name + "')");
+
+            return timeout.init(name, duration, timeUnit);
+        }
+
+        private void recycle(@NonNull SchedulerOperationTimeout timeout) {
+            timeouts.add(timeout);
+            Logger.info(LOG_TAG, "Pool now contains " + timeouts.size() + " available in '" + this.name + "')");
+        }
+
+
+        @Override
+        public String toString() {
+            return "Pool{" +
+                    "name='" + name + '\'' +
+                    ", availableObjects=" + timeouts.size() +
+                    '}';
+        }
     }
 }
