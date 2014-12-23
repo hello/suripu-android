@@ -8,10 +8,7 @@
 
     <item android:bottom="@dimen/divider_size">
         <shape android:shape="rectangle">
-            <gradient
-                android:angle="-90"
-                android:startColor="#FFFFFF"
-                android:endColor="#F5F6F7" />
+            <solid android:color="@color/white" />
         </shape>
     </item>
 </layer-list>

@@ -11,16 +11,29 @@
         android:divider="@null"
         android:dividerHeight="0dp"
         android:listSelector="@color/transparent"
+        android:scrollbars="none"
         android:background="@color/background_timeline"/>
 
     <is.hello.sense.ui.widget.TimestampTextView
         android:id="@+id/fragment_timeline_scrubber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_medium"
+        android:layout_marginLeft="@dimen/gap_medium"
+        android:layout_marginRight="@dimen/gap_medium"
+        android:layout_marginTop="@dimen/gap_outer"
+        android:layout_marginBottom="@dimen/gap_outer"
         android:layout_gravity="top|end"
         android:gravity="center"
         android:visibility="invisible"
         style="@style/AppTheme.Text.Timestamp"/>
+
+    <ImageButton
+        android:id="@+id/fragment_timeline_smart_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:src="@drawable/timeline_smart_alarm"
+        android:contentDescription="@string/title_smart_alarm"
+        style="@style/AppTheme.Button.Borderless"/>
 
 </FrameLayout>

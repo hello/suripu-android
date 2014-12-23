@@ -2,16 +2,18 @@ package is.hello.sense.ui.fragments;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -32,47 +34,61 @@ import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
-import is.hello.sense.ui.widget.util.ListViews;
-import is.hello.sense.ui.widget.graphing.PieGraphView;
 import is.hello.sense.ui.widget.SlidingLayersView;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.TimestampTextView;
+import is.hello.sense.ui.widget.graphing.PieGraphView;
+import is.hello.sense.ui.widget.util.ListViews;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Markdown;
+import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
 
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
 
+    private static final int MESSAGE_FADE_OUT = 0;
+    private static final long MESSAGE_FADE_OUT_DELAY = 150;
 
     @Inject DateFormatter dateFormatter;
     @Inject TimelinePresenter timelinePresenter;
+    @Inject Markdown markdown;
 
     private ListView listView;
     private TimelineSegmentAdapter segmentAdapter;
 
     private TimestampTextView timeScrubber;
-    private int timeScrubberTopMargin = 0;
-    private boolean headerTallerThanList = false;
-    private int totalHeaderHeight = 0;
-    private int listViewContentHeight = 0;
+    private float scrollContentAperture;
+    private float timeScrubberTrackHeight;
 
-    private View headerView;
     private ImageButton menuButton;
     private ImageButton shareButton;
+    private ImageButton smartAlarmButton;
+
     private TextView dateText;
     private PieGraphView scoreGraph;
     private TextView scoreText;
-    private TextView messageTextLabel;
     private TextView messageText;
 
     private TextView timelineEventsHeader;
-    private LinearLayout insightsContainer;
+    private LinearLayout beforeSleepHeader;
+    private LinearLayout beforeSleepItemContainer;
+    private TextView beforeSleepMessage;
+    private int selectedBeforeSleepInsight = -1;
+
+    private final Handler fadeOutHandler = new Handler(message -> {
+        fadeOutTimeScrubber();
+        return true;
+    });
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -92,7 +108,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         addPresenter(timelinePresenter);
 
         this.segmentAdapter = new TimelineSegmentAdapter(getActivity());
-        this.timeScrubberTopMargin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
 
         setRetainInstance(true);
     }
@@ -105,14 +120,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
-        listView.setOnScrollListener(new TimelineScrollListener());
         listView.setOnItemClickListener(this);
 
-        this.headerView = inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
+
+        View headerView = inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
 
         this.scoreGraph = (PieGraphView) headerView.findViewById(R.id.fragment_timeline_sleep_score_chart);
         this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
-        this.messageTextLabel = (TextView) headerView.findViewById(R.id.fragment_timeline_message_label);
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
@@ -121,6 +135,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         listView.addHeaderView(headerView, null, false);
 
+        this.beforeSleepHeader = (LinearLayout) inflater.inflate(R.layout.sub_fragment_before_sleep, listView, false);
+        this.beforeSleepItemContainer = (LinearLayout) beforeSleepHeader.findViewById(R.id.fragment_timeline_before_sleep_container);
+        this.beforeSleepMessage = (TextView) beforeSleepHeader.findViewById(R.id.fragment_timeline_before_sleep_message);
+        Animations.Properties.DEFAULT.apply(beforeSleepHeader.getLayoutTransition(), false);
+        beforeSleepHeader.setVisibility(View.GONE);
+        listView.addHeaderView(beforeSleepHeader, null, false);
 
         this.timelineEventsHeader = (TextView) inflater.inflate(R.layout.item_section_header, listView, false);
         timelineEventsHeader.setText(R.string.title_events_timeline);
@@ -146,14 +166,23 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
         });
 
+        this.smartAlarmButton = (ImageButton) view.findViewById(R.id.fragment_timeline_smart_alarm);
+        Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
+            // TODO: This is massively hacky
 
-        this.insightsContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_before_sleep, listView, false);
-        insightsContainer.setVisibility(View.GONE);
-        listView.addFooterView(insightsContainer, null, false);
+            SharedPreferences preferences = getActivity().getSharedPreferences(Constants.INTERNAL_PREFS, 0);
+            preferences.edit()
+                    .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
+                    .putInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 3)
+                    .apply();
+
+            ((HomeActivity) getActivity()).getSlidingLayersView().open();
+        });
 
         // Always do this after adding headers and footer views,
         // we have to support Android versions under 4.4 KitKat.
         listView.setAdapter(segmentAdapter);
+        ListViews.setTouchAndScrollListener(listView, new TimelineScrollListener());
 
         return view;
     }
@@ -166,15 +195,23 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         subscribe(boundMainTimeline, this::bindTimeline, this::timelineUnavailable);
 
         Observable<List<TimelineSegment>> segments = boundMainTimeline.map(timeline -> {
-            if (timeline != null)
+            if (timeline != null) {
                 return timeline.getSegments();
-            else
+            } else {
                 return Collections.emptyList();
+            }
         });
         subscribe(segments, segmentAdapter::bindSegments, segmentAdapter::handleError);
 
         Observable<CharSequence> renderedMessage = timelinePresenter.renderedTimelineMessage;
         bindAndSubscribe(renderedMessage, messageText::setText, this::timelineUnavailable);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
     }
 
     @Override
@@ -190,8 +227,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
 
     public void showSleepScore(int sleepScore) {
-        scoreGraph.setTrackColor(Styles.getSleepScoreBorderColor(getActivity(), sleepScore));
-        scoreGraph.setFillColor(Styles.getSleepScoreColor(getActivity(), sleepScore));
+        int scoreColor = Styles.getSleepScoreColor(getActivity(), sleepScore);
+        scoreGraph.setFillColor(scoreColor);
+        scoreText.setTextColor(scoreColor);
         ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animations.Properties.createWithDelay(250));
         if (updateAnimation != null) {
             updateAnimation.addUpdateListener(a -> {
@@ -205,24 +243,30 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     public void showInsights(@NonNull List<PreSleepInsight> preSleepInsights) {
         if (preSleepInsights.isEmpty()) {
-            insightsContainer.setVisibility(View.GONE);
+            beforeSleepHeader.setVisibility(View.GONE);
         } else {
+            beforeSleepItemContainer.removeViews(0, beforeSleepItemContainer.getChildCount());
+
             LayoutInflater inflater = LayoutInflater.from(getActivity());
+            int dividerWidth = (int) (0.14f * beforeSleepHeader.getMeasuredWidth()); // from comp
+            View.OnClickListener onClick = new SafeOnClickListener(this::showInsight);
+            for (int i = 0, size = preSleepInsights.size(); i < size; i++) {
+                PreSleepInsight preSleepInsight = preSleepInsights.get(i);
 
-            int childCount = insightsContainer.getChildCount();
-            if (childCount > 2) {
-                insightsContainer.removeViews(2, childCount - 2);
+                ImageView insightImage = (ImageView) inflater.inflate(R.layout.item_before_sleep, beforeSleepItemContainer, false);
+                insightImage.setImageDrawable(preSleepInsight.getIcon(getActivity()));
+                insightImage.setTag(i);
+                insightImage.setTag(R.id.fragment_timeline_before_sleep_item_tag_insight, preSleepInsight);
+                insightImage.setOnClickListener(onClick);
+                beforeSleepItemContainer.addView(insightImage);
+
+                if (i != size - 1) {
+                    beforeSleepItemContainer.addView(Styles.createHorizontalDivider(getActivity(), dividerWidth));
+                }
             }
 
-            for (PreSleepInsight preSleepInsight : preSleepInsights) {
-                TextView insightText = (TextView) inflater.inflate(R.layout.item_before_sleep, insightsContainer, false);
-                insightText.setCompoundDrawablesRelativeWithIntrinsicBounds(preSleepInsight.getIconResource(), 0, 0, 0);
-                insightText.setText(preSleepInsight.getMessage());
-                insightsContainer.addView(insightText);
-            }
-
-            insightsContainer.setVisibility(View.VISIBLE);
-            insightsContainer.forceLayout();
+            beforeSleepHeader.setVisibility(View.VISIBLE);
+            beforeSleepHeader.forceLayout();
         }
     }
 
@@ -236,33 +280,20 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
 
             if (timeline.getSegments().isEmpty()) {
-                messageTextLabel.setVisibility(View.INVISIBLE);
-                messageText.setGravity(Gravity.CENTER);
                 timelineEventsHeader.setVisibility(View.INVISIBLE);
             } else {
                 timelineEventsHeader.setVisibility(View.VISIBLE);
-                messageTextLabel.setVisibility(View.VISIBLE);
-                messageText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 
                 bindAndSubscribe(Views.observeNextLayout(listView), ignored -> {
-                    this.totalHeaderHeight = headerView.getMeasuredHeight() + timelineEventsHeader.getMeasuredHeight();
-                    this.headerTallerThanList = headerView.getMeasuredHeight() > listView.getMeasuredHeight();
-                    if (headerTallerThanList) {
-                        this.listViewContentHeight = (listView.getMeasuredHeight() - timelineEventsHeader.getMeasuredHeight());
-                    } else {
-                        this.listViewContentHeight = (listView.getMeasuredHeight() - totalHeaderHeight);
-                    }
+                    this.scrollContentAperture = segmentAdapter.getTotalItemHeight() - listView.getMeasuredHeight();
+                    this.timeScrubberTrackHeight = listView.getMeasuredHeight() - timeScrubber.getMeasuredHeight();
 
                     updateTimeScrubber();
                     timeScrubber.forceLayout(); // Does not happen implicitly
-                    animate(timeScrubber).fadeIn().startAfterLayout();
                 }, Functions.LOG_ERROR);
             }
         } else {
             scoreGraph.setTrackColor(getResources().getColor(R.color.border));
-
-            messageTextLabel.setVisibility(View.INVISIBLE);
-            messageText.setGravity(Gravity.CENTER);
 
             showInsights(Collections.emptyList());
             timelineEventsHeader.setVisibility(View.INVISIBLE);
@@ -275,9 +306,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         scoreGraph.setTrackColor(getResources().getColor(R.color.border));
         scoreGraph.setValue(0);
         scoreText.setText(R.string.missing_data_placeholder);
-
-        messageTextLabel.setVisibility(View.INVISIBLE);
-        messageText.setGravity(Gravity.CENTER);
+        scoreText.setTextColor(getResources().getColor(R.color.text_dark));
 
         if (e != null) {
             messageText.setText(getString(R.string.timeline_error_message, e.getMessage()));
@@ -291,6 +320,22 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     public DateTime getDate() {
         return (DateTime) getArguments().getSerializable(ARG_DATE);
+    }
+
+
+    public void showInsight(@NonNull View sender) {
+        View view = beforeSleepItemContainer.findViewWithTag(selectedBeforeSleepInsight);
+        if (view == sender) {
+            beforeSleepMessage.setText(null);
+            beforeSleepMessage.setVisibility(View.GONE);
+        } else {
+            PreSleepInsight insight = (PreSleepInsight) sender.getTag(R.id.fragment_timeline_before_sleep_item_tag_insight);
+            beforeSleepMessage.setText(insight.getMessage());
+            bindAndSubscribe(markdown.render(insight.getMessage()), beforeSleepMessage::setText, Functions.LOG_ERROR);
+            beforeSleepMessage.setVisibility(View.VISIBLE);
+
+            this.selectedBeforeSleepInsight = (int) sender.getTag();
+        }
     }
 
 
@@ -320,40 +365,101 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         Analytics.trackEvent(Analytics.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.PROP_TIMELINE_ACTION, Analytics.PROP_TIMELINE_ACTION_TAP_EVENT));
     }
 
-    private void updateTimeScrubber() {
-        View topView = listView.getChildAt(0);
 
+    //region Smart Alarm Button
+
+    private void pushSmartAlarmOffScreen() {
+        if (smartAlarmButton.getVisibility() == View.VISIBLE && !isAnimating(smartAlarmButton)) {
+            int contentHeight = listView.getMeasuredHeight();
+
+            animate(smartAlarmButton)
+                    .y(contentHeight)
+                    .addOnAnimationCompleted(finished -> {
+                        if (finished) {
+                            smartAlarmButton.setVisibility(View.INVISIBLE);
+                        }
+                    })
+                    .start();
+        }
+    }
+
+    private void pullSmartAlarmOnScreen() {
+        if (smartAlarmButton.getVisibility() == View.INVISIBLE) {
+            int contentHeight = listView.getMeasuredHeight();
+            int buttonHeight = smartAlarmButton.getMeasuredHeight();
+
+            smartAlarmButton.setVisibility(View.VISIBLE);
+
+            animate(smartAlarmButton)
+                    .y(contentHeight - buttonHeight)
+                    .start();
+        }
+    }
+
+    //endregion
+
+    //region Time Scrubber
+
+    private void snapInTimeScrubber() {
+        PropertyAnimatorProxy.stop(timeScrubber);
+        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
+
+        timeScrubber.setAlpha(1f);
+        timeScrubber.setVisibility(View.VISIBLE);
+    }
+
+    private void fadeInTimeScrubber() {
+        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
+
+        if (timeScrubber.getVisibility() == View.INVISIBLE) {
+            animate(timeScrubber)
+                    .setDuration(Animations.DURATION_MINIMUM)
+                    .fadeIn()
+                    .start();
+        }
+    }
+
+    private void fadeOutTimeScrubber() {
+        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
+
+        if (timeScrubber.getAlpha() == 1f) {
+            animate(timeScrubber)
+                    .setDuration(Animations.DURATION_MINIMUM)
+                    .fadeOut(View.INVISIBLE)
+                    .start();
+        }
+    }
+
+    private void scheduleFadeOutTimeScrubber() {
+        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
+        fadeOutHandler.sendEmptyMessageDelayed(MESSAGE_FADE_OUT, MESSAGE_FADE_OUT_DELAY);
+    }
+
+    private void updateTimeScrubber() {
         // OnScrollListener will fire immediately after rotation before
         // the list view has laid itself out, have to guard against that.
-        if (topView == null) {
+        if (listView.getChildCount() == 0) {
             return;
         }
 
         int firstVisiblePosition = listView.getFirstVisiblePosition();
         int firstVisibleSegment = ListViews.getAdapterPosition(listView, firstVisiblePosition);
 
-        float scrolledAmount;
-        if (firstVisiblePosition == 0) {
-            scrolledAmount = headerTallerThanList ? 0 : -topView.getTop();
-        } else if (firstVisiblePosition == 1) {
-            scrolledAmount = headerTallerThanList ? 0 : (headerView.getMeasuredHeight() + -topView.getTop());
+        float headerInset;
+        float scrollTop;
+        if (firstVisiblePosition < listView.getHeaderViewsCount()) {
+            headerInset = timelineEventsHeader.getBottom();
+            scrollTop = 0f;
         } else {
+            headerInset = 0f;
+
+            View topView = listView.getChildAt(0);
             float scaleFactor = -topView.getTop() / (float) topView.getMeasuredHeight();
-            float itemsHeight = segmentAdapter.getHeightOfItems(0, firstVisibleSegment, scaleFactor);
-            scrolledAmount = headerTallerThanList ? itemsHeight : (totalHeaderHeight + itemsHeight);
+            scrollTop = segmentAdapter.getHeightOfItems(0, firstVisibleSegment, scaleFactor);
         }
 
-        float multiple = (scrolledAmount / segmentAdapter.getTotalItemHeight());
-        float headerInset = headerTallerThanList ? headerView.getBottom() : headerView.getMeasuredHeight();
-        float timestampY = (timeScrubberTopMargin + headerInset) + (listViewContentHeight * multiple);
-
-        if (insightsContainer.getParent() != null) {
-            int insightsVisibleHeight = listView.getMeasuredHeight() - insightsContainer.getTop();
-            int amountVisible = insightsVisibleHeight / insightsContainer.getMeasuredHeight();
-            float extraMarginFraction = timeScrubberTopMargin * amountVisible;
-            timestampY -= insightsVisibleHeight + extraMarginFraction;
-        }
-
+        float multiple = Math.min(1f, scrollTop / scrollContentAperture);
+        float timestampY = headerInset + (timeScrubberTrackHeight * multiple);
 
         int itemPosition = ListViews.getPositionForY(listView, timestampY);
         TimelineSegment segment = segmentAdapter.getItem(itemPosition);
@@ -362,11 +468,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
 
-    private class TimelineScrollListener implements AbsListView.OnScrollListener {
+    private class TimelineScrollListener extends ListViews.TouchAndScrollListener {
         @Override
-        public void onScrollStateChanged(AbsListView listView, int newState) {
-            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && segmentAdapter.getCount() > 0) {
-                updateTimeScrubber();
+        protected void onScrollStateChanged(@NonNull AbsListView absListView, int oldState, int newState) {
+            if (segmentAdapter.getCount() > 0) {
+                if (newState == SCROLL_STATE_FLING) {
+                    snapInTimeScrubber();
+                } else if (newState == SCROLL_STATE_IDLE && oldState == SCROLL_STATE_FLING) {
+                    scheduleFadeOutTimeScrubber();
+                }
             }
         }
 
@@ -375,6 +485,24 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             if (segmentAdapter.getCount() > 0) {
                 updateTimeScrubber();
             }
+
+            if (firstVisiblePosition == 0) {
+                pullSmartAlarmOnScreen();
+            } else {
+                pushSmartAlarmOffScreen();
+            }
+        }
+
+        @Override
+        protected void onTouchDown(@NonNull AbsListView absListView) {
+            fadeInTimeScrubber();
+        }
+
+        @Override
+        protected void onTouchUp(@NonNull AbsListView absListView) {
+            scheduleFadeOutTimeScrubber();
         }
     }
+
+    //endregion
 }

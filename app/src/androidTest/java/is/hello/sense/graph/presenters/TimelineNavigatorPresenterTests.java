@@ -91,14 +91,4 @@ public class TimelineNavigatorPresenterTests extends InjectionTestCase {
         assertEquals(77, secondObserver.getSingle().getScore());
         assertSame(secondObserver.getSingle(), firstObserver.getSingle());
     }
-
-    public void testScoreForDate() throws Exception {
-        Observable<Integer> timeline = presenter.scoreForDate(startTime);
-        SyncObserver<Integer> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, timeline);
-        observer.await();
-
-        assertNull(observer.getError());
-        assertNotNull(observer.getSingle());
-        assertEquals(77, observer.getSingle().intValue());
-    }
 }

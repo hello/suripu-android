@@ -1,5 +1,9 @@
 package is.hello.sense.api.model;
 
+import android.content.Context;
+import android.graphics.LightingColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
@@ -31,8 +35,11 @@ public class PreSleepInsight extends ApiResponse {
         return sensor;
     }
 
-    public @DrawableRes int getIconResource() {
-        return getSensor().getResourceForCondition(getCondition());
+    public Drawable getIcon(@NonNull Context context) {
+        int color = context.getResources().getColor(getCondition().colorRes);
+        Drawable icon = context.getResources().getDrawable(getSensor().iconRes);
+        icon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        return icon;
     }
 
 
@@ -47,40 +54,17 @@ public class PreSleepInsight extends ApiResponse {
 
 
     public static enum Sensor {
-        TEMPERATURE(R.drawable.temperature_good, R.drawable.temperature_medium, R.drawable.temperature_bad),
-        HUMIDITY(R.drawable.humidity_good, R.drawable.humidity_medium, R.drawable.humidity_bad),
-        PARTICULATES(R.drawable.particulates_good, R.drawable.particulates_medium, R.drawable.particulates_bad),
-        SOUND(R.drawable.sound_good, R.drawable.sound_medium, R.drawable.sound_bad),
-        LIGHT(R.drawable.light_good, R.drawable.light_medium, R.drawable.light_bad),
-        UNKNOWN(R.drawable.movement_good, R.drawable.movement_medium, R.drawable.movement_bad);
+        TEMPERATURE(R.drawable.before_sleep_insight_temperature),
+        HUMIDITY(R.drawable.before_sleep_insight_humidity),
+        PARTICULATES(R.drawable.before_sleep_insight_particulates),
+        SOUND(R.drawable.before_sleep_insight_sound),
+        LIGHT(R.drawable.before_sleep_insight_light),
+        UNKNOWN(R.drawable.before_sleep_insight_phone);
 
-        public final @DrawableRes int idealDrawableRes;
-        public final @DrawableRes int warningDrawableRes;
-        public final @DrawableRes int alertDrawableRes;
+        public final @DrawableRes int iconRes;
 
-        public @DrawableRes int getResourceForCondition(Condition condition) {
-            switch (condition) {
-                case IDEAL:
-                    return idealDrawableRes;
-
-                case WARNING:
-                    return warningDrawableRes;
-
-                case ALERT:
-                    return alertDrawableRes;
-
-                default:
-                case UNKNOWN:
-                    return warningDrawableRes;
-            }
-        }
-
-        private Sensor(@DrawableRes int idealDrawableRes,
-                       @DrawableRes int warningDrawableRes,
-                       @DrawableRes int alertDrawableRes) {
-            this.idealDrawableRes = idealDrawableRes;
-            this.warningDrawableRes = warningDrawableRes;
-            this.alertDrawableRes = alertDrawableRes;
+        private Sensor(@DrawableRes int iconRes) {
+            this.iconRes = iconRes;
         }
 
         @JsonCreator

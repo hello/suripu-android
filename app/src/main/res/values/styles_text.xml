@@ -98,8 +98,7 @@
         <item name="android:paddingBottom">@dimen/gap_xsmall</item>
         <item name="android:paddingLeft">@dimen/gap_small</item>
         <item name="android:paddingRight">@dimen/gap_small</item>
-        <item name="android:background">@drawable/timestamp_background</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/text_section_header</item>
         <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
     </style>
 

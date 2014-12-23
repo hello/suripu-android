@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/item_before_sleep_text"
-    android:layout_width="match_parent"
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_before_sleep_image"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="@dimen/gap_outer"
-    android:drawableStart="@drawable/sound_bad"
-    android:drawablePadding="@dimen/gap_outer"
-    android:textAppearance="@style/AppTheme.Text.Body.Light"
-    android:textColor="@color/black"
-    android:text="@string/mock_event_message" />
+    android:scaleType="center"
+    android:src="@drawable/before_sleep_insight_phone"
+    tools:ignore="ContentDescription" />

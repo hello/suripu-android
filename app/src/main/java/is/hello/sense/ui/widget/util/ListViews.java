@@ -1,7 +1,9 @@
 package is.hello.sense.ui.widget.util;
 
 import android.support.annotation.NonNull;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 public final class ListViews {
@@ -53,6 +55,49 @@ public final class ListViews {
         } else {
             int position = listView.getPositionForView(view);
             return Math.min(lastItem, position);
+        }
+    }
+
+
+    public static void setTouchAndScrollListener(@NonNull ListView listView, @NonNull TouchAndScrollListener listener) {
+        listView.setOnScrollListener(listener);
+        listView.setOnTouchListener(listener);
+    }
+
+    public static abstract class TouchAndScrollListener implements AbsListView.OnScrollListener, View.OnTouchListener {
+        private int previousState = SCROLL_STATE_IDLE;
+
+        public abstract void onScroll(AbsListView absListView, int firstVisiblePosition, int visibleItemCount, int totalItemCount);
+        public final void onScrollStateChanged(AbsListView absListView, int newState) {
+            onScrollStateChanged(absListView, previousState, newState);
+            this.previousState = newState;
+        }
+
+        protected abstract void onScrollStateChanged(@NonNull AbsListView absListView, int oldState, int newState);
+
+        protected abstract void onTouchDown(@NonNull AbsListView absListView);
+        protected abstract void onTouchUp(@NonNull AbsListView absListView);
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN: {
+                    onTouchDown((AbsListView) view);
+                    break;
+                }
+
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL: {
+                    onTouchUp((AbsListView) view);
+                    break;
+                }
+
+                default: {
+                    break;
+                }
+            }
+
+            return false;
         }
     }
 }
