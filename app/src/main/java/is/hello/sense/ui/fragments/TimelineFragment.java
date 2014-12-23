@@ -44,6 +44,7 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -222,11 +223,20 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             beforeSleepItemContainer.removeViews(0, beforeSleepItemContainer.getChildCount());
 
             LayoutInflater inflater = LayoutInflater.from(getActivity());
-            for (PreSleepInsight preSleepInsight : preSleepInsights) {
+            int dividerWidth = (int) (0.14f * beforeSleepHeader.getMeasuredWidth());
+            View.OnClickListener onClick = new SafeOnClickListener(i -> {});
+            for (int i = 0, size = preSleepInsights.size(); i < size; i++) {
+                PreSleepInsight preSleepInsight = preSleepInsights.get(i);
+
                 ImageView insightImage = (ImageView) inflater.inflate(R.layout.item_before_sleep, beforeSleepItemContainer, false);
-                insightImage.setImageResource(preSleepInsight.getIconResource());
+                insightImage.setImageDrawable(preSleepInsight.getIcon(getActivity()));
                 insightImage.setTag(R.id.fragment_timeline_before_sleep_item_tag_insight, preSleepInsight);
+                insightImage.setOnClickListener(onClick);
                 beforeSleepItemContainer.addView(insightImage);
+
+                if (i != size - 1) {
+                    beforeSleepItemContainer.addView(Styles.createHorizontalDivider(getActivity(), dividerWidth));
+                }
             }
 
             beforeSleepHeader.setVisibility(View.VISIBLE);

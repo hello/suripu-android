@@ -141,7 +141,7 @@ public class OnboardingStaticStepFragment extends Fragment {
             return this;
         }
 
-        public Builder setHelpStep(@Nullable HelpUtil.Step step) {
+        public Builder setHelpStep(@NonNull HelpUtil.Step step) {
             arguments.putString(ARG_HELP_STEP, step.toString());
             return this;
         }

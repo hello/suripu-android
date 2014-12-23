@@ -7,6 +7,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.WrapperListAdapter;
@@ -112,7 +113,7 @@ public final class Styles {
             }
 
             case SLEEP: {
-                return R.drawable.timeline_fell_asleep;
+                return R.drawable.timeline_asleep;
             }
 
             case SUNSET: {
@@ -124,11 +125,11 @@ public final class Styles {
             }
 
             case PARTNER_MOTION: {
-                return R.drawable.timeline_movement;
+                return R.drawable.timeline_partner;
             }
 
             case WAKE_UP: {
-                return R.drawable.timeline_movement;
+                return R.drawable.timeline_wakeup;
             }
 
             default:
@@ -159,4 +160,16 @@ public final class Styles {
         bottomSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
         listView.addFooterView(bottomSpacing, null, false);
     }
+
+
+    //region Dividers
+
+    public static View createHorizontalDivider(@NonNull Context context, int width) {
+        View view = new View(context);
+        view.setBackgroundResource(R.color.border);
+        view.setLayoutParams(new ViewGroup.LayoutParams(width, context.getResources().getDimensionPixelSize(R.dimen.divider_size)));
+        return view;
+    }
+
+    //endregion
 }

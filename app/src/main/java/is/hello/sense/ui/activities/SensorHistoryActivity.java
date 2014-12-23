@@ -13,7 +13,6 @@ public class SensorHistoryActivity extends SenseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor_history);
 
-        //noinspection ConstantConditions
         String sensor = getSensor();
         int titleRes = R.string.app_name;
         switch (sensor) {
@@ -32,6 +31,8 @@ public class SensorHistoryActivity extends SenseActivity {
             default:
                 break;
         }
+
+        //noinspection ConstantConditions
         getActionBar().setTitle(titleRes);
     }
 
