@@ -13,6 +13,9 @@ public class Insight extends ApiResponse {
     @JsonProperty("id")
     private long id;
 
+    @JsonProperty("account_id")
+    private long accountId;
+
     @JsonProperty("title")
     private String title;
 
@@ -28,6 +31,10 @@ public class Insight extends ApiResponse {
 
     public long getId() {
         return id;
+    }
+
+    public long getAccountId() {
+        return accountId;
     }
 
     public String getTitle() {
@@ -50,6 +57,7 @@ public class Insight extends ApiResponse {
     public String toString() {
         return "Insight{" +
                 "id=" + id +
+                ", accountId=" + accountId +
                 ", title='" + title + '\'' +
                 ", message='" + message + '\'' +
                 ", created=" + created +
