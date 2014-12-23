@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
 
 public class Insight extends ApiResponse {
+    @JsonProperty("id")
+    private long id;
+
     @JsonProperty("title")
     private String title;
 
@@ -14,6 +17,10 @@ public class Insight extends ApiResponse {
     @JsonProperty("created_utc")
     private DateTime created;
 
+
+    public long getId() {
+        return id;
+    }
 
     public String getTitle() {
         return title;
@@ -31,9 +38,10 @@ public class Insight extends ApiResponse {
     @Override
     public String toString() {
         return "Insight{" +
-                "created=" + created +
-                ", message='" + message + '\'' +
+                "id=" + id +
                 ", title='" + title + '\'' +
+                ", message='" + message + '\'' +
+                ", created=" + created +
                 '}';
     }
 }

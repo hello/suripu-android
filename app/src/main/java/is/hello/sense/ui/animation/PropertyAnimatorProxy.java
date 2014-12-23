@@ -10,12 +10,16 @@ import android.view.animation.DecelerateInterpolator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import is.hello.sense.ui.widget.util.Views;
 
 public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
+    private static final Set<View> ANIMATING_VIEWS = new HashSet<>();
+
     private final View view;
     private final HashMap<String, Float> properties = new HashMap<>();
     private final List<OnAnimationCompleted> onAnimationCompletedListeners = new ArrayList<>();
@@ -46,6 +50,10 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
             forView.animate().cancel();
             forView.clearAnimation();
         }
+    }
+
+    public static boolean isAnimating(@NonNull View view) {
+        return ANIMATING_VIEWS.contains(view);
     }
 
     //endregion
@@ -161,6 +169,8 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
                     throw new IllegalStateException("Unknown animation property " + property.getKey());
             }
         }
+
+        ANIMATING_VIEWS.add(view);
     }
 
     public void start() {
@@ -218,8 +228,11 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
 
         this.animationEnded = true;
 
-        for (OnAnimationCompleted listener : onAnimationCompletedListeners)
+        for (OnAnimationCompleted listener : onAnimationCompletedListeners) {
             listener.onAnimationCompleted(!animationCanceled);
+        }
+
+        ANIMATING_VIEWS.remove(view);
     }
 
     @Override
@@ -228,6 +241,8 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
             return;
 
         this.animationCanceled = true;
+
+        ANIMATING_VIEWS.remove(view);
     }
 
     @Override
