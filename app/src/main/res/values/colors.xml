@@ -43,7 +43,7 @@
 
     <color name="sensor_alert">#FF9A00</color>
     <color name="sensor_warning">#FF0000</color>
-    <color name="sensor_ideal">#36D8AB</color>
+    <color name="sensor_ideal">#41D7AC</color>
     <color name="sensor_unknown">#565961</color>
 
     <color name="sleep_light">#009CFF</color>

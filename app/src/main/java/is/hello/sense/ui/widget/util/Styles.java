@@ -65,18 +65,6 @@ public final class Styles {
         return context.getResources().getColor(getSleepScoreColorRes(sleepScore));
     }
 
-    public static @ColorRes @DrawableRes int getSleepScoreBorderColorRes(int sleepScore) {
-        if (sleepScore > 0) {
-            return R.color.transparent;
-        } else {
-            return R.color.border;
-        }
-    }
-
-    public static int getSleepScoreBorderColor(@NonNull Context context, int sleepScore) {
-        return context.getResources().getColor(getSleepScoreBorderColorRes(sleepScore));
-    }
-
 
     public static @DrawableRes int getTimelineSegmentIconRes(@NonNull TimelineSegment segment) {
         if (segment.getEventType() == null) {

@@ -19,7 +19,7 @@
     <dimen name="text_size_question">24sp</dimen>
     <dimen name="text_size_heading">26sp</dimen>
     <dimen name="text_size_small_score">40sp</dimen>
-    <dimen name="text_size_big_score">72sp</dimen>
+    <dimen name="text_size_big_score">76sp</dimen>
     <dimen name="text_size_smart_alarm_time">32sp</dimen>
 
     <item name="heading_line_multiple" format="float" type="dimen">1.2</item>
@@ -32,7 +32,7 @@
     <dimen name="divider_size">1px</dimen> <!-- px is not a typo -->
     <dimen name="divider_height_edit_text">1dp</dimen>
     <dimen name="smart_alarm_toggle_line_height">2dp</dimen>
-    <dimen name="pie_graph_stroke_width">3dp</dimen>
+    <dimen name="pie_graph_stroke_width">1dp</dimen>
 
     <dimen name="gap_raised_item_inset_side">1px</dimen>
     <dimen name="gap_raised_item_inset_bottom">1dp</dimen>

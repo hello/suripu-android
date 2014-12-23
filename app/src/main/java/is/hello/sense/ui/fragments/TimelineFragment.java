@@ -208,8 +208,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
 
     public void showSleepScore(int sleepScore) {
-        scoreGraph.setTrackColor(Styles.getSleepScoreBorderColor(getActivity(), sleepScore));
-        scoreGraph.setFillColor(Styles.getSleepScoreColor(getActivity(), sleepScore));
+        int scoreColor = Styles.getSleepScoreColor(getActivity(), sleepScore);
+        scoreGraph.setFillColor(scoreColor);
+        scoreText.setTextColor(scoreColor);
         ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animations.Properties.createWithDelay(250));
         if (updateAnimation != null) {
             updateAnimation.addUpdateListener(a -> {
@@ -286,6 +287,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         scoreGraph.setTrackColor(getResources().getColor(R.color.border));
         scoreGraph.setValue(0);
         scoreText.setText(R.string.missing_data_placeholder);
+        scoreText.setTextColor(getResources().getColor(R.color.text_dark));
 
         if (e != null) {
             messageText.setText(getString(R.string.timeline_error_message, e.getMessage()));

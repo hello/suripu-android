@@ -63,7 +63,6 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
         holder.dayNumber.setText(date.toString("d"));
         holder.dayName.setText(date.toString("EE"));
         holder.pieDrawable.setValue(0);
-        holder.pieDrawable.setTrackColor(Styles.getSleepScoreBorderColor(context, 0));
         holder.score.setText(R.string.missing_data_placeholder);
         presenter.post(holder, holder::populate);
     }
@@ -137,12 +136,16 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
         void setSleepScore(int sleepScore) {
             pieDrawable.setTrackColor(Color.TRANSPARENT);
             if (sleepScore == ERROR_MARKER) {
+                int sleepScoreColor = context.getResources().getColor(R.color.sensor_warning);
                 score.setText(R.string.missing_data_placeholder);
-                pieDrawable.setFillColor(context.getResources().getColor(R.color.sensor_warning));
+                score.setTextColor(sleepScoreColor);
+                pieDrawable.setFillColor(sleepScoreColor);
                 pieDrawable.setValue(100);
             } else {
+                int sleepScoreColor = Styles.getSleepScoreColor(context, sleepScore);
                 score.setText(Integer.toString(sleepScore));
-                pieDrawable.setFillColor(Styles.getSleepScoreColor(context, sleepScore));
+                score.setTextColor(sleepScoreColor);
+                pieDrawable.setFillColor(sleepScoreColor);
                 pieDrawable.setValue(sleepScore);
             }
         }
@@ -158,6 +161,7 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
             pieDrawable.setValue(0);
             pieDrawable.setTrackColor(context.getResources().getColor(R.color.border));
             score.setText(R.string.missing_data_placeholder);
+            score.setTextColor(context.getResources().getColor(R.color.text_dark));
 
             timeline.setTimelineSegments(null);
         }
