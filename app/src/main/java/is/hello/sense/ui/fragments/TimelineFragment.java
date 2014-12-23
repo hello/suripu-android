@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -43,6 +44,7 @@ import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SafeOnClickListener;
@@ -159,6 +161,19 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_TEXT, "http://hello.is");
             startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
+        });
+
+        ImageButton smartAlarmButton = (ImageButton) view.findViewById(R.id.fragment_timeline_smart_alarm);
+        Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
+            // TODO: This is massively hacky
+            
+            SharedPreferences preferences = getActivity().getSharedPreferences(Constants.INTERNAL_PREFS, 0);
+            preferences.edit()
+                    .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
+                    .putInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 3)
+                    .apply();
+
+            ((HomeActivity) getActivity()).getSlidingLayersView().open();
         });
 
         // Always do this after adding headers and footer views,

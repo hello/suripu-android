@@ -254,7 +254,6 @@ public class HomeActivity
 
     //region Sliding Layers
 
-
     public SlidingLayersView getSlidingLayersView() {
         return slidingLayersView;
     }

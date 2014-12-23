@@ -27,4 +27,13 @@
         android:visibility="invisible"
         style="@style/AppTheme.Text.Timestamp"/>
 
+    <ImageButton
+        android:id="@+id/fragment_timeline_smart_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:src="@drawable/timeline_smart_alarm"
+        android:contentDescription="@string/title_smart_alarm"
+        style="@style/AppTheme.Button.Borderless"/>
+
 </FrameLayout>
