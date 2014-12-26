@@ -231,7 +231,12 @@ public class AndroidPeripheral implements Peripheral {
             });
 
             if (getBondStatus() == BluetoothDevice.BOND_BONDED) {
-                removeBond().subscribe(ignored -> {}, s::onError);
+                /*
+                It seems the requirement of remove bond is because we do in-memory bonding
+                or there is a bug in the flash storage setting of EVT.
+                The DVT does not need to remove bond or you will never able to connect back.
+                 */
+                // removeBond().subscribe(ignored -> {}, s::onError);
             } else {
                 gatt.disconnect();
             }
