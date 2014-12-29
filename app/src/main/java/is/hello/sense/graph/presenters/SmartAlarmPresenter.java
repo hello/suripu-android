@@ -54,6 +54,7 @@ public class SmartAlarmPresenter extends ValuePresenter<ArrayList<SmartAlarm>> {
         return true;
     }
 
+
     public Observable<VoidResponse> save(@NonNull ArrayList<SmartAlarm> updatedAlarms) {
         logEvent("save()");
 

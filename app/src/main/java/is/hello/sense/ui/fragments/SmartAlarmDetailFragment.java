@@ -181,7 +181,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             smartAlarm.getDaysOfWeek().remove(day);
         }
 
-        smartAlarm.setRepeated(smartAlarm.getDaysOfWeek().isEmpty());
+        smartAlarm.setRepeated(!smartAlarm.getDaysOfWeek().isEmpty());
     }
 
     public void selectSound(@NonNull View sender) {
