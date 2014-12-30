@@ -254,28 +254,32 @@ public class SmartAlarm extends ApiResponse {
         @JsonProperty("name")
         public final String name;
 
+        @JsonProperty("url")
+        public final String url;
+
 
         public static @NonNull Sound none() {
-            return new Sound(0, "None");
+            return new Sound(0, "None", "");
         }
 
         public static @NonNull List<Sound> testSounds() {
             List<Sound> sounds = new ArrayList<>();
 
             sounds.add(Sound.none());
-            sounds.add(new Sound(1, "Bells"));
-            sounds.add(new Sound(2, "Birdsong"));
-            sounds.add(new Sound(3, "Chime"));
-            sounds.add(new Sound(4, "Waterfall"));
+            sounds.add(new Sound(1, "Bells", ""));
+            sounds.add(new Sound(2, "Birdsong", ""));
+            sounds.add(new Sound(3, "Chime", ""));
+            sounds.add(new Sound(4, "Waterfall", ""));
 
             return sounds;
         }
 
-
         public Sound(@JsonProperty("id") long id,
-                     @JsonProperty("name") String name) {
+                     @JsonProperty("name") String name,
+                     @JsonProperty("url") String url) {
             this.id = id;
             this.name = name;
+            this.url = url;
         }
 
 
@@ -284,6 +288,7 @@ public class SmartAlarm extends ApiResponse {
             return "Sound{" +
                     "id=" + id +
                     ", name='" + name + '\'' +
+                    ", url='" + url + '\'' +
                     '}';
         }
     }
