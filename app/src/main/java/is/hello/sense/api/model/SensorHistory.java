@@ -61,20 +61,10 @@ public class SensorHistory extends ApiResponse {
     //region Time Zone Fun
 
     /**
-     * Returns the user's current time, in the UTC timezone. For use with sensor history.
+     * Returns the user's current time. For use with sensor history.
      */
     public static long timeForLatest() {
-        DateTime now = DateTime.now();
-        DateTime nowUTC = new DateTime(
-                now.getYear(),
-                now.getMonthOfYear(),
-                now.getDayOfMonth(),
-                now.getHourOfDay(),
-                now.getMinuteOfHour(),
-                now.getSecondOfMinute(),
-                DateTimeZone.UTC
-        );
-        return nowUTC.getMillis();
+        return DateTime.now().getMillis();
     }
 
     //endregion
