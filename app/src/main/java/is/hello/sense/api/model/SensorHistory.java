@@ -58,7 +58,7 @@ public class SensorHistory extends ApiResponse {
     }
 
 
-    //region Time Zone Fun
+    //No more region Time Zone Fun
 
     /**
      * Returns the user's current time. For use with sensor history.
