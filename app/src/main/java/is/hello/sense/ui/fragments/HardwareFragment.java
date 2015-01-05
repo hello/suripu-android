@@ -21,22 +21,26 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     protected void showBlockingActivity(@StringRes int titleRes) {
         if (loadingDialogFragment == null) {
-            this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(titleRes), true);
+            coordinator.postOnResume(() -> {
+                this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(titleRes), true);
+            });
         } else {
             loadingDialogFragment.setTitle(getString(titleRes));
         }
     }
 
     protected void hideBlockingActivity(boolean success, @NonNull Runnable onCompletion) {
-        if (success) {
-            LoadingDialogFragment.close(getFragmentManager());
-            onCompletion.run();
-        } else {
-            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-                this.loadingDialogFragment = null;
+        coordinator.postOnResume(() -> {
+            if (success) {
+                LoadingDialogFragment.close(getFragmentManager());
                 onCompletion.run();
-            });
-        }
+            } else {
+                LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
+                    this.loadingDialogFragment = null;
+                    onCompletion.run();
+                });
+            }
+        });
     }
 
 
