@@ -26,6 +26,9 @@ public class SensorState extends ApiResponse {
     @JsonProperty("last_updated_utc")
     private DateTime lastUpdated;
 
+    @JsonProperty("ideal_conditions")
+    private String idealConditions;
+
 
     public SensorState() {
     }
@@ -63,6 +66,10 @@ public class SensorState extends ApiResponse {
         return unit;
     }
 
+    public String getIdealConditions() {
+        return idealConditions;
+    }
+
     public @Nullable String getFormattedValue(@Nullable UnitFormatter.Formatter formatter) {
         if (getValue() == null) {
             return null;
@@ -79,8 +86,9 @@ public class SensorState extends ApiResponse {
                 "value=" + value +
                 ", message='" + message + '\'' +
                 ", condition=" + condition +
-                ", unit=" + unit +
+                ", unit='" + unit + '\'' +
                 ", lastUpdated=" + lastUpdated +
+                ", idealConditions='" + idealConditions + '\'' +
                 '}';
     }
 }
