@@ -70,7 +70,7 @@ public class OnboardingPairPillFragment extends OnboardingHardwareFragment {
     private void finishedPairing() {
         hardwarePresenter.clearPeripheral();
 
-        hideHardwareActivity(true, () -> {
+        completeHardwareActivity(() -> {
             if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false)) {
                 hardwarePresenter.clearPeripheral();
                 getOnboardingActivity().finish();

@@ -42,15 +42,21 @@ public class OnboardingHardwareFragment extends InjectionFragment {
                          error -> onCompletion.run());
     }
 
-    protected void hideHardwareActivity(boolean success, @NonNull Runnable onCompletion) {
-        bindAndSubscribe(hardwarePresenter.stopAnimation(success),
+    protected void hideHardwareActivity(@NonNull Runnable onCompletion) {
+        bindAndSubscribe(hardwarePresenter.trippyAnimation(),
+                         ignored -> onCompletion.run(),
+                         error -> onCompletion.run());
+    }
+
+    protected void completeHardwareActivity(@NonNull Runnable onCompletion) {
+        bindAndSubscribe(hardwarePresenter.stopAnimation(true),
                          ignored -> onCompletion.run(),
                          error -> onCompletion.run());
     }
 
 
     protected void hideAllActivity(boolean success, @NonNull Runnable onCompletion) {
-        hideHardwareActivity(success, () -> hideBlockingActivity(success, onCompletion));
+        hideHardwareActivity(() -> hideBlockingActivity(success, onCompletion));
     }
 
 

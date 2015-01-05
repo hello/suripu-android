@@ -132,7 +132,7 @@ public class OnboardingWifiNetworkFragment extends OnboardingHardwareFragment im
     }
 
     public void bindScanResults(@NonNull Collection<SenseCommandProtos.wifi_endpoint> scanResults) {
-        hideHardwareActivity(true, () -> {
+        hideHardwareActivity(() -> {
             networkAdapter.clear();
             networkAdapter.addAll(scanResults);
 
@@ -147,7 +147,7 @@ public class OnboardingWifiNetworkFragment extends OnboardingHardwareFragment im
     }
 
     public void scanResultsUnavailable(Throwable e) {
-        hideHardwareActivity(false, () -> {
+        hideHardwareActivity(() -> {
             scanningIndicatorLabel.setVisibility(View.GONE);
             scanningIndicator.setVisibility(View.GONE);
             infoLabel.setVisibility(View.VISIBLE);
