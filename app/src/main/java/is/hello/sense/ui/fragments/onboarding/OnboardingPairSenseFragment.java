@@ -107,13 +107,29 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     @SuppressWarnings("CodeBlock2Expr")
     private void linkAccount() {
         loadingDialogFragment.setTitle(getString(R.string.title_linking_account));
-        bindAndSubscribe(hardwarePresenter.linkAccount(), ignored -> {
-            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
-                    () -> ((OnboardingActivity) getActivity()).showPairPill());
-        }, error -> {
-            Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not link Sense to account", error);
-            pairingFailed(error);
-        });
+
+        bindAndSubscribe(hardwarePresenter.linkAccount(),
+                         ignored -> pushDeviceData(),
+                         error -> {
+                             Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not link Sense to account", error);
+                             pairingFailed(error);
+                         });
+    }
+
+    private void pushDeviceData() {
+        loadingDialogFragment.setTitle(getString(R.string.title_pushing_data));
+
+        bindAndSubscribe(hardwarePresenter.pushData(),
+                ignored -> finished(),
+                error -> {
+                    Logger.error(getClass().getSimpleName(), "Could not push data from Sense, ignoring.", error);
+                    finished();
+                });
+    }
+
+    private void finished() {
+        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
+                () -> ((OnboardingActivity) getActivity()).showPairPill());
     }
 
     public void next(@NonNull View sender) {

@@ -23,7 +23,6 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -58,6 +57,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private @Nullable SenseCommandProtos.wifi_endpoint network;
 
     private boolean hasConnectedToNetwork = false;
+    private boolean hasSetAccessToken = false;
 
     public static OnboardingSignIntoWifiFragment newInstance(@Nullable SenseCommandProtos.wifi_endpoint network) {
         OnboardingSignIntoWifiFragment fragment = new OnboardingSignIntoWifiFragment();
@@ -76,6 +76,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         this.network = (SenseCommandProtos.wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
         if (savedInstanceState != null) {
             this.hasConnectedToNetwork = savedInstanceState.getBoolean("hasConnectedToNetwork", false);
+            this.hasSetAccessToken = savedInstanceState.getBoolean("hasSetAccessToken", false);
         }
 
         Analytics.trackEvent(Analytics.EVENT_ONBOARDING_WIFI_PASSWORD, null);
@@ -131,6 +132,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("hasConnectedToNetwork", hasConnectedToNetwork);
+        outState.putBoolean("hasSetAccessToken", hasSetAccessToken);
     }
 
     @Override
@@ -146,21 +148,39 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_connecting_network), true);
     }
 
-    private void finishedSettingWifi() {
-        SenseTimeZone timeZone = SenseTimeZone.fromDefault();
-        apiService.updateTimeZone(timeZone)
-                  .subscribe(ignored -> {
-                      Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
-
-                      preferences.edit()
-                              .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
-                              .apply();
-                  }, Functions.LOG_ERROR);
-
+    private void finished() {
         LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
             OnboardingActivity activity = (OnboardingActivity) getActivity();
             activity.showPairPill();
         });
+    }
+
+    private void setDeviceTimeZone() {
+        loadingDialogFragment.setTitle(getString(R.string.title_setting_time_zone));
+
+        SenseTimeZone timeZone = SenseTimeZone.fromDefault();
+        bindAndSubscribe(apiService.updateTimeZone(timeZone),
+                         ignored -> {
+                             Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
+
+                             preferences.edit()
+                                     .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
+                                     .apply();
+
+                             pushDeviceData();
+                         },
+                         this::presentError);
+    }
+
+    private void pushDeviceData() {
+        loadingDialogFragment.setTitle(getString(R.string.title_pushing_data));
+
+        bindAndSubscribe(hardwarePresenter.pushData(),
+                         ignored -> finished(),
+                         error -> {
+                             Logger.error(getClass().getSimpleName(), "Could not push Sense data, ignoring.", error);
+                             finished();
+                         });
     }
 
     private void sendWifiCredentials() {
@@ -207,11 +227,17 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     }
 
     private void sendAccessToken() {
-        if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false)) {
-            finishedSettingWifi();
+        if (hasSetAccessToken || getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false)) {
+            setDeviceTimeZone();
         } else {
             loadingDialogFragment.setTitle(getString(R.string.title_linking_account));
-            bindAndSubscribe(hardwarePresenter.linkAccount(), ignored -> finishedSettingWifi(), this::presentError);
+
+            bindAndSubscribe(hardwarePresenter.linkAccount(),
+                             ignored -> {
+                                 this.hasSetAccessToken = true;
+                                 setDeviceTimeZone();
+                             },
+                             this::presentError);
         }
     }
 
