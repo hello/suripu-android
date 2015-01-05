@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
@@ -90,7 +90,7 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     private void finishedPairing() {
         loadingDialogFragment.setTitle(getString(R.string.title_checking_connectivity));
         bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
-            if (network.connectionState == MorpheusBle.wifi_connection_state.IP_RETRIEVED) {
+            if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
                 linkAccount();
             } else {
                 LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),

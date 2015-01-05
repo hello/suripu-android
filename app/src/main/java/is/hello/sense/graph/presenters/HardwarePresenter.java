@@ -18,7 +18,7 @@ import is.hello.sense.api.model.Device;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
@@ -236,7 +236,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return this.connectingToPeripheral;
     }
 
-    public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks() {
+    public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks() {
         if (peripheral == null) {
             return noDeviceError();
         }
@@ -265,7 +265,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     public Observable<Void> sendWifiCredentials(@NonNull String bssid,
                                                 @NonNull String ssid,
-                                                @NonNull MorpheusBle.wifi_endpoint.sec_type securityType,
+                                                @NonNull SenseCommandProtos.wifi_endpoint.sec_type securityType,
                                                 @NonNull String password) {
         logEvent("sendWifiCredentials()");
 

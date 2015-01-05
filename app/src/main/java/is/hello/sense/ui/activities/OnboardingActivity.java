@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.AccountEditingFragment;
@@ -272,7 +272,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(new OnboardingWifiNetworkFragment(), null, wantsBackStackEntry);
     }
 
-    public void showSignIntoWifiNetwork(@Nullable MorpheusBle.wifi_endpoint network) {
+    public void showSignIntoWifiNetwork(@Nullable SenseCommandProtos.wifi_endpoint network) {
         showFragment(OnboardingSignIntoWifiFragment.newInstance(network), null, true);
     }
 

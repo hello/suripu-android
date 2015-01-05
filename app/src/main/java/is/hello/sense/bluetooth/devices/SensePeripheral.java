@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.devices.transmission.SensePacketDataHandler;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.BluetoothEarlyDisconnectError;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
@@ -31,9 +31,9 @@ import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Action3;
 
-import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.MorpheusCommand;
-import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.MorpheusCommand.CommandType;
-import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.wifi_connection_state;
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand;
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand.CommandType;
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state;
 
 public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     private static int COMMAND_VERSION = 0;
@@ -129,7 +129,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 MorpheusCommand timeoutResponse = MorpheusCommand.newBuilder()
                         .setVersion(COMMAND_VERSION)
                         .setType(CommandType.MORPHEUS_COMMAND_ERROR)
-                        .setError(MorpheusBle.ErrorType.TIME_OUT)
+                        .setError(SenseCommandProtos.ErrorType.TIME_OUT)
                         .build();
                 onCommandResponse.call(timeoutResponse, s, timeout);
             }, peripheral.getStack().getScheduler());
@@ -259,7 +259,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     public Observable<Void> setWifiNetwork(String bssid,
                                            String ssid,
-                                           MorpheusBle.wifi_endpoint.sec_type securityType,
+                                           SenseCommandProtos.wifi_endpoint.sec_type securityType,
                                            String password) {
         Logger.info(Peripheral.LOG_TAG, "setWifiNetwork(" + ssid + ")");
 
@@ -315,7 +315,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
 
-    public Observable<List<MorpheusBle.wifi_endpoint>> scanForWifiNetworks() {
+    public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks() {
         Logger.info(Peripheral.LOG_TAG, "scanForWifiNetworks()");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
@@ -324,7 +324,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .build();
 
         //noinspection MismatchedQueryAndUpdateOfCollection
-        List<MorpheusBle.wifi_endpoint> endpoints = new ArrayList<>();
+        List<SenseCommandProtos.wifi_endpoint> endpoints = new ArrayList<>();
         return performCommand(morpheusCommand, createScanWifiTimeout(), (response, subscriber, timeout) -> {
             Action1<Throwable> onError = subscriber::onError;
 
@@ -358,7 +358,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
-                unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(MorpheusBle.ErrorType.INTERNAL_DATA_ERROR)), onError);
+                unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(SenseCommandProtos.ErrorType.INTERNAL_DATA_ERROR)), onError);
 
                 dataHandler.clearListeners();
             }

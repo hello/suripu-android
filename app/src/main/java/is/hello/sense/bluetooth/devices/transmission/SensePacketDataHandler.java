@@ -8,14 +8,14 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import is.hello.sense.bluetooth.devices.SenseIdentifiers;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.ProtobufProcessingError;
 import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.transmission.SequencedPacket;
 import is.hello.sense.util.Logger;
 
-public class SensePacketDataHandler extends PacketDataHandler<MorpheusBle.MorpheusCommand> {
+public class SensePacketDataHandler extends PacketDataHandler<SenseCommandProtos.MorpheusCommand> {
     private int totalPackets = 0;
     private int packetsProcessed = 0;
     private int expectedIndex = 0;
@@ -75,9 +75,9 @@ public class SensePacketDataHandler extends PacketDataHandler<MorpheusBle.Morphe
         this.packetsProcessed++;
 
         if (this.packetsProcessed == this.totalPackets) {
-            final MorpheusBle.MorpheusCommand data;
+            final SenseCommandProtos.MorpheusCommand data;
             try {
-                data = MorpheusBle.MorpheusCommand.parseFrom(Arrays.copyOfRange(this.buffer, 0, bufferDataLength));
+                data = SenseCommandProtos.MorpheusCommand.parseFrom(Arrays.copyOfRange(this.buffer, 0, bufferDataLength));
                 this.onResponse(data);
             } catch (InvalidProtocolBufferException e) {
                 Logger.error(SensePacketDataHandler.class.getSimpleName(), "Could not parse command.", e);

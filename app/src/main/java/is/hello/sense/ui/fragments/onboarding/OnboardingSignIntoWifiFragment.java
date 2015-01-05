@@ -22,7 +22,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -38,7 +38,7 @@ import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 
-import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.wifi_endpoint.sec_type;
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
 public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     private static final String ARG_SCAN_RESULT = OnboardingSignIntoWifiFragment.class.getName() + ".ARG_SCAN_RESULT";
@@ -55,11 +55,11 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
     private LoadingDialogFragment loadingDialogFragment;
 
-    private @Nullable MorpheusBle.wifi_endpoint network;
+    private @Nullable SenseCommandProtos.wifi_endpoint network;
 
     private boolean hasConnectedToNetwork = false;
 
-    public static OnboardingSignIntoWifiFragment newInstance(@Nullable MorpheusBle.wifi_endpoint network) {
+    public static OnboardingSignIntoWifiFragment newInstance(@Nullable SenseCommandProtos.wifi_endpoint network) {
         OnboardingSignIntoWifiFragment fragment = new OnboardingSignIntoWifiFragment();
 
         Bundle arguments = new Bundle();
@@ -73,7 +73,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.network = (MorpheusBle.wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
+        this.network = (SenseCommandProtos.wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
         if (savedInstanceState != null) {
             this.hasConnectedToNetwork = savedInstanceState.getBoolean("hasConnectedToNetwork", false);
         }
