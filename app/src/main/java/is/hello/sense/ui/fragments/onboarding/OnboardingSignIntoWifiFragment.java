@@ -23,13 +23,10 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
-import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.HelpUtil;
-import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -39,20 +36,17 @@ import rx.functions.Action1;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
-public class OnboardingSignIntoWifiFragment extends InjectionFragment {
+public class OnboardingSignIntoWifiFragment extends OnboardingHardwareFragment {
     private static final String ARG_SCAN_RESULT = OnboardingSignIntoWifiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
     private static final int ERROR_REQUEST_CODE = 0x30;
 
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferences;
-    @Inject HardwarePresenter hardwarePresenter;
 
     private EditText networkName;
     private EditText networkPassword;
     private Spinner networkSecurity;
-
-    private LoadingDialogFragment loadingDialogFragment;
 
     private @Nullable SenseCommandProtos.wifi_endpoint network;
 
@@ -144,19 +138,12 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         }
     }
 
-    private void beginSettingWifi() {
-        this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_connecting_network), true);
-    }
-
     private void finished() {
-        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-            OnboardingActivity activity = (OnboardingActivity) getActivity();
-            activity.showPairPill();
-        });
+        hideAllActivity(true, () -> getOnboardingActivity().showPairPill());
     }
 
     private void setDeviceTimeZone() {
-        loadingDialogFragment.setTitle(getString(R.string.title_setting_time_zone));
+        showBlockingActivity(R.string.title_setting_time_zone);
 
         SenseTimeZone timeZone = SenseTimeZone.fromDefault();
         bindAndSubscribe(apiService.updateTimeZone(timeZone),
@@ -173,7 +160,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     }
 
     private void pushDeviceData() {
-        loadingDialogFragment.setTitle(getString(R.string.title_pushing_data));
+        showBlockingActivity(R.string.title_pushing_data);
 
         bindAndSubscribe(hardwarePresenter.pushData(),
                          ignored -> finished(),
@@ -193,7 +180,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
             return;
         }
 
-        beginSettingWifi();
+        showBlockingActivity(R.string.title_connecting_network);
 
         if (hardwarePresenter.getPeripheral() == null) {
             Action1<Throwable> onError = this::presentError;
@@ -208,29 +195,31 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
             return;
         }
 
-        if (hasConnectedToNetwork) {
-            sendAccessToken();
-            return;
-        }
+        showHardwareActivity(() -> {
+            if (hasConnectedToNetwork) {
+                sendAccessToken();
+                return;
+            }
 
-        sec_type securityType;
-        if (network != null) {
-            securityType = network.getSecurityType();
-        } else {
-            securityType = (sec_type) networkSecurity.getSelectedItem();
-        }
+            sec_type securityType;
+            if (network != null) {
+                securityType = network.getSecurityType();
+            } else {
+                securityType = (sec_type) networkSecurity.getSelectedItem();
+            }
 
-        bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, securityType, password), ignored -> {
-            this.hasConnectedToNetwork = true;
-            sendAccessToken();
-        }, this::presentError);
+            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, securityType, password), ignored -> {
+                this.hasConnectedToNetwork = true;
+                sendAccessToken();
+            }, this::presentError);
+        });
     }
 
     private void sendAccessToken() {
         if (hasSetAccessToken || getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false)) {
             setDeviceTimeZone();
         } else {
-            loadingDialogFragment.setTitle(getString(R.string.title_linking_account));
+            showBlockingActivity(R.string.title_linking_account);
 
             bindAndSubscribe(hardwarePresenter.linkAccount(),
                              ignored -> {
@@ -243,14 +232,14 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
 
 
     public void presentError(Throwable e) {
-        LoadingDialogFragment.close(getFragmentManager());
-
-        if (hardwarePresenter.isErrorFatal(e)) {
-            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
-            fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
-        } else {
-            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
-        }
+        hideAllActivity(false, () -> {
+            if (hardwarePresenter.isErrorFatal(e)) {
+                UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+                fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
+            } else {
+                ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            }
+        });
     }
 
     private static class SecurityTypeAdapter extends ArrayAdapter<sec_type> {

@@ -18,7 +18,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class Onboarding2ndPillInfoFragment extends InjectionFragment {
+public class Onboarding2ndPillInfoFragment extends OnboardingHardwareFragment {
     @Inject HardwarePresenter hardwarePresenter;
 
     @Override

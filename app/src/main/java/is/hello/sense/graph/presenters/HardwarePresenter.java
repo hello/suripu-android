@@ -237,6 +237,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     public Observable<Void> busyAnimation() {
+        logEvent("busyAnimation()");
+
         if (peripheral == null) {
             return noDeviceError();
         }
@@ -245,6 +247,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     public Observable<Void> trippyAnimation() {
+        logEvent("trippyAnimation()");
+
         if (peripheral == null) {
             return noDeviceError();
         }
@@ -253,6 +257,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     public Observable<Void> stopAnimation(boolean success) {
+        logEvent("stopAnimation(" + success + ")");
+
         if (peripheral == null) {
             return noDeviceError();
         }
@@ -329,6 +335,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     public Observable<Void> pushData() {
+        logEvent("pushData()");
+
         if (peripheral == null) {
             return noDeviceError();
         }

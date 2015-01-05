@@ -20,12 +20,8 @@ import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
-import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
@@ -34,14 +30,12 @@ import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class OnboardingPairSenseFragment extends InjectionFragment {
+public class OnboardingPairSenseFragment extends OnboardingHardwareFragment {
     private static int REQUEST_CODE_PAIR_HELP = 0x19;
 
-    @Inject HardwarePresenter hardwarePresenter;
     @Inject BuildValues buildValues;
 
     private Button nextButton;
-    private LoadingDialogFragment loadingDialogFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,31 +77,24 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
         }
     }
 
-    private void beginPairing() {
-        this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_scanning_for_sense), true);
-    }
-
-    private void finishedPairing() {
-        loadingDialogFragment.setTitle(getString(R.string.title_checking_connectivity));
-        bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
-            if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
-                linkAccount();
-            } else {
-                LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
-                        () -> ((OnboardingActivity) getActivity()).showSelectWifiNetwork(true));
-            }
-        }, e -> {
-            Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not get Sense's wifi network", e);
-
-            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
-                    () -> ((OnboardingActivity) getActivity()).showSelectWifiNetwork(true));
+    private void checkConnectivityAndContinue() {
+        showBlockingActivity(R.string.title_checking_connectivity);
+        showHardwareActivity(() -> {
+            bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
+                if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
+                    linkAccount();
+                } else {
+                    hideAllActivity(true, () -> getOnboardingActivity().showSelectWifiNetwork(true));
+                }
+            }, e -> {
+                Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not get Sense's wifi network", e);
+                hideAllActivity(true, () -> getOnboardingActivity().showSelectWifiNetwork(true));
+            });
         });
     }
 
-    @SuppressWarnings("CodeBlock2Expr")
     private void linkAccount() {
-        loadingDialogFragment.setTitle(getString(R.string.title_linking_account));
-
+        showBlockingActivity(R.string.title_linking_account);
         bindAndSubscribe(hardwarePresenter.linkAccount(),
                          ignored -> pushDeviceData(),
                          error -> {
@@ -117,29 +104,26 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     }
 
     private void pushDeviceData() {
-        loadingDialogFragment.setTitle(getString(R.string.title_pushing_data));
-
+        showBlockingActivity(R.string.title_pushing_data);
         bindAndSubscribe(hardwarePresenter.pushData(),
-                ignored -> finished(),
-                error -> {
-                    Logger.error(getClass().getSimpleName(), "Could not push data from Sense, ignoring.", error);
-                    finished();
-                });
+                         ignored -> finished(),
+                         error -> {
+                             Logger.error(getClass().getSimpleName(), "Could not push data from Sense, ignoring.", error);
+                             finished();
+                         });
     }
 
     private void finished() {
-        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
-                () -> ((OnboardingActivity) getActivity()).showPairPill());
+        hideAllActivity(true, () -> getOnboardingActivity().showPairPill());
     }
 
     public void next(@NonNull View sender) {
-        beginPairing();
-
+        showBlockingActivity(R.string.title_pairing);
         if (hardwarePresenter.getPeripheral() == null) {
             Observable<SensePeripheral> device = hardwarePresenter.scanForDevices().map(hardwarePresenter::getClosestPeripheral);
             bindAndSubscribe(device, this::tryToPairWith, this::pairingFailed);
         } else {
-            finishedPairing();
+            checkConnectivityAndContinue();
         }
     }
 
@@ -163,26 +147,26 @@ public class OnboardingPairSenseFragment extends InjectionFragment {
     public void pairWith(@NonNull SensePeripheral device) {
         bindAndSubscribe(hardwarePresenter.connectToPeripheral(device), status -> {
             if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
-                finishedPairing();
+                checkConnectivityAndContinue();
             } else {
-                loadingDialogFragment.setTitle(getString(status.messageRes));
+                showBlockingActivity(status.messageRes);
             }
         }, this::pairingFailed);
     }
 
     public void pairingFailed(Throwable e) {
-        LoadingDialogFragment.close(getFragmentManager());
-
-        if (e instanceof PeripheralNotFoundError) {
-            OnboardingPairHelpFragment pairHelpFragment = new OnboardingPairHelpFragment();
-            pairHelpFragment.setTargetFragment(this, REQUEST_CODE_PAIR_HELP);
-            ((FragmentNavigation) getActivity()).showFragment(pairHelpFragment, null, true);
-        } else if (hardwarePresenter.isErrorFatal(e)) {
-            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
-            fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
-        } else {
-            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
-        }
+        hideAllActivity(false, () -> {
+            if (e instanceof PeripheralNotFoundError) {
+                OnboardingPairHelpFragment pairHelpFragment = new OnboardingPairHelpFragment();
+                pairHelpFragment.setTargetFragment(this, REQUEST_CODE_PAIR_HELP);
+                ((FragmentNavigation) getActivity()).showFragment(pairHelpFragment, null, true);
+            } else if (hardwarePresenter.isErrorFatal(e)) {
+                UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+                fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
+            } else {
+                ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            }
+        });
     }
 
 

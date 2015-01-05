@@ -8,22 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import javax.inject.Inject;
-
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingBluetoothFragment extends InjectionFragment {
-    @Inject HardwarePresenter hardwarePresenter;
-
+public class OnboardingBluetoothFragment extends OnboardingHardwareFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,23 +47,22 @@ public class OnboardingBluetoothFragment extends InjectionFragment {
     }
 
     public void done() {
-        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
-                () -> ((OnboardingActivity) getActivity()).showSetupSense());
+        hideBlockingActivity(true, () -> ((OnboardingActivity) getActivity()).showSetupSense());
     }
 
     public void turnOn(@NonNull View sender) {
-        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_turning_on), true);
+        showBlockingActivity(R.string.title_turning_on);
         bindAndSubscribe(hardwarePresenter.turnOnBluetooth(), ignored -> {}, this::presentError);
     }
 
     public void presentError(Throwable e) {
-        LoadingDialogFragment.close(getFragmentManager());
-
-        if (hardwarePresenter.isErrorFatal(e)) {
-            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
-            fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
-        } else {
-            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
-        }
+        hideBlockingActivity(false, () -> {
+            if (hardwarePresenter.isErrorFatal(e)) {
+                UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+                fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
+            } else {
+                ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            }
+        });
     }
 }

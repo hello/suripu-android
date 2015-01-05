@@ -29,7 +29,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action1;
-import rx.functions.Action3;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand;
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand.CommandType;
@@ -131,7 +130,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                         .setType(CommandType.MORPHEUS_COMMAND_ERROR)
                         .setError(SenseCommandProtos.ErrorType.TIME_OUT)
                         .build();
-                onCommandResponse.call(timeoutResponse, s, timeout);
+                onCommandResponse.onResponse(timeoutResponse, s, timeout);
             }, peripheral.getStack().getScheduler());
 
             Action1<Throwable> onError = error -> {
@@ -144,7 +143,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
             subscribe.subscribe(subscribedCharacteristic -> {
                 dataHandler.onResponse = response -> {
                     Logger.info(Peripheral.LOG_TAG, "Got response to command " + command + ": " + response);
-                    onCommandResponse.call(response, s, timeout);
+                    onCommandResponse.onResponse(response, s, timeout);
                 };
                 dataHandler.onError = dataError -> {
                     timeout.unschedule();
@@ -345,11 +344,11 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
 
-    public Observable<Void> stopAnimation(boolean success) {
-        Logger.info(Peripheral.LOG_TAG, "stopAnimation()");
+    public Observable<Void> stopAnimation(boolean withFade) {
+        Logger.info(Peripheral.LOG_TAG, "stopAnimation(" + withFade + ")");
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(success ? CommandType.MORPHEUS_COMMAND_LED_OPERATION_SUCCESS : CommandType.MORPHEUS_COMMAND_LED_OPERATION_FAILED)
+                .setType(withFade ? CommandType.MORPHEUS_COMMAND_LED_OPERATION_SUCCESS : CommandType.MORPHEUS_COMMAND_LED_OPERATION_FAILED)
                 .setVersion(COMMAND_VERSION)
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
@@ -428,7 +427,9 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     //endregion
 
 
-    interface OnCommandResponse extends Action3<MorpheusCommand, Subscriber<? super MorpheusCommand>, OperationTimeout> {}
+    interface OnCommandResponse {
+        void onResponse(MorpheusCommand response, Subscriber<? super MorpheusCommand> subscriber, OperationTimeout timeout);
+    }
 
 
     public final class SenseWifiNetwork {
