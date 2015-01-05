@@ -22,6 +22,7 @@ import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
@@ -30,7 +31,7 @@ import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class OnboardingPairSenseFragment extends OnboardingHardwareFragment {
+public class OnboardingPairSenseFragment extends HardwareFragment {
     private static int REQUEST_CODE_PAIR_HELP = 0x19;
 
     @Inject BuildValues buildValues;

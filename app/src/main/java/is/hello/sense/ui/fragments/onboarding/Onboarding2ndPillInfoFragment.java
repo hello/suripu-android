@@ -13,12 +13,12 @@ import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class Onboarding2ndPillInfoFragment extends OnboardingHardwareFragment {
+public class Onboarding2ndPillInfoFragment extends HardwareFragment {
     @Inject HardwarePresenter hardwarePresenter;
 
     @Override
@@ -55,7 +55,7 @@ public class Onboarding2ndPillInfoFragment extends OnboardingHardwareFragment {
         }
 
         bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                         ignored -> Logger.info(Onboarding2ndPillInfoFragment.class.getSimpleName(), "Sense is now in pairing mode"),
-                         Functions.LOG_ERROR);
+                ignored -> Logger.info(Onboarding2ndPillInfoFragment.class.getSimpleName(), "Sense is now in pairing mode"),
+                Functions.LOG_ERROR);
     }
 }

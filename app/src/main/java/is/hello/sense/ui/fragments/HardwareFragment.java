@@ -1,4 +1,4 @@
-package is.hello.sense.ui.fragments.onboarding;
+package is.hello.sense.ui.fragments;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -10,8 +10,12 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 
-public class OnboardingHardwareFragment extends InjectionFragment {
-    @Inject HardwarePresenter hardwarePresenter;
+/**
+ * Extends InjectionFragment to add support for displaying
+ * in-app and on Sense loading indicators.
+ */
+public abstract class HardwareFragment extends InjectionFragment {
+    public @Inject HardwarePresenter hardwarePresenter;
 
     private LoadingDialogFragment loadingDialogFragment;
 
@@ -43,9 +47,13 @@ public class OnboardingHardwareFragment extends InjectionFragment {
     }
 
     protected void hideHardwareActivity(@NonNull Runnable onCompletion) {
-        bindAndSubscribe(hardwarePresenter.trippyAnimation(),
-                         ignored -> onCompletion.run(),
-                         error -> onCompletion.run());
+        if (hardwarePresenter.getPeripheral() != null) {
+            bindAndSubscribe(hardwarePresenter.trippyAnimation(),
+                             ignored -> onCompletion.run(),
+                             error -> onCompletion.run());
+        } else {
+            onCompletion.run();
+        }
     }
 
     protected void completeHardwareActivity(@NonNull Runnable onCompletion) {

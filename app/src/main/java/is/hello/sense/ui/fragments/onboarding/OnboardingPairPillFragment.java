@@ -17,11 +17,12 @@ import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
+import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingPairPillFragment extends OnboardingHardwareFragment {
+public class OnboardingPairPillFragment extends HardwareFragment {
     private ProgressBar activityIndicator;
     private TextView activityStatus;
     private Button retryButton;

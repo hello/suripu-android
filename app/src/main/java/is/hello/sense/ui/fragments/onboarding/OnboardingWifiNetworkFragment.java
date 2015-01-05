@@ -20,12 +20,13 @@ import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.HelpUtil;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import rx.functions.Action1;
 
-public class OnboardingWifiNetworkFragment extends OnboardingHardwareFragment implements AdapterView.OnItemClickListener {
+public class OnboardingWifiNetworkFragment extends HardwareFragment implements AdapterView.OnItemClickListener {
     private WifiNetworkAdapter networkAdapter;
 
     private TextView infoLabel;

@@ -24,12 +24,10 @@ import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
-import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
-import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SensorStateView;
@@ -40,14 +38,13 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.functions.Action0;
 
-public class DeviceDetailsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+public class DeviceDetailsFragment extends HardwareFragment implements AdapterView.OnItemClickListener {
     public static final int RESULT_UNPAIRED_PILL = 0x66;
 
     public static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
 
     @Inject ApiSessionManager apiSessionManager;
     @Inject DateFormatter dateFormatter;
-    @Inject HardwarePresenter hardwarePresenter;
     @Inject DevicesPresenter devicesPresenter;
 
     private ProgressBar activityIndicator;
@@ -185,16 +182,10 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     }
 
     public void enableBluetooth() {
-        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_turning_on), true);
+        showBlockingActivity(R.string.title_turning_on);
         bindAndSubscribe(hardwarePresenter.turnOnBluetooth(),
-                         ignored -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                             connectToPeripheral();
-                         },
-                         e -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                             presentError(e);
-                         });
+                         ignored -> hideBlockingActivity(true, this::connectToPeripheral),
+                         this::presentError);
     }
 
     public void bindPeripheral(@NonNull SensePeripheral peripheral) {
@@ -229,25 +220,25 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
 
     public void presentError(@NonNull Throwable e) {
         activityIndicator.setVisibility(View.GONE);
-        LoadingDialogFragment.close(getFragmentManager());
+        hideAllActivity(false, () -> {
+            if (hardwarePresenter.isErrorFatal(e)) {
+                UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+                fragment.show(getFragmentManager(), R.id.activity_fragment_navigation_container);
+            } else {
+                ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            }
 
-        if (hardwarePresenter.isErrorFatal(e)) {
-            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
-            fragment.show(getFragmentManager(), R.id.activity_fragment_navigation_container);
-        } else {
-            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
-        }
+            Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
 
-        Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
+            if (signalStrength != null) {
+                signalStrength.setReading(getString(R.string.missing_data_placeholder));
+                senseActionsContainer.setVisibility(View.GONE);
+            }
 
-        if (signalStrength != null) {
-            signalStrength.setReading(getString(R.string.missing_data_placeholder));
-            senseActionsContainer.setVisibility(View.GONE);
-        }
-
-        if (actionButton != null) {
-            actionButton.setVisibility(View.VISIBLE);
-        }
+            if (actionButton != null) {
+                actionButton.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
 
@@ -266,11 +257,12 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         if (hardwarePresenter.getPeripheral() == null)
             return;
 
-        LoadingDialogFragment.show(getFragmentManager());
-
-        bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                         ignored -> LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> getFragmentManager().popBackStackImmediate()),
-                         this::presentError);
+        showBlockingActivity(R.string.dialog_loading_message);
+        showHardwareActivity(() -> {
+            bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
+                             ignored -> hideAllActivity(true, () -> getFragmentManager().popBackStackImmediate()),
+                             this::presentError);
+        });
     }
 
     public void pairNewPill(@NonNull View sender) {
@@ -297,24 +289,26 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         dialog.setMessage(R.string.dialog_messsage_factory_reset);
         dialog.setNegativeButton(android.R.string.cancel, null);
         dialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> {
-            LoadingDialogFragment.show(getFragmentManager());
-            bindAndSubscribe(hardwarePresenter.factoryReset(), device -> {
-                Logger.info(getClass().getSimpleName(), "Completed Sense factory reset");
-                Action0 finish = () -> {
-                    LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-                        apiSessionManager.logOut(getActivity());
-                        getActivity().finish();
-                    });
-                };
-                bindAndSubscribe(devicesPresenter.unregisterAllDevices(),
-                        ignored -> {
-                            finish.call();
-                        },
-                        e -> {
-                            Logger.error(getClass().getSimpleName(), "Could not unregister all devices, ignoring.", e);
-                            finish.call();
+            showBlockingActivity(R.string.dialog_loading_message);
+            showHardwareActivity(() -> {
+                bindAndSubscribe(hardwarePresenter.factoryReset(), device -> {
+                    Logger.info(getClass().getSimpleName(), "Completed Sense factory reset");
+                    Action0 finish = () -> {
+                        hideAllActivity(true, () -> {
+                            apiSessionManager.logOut(getActivity());
+                            getActivity().finish();
                         });
-            }, this::presentError);
+                    };
+                    bindAndSubscribe(devicesPresenter.unregisterAllDevices(),
+                            ignored -> {
+                                finish.call();
+                            },
+                            e -> {
+                                Logger.error(getClass().getSimpleName(), "Could not unregister all devices, ignoring.", e);
+                                finish.call();
+                            });
+                }, this::presentError);
+            });
         });
         dialog.show();
     }
@@ -328,8 +322,8 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         alertDialog.setPositiveButton(R.string.action_unpair, (d, which) -> {
             activityIndicator.setVisibility(View.VISIBLE);
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
-                    ignored -> finishWithResult(RESULT_UNPAIRED_PILL, null),
-                    this::presentError);
+                             ignored -> finishWithResult(RESULT_UNPAIRED_PILL, null),
+                             this::presentError);
         });
         alertDialog.show();
     }
