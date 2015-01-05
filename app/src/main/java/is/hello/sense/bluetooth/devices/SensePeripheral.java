@@ -315,6 +315,66 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
 
+    public Observable<Void> pushData() {
+        Logger.info(Peripheral.LOG_TAG, "pushData()");
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE)
+                .setVersion(COMMAND_VERSION)
+                .build();
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
+    }
+
+    public Observable<Void> busyAnimation() {
+        Logger.info(Peripheral.LOG_TAG, "busyAnimation()");
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_LED_BUSY)
+                .setVersion(COMMAND_VERSION)
+                .build();
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
+    }
+
+    public Observable<Void> trippyAnimation() {
+        Logger.info(Peripheral.LOG_TAG, "trippyAnimation()");
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_LED_TRIPPY)
+                .setVersion(COMMAND_VERSION)
+                .build();
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
+    }
+
+    public Observable<Void> stopAnimation(boolean success) {
+        Logger.info(Peripheral.LOG_TAG, "stopAnimation()");
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(success ? CommandType.MORPHEUS_COMMAND_LED_OPERATION_SUCCESS : CommandType.MORPHEUS_COMMAND_LED_OPERATION_FAILED)
+                .setVersion(COMMAND_VERSION)
+                .build();
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
+    }
+
+    public Observable<Void> startWifiScan() {
+        Logger.info(Peripheral.LOG_TAG, "startWifiScan()");
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_SCAN_WIFI)
+                .setVersion(COMMAND_VERSION)
+                .build();
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
+    }
+
+    public Observable<SenseCommandProtos.wifi_endpoint> nextWifiEndpoint() {
+        Logger.info(Peripheral.LOG_TAG, "nextWifiEndpoint()");
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_SCAN_WIFI)
+                .setVersion(COMMAND_VERSION)
+                .build();
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(r -> r.getWifiScanResult(0));
+    }
+
     public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks() {
         Logger.info(Peripheral.LOG_TAG, "scanForWifiNetworks()");
 
