@@ -236,6 +236,30 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return this.connectingToPeripheral;
     }
 
+    public Observable<Void> busyAnimation() {
+        if (peripheral == null) {
+            return noDeviceError();
+        }
+
+        return peripheral.busyAnimation();
+    }
+
+    public Observable<Void> trippyAnimation() {
+        if (peripheral == null) {
+            return noDeviceError();
+        }
+
+        return peripheral.trippyAnimation();
+    }
+
+    public Observable<Void> stopAnimation(boolean success) {
+        if (peripheral == null) {
+            return noDeviceError();
+        }
+
+        return peripheral.stopAnimation(success);
+    }
+
     public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks() {
         if (peripheral == null) {
             return noDeviceError();
@@ -302,6 +326,14 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                              setPairedPillId(pillId);
                          })
                          .doOnError(this.respondToError);
+    }
+
+    public Observable<Void> pushData() {
+        if (peripheral == null) {
+            return noDeviceError();
+        }
+
+        return peripheral.pushData();
     }
 
     public Observable<Void> putIntoPairingMode() {
