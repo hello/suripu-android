@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import net.hockeyapp.android.UpdateManager;
 
@@ -105,6 +106,8 @@ public class HomeActivity
 
         Observable<Intent> onLogOut = fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         bindAndSubscribe(onLogOut, ignored -> {
+            Toast.makeText(getApplicationContext(), R.string.error_session_invalidated, Toast.LENGTH_SHORT).show();
+
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
         }, Functions.LOG_ERROR);
