@@ -84,24 +84,29 @@ public class SensorHistory extends ApiResponse {
 
     public static Observable<SensorHistoryAdapter.Update> createAdapterUpdate(@NonNull List<SensorHistory> history, int mode, @NonNull DateTimeZone timeZone) {
         return Observable.create((Observable.OnSubscribe<SensorHistoryAdapter.Update>) s -> {
-            Function<SensorHistory, Integer> segmentKeyProducer;
-            if (mode == SensorHistoryPresenter.MODE_WEEK) {
-                segmentKeyProducer = sensorHistory -> sensorHistory.getTime().withZone(timeZone).getDayOfMonth();
+            if (history.isEmpty()) {
+                s.onNext(new SensorHistoryAdapter.Update(Collections.emptyList(), 0f, 0f));
+                s.onCompleted();
             } else {
-                segmentKeyProducer = sensorHistory -> {
-                    DateTime shiftedTime = sensorHistory.getTime().withZone(timeZone);
-                    return (shiftedTime.getDayOfMonth() * 100) + (shiftedTime.getHourOfDay() / 6);
-                };
+                Function<SensorHistory, Integer> segmentKeyProducer;
+                if (mode == SensorHistoryPresenter.MODE_WEEK) {
+                    segmentKeyProducer = sensorHistory -> sensorHistory.getTime().withZone(timeZone).getDayOfMonth();
+                } else {
+                    segmentKeyProducer = sensorHistory -> {
+                        DateTime shiftedTime = sensorHistory.getTime().withZone(timeZone);
+                        return (shiftedTime.getDayOfMonth() * 100) + (shiftedTime.getHourOfDay() / 6);
+                    };
+                }
+                List<List<SensorHistory>> segments = segment(segmentKeyProducer, history);
+                List<SensorHistoryAdapter.Section> sections = map(segments, SensorHistoryAdapter.Section::new);
+
+                Comparator<SensorHistory> comparator = (l, r) -> Float.compare(r.getValue(), l.getValue());
+                float peak = Collections.max(history, comparator).getValue();
+                float base = Collections.min(history, comparator).getValue();
+
+                s.onNext(new SensorHistoryAdapter.Update(sections, peak, base));
+                s.onCompleted();
             }
-            List<List<SensorHistory>> segments = segment(segmentKeyProducer, history);
-            List<SensorHistoryAdapter.Section> sections = map(segments, SensorHistoryAdapter.Section::new);
-
-            Comparator<SensorHistory> comparator = (l, r) -> Float.compare(r.getValue(), l.getValue());
-            float peak = Collections.max(history, comparator).getValue();
-            float base = Collections.min(history, comparator).getValue();
-
-            s.onNext(new SensorHistoryAdapter.Update(sections, peak, base));
-            s.onCompleted();
         }).subscribeOn(Schedulers.computation());
     }
 
