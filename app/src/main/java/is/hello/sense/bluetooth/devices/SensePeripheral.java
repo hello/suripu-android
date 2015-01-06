@@ -378,43 +378,15 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
 
-    public Observable<Void> busyAnimation() {
-        Logger.info(Peripheral.LOG_TAG, "busyAnimation()");
+    public Observable<Void> runLedAnimation(@NonNull LedAnimation animationType) {
+        Logger.info(Peripheral.LOG_TAG, "runLedAnimation(" + animationType + ")");
 
         if (isBusy()) {
             return Observable.error(busyError());
         }
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(CommandType.MORPHEUS_COMMAND_LED_BUSY)
-                .setVersion(COMMAND_VERSION)
-                .build();
-        return performSimpleCommand(morpheusCommand, createAnimationTimeout()).map(Functions.TO_VOID);
-    }
-
-    public Observable<Void> trippyAnimation() {
-        Logger.info(Peripheral.LOG_TAG, "trippyAnimation()");
-
-        if (isBusy()) {
-            return Observable.error(busyError());
-        }
-
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(CommandType.MORPHEUS_COMMAND_LED_TRIPPY)
-                .setVersion(COMMAND_VERSION)
-                .build();
-        return performSimpleCommand(morpheusCommand, createAnimationTimeout()).map(Functions.TO_VOID);
-    }
-
-    public Observable<Void> stopAnimation(boolean withFade) {
-        Logger.info(Peripheral.LOG_TAG, "stopAnimation(" + withFade + ")");
-
-        if (isBusy()) {
-            return Observable.error(busyError());
-        }
-
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(withFade ? CommandType.MORPHEUS_COMMAND_LED_OPERATION_SUCCESS : CommandType.MORPHEUS_COMMAND_LED_OPERATION_FAILED)
+                .setType(animationType.commandType)
                 .setVersion(COMMAND_VERSION)
                 .build();
         return performSimpleCommand(morpheusCommand, createAnimationTimeout()).map(Functions.TO_VOID);
@@ -527,6 +499,19 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                     ", connectionState=" + connectionState +
                     ", isBusy=" + isBusy() +
                     '}';
+        }
+    }
+
+    public static enum LedAnimation {
+        BUSY(CommandType.MORPHEUS_COMMAND_LED_BUSY),
+        TRIPPY(CommandType.MORPHEUS_COMMAND_LED_TRIPPY),
+        FADE_OUT(CommandType.MORPHEUS_COMMAND_LED_OPERATION_SUCCESS),
+        STOP(CommandType.MORPHEUS_COMMAND_LED_OPERATION_FAILED);
+
+        final CommandType commandType;
+
+        LedAnimation(@NonNull CommandType commandType) {
+            this.commandType = commandType;
         }
     }
 }

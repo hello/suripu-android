@@ -5,6 +5,7 @@ import android.support.annotation.StringRes;
 
 import javax.inject.Inject;
 
+import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -45,14 +46,14 @@ public abstract class HardwareFragment extends InjectionFragment {
 
 
     protected void showHardwareActivity(@NonNull Runnable onCompletion) {
-        bindAndSubscribe(hardwarePresenter.busyAnimation(),
+        bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.BUSY),
                          ignored -> onCompletion.run(),
                          error -> onCompletion.run());
     }
 
     protected void hideHardwareActivity(@NonNull Runnable onCompletion) {
         if (hardwarePresenter.getPeripheral() != null) {
-            bindAndSubscribe(hardwarePresenter.trippyAnimation(),
+            bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.TRIPPY),
                              ignored -> onCompletion.run(),
                              error -> onCompletion.run());
         } else {
@@ -61,7 +62,7 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
     protected void completeHardwareActivity(@NonNull Runnable onCompletion) {
-        bindAndSubscribe(hardwarePresenter.stopAnimation(true),
+        bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.FADE_OUT),
                          ignored -> onCompletion.run(),
                          error -> onCompletion.run());
     }

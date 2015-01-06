@@ -175,12 +175,12 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     public void getWifiNetwork() {
         LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(selectedPeripheral.getWifiNetwork(),
-                         network -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                             MessageDialogFragment dialogFragment = MessageDialogFragment.newInstance("Wifi Network", network.ssid + "\n" + network.connectionState);
-                             dialogFragment.show(getFragmentManager(), MessageDialogFragment.TAG);
-                         },
-                         this::presentError);
+                network -> {
+                    LoadingDialogFragment.close(getFragmentManager());
+                    MessageDialogFragment dialogFragment = MessageDialogFragment.newInstance("Wifi Network", network.ssid + "\n" + network.connectionState);
+                    dialogFragment.show(getFragmentManager(), MessageDialogFragment.TAG);
+                },
+                this::presentError);
     }
 
     public void setWifiNetwork() {
@@ -204,19 +204,19 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     }
 
     public void busyLedAnimation() {
-        runSimpleCommand(selectedPeripheral.busyAnimation());
+        runSimpleCommand(selectedPeripheral.runLedAnimation(SensePeripheral.LedAnimation.BUSY));
     }
 
     public void trippyLedAnimation() {
-        runSimpleCommand(selectedPeripheral.trippyAnimation());
+        runSimpleCommand(selectedPeripheral.runLedAnimation(SensePeripheral.LedAnimation.TRIPPY));
     }
 
     public void stopAnimationWithFade() {
-        runSimpleCommand(selectedPeripheral.stopAnimation(true));
+        runSimpleCommand(selectedPeripheral.runLedAnimation(SensePeripheral.LedAnimation.FADE_OUT));
     }
 
     public void stopAnimationWithoutFade() {
-        runSimpleCommand(selectedPeripheral.stopAnimation(false));
+        runSimpleCommand(selectedPeripheral.runLedAnimation(SensePeripheral.LedAnimation.STOP));
     }
 
     //endregion
