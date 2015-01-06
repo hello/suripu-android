@@ -19,6 +19,7 @@ import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.errors.BluetoothPowerChangeError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
+import is.hello.sense.bluetooth.errors.PeripheralBusyError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
@@ -61,6 +62,8 @@ public class ErrorDialogFragment extends DialogFragment {
             message = context.getString(R.string.error_sense_not_found);
         } else if (e instanceof BluetoothPowerChangeError) {
             message = context.getString(R.string.error_bluetooth_power_change);
+        } else if (e instanceof PeripheralBusyError) {
+            message = context.getString(R.string.error_bluetooth_peripheral_busy);
         } else if (e instanceof SensePeripheralError) {
             SenseCommandProtos.ErrorType errorType = ((SensePeripheralError) e).errorType;
             switch (errorType) {
