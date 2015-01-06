@@ -34,7 +34,6 @@ import is.hello.sense.util.Analytics;
 import rx.Observable;
 
 public class SmartAlarmListFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, SmartAlarmAdapter.OnAlarmEnabledChanged {
-    private static final int EDIT_REQUEST_CODE = 0x31;
     private static final int DELETE_REQUEST_CODE = 0x11;
 
     @Inject SmartAlarmPresenter smartAlarmPresenter;
@@ -88,33 +87,14 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == Activity.RESULT_CANCELED) {
-            return;
-        }
-
-        if (requestCode == EDIT_REQUEST_CODE) {
-            int index = data.getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, 0);
-            if (resultCode == Activity.RESULT_OK) {
-                SmartAlarm alarm = (SmartAlarm) data.getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
-                if (index == SmartAlarmDetailActivity.INDEX_NEW) {
-                    currentAlarms.add(alarm);
-                } else {
-                    currentAlarms.set(index, alarm);
-                }
-            } else if (resultCode == SmartAlarmDetailActivity.RESULT_DELETE) {
-                if (index != SmartAlarmDetailActivity.INDEX_NEW) {
-                    currentAlarms.remove(index);
-                }
-            }
-        } else if (requestCode == DELETE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == DELETE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             int position = data.getIntExtra(DeleteAlarmDialogFragment.ARG_INDEX, 0);
-            currentAlarms.remove(position);
-        }
 
-        activityIndicator.setVisibility(View.VISIBLE);
-        bindAndSubscribe(smartAlarmPresenter.save(currentAlarms),
-                ignored -> activityIndicator.setVisibility(View.GONE),
-                this::presentError);
+            activityIndicator.setVisibility(View.VISIBLE);
+            bindAndSubscribe(smartAlarmPresenter.deleteSmartAlarm(position),
+                             ignored -> activityIndicator.setVisibility(View.GONE),
+                             this::presentError);
+        }
     }
 
     public void bindAlarms(@NonNull ArrayList<SmartAlarm> alarms) {
@@ -142,7 +122,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         Bundle arguments = SmartAlarmDetailActivity.getArguments(alarm, index);
         Intent intent = new Intent(getActivity(), SmartAlarmDetailActivity.class);
         intent.putExtras(arguments);
-        startActivityForResult(intent, EDIT_REQUEST_CODE);
+        startActivity(intent);
     }
 
     @Override

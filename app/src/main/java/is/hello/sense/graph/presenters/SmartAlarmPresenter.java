@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SmartAlarm;
@@ -15,7 +16,7 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
-public class SmartAlarmPresenter extends ValuePresenter<ArrayList<SmartAlarm>> {
+@Singleton public class SmartAlarmPresenter extends ValuePresenter<ArrayList<SmartAlarm>> {
     private final ApiService apiService;
 
     public final PresenterSubject<ArrayList<SmartAlarm>> alarms = this.subject;
@@ -55,8 +56,32 @@ public class SmartAlarmPresenter extends ValuePresenter<ArrayList<SmartAlarm>> {
     }
 
 
+    public Observable<VoidResponse> addSmartAlarm(@NonNull SmartAlarm alarm) {
+        return alarms.take(1).flatMap(alarms -> {
+            ArrayList<SmartAlarm> newAlarms = new ArrayList<>(alarms);
+            newAlarms.add(alarm);
+            return save(newAlarms);
+        });
+    }
+
+    public Observable<VoidResponse> saveSmartAlarm(int index, @NonNull SmartAlarm alarm) {
+        return alarms.take(1).flatMap(alarms -> {
+            ArrayList<SmartAlarm> newAlarms = new ArrayList<>(alarms);
+            newAlarms.set(index, alarm);
+            return save(newAlarms);
+        });
+    }
+
+    public Observable<VoidResponse> deleteSmartAlarm(int index) {
+        return alarms.take(1).flatMap(alarms -> {
+            ArrayList<SmartAlarm> newAlarms = new ArrayList<>(alarms);
+            newAlarms.remove(index);
+            return save(newAlarms);
+        });
+    }
+
     public Observable<VoidResponse> save(@NonNull ArrayList<SmartAlarm> updatedAlarms) {
-        logEvent("save()");
+        logEvent("save(" + updatedAlarms.size() + " alarms)");
 
         if (validateAlarms(updatedAlarms)) {
             return apiService.saveSmartAlarms(System.currentTimeMillis(), updatedAlarms)

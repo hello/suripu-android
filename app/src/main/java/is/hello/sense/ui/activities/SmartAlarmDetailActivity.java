@@ -13,8 +13,6 @@ import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 
 public class SmartAlarmDetailActivity extends SenseActivity {
-    public static final int RESULT_DELETE = 0xD3;
-
     public static final String EXTRA_ALARM = SmartAlarmDetailActivity.class.getName() + ".ARG_ALARM";
     public static final String EXTRA_INDEX = SmartAlarmDetailActivity.class.getName() + ".ARG_INDEX";
 

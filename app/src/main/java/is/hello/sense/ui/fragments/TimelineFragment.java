@@ -27,11 +27,13 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.PreSleepInsight;
+import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
@@ -168,15 +170,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.smartAlarmButton = (ImageButton) view.findViewById(R.id.fragment_timeline_smart_alarm);
         Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
-            // TODO: This is massively hacky
-
-            SharedPreferences preferences = getActivity().getSharedPreferences(Constants.INTERNAL_PREFS, 0);
-            preferences.edit()
-                    .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
-                    .putInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 3)
-                    .apply();
-
-            ((HomeActivity) getActivity()).getSlidingLayersView().open();
+            Intent intent = new Intent(getActivity(), SmartAlarmDetailActivity.class);
+            intent.putExtras(SmartAlarmDetailActivity.getArguments(new SmartAlarm(), SmartAlarmDetailActivity.INDEX_NEW));
+            startActivity(intent);
         });
 
         // Always do this after adding headers and footer views,
