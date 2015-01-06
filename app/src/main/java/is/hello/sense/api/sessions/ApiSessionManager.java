@@ -21,9 +21,14 @@ public abstract class ApiSessionManager {
         this.context = context;
 
         BroadcastReceiver receiver = new BroadcastReceiver() {
+            private long timeOfLastReception = 0;
+
             @Override
             public void onReceive(Context context, Intent intent) {
-                onSessionInvalidated();
+                if ((System.currentTimeMillis() - timeOfLastReception) > 1000) {
+                    onSessionInvalidated();
+                    this.timeOfLastReception = System.currentTimeMillis();
+                }
             }
         };
         LocalBroadcastManager.getInstance(context)
@@ -69,7 +74,6 @@ public abstract class ApiSessionManager {
 
     protected void onSessionInvalidated() {
         Logger.warn(getClass().getSimpleName(), "Session invalidated, logging out.");
-
         logOut();
     }
 
