@@ -44,8 +44,7 @@ import rx.Observable;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class SensorHistoryFragment extends InjectionFragment implements SelectorLinearLayout.OnSelectionChangedListener {
-    @Inject
-    RoomConditionsPresenter conditionsPresenter;
+    @Inject RoomConditionsPresenter conditionsPresenter;
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
     @Inject Markdown markdown;
     @Inject DateFormatter dateFormatter;
@@ -167,7 +166,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 bindAndSubscribe(markdown.renderWithEmphasisColor(sensorColor, condition.getMessage()),
                                  messageText::setText,
                                  e -> messageText.setText(condition.getMessage()));
-                insightText.setText("[placeholder] current conditions text");
+
+                bindAndSubscribe(markdown.renderWithEmphasisColor(sensorColor, condition.getIdealConditions()),
+                                 insightText::setText,
+                                 e -> insightText.setText(condition.getMessage()));
             } else {
                 readingText.setText(R.string.missing_data_placeholder);
                 messageText.setText(R.string.missing_data_placeholder);

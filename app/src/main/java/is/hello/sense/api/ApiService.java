@@ -31,6 +31,9 @@ import rx.Observable;
 public interface ApiService {
     public static final String DATE_FORMAT = "yyyy-MM-dd";
 
+    public static final String UNIT_TEMPERATURE_CELCIUS = "c";
+    public static final String UNIT_TEMPERATURE_US_CUSTOMARY = "f";
+
     //region OAuth
 
     @POST("/oauth2/token")
@@ -78,7 +81,7 @@ public interface ApiService {
     //region Room Conditions
 
     @GET("/room/current")
-    Observable<RoomConditions> currentRoomConditions();
+    Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit);
 
     @GET("/room/{sensor}/day")
     Observable<ArrayList<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor,
