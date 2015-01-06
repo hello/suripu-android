@@ -67,6 +67,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         peripheralActions.addItem("Set WiFi Network", null, this::setWifiNetwork);
         peripheralActions.addItem("Pair Pill Mode", null, this::pairPillMode);
         peripheralActions.addItem("Link Account", null, this::linkAccount);
+        peripheralActions.addItem("Push Data", null, this::pushData);
         peripheralActions.addItem("Busy LEDs", null, this::busyLedAnimation);
         peripheralActions.addItem("Trippy LEDs", null, this::trippyLedAnimation);
         peripheralActions.addItem("Fade Out LEDs", null, this::stopAnimationWithFade);
@@ -196,6 +197,10 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
     public void linkAccount() {
         runSimpleCommand(selectedPeripheral.linkAccount(apiSessionManager.getAccessToken()));
+    }
+
+    public void pushData() {
+        runSimpleCommand(selectedPeripheral.pushData());
     }
 
     public void busyLedAnimation() {

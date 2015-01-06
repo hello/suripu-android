@@ -301,22 +301,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(new OnboardingPairPillFragment(), null, false);
     }
 
-    public void showPillInstructions() {
-        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
-        builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
-        builder.setNextFragmentClass(OnboardingSetup2ndPillFragment.class);
-        builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_PILL_PLACEMENT);
-        builder.setHelpStep(HelpUtil.Step.ONBOARDING_PILL_PLACEMENT);
-        showFragment(builder.build(), null, true);
-    }
-
-    public void show2ndPillPairing() {
-        showFragment(new Onboarding2ndPillInfoFragment(), null, true);
-    }
-
-    public void showSenseColorsInfo() {
-        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
-
+    private OnboardingStaticStepFragment.Builder createSenseColorsBuilder() {
         OnboardingStaticStepFragment.Builder senseColorsBuilder = new OnboardingStaticStepFragment.Builder();
         senseColorsBuilder.setLayout(R.layout.sub_fragment_onboarding_sense_colors);
         senseColorsBuilder.setHideHelp(true);
@@ -333,11 +318,37 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         senseColorsBuilder.setNextFragmentArguments(introBuilder.arguments);
         senseColorsBuilder.setNextFragmentClass(OnboardingStaticStepFragment.class);
 
-        showFragment(senseColorsBuilder.build(), null, false);
+        return senseColorsBuilder;
+    }
+
+    public void showPillInstructions() {
+        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
+        builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
+        builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_PILL_PLACEMENT);
+        builder.setHelpStep(HelpUtil.Step.ONBOARDING_PILL_PLACEMENT);
+
+        builder.setNextFragmentArguments(createSenseColorsBuilder().arguments);
+        builder.setNextFragmentClass(OnboardingStaticStepFragment.class);
+
+        showFragment(builder.build(), null, true);
+    }
+
+    public void showSenseColorsInfo() {
+        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
+
+        showFragment(createSenseColorsBuilder().build(), null, false);
     }
 
     public void showSmartAlarmInfo() {
         showFragment(new OnboardingSmartAlarmFragment(), null, false);
+    }
+
+    public void show2ndPillIntroduction() {
+        showFragment(new OnboardingSetup2ndPillFragment(), null, false);
+    }
+
+    public void show2ndPillPairing() {
+        showFragment(new Onboarding2ndPillInfoFragment(), null, true);
     }
 
     public void showDone() {

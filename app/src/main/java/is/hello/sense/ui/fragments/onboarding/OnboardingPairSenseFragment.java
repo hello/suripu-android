@@ -14,11 +14,14 @@ import android.widget.Button;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
@@ -33,7 +36,9 @@ import rx.Observable;
 public class OnboardingPairSenseFragment extends HardwareFragment {
     private static int REQUEST_CODE_PAIR_HELP = 0x19;
 
+    @Inject ApiService apiService;
     @Inject BuildValues buildValues;
+    @Inject PreferencesPresenter preferences;
 
     private Button nextButton;
 
@@ -82,7 +87,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         showHardwareActivity(() -> {
             bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
                 if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
-                    linkAccount();
+                    setDeviceTimeZone();
                 } else {
                     hideAllActivity(true, () -> getOnboardingActivity().showSelectWifiNetwork(true));
                 }
@@ -91,6 +96,23 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 hideAllActivity(true, () -> getOnboardingActivity().showSelectWifiNetwork(true));
             });
         });
+    }
+
+    private void setDeviceTimeZone() {
+        showBlockingActivity(R.string.title_setting_time_zone);
+
+        SenseTimeZone timeZone = SenseTimeZone.fromDefault();
+        bindAndSubscribe(apiService.updateTimeZone(timeZone),
+                         ignored -> {
+                             Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
+
+                             preferences.edit()
+                                     .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
+                                     .apply();
+         
+                             linkAccount();
+                         },
+                         this::pairingFailed);
     }
 
     private void linkAccount() {

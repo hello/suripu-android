@@ -37,7 +37,7 @@ public class Onboarding2ndPillInfoFragment extends HardwareFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_2nd_pill_info, container, false);
 
         Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_2nd_pill_info_continue);
-        Views.setSafeOnClickListener(continueButton, ignored -> ((OnboardingActivity) getActivity()).showSenseColorsInfo());
+        Views.setSafeOnClickListener(continueButton, ignored -> getOnboardingActivity().showDone());
 
         return view;
     }
