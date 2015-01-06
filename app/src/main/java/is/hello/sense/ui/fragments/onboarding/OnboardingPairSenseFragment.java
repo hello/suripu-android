@@ -107,9 +107,9 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                              Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
 
                              preferences.edit()
-                                     .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
-                                     .apply();
-         
+                                        .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
+                                        .apply();
+
                              linkAccount();
                          },
                          this::pairingFailed);
