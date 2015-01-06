@@ -42,9 +42,15 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
     private Button nextButton;
 
+    private boolean hasLinkedAccount = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            this.hasLinkedAccount = savedInstanceState.getBoolean("hasLinkedAccount", false);
+        }
 
         Analytics.trackEvent(Analytics.EVENT_ONBOARDING_PAIR_SENSE, null);
 
@@ -73,6 +79,13 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("hasLinkedAccount", hasLinkedAccount);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -82,12 +95,13 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         }
     }
 
+
     private void checkConnectivityAndContinue() {
         showBlockingActivity(R.string.title_checking_connectivity);
         showHardwareActivity(() -> {
             bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
                 if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
-                    setDeviceTimeZone();
+                    linkAccount();
                 } else {
                     hideAllActivity(true, () -> getOnboardingActivity().showSelectWifiNetwork(true));
                 }
@@ -96,6 +110,24 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 hideAllActivity(true, () -> getOnboardingActivity().showSelectWifiNetwork(true));
             });
         });
+    }
+
+    private void linkAccount() {
+        if (hasLinkedAccount) {
+            setDeviceTimeZone();
+        } else {
+            showBlockingActivity(R.string.title_linking_account);
+
+            bindAndSubscribe(hardwarePresenter.linkAccount(),
+                             ignored -> {
+                                 this.hasLinkedAccount = true;
+                                 setDeviceTimeZone();
+                             },
+                             error -> {
+                                 Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not link Sense to account", error);
+                                 pairingFailed(error);
+                             });
+        }
     }
 
     private void setDeviceTimeZone() {
@@ -110,23 +142,14 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                                         .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
                                         .apply();
 
-                             linkAccount();
+                             pushDeviceData();
                          },
                          this::pairingFailed);
     }
 
-    private void linkAccount() {
-        showBlockingActivity(R.string.title_linking_account);
-        bindAndSubscribe(hardwarePresenter.linkAccount(),
-                         ignored -> pushDeviceData(),
-                         error -> {
-                             Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not link Sense to account", error);
-                             pairingFailed(error);
-                         });
-    }
-
     private void pushDeviceData() {
         showBlockingActivity(R.string.title_pushing_data);
+
         bindAndSubscribe(hardwarePresenter.pushData(),
                          ignored -> finished(),
                          error -> {

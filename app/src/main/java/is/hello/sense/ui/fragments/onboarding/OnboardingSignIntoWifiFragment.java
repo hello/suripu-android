@@ -52,7 +52,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
     private @Nullable SenseCommandProtos.wifi_endpoint network;
 
     private boolean hasConnectedToNetwork = false;
-    private boolean hasSetAccessToken = false;
+    private boolean hasSentAccessToken = false;
 
     public static OnboardingSignIntoWifiFragment newInstance(@Nullable SenseCommandProtos.wifi_endpoint network) {
         OnboardingSignIntoWifiFragment fragment = new OnboardingSignIntoWifiFragment();
@@ -71,7 +71,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
         this.network = (SenseCommandProtos.wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
         if (savedInstanceState != null) {
             this.hasConnectedToNetwork = savedInstanceState.getBoolean("hasConnectedToNetwork", false);
-            this.hasSetAccessToken = savedInstanceState.getBoolean("hasSetAccessToken", false);
+            this.hasSentAccessToken = savedInstanceState.getBoolean("hasSentAccessToken", false);
         }
 
         Analytics.trackEvent(Analytics.EVENT_ONBOARDING_WIFI_PASSWORD, null);
@@ -127,7 +127,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("hasConnectedToNetwork", hasConnectedToNetwork);
-        outState.putBoolean("hasSetAccessToken", hasSetAccessToken);
+        outState.putBoolean("hasSentAccessToken", hasSentAccessToken);
     }
 
     @Override
@@ -139,37 +139,6 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
         }
     }
 
-    private void finished() {
-        hideAllActivity(true, () -> getOnboardingActivity().showPairPill());
-    }
-
-    private void setDeviceTimeZone() {
-        showBlockingActivity(R.string.title_setting_time_zone);
-
-        SenseTimeZone timeZone = SenseTimeZone.fromDefault();
-        bindAndSubscribe(apiService.updateTimeZone(timeZone),
-                         ignored -> {
-                             Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
-
-                             preferences.edit()
-                                     .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
-                                     .apply();
-
-                             pushDeviceData();
-                         },
-                         this::presentError);
-    }
-
-    private void pushDeviceData() {
-        showBlockingActivity(R.string.title_pushing_data);
-
-        bindAndSubscribe(hardwarePresenter.pushData(),
-                         ignored -> finished(),
-                         error -> {
-                             Logger.error(getClass().getSimpleName(), "Could not push Sense data, ignoring.", error);
-                             finished();
-                         });
-    }
 
     private void sendWifiCredentials() {
         String networkName = this.networkName.getText().toString();
@@ -217,18 +186,50 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
     }
 
     private void sendAccessToken() {
-        if (hasSetAccessToken || getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false)) {
+        if (hasSentAccessToken || getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false)) {
             setDeviceTimeZone();
         } else {
             showBlockingActivity(R.string.title_linking_account);
 
             bindAndSubscribe(hardwarePresenter.linkAccount(),
                              ignored -> {
-                                 this.hasSetAccessToken = true;
+                                 this.hasSentAccessToken = true;
                                  setDeviceTimeZone();
                              },
                              this::presentError);
         }
+    }
+
+    private void setDeviceTimeZone() {
+        showBlockingActivity(R.string.title_setting_time_zone);
+
+        SenseTimeZone timeZone = SenseTimeZone.fromDefault();
+        bindAndSubscribe(apiService.updateTimeZone(timeZone),
+                         ignored -> {
+                             Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
+
+                             preferences.edit()
+                                     .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
+                                     .apply();
+
+                             pushDeviceData();
+                         },
+                         this::presentError);
+    }
+
+    private void pushDeviceData() {
+        showBlockingActivity(R.string.title_pushing_data);
+
+        bindAndSubscribe(hardwarePresenter.pushData(),
+                         ignored -> finished(),
+                         error -> {
+                             Logger.error(getClass().getSimpleName(), "Could not push Sense data, ignoring.", error);
+                             finished();
+                         });
+    }
+
+    private void finished() {
+        hideAllActivity(true, () -> getOnboardingActivity().showPairPill());
     }
 
 
