@@ -54,8 +54,6 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         super.onCreate(savedInstanceState);
 
         this.preferences = getActivity().getSharedPreferences(Constants.INTERNAL_PREFS, 0);
-
-        setRetainInstance(true);
     }
 
     @Nullable
