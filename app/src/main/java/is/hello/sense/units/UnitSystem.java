@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import is.hello.sense.api.ApiService;
 import is.hello.sense.units.systems.MetricUnitSystem;
 import is.hello.sense.units.systems.UsCustomaryUnitSystem;
 
@@ -49,6 +50,11 @@ public class UnitSystem implements Serializable {
     }
 
     //endregion
+
+
+    public String getApiTemperatureUnit() {
+        return ApiService.UNIT_TEMPERATURE_CELCIUS;
+    }
 
 
     //region Formatting

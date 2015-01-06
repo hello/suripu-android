@@ -1,10 +1,16 @@
 package is.hello.sense.units.systems;
 
+import is.hello.sense.api.ApiService;
 import is.hello.sense.units.UnitOperations;
 import is.hello.sense.units.UnitSystem;
 
 public class UsCustomaryUnitSystem extends UnitSystem {
     public static final String NAME = "UsCustomary";
+
+    @Override
+    public String getApiTemperatureUnit() {
+        return ApiService.UNIT_TEMPERATURE_US_CUSTOMARY;
+    }
 
     @Override
     public String formatMass(float mass) {
