@@ -18,7 +18,6 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
@@ -48,7 +47,6 @@ public class HomeActivity
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
     @Inject QuestionsPresenter questionsPresenter;
-    @Inject PreferencesPresenter preferences;
     @Inject BuildValues buildValues;
 
     private long lastUpdated = Long.MAX_VALUE;
@@ -105,15 +103,8 @@ public class HomeActivity
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        // This is probably not what we want to happen.
         Observable<Intent> onLogOut = fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         bindAndSubscribe(onLogOut, ignored -> {
-            preferences
-                    .edit()
-                    .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)
-                    .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE)
-                    .apply();
-
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
         }, Functions.LOG_ERROR);
