@@ -63,7 +63,13 @@ public final class SchedulerOperationTimeout implements OperationTimeout {
 
         // It's the responsibility of the scheduler of the timeout
         // to clean up after it when a timeout condition occurs.
-        this.subscription = scheduler.createWorker().schedule(action, durationMs, TimeUnit.MILLISECONDS);
+        this.subscription = scheduler.createWorker().schedule(() -> {
+            if (subscription == null || isInPool) {
+                return;
+            }
+
+            action.call();
+        }, durationMs, TimeUnit.MILLISECONDS);
     }
 
     @Override
