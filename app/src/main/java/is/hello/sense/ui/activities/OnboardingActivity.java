@@ -23,6 +23,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.AccountEditingFragment;
@@ -53,6 +54,7 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.Logger;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
@@ -218,11 +220,23 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(new OnboardingRegisterFragment(), null, true);
     }
 
-    public void showBirthday(@NonNull Account account) {
+    public void showBirthday(@Nullable Account account) {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_ACCOUNT);
 
-        this.account = account;
-        showFragment(new OnboardingRegisterBirthdayFragment(), null, false);
+        if (account != null) {
+            this.account = account;
+        }
+
+        if (bluetoothAdapter.isEnabled()) {
+            Logger.info(getClass().getSimpleName(), "Performing preemptive BLE Sense scan");
+            bindAndSubscribe(hardwarePresenter.closestPeripheral(),
+                    peripheral -> Logger.info(getClass().getSimpleName(), "Found and cached Sense " + peripheral),
+                    Functions.LOG_ERROR);
+
+            showFragment(new OnboardingRegisterBirthdayFragment(), null, false);
+        } else {
+            showFragment(OnboardingBluetoothFragment.newInstance(true), null, false);
+        }
     }
 
     @NonNull
@@ -264,7 +278,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             builder.setHelpStep(HelpUtil.Step.ONBOARDING_SETUP_SENSE);
             showFragment(builder.build(), null, false);
         } else {
-            showFragment(new OnboardingBluetoothFragment(), null, false);
+            showFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
         }
     }
 
@@ -287,22 +301,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(new OnboardingPairPillFragment(), null, false);
     }
 
-    public void showPillInstructions() {
-        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
-        builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
-        builder.setNextFragmentClass(OnboardingSetup2ndPillFragment.class);
-        builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_PILL_PLACEMENT);
-        builder.setHelpStep(HelpUtil.Step.ONBOARDING_PILL_PLACEMENT);
-        showFragment(builder.build(), null, true);
-    }
-
-    public void show2ndPillPairing() {
-        showFragment(new Onboarding2ndPillInfoFragment(), null, true);
-    }
-
-    public void showSenseColorsInfo() {
-        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
-
+    private OnboardingStaticStepFragment.Builder createSenseColorsBuilder() {
         OnboardingStaticStepFragment.Builder senseColorsBuilder = new OnboardingStaticStepFragment.Builder();
         senseColorsBuilder.setLayout(R.layout.sub_fragment_onboarding_sense_colors);
         senseColorsBuilder.setHideHelp(true);
@@ -319,11 +318,37 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         senseColorsBuilder.setNextFragmentArguments(introBuilder.arguments);
         senseColorsBuilder.setNextFragmentClass(OnboardingStaticStepFragment.class);
 
-        showFragment(senseColorsBuilder.build(), null, false);
+        return senseColorsBuilder;
+    }
+
+    public void showPillInstructions() {
+        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
+        builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
+        builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_PILL_PLACEMENT);
+        builder.setHelpStep(HelpUtil.Step.ONBOARDING_PILL_PLACEMENT);
+
+        builder.setNextFragmentArguments(createSenseColorsBuilder().arguments);
+        builder.setNextFragmentClass(OnboardingStaticStepFragment.class);
+
+        showFragment(builder.build(), null, true);
+    }
+
+    public void showSenseColorsInfo() {
+        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
+
+        showFragment(createSenseColorsBuilder().build(), null, false);
     }
 
     public void showSmartAlarmInfo() {
         showFragment(new OnboardingSmartAlarmFragment(), null, false);
+    }
+
+    public void show2ndPillIntroduction() {
+        showFragment(new OnboardingSetup2ndPillFragment(), null, false);
+    }
+
+    public void show2ndPillPairing() {
+        showFragment(new Onboarding2ndPillInfoFragment(), null, true);
     }
 
     public void showDone() {

@@ -67,6 +67,11 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         peripheralActions.addItem("Set WiFi Network", null, this::setWifiNetwork);
         peripheralActions.addItem("Pair Pill Mode", null, this::pairPillMode);
         peripheralActions.addItem("Link Account", null, this::linkAccount);
+        peripheralActions.addItem("Push Data", null, this::pushData);
+        peripheralActions.addItem("Busy LEDs", null, this::busyLedAnimation);
+        peripheralActions.addItem("Trippy LEDs", null, this::trippyLedAnimation);
+        peripheralActions.addItem("Fade Out LEDs", null, this::stopAnimationWithFade);
+        peripheralActions.addItem("Turn Off LEDs", null, this::stopAnimationWithoutFade);
     }
 
     @Override
@@ -170,12 +175,12 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     public void getWifiNetwork() {
         LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(selectedPeripheral.getWifiNetwork(),
-                         network -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                             MessageDialogFragment dialogFragment = MessageDialogFragment.newInstance("Wifi Network", network.ssid + "\n" + network.connectionState);
-                             dialogFragment.show(getFragmentManager(), MessageDialogFragment.TAG);
-                         },
-                         this::presentError);
+                network -> {
+                    LoadingDialogFragment.close(getFragmentManager());
+                    MessageDialogFragment dialogFragment = MessageDialogFragment.newInstance("Wifi Network", network.ssid + "\n" + network.connectionState);
+                    dialogFragment.show(getFragmentManager(), MessageDialogFragment.TAG);
+                },
+                this::presentError);
     }
 
     public void setWifiNetwork() {
@@ -192,6 +197,26 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
     public void linkAccount() {
         runSimpleCommand(selectedPeripheral.linkAccount(apiSessionManager.getAccessToken()));
+    }
+
+    public void pushData() {
+        runSimpleCommand(selectedPeripheral.pushData());
+    }
+
+    public void busyLedAnimation() {
+        runSimpleCommand(selectedPeripheral.runLedAnimation(SensePeripheral.LedAnimation.BUSY));
+    }
+
+    public void trippyLedAnimation() {
+        runSimpleCommand(selectedPeripheral.runLedAnimation(SensePeripheral.LedAnimation.TRIPPY));
+    }
+
+    public void stopAnimationWithFade() {
+        runSimpleCommand(selectedPeripheral.runLedAnimation(SensePeripheral.LedAnimation.FADE_OUT));
+    }
+
+    public void stopAnimationWithoutFade() {
+        runSimpleCommand(selectedPeripheral.runLedAnimation(SensePeripheral.LedAnimation.STOP));
     }
 
     //endregion

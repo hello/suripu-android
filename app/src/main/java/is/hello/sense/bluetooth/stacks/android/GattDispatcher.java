@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import is.hello.sense.bluetooth.errors.BluetoothEarlyDisconnectError;
-import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;

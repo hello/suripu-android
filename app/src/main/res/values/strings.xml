@@ -262,4 +262,7 @@
     <string name="title_trends">Trends</string>
     <string name="title_current_conditions">Current Conditions</string>
     <string name="action_today">Today</string>
+    <string name="title_setting_time_zone">Setting Time Zone…</string>
+    <string name="title_pushing_data">Pushing Data…</string>
+    <string name="error_bluetooth_peripheral_busy">Sense is busy, please retry again in a few moments.</string>
 </resources>

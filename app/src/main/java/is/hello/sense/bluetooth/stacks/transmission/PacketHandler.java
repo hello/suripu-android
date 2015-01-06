@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import is.hello.sense.bluetooth.errors.BluetoothEarlyDisconnectError;
-import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.util.Logger;
 
