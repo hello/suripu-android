@@ -55,20 +55,7 @@ public class OnboardingSmartAlarmFragment extends InjectionFragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            SmartAlarm newAlarm = (SmartAlarm) data.getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
-
-            LoadingDialogFragment.show(getFragmentManager());
-            bindAndSubscribe(smartAlarmPresenter.save(Lists.newArrayList(newAlarm)),
-                             ignored -> complete(),
-                             e -> {
-                                 LoadingDialogFragment.close(getFragmentManager());
-                                 if (e instanceof SmartAlarmPresenter.DayOverlapError) {
-                                     ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_day_overlap));
-                                     dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-                                 } else {
-                                     ErrorDialogFragment.presentError(getFragmentManager(), e);
-                                 }
-                             });
+            complete();
         }
     }
 
