@@ -47,7 +47,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
         String placeholder = getString(R.string.missing_data_placeholder);
         this.nameItem = adapter.addItem(getString(R.string.label_name), placeholder);
-        this.emailItem = adapter.addItem(getString(R.string.label_email), placeholder);
+        this.emailItem = adapter.addItem(getString(R.string.label_email), placeholder, this::changeEmail);
         adapter.addItem(getString(R.string.title_change_password), null, this::changePassword);
 
         listView.setAdapter(adapter);
@@ -83,6 +83,11 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 
+
+    public void changeEmail() {
+        FragmentNavigation navigation = (FragmentNavigation) getActivity();
+        navigation.showFragment(new ChangeEmailFragment(), getString(R.string.label_email), true);
+    }
 
     public void changePassword() {
         if (accountEmail != null) {

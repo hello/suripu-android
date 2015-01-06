@@ -52,6 +52,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
+import is.hello.sense.ui.fragments.settings.ChangeEmailFragment;
 import is.hello.sense.ui.fragments.settings.ChangePasswordFragment;
 import is.hello.sense.ui.fragments.settings.DeviceDetailsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
@@ -116,6 +117,7 @@ import is.hello.sense.util.BuildValues;
         MyInfoFragment.class,
         AccountSettingsFragment.class,
         ChangePasswordFragment.class,
+        ChangeEmailFragment.class,
         AccountPresenter.class,
 
         UnstableBluetoothFragment.class,

@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -64,6 +65,10 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     public void saveAccount(@NonNull Account updatedAccount) {
         apiService.updateAccount(updatedAccount).subscribe(account);
+    }
+
+    public Observable<VoidResponse> updateEmail(@NonNull String email) {
+        return null;
     }
 
     public Observable<SenseTimeZone> updateTimeZone(@NonNull SenseTimeZone senseTimeZone) {
