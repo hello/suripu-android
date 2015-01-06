@@ -10,7 +10,6 @@ import android.widget.Button;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
@@ -18,6 +17,18 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingBluetoothFragment extends HardwareFragment {
+    private static final String ARG_IS_BEFORE_BIRTHDAY = OnboardingBluetoothFragment.class.getName() + ".ARG_IS_BEFORE_BIRTHDAY";
+
+    public static OnboardingBluetoothFragment newInstance(boolean isBeforeBirthday) {
+        OnboardingBluetoothFragment fragment = new OnboardingBluetoothFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putBoolean(ARG_IS_BEFORE_BIRTHDAY, isBeforeBirthday);
+        fragment.setArguments(arguments);
+
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +59,13 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
     }
 
     public void done() {
-        hideBlockingActivity(true, () -> ((OnboardingActivity) getActivity()).showSetupSense());
+        hideBlockingActivity(true, () -> {
+            if (getArguments().getBoolean(ARG_IS_BEFORE_BIRTHDAY, false)) {
+                getOnboardingActivity().showBirthday(null);
+            } else {
+                getOnboardingActivity().showSetupSense();
+            }
+        });
     }
 
     public void turnOn(@NonNull View sender) {

@@ -23,6 +23,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.AccountEditingFragment;
@@ -53,6 +54,7 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.Logger;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
@@ -218,11 +220,23 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(new OnboardingRegisterFragment(), null, true);
     }
 
-    public void showBirthday(@NonNull Account account) {
+    public void showBirthday(@Nullable Account account) {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_ACCOUNT);
 
-        this.account = account;
-        showFragment(new OnboardingRegisterBirthdayFragment(), null, false);
+        if (account != null) {
+            this.account = account;
+        }
+
+        if (bluetoothAdapter.isEnabled()) {
+            Logger.info(getClass().getSimpleName(), "Performing preemptive BLE Sense scan");
+            bindAndSubscribe(hardwarePresenter.closestPeripheral(),
+                    peripheral -> Logger.info(getClass().getSimpleName(), "Found and cached Sense " + peripheral),
+                    Functions.LOG_ERROR);
+
+            showFragment(new OnboardingRegisterBirthdayFragment(), null, false);
+        } else {
+            showFragment(OnboardingBluetoothFragment.newInstance(true), null, false);
+        }
     }
 
     @NonNull
@@ -264,7 +278,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             builder.setHelpStep(HelpUtil.Step.ONBOARDING_SETUP_SENSE);
             showFragment(builder.build(), null, false);
         } else {
-            showFragment(new OnboardingBluetoothFragment(), null, false);
+            showFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
         }
     }
 

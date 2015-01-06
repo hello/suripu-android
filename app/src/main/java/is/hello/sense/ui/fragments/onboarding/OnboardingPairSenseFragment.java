@@ -17,7 +17,6 @@ import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
-import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.FragmentNavigation;
@@ -120,28 +119,21 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
     public void next(@NonNull View sender) {
         showBlockingActivity(R.string.title_pairing);
-        if (hardwarePresenter.getPeripheral() == null) {
-            Observable<SensePeripheral> device = hardwarePresenter.scanForDevices().map(hardwarePresenter::getClosestPeripheral);
-            bindAndSubscribe(device, this::tryToPairWith, this::pairingFailed);
-        } else {
-            checkConnectivityAndContinue();
-        }
+
+        Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
+        bindAndSubscribe(device, this::tryToPairWith, this::pairingFailed);
     }
 
-    public void tryToPairWith(@Nullable SensePeripheral device) {
-        if (device != null) {
-            if (buildValues.isDebugBuild()) {
-                SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
-                dialog.setTitle(R.string.debug_title_confirm_sense_pair);
-                dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
-                dialog.setPositiveButton(android.R.string.ok, (sender, which) -> pairWith(device));
-                dialog.setNegativeButton(android.R.string.cancel, null);
-                dialog.show();
-            } else {
-                pairWith(device);
-            }
+    public void tryToPairWith(@NonNull SensePeripheral device) {
+        if (buildValues.isDebugBuild()) {
+            SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+            dialog.setTitle(R.string.debug_title_confirm_sense_pair);
+            dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
+            dialog.setPositiveButton(android.R.string.ok, (sender, which) -> pairWith(device));
+            dialog.setNegativeButton(android.R.string.cancel, null);
+            dialog.show();
         } else {
-            pairingFailed(new PeripheralConnectionError());
+            pairWith(device);
         }
     }
 
