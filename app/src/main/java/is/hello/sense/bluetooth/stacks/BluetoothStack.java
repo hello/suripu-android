@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import rx.Observable;

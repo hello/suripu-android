@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
