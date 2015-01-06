@@ -7,16 +7,17 @@ import android.support.annotation.NonNull;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
+import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
@@ -29,10 +30,10 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
-import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
-import is.hello.sense.ui.fragments.RoomConditionsFragment;
-import is.hello.sense.ui.fragments.InsightsFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
+import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
+import is.hello.sense.ui.fragments.InsightsFragment;
+import is.hello.sense.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.ui.fragments.SensorHistoryFragment;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.SmartAlarmListFragment;
@@ -57,12 +58,12 @@ import is.hello.sense.ui.fragments.settings.DeviceDetailsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.MyInfoFragment;
 import is.hello.sense.ui.widget.TimestampTextView;
-import is.hello.sense.util.BuildValues;
 
 @Module(
     includes = {ApiModule.class, BluetoothModule.class, DebugModule.class},
     injects = {
-        BuildValues.class,
+        SenseApplication.class,
+
         DebugActivity.class,
         PreferencesPresenter.class,
         TimestampTextView.class,

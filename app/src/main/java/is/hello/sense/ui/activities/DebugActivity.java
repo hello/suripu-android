@@ -108,6 +108,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         debugActionItems.addItem("Clear Log", null, this::clearLog);
         debugActionItems.addItem("Share Log", null, this::sendLog);
         debugActionItems.addItem("Clear Http Cache", null, this::clearHttpCache);
+        debugActionItems.addItem("Clear OAuth Session", null, this::clearOAuthSession);
     }
 
 
@@ -160,6 +161,10 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         } catch (IOException e) {
             ErrorDialogFragment.presentError(getFragmentManager(), e);
         }
+    }
+
+    public void clearOAuthSession() {
+        sessionManager.setSession(null);
     }
 
 
