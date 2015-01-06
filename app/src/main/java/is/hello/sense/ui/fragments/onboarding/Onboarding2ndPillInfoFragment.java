@@ -12,13 +12,12 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class Onboarding2ndPillInfoFragment extends InjectionFragment {
+public class Onboarding2ndPillInfoFragment extends HardwareFragment {
     @Inject HardwarePresenter hardwarePresenter;
 
     @Override
@@ -37,7 +36,7 @@ public class Onboarding2ndPillInfoFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_2nd_pill_info, container, false);
 
         Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_2nd_pill_info_continue);
-        Views.setSafeOnClickListener(continueButton, ignored -> ((OnboardingActivity) getActivity()).showSenseColorsInfo());
+        Views.setSafeOnClickListener(continueButton, ignored -> getOnboardingActivity().showDone());
 
         return view;
     }
@@ -55,7 +54,7 @@ public class Onboarding2ndPillInfoFragment extends InjectionFragment {
         }
 
         bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                         ignored -> Logger.info(Onboarding2ndPillInfoFragment.class.getSimpleName(), "Sense is now in pairing mode"),
-                         Functions.LOG_ERROR);
+                ignored -> Logger.info(Onboarding2ndPillInfoFragment.class.getSimpleName(), "Sense is now in pairing mode"),
+                Functions.LOG_ERROR);
     }
 }

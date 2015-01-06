@@ -67,6 +67,6 @@ public class OnboardingSmartAlarmFragment extends InjectionFragment {
 
     public void complete() {
         LoadingDialogFragment.close(getFragmentManager());
-        ((OnboardingActivity) getActivity()).showDone();
+        ((OnboardingActivity) getActivity()).show2ndPillIntroduction();
     }
 }

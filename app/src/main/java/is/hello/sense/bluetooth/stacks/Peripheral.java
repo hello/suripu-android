@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
