@@ -124,7 +124,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
                     .putString(Constants.INTERNAL_PREF_API_ENV_NAME, newEnvironment.toString())
                     .apply();
 
-            sessionManager.logOut(this);
+            sessionManager.logOut();
         });
         builder.setCancelable(true);
         builder.create().show();
