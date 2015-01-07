@@ -17,22 +17,22 @@ public class TrendGraph extends ApiResponse {
 
 
     @JsonProperty("title")
-    public String title;
+    private String title;
 
     @JsonProperty("data_type")
-    public DataType dataType;
+    private DataType dataType;
 
     @JsonProperty("graph_type")
-    public GraphType graphType;
+    private GraphType graphType;
 
     @JsonProperty("time_period")
-    public String timePeriod;
+    private String timePeriod;
 
     @JsonProperty("options")
-    public List<String> options;
+    private List<String> options;
 
     @JsonProperty("data_points")
-    public List<GraphSample> dataPoints;
+    private List<GraphSample> dataPoints;
 
 
     public String getTitle() {
@@ -75,30 +75,30 @@ public class TrendGraph extends ApiResponse {
 
     public static class GraphSample extends ApiResponse {
         @JsonProperty("datetime")
-        public long dateTime;
+        private long dateTime;
 
         @JsonProperty("y_value")
-        public float yValue;
+        private float yValue;
 
         @JsonProperty("x_value")
-        public String xValue;
+        private String xValue;
 
         @JsonProperty("offset_millis")
-        public int offsetMillis;
+        private int offsetMillis;
 
         @JsonProperty("data_label")
-        public DataLabel dataLabel;
+        private DataLabel dataLabel;
 
 
         public long getDateTime() {
             return dateTime;
         }
 
-        public float getyValue() {
+        public float getYValue() {
             return yValue;
         }
 
-        public String getxValue() {
+        public String getXValue() {
             return xValue;
         }
 
