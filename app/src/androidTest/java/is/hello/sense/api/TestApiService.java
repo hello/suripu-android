@@ -183,12 +183,12 @@ public final class TestApiService implements ApiService {
 
 
     @Override
-    public Observable<List<AvailableTrendGraph>> availableTrendGraphs() {
+    public Observable<ArrayList<AvailableTrendGraph>> availableTrendGraphs() {
         return unimplemented();
     }
 
     @Override
-    public Observable<List<TrendGraph>> allTrends() {
+    public Observable<ArrayList<TrendGraph>> allTrends() {
         return unimplemented();
     }
 

@@ -129,6 +129,10 @@ public class TrendGraph extends ApiResponse {
         SLEEP_SCORE,
         SLEEP_DURATION;
 
+        public String toQueryString() {
+            return toString().toLowerCase();
+        }
+
         @JsonCreator
         public static DataType fromString(@Nullable String string) {
             return Enums.fromString(string, values(), NONE);

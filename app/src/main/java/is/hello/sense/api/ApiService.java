@@ -144,10 +144,10 @@ public interface ApiService {
     //region Trends
 
     @GET("/insights/trends/list")
-    Observable<List<AvailableTrendGraph>> availableTrendGraphs();
+    Observable<ArrayList<AvailableTrendGraph>> availableTrendGraphs();
 
     @GET("/insights/trends/all")
-    Observable<List<TrendGraph>> allTrends();
+    Observable<ArrayList<TrendGraph>> allTrends();
 
     @GET("/v1/insights/trends/graph")
     Observable<TrendGraph> trendGraph(@NonNull @Query("data_type") String dataType,

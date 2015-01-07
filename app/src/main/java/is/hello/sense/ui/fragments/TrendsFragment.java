@@ -7,11 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
+import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class TrendsFragment extends InjectionFragment {
+    @Inject TrendsPresenter trendsPresenter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
