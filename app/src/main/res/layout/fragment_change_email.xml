@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/background_light">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/gap_outer"
+        android:clipToPadding="false">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_small"
+            android:textAppearance="@style/AppTheme.Text.Subheading"
+            android:text="@string/label_email_address"/>
+
+        <EditText
+            android:id="@+id/fragment_change_email_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_large"
+            android:inputType="textEmailAddress"
+            android:imeOptions="actionGo|flagNoExtractUi"
+            android:selectAllOnFocus="true"
+            android:contentDescription="@string/label_email_address"
+            tools:ignore="LabelFor" />
+
+        <Button
+            android:id="@+id/fragment_change_email_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_change_email"
+            style="@style/AppTheme.Button.Rounded"/>
+
+    </LinearLayout>
+
+</ScrollView>

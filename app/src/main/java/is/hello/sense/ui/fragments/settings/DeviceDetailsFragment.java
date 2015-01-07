@@ -295,7 +295,7 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
                     Logger.info(getClass().getSimpleName(), "Completed Sense factory reset");
                     Action0 finish = () -> {
                         hideAllActivity(true, () -> {
-                            apiSessionManager.logOut(getActivity());
+                            apiSessionManager.logOut();
                             getActivity().finish();
                         });
                     };
