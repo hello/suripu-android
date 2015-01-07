@@ -155,7 +155,9 @@ public class GraphView extends View {
 
                 for (int section = 0; section < sectionCount; section++) {
                     if (wantsHeaders) {
+                        int savedAlpha = headerTextPaint.getAlpha();
                         headerTextPaint.setColor(headerFooterProvider.getSectionTextColor(section));
+                        headerTextPaint.setAlpha(savedAlpha);
 
                         String text = headerFooterProvider.getSectionHeader(section);
                         headerTextPaint.getTextBounds(text, 0, text.length(), textRect);
@@ -167,7 +169,9 @@ public class GraphView extends View {
                     }
 
                     if (wantsFooters) {
+                        int savedAlpha = footerTextPaint.getAlpha();
                         footerTextPaint.setColor(headerFooterProvider.getSectionTextColor(section));
+                        footerTextPaint.setAlpha(savedAlpha);
 
                         String text = headerFooterProvider.getSectionFooter(section);
                         footerTextPaint.getTextBounds(text, 0, text.length(), textRect);
@@ -333,12 +337,17 @@ public class GraphView extends View {
 
     protected void animateHighlightAlphaTo(int alpha, @Nullable Runnable onCompletion) {
         ValueAnimator alphaAnimator = ValueAnimator.ofInt(highlightPaint.getAlpha(), alpha);
-        Animations.Properties.DEFAULT.apply(alphaAnimator);
+        alphaAnimator.setInterpolator(Animations.INTERPOLATOR_DEFAULT);
+        alphaAnimator.setDuration(Animations.DURATION_MINIMUM);
 
         alphaAnimator.addUpdateListener(a -> {
             int newAlpha = (int) a.getAnimatedValue();
             highlightPaint.setAlpha(newAlpha);
-            headerTextPaint.setAlpha(255 - newAlpha);
+
+            int invertedNewAlpha = 255 - newAlpha;
+            headerTextPaint.setAlpha(invertedNewAlpha);
+            footerTextPaint.setAlpha(invertedNewAlpha);
+
             invalidate();
         });
 

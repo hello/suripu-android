@@ -90,6 +90,8 @@
 
         </FrameLayout>
 
+        <View style="@style/Divider.Horizontal" />
+
         <TextView
             android:id="@+id/fragment_sensor_history_insight"
             android:layout_width="match_parent"
