@@ -19,6 +19,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.EditorActionHandler;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
@@ -26,6 +27,7 @@ public class ChangeEmailFragment extends InjectionFragment {
     @Inject AccountPresenter accountPresenter;
 
     private EditText email;
+    private Button submitButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,9 +45,10 @@ public class ChangeEmailFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_change_email, container, false);
 
         this.email = (EditText) view.findViewById(R.id.fragment_change_email_value);
+        email.setOnEditorActionListener(new EditorActionHandler(this::save));
 
-        Button submit = (Button) view.findViewById(R.id.fragment_change_email_submit);
-        Views.setSafeOnClickListener(submit, this::save);
+        this.submitButton = (Button) view.findViewById(R.id.fragment_change_email_submit);
+        Views.setSafeOnClickListener(submitButton, ignored -> save());
 
         return view;
     }
@@ -54,11 +57,13 @@ public class ChangeEmailFragment extends InjectionFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        LoadingDialogFragment.show(getFragmentManager(), null, false);
+        email.setEnabled(false);
+        submitButton.setEnabled(false);
+
         bindAndSubscribe(accountPresenter.account, this::bindAccount, this::presentError);
     }
 
-    public void save(@NonNull View sender) {
+    public void save() {
         String newEmail = email.getText().toString();
         if (TextUtils.isEmpty(newEmail)) {
             email.requestFocus();
@@ -79,6 +84,10 @@ public class ChangeEmailFragment extends InjectionFragment {
 
     public void bindAccount(@NonNull Account account) {
         email.setText(account.getEmail());
+
+        email.setEnabled(true);
+        submitButton.setEnabled(true);
+        email.requestFocus();
 
         LoadingDialogFragment.close(getFragmentManager());
     }

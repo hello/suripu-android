@@ -266,4 +266,6 @@
     <string name="title_pushing_data">Pushing Data…</string>
     <string name="error_bluetooth_peripheral_busy">Sense is busy, please retry again in a few moments.</string>
     <string name="action_change_email">Change Email</string>
+    <string name="label_email_address">Email Address</string>
+    <string name="title_change_email">Change Email</string>
 </resources>

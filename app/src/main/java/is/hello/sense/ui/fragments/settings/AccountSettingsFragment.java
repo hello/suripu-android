@@ -86,7 +86,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     public void changeEmail() {
         FragmentNavigation navigation = (FragmentNavigation) getActivity();
-        navigation.showFragment(new ChangeEmailFragment(), getString(R.string.label_email), true);
+        navigation.showFragment(new ChangeEmailFragment(), getString(R.string.title_change_email), true);
     }
 
     public void changePassword() {
