@@ -21,7 +21,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.util.Styles;
 
-public class TrendsFragment extends InjectionFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class TrendsFragment extends InjectionFragment {
     @Inject TrendsPresenter trendsPresenter;
 
     private TrendsAdapter trendsAdapter;
@@ -40,7 +40,8 @@ public class TrendsFragment extends InjectionFragment implements SwipeRefreshLay
         View view = inflater.inflate(R.layout.fragment_trends, container, false);
 
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_trends_refresh_container);
-        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setOnRefreshListener(trendsPresenter::update);
+        Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
@@ -78,11 +79,5 @@ public class TrendsFragment extends InjectionFragment implements SwipeRefreshLay
         ErrorDialogFragment.presentError(getFragmentManager(), e);
 
         trendsAdapter.trendsUnavailable(e);
-    }
-
-
-    @Override
-    public void onRefresh() {
-        trendsPresenter.update();
     }
 }

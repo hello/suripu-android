@@ -140,6 +140,24 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
     @Override
     public String getSectionFooter(int section) {
         TrendGraph.GraphSample sample = trendGraph.getDataPoints().get(section);
-        return String.format("%.0f", sample.getYValue());
+        switch (trendGraph.getDataType()) {
+            default:
+            case NONE:
+            case SLEEP_SCORE: {
+                return String.format("%.0f", sample.getYValue());
+            }
+
+            case SLEEP_DURATION: {
+                int durationInHours = ((int) sample.getYValue()) / 60;
+                int remainingMinutes = ((int) sample.getYValue()) % 60;
+
+                String time = Integer.toString(durationInHours);
+                if (remainingMinutes >= 30) {
+                    time += ".5";
+                }
+                time += "h";
+                return time;
+            }
+        }
     }
 }

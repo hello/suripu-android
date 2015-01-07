@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -135,6 +136,10 @@ public final class Styles {
                 resources.getColor(R.color.graph_fill_gradient_top),
                 resources.getColor(R.color.graph_fill_gradient_bottom),
         });
+    }
+
+    public static void applyRefreshLayoutStyle(@NonNull SwipeRefreshLayout refreshLayout) {
+        refreshLayout.setColorSchemeResources(R.color.grey, R.color.purple, R.color.light_accent);
     }
 
     public static void applyGraphLineParameters(@NonNull Paint paint) {
