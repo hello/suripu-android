@@ -44,29 +44,36 @@ public class LineGraphDrawable extends GraphDrawable {
             fillPath.reset();
             linePath.reset();
 
-            fillPath.moveTo(0, minY + height + bottomInset);
+            if (sectionCount == 1 && adapterCache.getSectionCount(0) == 1) {
+                linePath.moveTo(0f, minY);
+                linePath.lineTo(width, minY);
 
-            float sectionWidth = width / sectionCount;
-            for (int section = 0; section < sectionCount; section++) {
-                int pointCount = adapterCache.getSectionCount(section);
-                if (pointCount == 0)
-                    continue;
+                fillPath.addRect(0f, minY + halfOfTopLine, width, height + bottomInset, Path.Direction.CW);
+            } else {
+                fillPath.moveTo(0f, minY + height + bottomInset);
 
-                float segmentWidth = sectionWidth / (float) pointCount;
-                for (int position = 0; position < pointCount; position++) {
-                    float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, section, position);
-                    float segmentY = minY + adapterCache.calculateSegmentY(height, section, position);
+                float sectionWidth = width / sectionCount;
+                for (int section = 0; section < sectionCount; section++) {
+                    int pointCount = adapterCache.getSectionCount(section);
+                    if (pointCount == 0)
+                        continue;
 
-                    if (section == 0 && position == 0) {
-                        linePath.moveTo(segmentX, segmentY);
-                    } else {
-                        linePath.lineTo(segmentX, segmentY);
-                    }
-                    fillPath.lineTo(segmentX, segmentY - halfOfTopLine);
+                    float segmentWidth = sectionWidth / (float) pointCount;
+                    for (int position = 0; position < pointCount; position++) {
+                        float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, section, position);
+                        float segmentY = minY + adapterCache.calculateSegmentY(height, section, position);
 
-                    if (section == sectionCount - 1 && position == pointCount - 1) {
-                        fillPath.lineTo(segmentX + halfOfTopLine, minY + height + bottomInset);
-                        fillPath.lineTo(0, minY + height + bottomInset);
+                        if (section == 0 && position == 0) {
+                            linePath.moveTo(segmentX, segmentY);
+                        } else {
+                            linePath.lineTo(segmentX, segmentY);
+                        }
+                        fillPath.lineTo(segmentX, segmentY - halfOfTopLine);
+
+                        if (section == sectionCount - 1 && position == pointCount - 1) {
+                            fillPath.lineTo(segmentX + halfOfTopLine, minY + height + bottomInset);
+                            fillPath.lineTo(0f, minY + height + bottomInset);
+                        }
                     }
                 }
             }

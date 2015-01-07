@@ -278,12 +278,17 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         }
 
         @Override
-        public int getSectionTextColor(int section) {
+        public int getSectionHeaderTextColor(int section) {
             if (section == getSectionCount() - 1) {
                 return Color.BLACK;
             } else {
                 return Color.GRAY;
             }
+        }
+
+        @Override
+        public int getSectionFooterTextColor(int section) {
+            return getSectionHeaderTextColor(section);
         }
 
         @NonNull

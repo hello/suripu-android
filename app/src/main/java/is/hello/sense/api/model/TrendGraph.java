@@ -1,11 +1,14 @@
 package is.hello.sense.api.model;
 
+import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+
+import is.hello.sense.R;
 
 public class TrendGraph extends ApiResponse {
     public static String TIME_PERIOD_DAY_OF_WEEK = "DOW";
@@ -140,9 +143,15 @@ public class TrendGraph extends ApiResponse {
     }
 
     public static enum DataLabel {
-        BAD,
-        OK,
-        GOOD;
+        BAD(R.color.sensor_alert),
+        OK(R.color.sensor_warning),
+        GOOD(R.color.sensor_ideal);
+
+        public final @ColorRes int colorRes;
+
+        DataLabel(@ColorRes int colorRes) {
+            this.colorRes = colorRes;
+        }
 
         @JsonCreator
         public static DataLabel fromString(@Nullable String string) {
@@ -150,13 +159,4 @@ public class TrendGraph extends ApiResponse {
         }
     }
 
-    public static enum GraphType {
-        HISTOGRAM,
-        TIME_SERIES_LINE;
-
-        @JsonCreator
-        public static GraphType fromString(@Nullable String string) {
-            return Enums.fromString(string, values(), TIME_SERIES_LINE);
-        }
-    }
 }

@@ -52,6 +52,23 @@ public class GraphView extends View {
 
     private int highlightedSection = NONE, highlightedSegment = NONE;
 
+    private final Drawable.Callback DRAWABLE_CALLBACK = new Drawable.Callback() {
+        @Override
+        public void invalidateDrawable(Drawable drawable) {
+            invalidate();
+        }
+
+        @Override
+        public void scheduleDrawable(Drawable drawable, Runnable what, long when) {
+            GraphView.this.scheduleDrawable(drawable, what, when);
+        }
+
+        @Override
+        public void unscheduleDrawable(Drawable drawable, Runnable what) {
+            GraphView.this.unscheduleDrawable(drawable, what);
+        }
+    };
+
 
     public GraphView(Context context) {
         super(context);
@@ -115,10 +132,29 @@ public class GraphView extends View {
         return (int) footerTextPaint.getTextSize() + (headerFooterPadding * 2);
     }
 
+    protected int getDrawingMinX() {
+        return 0;
+    }
+
+    protected int getDrawingMinY() {
+        return 0;
+    }
+
+    protected int getDrawingWidth() {
+        return getMeasuredWidth() - getDrawingMinX();
+    }
+
+    protected int getDrawingHeight() {
+        return getMeasuredHeight() - getDrawingMinY();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
-        int minX = 0, minY = 0;
-        int height = getMeasuredHeight() - minY, width = getMeasuredWidth() - minX;
+        int minY = getDrawingMinY();
+
+        int width = getDrawingWidth(),
+            height = getDrawingHeight();
+
         boolean isHighlighted = (highlightedSection != NONE && highlightedSegment != NONE);
 
         if (gridDrawable != null && numberOfLines > 0) {
@@ -132,7 +168,6 @@ public class GraphView extends View {
         }
 
         if (graphDrawable != null) {
-            graphDrawable.setBounds(minX, minY, width, height);
             graphDrawable.draw(canvas);
         }
 
@@ -156,7 +191,7 @@ public class GraphView extends View {
                 for (int section = 0; section < sectionCount; section++) {
                     if (wantsHeaders) {
                         int savedAlpha = headerTextPaint.getAlpha();
-                        headerTextPaint.setColor(headerFooterProvider.getSectionTextColor(section));
+                        headerTextPaint.setColor(headerFooterProvider.getSectionHeaderTextColor(section));
                         headerTextPaint.setAlpha(savedAlpha);
 
                         String text = headerFooterProvider.getSectionHeader(section);
@@ -170,7 +205,7 @@ public class GraphView extends View {
 
                     if (wantsFooters) {
                         int savedAlpha = footerTextPaint.getAlpha();
-                        footerTextPaint.setColor(headerFooterProvider.getSectionTextColor(section));
+                        footerTextPaint.setColor(headerFooterProvider.getSectionFooterTextColor(section));
                         footerTextPaint.setAlpha(savedAlpha);
 
                         String text = headerFooterProvider.getSectionFooter(section);
@@ -198,11 +233,18 @@ public class GraphView extends View {
                                      minY + (segmentY + highlightPointAreaHalf));
             canvas.drawOval(highlightPointBounds, highlightPaint);
 
-            canvas.drawRect(highlightPointBounds.centerX(), 0f, highlightPointBounds.centerX() + 1f, getMeasuredHeight(), highlightPaint);
+            canvas.drawRect(highlightPointBounds.centerX(), 0f, highlightPointBounds.centerX() + 1f, getDrawingHeight(), highlightPaint);
         }
     }
 
-    protected void updateDrawableInsets() {
+    @Override
+    protected void onSizeChanged(int w, int h, int oldW, int oldH) {
+        super.onSizeChanged(w, h, oldW, oldH);
+
+        updateDrawableMetrics();
+    }
+
+    protected void updateDrawableMetrics() {
         if (graphDrawable != null) {
             if (wantsHeaders) {
                 graphDrawable.setTopInset(calculateHeaderHeight());
@@ -215,6 +257,8 @@ public class GraphView extends View {
             } else {
                 graphDrawable.setBottomInset(0);
             }
+
+            graphDrawable.setBounds(getDrawingMinX(), getDrawingMinY(), getDrawingWidth(), getDrawingHeight());
         }
     }
 
@@ -233,10 +277,10 @@ public class GraphView extends View {
         }
 
         this.graphDrawable = graphDrawable;
-        updateDrawableInsets();
+        updateDrawableMetrics();
 
         if (graphDrawable != null) {
-            graphDrawable.setCallback(this);
+            graphDrawable.setCallback(DRAWABLE_CALLBACK);
         }
 
         invalidate();
@@ -275,13 +319,13 @@ public class GraphView extends View {
 
     public void setWantsHeaders(boolean wantsHeaders) {
         this.wantsHeaders = wantsHeaders;
-        updateDrawableInsets();
+        updateDrawableMetrics();
         invalidate();
     }
 
     public void setWantsFooters(boolean wantsFooters) {
         this.wantsFooters = wantsFooters;
-        updateDrawableInsets();
+        updateDrawableMetrics();
         invalidate();
     }
 
@@ -292,25 +336,25 @@ public class GraphView extends View {
 
     public void setHeaderTypeface(@NonNull Typeface typeface) {
         headerTextPaint.setTypeface(typeface);
-        updateDrawableInsets();
+        updateDrawableMetrics();
         invalidate();
     }
 
     public void setFooterTypeface(@NonNull Typeface typeface) {
         footerTextPaint.setTypeface(typeface);
-        updateDrawableInsets();
+        updateDrawableMetrics();
         invalidate();
     }
 
     public void setHeaderTextSize(int size) {
         headerTextPaint.setTextSize(size);
-        updateDrawableInsets();
+        updateDrawableMetrics();
         invalidate();
     }
 
     public void setFooterTextSize(int size) {
         footerTextPaint.setTextSize(size);
-        updateDrawableInsets();
+        updateDrawableMetrics();
         invalidate();
     }
 
@@ -370,7 +414,7 @@ public class GraphView extends View {
         }
 
         GraphAdapterCache adapterCache = getAdapterCache();
-        int width = getMeasuredWidth();
+        int width = getDrawingWidth();
         float x = Views.getNormalizedX(event);
         int section = adapterCache.findSectionAtX(width, x);
         int segment = adapterCache.findSegmentAtX(width, section, x);
@@ -427,7 +471,8 @@ public class GraphView extends View {
 
     public interface HeaderFooterProvider {
         int getSectionCount();
-        int getSectionTextColor(int section);
+        int getSectionHeaderTextColor(int section);
+        int getSectionFooterTextColor(int section);
         @NonNull String getSectionHeader(int section);
         @NonNull String getSectionFooter(int section);
     }
