@@ -53,9 +53,6 @@ public class LaunchActivity extends InjectionActivity {
     }
 
     private void bounce() {
-        startActivity(new Intent(this, HistogramTestActivity.class));
-        if(0==0)return;
-
         if (sessionManager.hasSession() && preferences.getBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)) {
             showHomeActivity();
         } else {
