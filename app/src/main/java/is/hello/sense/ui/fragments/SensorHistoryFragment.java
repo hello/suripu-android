@@ -1,6 +1,8 @@
 package is.hello.sense.ui.fragments;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,6 +58,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     private LineGraphView graphView;
     private ProgressBar loadingIndicator;
     private TextView insightText;
+    private GradientDrawable graphBackground;
     private SensorDataSource sensorDataSource = new SensorDataSource();
     private String sensor;
 
@@ -83,6 +86,13 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_sensor_history_loading);
         this.insightText = (TextView) view.findViewById(R.id.fragment_sensor_history_insight);
 
+        this.graphBackground = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
+                getResources().getColor(R.color.graph_fill_gradient_top),
+                getResources().getColor(R.color.graph_fill_gradient_bottom),
+        });
+        graphBackground.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
+
+        graphView.setFillDrawable(graphBackground);
         graphView.setAdapter(sensorDataSource);
         graphView.setOnValueHighlightedListener(sensorDataSource);
 
@@ -170,6 +180,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 bindAndSubscribe(markdown.renderWithEmphasisColor(sensorColor, condition.getIdealConditions()),
                                  insightText::setText,
                                  e -> insightText.setText(condition.getMessage()));
+
+                sensorDataSource.setSectionLineColor(sensorColor);
+                graphBackground.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
             } else {
                 readingText.setText(R.string.missing_data_placeholder);
                 messageText.setText(R.string.missing_data_placeholder);
@@ -204,6 +217,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public class SensorDataSource extends SensorHistoryAdapter implements LineGraphView.OnValueHighlightedListener, StyleableGraphAdapter {
         private UnitSystem unitSystem;
         private boolean use24Time = false;
+        private int sectionLineColor = Color.GRAY;
 
         public void bindHistory(@NonNull SensorHistoryPresenter.Result historyAndUnits) {
             List<SensorHistory> history = historyAndUnits.data;
@@ -270,9 +284,14 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             }
         }
 
+        public void setSectionLineColor(int color) {
+            this.sectionLineColor = color;
+            notifyDataChanged();
+        }
+
         @Override
         public int getSectionLineColor(int section) {
-            return getResources().getColor(R.color.graph_fill_accent_color);
+            return sectionLineColor;
         }
 
         @Override
