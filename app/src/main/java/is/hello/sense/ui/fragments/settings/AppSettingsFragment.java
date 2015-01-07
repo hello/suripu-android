@@ -113,7 +113,7 @@ public class AppSettingsFragment extends InjectionFragment {
         builder.setMessage(R.string.dialog_message_log_out);
         builder.setNegativeButton(android.R.string.cancel, null);
         builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-            sessionManager.logOut(getActivity());
+            sessionManager.logOut();
             Analytics.trackEvent(Analytics.EVENT_SIGNED_OUT, null);
         });
         builder.show();
