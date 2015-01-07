@@ -82,7 +82,7 @@ public class CompoundGraphView extends View {
             minY += headerHeight;
             height -= headerHeight;
         }
-        
+
         if (graphDrawable != null) {
             graphDrawable.setBounds(minX, minY, width, height);
             graphDrawable.draw(canvas);
