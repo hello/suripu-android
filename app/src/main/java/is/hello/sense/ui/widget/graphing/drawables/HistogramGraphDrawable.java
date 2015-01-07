@@ -64,6 +64,14 @@ public class HistogramGraphDrawable extends GraphDrawable {
                 }
 
                 linePath.lineTo(sectionX + sectionWidth, sectionY);
+
+                fillPath.lineTo(sectionX, sectionY - halfOfTopLine);
+                fillPath.lineTo(sectionX + sectionWidth, sectionY - halfOfTopLine);
+
+                if (section == sectionCount - 1) {
+                    fillPath.lineTo(sectionX + sectionWidth + halfOfTopLine, minY + height + bottomInset);
+                    fillPath.lineTo(0, minY + height + bottomInset);
+                }
             }
 
             canvas.save();
