@@ -1,5 +1,8 @@
 package is.hello.sense.ui.widget.graphing;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -18,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapterCache;
 import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
@@ -83,6 +87,7 @@ public class GraphView extends View {
 
         this.highlightPointAreaHalf = getResources().getDimensionPixelSize(R.dimen.view_line_graph_point_size) / 2f;
         highlightPaint.setAntiAlias(true);
+        highlightPaint.setAlpha(0);
 
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.GraphView, defStyleAttr, 0);
@@ -149,7 +154,7 @@ public class GraphView extends View {
                 }
 
                 for (int section = 0; section < sectionCount; section++) {
-                    if (wantsHeaders && !isHighlighted) {
+                    if (wantsHeaders) {
                         headerTextPaint.setColor(headerFooterProvider.getSectionTextColor(section));
 
                         String text = headerFooterProvider.getSectionHeader(section);
@@ -233,6 +238,32 @@ public class GraphView extends View {
         invalidate();
     }
 
+    public void setAdapter(@Nullable GraphAdapter adapter) {
+        if (graphDrawable == null) {
+            throw new IllegalStateException("Cannot set the adapter on a compound graph view without specifying a drawable first");
+        }
+
+        graphDrawable.setAdapter(adapter);
+        invalidate();
+    }
+
+    protected GraphAdapterCache getAdapterCache() {
+        if (graphDrawable == null) {
+            throw new IllegalStateException();
+        }
+
+        return graphDrawable.getAdapterCache();
+    }
+
+    public void setTintColor(int color) {
+        if (graphDrawable == null) {
+            throw new IllegalStateException();
+        }
+
+        graphDrawable.setTintColor(color);
+        highlightPaint.setColor(color);
+    }
+
     public void setNumberOfLines(int numberOfLines) {
         this.numberOfLines = numberOfLines;
         invalidate();
@@ -279,15 +310,6 @@ public class GraphView extends View {
         invalidate();
     }
 
-    public void setAdapter(@Nullable GraphAdapter adapter) {
-        if (graphDrawable == null) {
-            throw new IllegalStateException("Cannot set the adapter on a compound graph view without specifying a drawable first");
-        }
-
-        graphDrawable.setAdapter(adapter);
-        invalidate();
-    }
-
     public void setHeaderFooterProvider(@Nullable HeaderFooterProvider headerFooterProvider) {
         this.headerFooterProvider = headerFooterProvider;
         invalidate();
@@ -295,14 +317,6 @@ public class GraphView extends View {
 
     public void setHighlightListener(@Nullable HighlightListener highlightListener) {
         this.highlightListener = highlightListener;
-    }
-
-    protected GraphAdapterCache getAdapterCache() {
-        if (graphDrawable == null) {
-            throw new IllegalStateException();
-        }
-
-        return graphDrawable.getAdapterCache();
     }
 
     //endregion
@@ -315,6 +329,29 @@ public class GraphView extends View {
         this.highlightedSegment = segment;
 
         invalidate();
+    }
+
+    protected void animateHighlightAlphaTo(int alpha, @Nullable Runnable onCompletion) {
+        ValueAnimator alphaAnimator = ValueAnimator.ofInt(highlightPaint.getAlpha(), alpha);
+        Animations.Properties.DEFAULT.apply(alphaAnimator);
+
+        alphaAnimator.addUpdateListener(a -> {
+            int newAlpha = (int) a.getAnimatedValue();
+            highlightPaint.setAlpha(newAlpha);
+            headerTextPaint.setAlpha(255 - newAlpha);
+            invalidate();
+        });
+
+        if (onCompletion != null) {
+            alphaAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    onCompletion.run();
+                }
+            });
+        }
+
+        alphaAnimator.start();
     }
 
     @Override
@@ -337,6 +374,8 @@ public class GraphView extends View {
                     highlightListener.onGraphValueHighlighted(section, segment);
                 }
 
+                animateHighlightAlphaTo(255, null);
+
                 break;
             }
 
@@ -348,12 +387,23 @@ public class GraphView extends View {
                 break;
             }
 
-            case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
                 if (highlightListener != null) {
                     highlightListener.onGraphHighlightEnd();
                 }
 
+                animateHighlightAlphaTo(0, () -> setHighlightedValue(NONE, NONE));
+
+                break;
+            }
+
+            case MotionEvent.ACTION_CANCEL: {
+                if (highlightListener != null) {
+                    highlightListener.onGraphHighlightEnd();
+                }
+
+                highlightPaint.setAlpha(0);
+                headerTextPaint.setAlpha(255);
                 setHighlightedValue(NONE, NONE);
 
                 break;

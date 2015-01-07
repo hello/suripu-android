@@ -1,13 +1,7 @@
 package is.hello.sense.ui.widget.graphing.adapters;
 
-import android.graphics.Path;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseIntArray;
-
-import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Companion class for GraphAdapter that caches all of the values
@@ -21,26 +15,6 @@ public class GraphAdapterCache {
     private float baseMagnitude = 0f;
     private float peakMagnitude = 0f;
     private final SparseIntArray sectionCounts = new SparseIntArray();
-    private final @Nullable List<Path> sectionLinePaths;
-
-
-    public GraphAdapterCache(@NonNull Type type) {
-        switch (type) {
-            case PLAIN: {
-                this.sectionLinePaths = null;
-                break;
-            }
-
-            case STYLEABLE: {
-                this.sectionLinePaths = new ArrayList<>();
-                break;
-            }
-
-            default: {
-                throw new InvalidParameterException();
-            }
-        }
-    }
 
 
     //region Properties
@@ -64,14 +38,6 @@ public class GraphAdapterCache {
 
     public int getSectionCount(int position) {
         return sectionCounts.get(position);
-    }
-
-    public @NonNull Path getSectionLinePath(int position) {
-        if (sectionLinePaths == null) {
-            throw new IllegalStateException("getSectionLinePath is only available with STYLEABLE adapter caches");
-        }
-
-        return sectionLinePaths.get(position);
     }
 
     //endregion
@@ -119,28 +85,7 @@ public class GraphAdapterCache {
 
     //region Building
 
-    private void recreateSectionPaths(int oldSize, int newSize) {
-        if (sectionLinePaths == null) {
-            throw new IllegalStateException("recreateSectionPaths is only available with STYLEABLE adapter caches");
-        }
-
-        if (newSize == 0) {
-            sectionLinePaths.clear();
-        } else if (newSize < oldSize) {
-            int delta = oldSize - newSize;
-            for (int i = 0; i < delta; i++) {
-                sectionLinePaths.remove(i);
-            }
-        } else {
-            int delta = newSize - oldSize;
-            for (int i = 0; i < delta; i++) {
-                sectionLinePaths.add(new Path());
-            }
-        }
-    }
-
     public void rebuild() {
-        int oldSize = sectionCounts.size();
         this.sectionCounts.clear();
 
         if (adapter != null) {
@@ -151,20 +96,7 @@ public class GraphAdapterCache {
                 sectionCounts.append(section, count);
             }
         }
-
-        if (sectionLinePaths != null) {
-            int newSize = sectionCounts.size();
-            recreateSectionPaths(oldSize, newSize);
-        }
     }
 
     //endregion
-
-
-    public static enum Type {
-        PLAIN,
-
-        @Deprecated
-        STYLEABLE,
-    }
 }

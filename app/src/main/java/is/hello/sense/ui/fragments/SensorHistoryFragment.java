@@ -59,7 +59,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     private String sensor;
 
     private GraphView graphView;
-    private LineGraphDrawable graph;
     private SensorDataSource sensorDataSource = new SensorDataSource();
 
     @Override
@@ -86,11 +85,11 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_sensor_history_loading);
         this.insightText = (TextView) view.findViewById(R.id.fragment_sensor_history_insight);
 
-        this.graph = new LineGraphDrawable(getResources());
-        graph.setAdapter(sensorDataSource);
-        graphView.setGraphDrawable(graph);
+        graphView.setGraphDrawable(new LineGraphDrawable(getResources()));
+        graphView.setAdapter(sensorDataSource);
         graphView.setHeaderFooterProvider(sensorDataSource);
         graphView.setHighlightListener(sensorDataSource);
+        graphView.setTintColor(getResources().getColor(R.color.sensor_unknown));
 
         this.historyModeSelector = (SelectorLinearLayout) view.findViewById(R.id.fragment_sensor_history_mode);
         historyModeSelector.setOnSelectionChangedListener(this);
@@ -177,8 +176,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                                  insightText::setText,
                                  e -> insightText.setText(condition.getMessage()));
 
-                graph.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
-                graphView.invalidate();
+                graphView.setTintColor(sensorColor);
             } else {
                 readingText.setText(R.string.missing_data_placeholder);
                 messageText.setText(R.string.missing_data_placeholder);
@@ -334,7 +332,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         public void onGraphValueHighlighted(int section, int position) {
             SensorHistory instant = getSection(section).get(position);
             readingText.setText(spanFormattedValue(sensor, formatSensorValue(instant.getValue())));
-            //readingText.setTextColor(getSectionLineColor(section));
             messageText.setText(dateFormatter.formatAsTime(instant.getTime(), use24Time));
         }
 
