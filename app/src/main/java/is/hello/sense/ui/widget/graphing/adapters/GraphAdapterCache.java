@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget.graphing;
+package is.hello.sense.ui.widget.graphing.adapters;
 
 import android.graphics.Path;
 import android.support.annotation.NonNull;

@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget.graphing;
+package is.hello.sense.ui.widget.graphing.drawables;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
 
-public class SimplePieDrawable extends Drawable {
+public class PieGraphDrawable extends Drawable {
     private final Path fillPath = new Path();
     private final RectF arcRect = new RectF();
     private final Paint paint = new Paint();
@@ -25,7 +25,7 @@ public class SimplePieDrawable extends Drawable {
     private int trackColor;
 
 
-    public SimplePieDrawable(@NonNull Resources resources) {
+    public PieGraphDrawable(@NonNull Resources resources) {
         this.fillStrokeWidth = resources.getDimensionPixelSize(R.dimen.pie_graph_stroke_width);
         this.fillColor = resources.getColor(R.color.graph_fill_accent_color);
         this.trackColor = resources.getColor(R.color.border);

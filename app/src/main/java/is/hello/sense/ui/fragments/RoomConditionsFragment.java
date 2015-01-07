@@ -32,7 +32,7 @@ import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.widget.graphing.SimpleLineGraphDrawable;
+import is.hello.sense.ui.widget.graphing.drawables.LineAdapterGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.DateFormatter;
@@ -228,13 +228,13 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
         class ViewHolder {
             final TextView reading;
             final TextView message;
-            final SimpleLineGraphDrawable lineGraphDrawable;
+            final LineAdapterGraphDrawable lineGraphDrawable;
 
             ViewHolder(@NonNull View view) {
                 this.reading = (TextView) view.findViewById(R.id.item_sensor_condition_reading);
                 this.message = (TextView) view.findViewById(R.id.item_sensor_condition_message);
 
-                this.lineGraphDrawable = new SimpleLineGraphDrawable(getResources());
+                this.lineGraphDrawable = new LineAdapterGraphDrawable(getResources());
 
                 View graph = view.findViewById(R.id.fragment_room_sensor_condition_graph);
                 graph.setBackground(lineGraphDrawable);

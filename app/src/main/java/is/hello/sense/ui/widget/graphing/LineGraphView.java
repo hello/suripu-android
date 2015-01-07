@@ -20,6 +20,9 @@ import android.widget.FrameLayout;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
+import is.hello.sense.ui.widget.graphing.adapters.GraphAdapterCache;
+import is.hello.sense.ui.widget.graphing.adapters.StyleableGraphAdapter;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 

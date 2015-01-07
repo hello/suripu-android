@@ -1,22 +1,18 @@
-package is.hello.sense.ui.widget.graphing;
+package is.hello.sense.ui.widget.graphing.drawables;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
 
-public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.ChangeObserver {
-    private final GraphAdapterCache adapterCache = new GraphAdapterCache(GraphAdapterCache.Type.PLAIN);
-
+public class LineAdapterGraphDrawable extends AdapterGraphDrawable {
     private final Paint linePaint = new Paint();
     private final Path linePath = new Path();
     private final Path fillPath = new Path();
@@ -25,7 +21,7 @@ public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.Ch
     private final Drawable fillDrawable;
 
 
-    public SimpleLineGraphDrawable(@NonNull Resources resources) {
+    public LineAdapterGraphDrawable(@NonNull Resources resources) {
         this.topLineHeight = resources.getDimensionPixelSize(R.dimen.view_line_graph_line_size);
 
         Styles.applyGraphLineParameters(linePaint);
@@ -110,34 +106,5 @@ public class SimpleLineGraphDrawable extends Drawable implements GraphAdapter.Ch
         invalidateSelf();
     }
 
-    @Override
-    public int getOpacity() {
-        return PixelFormat.TRANSLUCENT;
-    }
-
-
-    public void setAdapter(@Nullable GraphAdapter adapter) {
-        if (adapter == adapterCache.getAdapter()) {
-            return;
-        }
-
-        if (adapterCache.getAdapter() != null) {
-            adapterCache.getAdapter().unregisterObserver(this);
-        }
-
-        adapterCache.setAdapter(adapter);
-        if (adapter != null) {
-            adapter.registerObserver(this);
-        }
-
-        invalidateSelf();
-    }
-
     //endregion
-
-    @Override
-    public void onGraphAdapterChanged() {
-        adapterCache.rebuild();
-        invalidateSelf();
-    }
 }

@@ -34,7 +34,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.graphing.LineGraphView;
-import is.hello.sense.ui.widget.graphing.StyleableGraphAdapter;
+import is.hello.sense.ui.widget.graphing.adapters.StyleableGraphAdapter;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.DateFormatter;
