@@ -112,8 +112,8 @@ public final class TestModule {
         return new TestApiService(context, objectMapper);
     }
 
-    @Singleton @Provides ApiSessionManager provideApiSessionManager() {
-        return new TransientApiSessionManager();
+    @Singleton @Provides ApiSessionManager provideApiSessionManager(@NonNull @ApiAppContext Context context) {
+        return new TransientApiSessionManager(context);
     }
 
     @Singleton @Provides TestBluetoothStackBehavior provideBluetoothStackConfig() {

@@ -130,6 +130,7 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
         int sectionCount = adapterCache.getNumberSections();
         int minX = 0, minY = 0;
         int height = getMeasuredHeight() - minY, width = getMeasuredWidth() - minX;
+        int fillHeight = height;
 
         if (gridDrawable != null && numberOfLines > 0) {
             int lineDistance = width / numberOfLines;
@@ -159,7 +160,7 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
                 height -= footerHeight;
             }
 
-            fillPath.moveTo(minX, minY + height);
+            fillPath.moveTo(minX, minY + fillHeight);
 
             float sectionWidth = width / sectionCount;
             for (int section = 0; section < sectionCount; section++) {
@@ -211,8 +212,8 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
                     fillPath.lineTo(segmentX, segmentY - halfOfTopLine);
 
                     if (section == sectionCount - 1 && position == pointCount - 1) {
-                        fillPath.lineTo(segmentX + halfOfTopLine, minY + height);
-                        fillPath.lineTo(minX, minY + height);
+                        fillPath.lineTo(segmentX + halfOfTopLine, minY + fillHeight);
+                        fillPath.lineTo(minX, minY + fillHeight);
                     }
                 }
 
@@ -226,7 +227,7 @@ public final class LineGraphView extends FrameLayout implements GraphAdapter.Cha
                 canvas.save();
                 {
                     canvas.clipPath(fillPath);
-                    fillDrawable.setBounds(minX, minY, width, height);
+                    fillDrawable.setBounds(minX, minY, width, fillHeight);
                     fillDrawable.draw(canvas);
                 }
                 canvas.restore();

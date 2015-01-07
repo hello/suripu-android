@@ -2,11 +2,11 @@ package is.hello.sense.ui.fragments;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +46,6 @@ import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SafeOnClickListener;
@@ -321,7 +320,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     public void showInsight(@NonNull View sender) {
         View view = beforeSleepItemContainer.findViewWithTag(selectedBeforeSleepInsight);
-        if (view == sender) {
+        if (view == sender && !TextUtils.isEmpty(beforeSleepMessage.getText())) {
             beforeSleepMessage.setText(null);
             beforeSleepMessage.setVisibility(View.GONE);
         } else {
