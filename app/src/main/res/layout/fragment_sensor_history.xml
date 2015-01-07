@@ -75,7 +75,7 @@
             android:layout_weight="1"
             android:minHeight="@dimen/sensor_history_graph_min_height">
 
-            <is.hello.sense.ui.widget.graphing.CompoundGraphView
+            <is.hello.sense.ui.widget.graphing.GraphView
                 android:id="@+id/fragment_sensor_history_graph"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

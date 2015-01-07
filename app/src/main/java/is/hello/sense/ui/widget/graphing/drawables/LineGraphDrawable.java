@@ -10,6 +10,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class LineGraphDrawable extends GraphDrawable {

@@ -41,7 +41,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.TimestampTextView;
-import is.hello.sense.ui.widget.graphing.PieGraphView;
+import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -76,7 +76,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private ImageButton smartAlarmButton;
 
     private TextView dateText;
-    private PieGraphView scoreGraph;
+    private SleepScoreDrawable scoreGraph;
     private TextView scoreText;
     private TextView messageText;
 
@@ -126,9 +126,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         View headerView = inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
 
-        this.scoreGraph = (PieGraphView) headerView.findViewById(R.id.fragment_timeline_sleep_score_chart);
-        this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
+        LinearLayout sleepScoreContainer = (LinearLayout) headerView.findViewById(R.id.fragment_timeline_sleep_score_chart);
+        this.scoreText = (TextView) sleepScoreContainer.findViewById(R.id.fragment_timeline_sleep_score);
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
+
+        this.scoreGraph = new SleepScoreDrawable(getResources());
+        sleepScoreContainer.setBackground(scoreGraph);
+
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
@@ -225,11 +229,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         int scoreColor = Styles.getSleepScoreColor(getActivity(), sleepScore);
         scoreGraph.setFillColor(scoreColor);
         scoreText.setTextColor(scoreColor);
-        ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animations.Properties.createWithDelay(250));
-        if (updateAnimation != null) {
+
+        if (sleepScore != scoreGraph.getValue()) {
+            ValueAnimator updateAnimation = ValueAnimator.ofInt(scoreGraph.getValue(), sleepScore);
+            Animations.Properties.createWithDelay(250).apply(updateAnimation);
+
             updateAnimation.addUpdateListener(a -> {
-                String score = a.getAnimatedValue().toString();
-                scoreText.setText(score);
+                Integer score = (Integer) a.getAnimatedValue();
+                scoreGraph.setValue(score);
+                scoreText.setText(score.toString());
             });
 
             updateAnimation.start();

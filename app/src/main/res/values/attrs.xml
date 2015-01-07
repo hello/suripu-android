@@ -2,16 +2,6 @@
 <resources>
     <attr name="fontPath" format="string"/>
 
-    <declare-styleable name="GraphView">
-        <attr name="fillColor" format="color" />
-        <attr name="maxValue" format="integer" />
-        <attr name="value" format="integer" />
-        <attr name="topInset" format="dimension" />
-        <attr name="leftInset" format="dimension" />
-        <attr name="rightInset" format="dimension" />
-        <attr name="bottomInset" format="dimension" />
-    </declare-styleable>
-
     <declare-styleable name="SensorStateView">
         <attr name="sensorTitle" format="string" />
         <attr name="sensorIcon" format="integer" />
@@ -27,7 +17,7 @@
         <attr name="wantsFooters" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="CompoundGraphView">
+    <declare-styleable name="GraphView">
         <attr name="senseNumberOfLines" format="integer" />
         <attr name="senseGridDrawable" format="integer" />
         <attr name="senseWantsHeaders" format="boolean" />

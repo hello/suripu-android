@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget.graphing.drawables;
+package is.hello.sense.ui.widget;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -12,12 +12,13 @@ import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
 
-public class PieGraphDrawable extends Drawable {
+public class SleepScoreDrawable extends Drawable {
+    private static final int MAX_VALUE = 100;
+
     private final Path fillPath = new Path();
     private final RectF arcRect = new RectF();
     private final Paint paint = new Paint();
 
-    private int maxValue = 100;
     private int value = 0;
 
     private int fillColor;
@@ -25,7 +26,7 @@ public class PieGraphDrawable extends Drawable {
     private int trackColor;
 
 
-    public PieGraphDrawable(@NonNull Resources resources) {
+    public SleepScoreDrawable(@NonNull Resources resources) {
         this.fillStrokeWidth = resources.getDimensionPixelSize(R.dimen.pie_graph_stroke_width);
         this.fillColor = resources.getColor(R.color.graph_fill_accent_color);
         this.trackColor = resources.getColor(R.color.border);
@@ -48,7 +49,7 @@ public class PieGraphDrawable extends Drawable {
         arcRect.set(left, top, size + left, size + top);
         arcRect.inset(fillStrokeWidth / 2f, fillStrokeWidth / 2f);
 
-        float scale = ((float) value / (float) maxValue);
+        float scale = ((float) value / (float) MAX_VALUE);
         if (scale > 0f) {
             fillPath.moveTo(arcRect.centerX(), arcRect.top);
             fillPath.arcTo(arcRect, -90f, scale * 360f);
@@ -92,14 +93,13 @@ public class PieGraphDrawable extends Drawable {
         invalidateSelf();
     }
 
-    public void setMaxValue(int maxValue) {
-        this.maxValue = maxValue;
-        invalidateSelf();
-    }
-
     public void setValue(int value) {
         this.value = value;
         invalidateSelf();
+    }
+
+    public int getValue() {
+        return value;
     }
 
     public void setFillColor(int fillColor) {

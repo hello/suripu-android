@@ -31,7 +31,7 @@ import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
-import is.hello.sense.ui.widget.graphing.CompoundGraphView;
+import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
@@ -57,7 +57,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     private TextView insightText;
     private String sensor;
 
-    private CompoundGraphView graphView;
+    private GraphView graphView;
     private LineGraphDrawable graph;
     private SensorDataSource sensorDataSource = new SensorDataSource();
 
@@ -81,7 +81,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         this.readingText = (TextView) view.findViewById(R.id.fragment_sensor_history_reading);
         this.messageText = (TextView) view.findViewById(R.id.fragment_sensor_history_message);
-        this.graphView = (CompoundGraphView) view.findViewById(R.id.fragment_sensor_history_graph);
+        this.graphView = (GraphView) view.findViewById(R.id.fragment_sensor_history_graph);
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_sensor_history_loading);
         this.insightText = (TextView) view.findViewById(R.id.fragment_sensor_history_insight);
 
@@ -208,7 +208,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     }
 
 
-    public class SensorDataSource extends SensorHistoryAdapter implements CompoundGraphView.HeaderFooterProvider {
+    public class SensorDataSource extends SensorHistoryAdapter implements GraphView.HeaderFooterProvider {
         private UnitSystem unitSystem;
         private boolean use24Time = false;
 
