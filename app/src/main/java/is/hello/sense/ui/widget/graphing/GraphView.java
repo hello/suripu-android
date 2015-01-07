@@ -85,7 +85,7 @@ public class GraphView extends View {
         setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_body));
         setFooterTypeface(Typeface.createFromAsset(resources.getAssets(), Styles.TYPEFACE_LIGHT));
 
-        this.highlightPointAreaHalf = getResources().getDimensionPixelSize(R.dimen.view_line_graph_point_size) / 2f;
+        this.highlightPointAreaHalf = getResources().getDimensionPixelSize(R.dimen.series_graph_point_size) / 2f;
         highlightPaint.setAntiAlias(true);
         highlightPaint.setAlpha(0);
 

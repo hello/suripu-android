@@ -10,8 +10,9 @@ import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.util.Logger;
 
-public class LineGraphDrawable extends GraphDrawable {
+public class HistogramGraphDrawable extends GraphDrawable {
     private final Paint linePaint = new Paint();
     private final Path linePath = new Path();
     private final Path fillPath = new Path();
@@ -19,8 +20,7 @@ public class LineGraphDrawable extends GraphDrawable {
     private final float topLineHeight;
     private final Drawable fillDrawable;
 
-
-    public LineGraphDrawable(@NonNull Resources resources) {
+    public HistogramGraphDrawable(@NonNull Resources resources) {
         this.topLineHeight = resources.getDimensionPixelSize(R.dimen.series_graph_line_size);
 
         Styles.applyGraphLineParameters(linePaint);
@@ -49,26 +49,21 @@ public class LineGraphDrawable extends GraphDrawable {
             float sectionWidth = width / sectionCount;
             for (int section = 0; section < sectionCount; section++) {
                 int pointCount = adapterCache.getSectionCount(section);
-                if (pointCount == 0)
+                if (pointCount != 1) {
+                    Logger.error(getClass().getSimpleName(), "Invalid adapter given to histogram graph drawable! Each section must have exactly one point.");
                     continue;
-
-                float segmentWidth = sectionWidth / (float) pointCount;
-                for (int position = 0; position < pointCount; position++) {
-                    float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, section, position);
-                    float segmentY = minY + adapterCache.calculateSegmentY(height, section, position);
-
-                    if (section == 0 && position == 0) {
-                        linePath.moveTo(segmentX, segmentY);
-                    } else {
-                        linePath.lineTo(segmentX, segmentY);
-                    }
-                    fillPath.lineTo(segmentX, segmentY - halfOfTopLine);
-
-                    if (section == sectionCount - 1 && position == pointCount - 1) {
-                        fillPath.lineTo(segmentX + halfOfTopLine, minY + height + bottomInset);
-                        fillPath.lineTo(0, minY + height + bottomInset);
-                    }
                 }
+
+                float sectionX = adapterCache.calculateSegmentX(sectionWidth, 0, section, 0);
+                float sectionY = minY + adapterCache.calculateSegmentY(height, section, 0);
+
+                if (section == 0) {
+                    linePath.moveTo(sectionX, sectionY);
+                } else {
+                    linePath.lineTo(sectionX, sectionY);
+                }
+
+                linePath.lineTo(sectionX + sectionWidth, sectionY);
             }
 
             canvas.save();

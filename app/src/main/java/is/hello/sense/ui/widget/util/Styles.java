@@ -3,6 +3,8 @@ package is.hello.sense.ui.widget.util;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -127,6 +129,13 @@ public final class Styles {
         }
     }
 
+
+    public static @NonNull Drawable createGraphFillDrawable(@NonNull Resources resources) {
+        return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
+                resources.getColor(R.color.graph_fill_gradient_top),
+                resources.getColor(R.color.graph_fill_gradient_bottom),
+        });
+    }
 
     public static void applyGraphLineParameters(@NonNull Paint paint) {
         paint.setStyle(Paint.Style.STROKE);
