@@ -2,15 +2,15 @@ package is.hello.sense.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Trend extends ApiResponse {
+public class AvailableTrendGraph extends ApiResponse {
     @JsonProperty("data_type")
-    private String dataType;
+    private TrendGraph.DataType dataType;
 
     @JsonProperty("time_period")
     private String timePeriod;
 
 
-    public String getDataType() {
+    public TrendGraph.DataType getDataType() {
         return dataType;
     }
 

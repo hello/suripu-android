@@ -8,11 +8,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public class TrendGraph extends ApiResponse {
+    public static String TIME_PERIOD_DAY_OF_WEEK = "DOW";
+    public static String TIME_PERIOD_OVER_TIME_1W = "1W";
+    public static String TIME_PERIOD_OVER_TIME_2W = "2W";
+    public static String TIME_PERIOD_OVER_TIME_1M = "1M";
+    public static String TIME_PERIOD_OVER_TIME_3M = "3M";
+    public static String TIME_PERIOD_OVER_TIME_ALL = "ALL";
+
+
     @JsonProperty("title")
     public String title;
 
     @JsonProperty("data_type")
-    public String dataType;
+    public DataType dataType;
 
     @JsonProperty("graph_type")
     public GraphType graphType;
@@ -31,7 +39,7 @@ public class TrendGraph extends ApiResponse {
         return title;
     }
 
-    public String getDataType() {
+    public DataType getDataType() {
         return dataType;
     }
 
@@ -112,6 +120,18 @@ public class TrendGraph extends ApiResponse {
                     ", offsetMillis=" + offsetMillis +
                     ", dataLabel=" + dataLabel +
                     '}';
+        }
+    }
+
+
+    public enum DataType {
+        NONE,
+        SLEEP_SCORE,
+        SLEEP_DURATION;
+
+        @JsonCreator
+        public static DataType fromString(@Nullable String string) {
+            return Enums.fromString(string, values(), NONE);
         }
     }
 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -16,6 +17,7 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
@@ -135,6 +137,21 @@ public interface ApiService {
     @POST("/alarms/{client_time_utc}")
     Observable<VoidResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
                                              @NonNull @Body List<SmartAlarm> alarms);
+
+    //endregion
+
+
+    //region Trends
+
+    @GET("/insights/trends/list")
+    Observable<List<AvailableTrendGraph>> availableTrendGraphs();
+
+    @GET("/insights/trends/all")
+    Observable<List<TrendGraph>> allTrends();
+
+    @GET("/v1/insights/trends/graph")
+    Observable<TrendGraph> trendGraph(@NonNull @Query("data_type") String dataType,
+                                      @NonNull @Query("time_period") String timePeriod);
 
     //endregion
 }

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -23,6 +24,7 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
@@ -177,5 +179,22 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<VoidResponse> updateEmailAddress(@NonNull @Body Account account) {
         return Observable.just(new VoidResponse());
+    }
+
+
+    @Override
+    public Observable<List<AvailableTrendGraph>> availableTrendGraphs() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<List<TrendGraph>> allTrends() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<TrendGraph> trendGraph(@NonNull @Query("data_type") String dataType,
+                                             @NonNull @Query("time_period") String timePeriod) {
+        return unimplemented();
     }
 }
