@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -21,14 +22,18 @@ import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapterCache;
 import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.util.Views;
 
 public class GraphView extends View {
+    private static final int NONE = -1;
+
     private @Nullable GraphDrawable graphDrawable;
     private int numberOfLines = 0;
     private boolean wantsHeaders = true;
     private boolean wantsFooters = true;
     private @Nullable Drawable gridDrawable;
     private @Nullable HeaderFooterProvider headerFooterProvider;
+    private @Nullable HighlightListener highlightListener;
 
     private final Paint headerTextPaint = new Paint();
     private final Paint footerTextPaint = new Paint();
@@ -36,6 +41,12 @@ public class GraphView extends View {
     private final Rect textRect = new Rect();
 
     private int headerFooterPadding;
+
+    private final Paint highlightPaint = new Paint();
+    private final RectF highlightPointBounds = new RectF();
+    private float highlightPointAreaHalf;
+
+    private int highlightedSection = NONE, highlightedSegment = NONE;
 
 
     public GraphView(Context context) {
@@ -70,14 +81,17 @@ public class GraphView extends View {
         setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_body));
         setFooterTypeface(Typeface.createFromAsset(resources.getAssets(), Styles.TYPEFACE_LIGHT));
 
+        this.highlightPointAreaHalf = getResources().getDimensionPixelSize(R.dimen.view_line_graph_point_size) / 2f;
+        highlightPaint.setAntiAlias(true);
+
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.GraphView, defStyleAttr, 0);
 
             this.numberOfLines = styles.getInt(R.styleable.GraphView_senseNumberOfLines, 0);
             setGridDrawable(styles.getDrawable(R.styleable.GraphView_senseGridDrawable));
 
-            this.wantsHeaders = styles.getBoolean(R.styleable.GraphView_senseWantsHeaders, true);
-            this.wantsFooters = styles.getBoolean(R.styleable.GraphView_senseWantsFooters, true);
+            setWantsHeaders(styles.getBoolean(R.styleable.GraphView_senseWantsHeaders, true));
+            setWantsFooters(styles.getBoolean(R.styleable.GraphView_senseWantsFooters, true));
 
             styles.recycle();
         } else {
@@ -100,6 +114,7 @@ public class GraphView extends View {
     protected void onDraw(Canvas canvas) {
         int minX = 0, minY = 0;
         int height = getMeasuredHeight() - minY, width = getMeasuredWidth() - minX;
+        boolean isHighlighted = (highlightedSection != NONE && highlightedSegment != NONE);
 
         if (gridDrawable != null && numberOfLines > 0) {
             int lineDistance = width / numberOfLines;
@@ -134,7 +149,7 @@ public class GraphView extends View {
                 }
 
                 for (int section = 0; section < sectionCount; section++) {
-                    if (wantsHeaders) {
+                    if (wantsHeaders && !isHighlighted) {
                         headerTextPaint.setColor(headerFooterProvider.getSectionTextColor(section));
 
                         String text = headerFooterProvider.getSectionHeader(section);
@@ -160,6 +175,22 @@ public class GraphView extends View {
                 }
             }
         }
+
+        if (isHighlighted) {
+            GraphAdapterCache adapterCache = getAdapterCache();
+            float sectionWidth = adapterCache.calculateSectionWidth(width);
+            float segmentWidth = adapterCache.calculateSegmentWidth(width, highlightedSection);
+            float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, highlightedSection, highlightedSegment);
+            float segmentY = adapterCache.calculateSegmentY(height, highlightedSection, highlightedSegment);
+
+            highlightPointBounds.set(segmentX - highlightPointAreaHalf,
+                                     minY + (segmentY - highlightPointAreaHalf),
+                                     segmentX + highlightPointAreaHalf,
+                                     minY + (segmentY + highlightPointAreaHalf));
+            canvas.drawOval(highlightPointBounds, highlightPaint);
+
+            canvas.drawRect(highlightPointBounds.centerX(), 0f, highlightPointBounds.centerX() + 1f, getMeasuredHeight(), highlightPaint);
+        }
     }
 
     protected void updateDrawableInsets() {
@@ -182,6 +213,10 @@ public class GraphView extends View {
 
 
     //region Properties
+
+    public boolean hasData() {
+        return (graphDrawable != null && getAdapterCache().getNumberSections() > 0);
+    }
 
     public void setGraphDrawable(@Nullable GraphDrawable graphDrawable) {
         if (this.graphDrawable != null) {
@@ -258,6 +293,10 @@ public class GraphView extends View {
         invalidate();
     }
 
+    public void setHighlightListener(@Nullable HighlightListener highlightListener) {
+        this.highlightListener = highlightListener;
+    }
+
     protected GraphAdapterCache getAdapterCache() {
         if (graphDrawable == null) {
             throw new IllegalStateException();
@@ -269,12 +308,56 @@ public class GraphView extends View {
     //endregion
 
 
-    //region Event Handling
+    //region Highlight Support
+
+    protected void setHighlightedValue(int section, int segment) {
+        this.highlightedSection = section;
+        this.highlightedSegment = segment;
+
+        invalidate();
+    }
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-        if (graphDrawable == null || graphDrawable.getAdapter() == null) {
+        if (!hasData() || highlightListener == null) {
             return false;
+        }
+
+        GraphAdapterCache adapterCache = getAdapterCache();
+        int width = getMeasuredWidth();
+        float x = Views.getNormalizedX(event);
+        int section = adapterCache.findSectionAtX(width, x);
+        int segment = adapterCache.findSegmentAtX(width, section, x);
+        setHighlightedValue(section, segment);
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN: {
+                if (highlightListener != null) {
+                    highlightListener.onGraphHighlightBegin();
+                    highlightListener.onGraphValueHighlighted(section, segment);
+                }
+
+                break;
+            }
+
+            case MotionEvent.ACTION_MOVE: {
+                if (highlightListener != null) {
+                    highlightListener.onGraphValueHighlighted(section, segment);
+                }
+
+                break;
+            }
+
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP: {
+                if (highlightListener != null) {
+                    highlightListener.onGraphHighlightEnd();
+                }
+
+                setHighlightedValue(NONE, NONE);
+
+                break;
+            }
         }
 
         return true;
@@ -288,5 +371,11 @@ public class GraphView extends View {
         int getSectionTextColor(int section);
         @NonNull String getSectionHeader(int section);
         @NonNull String getSectionFooter(int section);
+    }
+
+    public interface HighlightListener {
+        void onGraphHighlightBegin();
+        void onGraphValueHighlighted(int section, int position);
+        void onGraphHighlightEnd();
     }
 }

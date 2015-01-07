@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.RelativeSizeSpan;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,6 +90,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         graph.setAdapter(sensorDataSource);
         graphView.setGraphDrawable(graph);
         graphView.setHeaderFooterProvider(sensorDataSource);
+        graphView.setHighlightListener(sensorDataSource);
 
         this.historyModeSelector = (SelectorLinearLayout) view.findViewById(R.id.fragment_sensor_history_mode);
         historyModeSelector.setOnSelectionChangedListener(this);
@@ -208,7 +210,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     }
 
 
-    public class SensorDataSource extends SensorHistoryAdapter implements GraphView.HeaderFooterProvider {
+    public class SensorDataSource extends SensorHistoryAdapter implements GraphView.HeaderFooterProvider, GraphView.HighlightListener {
         private UnitSystem unitSystem;
         private boolean use24Time = false;
 
@@ -310,7 +312,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         //endregion
 
 
-        /*region Highlight Listener
+        //region Highlight Listener
 
         private int savedReadingColor;
         private CharSequence savedReading;
@@ -349,6 +351,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             messageText.setTextColor(getResources().getColor(R.color.text_dark));
         }
 
-        //endregion*/
+        //endregion
     }
 }

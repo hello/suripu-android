@@ -8,15 +8,6 @@
         <attr name="wantsReading" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="LineGraphView">
-        <attr name="lineCount" format="integer" />
-        <attr name="gridDrawable" format="integer" />
-        <attr name="topLineHeight" format="dimension" />
-        <attr name="fill" format="integer" />
-        <attr name="wantsHeaders" format="boolean" />
-        <attr name="wantsFooters" format="boolean" />
-    </declare-styleable>
-
     <declare-styleable name="GraphView">
         <attr name="senseNumberOfLines" format="integer" />
         <attr name="senseGridDrawable" format="integer" />
