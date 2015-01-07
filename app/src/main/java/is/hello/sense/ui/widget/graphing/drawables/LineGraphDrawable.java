@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
 
-public class LineAdapterGraphDrawable extends AdapterGraphDrawable {
+public class LineGraphDrawable extends GraphDrawable {
     private final Paint linePaint = new Paint();
     private final Path linePath = new Path();
     private final Path fillPath = new Path();
@@ -21,7 +21,7 @@ public class LineAdapterGraphDrawable extends AdapterGraphDrawable {
     private final Drawable fillDrawable;
 
 
-    public LineAdapterGraphDrawable(@NonNull Resources resources) {
+    public LineGraphDrawable(@NonNull Resources resources) {
         this.topLineHeight = resources.getDimensionPixelSize(R.dimen.view_line_graph_line_size);
 
         Styles.applyGraphLineParameters(linePaint);
@@ -41,14 +41,14 @@ public class LineAdapterGraphDrawable extends AdapterGraphDrawable {
         if (sectionCount > 0) {
             float halfOfTopLine = topLineHeight / 2f;
 
-            int minY = Math.round(halfOfTopLine);
+            int minY = Math.round(halfOfTopLine) + topInset;
             int width = canvas.getWidth();
-            int height = canvas.getHeight() - minY;
+            int height = canvas.getHeight() - minY - bottomInset;
 
             fillPath.reset();
             linePath.reset();
 
-            fillPath.moveTo(0, minY + height);
+            fillPath.moveTo(0, minY + height + bottomInset);
 
             float sectionWidth = width / sectionCount;
             for (int section = 0; section < sectionCount; section++) {
@@ -69,8 +69,8 @@ public class LineAdapterGraphDrawable extends AdapterGraphDrawable {
                     fillPath.lineTo(segmentX, segmentY - halfOfTopLine);
 
                     if (section == sectionCount - 1 && position == pointCount - 1) {
-                        fillPath.lineTo(segmentX + halfOfTopLine, minY + height);
-                        fillPath.lineTo(0, minY + height);
+                        fillPath.lineTo(segmentX + halfOfTopLine, minY + height + bottomInset);
+                        fillPath.lineTo(0, minY + height + bottomInset);
                     }
                 }
             }
@@ -78,7 +78,7 @@ public class LineAdapterGraphDrawable extends AdapterGraphDrawable {
             canvas.save();
             {
                 canvas.clipPath(fillPath);
-                fillDrawable.setBounds(0, minY, width, minY + height);
+                fillDrawable.setBounds(0, minY, width, minY + height + bottomInset);
                 fillDrawable.draw(canvas);
             }
             canvas.restore();

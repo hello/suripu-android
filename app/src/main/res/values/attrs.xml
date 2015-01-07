@@ -27,6 +27,13 @@
         <attr name="wantsFooters" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="CompoundGraphView">
+        <attr name="senseNumberOfLines" format="integer" />
+        <attr name="senseGridDrawable" format="integer" />
+        <attr name="senseWantsHeaders" format="boolean" />
+        <attr name="senseWantsFooters" format="boolean" />
+    </declare-styleable>
+
     <declare-styleable name="SenseHtmlTextView">
         <attr name="senseHtml" format="integer" />
     </declare-styleable>

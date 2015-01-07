@@ -26,6 +26,7 @@ import is.hello.sense.ui.widget.graphing.adapters.StyleableGraphAdapter;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
+@Deprecated
 public final class LineGraphView extends FrameLayout implements GraphAdapter.ChangeObserver {
     private @Nullable OnValueHighlightedListener onValueHighlightedListener;
     private StyleableGraphAdapter adapter;

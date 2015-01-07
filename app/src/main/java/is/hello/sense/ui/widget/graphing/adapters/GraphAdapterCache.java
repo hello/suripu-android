@@ -83,14 +83,35 @@ public class GraphAdapterCache {
         return (magnitude - baseMagnitude) / (peakMagnitude - baseMagnitude);
     }
 
+    public float getSectionWidth(float hostWidth) {
+        return hostWidth / getNumberSections();
+    }
+
+    public float getSegmentWidth(float hostWidth, int section) {
+        return hostWidth / getSectionCount(section);
+    }
+
     public float calculateSegmentX(float sectionWidth, float segmentWidth, int section, int position) {
         return (sectionWidth * section) + (segmentWidth * position);
     }
 
-    public float calculateSegmentY(float height, int section, int position) {
+    public float calculateSegmentY(float hostHeight, int section, int position) {
         float magnitude = adapter.getMagnitudeAt(section, position);
         float percentage = calculateMagnitudePercentage(magnitude);
-        return Math.round(height * percentage);
+        return Math.round(hostHeight * percentage);
+    }
+
+    public int findSectionAtX(float hostWidth, float x) {
+        int limit = getNumberSections();
+        return (int) Math.min(limit - 1, Math.floor(x / getSectionWidth(hostWidth)));
+    }
+
+    public int findSegmentAtX(float hostWidth, int section, float x) {
+        int limit = getSectionCount(section);
+        float sectionMinX = getSectionWidth(hostWidth) * section;
+        float segmentWidth = getSegmentWidth(hostWidth, section);
+        float xInSection = x - sectionMinX;
+        return (int) Math.min(limit - 1, xInSection / segmentWidth);
     }
 
     //endregion
@@ -142,6 +163,8 @@ public class GraphAdapterCache {
 
     public static enum Type {
         PLAIN,
+
+        @Deprecated
         STYLEABLE,
     }
 }
