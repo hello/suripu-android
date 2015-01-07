@@ -62,6 +62,9 @@ public interface ApiService {
     @POST("/timezone")
     Observable<SenseTimeZone> updateTimeZone(@NonNull @Body SenseTimeZone senseTimeZone);
 
+    @POST("/account/email")
+    Observable<VoidResponse> updateEmailAddress(@NonNull @Body Account account);
+
     //endregion
 
 

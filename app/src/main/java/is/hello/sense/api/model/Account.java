@@ -11,7 +11,7 @@ import org.joda.time.LocalDate;
 import is.hello.sense.api.ApiService;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Account extends ApiResponse {
+public class Account extends ApiResponse implements Cloneable {
     @JsonIgnore
     private String id;
 
@@ -142,6 +142,15 @@ public class Account extends ApiResponse {
 
     public boolean isEmailVerified() {
         return emailVerified;
+    }
+
+
+    public final Account clone() {
+        try {
+            return (Account) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
