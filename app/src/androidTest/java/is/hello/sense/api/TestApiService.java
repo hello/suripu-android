@@ -89,7 +89,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> changePassword(@NonNull @Body PasswordUpdate passwordUpdate) {
-        return unimplemented();
+        return Observable.just(new VoidResponse());
     }
 
     @Override
@@ -99,7 +99,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration) {
-        return unimplemented();
+        return Observable.just(new VoidResponse());
     }
 
     @Override
@@ -115,7 +115,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<RoomConditions> currentRoomConditions() {
+    public Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit) {
         return loadResponse("current_conditions", new TypeReference<RoomConditions>() {});
     }
 
@@ -139,13 +139,13 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<VoidResponse> answerQuestion(@Query("account_question_id") long accountId,
                                                    @NonNull @Body List<Question.Choice> answers) {
-        return unimplemented();
+        return Observable.just(new VoidResponse());
     }
 
     @Override
     public Observable<VoidResponse> skipQuestion(@Query("account_question_id") long accountId,
                                                  @Query("id") long questionId) {
-        return unimplemented();
+        return Observable.just(new VoidResponse());
     }
 
     @Override
@@ -155,12 +155,12 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> unregisterPill(@Path("id") @NonNull String pillId) {
-        return unimplemented();
+        return Observable.just(new VoidResponse());
     }
 
     @Override
     public Observable<VoidResponse> unregisterSense(@Path("id") @NonNull String senseId) {
-        return unimplemented();
+        return Observable.just(new VoidResponse());
     }
 
     @Override
@@ -171,6 +171,11 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<VoidResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp,
                                                    @NonNull @Body List<SmartAlarm> alarms) {
+        return Observable.just(new VoidResponse());
+    }
+
+    @Override
+    public Observable<VoidResponse> updateEmailAddress(@NonNull @Body Account account) {
         return Observable.just(new VoidResponse());
     }
 }

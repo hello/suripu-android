@@ -31,7 +31,6 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        accountPresenter.update();
         addPresenter(accountPresenter);
     }
 
@@ -59,6 +58,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        accountPresenter.update();
         bindAndSubscribe(accountPresenter.account, this::bindAccount, this::accountUnavailable);
     }
 

@@ -37,11 +37,12 @@ public class AccountPresenter extends ValuePresenter<Account> {
         apiService.updateAccount(updatedAccount).subscribe(account);
     }
 
-    public Observable<VoidResponse> updateEmail(@NonNull String email) {
+    public Observable<Account> updateEmail(@NonNull String email) {
         return account.take(1).flatMap(account -> {
             Account updatedAccount = account.clone();
             updatedAccount.setEmail(email);
             return apiService.updateEmailAddress(updatedAccount)
+                             .map(ignored -> updatedAccount)
                              .doOnCompleted(() -> this.account.onNext(updatedAccount));
         });
     }

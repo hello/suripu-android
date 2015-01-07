@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -94,6 +95,12 @@ public class ChangeEmailFragment extends InjectionFragment {
 
     public void presentError(@Nullable Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        if (ApiException.statusEquals(e, 409)) {
+            String errorMessage = getString(R.string.error_account_email_taken, email.getText());
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(errorMessage);
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
     }
 }
