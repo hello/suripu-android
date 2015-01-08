@@ -3,9 +3,12 @@ package is.hello.sense.ui.widget.util;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -128,6 +131,17 @@ public final class Styles {
     }
 
 
+    public static @NonNull Drawable createGraphFillDrawable(@NonNull Resources resources) {
+        return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
+                resources.getColor(R.color.graph_fill_gradient_top),
+                resources.getColor(R.color.graph_fill_gradient_bottom),
+        });
+    }
+
+    public static void applyRefreshLayoutStyle(@NonNull SwipeRefreshLayout refreshLayout) {
+        refreshLayout.setColorSchemeResources(R.color.sensor_alert, R.color.sensor_warning, R.color.sensor_ideal);
+    }
+
     public static void applyGraphLineParameters(@NonNull Paint paint) {
         paint.setStyle(Paint.Style.STROKE);
         paint.setAntiAlias(true);
@@ -156,6 +170,13 @@ public final class Styles {
         View view = new View(context);
         view.setBackgroundResource(R.color.border);
         view.setLayoutParams(new ViewGroup.LayoutParams(width, context.getResources().getDimensionPixelSize(R.dimen.divider_size)));
+        return view;
+    }
+
+    public static View createVerticalDivider(@NonNull Context context, int height) {
+        View view = new View(context);
+        view.setBackgroundResource(R.color.border);
+        view.setLayoutParams(new ViewGroup.LayoutParams(context.getResources().getDimensionPixelSize(R.dimen.divider_size), height));
         return view;
     }
 

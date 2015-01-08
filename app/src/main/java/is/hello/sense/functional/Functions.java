@@ -31,6 +31,7 @@ public final class Functions {
     public static final Action1<Throwable> LOG_ERROR = e -> Logger.error("UnexpectedErrors", "An error occurred.", e);
     public static final Func1<Boolean, Boolean> IS_TRUE = is -> is;
     public static final Func1<Boolean, Boolean> IS_FALSE = is -> !is;
+    public static final Action1<Object> NO_OP = ignored -> {};
     public static final Func1<Object, Void> TO_VOID = ignored -> null;
 
     //endregion

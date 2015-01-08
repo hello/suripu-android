@@ -69,15 +69,17 @@
 
         <View style="@style/Divider.Horizontal" />
 
-        <is.hello.sense.ui.widget.graphing.LineGraphView
-            android:id="@+id/fragment_sensor_history_graph"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:minHeight="@dimen/sensor_history_graph_min_height"
-            app:fill="@color/transparent"
-            app:gridDrawable="@drawable/graph_grid_fill"
-            app:topLineHeight="@dimen/view_line_graph_line_size">
+            android:minHeight="@dimen/series_graph_min_height">
+
+            <is.hello.sense.ui.widget.graphing.GraphView
+                android:id="@+id/fragment_sensor_history_graph"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:senseGridDrawable="@drawable/graph_grid_fill_top_down" />
 
             <is.hello.sense.ui.widget.TintedProgressBar
                 android:id="@+id/fragment_sensor_history_loading"
@@ -86,7 +88,9 @@
                 android:layout_gravity="center"
                 style="@android:style/Widget.Holo.Light.ProgressBar"/>
 
-        </is.hello.sense.ui.widget.graphing.LineGraphView>
+        </FrameLayout>
+
+        <View style="@style/Divider.Horizontal" />
 
         <TextView
             android:id="@+id/fragment_sensor_history_insight"

@@ -53,9 +53,9 @@ public class AccountPresenterTests extends InjectionTestCase {
         accountAfter.await();
 
         assertNull(accountAfter.getError());
-        assertNotNull(accountAfter.getSingle());
+        assertNotNull(accountAfter.getLast());
 
-        assertNotSame(accountBefore.getSingle().getEmail(), accountAfter.getSingle().getEmail());
-        assertEquals("test@me.com", accountAfter.getSingle().getEmail());
+        assertNotSame(accountBefore.getLast().getEmail(), accountAfter.getLast().getEmail());
+        assertEquals("test@me.com", accountAfter.getLast().getEmail());
     }
 }

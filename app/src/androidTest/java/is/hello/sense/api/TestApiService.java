@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -23,6 +24,7 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
@@ -177,5 +179,22 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<VoidResponse> updateEmailAddress(@NonNull @Body Account account) {
         return Observable.just(new VoidResponse());
+    }
+
+
+    @Override
+    public Observable<ArrayList<AvailableTrendGraph>> availableTrendGraphs() {
+        return loadResponse("available_trend_graphs", new TypeReference<ArrayList<AvailableTrendGraph>>() {});
+    }
+
+    @Override
+    public Observable<ArrayList<TrendGraph>> allTrends() {
+        return loadResponse("all_trends", new TypeReference<ArrayList<TrendGraph>>() {});
+    }
+
+    @Override
+    public Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
+                                                        @NonNull @Query("time_period") String timePeriod) {
+        return loadResponse("single_trend", new TypeReference<ArrayList<TrendGraph>>() {});
     }
 }

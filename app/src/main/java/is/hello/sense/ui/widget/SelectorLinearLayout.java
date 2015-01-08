@@ -1,9 +1,11 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Styles;
 
 public class SelectorLinearLayout extends LinearLayout implements View.OnClickListener {
     public static final int EMPTY_SELECTION = -1;
@@ -106,6 +109,39 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
 
     public void setButtonStyler(@Nullable ButtonStyler buttonStyler) {
         this.buttonStyler = buttonStyler;
+    }
+
+    public int addOption(@NonNull String title, @Nullable Object tag) {
+        Resources resources = getResources();
+
+        ToggleButton optionButton = new ToggleButton(getContext());
+        optionButton.setBackgroundResource(R.drawable.button_selector_dark);
+        optionButton.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold);
+        optionButton.setTextColor(resources.getColorStateList(R.color.text_color_selector_toggle_button));
+        optionButton.setTextOn(title);
+        optionButton.setTextOff(title);
+        optionButton.setText(title);
+        optionButton.setGravity(Gravity.CENTER);
+        optionButton.setTag(R.id.layout_linear_selector_tag_key_user, tag);
+
+        if (getChildCount() > 0) {
+            View divider = Styles.createVerticalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
+            LayoutParams layoutParams = new LayoutParams(divider.getLayoutParams());
+            int margin = resources.getDimensionPixelSize(R.dimen.gap_small);
+            layoutParams.setMargins(0, margin, 0, margin);
+            addView(divider, layoutParams);
+        }
+
+        int index = toggleButtons.size();
+        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(R.dimen.button_min_size), 1);
+        addView(optionButton, layoutParams);
+        return index;
+    }
+
+    public void removeAllOptions() {
+        removeViews(0, getChildCount());
+        toggleButtons.clear();
+        this.selectedIndex = EMPTY_SELECTION;
     }
 
 

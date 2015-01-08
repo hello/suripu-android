@@ -2,7 +2,6 @@ package is.hello.sense.ui.fragments;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,8 +32,8 @@ import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
-import is.hello.sense.ui.widget.graphing.LineGraphView;
-import is.hello.sense.ui.widget.graphing.StyleableGraphAdapter;
+import is.hello.sense.ui.widget.graphing.GraphView;
+import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.DateFormatter;
@@ -55,12 +54,12 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     private TextView readingText;
     private TextView messageText;
     private SelectorLinearLayout historyModeSelector;
-    private LineGraphView graphView;
     private ProgressBar loadingIndicator;
     private TextView insightText;
-    private GradientDrawable graphBackground;
-    private SensorDataSource sensorDataSource = new SensorDataSource();
     private String sensor;
+
+    private GraphView graphView;
+    private SensorDataSource sensorDataSource = new SensorDataSource();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,19 +81,15 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         this.readingText = (TextView) view.findViewById(R.id.fragment_sensor_history_reading);
         this.messageText = (TextView) view.findViewById(R.id.fragment_sensor_history_message);
-        this.graphView = (LineGraphView) view.findViewById(R.id.fragment_sensor_history_graph);
+        this.graphView = (GraphView) view.findViewById(R.id.fragment_sensor_history_graph);
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_sensor_history_loading);
         this.insightText = (TextView) view.findViewById(R.id.fragment_sensor_history_insight);
 
-        this.graphBackground = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
-                getResources().getColor(R.color.graph_fill_gradient_top),
-                getResources().getColor(R.color.graph_fill_gradient_bottom),
-        });
-        graphBackground.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
-
-        graphView.setFillDrawable(graphBackground);
+        graphView.setGraphDrawable(new LineGraphDrawable(getResources()));
         graphView.setAdapter(sensorDataSource);
-        graphView.setOnValueHighlightedListener(sensorDataSource);
+        graphView.setHeaderFooterProvider(sensorDataSource);
+        graphView.setHighlightListener(sensorDataSource);
+        graphView.setTintColor(getResources().getColor(R.color.sensor_unknown));
 
         this.historyModeSelector = (SelectorLinearLayout) view.findViewById(R.id.fragment_sensor_history_mode);
         historyModeSelector.setOnSelectionChangedListener(this);
@@ -181,8 +176,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                                  insightText::setText,
                                  e -> insightText.setText(condition.getMessage()));
 
-                sensorDataSource.setSectionLineColor(sensorColor);
-                graphBackground.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
+                graphView.setTintColor(sensorColor);
             } else {
                 readingText.setText(R.string.missing_data_placeholder);
                 messageText.setText(R.string.missing_data_placeholder);
@@ -214,10 +208,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     }
 
 
-    public class SensorDataSource extends SensorHistoryAdapter implements LineGraphView.OnValueHighlightedListener, StyleableGraphAdapter {
+    public class SensorDataSource extends SensorHistoryAdapter implements GraphView.HeaderFooterProvider, GraphView.HighlightListener {
         private UnitSystem unitSystem;
         private boolean use24Time = false;
-        private int sectionLineColor = Color.GRAY;
 
         public void bindHistory(@NonNull SensorHistoryPresenter.Result historyAndUnits) {
             List<SensorHistory> history = historyAndUnits.data;
@@ -284,23 +277,18 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             }
         }
 
-        public void setSectionLineColor(int color) {
-            this.sectionLineColor = color;
-            notifyDataChanged();
-        }
-
         @Override
-        public int getSectionLineColor(int section) {
-            return sectionLineColor;
-        }
-
-        @Override
-        public int getSectionTextColor(int section) {
+        public int getSectionHeaderTextColor(int section) {
             if (section == getSectionCount() - 1) {
                 return Color.BLACK;
             } else {
                 return Color.GRAY;
             }
+        }
+
+        @Override
+        public int getSectionFooterTextColor(int section) {
+            return getSectionHeaderTextColor(section);
         }
 
         @NonNull
@@ -349,7 +337,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         public void onGraphValueHighlighted(int section, int position) {
             SensorHistory instant = getSection(section).get(position);
             readingText.setText(spanFormattedValue(sensor, formatSensorValue(instant.getValue())));
-            readingText.setTextColor(getSectionLineColor(section));
             messageText.setText(dateFormatter.formatAsTime(instant.getTime(), use24Time));
         }
 

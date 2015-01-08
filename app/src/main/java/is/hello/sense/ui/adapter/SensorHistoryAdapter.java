@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.api.model.SensorHistory;
-import is.hello.sense.ui.widget.graphing.GraphAdapter;
+import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
 
 public class SensorHistoryAdapter implements GraphAdapter {
     private final List<ChangeObserver> observers = new ArrayList<>();

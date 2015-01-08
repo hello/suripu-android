@@ -1,7 +1,6 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +15,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.ui.widget.MiniTimelineView;
-import is.hello.sense.ui.widget.graphing.SimplePieDrawable;
+import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -113,7 +112,7 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
         public final TextView score;
         public final MiniTimelineView timeline;
 
-        public final SimplePieDrawable pieDrawable;
+        public final SleepScoreDrawable pieDrawable;
 
         public @Nullable DateTime date;
 
@@ -127,7 +126,7 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
             this.score = (TextView) itemView.findViewById(R.id.item_timeline_navigator_score);
             this.timeline = (MiniTimelineView) itemView.findViewById(R.id.item_timeline_navigator_timeline);
 
-            this.pieDrawable = new SimplePieDrawable(context.getResources());
+            this.pieDrawable = new SleepScoreDrawable(context.getResources());
 
             View pieView = itemView.findViewById(R.id.item_timeline_navigator_pie);
             pieView.setBackground(pieDrawable);

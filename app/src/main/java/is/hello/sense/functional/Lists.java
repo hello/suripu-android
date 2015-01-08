@@ -18,6 +18,10 @@ public class Lists {
         return list;
     }
 
+    public static <T> boolean isEmpty(@Nullable Collection<T> source) {
+        return (source == null || source.isEmpty());
+    }
+
     public static <T, R> List<R> map(@NonNull Iterable<T> source, @NonNull Function<T, R> mapper) {
         List<R> accumulator = new ArrayList<>();
         for (T value : source) {

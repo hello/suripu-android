@@ -22,6 +22,7 @@ import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
+import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.remote.LastNightWidgetProvider;
 import is.hello.sense.remote.RoomConditionsWidgetProvider;
@@ -102,12 +103,13 @@ import is.hello.sense.ui.widget.TimestampTextView;
         QuestionsDialogFragment.class,
 
         InsightsPresenter.class,
+        InsightsFragment.class,
         InsightDetailsDialogFragment.class,
         RoomConditionsFragment.class,
         RoomConditionsPresenter.class,
         SensorHistoryFragment.class,
         SensorHistoryPresenter.class,
-        InsightsFragment.class,
+        TrendsPresenter.class,
         TrendsFragment.class,
 
         SmartAlarmListFragment.class,
