@@ -1,0 +1,31 @@
+[
+    {
+        "data_points": [
+            {
+                "data_label": "BAD",
+                "datetime": 1420416000000,
+                "offset_millis": -28800000,
+                "x_value": "",
+                "y_value": 72.0
+            },
+            {
+                "data_label": "BAD",
+                "datetime": 1420502400000,
+                "offset_millis": -28800000,
+                "x_value": "",
+                "y_value": 75.0
+            }
+        ],
+        "data_type": "SLEEP_SCORE",
+        "graph_type": "TIME_SERIES_LINE",
+        "options": [
+            "1W",
+            "2W",
+            "1M",
+            "3M",
+            "ALL"
+        ],
+        "time_period": "1M",
+        "title": "SLEEP SCORE OVER TIME"
+    }
+]

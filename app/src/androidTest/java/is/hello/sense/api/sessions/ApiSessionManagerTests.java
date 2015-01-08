@@ -1,13 +1,16 @@
 package is.hello.sense.api.sessions;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.test.InstrumentationTestCase;
 
 import junit.framework.TestCase;
 
-public class ApiSessionManagerTests extends TestCase {
+public class ApiSessionManagerTests extends InstrumentationTestCase {
     public void testFacade() {
         OAuthSession testSession = new OAuthSession();
-        TestApiSessionManager testApiSessionManager = new TestApiSessionManager();
+        TestApiSessionManager testApiSessionManager = new TestApiSessionManager(getInstrumentation().getContext());
         testApiSessionManager.setSession(testSession);
 
         assertTrue(testApiSessionManager.hasSession());
@@ -20,6 +23,10 @@ public class ApiSessionManagerTests extends TestCase {
     private static class TestApiSessionManager extends TransientApiSessionManager {
         boolean storeOAuthSessionCalled = false;
         boolean retrieveOAuthSessionCalled = false;
+
+        public TestApiSessionManager(@NonNull Context context) {
+            super(context);
+        }
 
         @Override
         protected void storeOAuthSession(@Nullable OAuthSession session) {

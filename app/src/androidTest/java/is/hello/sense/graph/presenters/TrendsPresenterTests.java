@@ -35,11 +35,11 @@ public class TrendsPresenterTests extends InjectionTestCase {
 
         assertNull(graphs.getError());
         assertNotNull(graphs.getSingle());
-        assertEquals(1, graphs.getSingle().size());
-        assertEquals(TrendGraph.TIME_PERIOD_DAY_OF_WEEK, graphs.getSingle().get(0).getTimePeriod());
+        assertEquals(3, graphs.getSingle().size());
+        assertEquals(TrendGraph.TIME_PERIOD_OVER_TIME_ALL, graphs.getSingle().get(2).getTimePeriod());
 
 
-        SyncObserver<Void> update = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, trendsPresenter.updateTrend(0, TrendGraph.TIME_PERIOD_OVER_TIME_1M));
+        SyncObserver<Void> update = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, trendsPresenter.updateTrend(2, TrendGraph.TIME_PERIOD_OVER_TIME_1M));
         update.await();
 
         assertNull(graphs.getError());
@@ -50,7 +50,7 @@ public class TrendsPresenterTests extends InjectionTestCase {
 
         assertNull(graphs.getError());
         assertNotNull(graphs.getSingle());
-        assertEquals(1, graphs.getSingle().size());
-        assertEquals(TrendGraph.TIME_PERIOD_OVER_TIME_1M, graphs.getSingle().get(0).getTimePeriod());
+        assertEquals(3, graphs.getSingle().size());
+        assertEquals(TrendGraph.TIME_PERIOD_OVER_TIME_1M, graphs.getSingle().get(2).getTimePeriod());
     }
 }
