@@ -20,6 +20,7 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
+import is.hello.sense.ui.widget.util.Styles;
 
 public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
     private final LayoutInflater inflater;
@@ -92,6 +93,7 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         final GraphView graphView;
         final TrendGraphAdapter graphAdapter;
         @Nullable SelectorLinearLayout optionSelector;
+        @Nullable View optionSelectorDivider;
 
         ViewHolder(@NonNull View view) {
             this.itemView = (ViewGroup) view;
@@ -103,6 +105,9 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
 
         void addOptionSelector(int index, @NonNull List<String> options, @NonNull String selectedOption) {
             if (optionSelector == null) {
+                this.optionSelectorDivider = Styles.createHorizontalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
+                itemView.addView(optionSelectorDivider, 0);
+
                 this.optionSelector = new SelectorLinearLayout(getContext());
                 optionSelector.setOnSelectionChangedListener(this);
                 itemView.addView(optionSelector, 0);
@@ -124,6 +129,12 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
             if (optionSelector != null) {
                 itemView.removeView(optionSelector);
                 this.optionSelector = null;
+
+            }
+
+            if (optionSelectorDivider != null) {
+                itemView.removeView(optionSelectorDivider);
+                this.optionSelectorDivider = null;
             }
         }
 

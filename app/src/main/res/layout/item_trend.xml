@@ -11,7 +11,7 @@
         android:id="@+id/item_trend_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_outer"
+        android:layout_margin="@dimen/gap_medium"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.SectionHeading"
         android:text="@string/mock_time"/>

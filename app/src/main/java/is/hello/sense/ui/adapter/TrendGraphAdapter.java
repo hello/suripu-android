@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import is.hello.sense.R;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.graphing.GraphView;
@@ -140,16 +141,21 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
     @Override
     public String getSectionFooter(int section) {
         TrendGraph.GraphSample sample = trendGraph.getDataPoints().get(section);
+        float value = sample.getYValue();
+        if (value <= 0f) {
+            return resources.getString(R.string.missing_data_placeholder);
+        }
+
         switch (trendGraph.getDataType()) {
             default:
             case NONE:
             case SLEEP_SCORE: {
-                return String.format("%.0f", sample.getYValue());
+                return String.format("%.0f", value);
             }
 
             case SLEEP_DURATION: {
-                int durationInHours = ((int) sample.getYValue()) / 60;
-                int remainingMinutes = ((int) sample.getYValue()) % 60;
+                int durationInHours = ((int) value) / 60;
+                int remainingMinutes = ((int) value) % 60;
 
                 String time = Integer.toString(durationInHours);
                 if (remainingMinutes >= 30) {
