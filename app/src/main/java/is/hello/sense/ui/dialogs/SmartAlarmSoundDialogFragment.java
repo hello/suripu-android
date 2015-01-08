@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.ui.adapter.SmartAlarmSoundAdapter;
@@ -161,8 +162,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
         if (what != -38) {
             stopPlayback();
 
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance("Could not play alarm sound");
-            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            Toast.makeText(getActivity().getApplicationContext(), R.string.error_failed_to_play_alarm_sound, Toast.LENGTH_SHORT).show();
         }
 
         return true;

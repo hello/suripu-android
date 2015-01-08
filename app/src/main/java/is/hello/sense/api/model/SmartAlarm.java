@@ -62,7 +62,6 @@ public class SmartAlarm extends ApiResponse {
         this.isEnabled = true;
         this.isEditable = true;
         this.daysOfWeek = new HashSet<>();
-        this.sound = Sound.none();
     }
 
 
@@ -260,10 +259,6 @@ public class SmartAlarm extends ApiResponse {
         @JsonProperty("url")
         public final String url;
 
-
-        public static Sound none() {
-            return new Sound(0, "None", "");
-        }
 
         public Sound(@JsonProperty("id") long id,
                      @JsonProperty("name") String name,
