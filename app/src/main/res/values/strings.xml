@@ -269,4 +269,7 @@
     <string name="label_email_address">Email Address</string>
     <string name="title_change_email">Change Email</string>
     <string name="error_session_invalidated">Please login again</string>
+    <string name="title_turn_off_bluetooth">Turn Off Bluetooth</string>
+    <string name="message_turn_off_bluetooth">Sense no longer requires Bluetooth be turned on, would you like to turn it off?</string>
+    <string name="action_turn_off">Turn Off</string>
 </resources>

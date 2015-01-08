@@ -26,6 +26,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
@@ -38,7 +39,8 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.functions.Action0;
 
-public class DeviceDetailsFragment extends HardwareFragment implements AdapterView.OnItemClickListener {
+public class DeviceDetailsFragment extends HardwareFragment implements AdapterView.OnItemClickListener, FragmentNavigationActivity.BackInterceptingFragment
+{
     public static final int RESULT_UNPAIRED_PILL = 0x66;
 
     public static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
@@ -54,6 +56,8 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
 
     private Device device;
     private BluetoothAdapter bluetoothAdapter;
+    private boolean didEnableBluetooth = false;
+
 
     public static DeviceDetailsFragment newInstance(@NonNull Device device) {
         DeviceDetailsFragment fragment = new DeviceDetailsFragment();
@@ -68,6 +72,10 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            this.didEnableBluetooth = savedInstanceState.getBoolean("didEnableBluetooth", false);
+        }
 
         this.device = (Device) getArguments().getSerializable(ARG_DEVICE);
         addPresenter(hardwarePresenter);
@@ -143,18 +151,44 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("didEnableBluetooth", didEnableBluetooth);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
         this.hardwarePresenter.clearPeripheral();
     }
 
+    @Override
+    public boolean onInterceptBack(@NonNull Runnable back) {
+        if (didEnableBluetooth) {
+            SenseAlertDialog turnOffDialog = new SenseAlertDialog(getActivity());
+            turnOffDialog.setTitle(R.string.title_turn_off_bluetooth);
+            turnOffDialog.setMessage(R.string.message_turn_off_bluetooth);
+            turnOffDialog.setPositiveButton(R.string.action_turn_off, (dialog, which) -> {
+                hardwarePresenter.turnOffBluetooth().subscribe(Functions.NO_OP, Functions.LOG_ERROR);
+                back.run();
+            });
+            turnOffDialog.setNegativeButton(R.string.action_no_thanks, (dialog, which) -> back.run());
+            turnOffDialog.show();
+
+            return true;
+        }
+        return false;
+    }
+
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         StaticItemAdapter.Item item = (StaticItemAdapter.Item) adapterView.getItemAtPosition(position);
-        if (item.getAction() != null)
+        if (item.getAction() != null) {
             item.getAction().run();
+        }
     }
 
 
@@ -184,7 +218,10 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
     public void enableBluetooth() {
         showBlockingActivity(R.string.title_turning_on);
         bindAndSubscribe(hardwarePresenter.turnOnBluetooth(),
-                         ignored -> hideBlockingActivity(true, this::connectToPeripheral),
+                         ignored -> {
+                             this.didEnableBluetooth = true;
+                             hideBlockingActivity(true, this::connectToPeripheral);
+                         },
                          this::presentError);
     }
 
