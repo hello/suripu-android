@@ -62,7 +62,7 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
         this.monthText = (TextView) view.findViewById(R.id.fragment_timeline_navigator_month);
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_navigator_recycler_view);
-        recyclerView.addItemDecoration(new TimelineItemDecoration(getResources(), R.drawable.graph_grid_fill, R.dimen.divider_size));
+        recyclerView.addItemDecoration(new TimelineItemDecoration(getResources(), R.drawable.graph_grid_fill_top_down, R.dimen.divider_size));
 
         TimelineScrollListener timelineScrollListener = new TimelineScrollListener();
         recyclerView.setOnScrollListener(timelineScrollListener);

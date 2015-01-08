@@ -79,7 +79,7 @@
                 android:id="@+id/fragment_sensor_history_graph"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:senseGridDrawable="@drawable/graph_grid_fill" />
+                app:senseGridDrawable="@drawable/graph_grid_fill_top_down" />
 
             <is.hello.sense.ui.widget.TintedProgressBar
                 android:id="@+id/fragment_sensor_history_loading"
