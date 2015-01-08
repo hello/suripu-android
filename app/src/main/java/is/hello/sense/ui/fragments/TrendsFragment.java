@@ -15,13 +15,14 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TrendGraph;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.adapter.TrendsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.util.Styles;
 
-public class TrendsFragment extends InjectionFragment {
+public class TrendsFragment extends InjectionFragment implements TrendsAdapter.OnTrendOptionSelected {
     @Inject TrendsPresenter trendsPresenter;
 
     private TrendsAdapter trendsAdapter;
@@ -31,6 +32,7 @@ public class TrendsFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        trendsPresenter.update();
         addPresenter(trendsPresenter);
     }
 
@@ -46,6 +48,7 @@ public class TrendsFragment extends InjectionFragment {
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
         this.trendsAdapter = new TrendsAdapter(getActivity());
+        trendsAdapter.setOnTrendOptionSelected(this);
         listView.setAdapter(trendsAdapter);
 
         Styles.addCardSpacingHeaderAndFooter(listView);
@@ -57,15 +60,8 @@ public class TrendsFragment extends InjectionFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(trendsPresenter.trends, this::bindTrends, this::presentError);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
         swipeRefreshLayout.setRefreshing(true);
-        trendsPresenter.update();
+        bindAndSubscribe(trendsPresenter.trends, this::bindTrends, this::presentError);
     }
 
 
@@ -79,5 +75,12 @@ public class TrendsFragment extends InjectionFragment {
         ErrorDialogFragment.presentError(getFragmentManager(), e);
 
         trendsAdapter.trendsUnavailable(e);
+    }
+
+
+    @Override
+    public void onTrendOptionSelected(int trendIndex, @NonNull String option) {
+        swipeRefreshLayout.setRefreshing(true);
+        bindAndSubscribe(trendsPresenter.updateTrend(trendIndex, option), Functions.NO_OP, this::presentError);
     }
 }

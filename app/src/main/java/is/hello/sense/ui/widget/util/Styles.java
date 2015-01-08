@@ -139,7 +139,7 @@ public final class Styles {
     }
 
     public static void applyRefreshLayoutStyle(@NonNull SwipeRefreshLayout refreshLayout) {
-        refreshLayout.setColorSchemeResources(R.color.grey, R.color.purple, R.color.light_accent);
+        refreshLayout.setColorSchemeResources(R.color.sensor_alert, R.color.sensor_warning, R.color.sensor_ideal);
     }
 
     public static void applyGraphLineParameters(@NonNull Paint paint) {

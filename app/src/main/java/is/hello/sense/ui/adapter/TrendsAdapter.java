@@ -26,6 +26,8 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
     private final Resources resources;
     private final int graphTintColor;
 
+    private @Nullable OnTrendOptionSelected onTrendOptionSelected;
+
     public TrendsAdapter(@NonNull Context context) {
         super(context, R.layout.item_trend);
 
@@ -43,6 +45,11 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
     @SuppressWarnings("UnusedParameters")
     public void trendsUnavailable(Throwable e) {
         clear();
+    }
+
+
+    public void setOnTrendOptionSelected(@Nullable OnTrendOptionSelected onTrendOptionSelected) {
+        this.onTrendOptionSelected = onTrendOptionSelected;
     }
 
 
@@ -70,7 +77,7 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         if (Lists.isEmpty(graph.getOptions())) {
             holder.removeOptionSelector();
         } else {
-            holder.addOptionSelector(graph.getOptions(), graph.getTimePeriod());
+            holder.addOptionSelector(position, graph.getOptions(), graph.getTimePeriod());
         }
 
         holder.graphAdapter.setTrendGraph(graph);
@@ -79,7 +86,7 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
     }
 
 
-    class ViewHolder {
+    class ViewHolder implements SelectorLinearLayout.OnSelectionChangedListener {
         final ViewGroup itemView;
         final TextView title;
         final GraphView graphView;
@@ -94,20 +101,23 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         }
 
 
-        void addOptionSelector(@NonNull List<String> options, @NonNull String selectedOption) {
+        void addOptionSelector(int index, @NonNull List<String> options, @NonNull String selectedOption) {
             if (optionSelector == null) {
                 this.optionSelector = new SelectorLinearLayout(getContext());
+                optionSelector.setOnSelectionChangedListener(this);
                 itemView.addView(optionSelector, 0);
             } else {
                 optionSelector.removeAllOptions();
             }
 
             for (String option : options) {
-                int optionIndex = optionSelector.addOption(option, null);
+                int optionIndex = optionSelector.addOption(option, option);
                 if (option.equals(selectedOption)) {
                     optionSelector.setSelectedIndex(optionIndex);
                 }
             }
+
+            optionSelector.setTag(index);
         }
 
         void removeOptionSelector() {
@@ -116,5 +126,19 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
                 this.optionSelector = null;
             }
         }
+
+        @Override
+        public void onSelectionChanged(int newSelectionIndex) {
+            if (optionSelector != null && onTrendOptionSelected != null) {
+                int index = (int) optionSelector.getTag();
+                String option = optionSelector.getButtonTag(newSelectionIndex).toString();
+                onTrendOptionSelected.onTrendOptionSelected(index, option);
+            }
+        }
+    }
+
+
+    public interface OnTrendOptionSelected {
+        void onTrendOptionSelected(int trendIndex, @NonNull String option);
     }
 }

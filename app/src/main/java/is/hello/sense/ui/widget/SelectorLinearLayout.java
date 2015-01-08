@@ -132,9 +132,9 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
             addView(divider, layoutParams);
         }
 
-        int index = getChildCount();
+        int index = toggleButtons.size();
         LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(R.dimen.button_min_size), 1);
-        addView(optionButton, index, layoutParams);
+        addView(optionButton, layoutParams);
         return index;
     }
 

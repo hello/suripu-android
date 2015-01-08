@@ -149,9 +149,9 @@ public interface ApiService {
     @GET("/insights/trends/all")
     Observable<ArrayList<TrendGraph>> allTrends();
 
-    @GET("/v1/insights/trends/graph")
-    Observable<TrendGraph> trendGraph(@NonNull @Query("data_type") String dataType,
-                                      @NonNull @Query("time_period") String timePeriod);
+    @GET("/insights/trends/graph")
+    Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
+                                                 @NonNull @Query("time_period") String timePeriod);
 
     //endregion
 }
