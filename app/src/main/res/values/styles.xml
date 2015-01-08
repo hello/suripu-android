@@ -126,6 +126,11 @@
         <item name="android:paddingBottom">@dimen/gap_raised_item_inset_bottom</item>
     </style>
 
+    <style name="AppTheme.Dialog.Selector">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/transparent</item>
+    </style>
+
     <style name="AppTheme.Dialog.FullScreen">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">false</item>
@@ -249,8 +254,10 @@
         <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
-    <style name="AppTheme.Button.Dialog.Blue">
-        
+    <style name="AppTheme.Button.Dialog.SolidBlue">
+        <item name="android:minHeight">@dimen/button_rounded_min_height</item>
+        <item name="android:background">@drawable/selector_button_dialog_blue</item>
+        <item name="android:textColor">@color/text_color_selector_white</item>
     </style>
 
     <style name="AppTheme.Button.Dialog.Positive">

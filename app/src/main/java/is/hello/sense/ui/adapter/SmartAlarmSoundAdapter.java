@@ -29,9 +29,9 @@ public class SmartAlarmSoundAdapter extends ArrayAdapter<SmartAlarm.Sound> {
         text.setText(sound.name);
 
         if (selectedSoundId == sound.id) {
-            text.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.radio_on, 0, 0, 0);
+            text.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.radio_on, 0);
         } else {
-            text.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.radio_off, 0, 0, 0);
+            text.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.radio_off, 0);
         }
 
         return text;
