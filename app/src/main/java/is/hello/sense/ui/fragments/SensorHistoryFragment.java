@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments;
 
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -317,20 +316,16 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         //region Highlight Listener
 
-        private int savedReadingColor;
         private CharSequence savedReading;
         private CharSequence savedMessage;
 
         @Override
         public void onGraphHighlightBegin() {
             this.savedReading = readingText.getText();
-            this.savedReadingColor = readingText.getCurrentTextColor();
             this.savedMessage = messageText.getText();
 
             messageText.setGravity(Gravity.CENTER);
             messageText.setTextColor(getResources().getColor(R.color.text_dim));
-
-            animate(readingText).simplePop(1.1f).start();
         }
 
         @Override
@@ -343,7 +338,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public void onGraphHighlightEnd() {
             readingText.setText(savedReading);
-            readingText.setTextColor(savedReadingColor);
             this.savedReading = null;
 
             messageText.setText(savedMessage);
