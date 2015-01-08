@@ -173,5 +173,12 @@ public final class Styles {
         return view;
     }
 
+    public static View createVerticalDivider(@NonNull Context context, int height) {
+        View view = new View(context);
+        view.setBackgroundResource(R.color.border);
+        view.setLayoutParams(new ViewGroup.LayoutParams(context.getResources().getDimensionPixelSize(R.dimen.divider_size), height));
+        return view;
+    }
+
     //endregion
 }

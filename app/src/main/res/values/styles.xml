@@ -179,7 +179,7 @@
     </style>
 
     <style name="AppTheme.Button.Borderless.Question.Choice">
-        <item name="android:textColor">@drawable/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Toggle">
@@ -193,7 +193,7 @@
     </style>
 
     <style name="AppTheme.Button.Borderless.Onboarding">
-        <item name="android:textColor">@drawable/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.White.Thin">
@@ -205,7 +205,7 @@
     <style name="AppTheme.Button.Rounded">
         <item name="android:minHeight">@dimen/button_rounded_min_height</item>
         <item name="android:background">@drawable/selector_button_rounded</item>
-        <item name="android:textColor">@drawable/text_color_selector_white</item>
+        <item name="android:textColor">@color/text_color_selector_white</item>
         <item name="android:textSize">@dimen/text_size_button</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textAllCaps">true</item>
@@ -219,14 +219,14 @@
 
     <style name="AppTheme.Button.ModeSelector">
         <item name="android:background">@drawable/button_selector_dark</item>
-        <item name="android:textColor">@drawable/text_color_selector_toggle_button</item>
+        <item name="android:textColor">@color/text_color_selector_toggle_button</item>
         <item name="android:textAppearance">@style/AppTheme.Text.Body.Bold</item>
         <item name="android:padding">@dimen/gap_medium</item>
     </style>
 
     <style name="AppTheme.Button.SmartAlarmDay">
         <item name="android:background">@drawable/smart_alarm_day_toggle_selector</item>
-        <item name="android:textColor">@drawable/text_color_selector_toggle_button</item>
+        <item name="android:textColor">@color/text_color_selector_toggle_button</item>
         <item name="android:textAppearance">@style/AppTheme.Text</item>
         <item name="android:textSize">@dimen/text_size_section_heading</item>
         <item name="android:textAllCaps">true</item>
@@ -240,13 +240,13 @@
         <item name="android:paddingLeft">@dimen/gap_small</item>
         <item name="android:paddingRight">@dimen/gap_small</item>
         <item name="android:background">@drawable/raised_item_background</item>
-        <item name="android:textColor">@drawable/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
         <item name="android:textAppearance">@style/AppTheme.Text.SectionHeading</item>
     </style>
 
     <style name="AppTheme.Button.Dialog" parent="AppTheme.Button.Borderless">
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@drawable/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
     <style name="AppTheme.Button.Dialog.Positive">
