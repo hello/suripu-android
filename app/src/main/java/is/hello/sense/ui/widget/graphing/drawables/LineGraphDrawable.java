@@ -71,7 +71,10 @@ public class LineGraphDrawable extends GraphDrawable {
                         fillPath.lineTo(segmentX, segmentY - halfOfTopLine);
 
                         if (section == sectionCount - 1 && position == pointCount - 1) {
-                            fillPath.lineTo(segmentX + halfOfTopLine, minY + height + bottomInset);
+                            linePath.lineTo(width, segmentY);
+
+                            fillPath.lineTo(width, segmentY - halfOfTopLine);
+                            fillPath.lineTo(width, minY + height + bottomInset);
                             fillPath.lineTo(0f, minY + height + bottomInset);
                         }
                     }
