@@ -9,13 +9,11 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SmartAlarm;
 
-public class AlarmSoundAdapter extends ArrayAdapter<SmartAlarm.Sound> {
+public class SmartAlarmSoundAdapter extends ArrayAdapter<SmartAlarm.Sound> {
     private long selectedSoundId = -1;
 
-    public AlarmSoundAdapter(Context context) {
+    public SmartAlarmSoundAdapter(Context context) {
         super(context, R.layout.item_simple_text);
-
-        addAll(SmartAlarm.Sound.testSounds());
     }
 
     public void setSelectedSoundId(long selectedSoundId) {

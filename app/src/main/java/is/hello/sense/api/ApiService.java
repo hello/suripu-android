@@ -138,6 +138,9 @@ public interface ApiService {
     Observable<VoidResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
                                              @NonNull @Body List<SmartAlarm> alarms);
 
+    @GET("/alarms/sounds")
+    Observable<ArrayList<SmartAlarm.Sound>> availableSmartAlarmSounds();
+
     //endregion
 
 

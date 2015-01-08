@@ -249,6 +249,10 @@
         <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
+    <style name="AppTheme.Button.Dialog.Blue">
+        
+    </style>
+
     <style name="AppTheme.Button.Dialog.Positive">
         <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
     </style>

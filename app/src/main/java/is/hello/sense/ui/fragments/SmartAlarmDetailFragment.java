@@ -29,7 +29,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ChooseSoundDialogFragment;
+import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
@@ -152,13 +152,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             smartAlarm.setTime(new LocalTime(hour, minute));
             updateTime();
         } else if (requestCode == SOUND_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            long selectedId = data.getLongExtra(ChooseSoundDialogFragment.ARG_SELECTED_ID, 0);
-            List<SmartAlarm.Sound> sounds = SmartAlarm.Sound.testSounds();
-            SmartAlarm.Sound selectedSound = Lists.findFirst(sounds, s -> s.id == selectedId);
-            if (selectedSound == null) {
-                selectedSound = SmartAlarm.Sound.none();
-            }
-
+            SmartAlarm.Sound selectedSound = (SmartAlarm.Sound) data.getSerializableExtra(SmartAlarmSoundDialogFragment.ARG_SELECTED_SOUND);
             smartAlarm.setSound(selectedSound);
             soundButton.setText(selectedSound.name);
         }
@@ -196,10 +190,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void selectSound(@NonNull View sender) {
-        long selectedId = smartAlarm.getSound() != null ? smartAlarm.getSound().id : 0;
-        ChooseSoundDialogFragment dialogFragment = ChooseSoundDialogFragment.newInstance(selectedId);
+        SmartAlarmSoundDialogFragment dialogFragment = SmartAlarmSoundDialogFragment.newInstance(smartAlarm.getSound());
         dialogFragment.setTargetFragment(this, SOUND_REQUEST_CODE);
-        dialogFragment.show(getFragmentManager(), ChooseSoundDialogFragment.TAG);
+        dialogFragment.show(getFragmentManager(), SmartAlarmSoundDialogFragment.TAG);
     }
 
 
