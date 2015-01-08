@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -37,6 +38,23 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
 
         setCancelable(true);
         setCanceledOnTouchOutside(true);
+    }
+
+    @Override
+    public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        setDoneButtonEnabled(savedInstanceState.getBoolean("doneEnabled"));
+        setActivityIndicatorVisible(savedInstanceState.getBoolean("activityIndicatorVisible"));
+
+        super.onRestoreInstanceState(savedInstanceState.getParcelable("savedInstanceState"));
+    }
+
+    @Override
+    public Bundle onSaveInstanceState() {
+        Bundle savedState = new Bundle();
+        savedState.putParcelable("savedInstanceState", super.onSaveInstanceState());
+        savedState.putBoolean("doneEnabled", doneButton.isEnabled());
+        savedState.putBoolean("activityIndicatorVisible", activityIndicator.getVisibility() == View.VISIBLE);
+        return savedState;
     }
 
 
