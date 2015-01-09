@@ -3,16 +3,12 @@ package is.hello.sense.ui.dialogs;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -23,8 +19,9 @@ import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.ui.adapter.SmartAlarmSoundAdapter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.SenseSelectorDialog;
+import is.hello.sense.util.SoundPlayer;
 
-public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment implements SenseSelectorDialog.OnSelectionListener<SmartAlarm.Sound>, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
+public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment implements SenseSelectorDialog.OnSelectionListener<SmartAlarm.Sound>, SoundPlayer.OnEventListener {
     public static final String ARG_SELECTED_SOUND = SmartAlarmSoundDialogFragment.class.getName() + ".ARG_SELECTED_SOUND";
 
     public static final String TAG = SmartAlarmSoundDialogFragment.class.getSimpleName();
@@ -35,7 +32,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     private SmartAlarmSoundAdapter adapter;
     private SenseSelectorDialog<SmartAlarm.Sound> dialog;
 
-    private MediaPlayer soundPlayer;
+    private SoundPlayer soundPlayer;
 
     public static SmartAlarmSoundDialogFragment newInstance(@Nullable SmartAlarm.Sound sound) {
         SmartAlarmSoundDialogFragment dialogFragment = new SmartAlarmSoundDialogFragment();
@@ -51,12 +48,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.soundPlayer = new MediaPlayer();
-
-        soundPlayer.setOnPreparedListener(this);
-        soundPlayer.setOnCompletionListener(this);
-        soundPlayer.setOnErrorListener(this);
-        soundPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+        this.soundPlayer = new SoundPlayer(getActivity(), this);
     }
 
     @Override
@@ -84,8 +76,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     public void onDestroy() {
         super.onDestroy();
 
-        stopPlayback();
-        soundPlayer.release();
+        soundPlayer.recycle();
     }
 
     public void bindSounds(@NonNull ArrayList<SmartAlarm.Sound> sounds) {
@@ -121,51 +112,29 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     //region Playback
 
     public void playSound(@NonNull SmartAlarm.Sound sound) {
-        stopPlayback();
-
-        try {
-            soundPlayer.setDataSource(getActivity(), Uri.parse(sound.url));
-            soundPlayer.prepareAsync();
-            adapter.setPlayingSoundId(sound.id, true);
-        } catch (IOException e) {
-            presentError(e);
-        }
+        soundPlayer.play(Uri.parse(sound.url));
+        adapter.setPlayingSoundId(sound.id, true);
     }
 
-    public void stopPlayback() {
-        if (soundPlayer.isPlaying()) {
-            soundPlayer.stop();
-        }
 
-        soundPlayer.reset();
+    @Override
+    public void onPlaybackStarted(@NonNull SoundPlayer player) {
+        adapter.setPlayingSoundId(adapter.getPlayingSoundId(), false);
+    }
 
+    @Override
+    public void onPlaybackStopped(@NonNull SoundPlayer player, boolean finished) {
         adapter.setPlayingSoundId(SmartAlarmSoundAdapter.NONE, false);
     }
 
     @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        Log.i(getClass().getSimpleName(), "onPrepared");
-
-        adapter.setPlayingSoundId(adapter.getPlayingSoundId(), false);
-        soundPlayer.start();
+    public void onPlaybackError(@NonNull SoundPlayer player, @NonNull Throwable error) {
+        Toast.makeText(getActivity().getApplicationContext(), R.string.error_failed_to_play_alarm_sound, Toast.LENGTH_SHORT).show();
+        adapter.setPlayingSoundId(SmartAlarmSoundAdapter.NONE, false);
     }
 
     @Override
-    public void onCompletion(MediaPlayer mediaPlayer) {
-        Log.i(getClass().getSimpleName(), "onCompletion");
-
-        stopPlayback();
-    }
-
-    @Override
-    public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
-        if (what != -38) {
-            stopPlayback();
-
-            Toast.makeText(getActivity().getApplicationContext(), R.string.error_failed_to_play_alarm_sound, Toast.LENGTH_SHORT).show();
-        }
-
-        return true;
+    public void onPlaybackPulse(@NonNull SoundPlayer player, int position) {
     }
 
     //endregion
