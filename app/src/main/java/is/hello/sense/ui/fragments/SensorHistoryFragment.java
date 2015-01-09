@@ -121,7 +121,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     }
 
     public CharSequence spanFormattedValue(@NonNull String sensor, @NonNull String formattedValue) {
-        if (!SensorHistory.SENSOR_NAME_PARTICULATES.equals(sensor)) {
+        if (!SensorHistory.SENSOR_NAME_PARTICULATES.equals(sensor) && !SensorHistory.SENSOR_NAME_LIGHT.equals(sensor)) {
             SpannableString spannedValue = new SpannableString(formattedValue);
 
             boolean isTemperature = SensorHistory.SENSOR_NAME_TEMPERATURE.equals(sensor);
@@ -150,12 +150,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         } else {
             SensorState condition = result.conditions.getSensorStateWithName(sensor);
             if (condition != null) {
-                UnitFormatter.Formatter formatter = null;
-                if (SensorHistory.SENSOR_NAME_TEMPERATURE.equals(sensor)) {
-                    formatter = result.units::formatTemperature;
-                } else if (SensorHistory.SENSOR_NAME_PARTICULATES.equals(sensor)) {
-                    formatter = result.units::formatParticulates;
-                }
+                UnitFormatter.Formatter formatter = result.units.getUnitFormatterForSensor(sensor);
 
                 String formattedValue = condition.getFormattedValue(formatter);
                 if (formattedValue != null) {

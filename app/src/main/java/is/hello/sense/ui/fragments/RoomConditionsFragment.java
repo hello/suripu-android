@@ -50,6 +50,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
     private final RoomSensorInfo temperature = new RoomSensorInfo(SensorHistory.SENSOR_NAME_TEMPERATURE);
     private final RoomSensorInfo humidity = new RoomSensorInfo(SensorHistory.SENSOR_NAME_HUMIDITY);
     private final RoomSensorInfo particulates = new RoomSensorInfo(SensorHistory.SENSOR_NAME_PARTICULATES);
+    private final RoomSensorInfo light = new RoomSensorInfo(SensorHistory.SENSOR_NAME_LIGHT);
     private Adapter adapter;
 
     @Override
@@ -66,7 +67,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        this.adapter = new Adapter(getActivity(), new RoomSensorInfo[] { temperature, humidity, particulates });
+        this.adapter = new Adapter(getActivity(), new RoomSensorInfo[] { temperature, humidity, particulates, light });
         Styles.addCardSpacingHeaderAndFooter(listView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
@@ -114,18 +115,26 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
             temperature.formatter = null;
             temperature.sensorState = null;
 
+            humidity.formatter = null;
             humidity.sensorState = null;
 
             particulates.formatter = null;
             particulates.sensorState = null;
+
+            light.formatter = null;
+            light.sensorState = null;
         } else {
-            temperature.formatter = result.units::formatTemperature;
+            temperature.formatter = result.units.getUnitFormatterForSensor(SensorHistory.SENSOR_NAME_TEMPERATURE);
             temperature.sensorState = result.conditions.getTemperature();
 
+            humidity.formatter = result.units.getUnitFormatterForSensor(SensorHistory.SENSOR_NAME_HUMIDITY);
             humidity.sensorState = result.conditions.getHumidity();
 
-            particulates.formatter = result.units::formatParticulates;
+            particulates.formatter = result.units.getUnitFormatterForSensor(SensorHistory.SENSOR_NAME_PARTICULATES);
             particulates.sensorState = result.conditions.getParticulates();
+
+            light.formatter = result.units.getUnitFormatterForSensor(SensorHistory.SENSOR_NAME_LIGHT);
+            light.sensorState = result.conditions.getLight();
         }
 
         adapter.notifyDataSetChanged();
@@ -137,10 +146,14 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
         temperature.formatter = null;
         temperature.sensorState = null;
 
+        humidity.formatter = null;
         humidity.sensorState = null;
 
         particulates.formatter = null;
         particulates.sensorState = null;
+
+        light.formatter = null;
+        light.sensorState = null;
 
         adapter.notifyDataSetChanged();
     }

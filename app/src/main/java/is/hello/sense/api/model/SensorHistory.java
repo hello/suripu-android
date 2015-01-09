@@ -24,6 +24,7 @@ public class SensorHistory extends ApiResponse {
     public static final String SENSOR_NAME_TEMPERATURE = "temperature";
     public static final String SENSOR_NAME_HUMIDITY = "humidity";
     public static final String SENSOR_NAME_PARTICULATES = "particulates";
+    public static final String SENSOR_NAME_LIGHT = "light";
 
     @JsonProperty("value")
     private float value;

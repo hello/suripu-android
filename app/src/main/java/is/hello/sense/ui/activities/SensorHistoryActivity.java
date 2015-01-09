@@ -28,6 +28,10 @@ public class SensorHistoryActivity extends SenseActivity {
                 titleRes = R.string.condition_humidity;
                 break;
 
+            case SensorHistory.SENSOR_NAME_LIGHT:
+                titleRes = R.string.condition_light;
+                break;
+
             default:
                 break;
         }
