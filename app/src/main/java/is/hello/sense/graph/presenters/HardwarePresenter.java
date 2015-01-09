@@ -123,6 +123,10 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return bluetoothStack.turnOn();
     }
 
+    public Observable<Void> turnOffBluetooth() {
+        return bluetoothStack.turnOff();
+    }
+
     public @Nullable SensePeripheral getClosestPeripheral(@NonNull List<SensePeripheral> peripherals) {
         logEvent("getClosestPeripheral(" + peripherals + ")");
 

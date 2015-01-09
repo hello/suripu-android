@@ -271,4 +271,7 @@
     <string name="error_session_invalidated">Please login again</string>
     <string name="error_failed_to_play_alarm_sound">Could not play preview</string>
     <string name="error_no_smart_alarm_sound">Please select a sound for this smart alarm.</string>
+    <string name="title_turn_off_bluetooth">Turn Off Bluetooth</string>
+    <string name="message_turn_off_bluetooth">Sense no longer requires Bluetooth be turned on, would you like to turn it off?</string>
+    <string name="action_turn_off">Turn Off</string>
 </resources>

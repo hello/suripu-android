@@ -42,7 +42,7 @@
             android:text="@string/format_date_last_night"
             android:singleLine="true"
             android:ellipsize="end"
-            android:background="@drawable/button_selector_dark"/>
+            android:background="@drawable/selectable_dark"/>
 
     </RelativeLayout>
 

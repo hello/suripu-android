@@ -8,6 +8,7 @@
 
     <style name="AppTheme.Text.Heading">
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
+        <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">@dimen/text_size_heading</item>
         <item name="android:lineSpacingMultiplier">@dimen/heading_line_multiple</item>
         <item name="android:textColor">@color/text_dark</item>
@@ -15,6 +16,7 @@
 
     <style name="AppTheme.Text.Subheading">
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
+        <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">@dimen/text_size_subheading</item>
         <item name="android:lineSpacingMultiplier">@dimen/subheading_text_line_multiple</item>
         <item name="android:textColor">@color/text_dark</item>
@@ -23,6 +25,7 @@
     <style name="AppTheme.Text.Question">
         <item name="android:textSize">@dimen/text_size_question</item>
         <item name="fontPath">fonts/AvenirNextLTPro-UltLt.ttf</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:lineSpacingMultiplier">@dimen/body_text_line_multiple</item>
         <item name="android:textColor">@color/text_dark</item>
     </style>
@@ -42,11 +45,13 @@
     <style name="AppTheme.Text.ScreenTitle">
         <item name="android:textSize">@dimen/action_bar_title_text_size</item>
         <item name="android:textColor">@color/text_dark</item>
+        <item name="android:fontFamily">sans-serif-light</item>
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
 
     <style name="AppTheme.Text.Body">
         <item name="android:textSize">@dimen/text_size_body</item>
+        <item name="android:fontFamily">sans-serif-light</item>
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
 
@@ -81,6 +86,7 @@
 
     <style name="AppTheme.Text.BigScore">
         <item name="android:textSize">@dimen/text_size_big_score</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="fontPath">fonts/AvenirNextLTPro-UltLt.ttf</item>
     </style>
 
@@ -90,6 +96,7 @@
 
     <style name="AppTheme.Text.Condition">
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
+        <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">@dimen/text_size_subheading</item>
     </style>
 
@@ -106,6 +113,7 @@
 
     <style name="AppTheme.Text.SmartAlarm.Time">
         <item name="fontPath">fonts/AvenirNextLTPro-UltLt.ttf</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">@dimen/text_size_smart_alarm_time</item>
     </style>
 

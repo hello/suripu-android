@@ -72,7 +72,7 @@ public class AppSettingsFragment extends InjectionFragment {
 
     public void addItem(@StringRes int titleRes, boolean wantsDivider, @NonNull View.OnClickListener onClick) {
         TextView itemView = new TextView(getActivity());
-        itemView.setBackgroundResource(R.drawable.button_selector_dark);
+        itemView.setBackgroundResource(R.drawable.selectable_list);
         itemView.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_Light);
         itemView.setPadding(itemTextHorizontalPadding, itemTextVerticalPadding, itemTextHorizontalPadding, itemTextVerticalPadding);
         itemView.setText(titleRes);

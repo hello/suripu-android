@@ -115,7 +115,7 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
         Resources resources = getResources();
 
         ToggleButton optionButton = new ToggleButton(getContext());
-        optionButton.setBackgroundResource(R.drawable.button_selector_dark);
+        optionButton.setBackgroundResource(R.drawable.selectable_dark);
         optionButton.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold);
         optionButton.setTextColor(resources.getColorStateList(R.color.text_color_selector_toggle_button));
         optionButton.setTextOn(title);
