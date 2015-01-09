@@ -23,6 +23,10 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     private @Nullable TimerTask timePulseTask;
 
     private boolean isPaused = false;
+    private boolean recycled = false;
+
+
+    //region Lifecycle
 
     public SoundPlayer(@NonNull Context context, @NonNull OnEventListener onEventListener) {
         this.context = context;
@@ -40,10 +44,26 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     }
 
     public void recycle() {
-        stop();
-        mediaPlayer.reset();
-        mediaPlayer.release();
+        if (!recycled) {
+            stop();
+            mediaPlayer.reset();
+            mediaPlayer.release();
+
+            this.recycled = true;
+        }
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+
+        if (!recycled) {
+            Logger.warn(getClass().getSimpleName(), "SoundPlayer was not recycled before finalization.");
+        }
+        recycle();
+    }
+
+    //endregion
 
 
     //region Time Pulse
@@ -84,7 +104,7 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         if (what != CHANGING_TO_REMOTE_STREAM_ERROR) {
-            mediaPlayer.reset();
+            reset();
             onEventListener.onPlaybackError(this, new PlaybackError(what, extra));
         }
 
@@ -93,6 +113,9 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        stop();
+        reset();
+
         onEventListener.onPlaybackStopped(this, true);
     }
 
@@ -118,11 +141,24 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
         mediaPlayer.stop();
     }
 
+    private void reset() {
+        unscheduleTimePulse();
+        this.isPaused = false;
+    }
+
 
     public void play(@NonNull Uri source) {
         try {
-            mediaPlayer.reset();
-            mediaPlayer.setDataSource(context, source);
+            stop();
+            reset();
+
+            // See <https://code.google.com/p/android/issues/detail?id=957>
+            try {
+                mediaPlayer.setDataSource(context, source);
+            } catch (IllegalStateException e) {
+                mediaPlayer.reset();
+                mediaPlayer.setDataSource(context, source);
+            }
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             onEventListener.onPlaybackError(this, e);
@@ -131,7 +167,7 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     public void stopPlayback() {
         stop();
-        mediaPlayer.reset();
+        reset();
 
         onEventListener.onPlaybackStopped(this, false);
     }
@@ -142,7 +178,8 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
             start();
             this.isPaused = false;
         } else {
-            stop();
+            unscheduleTimePulse();
+            mediaPlayer.pause();
             this.isPaused = true;
         }
     }

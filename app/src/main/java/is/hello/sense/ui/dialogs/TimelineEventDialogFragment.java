@@ -1,8 +1,9 @@
 package is.hello.sense.ui.dialogs;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.app.Dialog;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,19 +15,19 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
+import is.hello.sense.util.SoundPlayer;
 
-public final class TimelineEventDialogFragment extends InjectionDialogFragment implements MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, SeekBar.OnSeekBarChangeListener {
+public final class TimelineEventDialogFragment extends InjectionDialogFragment implements SeekBar.OnSeekBarChangeListener, SoundPlayer.OnEventListener {
     public static final String TAG = TimelineEventDialogFragment.class.getSimpleName();
 
     private static final String ARG_SEGMENT = TimelineEventDialogFragment.class.getSimpleName() + ".ARG_SEGMENT";
@@ -36,9 +37,10 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     @Inject Markdown markdown;
     private TimelineSegment timelineSegment;
 
-    private MediaPlayer soundPlayer;
+    private SoundPlayer soundPlayer;
     private ImageView soundPlayButton;
     private SeekBar soundSeekBar;
+    private ValueAnimator soundPlayPulseAnimator;
 
 
     public static TimelineEventDialogFragment newInstance(@NonNull TimelineSegment segment) {
@@ -104,7 +106,8 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         super.onDestroy();
 
         if (soundPlayer != null) {
-            soundPlayer.release();
+            stopPulsingPlayButton();
+            soundPlayer.recycle();
         }
     }
 
@@ -113,69 +116,58 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
 
     public void playSound(@NonNull View sender) {
         if (soundPlayer == null) {
-            this.soundPlayer = new MediaPlayer();
-            soundPlayer.setOnSeekCompleteListener(this);
-            soundPlayer.setOnErrorListener(this);
-            soundPlayer.setOnPreparedListener(this);
-            soundPlayer.setOnCompletionListener(this);
-            soundPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            this.soundPlayer = new SoundPlayer(getActivity(), this);
+        }
+
+        if (soundPlayer.isPaused() || soundPlayer.isPlaying()) {
+            soundPlayer.togglePaused();
         } else {
-            soundPlayer.reset();
-        }
-
-        try {
-            Uri soundUri = Uri.parse(timelineSegment.getSound().getUrl());
-            soundPlayer.setDataSource(getActivity(), soundUri);
-            soundPlayer.prepareAsync();
-
+            Uri soundUri = Uri.parse("https://hello-audio.s3.amazonaws.com/ringtones/Bounce.mp3?AWSAccessKeyId=AKIAJHLIYLMRTUZO6VDA&Expires=1421436657&Signature=Mk9DR4Q6rzOMj01qBGVKt8lcPKY%3D");//Uri.parse(timelineSegment.getSound().getUrl());
+            soundPlayer.play(soundUri);
             soundPlayButton.setEnabled(false);
-        } catch (IOException e) {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            pulsePlayButton();
         }
+
+        updatePlayButton();
     }
 
 
+    public void pulsePlayButton() {
+        this.soundPlayPulseAnimator = ValueAnimator.ofFloat(1f, 0.25f);
+        soundPlayPulseAnimator.setDuration(500);
+        soundPlayPulseAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        soundPlayPulseAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        soundPlayPulseAnimator.addUpdateListener(a -> {
+            float alpha = (float) a.getAnimatedValue();
+            soundPlayButton.setAlpha(alpha);
+        });
+        soundPlayPulseAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                soundPlayButton.setAlpha(1f);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                soundPlayButton.setAlpha(1f);
+            }
+        });
+        soundPlayPulseAnimator.start();
+    }
+
+    public void stopPulsingPlayButton() {
+        if (soundPlayPulseAnimator != null) {
+            soundPlayPulseAnimator.cancel();
+            this.soundPlayPulseAnimator = null;
+        }
+    }
+
     public void updatePlayButton() {
-        if (soundPlayer.isPlaying()) {
+        if (soundPlayer.isPlaying() && !soundPlayer.isPaused()) {
             soundPlayButton.setImageResource(R.drawable.timeline_pause);
         } else {
             soundPlayButton.setImageResource(R.drawable.timeline_play);
         }
-    }
-
-    public void stopPlayback() {
-        soundSeekBar.setEnabled(false);
-        soundSeekBar.setProgress(0);
-        soundPlayer.reset();
-        updatePlayButton();
-    }
-
-
-    @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
-        return false;
-    }
-
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-        stopPlayback();
-    }
-
-    @Override
-    public void onSeekComplete(MediaPlayer mp) {
-        soundSeekBar.setProgress(mp.getCurrentPosition());
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        soundPlayer.start();
-
-        soundSeekBar.setMax(soundPlayer.getDuration());
-        soundSeekBar.setProgress(0);
-        soundSeekBar.setEnabled(true);
-        soundPlayButton.setEnabled(true);
-
-        updatePlayButton();
     }
 
 
@@ -190,6 +182,43 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         soundPlayer.seekTo(seekBar.getProgress());
+    }
+
+
+    @Override
+    public void onPlaybackStarted(@NonNull SoundPlayer player) {
+        soundSeekBar.setMax(soundPlayer.getDuration());
+        soundSeekBar.setProgress(0);
+        soundSeekBar.setEnabled(true);
+        soundPlayButton.setEnabled(true);
+
+        stopPulsingPlayButton();
+        updatePlayButton();
+    }
+
+    @Override
+    public void onPlaybackStopped(@NonNull SoundPlayer player, boolean finished) {
+        soundSeekBar.setEnabled(false);
+        soundSeekBar.setProgress(0);
+
+        stopPulsingPlayButton();
+        updatePlayButton();
+    }
+
+    @Override
+    public void onPlaybackError(@NonNull SoundPlayer player, @NonNull Throwable error) {
+        soundSeekBar.setEnabled(false);
+        soundSeekBar.setProgress(0);
+
+        stopPulsingPlayButton();
+        updatePlayButton();
+
+        ErrorDialogFragment.presentError(getFragmentManager(), error);
+    }
+
+    @Override
+    public void onPlaybackPulse(@NonNull SoundPlayer player, int position) {
+        soundSeekBar.setProgress(position);
     }
 
     //endregion
