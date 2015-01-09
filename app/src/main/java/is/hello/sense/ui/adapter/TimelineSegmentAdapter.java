@@ -19,7 +19,6 @@ import is.hello.sense.ui.widget.TimelineSegmentView;
 public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     private final int baseItemHeight;
     private final int itemEventImageHeight;
-    private final int stripeCornerRadius;
 
     private float[] itemHeights;
     private float totalItemHeight;
@@ -34,7 +33,6 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         windowManager.getDefaultDisplay().getSize(size);
         this.baseItemHeight = size.y / Styles.TIMELINE_HOURS_ON_SCREEN;
         this.itemEventImageHeight = context.getResources().getDimensionPixelSize(R.dimen.event_image_height);
-        this.stripeCornerRadius = context.getResources().getDimensionPixelOffset(R.dimen.view_timeline_segment_corner_radius);
     }
 
     //endregion
@@ -45,12 +43,9 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     /**
      * Calculates the height required to display the item at a given position.
      */
-    private int calculateItemHeight(int position, @NonNull TimelineSegment segment) {
+    private int calculateItemHeight(@NonNull TimelineSegment segment) {
         if (segment.getEventType() != null) {
             int itemHeight = this.itemEventImageHeight + this.baseItemHeight;
-            return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
-        } else if (position == 0 || position == getCount() - 1) {
-            int itemHeight = this.stripeCornerRadius;
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
         } else {
             return (int) ((segment.getDuration() / 3600f) * this.baseItemHeight);
@@ -66,7 +61,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         this.totalItemHeight = 0;
 
         for (int i = 0, size = itemHeights.length; i < size; i++) {
-            int height = calculateItemHeight(i, segments.get(i));
+            int height = calculateItemHeight(segments.get(i));
             this.itemHeights[i] = height;
             this.totalItemHeight += height;
         }
