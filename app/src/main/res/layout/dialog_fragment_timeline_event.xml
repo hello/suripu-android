@@ -1,42 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_fragment_timeline_event_container"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageButton
-        android:id="@+id/dialog_fragment_timeline_event_close"
-        android:layout_width="50dp"
-        android:layout_height="@dimen/button_min_size"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/icon_dialog_close"
-        android:contentDescription="@string/action_close"
-        android:background="@null"/>
-
-    <TextView
-        android:id="@+id/dialog_fragment_timeline_event_title"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@id/dialog_fragment_timeline_event_close"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:layout_marginTop="@dimen/gap_outer"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading"
-        android:text="@string/app_name"/>
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/dialog_fragment_timeline_event_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginBottom="@dimen/gap_medium"
+            android:layout_marginTop="@dimen/gap_outer"
+            android:layout_marginLeft="@dimen/gap_outer"
+            android:layout_marginRight="@dimen/gap_outer"
+            android:textAppearance="@style/AppTheme.Text.SectionHeading"
+            android:text="@string/app_name"/>
+
+        <ImageButton
+            android:id="@+id/dialog_fragment_timeline_event_close"
+            android:layout_width="50dp"
+            android:layout_height="@dimen/button_min_size"
+            android:layout_marginTop="@dimen/gap_small"
+            android:src="@drawable/icon_dialog_close"
+            android:contentDescription="@string/action_close"
+            android:background="@null"/>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/dialog_fragment_timeline_event_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/dialog_fragment_timeline_event_title"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
         android:layout_marginBottom="@dimen/gap_outer"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/missing_data_placeholder"/>
 
-</RelativeLayout>
+</LinearLayout>
