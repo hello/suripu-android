@@ -30,7 +30,7 @@ public final class Styles {
     public static final String TYPEFACE_OBLIQUE = "fonts/AvenirLTCom-Oblique.ttf";
 
 
-    public static final int TIMELINE_HOURS_ON_SCREEN = 20;
+    public static final int TIMELINE_HOURS_ON_SCREEN = 10;
 
 
     public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth) {

@@ -47,15 +47,15 @@
     <color name="sensor_ideal">#1ED7AA</color>
     <color name="sensor_unknown">#565961</color>
 
-    <color name="sleep_light">#009CFF</color>
-    <color name="sleep_intermediate">#487ef7</color>
-    <color name="sleep_deep">#1736E4</color>
-    <color name="sleep_awake">#0025BD</color>
+    <color name="sleep_awake">#009CFF</color>
+    <color name="sleep_light">#487ef7</color>
+    <color name="sleep_intermediate">#1736E4</color>
+    <color name="sleep_deep">#0025BD</color>
 
-    <color name="sleep_light_dimmed">#9BD4FF</color>
-    <color name="sleep_intermediate_dimmed">#9BD4FF</color>
-    <color name="sleep_deep_dimmed">#d7eefe</color>
-    <color name="sleep_awake_dimmed">#9BD4FF</color>
+    <color name="sleep_awake_dimmed">#FFFFFF</color>
+    <color name="sleep_light_dimmed">#EBF8FF</color>
+    <color name="sleep_intermediate_dimmed">#D6F0FF</color>
+    <color name="sleep_deep_dimmed">#C2E8FF</color>
 
     <color name="graph_fill_color">#28000000</color>
     <color name="graph_fill_gradient_top">#23000000</color>

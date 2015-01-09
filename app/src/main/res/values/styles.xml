@@ -139,13 +139,13 @@ t
     </style>
 
     <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
-        <item name="android:windowAnimationStyle">@style/Animations.SimpleFade</item>
+        <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
         <item name="android:textColor">@color/black</item>
     </style>
 
-    <style name="Animations" />
+    <style name="WindowAnimations" />
 
-    <style name="Animations.SimpleFade">
+    <style name="WindowAnimations.Fade">
         <item name="android:windowEnterAnimation">@anim/fade_in</item>
         <item name="android:windowShowAnimation">@anim/fade_in</item>
         <item name="android:windowExitAnimation">@anim/fade_out</item>
