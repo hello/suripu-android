@@ -24,7 +24,7 @@
     <string name="device_state_low_battery">Low Battery</string>
     <string name="device_state_unknown">Unknown</string>
 
-    <string name="dialog_error_title">An Error Occurred</string>
+    <string name="dialog_error_title">Error</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
     <string name="dialog_error_extended_message_format">%1$s\n\n%2$s (Status: %3$d)</string>
     <string name="dialog_loading_message">Loading…</string>
@@ -269,6 +269,8 @@
     <string name="label_email_address">Email Address</string>
     <string name="title_change_email">Change Email</string>
     <string name="error_session_invalidated">Please login again</string>
+    <string name="error_failed_to_play_alarm_sound">Could not play preview</string>
+    <string name="error_no_smart_alarm_sound">Please select a sound for this smart alarm.</string>
     <string name="title_turn_off_bluetooth">Turn Off Bluetooth</string>
     <string name="message_turn_off_bluetooth">Sense no longer requires Bluetooth be turned on, would you like to turn it off?</string>
     <string name="action_turn_off">Turn Off</string>

@@ -177,6 +177,11 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
+    public Observable<ArrayList<SmartAlarm.Sound>> availableSmartAlarmSounds() {
+        return unimplemented();
+    }
+
+    @Override
     public Observable<VoidResponse> updateEmailAddress(@NonNull @Body Account account) {
         return Observable.just(new VoidResponse());
     }

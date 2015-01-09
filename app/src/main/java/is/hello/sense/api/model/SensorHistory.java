@@ -65,16 +65,7 @@ public class SensorHistory extends ApiResponse {
      */
     public static long timeForLatest() {
         DateTime now = DateTime.now();
-        DateTime nowUTC = new DateTime(
-                now.getYear(),
-                now.getMonthOfYear(),
-                now.getDayOfMonth(),
-                now.getHourOfDay(),
-                now.getMinuteOfHour(),
-                now.getSecondOfMinute(),
-                DateTimeZone.UTC
-        );
-        return nowUTC.getMillis();
+        return now.getMillis();
     }
 
     //endregion

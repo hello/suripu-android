@@ -30,6 +30,7 @@ import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
@@ -114,6 +115,7 @@ import is.hello.sense.ui.widget.TimestampTextView;
 
         SmartAlarmListFragment.class,
         SmartAlarmDetailFragment.class,
+        SmartAlarmSoundDialogFragment.class,
         SmartAlarmPresenter.class,
 
         AppSettingsFragment.class,

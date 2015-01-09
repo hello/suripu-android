@@ -62,7 +62,6 @@ public class SmartAlarm extends ApiResponse {
         this.isEnabled = true;
         this.isEditable = true;
         this.daysOfWeek = new HashSet<>();
-        this.sound = Sound.none();
     }
 
 
@@ -96,8 +95,6 @@ public class SmartAlarm extends ApiResponse {
     }
 
 
-
-
     public boolean isEditable() {
         return isEditable;
     }
@@ -109,7 +106,9 @@ public class SmartAlarm extends ApiResponse {
         return daysOfWeek;
     }
 
-    public static @NonNull String nameForDayOfWeek(@NonNull Context context, int dayOfWeek) {
+    public static
+    @NonNull
+    String nameForDayOfWeek(@NonNull Context context, int dayOfWeek) {
         switch (dayOfWeek) {
             case DateTimeConstants.MONDAY:
                 return context.getString(R.string.day_monday);
@@ -137,7 +136,9 @@ public class SmartAlarm extends ApiResponse {
         }
     }
 
-    public @NonNull String getDaysOfWeekSummary(@NonNull Context context) {
+    public
+    @NonNull
+    String getDaysOfWeekSummary(@NonNull Context context) {
         if (daysOfWeek == null || daysOfWeek.isEmpty())
             return context.getString(R.string.never);
 
@@ -149,15 +150,15 @@ public class SmartAlarm extends ApiResponse {
         return context.getString(R.string.days_repeat_prefix) + TextUtils.join(context.getString(R.string.day_separator), days);
     }
 
-    public int getYear(){
+    public int getYear() {
         return this.year;
     }
 
-    public int getMonth(){
+    public int getMonth() {
         return this.month;
     }
 
-    public int getDay(){
+    public int getDay() {
         return this.day;
     }
 
@@ -184,17 +185,18 @@ public class SmartAlarm extends ApiResponse {
                 '}';
     }
 
-    public static class Utils{
+    public static class Utils {
 
         /**
          * Make sure there is only one alarm per user per day
+         *
          * @param alarms
          * @return
          */
-        public static boolean isValidSmartAlarms(final List<SmartAlarm> alarms, final DateTime now, final DateTimeZone timeZone){
+        public static boolean isValidSmartAlarms(final List<SmartAlarm> alarms, final DateTime now, final DateTimeZone timeZone) {
             final Set<Integer> alarmDays = new HashSet<Integer>();
-            for(final SmartAlarm alarm: alarms){
-                if(alarm.isRepeated) {
+            for (final SmartAlarm alarm : alarms) {
+                if (alarm.isRepeated) {
                     for (final Integer dayOfWeek : alarm.daysOfWeek) {
                         if (alarmDays.contains(dayOfWeek)) {
                             return false;
@@ -202,12 +204,12 @@ public class SmartAlarm extends ApiResponse {
                             alarmDays.add(dayOfWeek);
                         }
                     }
-                }else{
-                    if(!isValidNoneRepeatedAlarm(alarm)){
+                } else {
+                    if (!isValidNoneRepeatedAlarm(alarm)) {
                         return false;
                     }
 
-                    if(!isAlarmExpired(alarm, now, timeZone)){
+                    if (!isAlarmExpired(alarm, now, timeZone)) {
                         final DateTime ringTime = new DateTime(alarm.year, alarm.month, alarm.day, alarm.hourOfDay, alarm.minuteOfHour, 0, timeZone);
                         final int dayOfWeek = ringTime.getDayOfWeek();
                         if (alarmDays.contains(dayOfWeek)) {
@@ -222,22 +224,22 @@ public class SmartAlarm extends ApiResponse {
             return true;
         }
 
-        public static boolean isValidNoneRepeatedAlarm(final SmartAlarm alarm){
-            if(alarm.isRepeated){
+        public static boolean isValidNoneRepeatedAlarm(final SmartAlarm alarm) {
+            if (alarm.isRepeated) {
                 return true;
             }
 
-            try{
+            try {
                 final DateTime validDateTime = new DateTime(alarm.year, alarm.month, alarm.day, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 return false;
             }
 
             return true;
         }
 
-        public static boolean isAlarmExpired(final SmartAlarm alarm, final DateTime currentTime, final DateTimeZone timeZone){
-            if(alarm.isRepeated){
+        public static boolean isAlarmExpired(final SmartAlarm alarm, final DateTime currentTime, final DateTimeZone timeZone) {
+            if (alarm.isRepeated) {
                 return false;
             }
 
@@ -257,22 +259,6 @@ public class SmartAlarm extends ApiResponse {
         @JsonProperty("url")
         public final String url;
 
-
-        public static @NonNull Sound none() {
-            return new Sound(0, "None", "");
-        }
-
-        public static @NonNull List<Sound> testSounds() {
-            List<Sound> sounds = new ArrayList<>();
-
-            sounds.add(Sound.none());
-            sounds.add(new Sound(1, "Bells", ""));
-            sounds.add(new Sound(2, "Birdsong", ""));
-            sounds.add(new Sound(3, "Chime", ""));
-            sounds.add(new Sound(4, "Waterfall", ""));
-
-            return sounds;
-        }
 
         public Sound(@JsonProperty("id") long id,
                      @JsonProperty("name") String name,
