@@ -16,22 +16,19 @@ import android.widget.ToggleButton;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalTime;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ChooseSoundDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
@@ -79,10 +76,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         }
 
         this.index = getActivity().getIntent().getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, SmartAlarmDetailActivity.INDEX_NEW);
-
-        if (smartAlarm.getSound() == null) {
-            smartAlarm.setSound(SmartAlarm.Sound.none());
-        }
 
         smartAlarmPresenter.update();
         addPresenter(smartAlarmPresenter);
@@ -152,13 +145,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             smartAlarm.setTime(new LocalTime(hour, minute));
             updateTime();
         } else if (requestCode == SOUND_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            long selectedId = data.getLongExtra(ChooseSoundDialogFragment.ARG_SELECTED_ID, 0);
-            List<SmartAlarm.Sound> sounds = SmartAlarm.Sound.testSounds();
-            SmartAlarm.Sound selectedSound = Lists.findFirst(sounds, s -> s.id == selectedId);
-            if (selectedSound == null) {
-                selectedSound = SmartAlarm.Sound.none();
-            }
-
+            SmartAlarm.Sound selectedSound = (SmartAlarm.Sound) data.getSerializableExtra(SmartAlarmSoundDialogFragment.ARG_SELECTED_SOUND);
             smartAlarm.setSound(selectedSound);
             soundButton.setText(selectedSound.name);
         }
@@ -196,10 +183,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void selectSound(@NonNull View sender) {
-        long selectedId = smartAlarm.getSound() != null ? smartAlarm.getSound().id : 0;
-        ChooseSoundDialogFragment dialogFragment = ChooseSoundDialogFragment.newInstance(selectedId);
+        SmartAlarmSoundDialogFragment dialogFragment = SmartAlarmSoundDialogFragment.newInstance(smartAlarm.getSound());
         dialogFragment.setTargetFragment(this, SOUND_REQUEST_CODE);
-        dialogFragment.show(getFragmentManager(), ChooseSoundDialogFragment.TAG);
+        dialogFragment.show(getFragmentManager(), SmartAlarmSoundDialogFragment.TAG);
     }
 
 
@@ -209,15 +195,20 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void saveAlarm() {
-        Observable<VoidResponse> saveOperation;
-        if (index == SmartAlarmDetailActivity.INDEX_NEW) {
-            saveOperation = smartAlarmPresenter.addSmartAlarm(smartAlarm);
+        if (smartAlarm.getSound() == null) {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_no_smart_alarm_sound));
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
-            saveOperation = smartAlarmPresenter.saveSmartAlarm(index, smartAlarm);
-        }
+            Observable<VoidResponse> saveOperation;
+            if (index == SmartAlarmDetailActivity.INDEX_NEW) {
+                saveOperation = smartAlarmPresenter.addSmartAlarm(smartAlarm);
+            } else {
+                saveOperation = smartAlarmPresenter.saveSmartAlarm(index, smartAlarm);
+            }
 
-        LoadingDialogFragment.show(getFragmentManager(), null, false);
-        bindAndSubscribe(saveOperation, ignored -> finish(), this::presentError);
+            LoadingDialogFragment.show(getFragmentManager(), null, false);
+            bindAndSubscribe(saveOperation, ignored -> finish(), this::presentError);
+        }
     }
 
     public void finish() {
