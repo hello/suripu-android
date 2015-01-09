@@ -3,7 +3,6 @@ package is.hello.sense.ui.fragments;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -36,12 +35,10 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
-import is.hello.sense.ui.widget.SlidingLayersView;
-import is.hello.sense.ui.widget.TimestampTextView;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
+import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -57,19 +54,12 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
 
-    private static final int MESSAGE_FADE_OUT = 0;
-    private static final long MESSAGE_FADE_OUT_DELAY = 150;
-
     @Inject DateFormatter dateFormatter;
     @Inject TimelinePresenter timelinePresenter;
     @Inject Markdown markdown;
 
     private ListView listView;
     private TimelineSegmentAdapter segmentAdapter;
-
-    private TimestampTextView timeScrubber;
-    private float scrollContentAperture;
-    private float timeScrubberTrackHeight;
 
     private ImageButton menuButton;
     private ImageButton shareButton;
@@ -85,11 +75,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private LinearLayout beforeSleepItemContainer;
     private TextView beforeSleepMessage;
     private int selectedBeforeSleepInsight = -1;
-
-    private final Handler fadeOutHandler = new Handler(message -> {
-        fadeOutTimeScrubber();
-        return true;
-    });
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -116,8 +101,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
-
-        this.timeScrubber = (TimestampTextView) view.findViewById(R.id.fragment_timeline_scrubber);
 
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
@@ -207,13 +190,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
@@ -286,22 +262,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 timelineEventsHeader.setVisibility(View.INVISIBLE);
             } else {
                 timelineEventsHeader.setVisibility(View.VISIBLE);
-
-                bindAndSubscribe(Views.observeNextLayout(listView), ignored -> {
-                    this.scrollContentAperture = segmentAdapter.getTotalItemHeight() - listView.getMeasuredHeight();
-                    this.timeScrubberTrackHeight = listView.getMeasuredHeight() - timeScrubber.getMeasuredHeight();
-
-                    updateTimeScrubber();
-                    timeScrubber.forceLayout(); // Does not happen implicitly
-                }, Functions.LOG_ERROR);
             }
         } else {
             scoreGraph.setTrackColor(getResources().getColor(R.color.border));
 
             showInsights(Collections.emptyList());
             timelineEventsHeader.setVisibility(View.INVISIBLE);
-
-            timeScrubber.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -316,8 +282,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         } else {
             messageText.setText(R.string.missing_data_placeholder);
         }
-
-        timeScrubber.setVisibility(View.INVISIBLE);
     }
 
 
@@ -401,95 +365,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     //endregion
 
-    //region Time Scrubber
-
-    private void snapInTimeScrubber() {
-        PropertyAnimatorProxy.stop(timeScrubber);
-        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
-
-        timeScrubber.setAlpha(1f);
-        timeScrubber.setVisibility(View.VISIBLE);
-    }
-
-    private void fadeInTimeScrubber() {
-        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
-
-        if (timeScrubber.getVisibility() == View.INVISIBLE) {
-            animate(timeScrubber)
-                    .setDuration(Animations.DURATION_MINIMUM)
-                    .fadeIn()
-                    .start();
-        }
-    }
-
-    private void fadeOutTimeScrubber() {
-        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
-
-        if (timeScrubber.getAlpha() == 1f) {
-            animate(timeScrubber)
-                    .setDuration(Animations.DURATION_MINIMUM)
-                    .fadeOut(View.INVISIBLE)
-                    .start();
-        }
-    }
-
-    private void scheduleFadeOutTimeScrubber() {
-        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
-        fadeOutHandler.sendEmptyMessageDelayed(MESSAGE_FADE_OUT, MESSAGE_FADE_OUT_DELAY);
-    }
-
-    private void updateTimeScrubber() {
-        // OnScrollListener will fire immediately after rotation before
-        // the list view has laid itself out, have to guard against that.
-        if (listView.getChildCount() == 0) {
-            return;
-        }
-
-        int firstVisiblePosition = listView.getFirstVisiblePosition();
-        int firstVisibleSegment = ListViews.getAdapterPosition(listView, firstVisiblePosition);
-
-        float headerInset;
-        float scrollTop;
-        if (firstVisiblePosition < listView.getHeaderViewsCount()) {
-            headerInset = timelineEventsHeader.getBottom();
-            scrollTop = 0f;
-        } else {
-            headerInset = 0f;
-
-            View topView = listView.getChildAt(0);
-            float scaleFactor = -topView.getTop() / (float) topView.getMeasuredHeight();
-            scrollTop = segmentAdapter.getHeightOfItems(0, firstVisibleSegment, scaleFactor);
-        }
-
-        float multiple = Math.min(1f, scrollTop / scrollContentAperture);
-        float timestampY = headerInset + (timeScrubberTrackHeight * multiple);
-
-        int itemPosition = ListViews.getPositionForY(listView, timestampY);
-        TimelineSegment segment = segmentAdapter.getItem(itemPosition);
-        timeScrubber.setY(timestampY);
-        timeScrubber.setDateTime(segment.getTimestamp());
-    }
-
-
     private class TimelineScrollListener extends ListViews.TouchAndScrollListener {
         @Override
         protected void onScrollStateChanged(@NonNull AbsListView absListView, int oldState, int newState) {
-            if (segmentAdapter.getCount() > 0) {
-                if (newState == SCROLL_STATE_FLING) {
-                    snapInTimeScrubber();
-                } else if (newState == SCROLL_STATE_IDLE && oldState == SCROLL_STATE_FLING) {
-                    scheduleFadeOutTimeScrubber();
-                }
-            }
         }
 
         @Override
         public void onScroll(AbsListView listView, int firstVisiblePosition, int visibleItemCount, int totalItemCount) {
-            if (segmentAdapter.getCount() > 0) {
-                updateTimeScrubber();
-            }
-
-            if (firstVisiblePosition == 0) {
+            if (firstVisiblePosition == 0 && ListViews.getEstimatedScrollY(listView) == 0) {
                 pullSmartAlarmOnScreen();
             } else {
                 pushSmartAlarmOffScreen();
@@ -498,14 +381,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         @Override
         protected void onTouchDown(@NonNull AbsListView absListView) {
-            fadeInTimeScrubber();
         }
 
         @Override
         protected void onTouchUp(@NonNull AbsListView absListView) {
-            scheduleFadeOutTimeScrubber();
         }
     }
-
-    //endregion
 }

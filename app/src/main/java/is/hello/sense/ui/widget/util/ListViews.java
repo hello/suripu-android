@@ -35,8 +35,8 @@ public final class ListViews {
      * The value returned by this method will be non-sense for
      * list views with variable view heights.
      */
-    public static int getEstimatedScrollY(@NonNull ListView listView) {
-        if (listView.getCount() == 0) {
+    public static int getEstimatedScrollY(@NonNull AbsListView listView) {
+        if (listView.getChildCount() == 0) {
             return 0;
         } else {
             View rowView = listView.getChildAt(0);
