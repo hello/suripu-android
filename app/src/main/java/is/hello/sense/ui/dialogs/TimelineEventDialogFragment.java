@@ -4,7 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Dialog;
+import android.graphics.PorterDuff;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -22,6 +24,7 @@ import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionDialogFragment;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
@@ -85,7 +88,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         markdown.render(timelineSegment.getMessage())
                 .subscribe(message::setText, e -> message.setText(R.string.missing_data_placeholder));
 
-        if (timelineSegment.getSound() == null) {
+        if (timelineSegment.getSound() != null) {
             View soundControls = LayoutInflater.from(getActivity()).inflate(R.layout.sub_fragment_timeline_event_sound, container, false);
 
             this.soundPlayButton = (ImageView) soundControls.findViewById(R.id.sub_fragment_timeline_event_sound_play);
@@ -95,6 +98,13 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
             soundSeekBar.setEnabled(false);
             soundSeekBar.setOnSeekBarChangeListener(this);
 
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                int tintColor = getResources().getColor(R.color.light_accent);
+                soundSeekBar.getThumb().setColorFilter(tintColor, PorterDuff.Mode.SRC_IN);
+                soundSeekBar.getProgressDrawable().setColorFilter(tintColor, PorterDuff.Mode.SRC_IN);
+            }
+
+            container.addView(Styles.createHorizontalDivider(getActivity(), ViewGroup.LayoutParams.MATCH_PARENT));
             container.addView(soundControls);
         }
 
@@ -122,7 +132,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         if (soundPlayer.isPaused() || soundPlayer.isPlaying()) {
             soundPlayer.togglePaused();
         } else {
-            Uri soundUri = Uri.parse("https://hello-audio.s3.amazonaws.com/ringtones/Bounce.mp3?AWSAccessKeyId=AKIAJHLIYLMRTUZO6VDA&Expires=1421436657&Signature=Mk9DR4Q6rzOMj01qBGVKt8lcPKY%3D");//Uri.parse(timelineSegment.getSound().getUrl());
+            Uri soundUri = Uri.parse(timelineSegment.getSound().getUrl());
             soundPlayer.play(soundUri);
             soundPlayButton.setEnabled(false);
             pulsePlayButton();

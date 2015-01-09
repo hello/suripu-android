@@ -3,7 +3,6 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/gap_outer"
     android:gravity="center_vertical">
 
     <ImageView
@@ -12,12 +11,14 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/gap_medium"
         android:src="@drawable/timeline_play"
-        android:contentDescription="@string/action_play_video"/>
+        android:contentDescription="@string/action_play_video"
+        android:background="@drawable/selectable_dark"/>
 
     <SeekBar
         android:id="@+id/sub_fragment_timeline_event_sound_seek_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:layout_marginEnd="@dimen/gap_medium"/>
 
 </LinearLayout>
