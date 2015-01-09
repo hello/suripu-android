@@ -19,6 +19,7 @@ import android.widget.TextView;
 import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,6 +28,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
@@ -41,6 +43,8 @@ import is.hello.sense.util.Markdown;
 import rx.Observable;
 
 public class RoomConditionsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+    private static final long THREE_HOURS = (3 * 60 * 60 * 1000);
+
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
 
@@ -100,7 +104,8 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
             RoomSensorInfo info = adapter.getItem(i);
 
             Observable<ArrayList<SensorHistory>> history = apiService.sensorHistoryForDay(info.sensorName, timestamp);
-            Observable<SensorHistoryAdapter.Update> graphUpdate = history.flatMap(h -> SensorHistory.createAdapterUpdate(h, SensorHistoryPresenter.MODE_DAY, timeZone));
+            Observable<List<SensorHistory>> threeHours = history.map(h -> Lists.filtered(h, item -> (timestamp - item.getTime().getMillis()) < THREE_HOURS));
+            Observable<SensorHistoryAdapter.Update> graphUpdate = threeHours.flatMap(h -> SensorHistory.createAdapterUpdate(h, SensorHistoryPresenter.MODE_DAY, timeZone));
             bindAndSubscribe(graphUpdate,
                              info.graphAdapter::update,
                              e -> {
