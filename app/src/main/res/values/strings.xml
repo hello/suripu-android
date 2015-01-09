@@ -34,6 +34,8 @@
     <string name="format_birth_date">MM/dd/yy</string>
     <string name="format_time_12_hr">h:mm a</string>
     <string name="format_time_24_hr">H:mm</string>
+    <string name="format_day_and_time_12_hr">EEEE – h:mm a</string>
+    <string name="format_day_and_time_24_hr">EEEE – H:mm</string>
     <string name="format_date_placeholder">--</string>
     <string name="format_date_last_night">Last Night</string>
 

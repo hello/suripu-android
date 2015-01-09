@@ -327,7 +327,11 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         public void onGraphValueHighlighted(int section, int position) {
             SensorHistory instant = getSection(section).get(position);
             readingText.setText(spanFormattedValue(sensor, formatSensorValue(instant.getValue())));
-            messageText.setText(dateFormatter.formatAsTime(instant.getTime(), use24Time));
+            if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
+                messageText.setText(dateFormatter.formatAsDayAndTime(instant.getTime(), use24Time));
+            } else {
+                messageText.setText(dateFormatter.formatAsTime(instant.getTime(), use24Time));
+            }
         }
 
         @Override
