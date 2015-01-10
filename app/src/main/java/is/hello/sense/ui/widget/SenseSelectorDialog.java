@@ -5,11 +5,14 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import is.hello.sense.R;
 
@@ -17,6 +20,7 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
     private OnSelectionListener<T> onSelectionListener;
 
     private Button doneButton;
+    private TextView messageText;
     private ListView listView;
     private TintedProgressBar activityIndicator;
 
@@ -34,6 +38,7 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
         this.doneButton = (Button) findViewById(R.id.dialog_sense_selector_done);
         doneButton.setOnClickListener(this::onDone);
 
+        this.messageText = (TextView) findViewById(R.id.dialog_sense_selector_message);
         this.activityIndicator = (TintedProgressBar) findViewById(R.id.dialog_sense_selector_loading);
 
         setCancelable(true);
@@ -60,6 +65,24 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
 
     public void setOnSelectionListener(@Nullable OnSelectionListener<T> onSelectionListener) {
         this.onSelectionListener = onSelectionListener;
+    }
+
+    public void setMessage(@Nullable CharSequence message) {
+        if (TextUtils.isEmpty(message)) {
+            messageText.setVisibility(View.GONE);
+        } else {
+            messageText.setVisibility(View.VISIBLE);
+        }
+        messageText.setText(message);
+    }
+
+    public void setMessage(@StringRes int messageRes) {
+        if (messageRes == 0) {
+            messageText.setVisibility(View.GONE);
+        } else {
+            messageText.setVisibility(View.VISIBLE);
+        }
+        messageText.setText(messageRes);
     }
 
     public void setAdapter(@NonNull ListAdapter adapter) {

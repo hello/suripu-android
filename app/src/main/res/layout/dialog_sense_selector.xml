@@ -16,10 +16,21 @@
         android:text="@string/action_done"
         style="@style/AppTheme.Button.Dialog.SolidBlue"/>
 
+    <TextView
+        android:id="@+id/dialog_sense_selector_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/gap_medium"
+        android:textAppearance="@style/AppTheme.Text.Body.Bold"
+        android:lineSpacingMultiplier="@dimen/body_text_line_multiple"
+        android:gravity="center"
+        android:visibility="gone"/>
+
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/dialog_sense_selector_message"
         android:layout_above="@id/dialog_sense_selector_done"
         android:divider="@color/border"
         android:dividerHeight="@dimen/divider_size"/>
