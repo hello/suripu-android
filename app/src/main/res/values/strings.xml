@@ -276,4 +276,7 @@
     <string name="title_turn_off_bluetooth">Turn Off Bluetooth</string>
     <string name="message_turn_off_bluetooth">Sense no longer requires Bluetooth be turned on, would you like to turn it off?</string>
     <string name="action_turn_off">Turn Off</string>
+    <string name="title_onboarding_register_location">What\'s your location?</string>
+    <string name="description_onboarding_register_location">Sense uses your location to know sunrise and sunset times, local weather, and more.</string>
+    <string name="action_set_location">Set Location</string>
 </resources>

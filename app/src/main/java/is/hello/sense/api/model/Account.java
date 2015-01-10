@@ -50,6 +50,12 @@ public class Account extends ApiResponse implements Cloneable {
     @JsonProperty("email_verified")
     private boolean emailVerified;
 
+    @JsonProperty("lat")
+    private Double latitude;
+
+    @JsonProperty("long")
+    private Double longitude;
+
     @JsonIgnore
     public String getId() {
         return id;
@@ -144,6 +150,13 @@ public class Account extends ApiResponse implements Cloneable {
         return emailVerified;
     }
 
+    public void setLocation(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+
+
 
     public final Account clone() {
         try {
@@ -169,6 +182,8 @@ public class Account extends ApiResponse implements Cloneable {
                 ", password='" + password + '\'' +
                 ", lastModified=" + lastModified +
                 ", emailVerified=" + emailVerified +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
                 '}';
     }
 }

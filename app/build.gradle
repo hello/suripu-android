@@ -118,6 +118,8 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:21.0.3'
     //noinspection GradleDynamicVersion
     compile 'com.google.android.gms:play-services-base:6.5.+'
+    //noinspection GradleDynamicVersion
+    compile 'com.google.android.gms:play-services-location:6.5.+'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
