@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.util.LruCache;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +21,8 @@ import rx.Observable;
 public class TimelineNavigatorPresenter extends Presenter {
     private static final int CACHE_LIMIT = 7;
 
-    private static final String STATE_KEY_START_TIME = "startTime";
-    private DateTime startTime;
+    private static final String STATE_KEY_FIRST_DATE = "firstDate";
+    private DateTime firstDate;
 
     private final Map<Object, Runnable> posted = new HashMap<>();
     private boolean suspended = false;
@@ -39,7 +40,7 @@ public class TimelineNavigatorPresenter extends Presenter {
 
         if (savedState instanceof Bundle) {
             Bundle state = (Bundle) savedState;
-            setStartTime((DateTime) state.getSerializable(STATE_KEY_START_TIME));
+            setFirstDate((DateTime) state.getSerializable(STATE_KEY_FIRST_DATE));
         }
     }
 
@@ -47,7 +48,7 @@ public class TimelineNavigatorPresenter extends Presenter {
     @Override
     public Parcelable onSaveState() {
         Bundle savedState = new Bundle();
-        savedState.putSerializable(STATE_KEY_START_TIME, startTime);
+        savedState.putSerializable(STATE_KEY_FIRST_DATE, firstDate);
         return savedState;
     }
 
@@ -58,13 +59,17 @@ public class TimelineNavigatorPresenter extends Presenter {
     }
 
 
-    public void setStartTime(@NonNull DateTime startTime) {
-        this.startTime = startTime;
+    public void setFirstDate(@NonNull DateTime firstDate) {
+        this.firstDate = firstDate;
         cachedTimelines.evictAll();
     }
 
     public @NonNull DateTime getDateTimeAt(int position) {
-        return startTime.plusDays(-position);
+        return firstDate.plusDays(-position);
+    }
+
+    public int getDateTimePosition(@NonNull DateTime dateTime) {
+        return Days.daysBetween(dateTime.toLocalDate(), firstDate.toLocalDate()).getDays() - 1;
     }
 
 
