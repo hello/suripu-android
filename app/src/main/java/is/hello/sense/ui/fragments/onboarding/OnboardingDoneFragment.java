@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.util.Analytics;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.stop;
@@ -43,6 +44,15 @@ public class OnboardingDoneFragment extends Fragment {
 
     private ImageView glyph;
     private TextView message;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_END, null);
+        }
+    }
 
     @Nullable
     @Override

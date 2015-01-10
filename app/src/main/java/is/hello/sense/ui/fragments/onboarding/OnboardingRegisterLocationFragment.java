@@ -38,7 +38,7 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
         this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
-            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_WEIGHT, null);
+            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_LOCATION, null);
         }
     }
 
