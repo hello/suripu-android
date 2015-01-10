@@ -2,6 +2,7 @@ package is.hello.sense.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -15,18 +16,27 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.TimelineSegmentView;
+import is.hello.sense.util.DateFormatter;
+
+import static is.hello.sense.api.model.TimelineSegment.EventType;
 
 public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
+    private final DateFormatter dateFormatter;
+
     private final int baseItemHeight;
     private final int itemEventImageHeight;
 
     private float[] itemHeights;
     private float totalItemHeight;
 
+    private boolean use24Time;
+
     //region Lifecycle
 
-    public TimelineSegmentAdapter(@NonNull Context context) {
+    public TimelineSegmentAdapter(@NonNull Context context, @NonNull DateFormatter dateFormatter) {
         super(context, R.layout.item_simple_text);
+
+        this.dateFormatter = dateFormatter;
 
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
@@ -129,6 +139,12 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         clear();
     }
 
+    public void setUse24Time(boolean use24Time) {
+        this.use24Time = use24Time;
+        notifyDataSetChanged();
+    }
+
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TimelineSegmentView view = (TimelineSegmentView) convertView;
@@ -168,6 +184,18 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
             itemView.setStripeInset(stripeInset);
             itemView.setRounded(segment.getEventType() != null);
             itemView.setEventResource(Styles.getTimelineSegmentIconRes(segment));
+
+            EventType eventType = segment.getEventType();
+            if (eventType != null) {
+                if (eventType == EventType.WAKE_UP || eventType == EventType.SLEEP) {
+                    itemView.setTimestampTypeface(Typeface.createFromAsset(getContext().getAssets(), Styles.TYPEFACE_ROMAN));
+                } else {
+                    itemView.setTimestampTypeface(Typeface.createFromAsset(getContext().getAssets(), Styles.TYPEFACE_LIGHT));
+                }
+                itemView.setTimestampString(dateFormatter.formatAsTime(segment.getTimestamp(), use24Time));
+            } else {
+                itemView.setTimestampString(null);
+            }
         }
     }
 }

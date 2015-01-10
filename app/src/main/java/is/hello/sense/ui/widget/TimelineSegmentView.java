@@ -4,10 +4,14 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -35,6 +39,8 @@ public final class TimelineSegmentView extends View {
     private final RectF rect = new RectF();
     private final Paint fillPaint = new Paint();
     private final Paint stripePaint = new Paint();
+    private final Rect textRect = new Rect();
+    private final Paint timestampPaint = new Paint();
 
     //endregion
 
@@ -45,6 +51,7 @@ public final class TimelineSegmentView extends View {
     private int sleepDepth;
     private StripeInset stripeInset = StripeInset.NONE;
     private boolean rounded;
+    private @Nullable String timestampString;
 
     //endregion
 
@@ -72,6 +79,11 @@ public final class TimelineSegmentView extends View {
         stripePaint.setAntiAlias(true);
         stripePaint.setColor(resources.getColor(R.color.timeline_segment_stripe));
 
+        timestampPaint.setAntiAlias(true);
+        timestampPaint.setSubpixelText(true);
+        timestampPaint.setColor(resources.getColor(R.color.text_dim));
+        timestampPaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_body));
+
         this.leftInset = resources.getDimension(R.dimen.view_timeline_segment_left_inset);
         this.rightInset = resources.getDimension(R.dimen.view_timeline_segment_right_inset);
         this.stripeWidth = resources.getDimension(R.dimen.view_timeline_segment_stripe_width);
@@ -90,6 +102,7 @@ public final class TimelineSegmentView extends View {
         float minY = 0f,
               midY = (minY + height) / 2f,
               midX = minX + (width / 2f),
+              maxX = minX + width,
               maxY = minY + height;
 
 
@@ -146,6 +159,19 @@ public final class TimelineSegmentView extends View {
         }
 
         //endregion
+
+
+        //region Timestamp
+
+        if (timestampString != null) {
+            timestampPaint.getTextBounds(timestampString, 0, timestampString.length(), textRect);
+
+            float textX = Math.round(maxX - textRect.width());
+            float textY = Math.round(midY - textRect.centerY());
+            canvas.drawText(timestampString, textX, textY, timestampPaint);
+        }
+
+        //endregion
     }
 
 
@@ -181,6 +207,18 @@ public final class TimelineSegmentView extends View {
     public void setRounded(boolean rounded) {
         this.rounded = rounded;
         invalidate();
+    }
+
+    public void setTimestampTypeface(@NonNull Typeface typeface) {
+        timestampPaint.setTypeface(typeface);
+        invalidate();
+    }
+
+    public void setTimestampString(@Nullable String timestampString) {
+        if (!TextUtils.equals(timestampString, this.timestampString)) {
+            this.timestampString = timestampString;
+            invalidate();
+        }
     }
 
     //endregion

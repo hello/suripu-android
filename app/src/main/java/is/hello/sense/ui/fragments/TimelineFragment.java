@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
@@ -47,6 +49,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
@@ -56,6 +59,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     @Inject DateFormatter dateFormatter;
     @Inject TimelinePresenter timelinePresenter;
+    @Inject PreferencesPresenter preferences;
     @Inject Markdown markdown;
 
     private ListView listView;
@@ -93,7 +97,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         timelinePresenter.setDate(getDate());
         addPresenter(timelinePresenter);
 
-        this.segmentAdapter = new TimelineSegmentAdapter(getActivity());
+        this.segmentAdapter = new TimelineSegmentAdapter(getActivity(), dateFormatter);
+
+        boolean defaultValue = DateFormat.is24HourFormat(getActivity());
+        Observable<Boolean> use24HourTime = preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, defaultValue)
+                                                       .subscribeOn(AndroidSchedulers.mainThread());
+        track(use24HourTime.subscribe(segmentAdapter::setUse24Time));
 
         setRetainInstance(true);
     }
