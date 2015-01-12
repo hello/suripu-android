@@ -143,16 +143,20 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
     @Override
     public void onAlarmEnabledChanged(int position, boolean enabled) {
-        currentAlarms.get(position).setEnabled(enabled);
+        SmartAlarm smartAlarm = currentAlarms.get(position);
+        smartAlarm.setEnabled(enabled);
+        if (enabled && smartAlarm.getDaysOfWeek().isEmpty()) {
+            smartAlarm.fireOnceTomorrow();
+        }
 
         if (!enabled) {
             Analytics.trackEvent(Analytics.EVENT_ALARM_ACTION, Analytics.createProperties(Analytics.PROP_ALARM_ACTION, Analytics.PROP_ALARM_ACTION_DISABLE));
         }
 
         activityIndicator.setVisibility(View.VISIBLE);
-        bindAndSubscribe(smartAlarmPresenter.save(currentAlarms),
-                ignored -> activityIndicator.setVisibility(View.GONE),
-                this::presentError);
+        bindAndSubscribe(smartAlarmPresenter.saveSmartAlarm(position, smartAlarm),
+                         ignored -> activityIndicator.setVisibility(View.GONE),
+                         this::presentError);
     }
 
     public void newAlarm(@NonNull View sender) {

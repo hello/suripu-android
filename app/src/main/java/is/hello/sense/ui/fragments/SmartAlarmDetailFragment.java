@@ -199,6 +199,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_no_smart_alarm_sound));
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
+            if (smartAlarm.getDaysOfWeek().isEmpty()) {
+                smartAlarm.fireOnceTomorrow();
+            }
+
             Observable<VoidResponse> saveOperation;
             if (index == SmartAlarmDetailActivity.INDEX_NEW) {
                 saveOperation = smartAlarmPresenter.addSmartAlarm(smartAlarm);
