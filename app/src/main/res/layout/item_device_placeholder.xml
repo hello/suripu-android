@@ -3,29 +3,28 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/gap_outer"
     style="@style/AppTheme.Card">
 
     <TextView
         android:id="@+id/item_device_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/gap_outer"
         android:drawableStart="@drawable/sense_icon"
-        android:drawablePadding="@dimen/gap_small"
+        android:drawableEnd="@drawable/chevron"
+        android:drawablePadding="@dimen/gap_medium"
         android:gravity="start|center_vertical"
         android:textAppearance="@style/AppTheme.Text.Actionable"
         android:text="@string/app_name"
         android:singleLine="true"/>
 
-    <View
-        android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginBottom="@dimen/gap_medium"
-        style="@style/Divider.Horizontal"/>
+    <View style="@style/Divider.Horizontal"/>
 
     <TextView
         android:id="@+id/item_device_placeholder_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/gap_medium"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/info_no_sense_connected"
@@ -35,7 +34,9 @@
         android:id="@+id/item_device_placeholder_action"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginLeft="@dimen/gap_medium"
+        android:layout_marginRight="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_medium"
         android:text="@string/action_pair_new_sense"
         style="@style/AppTheme.Button.Rounded"/>
 
