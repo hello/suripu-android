@@ -47,7 +47,7 @@
         android:layout_marginEnd="@dimen/gap_medium"
         android:gravity="end|center_vertical"
         android:textAppearance="@style/AppTheme.Text.Body.Bold"
-        android:text="@string/app_name"
+        android:text="@string/missing_data_placeholder"
         android:singleLine="true"/>
 
     <TextView
@@ -63,14 +63,16 @@
 
     <TextView
         android:id="@+id/item_device_status"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/item_device_status_label"
-        android:layout_toEndOf="@id/item_device_status_label"
+        android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Body.Bold"
         android:gravity="end|center_vertical"
-        android:text="@string/app_name"
+        android:drawableStart="@drawable/wifi_network"
+        android:drawablePadding="@dimen/gap_xsmall"
+        android:text="@string/device_unknown"
         android:singleLine="true"/>
 
     <TextView
@@ -94,7 +96,7 @@
         android:layout_marginEnd="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Body.Bold"
         android:gravity="end|center_vertical"
-        android:text="@string/app_name"
+        android:text="@string/missing_data_placeholder"
         android:singleLine="true"/>
 
 </RelativeLayout>

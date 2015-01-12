@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.DevicesAdapter;
 import is.hello.sense.ui.common.FragmentNavigation;
@@ -32,6 +33,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
     private static final int DEVICE_REQUEST_CODE = 0x14;
 
     @Inject DevicesPresenter devicesPresenter;
+    @Inject PreferencesPresenter preferences;
 
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;
@@ -54,7 +56,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        this.adapter = new DevicesAdapter(getActivity());
+        this.adapter = new DevicesAdapter(getActivity(), preferences);
         adapter.setOnPairNewDeviceListener(this);
         listView.setAdapter(adapter);
 

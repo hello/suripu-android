@@ -20,6 +20,7 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.widget.util.Views;
 
 public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClickListener {
@@ -28,15 +29,16 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
 
     private final LayoutInflater inflater;
     private final Resources resources;
+    private final PreferencesPresenter preferences;
 
-    private @Nullable
-    OnPairNewDeviceListener onPairNewDeviceListener;
+    private @Nullable OnPairNewDeviceListener onPairNewDeviceListener;
 
-    public DevicesAdapter(@NonNull Context context) {
+    public DevicesAdapter(@NonNull Context context, @NonNull PreferencesPresenter preferences) {
         super(context, R.layout.item_device);
 
         this.inflater = LayoutInflater.from(context);
         this.resources = context.getResources();
+        this.preferences = preferences;
     }
 
 
@@ -160,7 +162,11 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
             switch (device.getType()) {
                 case SENSE: {
                     status1Label.setText(R.string.label_wifi);
-                    status1.setText(R.string.missing_data_placeholder);
+
+                    String wifiSsidName = preferences.getString(PreferencesPresenter.PAIRED_DEVICE_SSID, getContext().getString(R.string.device_state_unknown));
+                    status1.setText(wifiSsidName);
+                    status1.setTextColor(resources.getColor(R.color.text_dark));
+                    status1.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.wifi_network, 0, 0, 0);
 
                     status2Label.setText(R.string.label_firmware_version);
                     status2.setText(device.getFirmwareVersion());
@@ -172,9 +178,13 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
                 case OTHER:
                 case PILL: {
                     status1Label.setText(R.string.label_battery_level);
-                    status1Label.setText(device.getState().nameRes);
+
+                    status1.setText(device.getState().nameRes);
+                    status1.setTextColor(resources.getColor(device.getState().colorRes));
+                    status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
 
                     status2Label.setText(R.string.label_color);
+                    status2.setText(R.string.missing_data_placeholder);
 
                     break;
                 }

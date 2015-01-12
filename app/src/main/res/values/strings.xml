@@ -20,8 +20,8 @@
     <string name="device_pill">Your Sleep Pill</string>
     <string name="device_unknown">Other</string>
 
-    <string name="device_state_normal">Normal</string>
-    <string name="device_state_low_battery">Low Battery</string>
+    <string name="device_state_normal">Good</string>
+    <string name="device_state_low_battery">Low</string>
     <string name="device_state_unknown">Unknown</string>
 
     <string name="dialog_error_title">Error</string>

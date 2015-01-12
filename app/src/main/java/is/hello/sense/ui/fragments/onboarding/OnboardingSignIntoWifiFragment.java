@@ -180,6 +180,9 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
 
             bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, securityType, password), ignored -> {
                 this.hasConnectedToNetwork = true;
+                preferences.edit()
+                           .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
+                           .apply();
                 sendAccessToken();
             }, this::presentError);
         });

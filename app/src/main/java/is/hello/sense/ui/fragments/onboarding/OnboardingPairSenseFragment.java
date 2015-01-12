@@ -101,6 +101,10 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         showHardwareActivity(() -> {
             bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
                 if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
+                    preferences.edit()
+                               .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
+                               .apply();
+
                     linkAccount();
                 } else {
                     hideAllActivity(true, () -> getOnboardingActivity().showSelectWifiNetwork(true));
