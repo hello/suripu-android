@@ -33,13 +33,14 @@ public abstract class HardwareFragment extends InjectionFragment {
     protected void hideBlockingActivity(boolean success, @NonNull Runnable onCompletion) {
         coordinator.postOnResume(() -> {
             if (success) {
-                LoadingDialogFragment.close(getFragmentManager());
-                onCompletion.run();
-            } else {
                 LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
                     this.loadingDialogFragment = null;
                     onCompletion.run();
                 });
+            } else {
+                LoadingDialogFragment.close(getFragmentManager());
+                this.loadingDialogFragment = null;
+                onCompletion.run();
             }
         });
     }
