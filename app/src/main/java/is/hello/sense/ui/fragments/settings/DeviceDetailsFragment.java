@@ -24,6 +24,7 @@ import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -48,6 +49,7 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
     @Inject ApiSessionManager apiSessionManager;
     @Inject DateFormatter dateFormatter;
     @Inject DevicesPresenter devicesPresenter;
+    @Inject PreferencesPresenter preferences;
 
     private ProgressBar activityIndicator;
     private ViewGroup senseActionsContainer;
@@ -247,8 +249,7 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral),
                              status -> {
                                  if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
-                                     senseActionsContainer.setVisibility(View.VISIBLE);
-                                     activityIndicator.setVisibility(View.GONE);
+                                     checkConnectivityState();
                                  }
                              },
                              this::presentError);
@@ -276,6 +277,25 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
                 actionButton.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+
+    public void checkConnectivityState() {
+        bindAndSubscribe(hardwarePresenter.currentWifiNetwork(),
+                network -> {
+                    preferences.edit()
+                               .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
+                               .apply();
+
+                    senseActionsContainer.setVisibility(View.VISIBLE);
+                    activityIndicator.setVisibility(View.GONE);
+                },
+                e -> {
+                    Logger.error(getClass().getSimpleName(), "Could not get connectivity state, ignoring.", e);
+
+                    senseActionsContainer.setVisibility(View.VISIBLE);
+                    activityIndicator.setVisibility(View.GONE);
+                });
     }
 
 
