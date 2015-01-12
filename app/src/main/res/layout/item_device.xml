@@ -1,40 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/gap_outer">
-
-    <ImageView
-        android:id="@+id/item_device_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/sense_icon"
-        tools:ignore="ContentDescription" />
+    android:shrinkColumns="0"
+    android:stretchColumns="1"
+    android:padding="@dimen/gap_outer"
+    style="@style/AppTheme.Card">
 
     <TextView
         android:id="@+id/item_device_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/gap_small"
-        android:layout_toEndOf="@id/item_device_icon"
-        android:textAppearance="@style/AppTheme.Text.Body.Bold"
+        android:drawableStart="@drawable/sense_icon"
+        android:drawablePadding="@dimen/gap_small"
+        android:gravity="start|center_vertical"
+        android:textAppearance="@style/AppTheme.Text.Actionable"
         android:text="@string/app_name"
         android:singleLine="true"/>
 
-    <TextView
-        android:id="@+id/item_device_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/item_device_name"
-        android:layout_toEndOf="@id/item_device_icon"
-        android:layout_marginStart="@dimen/gap_small"
-        android:layout_marginTop="@dimen/gap_tiny"
-        android:text="@string/app_name"
-        android:singleLine="true"/>
+    <View
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_medium"
+        style="@style/Divider.Horizontal"/>
 
-</RelativeLayout>
+    <TableRow
+        android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/gap_small">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/gap_small"
+            android:textAppearance="@style/AppTheme.Text.Body"
+            android:text="@string/label_last_seen"/>
+
+        <TextView
+            android:id="@+id/item_device_last_seen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end|center_vertical"
+            android:textAppearance="@style/AppTheme.Text.Body.Bold"
+            android:text="@string/app_name"
+            android:singleLine="true"/>
+
+    </TableRow>
+
+    <TableRow
+        android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/gap_small">
+
+        <TextView
+            android:id="@+id/item_device_status_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/gap_small"
+            android:textAppearance="@style/AppTheme.Text.Body"
+            android:text="@string/label_wifi"/>
+
+        <TextView
+            android:id="@+id/item_device_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/AppTheme.Text.Body.Bold"
+            android:gravity="end|center_vertical"
+            android:text="@string/app_name"
+            android:singleLine="true"/>
+
+    </TableRow>
+
+    <TableRow
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/item_device_status2_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/gap_small"
+            android:textAppearance="@style/AppTheme.Text.Body"
+            android:text="@string/label_firmware_version"/>
+
+        <TextView
+            android:id="@+id/item_device_status2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/AppTheme.Text.Body.Bold"
+            android:gravity="end|center_vertical"
+            android:text="@string/app_name"
+            android:singleLine="true"/>
+
+    </TableRow>
+
+</TableLayout>

@@ -14,13 +14,13 @@
             android:id="@+id/fragment_device_details_last_seen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:sensorTitle="@string/title_device_last_seen"/>
+            app:sensorTitle="@string/label_last_seen"/>
 
         <is.hello.sense.ui.widget.SensorStateView
             android:id="@+id/fragment_device_details_version"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:sensorTitle="@string/title_device_firmware_version"/>
+            app:sensorTitle="@string/label_firmware_version"/>
 
         <is.hello.sense.ui.widget.TintedProgressBar
             android:id="@+id/fragment_device_details_activity"

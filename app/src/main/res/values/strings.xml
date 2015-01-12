@@ -16,8 +16,8 @@
     <string name="action_log_in">Log in</string>
     <string name="action_register">Sign Up</string>
 
-    <string name="device_sense">Sense</string>
-    <string name="device_pill">Pill</string>
+    <string name="device_sense">Your Sense</string>
+    <string name="device_pill">Your Sleep Pill</string>
     <string name="device_unknown">Other</string>
 
     <string name="device_state_normal">Normal</string>
@@ -133,9 +133,8 @@
     <string name="error_bad_wifi_credentials">The wifi network credentials you entered are incorrect.</string>
     <string name="error_wifi_out_of_range">The wifi network you selected could not be found by Sense.</string>
     <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the wifi network you selected.</string>
-    <string name="title_device_last_seen">Last Seen</string>
     <string name="title_device_signal_strength">Signal Strength</string>
-    <string name="title_device_firmware_version">Firmware Version</string>
+    <string name="label_firmware_version">Firmware</string>
     <string name="signal_strong">Strong</string>
     <string name="signal_good">Good</string>
     <string name="signal_weak">Weak</string>
@@ -280,4 +279,8 @@
     <string name="title_onboarding_register_location">What\'s your location?</string>
     <string name="description_onboarding_register_location">Sense uses your location to know sunrise and sunset times, local weather, and more.</string>
     <string name="action_set_location">Set Location</string>
+    <string name="label_last_seen">Last Seen</string>
+    <string name="label_wifi">Wi-Fi</string>
+    <string name="label_battery_level">Battery Level</string>
+    <string name="label_color">Color</string>
 </resources>
