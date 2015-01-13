@@ -92,9 +92,11 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Device device = (Device) adapterView.getItemAtPosition(position);
-        DeviceDetailsFragment fragment = DeviceDetailsFragment.newInstance(device);
-        fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
-        ((FragmentNavigation) getActivity()).showFragment(fragment, getString(device.getType().nameRes), true);
+        if (device.exists()) {
+            DeviceDetailsFragment fragment = DeviceDetailsFragment.newInstance(device);
+            fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
+            ((FragmentNavigation) getActivity()).showFragment(fragment, getString(device.getType().nameRes), true);
+        }
     }
 
 

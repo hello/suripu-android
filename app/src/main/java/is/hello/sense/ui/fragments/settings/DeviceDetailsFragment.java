@@ -415,8 +415,14 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
     public void unpairDevice(@NonNull View sender) {
         SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
         alertDialog.setDestructive(true);
-        alertDialog.setTitle(R.string.dialog_title_unpair_pill);
-        alertDialog.setMessage(R.string.dialog_message_unpair_pill);
+        if (device.getType() == Device.Type.SENSE) {
+            alertDialog.setTitle(R.string.dialog_title_unpair_sense);
+            alertDialog.setMessage(R.string.dialog_message_unpair_sense);
+        } else {
+            alertDialog.setTitle(R.string.dialog_title_unpair_pill);
+            alertDialog.setMessage(R.string.dialog_message_unpair_pill);
+        }
+
         alertDialog.setNegativeButton(android.R.string.cancel, null);
         alertDialog.setPositiveButton(R.string.action_unpair, (d, which) -> {
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
