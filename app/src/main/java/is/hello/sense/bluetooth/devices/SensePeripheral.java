@@ -23,7 +23,6 @@ import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
-import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -103,23 +102,23 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     }
 
     protected @NonNull OperationTimeout createOperationTimeout(@NonNull String name) {
-        return peripheral.getOperationTimeoutPool().acquire(name, STACK_OPERATION_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.createOperationTimeout(name, STACK_OPERATION_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createSimpleCommandTimeout() {
-        return peripheral.getOperationTimeoutPool().acquire("Simple Command", SIMPLE_COMMAND_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.createOperationTimeout("Simple Command", SIMPLE_COMMAND_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createScanWifiTimeout() {
-        return peripheral.getOperationTimeoutPool().acquire("Scan Wifi", WIFI_SCAN_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.createOperationTimeout("Scan Wifi", WIFI_SCAN_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createPairPillTimeout() {
-        return peripheral.getOperationTimeoutPool().acquire("Pair Pill", PAIR_PILL_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.createOperationTimeout("Pair Pill", PAIR_PILL_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected @NonNull OperationTimeout createAnimationTimeout() {
-        return peripheral.getOperationTimeoutPool().acquire("Animation", ANIMATION_TIMEOUT_S, TimeUnit.SECONDS);
+        return peripheral.createOperationTimeout("Animation", ANIMATION_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     protected PeripheralBusyError busyError() {
@@ -154,8 +153,6 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
             Action1<Throwable> onError = error -> {
                 timeout.unschedule();
-                timeout.recycle();
-
                 s.onError(error);
             };
             Observable<UUID> subscribe = subscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Subscribe"));
@@ -189,10 +186,9 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     }
 
     Observable<MorpheusCommand> performSimpleCommand(@NonNull MorpheusCommand command,
-                                                     @NonNull @TakesOwnership OperationTimeout commandTimeout) {
+                                                     @NonNull OperationTimeout commandTimeout) {
         return performCommand(command, commandTimeout, (response, s, timeout) -> {
             timeout.unschedule();
-            timeout.recycle();
 
             Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
             unsubscribe.subscribe(ignored -> {
@@ -301,7 +297,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .setWifiPassword(password)
                 .setSecurityType(securityType)
                 .build();
-        return performSimpleCommand(morpheusCommand, peripheral.getOperationTimeoutPool().acquire("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS)).map(Functions.TO_VOID);
+        return performSimpleCommand(morpheusCommand, peripheral.createOperationTimeout("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS)).map(Functions.TO_VOID);
     }
 
     public Observable<SenseWifiNetwork> getWifiNetwork() {
@@ -445,7 +441,6 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 }
             } else if (response.getType() == CommandType.MORPHEUS_COMMAND_STOP_WIFISCAN) {
                 timeout.unschedule();
-                timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> {
@@ -456,7 +451,6 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 dataHandler.clearListeners();
             } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
                 timeout.unschedule();
-                timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(response.getError())), onError);
@@ -464,7 +458,6 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 dataHandler.clearListeners();
             } else {
                 timeout.unschedule();
-                timeout.recycle();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(SenseCommandProtos.ErrorType.INTERNAL_DATA_ERROR)), onError);

@@ -2,8 +2,6 @@ package is.hello.sense.bluetooth.stacks;
 
 import android.support.annotation.NonNull;
 
-import java.util.concurrent.TimeUnit;
-
 import rx.Scheduler;
 import rx.functions.Action0;
 
@@ -13,11 +11,8 @@ public final class TestOperationTimeout implements OperationTimeout {
 
     private boolean wasScheduled = false;
     private boolean wasUnscheduled = false;
-    private boolean wasRecycled = false;
 
     private String name;
-
-    //region Creation
 
     public static TestOperationTimeout acquire(@NonNull String name) {
         return new TestOperationTimeout(name);
@@ -26,8 +21,6 @@ public final class TestOperationTimeout implements OperationTimeout {
     private TestOperationTimeout(@NonNull String name) {
         this.name = name;
     }
-
-    //endregion
 
 
     @Override
@@ -56,18 +49,9 @@ public final class TestOperationTimeout implements OperationTimeout {
         this.scheduler = scheduler;
     }
 
-    @Override
-    public void recycle() {
-        this.wasRecycled = true;
-    }
-
 
     public String getName() {
         return name;
-    }
-
-    public boolean wasRecycled() {
-        return wasRecycled;
     }
 
     public boolean wasScheduled() {
@@ -98,15 +82,6 @@ public final class TestOperationTimeout implements OperationTimeout {
                 ", name='" + name + '\'' +
                 ", wasScheduled=" + wasScheduled +
                 ", wasUnscheduled=" + wasUnscheduled +
-                ", wasRecycled=" + wasRecycled +
                 '}';
-    }
-
-
-    public static class Pool implements OperationTimeout.Pool {
-        @Override
-        public OperationTimeout acquire(@NonNull String name, long duration, TimeUnit timeUnit) {
-            return new TestOperationTimeout(name);
-        }
     }
 }

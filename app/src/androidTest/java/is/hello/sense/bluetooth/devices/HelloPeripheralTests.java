@@ -194,7 +194,6 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
         assertNull(subscribe1.getError());
         assertEquals(id, subscribe1.getSingle());
-        assertTrue(timeout.wasRecycled());
 
 
         peripheralBehavior.reset();
@@ -205,7 +204,6 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
         assertNotNull(subscribe2.getError());
         assertTrue(subscribe2.getError() instanceof BluetoothGattError);
-        assertTrue(timeout.wasRecycled());
     }
 
     public void testUnsubscribe() throws Exception {
@@ -219,7 +217,6 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
         assertNull(subscribe1.getError());
         assertEquals(id, subscribe1.getSingle());
-        assertTrue(timeout.wasRecycled());
 
 
         peripheralBehavior.reset();
@@ -230,7 +227,6 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
         assertNotNull(subscribe2.getError());
         assertTrue(subscribe2.getError() instanceof BluetoothGattError);
-        assertTrue(timeout.wasRecycled());
     }
 
     //endregion

@@ -9,7 +9,6 @@ import is.hello.sense.R;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
-import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
@@ -49,7 +48,7 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
      * an operation timeout object.
      * @param timeout   A timeout object to apply to the service discovery portion of connection.
      */
-    protected Observable<ConnectStatus> connect(@NonNull @TakesOwnership OperationTimeout timeout) {
+    protected Observable<ConnectStatus> connect(@NonNull OperationTimeout timeout) {
         return peripheral.getStack().newConfiguredObservable(s -> {
             Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
 
@@ -83,7 +82,6 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
                     });
                 }, e -> {
                     timeout.unschedule();
-                    timeout.recycle();
 
                     Logger.error(Peripheral.LOG_TAG, "Disconnecting due to bond change failure", e);
                     disconnect().subscribe(ignored -> {
@@ -96,7 +94,6 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
                 });
             }, e -> {
                 timeout.unschedule();
-                timeout.recycle();
 
                 s.onError(e);
             });
@@ -129,7 +126,7 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
     }
 
     protected Observable<UUID> subscribe(@NonNull UUID characteristicIdentifier,
-                                         @NonNull @TakesOwnership OperationTimeout timeout) {
+                                         @NonNull OperationTimeout timeout) {
         Logger.info(Peripheral.LOG_TAG, "Subscribing to " + characteristicIdentifier);
 
         return peripheral.subscribeNotification(getTargetService(),
@@ -139,7 +136,7 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
     }
 
     protected Observable<UUID> unsubscribe(@NonNull UUID characteristicIdentifier,
-                                           @NonNull @TakesOwnership OperationTimeout timeout) {
+                                           @NonNull OperationTimeout timeout) {
         Logger.info(Peripheral.LOG_TAG, "Unsubscribing from " + characteristicIdentifier);
 
         return peripheral.unsubscribeNotification(getTargetService(),

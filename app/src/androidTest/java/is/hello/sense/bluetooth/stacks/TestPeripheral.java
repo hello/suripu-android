@@ -8,14 +8,11 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
-import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import is.hello.sense.functional.Either;
 import is.hello.sense.functional.Lists;
 import rx.Observable;
 
 public class TestPeripheral implements Peripheral {
-    final TestOperationTimeout.Pool pool = new TestOperationTimeout.Pool();
-
     final BluetoothStack stack;
     final TestPeripheralBehavior behavior;
 
@@ -29,20 +26,14 @@ public class TestPeripheral implements Peripheral {
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     private <T> Observable<T> createResponseWith(@NonNull Either<T, Throwable> value, @Nullable OperationTimeout timeout) {
-        // This isn't really the intended order here, but
-        // `finallyDo` appears to be non-deterministic.
-        if (timeout != null) {
-            timeout.recycle();
-        }
-
         Observable<T> observable = value.<Observable<T>>map(Observable::just, Observable::error);
         return observable.delay(behavior.latency, TimeUnit.MILLISECONDS);
     }
 
     @NonNull
     @Override
-    public OperationTimeout.Pool getOperationTimeoutPool() {
-        return pool;
+    public OperationTimeout createOperationTimeout(@NonNull String name, long duration, @NonNull TimeUnit timeUnit) {
+        return TestOperationTimeout.acquire(name);
     }
 
     @Override
@@ -105,7 +96,7 @@ public class TestPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<Collection<PeripheralService>> discoverServices(@NonNull @TakesOwnership OperationTimeout timeout) {
+    public Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
         behavior.trackMethodCall(TestPeripheralBehavior.Method.DISCOVER_SERVICES);
         return createResponseWith(behavior.servicesResponse, timeout);
     }
@@ -125,7 +116,7 @@ public class TestPeripheral implements Peripheral {
     public Observable<UUID> subscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                   @NonNull UUID characteristicIdentifier,
                                                   @NonNull UUID descriptorIdentifier,
-                                                  @NonNull @TakesOwnership OperationTimeout timeout) {
+                                                  @NonNull OperationTimeout timeout) {
         behavior.trackMethodCall(TestPeripheralBehavior.Method.SUBSCRIBE);
         return createResponseWith(behavior.subscriptionResponse, timeout);
     }
@@ -135,7 +126,7 @@ public class TestPeripheral implements Peripheral {
     public Observable<UUID> unsubscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                     @NonNull UUID characteristicIdentifier,
                                                     @NonNull UUID descriptorIdentifier,
-                                                    @NonNull @TakesOwnership OperationTimeout timeout) {
+                                                    @NonNull OperationTimeout timeout) {
         behavior.trackMethodCall(TestPeripheralBehavior.Method.UNSUBSCRIBE);
         return createResponseWith(behavior.unsubscriptionResponse, timeout);
     }
@@ -145,7 +136,7 @@ public class TestPeripheral implements Peripheral {
     public Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService,
                                          @NonNull UUID identifier,
                                          @NonNull byte[] payload,
-                                         @NonNull @TakesOwnership OperationTimeout timeout) {
+                                         @NonNull OperationTimeout timeout) {
         behavior.trackMethodCall(TestPeripheralBehavior.Method.WRITE_COMMAND);
         return createResponseWith(behavior.writeCommandResponse, timeout);
     }

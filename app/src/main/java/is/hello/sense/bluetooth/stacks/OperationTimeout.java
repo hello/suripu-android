@@ -2,10 +2,6 @@ package is.hello.sense.bluetooth.stacks;
 
 import android.support.annotation.NonNull;
 
-import java.util.concurrent.TimeUnit;
-
-import is.hello.sense.bluetooth.stacks.util.Recyclable;
-import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import rx.Scheduler;
 import rx.functions.Action0;
 
@@ -17,7 +13,7 @@ import rx.functions.Action0;
  * <p/>
  * <em>Important:</em> OperationTimeout implementations are not guaranteed to be thread-safe.
  */
-public interface OperationTimeout extends Recyclable {
+public interface OperationTimeout {
     public static final String LOG_TAG = "Bluetooth." + OperationTimeout.class.getSimpleName();
 
     /**
@@ -57,36 +53,4 @@ public interface OperationTimeout extends Recyclable {
      * @param scheduler The scheduler to run the handler on.
      */
     void setTimeoutAction(@NonNull Action0 action, @NonNull Scheduler scheduler);
-
-    /**
-     * Called by the bluetooth stack. Clears all state associated with the timeout operation.
-     * <p/>
-     * It is an error for this method to be called on a scheduled timeout.
-     */
-    void recycle();
-
-
-    /**
-     * Operation timeouts are intended to be kept in a finite pool associated with
-     * an instance of the {@see is.hello.sense.bluetooth.stacks.Peripheral} interface.
-     */
-    public interface Pool {
-        /**
-         * The recommended capacity for implementations of pool.
-         */
-        public static final int RECOMMENDED_CAPACITY = 2;
-
-        /**
-         * Vends an operation timeout object for use with a Peripheral created by this stack.
-         * <p/>
-         * The callee becomes responsible for either calling {@see #recycle}, or for passing
-         * the OperationTimeout onto a method/object that {@see TakesOwnership} of it.
-         * @param name      The name of the timeout.
-         * @param duration  The duration of the timeout.
-         * @param timeUnit  The unit of the duration.
-         * @return An object implementing OperationTimeout ready for use.
-         */
-        @TakesOwnership
-        OperationTimeout acquire(@NonNull String name, long duration, TimeUnit timeUnit);
-    }
 }
