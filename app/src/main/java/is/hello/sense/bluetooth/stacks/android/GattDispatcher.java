@@ -47,7 +47,6 @@ class GattDispatcher extends BluetoothGattCallback {
             Logger.info(Peripheral.LOG_TAG, "onDisconnectListener(" + subscriber.hashCode() + ")");
 
             timeout.unschedule();
-            timeout.recycle();
 
             subscriber.onError(new BluetoothEarlyDisconnectError());
         });

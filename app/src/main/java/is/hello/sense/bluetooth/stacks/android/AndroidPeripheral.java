@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
@@ -31,7 +32,6 @@ import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
-import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
@@ -43,7 +43,6 @@ import static rx.android.observables.AndroidObservable.fromBroadcast;
 public class AndroidPeripheral implements Peripheral {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull BluetoothDevice bluetoothDevice;
-    private final @NonNull OperationTimeout.Pool operationTimeoutPool;
     private final int scannedRssi;
     private final GattDispatcher gattDispatcher = new GattDispatcher();
 
@@ -56,7 +55,6 @@ public class AndroidPeripheral implements Peripheral {
                       int scannedRssi) {
         this.stack = stack;
         this.bluetoothDevice = bluetoothDevice;
-        this.operationTimeoutPool = new SchedulerOperationTimeout.Pool(getName(), OperationTimeout.Pool.RECOMMENDED_CAPACITY);
         this.scannedRssi = scannedRssi;
 
         gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
@@ -69,10 +67,10 @@ public class AndroidPeripheral implements Peripheral {
 
     //region Attributes
 
-    @Override
     @NonNull
-    public OperationTimeout.Pool getOperationTimeoutPool() {
-        return operationTimeoutPool;
+    @Override
+    public OperationTimeout createOperationTimeout(@NonNull String name, long duration, @NonNull TimeUnit timeUnit) {
+        return new SchedulerOperationTimeout(name, duration, timeUnit);
     }
 
     @Override
@@ -275,7 +273,6 @@ public class AndroidPeripheral implements Peripheral {
                                    e -> subscriber.onError(new OperationTimeoutError(operation, e)));
 
             timeout.unschedule();
-            timeout.recycle();
         }, stack.scheduler);
     }
 
@@ -438,9 +435,8 @@ public class AndroidPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<Collection<PeripheralService>> discoverServices(@NonNull @TakesOwnership OperationTimeout timeout) {
+    public Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
         if (getConnectionStatus() != STATUS_CONNECTED) {
-            timeout.recycle();
             return Observable.error(new PeripheralConnectionError());
         }
 
@@ -450,7 +446,6 @@ public class AndroidPeripheral implements Peripheral {
 
             gattDispatcher.onServicesDiscovered = (gatt, status) -> {
                 timeout.unschedule();
-                timeout.recycle();
 
                 gattDispatcher.removeDisconnectListener(onDisconnect);
 
@@ -476,7 +471,6 @@ public class AndroidPeripheral implements Peripheral {
             } else {
                 gattDispatcher.onServicesDiscovered = null;
 
-                timeout.recycle();
                 s.onError(new PeripheralServiceDiscoveryFailedError());
             }
         });
@@ -507,9 +501,8 @@ public class AndroidPeripheral implements Peripheral {
     public Observable<UUID> subscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                   @NonNull UUID characteristicIdentifier,
                                                   @NonNull UUID descriptorIdentifier,
-                                                  @NonNull @TakesOwnership OperationTimeout timeout) {
+                                                  @NonNull OperationTimeout timeout) {
         if (getConnectionStatus() != STATUS_CONNECTED) {
-            timeout.recycle();
             return Observable.error(new PeripheralConnectionError());
         }
 
@@ -527,7 +520,6 @@ public class AndroidPeripheral implements Peripheral {
                     }
 
                     timeout.unschedule();
-                    timeout.recycle();
 
                     if (status == BluetoothGatt.GATT_SUCCESS) {
                         s.onNext(characteristicIdentifier);
@@ -549,11 +541,9 @@ public class AndroidPeripheral implements Peripheral {
                     gattDispatcher.onDescriptorWrite = null;
                     gattDispatcher.removeDisconnectListener(onDisconnect);
 
-                    timeout.recycle();
                     s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE));
                 }
             } else {
-                timeout.recycle();
                 s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
         });
@@ -564,9 +554,8 @@ public class AndroidPeripheral implements Peripheral {
     public Observable<UUID> unsubscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                     @NonNull UUID characteristicIdentifier,
                                                     @NonNull UUID descriptorIdentifier,
-                                                    @NonNull @TakesOwnership OperationTimeout timeout) {
+                                                    @NonNull OperationTimeout timeout) {
         if (getConnectionStatus() != STATUS_CONNECTED) {
-            timeout.recycle();
             return Observable.error(new PeripheralConnectionError());
         }
 
@@ -583,7 +572,6 @@ public class AndroidPeripheral implements Peripheral {
                 }
 
                 timeout.unschedule();
-                timeout.recycle();
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     if (gatt.setCharacteristicNotification(characteristic, false)) {
@@ -609,7 +597,6 @@ public class AndroidPeripheral implements Peripheral {
                 gattDispatcher.removeDisconnectListener(onDisconnect);
                 gattDispatcher.onDescriptorWrite = null;
 
-                timeout.recycle();
                 s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
         });
@@ -620,9 +607,8 @@ public class AndroidPeripheral implements Peripheral {
     public Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService,
                                          @NonNull UUID identifier,
                                          @NonNull byte[] payload,
-                                         @NonNull @TakesOwnership OperationTimeout timeout) {
+                                         @NonNull OperationTimeout timeout) {
         if (getConnectionStatus() != STATUS_CONNECTED) {
-            timeout.recycle();
             return Observable.error(new PeripheralConnectionError());
         }
 
@@ -632,7 +618,6 @@ public class AndroidPeripheral implements Peripheral {
 
             gattDispatcher.onCharacteristicWrite = (gatt, characteristic, status) -> {
                 timeout.unschedule();
-                timeout.recycle();
 
                 if (status != BluetoothGatt.GATT_SUCCESS) {
                     Logger.error(LOG_TAG, "Could not write command " + identifier + ", " + BluetoothGattError.statusToString(status));
@@ -655,7 +640,6 @@ public class AndroidPeripheral implements Peripheral {
                 gattDispatcher.removeDisconnectListener(onDisconnect);
                 gattDispatcher.onCharacteristicWrite = null;
 
-                timeout.recycle();
                 s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
             }
         });
