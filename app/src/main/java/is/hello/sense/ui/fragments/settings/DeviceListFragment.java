@@ -1,17 +1,14 @@
 package is.hello.sense.ui.fragments.settings;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -23,21 +20,22 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.adapter.DevicesAdapter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Constants;
-import is.hello.sense.util.DateFormatter;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class DeviceListFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+public class DeviceListFragment extends InjectionFragment implements AdapterView.OnItemClickListener, DevicesAdapter.OnPairNewDeviceListener {
     private static final int DEVICE_REQUEST_CODE = 0x14;
 
     @Inject DevicesPresenter devicesPresenter;
-    @Inject DateFormatter dateFormatter;
+    @Inject PreferencesPresenter preferences;
 
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;
@@ -60,18 +58,17 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        this.adapter = new DevicesAdapter(getActivity(), dateFormatter);
+        this.adapter = new DevicesAdapter(getActivity(), preferences);
+        adapter.setOnPairNewDeviceListener(this);
+
+        Styles.addCardSpacingHeaderAndFooter(listView);
+        TextView footer = (TextView) inflater.inflate(R.layout.sub_fragment_device_footer, listView, false);
+        footer.setMovementMethod(LinkMovementMethod.getInstance());
+        listView.addFooterView(footer, null, false);
         listView.setAdapter(adapter);
 
-        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_settings_device_list_progress);
 
-        ImageButton addDevice = (ImageButton) view.findViewById(R.id.fragment_settings_device_list_add);
-        Views.setSafeOnClickListener(addDevice, ignored -> {
-            Intent onboarding = new Intent(getActivity(), OnboardingActivity.class);
-            onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
-            onboarding.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
-            startActivity(onboarding);
-        });
+        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_settings_device_list_progress);
 
         return view;
     }
@@ -87,7 +84,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == DEVICE_REQUEST_CODE && resultCode == DeviceDetailsFragment.RESULT_UNPAIRED_PILL) {
+        if (requestCode == DEVICE_REQUEST_CODE && resultCode == DeviceDetailsFragment.RESULT_REPLACED_DEVICE) {
             adapter.clear();
 
             animate(loadingIndicator)
@@ -101,9 +98,11 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Device device = (Device) adapterView.getItemAtPosition(position);
-        DeviceDetailsFragment fragment = DeviceDetailsFragment.newInstance(device);
-        fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
-        ((FragmentNavigation) getActivity()).showFragment(fragment, getString(device.getType().nameRes), true);
+        if (device.exists()) {
+            DeviceDetailsFragment fragment = DeviceDetailsFragment.newInstance(device);
+            fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
+            ((FragmentNavigation) getActivity()).showFragment(fragment, getString(device.getType().nameRes), true);
+        }
     }
 
 
@@ -112,8 +111,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
                 .fadeOut(View.GONE)
                 .start();
 
-        adapter.clear();
-        adapter.addAll(devices);
+        adapter.bindDevices(devices);
     }
 
     public void devicesUnavailable(Throwable e) {
@@ -121,57 +119,32 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
                 .fadeOut(View.GONE)
                 .start();
 
-        adapter.clear();
+        adapter.devicesUnavailable(e);
 
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 
 
-    private static class DevicesAdapter extends ArrayAdapter<Device> {
-        private final LayoutInflater inflater;
-        private final DateFormatter dateFormatter;
-
-        private DevicesAdapter(@NonNull Context context, @NonNull DateFormatter dateFormatter) {
-            super(context, R.layout.item_device);
-
-            this.inflater = LayoutInflater.from(context);
-            this.dateFormatter = dateFormatter;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            if (view == null) {
-                view = inflater.inflate(R.layout.item_device, parent, false);
-                view.setTag(new ViewHolder(view));
+    @Override
+    public void onPairNewDevice(@NonNull Device.Type type) {
+        Intent intent = new Intent(getActivity(), OnboardingActivity.class);
+        switch (type) {
+            case SENSE: {
+                intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
+                intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+                break;
             }
 
-            ViewHolder holder = (ViewHolder) view.getTag();
-
-            Device device = getItem(position);
-            holder.icon.setImageResource(device.getType().iconRes);
-            holder.title.setText(device.getType().nameRes);
-            if (device.getState() == Device.State.LOW_BATTERY) {
-                holder.status.setText(device.getState().nameRes);
-            } else {
-                String formattedDate = dateFormatter.formatAsDate(device.getLastUpdated());
-                holder.status.setText(getContext().getString(R.string.device_last_seen_fmt, formattedDate));
+            case PILL: {
+                intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
+                intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+                break;
             }
 
-            return view;
-        }
-
-
-        private class ViewHolder {
-            private final ImageView icon;
-            private final TextView title;
-            private final TextView status;
-
-            private ViewHolder(@NonNull View view) {
-                this.icon = (ImageView) view.findViewById(R.id.item_device_icon);
-                this.title = (TextView) view.findViewById(R.id.item_device_name);
-                this.status = (TextView) view.findViewById(R.id.item_device_status);
+            default: {
+                throw new IllegalStateException();
             }
         }
+        startActivity(intent);
     }
 }

@@ -3,16 +3,20 @@ package is.hello.sense.ui.widget.util;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.WrapperListAdapter;
 
 import is.hello.sense.R;
@@ -31,6 +35,11 @@ public final class Styles {
 
 
     public static final int TIMELINE_HOURS_ON_SCREEN = 10;
+
+
+    public static @NonNull Typeface getTypeface(@NonNull Context context, @NonNull String typeface) {
+        return Typeface.createFromAsset(context.getAssets(), typeface);
+    }
 
 
     public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth) {
@@ -136,6 +145,25 @@ public final class Styles {
                 resources.getColor(R.color.graph_fill_gradient_top),
                 resources.getColor(R.color.graph_fill_gradient_bottom),
         });
+    }
+
+    public static @NonNull TextView createItemView(@NonNull Context context,
+                                                   @StringRes int titleRes,
+                                                   @StyleRes int textAppearanceRes,
+                                                   @NonNull View.OnClickListener onClick) {
+        TextView itemView = new TextView(context);
+        itemView.setBackgroundResource(R.drawable.selectable_list);
+        itemView.setTextAppearance(context, textAppearanceRes);
+        itemView.setText(titleRes);
+
+        Resources resources = context.getResources();
+        int itemTextHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_outer);
+        int itemTextVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        itemView.setPadding(itemTextHorizontalPadding, itemTextVerticalPadding, itemTextHorizontalPadding, itemTextVerticalPadding);
+
+        Views.setSafeOnClickListener(itemView, onClick);
+
+        return itemView;
     }
 
     public static void applyRefreshLayoutStyle(@NonNull SwipeRefreshLayout refreshLayout) {

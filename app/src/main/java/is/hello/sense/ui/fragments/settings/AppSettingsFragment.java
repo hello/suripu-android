@@ -20,10 +20,10 @@ import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
-import is.hello.sense.ui.common.HelpUtil;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.BuildValues;
 
@@ -35,7 +35,6 @@ public class AppSettingsFragment extends InjectionFragment {
 
     private final LayoutParams itemTextLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     private LayoutParams dividerLayoutParams;
-    private int itemTextHorizontalPadding, itemTextVerticalPadding;
 
     private LinearLayout itemContainer;
 
@@ -45,8 +44,6 @@ public class AppSettingsFragment extends InjectionFragment {
 
         Resources resources = getResources();
         this.dividerLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, resources.getDimensionPixelSize(R.dimen.divider_size));
-        this.itemTextHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_outer);
-        this.itemTextVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
     }
 
     @Nullable
@@ -71,12 +68,7 @@ public class AppSettingsFragment extends InjectionFragment {
 
 
     public void addItem(@StringRes int titleRes, boolean wantsDivider, @NonNull View.OnClickListener onClick) {
-        TextView itemView = new TextView(getActivity());
-        itemView.setBackgroundResource(R.drawable.selectable_list);
-        itemView.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_Light);
-        itemView.setPadding(itemTextHorizontalPadding, itemTextVerticalPadding, itemTextHorizontalPadding, itemTextVerticalPadding);
-        itemView.setText(titleRes);
-        Views.setSafeOnClickListener(itemView, onClick);
+        TextView itemView = Styles.createItemView(getActivity(), titleRes, R.style.AppTheme_Text_Body_Light, onClick);
         itemContainer.addView(itemView, itemTextLayoutParams);
 
         if (wantsDivider) {
@@ -104,7 +96,7 @@ public class AppSettingsFragment extends InjectionFragment {
     }
 
     public void showHelp(@NonNull View sender) {
-        HelpUtil.showHelp(getActivity(), HelpUtil.Step.SETTINGS);
+        UserSupport.show(getActivity());
     }
 
     public void logOut(@NonNull View sender) {

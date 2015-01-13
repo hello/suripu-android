@@ -28,7 +28,7 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
-import is.hello.sense.ui.common.HelpUtil;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -278,7 +278,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             builder.setLayout(R.layout.sub_fragment_onboarding_intro_setup_sense);
             builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
             builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_SETUP);
-            builder.setHelpStep(HelpUtil.Step.ONBOARDING_SETUP_SENSE);
+            builder.setHelpStep(UserSupport.OnboardingStep.SETUP_SENSE);
             showFragment(builder.build(), null, false);
         } else {
             showFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
@@ -328,7 +328,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
         builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
         builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_PILL_PLACEMENT);
-        builder.setHelpStep(HelpUtil.Step.ONBOARDING_PILL_PLACEMENT);
+        builder.setHelpStep(UserSupport.OnboardingStep.PILL_PLACEMENT);
 
         builder.setNextFragmentArguments(createSenseColorsBuilder().arguments);
         builder.setNextFragmentClass(OnboardingStaticStepFragment.class);
