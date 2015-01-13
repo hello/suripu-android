@@ -117,6 +117,7 @@
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-core-1.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="espresso-runner-1.1-r3" level="project" />
     <orderEntry type="library" exported="" name="support-v13-21.0.3" level="project" />
+    <orderEntry type="library" exported="" name="seismic-1.0.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="espresso-runner-runtime-1.1-r3" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="javax.inject-1" level="project" />

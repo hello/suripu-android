@@ -1,5 +1,6 @@
 package is.hello.sense.ui.activities;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -7,11 +8,15 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+
+import com.squareup.seismic.ShakeDetector;
 
 import org.joda.time.DateTime;
 
@@ -52,8 +57,10 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.RateLimitingShakeListener;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
@@ -64,6 +71,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public static final String EXTRA_WIFI_CHANGE_ONLY = OnboardingActivity.class.getName() + ".EXTRA_WIFI_CHANGE_ONLY";
     public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
 
+    @Inject BuildValues buildValues;
     @Inject ApiService apiService;
     @Inject HardwarePresenter hardwarePresenter;
     @Inject PreferencesPresenter preferences;
@@ -71,10 +79,18 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
     private Account account;
 
+    private @Nullable SensorManager sensorManager;
+    private @Nullable ShakeDetector shakeDetector;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
+
+        if (buildValues.debugScreenEnabled) {
+            this.sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            this.shakeDetector = new ShakeDetector(new RateLimitingShakeListener(this::showDebugOptions));
+        }
 
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         this.bluetoothAdapter = bluetoothManager.getAdapter();
@@ -118,6 +134,24 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (shakeDetector != null && sensorManager != null) {
+            shakeDetector.start(sensorManager);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (shakeDetector != null) {
+            shakeDetector.stop();
+        }
+    }
+
+    @Override
     public void showFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
         if (!wantsBackStackEntry) {
             getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -152,6 +186,40 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             super.onBackPressed();
         }
     }
+
+
+    //region Debug Options
+
+    public void showDebugOptions() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        ArrayAdapter<String> options = new ArrayAdapter<>(this, R.layout.item_simple_text, new String[] {
+                "Debug",
+                "Skip"
+        });
+        builder.setAdapter(options, (dialog, which) -> {
+            switch (which) {
+                case 0: {
+                    Intent intent = new Intent(this, DebugActivity.class);
+                    startActivity(intent);
+                    break;
+                }
+
+                case 1: {
+                    showHomeActivity();
+                    break;
+                }
+
+                default: {
+                    break;
+                }
+            }
+        });
+        builder.setCancelable(true);
+        builder.create().show();
+    }
+
+    //endregion
+
 
     //region Steps
 

@@ -123,6 +123,8 @@ dependencies {
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
+    compile 'com.squareup:seismic:1.0.1'
+
     androidTestCompile ('com.jakewharton.espresso:espresso:1.1-r3') {
         exclude group: 'com.squareup.dagger', module: 'dagger'
         exclude group: 'org.hamcrest', module: 'hamcrest-integration'
