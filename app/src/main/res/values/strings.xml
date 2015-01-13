@@ -287,4 +287,8 @@
     <string name="info_no_sleep_pill_connected">You don\'t currently have a Sleep Pill connected to your account.</string>
     <string name="action_replace_this_sense">Replace This Sense</string>
     <string name="action_replace_sleep_pill">Replace This Sleep Pill</string>
+    <string name="action_troubleshoot">Troubleshoot</string>
+    <string name="info_connecting_to_sense">Connecting with Sense over Bluetooth…</string>
+    <string name="error_no_bluetooth_connectivity">Bluetooth must be turned on to connect to Sense</string>
+    <string name="error_sense_no_connectivity">Your Sense <b>cannot connect to Wi-Fi</b>. Tap below to edit your Wi-Fi credentials.</string>
 </resources>

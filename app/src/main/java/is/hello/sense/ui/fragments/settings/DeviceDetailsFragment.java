@@ -8,11 +8,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -21,11 +25,12 @@ import is.hello.sense.api.model.Device;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
+import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.adapter.StaticItemAdapter;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
@@ -33,7 +38,6 @@ import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import rx.functions.Action0;
 
@@ -48,6 +52,11 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
     @Inject PreferencesPresenter preferences;
 
     private LinearLayout alertContainer;
+    private ImageView alertIcon;
+    private ProgressBar alertBusy;
+    private TextView alertText;
+    private Button alertAction;
+
     private LinearLayout actionsContainer;
 
     private Device device;
@@ -93,7 +102,15 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_device_details, container, false);
 
+        LinearLayout fragmentContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_container);
+        Animations.Properties.DEFAULT.apply(fragmentContainer.getLayoutTransition(), false);
+
         this.alertContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_alert);
+        this.alertIcon = (ImageView) alertContainer.findViewById(R.id.fragment_device_details_alert_icon);
+        this.alertBusy = (ProgressBar) alertContainer.findViewById(R.id.fragment_device_details_alert_busy);
+        this.alertText = (TextView) alertContainer.findViewById(R.id.fragment_device_details_alert_text);
+        this.alertAction = (Button) alertContainer.findViewById(R.id.fragment_device_details_alert_action);
+
         this.actionsContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_actions);
 
         if (device.getType() == Device.Type.PILL) {
@@ -154,6 +171,7 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
 
     private void clearActions() {
         actionsContainer.removeViews(0, actionsContainer.getChildCount());
+        actionsContainer.setVisibility(View.GONE);
     }
 
     private void addDeviceAction(@StringRes int titleRes, boolean wantsDivider, @NonNull View.OnClickListener onClick) {
@@ -163,19 +181,61 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
         }
     }
 
-    private void showConnectedSenseActions() {
+    private void showConnectedSenseActions(@Nullable SensePeripheral.SenseWifiNetwork network) {
         clearActions();
+        actionsContainer.setVisibility(View.VISIBLE);
 
         addDeviceAction(R.string.action_replace_this_sense, true, ignored -> {});
         addDeviceAction(R.string.action_enter_pairing_mode, true, this::putIntoPairingMode);
         addDeviceAction(R.string.action_factory_reset, true, this::factoryReset);
         addDeviceAction(R.string.action_select_wifi_network, false, this::changeWifiNetwork);
+
+        if (network == null || TextUtils.isEmpty(network.ssid)) {
+            showTroubleshootingAlert(R.string.error_sense_no_connectivity, R.string.action_troubleshoot, ignored -> {});
+        } else {
+            hideAlert();
+        }
     }
 
     private void showSleepPillActions() {
         clearActions();
+        actionsContainer.setVisibility(View.VISIBLE);
 
-        addDeviceAction(R.string.action_replace_sleep_pill, true, ignored -> {});
+        addDeviceAction(R.string.action_replace_sleep_pill, true, this::unpairPill);
+    }
+
+    //endregion
+
+
+    //region Displaying Alerts
+
+    private void hideAlert() {
+        alertContainer.setVisibility(View.GONE);
+        alertBusy.setVisibility(View.GONE);
+    }
+
+    private void showBlockingAlert(@StringRes int messageRes) {
+        alertIcon.setVisibility(View.GONE);
+        alertBusy.setVisibility(View.VISIBLE);
+        alertAction.setVisibility(View.GONE);
+
+        alertText.setText(messageRes);
+
+        alertContainer.setVisibility(View.VISIBLE);
+    }
+
+    private void showTroubleshootingAlert(@StringRes int messageRes,
+                                          @StringRes int buttonTitleRes,
+                                          @NonNull View.OnClickListener onClick) {
+        alertIcon.setVisibility(View.VISIBLE);
+        alertBusy.setVisibility(View.GONE);
+        alertAction.setVisibility(View.VISIBLE);
+
+        alertText.setText(messageRes);
+        alertAction.setText(buttonTitleRes);
+        alertAction.setOnClickListener(onClick);
+
+        alertContainer.setVisibility(View.VISIBLE);
     }
 
     //endregion
@@ -184,18 +244,22 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
     //region Connectivity
 
     public void onBluetoothStateChanged(boolean isEnabled) {
+        if (!isEnabled) {
+            showTroubleshootingAlert(R.string.error_no_bluetooth_connectivity, R.string.action_turn_on_ble, this::enableBluetooth);
+        }
     }
 
     public void connectToPeripheral() {
+        showBlockingAlert(R.string.info_connecting_to_sense);
         bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device), this::bindPeripheral, this::presentError);
     }
 
-    public void enableBluetooth() {
-        showBlockingActivity(R.string.title_turning_on);
+    public void enableBluetooth(@NonNull View sender) {
+        showBlockingAlert(R.string.title_turning_on);
         bindAndSubscribe(hardwarePresenter.turnOnBluetooth(),
                          ignored -> {
                              this.didEnableBluetooth = true;
-                             hideBlockingActivity(true, this::connectToPeripheral);
+                             connectToPeripheral();
                          },
                          this::presentError);
     }
@@ -215,10 +279,13 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
     }
 
     public void presentError(@NonNull Throwable e) {
+        hideAlert();
         hideAllActivity(false, () -> {
             if (hardwarePresenter.isErrorFatal(e)) {
                 UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
                 fragment.show(getFragmentManager(), R.id.activity_fragment_navigation_container);
+            } else if (e instanceof PeripheralNotFoundError) {
+                showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_troubleshoot, ignored -> {});
             } else {
                 ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
             }
@@ -235,11 +302,11 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
                                         .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
                                         .apply();
 
-                             showConnectedSenseActions();
+                             showConnectedSenseActions(network);
                          },
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Could not get connectivity state, ignoring.", e);
-                             showConnectedSenseActions();
+                             showConnectedSenseActions(null);
                          });
     }
 
