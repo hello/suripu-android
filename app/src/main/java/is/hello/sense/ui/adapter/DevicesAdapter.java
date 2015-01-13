@@ -112,7 +112,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
     }
 
 
-    class ViewHolder {
+    abstract class ViewHolder {
         final View itemView;
         final TextView title;
 
@@ -122,9 +122,11 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
             this.title = (TextView) view.findViewById(R.id.item_device_name);
         }
 
+        abstract boolean wantsChevron();
+
         void display(@NonNull Device device) {
             title.setText(device.getType().nameRes);
-            title.setCompoundDrawablesRelativeWithIntrinsicBounds(device.getType().iconRes, 0, R.drawable.chevron, 0);
+            title.setCompoundDrawablesRelativeWithIntrinsicBounds(device.getType().iconRes, 0, wantsChevron() ? R.drawable.chevron : 0, 0);
         }
     }
 
@@ -143,6 +145,11 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
             this.status1Label = (TextView) view.findViewById(R.id.item_device_status_label);
             this.status2 = (TextView) view.findViewById(R.id.item_device_status2);
             this.status2Label = (TextView) view.findViewById(R.id.item_device_status2_label);
+        }
+
+        @Override
+        boolean wantsChevron() {
+            return true;
         }
 
         @Override
@@ -198,6 +205,11 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
 
             this.message = (TextView) view.findViewById(R.id.item_device_placeholder_message);
             this.actionButton = (Button) view.findViewById(R.id.item_device_placeholder_action);
+        }
+
+        @Override
+        boolean wantsChevron() {
+            return false;
         }
 
         @Override
