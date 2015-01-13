@@ -18,7 +18,7 @@ import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
-import is.hello.sense.ui.common.HelpUtil;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
@@ -77,7 +77,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         });
 
         this.helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        Views.setSafeOnClickListener(helpButton, ignored -> HelpUtil.showHelp(getActivity(), HelpUtil.Step.ONBOARDING_WIFI_SCAN));
+        Views.setSafeOnClickListener(helpButton, ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.WIFI_SCAN));
 
         return view;
     }

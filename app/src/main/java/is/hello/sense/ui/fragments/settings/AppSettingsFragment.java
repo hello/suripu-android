@@ -20,7 +20,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
-import is.hello.sense.ui.common.HelpUtil;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
@@ -96,7 +96,7 @@ public class AppSettingsFragment extends InjectionFragment {
     }
 
     public void showHelp(@NonNull View sender) {
-        HelpUtil.showHelp(getActivity(), HelpUtil.Step.SETTINGS);
+        UserSupport.show(getActivity());
     }
 
     public void logOut(@NonNull View sender) {

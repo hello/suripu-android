@@ -35,6 +35,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
@@ -203,10 +204,10 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
         addDeviceAction(R.string.action_select_wifi_network, false, this::changeWifiNetwork);
 
         if (network == null || TextUtils.isEmpty(network.ssid)) {
-            showTroubleshootingAlert(R.string.error_sense_no_connectivity, R.string.action_troubleshoot, ignored -> {});
+            showTroubleshootingAlert(R.string.error_sense_no_connectivity, R.string.action_troubleshoot, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.WIFI_CONNECTIVITY));
         } else if (device.isMissing()) {
             String missingMessage = getString(R.string.error_sense_missing_fmt, DateUtils.getRelativeTimeSpanString(getActivity(), device.getLastUpdated()));
-            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, ignored -> {});
+            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.SENSE_MISSING));
         } else {
             hideAlert();
         }
@@ -220,7 +221,7 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
 
         if (device.isMissing()) {
             String missingMessage = getString(R.string.error_sleep_pill_missing_fmt, DateUtils.getRelativeTimeSpanString(getActivity(), device.getLastUpdated()));
-            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, ignored -> {});
+            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.SLEEP_PILL_MISSING));
         } else {
             hideAlert();
         }
