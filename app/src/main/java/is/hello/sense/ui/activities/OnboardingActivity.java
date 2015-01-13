@@ -270,14 +270,14 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     private OnboardingStaticStepFragment.Builder createSenseColorsBuilder() {
         OnboardingStaticStepFragment.Builder senseColorsBuilder = new OnboardingStaticStepFragment.Builder();
         senseColorsBuilder.setLayout(R.layout.sub_fragment_onboarding_sense_colors);
-        senseColorsBuilder.setHideHelp(true);
+        senseColorsBuilder.setHideToolbar(true);
         senseColorsBuilder.setNextWantsBackStackEntry(false);
         senseColorsBuilder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_COLORS);
 
         OnboardingStaticStepFragment.Builder introBuilder = new OnboardingStaticStepFragment.Builder();
         introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
         introBuilder.setLayout(R.layout.sub_fragment_onboarding_room_check_intro);
-        introBuilder.setHideHelp(true);
+        introBuilder.setHideToolbar(true);
         introBuilder.setExitAnimationName(ANIMATION_ROOM_CHECK);
         introBuilder.setNextWantsBackStackEntry(false);
         introBuilder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_ROOM_CHECK);

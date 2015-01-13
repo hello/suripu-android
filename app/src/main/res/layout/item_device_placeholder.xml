@@ -30,7 +30,7 @@
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/info_no_sense_connected"
-        android:lineSpacingMultiplier="@dimen/body_text_line_multiple"/>
+        android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
     <Button
         android:id="@+id/item_device_placeholder_action"

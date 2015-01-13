@@ -3,29 +3,48 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/gap_xlarge">
+    android:background="@color/background_onboarding">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.Heading"
-        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-        android:text="@string/action_turn_on_ble"/>
+    <include layout="@layout/sub_fragment_onboarding_toolbar" />
 
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.Subheading"
-        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
-        android:text="@string/info_turn_on_bluetooth"/>
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/gap_outer"
+            android:paddingRight="@dimen/gap_outer"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_outer"
+                android:layout_marginBottom="@dimen/gap_small"
+                android:textAppearance="@style/AppTheme.Text.Heading"
+                android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+                android:text="@string/action_turn_on_ble"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/AppTheme.Text.Subheading"
+                android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
+                android:text="@string/info_turn_on_bluetooth"/>
+
+        </LinearLayout>
+
+    </ScrollView>
 
     <Button
         android:id="@+id/fragment_onboarding_bluetooth_turn_on"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/gap_outer"
         android:text="@string/action_turn_on_ble"
         style="@style/AppTheme.Button.Rounded"/>
 

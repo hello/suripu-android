@@ -10,6 +10,8 @@ import android.widget.Button;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.ui.common.OnboardingToolbar;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
@@ -45,6 +47,10 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
 
         Button turnOn = (Button) view.findViewById(R.id.fragment_onboarding_bluetooth_turn_on);
         Views.setSafeOnClickListener(turnOn, this::turnOn);
+
+        OnboardingToolbar.of(this, view)
+                .setWantsBackButton(false)
+                .setOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.BLUETOOTH));
 
         return view;
     }

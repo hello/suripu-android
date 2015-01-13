@@ -136,7 +136,7 @@ public class OnboardingStaticStepFragment extends Fragment {
             return this;
         }
 
-        public Builder setHideHelp(boolean hideHelp) {
+        public Builder setHideToolbar(boolean hideHelp) {
             arguments.putBoolean(ARG_HIDE_TOOLBAR, hideHelp);
             return this;
         }

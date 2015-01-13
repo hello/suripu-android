@@ -25,6 +25,7 @@ import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
@@ -106,6 +107,10 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
         } else {
             networkSecurity.setAdapter(new SecurityTypeAdapter(getActivity()));
         }
+
+        OnboardingToolbar.of(this, view)
+                .setWantsBackButton(true)
+                .setOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SIGN_INTO_WIFI));
 
         return view;
     }

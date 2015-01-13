@@ -24,6 +24,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.OnboardingToolbar;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
@@ -67,7 +68,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         Views.setSafeOnClickListener(nextButton, this::next);
 
         OnboardingToolbar.of(this, view)
-                .setWantsBackButton(true);
+                .setWantsBackButton(true)
+                .setOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SETUP_SENSE));
 
         return view;
     }

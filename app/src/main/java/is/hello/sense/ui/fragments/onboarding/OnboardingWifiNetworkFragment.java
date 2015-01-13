@@ -18,6 +18,7 @@ import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
+import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
@@ -75,6 +76,10 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             Analytics.trackEvent(Analytics.EVENT_ONBOARDING_WIFI_SCAN, null);
             rescan();
         });
+
+        OnboardingToolbar.of(this, view)
+                .setWantsBackButton(false)
+                .setOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.WIFI_SCAN));
 
         return view;
     }

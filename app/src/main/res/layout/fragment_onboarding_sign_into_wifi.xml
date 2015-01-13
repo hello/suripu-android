@@ -1,94 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:orientation="vertical"
+    android:background="@color/background_onboarding">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <include layout="@layout/sub_fragment_onboarding_toolbar" />
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/gap_xlarge"
-        android:paddingLeft="@dimen/gap_large"
-        android:paddingRight="@dimen/gap_large"
-        android:background="@color/background_onboarding">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        style="@style/AppTheme.FadingScrollView">
 
-        <TextView
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_large"
-            android:textAppearance="@style/AppTheme.Text.Heading"
-            android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-            android:text="@string/title_choose_wifi_network"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_large"
-            android:textAppearance="@style/AppTheme.Text.Subheading"
-            android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
-            android:text="@string/info_sign_into_wifi"/>
-
-        <EditText
-            android:id="@+id/fragment_onboarding_sign_into_wifi_network"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_medium"
-            android:nextFocusForward="@+id/fragment_onboarding_sign_into_wifi_password"
-            android:imeOptions="actionNext|flagNoExtractUi"
-            android:hint="@string/label_network_name">
-
-            <requestFocus />
-
-        </EditText>
-
-        <EditText
-            android:id="@+id/fragment_onboarding_sign_into_wifi_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textVisiblePassword"
-            android:imeOptions="actionSend|flagNoExtractUi"
-            android:hint="@string/label_password"/>
-
-        <RelativeLayout
-            android:id="@+id/fragment_onboarding_sign_into_wifi_security_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_medium"
-            android:background="@drawable/edit_text_background_normal">
+            android:paddingLeft="@dimen/gap_outer"
+            android:paddingRight="@dimen/gap_outer"
+            android:background="@color/background_onboarding">
 
             <TextView
-                android:id="@+id/fragment_onboarding_sign_into_wifi_security_label"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/gap_tiny"
-                android:layout_marginRight="@dimen/gap_tiny"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:text="@string/title_security"
-                android:textSize="@dimen/text_size_body"
-                android:textColor="?android:textColorHint"/>
+                android:layout_marginTop="@dimen/gap_outer"
+                android:layout_marginBottom="@dimen/gap_small"
+                android:textAppearance="@style/AppTheme.Text.Heading"
+                android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+                android:text="@string/title_choose_wifi_network"/>
 
-            <Spinner
-                android:id="@+id/fragment_onboarding_sign_into_wifi_security"
-                android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:gravity="end|center_vertical"
-                style="@style/AppTheme.Spinner"/>
+                android:layout_marginBottom="@dimen/gap_large"
+                android:textAppearance="@style/AppTheme.Text.Subheading"
+                android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
+                android:text="@string/info_sign_into_wifi"/>
 
-        </RelativeLayout>
+            <EditText
+                android:id="@+id/fragment_onboarding_sign_into_wifi_network"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/gap_medium"
+                android:nextFocusForward="@+id/fragment_onboarding_sign_into_wifi_password"
+                android:imeOptions="actionNext|flagNoExtractUi"
+                android:hint="@string/label_network_name">
 
-        <Button
-            android:id="@+id/fragment_onboarding_sign_into_wifi_continue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_large"
-            android:text="@string/action_continue"
-            style="@style/AppTheme.Button.Rounded"/>
+                <requestFocus />
 
-    </LinearLayout>
+            </EditText>
 
-</ScrollView>
+            <EditText
+                android:id="@+id/fragment_onboarding_sign_into_wifi_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textVisiblePassword"
+                android:imeOptions="actionSend|flagNoExtractUi"
+                android:hint="@string/label_password"/>
+
+            <RelativeLayout
+                android:id="@+id/fragment_onboarding_sign_into_wifi_security_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_medium"
+                android:background="@drawable/edit_text_background_normal">
+
+                <TextView
+                    android:id="@+id/fragment_onboarding_sign_into_wifi_security_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/gap_tiny"
+                    android:layout_marginRight="@dimen/gap_tiny"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/title_security"
+                    android:textSize="@dimen/text_size_body"
+                    android:textColor="?android:textColorHint"/>
+
+                <Spinner
+                    android:id="@+id/fragment_onboarding_sign_into_wifi_security"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="end|center_vertical"
+                    style="@style/AppTheme.Spinner"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/fragment_onboarding_sign_into_wifi_continue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginBottom="@dimen/gap_outer"
+        android:text="@string/action_continue"
+        style="@style/AppTheme.Button.Rounded"/>
+
+</LinearLayout>
