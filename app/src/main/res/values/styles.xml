@@ -222,7 +222,7 @@ t
 
     <style name="AppTheme.Button.Rounded.Light">
         <item name="android:background">@drawable/selector_button_rounded_white</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/text_color_selector_white</item>
     </style>
 
     <style name="AppTheme.Button.ModeSelector">

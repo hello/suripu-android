@@ -35,7 +35,8 @@
     <color name="white_button_pressed">#d5d5d5</color>
     <color name="white_button_disabled">#88eaeaea</color>
 
-    <color name="background_button_white_pressed">#33ffffff</color>
+    <color name="background_button_white">#28ffffff</color>
+    <color name="background_button_white_pressed">#28d5d5d5</color>
     <color name="background_button_dark_pressed">#335785f5</color>
 
     <color name="sleep_score_empty">#e1e1e1</color>
