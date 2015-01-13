@@ -58,7 +58,7 @@ public abstract class HardwareFragment extends InjectionFragment {
                              ignored -> onCompletion.run(),
                              error -> onCompletion.run());
         } else {
-            onCompletion.run();
+            coordinator.postOnResume(onCompletion);
         }
     }
 
