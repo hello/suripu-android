@@ -29,7 +29,7 @@
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/mock_event_message"
-        android:lineSpacingMultiplier="@dimen/body_text_line_multiple"/>
+        android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
     <TextView
         android:id="@+id/item_room_check_condition_value"

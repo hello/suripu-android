@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Heading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:text="@string/action_turn_on_ble"/>
 
     <TextView
@@ -18,6 +19,7 @@
         android:layout_weight="1"
         android:layout_marginBottom="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
         android:text="@string/info_turn_on_bluetooth"/>
 
     <Button

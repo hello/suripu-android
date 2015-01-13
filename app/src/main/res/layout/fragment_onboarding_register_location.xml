@@ -21,6 +21,7 @@
             android:layout_marginLeft="@dimen/gap_large"
             android:layout_marginRight="@dimen/gap_large"
             android:textAppearance="@style/AppTheme.Text.Heading"
+            android:lineSpacingMultiplier="@dimen/line_multiple_heading"
             android:text="@string/title_onboarding_register_location"/>
 
         <TextView
@@ -30,6 +31,7 @@
             android:layout_marginLeft="@dimen/gap_large"
             android:layout_marginRight="@dimen/gap_large"
             android:textAppearance="@style/AppTheme.Text.Subheading"
+            android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
             android:text="@string/description_onboarding_register_location"/>
 
         <ImageView

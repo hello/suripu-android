@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/AppTheme.Text.Body"
-                android:lineSpacingMultiplier="@dimen/body_text_line_multiple"/>
+                android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
         </LinearLayout>
 

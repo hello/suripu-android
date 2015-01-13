@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/gap_large"
         android:textAppearance="@style/AppTheme.Text.Heading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:text="@string/title_sense_colors"/>
 
     <ImageView
@@ -27,6 +28,6 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/AppTheme.Text.Subheading"
         app:senseHtml="@string/info_sense_colors"
-        android:lineSpacingMultiplier="@dimen/subheading_text_line_multiple"/>
+        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"/>
 
 </LinearLayout>

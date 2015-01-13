@@ -21,6 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:textAppearance="@style/AppTheme.Text.Heading"
+            android:lineSpacingMultiplier="@dimen/line_multiple_heading"
             android:text="@string/title_register_weight"/>
 
         <TextView
@@ -29,6 +30,7 @@
             android:layout_marginTop="@dimen/gap_small"
             android:layout_below="@id/fragment_onboarding_register_weight_title"
             android:textAppearance="@style/AppTheme.Text.Subheading"
+            android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
             android:text="@string/onboarding_register_info_explanation"/>
 
         <EditText

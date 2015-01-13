@@ -25,6 +25,6 @@
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Subheading"
         android:text="@string/onboarding_done_message_1"
-        android:lineSpacingMultiplier="@dimen/subheading_text_line_multiple"/>
+        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"/>
 
 </LinearLayout>

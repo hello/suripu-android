@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/AppTheme.Text.Heading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:text="@string/title_pair_sense"/>
 
     <ImageView
@@ -28,6 +29,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
         android:text="@string/info_pair_sense"/>
 
     <include layout="@layout/sub_fragment_onboarding_buttons" />

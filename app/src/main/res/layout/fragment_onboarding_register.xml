@@ -18,6 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/gap_xlarge"
             android:textAppearance="@style/AppTheme.Text.Heading"
+            android:lineSpacingMultiplier="@dimen/line_multiple_heading"
             android:text="@string/title_register"/>
 
         <EditText
