@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -78,10 +76,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 
-        //noinspection ConstantConditions
-        getActionBar().setDisplayShowTitleEnabled(false);
-        getActionBar().setDisplayShowHomeEnabled(false);
-
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         this.bluetoothAdapter = bluetoothManager.getAdapter();
 
@@ -121,37 +115,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                     break;
             }
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (Boolean.parseBoolean(getString(R.string.build_debug_enabled))) {
-            getMenuInflater().inflate(R.menu.onboarding_debug, menu);
-        }
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem skipItem = menu.findItem(R.id.action_skip);
-        int lastCheckpoint = preferences.getInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
-        skipItem.setEnabled(lastCheckpoint > Constants.ONBOARDING_CHECKPOINT_ACCOUNT);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_debug) {
-            startActivity(new Intent(this, DebugActivity.class));
-            return true;
-        } else if (item.getItemId() == R.id.action_skip) {
-            showHomeActivity();
-
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -38,11 +38,7 @@ t
         <item name="android:background">@color/background</item>
     </style>
 
-    <style name="AppTheme.Onboarding">
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:actionOverflowButtonStyle">@style/ActionOverflowOnboarding</item>
-        <item name="android:actionBarStyle">@style/AppTheme.ActionBar.Transparent</item>
-    </style>
+    <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar" />
 
     <style name="AppTheme.NoActionBar">
         <item name="android:windowActionBar">false</item>
@@ -107,10 +103,6 @@ t
 
     <style name="AppTheme.ActionButton.CloseMode" parent="Platform.ActionBar.ButtonCloseMode">
         <item name="android:background">@drawable/app_theme_btn_cab_done</item>
-    </style>
-
-    <style name="ActionOverflowOnboarding" parent="Platform.ActionBar.ButtonOverflow">
-        <item name="android:src">@drawable/action_overflow_onboarding</item>
     </style>
 
     <style name="ActionOverflow" parent="Platform.ActionBar.ButtonOverflow">
