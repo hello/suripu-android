@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 
 import is.hello.sense.R;
 
@@ -75,6 +76,11 @@ public class Device extends ApiResponse {
         return exists;
     }
 
+    @JsonIgnore
+    public boolean isMissing() {
+        return !exists || (Minutes.minutesBetween(getLastUpdated(), DateTime.now()).getMinutes() > 15);
+    }
+
     @Override
     public String toString() {
         return "Device{" +
@@ -110,8 +116,8 @@ public class Device extends ApiResponse {
 
     public static enum State {
         NORMAL(R.string.device_state_normal, R.color.text_dark),
-        LOW_BATTERY(R.string.device_state_low_battery, R.color.destructuve_accent),
-        UNKNOWN(R.string.device_state_unknown, R.color.destructuve_accent);
+        LOW_BATTERY(R.string.device_state_low_battery, R.color.destructive_accent),
+        UNKNOWN(R.string.device_state_unknown, R.color.destructive_accent);
 
         public final @StringRes int nameRes;
         public final @ColorRes int colorRes;

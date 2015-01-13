@@ -18,6 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import net.danlew.android.joda.DateUtils;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -181,17 +183,27 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
         }
     }
 
+    private void showRestrictedSenseActions() {
+        clearActions();
+        actionsContainer.setVisibility(View.VISIBLE);
+
+        addDeviceAction(R.string.action_replace_this_sense, true, this::unpairDevice);
+    }
+
     private void showConnectedSenseActions(@Nullable SensePeripheral.SenseWifiNetwork network) {
         clearActions();
         actionsContainer.setVisibility(View.VISIBLE);
 
-        addDeviceAction(R.string.action_replace_this_sense, true, ignored -> {});
+        addDeviceAction(R.string.action_replace_this_sense, true, this::unpairDevice);
         addDeviceAction(R.string.action_enter_pairing_mode, true, this::putIntoPairingMode);
         addDeviceAction(R.string.action_factory_reset, true, this::factoryReset);
         addDeviceAction(R.string.action_select_wifi_network, false, this::changeWifiNetwork);
 
         if (network == null || TextUtils.isEmpty(network.ssid)) {
             showTroubleshootingAlert(R.string.error_sense_no_connectivity, R.string.action_troubleshoot, ignored -> {});
+        } else if (device.isMissing()) {
+            String missingMessage = getString(R.string.error_sense_missing_fmt, DateUtils.getRelativeTimeSpanString(getActivity(), device.getLastUpdated()));
+            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, ignored -> {});
         } else {
             hideAlert();
         }
@@ -201,7 +213,14 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
         clearActions();
         actionsContainer.setVisibility(View.VISIBLE);
 
-        addDeviceAction(R.string.action_replace_sleep_pill, true, this::unpairPill);
+        addDeviceAction(R.string.action_replace_sleep_pill, true, this::unpairDevice);
+
+        if (device.isMissing()) {
+            String missingMessage = getString(R.string.error_sleep_pill_missing_fmt, DateUtils.getRelativeTimeSpanString(getActivity(), device.getLastUpdated()));
+            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, ignored -> {});
+        } else {
+            hideAlert();
+        }
     }
 
     //endregion
@@ -222,20 +241,27 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
         alertText.setText(messageRes);
 
         alertContainer.setVisibility(View.VISIBLE);
+        clearActions();
     }
 
-    private void showTroubleshootingAlert(@StringRes int messageRes,
+    private void showTroubleshootingAlert(@NonNull String message,
                                           @StringRes int buttonTitleRes,
                                           @NonNull View.OnClickListener onClick) {
         alertIcon.setVisibility(View.VISIBLE);
         alertBusy.setVisibility(View.GONE);
         alertAction.setVisibility(View.VISIBLE);
 
-        alertText.setText(messageRes);
+        alertText.setText(message);
         alertAction.setText(buttonTitleRes);
         alertAction.setOnClickListener(onClick);
 
         alertContainer.setVisibility(View.VISIBLE);
+    }
+
+    private void showTroubleshootingAlert(@StringRes int messageRes,
+                                          @StringRes int buttonTitleRes,
+                                          @NonNull View.OnClickListener onClick) {
+        showTroubleshootingAlert(getString(messageRes), buttonTitleRes, onClick);
     }
 
     //endregion
@@ -246,6 +272,7 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
     public void onBluetoothStateChanged(boolean isEnabled) {
         if (!isEnabled) {
             showTroubleshootingAlert(R.string.error_no_bluetooth_connectivity, R.string.action_turn_on_ble, this::enableBluetooth);
+            showRestrictedSenseActions();
         }
     }
 
@@ -288,6 +315,10 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
                 showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_troubleshoot, ignored -> {});
             } else {
                 ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            }
+
+            if (device.getType() == Device.Type.SENSE) {
+                showRestrictedSenseActions();
             }
 
             Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
@@ -381,7 +412,7 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
 
     //region Pill Actions
 
-    public void unpairPill(@NonNull View sender) {
+    public void unpairDevice(@NonNull View sender) {
         SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
         alertDialog.setDestructive(true);
         alertDialog.setTitle(R.string.dialog_title_unpair_pill);

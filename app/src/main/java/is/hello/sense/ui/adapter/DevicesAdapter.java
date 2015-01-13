@@ -13,9 +13,6 @@ import android.widget.TextView;
 
 import net.danlew.android.joda.DateUtils;
 
-import org.joda.time.DateTime;
-import org.joda.time.Minutes;
-
 import java.util.List;
 
 import is.hello.sense.R;
@@ -153,8 +150,8 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
             super.display(device);
 
             lastSeen.setText(DateUtils.getRelativeTimeSpanString(getContext(), device.getLastUpdated()));
-            if (Minutes.minutesBetween(device.getLastUpdated(), DateTime.now()).getMinutes() > 15) {
-                lastSeen.setTextColor(resources.getColor(R.color.destructuve_accent));
+            if (device.isMissing()) {
+                lastSeen.setTextColor(resources.getColor(R.color.destructive_accent));
             } else {
                 lastSeen.setTextColor(resources.getColor(R.color.text_dark));
             }
