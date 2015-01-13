@@ -26,6 +26,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
@@ -67,6 +68,8 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
         Button register = (Button) view.findViewById(R.id.fragment_onboarding_register_go);
         Views.setSafeOnClickListener(register, ignored -> register());
+
+        OnboardingToolbar.of(this, view).setWantsBackButton(true);
 
         return view;
     }

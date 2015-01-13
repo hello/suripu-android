@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.HelpUtil;
+import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
@@ -23,7 +24,8 @@ public class OnboardingStaticStepFragment extends Fragment {
     private static final String ARG_NEXT_CLASS = OnboardingStaticStepFragment.class.getName() + ".ARG_NEXT_CLASS";
     private static final String ARG_NEXT_ARGUMENTS = OnboardingStaticStepFragment.class.getName() + ".ARG_NEXT_ARGUMENTS";
     private static final String ARG_ANALYTICS_EVENT = OnboardingStaticStepFragment.class.getName() + ".ARG_ANALYTICS_EVENT";
-    private static final String ARG_HIDE_HELP = OnboardingStaticStepFragment.class.getName() + ".ARG_HIDE_HELP";
+    private static final String ARG_HIDE_TOOLBAR = OnboardingStaticStepFragment.class.getName() + ".ARG_HIDE_TOOLBAR";
+    private static final String ARG_WANTS_BACK = OnboardingStaticStepFragment.class.getName() + ".ARG_WANTS_BACK";
     private static final String ARG_EXIT_ANIMATION_NAME = OnboardingStaticStepFragment.class.getName() + ".ARG_EXIT_ANIMATION_NAME";
     private static final String ARG_NEXT_WANTS_BACK_STACK = OnboardingStaticStepFragment.class.getName() + ".ARG_NEXT_WANTS_BACK_STACK";
     private static final String ARG_HELP_STEP = OnboardingStaticStepFragment.class.getName() + ".ARG_HELP_STEP";
@@ -63,10 +65,14 @@ public class OnboardingStaticStepFragment extends Fragment {
         Button next = (Button) view.findViewById(R.id.fragment_onboarding_step_continue);
         Views.setSafeOnClickListener(next, this::next);
 
-        if (getArguments().getBoolean(ARG_HIDE_HELP, false)) {
-
+        OnboardingToolbar toolbar = OnboardingToolbar.of(this, view);
+        if (getArguments().getBoolean(ARG_HIDE_TOOLBAR, false)) {
+            toolbar.hide();
         } else {
-
+            toolbar.setWantsBackButton(getArguments().getBoolean(ARG_WANTS_BACK, false));
+            if (getArguments().containsKey(ARG_HELP_STEP)) {
+                toolbar.setOnHelpClickListener(this::help);
+            }
         }
 
         return view;
@@ -125,8 +131,13 @@ public class OnboardingStaticStepFragment extends Fragment {
             return this;
         }
 
+        public Builder setWantsBack(boolean wantsBack) {
+            arguments.putBoolean(ARG_WANTS_BACK, wantsBack);
+            return this;
+        }
+
         public Builder setHideHelp(boolean hideHelp) {
-            arguments.putBoolean(ARG_HIDE_HELP, hideHelp);
+            arguments.putBoolean(ARG_HIDE_TOOLBAR, hideHelp);
             return this;
         }
 
@@ -170,7 +181,6 @@ public class OnboardingStaticStepFragment extends Fragment {
          * @param onComplete    The completion handler provided by the static step fragment.
          *
          * @see is.hello.sense.R.id#fragment_onboarding_step_continue
-         * @see is.hello.sense.R.id#fragment_onboarding_step_help
          */
         void executeAnimation(@NonNull LinearLayout container, @NonNull Runnable onComplete);
     }

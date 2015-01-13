@@ -280,4 +280,5 @@
     <string name="title_onboarding_register_location">What\'s your location?</string>
     <string name="description_onboarding_register_location">Sense uses your location to know sunrise and sunset times, local weather, and more.</string>
     <string name="action_set_location">Set Location</string>
+    <string name="action_back">Back</string>
 </resources>
