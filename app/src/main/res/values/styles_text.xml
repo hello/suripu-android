@@ -32,7 +32,7 @@
     
     <style name="AppTheme.Text.Actionable">
         <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
-        <item name="android:textSize">@dimen/text_size_actionable</item>
+        <item name="android:textSize">@dimen/text_size_body_small</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/light_accent</item>
     </style>
@@ -67,7 +67,7 @@
     <style name="AppTheme.Text.Body.Light" />
 
     <style name="AppTheme.Text.Body.Light.Small">
-        <item name="android:textSize">@dimen/text_size_section_heading</item>
+        <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
 
     <style name="AppTheme.Text.Body.Bold">

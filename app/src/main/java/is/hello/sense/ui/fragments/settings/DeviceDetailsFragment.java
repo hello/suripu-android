@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,9 +44,8 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.functions.Action0;
 
-public class DeviceDetailsFragment extends HardwareFragment implements FragmentNavigationActivity.BackInterceptingFragment
-{
-    public static final int RESULT_UNPAIRED_PILL = 0x66;
+public class DeviceDetailsFragment extends HardwareFragment implements FragmentNavigationActivity.BackInterceptingFragment {
+    public static final int RESULT_REPLACED_DEVICE = 0x66;
 
     public static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
 
@@ -114,6 +114,9 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
         this.alertAction = (Button) alertContainer.findViewById(R.id.fragment_device_details_alert_action);
 
         this.actionsContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_actions);
+
+        TextView footer = (TextView) view.findViewById(R.id.sub_fragment_device_footer);
+        footer.setMovementMethod(LinkMovementMethod.getInstance());
 
         if (device.getType() == Device.Type.PILL) {
             showSleepPillActions();
@@ -426,7 +429,7 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
         alertDialog.setNegativeButton(android.R.string.cancel, null);
         alertDialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
-                             ignored -> finishWithResult(RESULT_UNPAIRED_PILL, null),
+                             ignored -> finishWithResult(RESULT_REPLACED_DEVICE, null),
                              this::presentError);
         });
         alertDialog.show();
