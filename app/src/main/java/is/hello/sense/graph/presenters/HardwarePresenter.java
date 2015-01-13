@@ -249,7 +249,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         if (peripheral.isConnected() && peripheral.getBondStatus() != Peripheral.BOND_BONDED) {
             logEvent("already paired with peripheral " + peripheral);
 
-            return Observable.just(null);
+            return Observable.just(HelloPeripheral.ConnectStatus.CONNECTED);
         }
 
         Observable<SensePeripheral.ConnectStatus> connecting = peripheral.connect().doOnCompleted(() -> {
