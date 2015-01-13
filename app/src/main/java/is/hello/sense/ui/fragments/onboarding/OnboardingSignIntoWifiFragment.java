@@ -94,9 +94,6 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
         Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_continue);
         Views.setSafeOnClickListener(continueButton, ignored -> sendWifiCredentials());
 
-        Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        Views.setSafeOnClickListener(helpButton, ignored -> HelpUtil.showHelp(getActivity(), HelpUtil.Step.ONBOARDING_SIGN_INTO_WIFI));
-
         if (network != null) {
             this.networkName.setText(network.getSsid());
             if (network.getSecurityType() == sec_type.SL_SCAN_SEC_TYPE_OPEN) {

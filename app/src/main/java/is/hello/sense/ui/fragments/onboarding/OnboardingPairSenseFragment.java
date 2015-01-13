@@ -65,9 +65,6 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_step_continue);
         Views.setSafeOnClickListener(nextButton, this::next);
 
-        Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        Views.setSafeOnClickListener(helpButton, this::next);
-
         return view;
     }
 

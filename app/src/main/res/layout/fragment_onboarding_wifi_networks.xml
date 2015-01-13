@@ -64,14 +64,4 @@
         style="@style/AppTheme.Button.Borderless.Onboarding"
         android:visibility="invisible"/>
 
-    <Button
-        android:id="@+id/fragment_onboarding_step_help"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_marginBottom="@dimen/gap_large"
-        android:text="@string/action_onboarding_help"
-        style="@style/AppTheme.Button.Borderless.Onboarding"
-        android:visibility="invisible"/>
-
 </LinearLayout>

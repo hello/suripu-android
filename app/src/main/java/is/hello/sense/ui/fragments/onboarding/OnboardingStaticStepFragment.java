@@ -63,11 +63,10 @@ public class OnboardingStaticStepFragment extends Fragment {
         Button next = (Button) view.findViewById(R.id.fragment_onboarding_step_continue);
         Views.setSafeOnClickListener(next, this::next);
 
-        Button help = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
         if (getArguments().getBoolean(ARG_HIDE_HELP, false)) {
-            help.setVisibility(View.GONE);
+
         } else {
-            Views.setSafeOnClickListener(help, this::help);
+
         }
 
         return view;

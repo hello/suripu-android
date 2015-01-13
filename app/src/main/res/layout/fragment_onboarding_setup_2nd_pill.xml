@@ -22,19 +22,20 @@
         android:text="@string/info_onboarding_setup_2nd_pill"/>
 
     <Button
-        android:id="@+id/fragment_onboarding_setup_2nd_pill_yes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_large"
-        android:text="@string/action_setup_another_pill"
-        style="@style/AppTheme.Button.Rounded" />
-
-    <Button
         android:id="@+id/fragment_onboarding_setup_2nd_pill_no"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginTop="@dimen/gap_large"
         android:text="@string/action_no_thanks"
         style="@style/AppTheme.Button.Borderless.Onboarding" />
+
+    <Button
+        android:id="@+id/fragment_onboarding_setup_2nd_pill_yes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:text="@string/action_setup_another_pill"
+        style="@style/AppTheme.Button.Rounded" />
+
 
 </LinearLayout>

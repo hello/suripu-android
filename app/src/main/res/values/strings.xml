@@ -104,7 +104,7 @@
     <string name="info_sign_into_wifi">Enter your Wifi credentials:</string>
     <string name="wifi_other_network">Other</string>
     <string name="label_network_name">Network Name</string>
-    <string name="action_skip">Skip</string>
+    <string name="action_skip">Skip for now</string>
     <string name="info_introduction">A simple system that tracks your sleep, monitors the surroundings in your bedroom and reinvents the alarm, so you can sleep better.</string>
     <string name="action_play_video">Play</string>
     <string name="action_get_started">Get Started</string>
@@ -186,7 +186,7 @@
     <string name="title_onboarding_setup_2nd_pill">Set up another Sleep Pill?</string>
     <string name="info_onboarding_setup_2nd_pill">Would you like to set up a second Sleep Pill for your partner at this time?\n\nYou can always do this later by visiting Settings.</string>
     <string name="action_setup_another_pill">Set up another Sleep Pill</string>
-    <string name="action_no_thanks">No Thanks</string>
+    <string name="action_no_thanks">No, Thanks</string>
     <string name="title_onboarding_2nd_pill_info">Have your partner get the app</string>
     <string name="info_onboarding_2nd_pill_info">Your Sense is now in Pairing Mode.\n\nHave your partner visit hello.is/app to download the Sense app and create a new account. They will be given instructions to set up their Sleep Pill.</string>
     <string name="label_finding_wifi_networks">Finding Wifi Networks…</string>

@@ -58,21 +58,22 @@
             android:text="@string/label_pounds"/>
 
         <Button
+            android:id="@+id/fragment_onboarding_next"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_small"
+            android:layout_alignParentBottom="true"
+            android:text="@string/action_next"
+            style="@style/AppTheme.Button.Rounded"/>
+
+        <Button
             android:id="@+id/fragment_onboarding_skip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/gap_small"
+            android:layout_above="@id/fragment_onboarding_next"
             android:text="@string/action_skip"
-            android:layout_alignParentBottom="true"
             style="@style/AppTheme.Button.Borderless.Onboarding"/>
-
-        <Button
-            android:id="@+id/fragment_onboarding_next"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/fragment_onboarding_skip"
-            android:text="@string/action_next"
-            style="@style/AppTheme.Button.Rounded"/>
 
     </RelativeLayout>
 

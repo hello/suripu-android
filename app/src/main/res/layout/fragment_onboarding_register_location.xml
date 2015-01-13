@@ -50,24 +50,24 @@
             android:layout_weight="1" />
 
         <Button
+            android:id="@+id/fragment_onboarding_register_location_no"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/gap_large"
+            android:layout_marginRight="@dimen/gap_large"
+            android:text="@string/action_skip"
+            style="@style/AppTheme.Button.Borderless.Onboarding"/>
+
+        <Button
             android:id="@+id/fragment_onboarding_register_location_yes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_small"
+            android:layout_marginBottom="@dimen/gap_large"
             android:layout_marginLeft="@dimen/gap_large"
             android:layout_marginRight="@dimen/gap_large"
             android:text="@string/action_set_location"
             style="@style/AppTheme.Button.Rounded"/>
-
-        <Button
-            android:id="@+id/fragment_onboarding_register_location_no"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_small"
-            android:layout_marginLeft="@dimen/gap_large"
-            android:layout_marginRight="@dimen/gap_large"
-            android:layout_marginBottom="@dimen/gap_large"
-            android:text="@string/action_no_thanks"
-            style="@style/AppTheme.Button.Borderless.Onboarding"/>
 
     </LinearLayout>
 

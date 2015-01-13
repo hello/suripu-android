@@ -76,9 +76,6 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             rescan();
         });
 
-        this.helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        Views.setSafeOnClickListener(helpButton, ignored -> HelpUtil.showHelp(getActivity(), HelpUtil.Step.ONBOARDING_WIFI_SCAN));
-
         return view;
     }
 

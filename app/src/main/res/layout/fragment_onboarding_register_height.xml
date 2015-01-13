@@ -76,19 +76,20 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/fragment_onboarding_next"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/action_next"
-            style="@style/AppTheme.Button.Rounded"/>
-
-        <Button
             android:id="@+id/fragment_onboarding_skip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/gap_small"
             android:text="@string/action_skip"
             style="@style/AppTheme.Button.Borderless.Onboarding"/>
+
+        <Button
+            android:id="@+id/fragment_onboarding_next"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_small"
+            android:text="@string/action_next"
+            style="@style/AppTheme.Button.Rounded"/>
 
     </LinearLayout>
 
