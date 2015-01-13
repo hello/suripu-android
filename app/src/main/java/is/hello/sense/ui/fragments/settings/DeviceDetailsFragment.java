@@ -7,13 +7,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
 import javax.inject.Inject;
 
@@ -32,34 +31,31 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.ui.widget.SensorStateView;
-import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
-import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.functions.Action0;
 
-public class DeviceDetailsFragment extends HardwareFragment implements AdapterView.OnItemClickListener, FragmentNavigationActivity.BackInterceptingFragment
+public class DeviceDetailsFragment extends HardwareFragment implements FragmentNavigationActivity.BackInterceptingFragment
 {
     public static final int RESULT_UNPAIRED_PILL = 0x66;
 
     public static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
 
     @Inject ApiSessionManager apiSessionManager;
-    @Inject DateFormatter dateFormatter;
     @Inject DevicesPresenter devicesPresenter;
     @Inject PreferencesPresenter preferences;
 
-    private ProgressBar activityIndicator;
-    private ViewGroup senseActionsContainer;
-    private @Nullable SensorStateView signalStrength;
-    private Button actionButton;
+    private LinearLayout alertContainer;
+    private LinearLayout actionsContainer;
 
     private Device device;
     private BluetoothAdapter bluetoothAdapter;
     private boolean didEnableBluetooth = false;
 
+
+    //region Lifecycle
 
     public static DeviceDetailsFragment newInstance(@NonNull Device device) {
         DeviceDetailsFragment fragment = new DeviceDetailsFragment();
@@ -97,44 +93,11 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_device_details, container, false);
 
-        SensorStateView lastSeen = (SensorStateView) view.findViewById(R.id.fragment_device_details_last_seen);
-        lastSeen.setReading(dateFormatter.formatAsDate(device.getLastUpdated()));
+        this.alertContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_alert);
+        this.actionsContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_actions);
 
-        SensorStateView version = (SensorStateView) view.findViewById(R.id.fragment_device_details_version);
-        version.setReading(device.getFirmwareVersion());
-
-        this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_device_details_activity);
-
-        if (device.getType() == Device.Type.SENSE) {
-            this.senseActionsContainer = (ViewGroup) view.findViewById(R.id.fragment_device_details_sense);
-            this.signalStrength = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_signal);
-
-            SensorStateView changeWifi = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_change_wifi);
-            Views.setSafeOnClickListener(changeWifi, this::changeWifiNetwork);
-
-            SensorStateView enterPairingMode = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_pairing_mode);
-            Views.setSafeOnClickListener(enterPairingMode, this::putIntoPairingMode);
-
-            SensorStateView pairNewPill = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_pair_new_pill);
-            Views.setSafeOnClickListener(pairNewPill, this::pairNewPill);
-
-            SensorStateView factoryReset = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_factory_reset);
-            Views.setSafeOnClickListener(factoryReset, this::factoryReset);
-
-            this.actionButton = (Button) view.findViewById(R.id.fragment_device_details_action);
-            Views.setSafeOnClickListener(actionButton, ignored -> {
-                if (bluetoothAdapter.isEnabled()) {
-                    connectToPeripheral();
-                } else {
-                    enableBluetooth();
-                }
-            });
-        } else if (device.getType() == Device.Type.PILL) {
-            LinearLayout pillActionsContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_pill);
-            pillActionsContainer.setVisibility(View.VISIBLE);
-
-            SensorStateView unpairPill = (SensorStateView) pillActionsContainer.findViewById(R.id.fragment_device_details_pill_unpair);
-            Views.setSafeOnClickListener(unpairPill, this::unpairPill);
+        if (device.getType() == Device.Type.PILL) {
+            showSleepPillActions();
         }
 
         return view;
@@ -184,36 +147,46 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
         return false;
     }
 
+    //endregion
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        StaticItemAdapter.Item item = (StaticItemAdapter.Item) adapterView.getItemAtPosition(position);
-        if (item.getAction() != null) {
-            item.getAction().run();
+
+    //region Displaying Actions
+
+    private void clearActions() {
+        actionsContainer.removeViews(0, actionsContainer.getChildCount());
+    }
+
+    private void addDeviceAction(@StringRes int titleRes, boolean wantsDivider, @NonNull View.OnClickListener onClick) {
+        actionsContainer.addView(Styles.createItemView(getActivity(), titleRes, R.style.AppTheme_Text_Actionable, onClick));
+        if (wantsDivider) {
+            actionsContainer.addView(Styles.createHorizontalDivider(getActivity(), ViewGroup.LayoutParams.MATCH_PARENT));
         }
     }
 
+    private void showConnectedSenseActions() {
+        clearActions();
+
+        addDeviceAction(R.string.action_replace_this_sense, true, ignored -> {});
+        addDeviceAction(R.string.action_enter_pairing_mode, true, this::putIntoPairingMode);
+        addDeviceAction(R.string.action_factory_reset, true, this::factoryReset);
+        addDeviceAction(R.string.action_select_wifi_network, false, this::changeWifiNetwork);
+    }
+
+    private void showSleepPillActions() {
+        clearActions();
+
+        addDeviceAction(R.string.action_replace_sleep_pill, true, ignored -> {});
+    }
+
+    //endregion
+
+
+    //region Connectivity
 
     public void onBluetoothStateChanged(boolean isEnabled) {
-        if (isEnabled) {
-            actionButton.setText(R.string.action_retry);
-        } else {
-            if (signalStrength != null) {
-                signalStrength.setReading(getString(R.string.missing_data_placeholder));
-                senseActionsContainer.setVisibility(View.GONE);
-                activityIndicator.setVisibility(View.GONE);
-            }
-
-            actionButton.setVisibility(View.VISIBLE);
-            actionButton.setText(R.string.action_turn_on_ble);
-        }
     }
 
     public void connectToPeripheral() {
-        activityIndicator.setVisibility(View.VISIBLE);
-        senseActionsContainer.setVisibility(View.GONE);
-        actionButton.setVisibility(View.GONE);
-
         bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device), this::bindPeripheral, this::presentError);
     }
 
@@ -228,23 +201,8 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
     }
 
     public void bindPeripheral(@NonNull SensePeripheral peripheral) {
-        int rssi = peripheral.getScannedRssi();
-        String strength;
-        if (rssi <= -30) {
-            strength = getString(R.string.signal_strong);
-        } else if (rssi <= -50) {
-            strength = getString(R.string.signal_good);
-        } else {
-            strength = getString(R.string.signal_weak);
-        }
-
-        if (signalStrength != null) {
-            signalStrength.setReading(strength);
-        }
-
         if (peripheral.isConnected()) {
-            senseActionsContainer.setVisibility(View.VISIBLE);
-            activityIndicator.setVisibility(View.GONE);
+            checkConnectivityState();
         } else {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral),
                              status -> {
@@ -257,7 +215,6 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
     }
 
     public void presentError(@NonNull Throwable e) {
-        activityIndicator.setVisibility(View.GONE);
         hideAllActivity(false, () -> {
             if (hardwarePresenter.isErrorFatal(e)) {
                 UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
@@ -267,37 +224,29 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
             }
 
             Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
-
-            if (signalStrength != null) {
-                signalStrength.setReading(getString(R.string.missing_data_placeholder));
-                senseActionsContainer.setVisibility(View.GONE);
-            }
-
-            if (actionButton != null) {
-                actionButton.setVisibility(View.VISIBLE);
-            }
         });
     }
 
 
     public void checkConnectivityState() {
         bindAndSubscribe(hardwarePresenter.currentWifiNetwork(),
-                network -> {
-                    preferences.edit()
-                               .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
-                               .apply();
+                         network -> {
+                             preferences.edit()
+                                        .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
+                                        .apply();
 
-                    senseActionsContainer.setVisibility(View.VISIBLE);
-                    activityIndicator.setVisibility(View.GONE);
-                },
-                e -> {
-                    Logger.error(getClass().getSimpleName(), "Could not get connectivity state, ignoring.", e);
-
-                    senseActionsContainer.setVisibility(View.VISIBLE);
-                    activityIndicator.setVisibility(View.GONE);
-                });
+                             showConnectedSenseActions();
+                         },
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Could not get connectivity state, ignoring.", e);
+                             showConnectedSenseActions();
+                         });
     }
 
+    //endregion
+
+
+    //region Sense Actions
 
     public void changeWifiNetwork(@NonNull View sender) {
         if (hardwarePresenter.getPeripheral() == null)
@@ -320,16 +269,6 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
                              ignored -> hideAllActivity(true, () -> getFragmentManager().popBackStackImmediate()),
                              this::presentError);
         });
-    }
-
-    public void pairNewPill(@NonNull View sender) {
-        if (hardwarePresenter.getPeripheral() == null)
-            return;
-
-        Intent onboarding = new Intent(getActivity(), OnboardingActivity.class);
-        onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
-        onboarding.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
-        startActivity(onboarding);
     }
 
     @SuppressWarnings("CodeBlock2Expr")
@@ -370,6 +309,11 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
         dialog.show();
     }
 
+    //endregion
+
+
+    //region Pill Actions
+
     public void unpairPill(@NonNull View sender) {
         SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
         alertDialog.setDestructive(true);
@@ -377,11 +321,12 @@ public class DeviceDetailsFragment extends HardwareFragment implements AdapterVi
         alertDialog.setMessage(R.string.dialog_message_unpair_pill);
         alertDialog.setNegativeButton(android.R.string.cancel, null);
         alertDialog.setPositiveButton(R.string.action_unpair, (d, which) -> {
-            activityIndicator.setVisibility(View.VISIBLE);
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
                              ignored -> finishWithResult(RESULT_UNPAIRED_PILL, null),
                              this::presentError);
         });
         alertDialog.show();
     }
+
+    //endregion
 }

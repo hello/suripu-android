@@ -174,7 +174,7 @@
     <string name="title_timeline_event_fmt">%1$s - %2$s</string>
     <string name="action_pair_new_pill">Pair New Pill</string>
     <string name="action_pair_new_sense">Pair New Sense</string>
-    <string name="action_select_wifi_network">Select Wifi Network</string>
+    <string name="action_select_wifi_network">Edit Wi-Fi</string>
     <string name="title_scanning_for_sense">Looking for Sense…</string>
     <string name="title_connecting">Connecting with Sense…</string>
     <string name="title_discovering_services">Discovering Services…</string>
@@ -285,4 +285,6 @@
     <string name="label_color">Color</string>
     <string name="info_no_sense_connected">You don\'t currently have a Sense connected to your account.</string>
     <string name="info_no_sleep_pill_connected">You don\'t currently have a Sleep Pill connected to your account.</string>
+    <string name="action_replace_this_sense">Replace This Sense</string>
+    <string name="action_replace_sleep_pill">Replace This Sleep Pill</string>
 </resources>
