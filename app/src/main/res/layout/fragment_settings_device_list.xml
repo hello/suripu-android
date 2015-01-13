@@ -8,7 +8,8 @@
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        style="@style/AppTheme.ListView.Cards"/>
 
     <is.hello.sense.ui.widget.TintedProgressBar
         android:id="@+id/fragment_settings_device_list_progress"
@@ -16,24 +17,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         style="@android:style/Widget.Holo.Light.ProgressBar.Large.Inverse"/>
-
-    <Button
-        android:id="@android:id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/action_buy_sense"
-        android:visibility="gone"
-        style="@style/AppTheme.Button.Borderless.Onboarding" />
-
-    <ImageButton
-        android:id="@+id/fragment_settings_device_list_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/gap_small"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:layout_gravity="bottom|end"
-        android:src="@drawable/button_smart_alarm_add"
-        android:contentDescription="@string/action_pair_new_sense"/>
 
 </FrameLayout>

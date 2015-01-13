@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
@@ -43,9 +44,15 @@ public class AndroidBluetoothStack implements BluetoothStack {
         this.bluetoothManager = (BluetoothManager) applicationContext.getSystemService(Context.BLUETOOTH_SERVICE);
         this.adapter = bluetoothManager.getAdapter();
         if (adapter != null) {
+            AtomicBoolean lastEnabledState = new AtomicBoolean(adapter.isEnabled());
             Observable<Intent> stateChanged = fromBroadcast(applicationContext, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-            stateChanged.observeOn(getScheduler()).subscribe(ignored -> enabled.onNext(adapter.isEnabled()), Functions.LOG_ERROR);
-            enabled.onNext(adapter.isEnabled());
+            stateChanged.observeOn(getScheduler()).subscribe(ignored -> {
+                boolean isEnabled = adapter.isEnabled();
+                if (lastEnabledState.get() != isEnabled) {
+                    enabled.onNext(isEnabled);
+                }
+            }, Functions.LOG_ERROR);
+            enabled.onNext(lastEnabledState.get());
         } else {
             Logger.warn(LOG_TAG, "Host device has no bluetooth hardware!");
             enabled.onNext(false);

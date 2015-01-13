@@ -8,6 +8,7 @@
     <color name="light_accent">#009CFF</color>
     <color name="light_accent_dimmed">#6ec2fe</color>
     <color name="light_accent_darkened">#0c67c0</color>
+    <color name="destructive_accent">#e80009</color>
     <color name="status_bar">#919191</color>
 
     <color name="background">#f8f8f8</color>

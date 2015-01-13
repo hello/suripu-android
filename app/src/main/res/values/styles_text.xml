@@ -33,6 +33,13 @@
         <item name="android:lineSpacingMultiplier">@dimen/line_multiple_body</item>
         <item name="android:textColor">@color/text_dark</item>
     </style>
+    
+    <style name="AppTheme.Text.Actionable">
+        <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
+        <item name="android:textSize">@dimen/text_size_body_small</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/light_accent</item>
+    </style>
 
     <style name="AppTheme.Text.SectionHeading">
         <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
@@ -64,7 +71,7 @@
     <style name="AppTheme.Text.Body.Light" />
 
     <style name="AppTheme.Text.Body.Light.Small">
-        <item name="android:textSize">@dimen/text_size_section_heading</item>
+        <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
 
     <style name="AppTheme.Text.Body.Bold">

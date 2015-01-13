@@ -25,7 +25,7 @@ import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.HelpUtil;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
@@ -177,6 +177,9 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
 
             bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, securityType, password), ignored -> {
                 this.hasConnectedToNetwork = true;
+                preferences.edit()
+                           .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
+                           .apply();
                 sendAccessToken();
             }, this::presentError);
         });

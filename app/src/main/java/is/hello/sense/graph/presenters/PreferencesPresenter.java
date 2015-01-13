@@ -23,12 +23,11 @@ import rx.subscriptions.Subscriptions;
 
     public static final String PAIRED_DEVICE_TIME_ZONE = "paired_device_time_zone";
     public static final String PAIRED_DEVICE_ADDRESS = "paired_device_address";
+    public static final String PAIRED_DEVICE_SSID = "paired_device_ssid";
     public static final String PAIRED_PILL_ID = "paired_pill_id";
 
     public static final String LAST_ONBOARDING_CHECK_POINT = "last_onboarding_check_point";
     public static final String ONBOARDING_COMPLETED = "onboarding_completed";
-
-    public static final String QUESTIONS_LAST_ACKNOWLEDGED = "questions_last_acknowledged";
 
 
     private final SharedPreferences sharedPreferences;

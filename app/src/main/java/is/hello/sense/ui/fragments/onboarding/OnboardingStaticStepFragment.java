@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.HelpUtil;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -31,7 +31,7 @@ public class OnboardingStaticStepFragment extends Fragment {
     private static final String ARG_HELP_STEP = OnboardingStaticStepFragment.class.getName() + ".ARG_HELP_STEP";
 
     private LinearLayout container;
-    private HelpUtil.Step helpStep;
+    private UserSupport.OnboardingStep helpOnboardingStep;
     private @Nullable ExitAnimationProvider exitAnimationProvider;
 
     @Override
@@ -49,7 +49,7 @@ public class OnboardingStaticStepFragment extends Fragment {
         }
 
         String helpStepName = getArguments().getString(ARG_HELP_STEP);
-        this.helpStep = HelpUtil.Step.fromString(helpStepName);
+        this.helpOnboardingStep = UserSupport.OnboardingStep.fromString(helpStepName);
     }
 
     @Nullable
@@ -104,7 +104,7 @@ public class OnboardingStaticStepFragment extends Fragment {
     }
 
     public void help(@NonNull View sender) {
-        HelpUtil.showHelp(getActivity(), helpStep);
+        UserSupport.showForOnboardingStep(getActivity(), helpOnboardingStep);
     }
 
 
@@ -151,8 +151,8 @@ public class OnboardingStaticStepFragment extends Fragment {
             return this;
         }
 
-        public Builder setHelpStep(@NonNull HelpUtil.Step step) {
-            arguments.putString(ARG_HELP_STEP, step.toString());
+        public Builder setHelpStep(@NonNull UserSupport.OnboardingStep onboardingStep) {
+            arguments.putString(ARG_HELP_STEP, onboardingStep.toString());
             return this;
         }
 
