@@ -834,7 +834,7 @@ public final class SenseCommandProtos {
                 is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.class, is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.Builder.class);
       }
 
-      // Construct using is.hello.onboarding_pair_sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.newBuilder()
+      // Construct using is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1644,7 +1644,7 @@ public final class SenseCommandProtos {
                 is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.class, is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.Builder.class);
       }
 
-      // Construct using is.hello.onboarding_pair_sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.newBuilder()
+      // Construct using is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3509,7 +3509,7 @@ public final class SenseCommandProtos {
                 is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand.class, is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand.Builder.class);
       }
 
-      // Construct using is.hello.onboarding_pair_sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand.newBuilder()
+      // Construct using is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5257,7 +5257,7 @@ public final class SenseCommandProtos {
                 is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.batched_pill_data.class, is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.batched_pill_data.Builder.class);
       }
 
-      // Construct using is.hello.onboarding_pair_sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.batched_pill_data.newBuilder()
+      // Construct using is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.batched_pill_data.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
