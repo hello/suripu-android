@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
@@ -22,7 +23,6 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
-import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.VoidResponse;
@@ -166,18 +166,18 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<SmartAlarm>> smartAlarms() {
-        return loadResponse("smart_alarms", new TypeReference<ArrayList<SmartAlarm>>() {});
+    public Observable<ArrayList<Alarm>> smartAlarms() {
+        return loadResponse("smart_alarms", new TypeReference<ArrayList<Alarm>>() {});
     }
 
     @Override
     public Observable<VoidResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp,
-                                                   @NonNull @Body List<SmartAlarm> alarms) {
+                                                   @NonNull @Body List<Alarm> alarms) {
         return Observable.just(new VoidResponse());
     }
 
     @Override
-    public Observable<ArrayList<SmartAlarm.Sound>> availableSmartAlarmSounds() {
+    public Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds() {
         return unimplemented();
     }
 

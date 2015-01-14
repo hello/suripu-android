@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.Set;
 import is.hello.sense.R;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SmartAlarm extends ApiResponse {
+public class Alarm extends ApiResponse {
     @JsonProperty("year")
     private int year;
 
@@ -53,13 +54,74 @@ public class SmartAlarm extends ApiResponse {
     @JsonProperty("sound")
     private Sound sound;
 
+    @JsonProperty("smart")
+    private boolean isSmart;
 
-    public SmartAlarm() {
+
+    //region Validation
+
+    /**
+     * Make sure there is only one alarm per user per day
+     */
+    public static boolean validateAlarms(final List<Alarm> alarms) {
+        final Set<Integer> alarmDays = new HashSet<>();
+        for (final Alarm alarm : alarms) {
+            if (!alarm.isRepeated) {
+                if (!validateNonRepeatingAlarm(alarm)) {
+                    return false;
+                }
+
+                if (alarm.isSmart) {
+                    final DateTime expectedRingTime = new DateTime(alarm.year, alarm.month, alarm.dayOfMonth, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
+                    if (alarmDays.contains(expectedRingTime.getDayOfWeek())) {
+                        return false;
+                    }
+
+                    alarmDays.add(expectedRingTime.getDayOfWeek());
+                }
+            } else {
+                if (!alarm.isSmart) {
+                    continue;
+                }
+
+                for (final Integer dayOfWeek : alarm.getDaysOfWeek()) {
+                    if (alarmDays.contains(dayOfWeek)) {
+                        return false;
+                    }
+
+                    alarmDays.add(dayOfWeek);
+                }
+
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean validateNonRepeatingAlarm(final Alarm alarm) {
+        if (alarm.isRepeated) {
+            return true;
+        }
+
+        try {
+            new DateTime(alarm.year, alarm.month, alarm.dayOfMonth, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
+        } catch (Exception ex) {
+            return false;
+        }
+
+        return true;
+    }
+
+    //endregion
+
+
+    public Alarm() {
         this.hourOfDay = 7;
         this.minuteOfHour = 30;
         this.isRepeated = true;
         this.isEnabled = true;
         this.isEditable = true;
+        this.isSmart = false;
         this.daysOfWeek = new HashSet<>();
     }
 
@@ -104,6 +166,13 @@ public class SmartAlarm extends ApiResponse {
         this.isEnabled = isEnabled;
     }
 
+    public boolean isSmart() {
+        return this.isSmart;
+    }
+
+    public void setSmart(final boolean isSmart) {
+        this.isSmart = isSmart;
+    }
 
     public boolean isEditable() {
         return isEditable;
@@ -116,7 +185,9 @@ public class SmartAlarm extends ApiResponse {
         return daysOfWeek;
     }
 
-    public static @NonNull String nameForDayOfWeek(@NonNull Context context, int dayOfWeek) {
+    public static
+    @NonNull
+    String nameForDayOfWeek(@NonNull Context context, int dayOfWeek) {
         switch (dayOfWeek) {
             case DateTimeConstants.MONDAY:
                 return context.getString(R.string.day_monday);

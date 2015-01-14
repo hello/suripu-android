@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
@@ -15,7 +16,6 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
-import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.VoidResponse;
@@ -132,14 +132,14 @@ public interface ApiService {
     //region Smart Alarms
 
     @GET("/alarms")
-    Observable<ArrayList<SmartAlarm>> smartAlarms();
+    Observable<ArrayList<Alarm>> smartAlarms();
 
     @POST("/alarms/{client_time_utc}")
     Observable<VoidResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
-                                             @NonNull @Body List<SmartAlarm> alarms);
+                                             @NonNull @Body List<Alarm> alarms);
 
     @GET("/alarms/sounds")
-    Observable<ArrayList<SmartAlarm.Sound>> availableSmartAlarmSounds();
+    Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds();
 
     //endregion
 
