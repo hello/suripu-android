@@ -21,12 +21,13 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/gap_outer"
             android:orientation="vertical"
-            android:background="@color/background_onboarding">
+            android:background="@color/background_onboarding"
+            android:gravity="center">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/gap_xlarge"
+                android:layout_marginBottom="@dimen/gap_outer"
                 android:textAppearance="@style/AppTheme.Text.Heading"
                 android:lineSpacingMultiplier="@dimen/line_multiple_heading"
                 android:text="@string/title_register"/>
@@ -35,7 +36,6 @@
                 android:id="@+id/fragment_onboarding_register_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/gap_medium"
                 style="@style/AppTheme.Text.EditText.Onboarding"
                 android:inputType="textPersonName|textCapWords"
                 android:nextFocusForward="@+id/fragment_onboarding_register_email"
@@ -50,7 +50,6 @@
                 android:id="@+id/fragment_onboarding_register_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/gap_medium"
                 style="@style/AppTheme.Text.EditText.Onboarding"
                 android:inputType="textEmailAddress"
                 android:nextFocusForward="@+id/fragment_onboarding_register_password"

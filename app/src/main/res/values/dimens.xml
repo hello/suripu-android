@@ -27,6 +27,8 @@
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
     <item name="line_multiple_body" format="float" type="dimen">1.5</item>
 
+    <dimen name="edit_text_min_height">45dp</dimen>
+
     <!-- Divisions and Borders -->
 
     <dimen name="shadow_size">3dp</dimen>
