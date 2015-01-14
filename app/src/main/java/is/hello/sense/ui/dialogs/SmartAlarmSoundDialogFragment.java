@@ -15,26 +15,26 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.api.model.Alarm;
 import is.hello.sense.ui.adapter.SmartAlarmSoundAdapter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.SenseSelectorDialog;
 import is.hello.sense.util.SoundPlayer;
 
-public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment implements SenseSelectorDialog.OnSelectionListener<SmartAlarm.Sound>, SoundPlayer.OnEventListener {
+public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment implements SenseSelectorDialog.OnSelectionListener<Alarm.Sound>, SoundPlayer.OnEventListener {
     public static final String ARG_SELECTED_SOUND = SmartAlarmSoundDialogFragment.class.getName() + ".ARG_SELECTED_SOUND";
 
     public static final String TAG = SmartAlarmSoundDialogFragment.class.getSimpleName();
 
     @Inject ApiService apiService;
 
-    private SmartAlarm.Sound selectedSound;
+    private Alarm.Sound selectedSound;
     private SmartAlarmSoundAdapter adapter;
-    private SenseSelectorDialog<SmartAlarm.Sound> dialog;
+    private SenseSelectorDialog<Alarm.Sound> dialog;
 
     private SoundPlayer soundPlayer;
 
-    public static SmartAlarmSoundDialogFragment newInstance(@Nullable SmartAlarm.Sound sound) {
+    public static SmartAlarmSoundDialogFragment newInstance(@Nullable Alarm.Sound sound) {
         SmartAlarmSoundDialogFragment dialogFragment = new SmartAlarmSoundDialogFragment();
 
         Bundle arguments = new Bundle();
@@ -55,7 +55,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         this.dialog = new SenseSelectorDialog<>(getActivity());
 
-        this.selectedSound = (SmartAlarm.Sound) getArguments().getSerializable(ARG_SELECTED_SOUND);
+        this.selectedSound = (Alarm.Sound) getArguments().getSerializable(ARG_SELECTED_SOUND);
 
         this.adapter = new SmartAlarmSoundAdapter(getActivity());
         if (selectedSound != null) {
@@ -81,7 +81,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
         soundPlayer.recycle();
     }
 
-    public void bindSounds(@NonNull ArrayList<SmartAlarm.Sound> sounds) {
+    public void bindSounds(@NonNull ArrayList<Alarm.Sound> sounds) {
         dialog.setActivityIndicatorVisible(false);
         adapter.addAll(sounds);
     }
@@ -94,7 +94,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
 
 
     @Override
-    public void onItemSelected(@NonNull SenseSelectorDialog<SmartAlarm.Sound> dialog, int position, @NonNull SmartAlarm.Sound sound) {
+    public void onItemSelected(@NonNull SenseSelectorDialog<Alarm.Sound> dialog, int position, @NonNull Alarm.Sound sound) {
         this.selectedSound = sound;
         adapter.setSelectedSoundId(sound.id);
         getArguments().putSerializable(ARG_SELECTED_SOUND, selectedSound);
@@ -104,7 +104,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     }
 
     @Override
-    public void onSelectionCompleted(@NonNull SenseSelectorDialog<SmartAlarm.Sound> dialog) {
+    public void onSelectionCompleted(@NonNull SenseSelectorDialog<Alarm.Sound> dialog) {
         Intent response = new Intent();
         response.putExtra(ARG_SELECTED_SOUND, selectedSound);
         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, response);
@@ -113,7 +113,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
 
     //region Playback
 
-    public void playSound(@NonNull SmartAlarm.Sound sound) {
+    public void playSound(@NonNull Alarm.Sound sound) {
         soundPlayer.play(Uri.parse(sound.url));
         adapter.setPlayingSoundId(sound.id, true);
     }

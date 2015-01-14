@@ -58,6 +58,63 @@ public class Alarm extends ApiResponse {
     private boolean isSmart;
 
 
+    //region Validation
+
+    /**
+     * Make sure there is only one alarm per user per day
+     */
+    public static boolean validateAlarms(final List<Alarm> alarms) {
+        final Set<Integer> alarmDays = new HashSet<>();
+        for (final Alarm alarm : alarms) {
+            if (!alarm.isRepeated) {
+                if (!validateNonRepeatingAlarm(alarm)) {
+                    return false;
+                }
+
+                if (alarm.isSmart) {
+                    final DateTime expectedRingTime = new DateTime(alarm.year, alarm.month, alarm.dayOfMonth, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
+                    if (alarmDays.contains(expectedRingTime.getDayOfWeek())) {
+                        return false;
+                    }
+
+                    alarmDays.add(expectedRingTime.getDayOfWeek());
+                }
+            } else {
+                if (!alarm.isSmart) {
+                    continue;
+                }
+
+                for (final Integer dayOfWeek : alarm.getDaysOfWeek()) {
+                    if (alarmDays.contains(dayOfWeek)) {
+                        return false;
+                    }
+
+                    alarmDays.add(dayOfWeek);
+                }
+
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean validateNonRepeatingAlarm(final Alarm alarm) {
+        if (alarm.isRepeated) {
+            return true;
+        }
+
+        try {
+            new DateTime(alarm.year, alarm.month, alarm.dayOfMonth, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
+        } catch (Exception ex) {
+            return false;
+        }
+
+        return true;
+    }
+
+    //endregion
+
+
     public Alarm() {
         this.hourOfDay = 7;
         this.minuteOfHour = 30;
@@ -109,11 +166,11 @@ public class Alarm extends ApiResponse {
         this.isEnabled = isEnabled;
     }
 
-    public boolean isSmart(){
+    public boolean isSmart() {
         return this.isSmart;
     }
 
-    public void setSmart(final boolean isSmart){
+    public void setSmart(final boolean isSmart) {
         this.isSmart = isSmart;
     }
 
@@ -128,7 +185,9 @@ public class Alarm extends ApiResponse {
         return daysOfWeek;
     }
 
-    public static @NonNull String nameForDayOfWeek(@NonNull Context context, int dayOfWeek) {
+    public static
+    @NonNull
+    String nameForDayOfWeek(@NonNull Context context, int dayOfWeek) {
         switch (dayOfWeek) {
             case DateTimeConstants.MONDAY:
                 return context.getString(R.string.day_monday);
@@ -192,64 +251,6 @@ public class Alarm extends ApiResponse {
                 ", daysOfWeek=" + daysOfWeek +
                 ", sound=" + sound +
                 '}';
-    }
-
-    public static class Utils{
-
-        /**
-         * Make sure there is only one alarm per user per day
-         * @param alarms
-         * @return
-         */
-        public static boolean isValidAlarms(final List<Alarm> alarms){
-            final Set<Integer> alarmDays = new HashSet<Integer>();
-            for(final Alarm alarm: alarms){
-                if(!alarm.isRepeated){
-                    if (!isValidNoneRepeatedAlarm(alarm)) {
-                        return false;
-                    }
-
-                    if(alarm.isSmart){
-                        final DateTime expectedRingTime = new DateTime(alarm.year, alarm.month, alarm.dayOfMonth, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
-                        if(alarmDays.contains(expectedRingTime.getDayOfWeek())){
-                            return false;
-                        }
-
-                        alarmDays.add(expectedRingTime.getDayOfWeek());
-                    }
-                }else{
-                    if(!alarm.isSmart) {
-                        continue;
-                    }
-
-                    for (final Integer dayOfWeek : alarm.getDaysOfWeek()) {
-                        if (alarmDays.contains(dayOfWeek)) {
-                            return false;
-                        }
-
-                        alarmDays.add(dayOfWeek);
-                    }
-
-                }
-            }
-
-            return true;
-        }
-
-        public static boolean isValidNoneRepeatedAlarm(final Alarm alarm){
-            if(alarm.isRepeated){
-                return true;
-            }
-
-            try{
-                final DateTime validDateTime = new DateTime(alarm.year, alarm.month, alarm.dayOfMonth, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
-            }catch (Exception ex){
-                return false;
-            }
-
-            return true;
-        }
-
     }
 
     public static class Sound extends ApiResponse {

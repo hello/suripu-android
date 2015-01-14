@@ -39,7 +39,7 @@ import rx.Observable;
     }
 
     public boolean validateAlarms(@NonNull List<Alarm> alarms) {
-        return Alarm.Utils.isValidAlarms(alarms);
+        return Alarm.validateAlarms(alarms);
     }
 
 

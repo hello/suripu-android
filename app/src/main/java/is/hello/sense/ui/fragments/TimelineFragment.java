@@ -27,7 +27,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.PreSleepInsight;
-import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Functions;
@@ -166,7 +166,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         this.smartAlarmButton = (ImageButton) view.findViewById(R.id.fragment_timeline_smart_alarm);
         Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
             Intent intent = new Intent(getActivity(), SmartAlarmDetailActivity.class);
-            intent.putExtras(SmartAlarmDetailActivity.getArguments(new SmartAlarm(), SmartAlarmDetailActivity.INDEX_NEW));
+            intent.putExtras(SmartAlarmDetailActivity.getArguments(new Alarm(), SmartAlarmDetailActivity.INDEX_NEW));
             startActivity(intent);
         });
 

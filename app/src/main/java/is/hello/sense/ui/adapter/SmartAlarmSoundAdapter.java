@@ -12,9 +12,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.api.model.Alarm;
 
-public class SmartAlarmSoundAdapter extends ArrayAdapter<SmartAlarm.Sound> {
+public class SmartAlarmSoundAdapter extends ArrayAdapter<Alarm.Sound> {
     public static final int NONE = -1;
 
     private final LayoutInflater inflater;
@@ -57,7 +57,7 @@ public class SmartAlarmSoundAdapter extends ArrayAdapter<SmartAlarm.Sound> {
 
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        SmartAlarm.Sound sound = getItem(position);
+        Alarm.Sound sound = getItem(position);
         holder.name.setText(sound.name);
 
         if (selectedSoundId == sound.id) {
