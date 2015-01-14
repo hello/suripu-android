@@ -40,6 +40,8 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     @Inject PreferencesPresenter preferences;
 
     private ProgressBar activityIndicator;
+    private View emptyView;
+    private View emptyPrompt;
 
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
     private SmartAlarmAdapter adapter;
@@ -62,6 +64,9 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_smart_alarm_list_activity);
 
+        this.emptyView = view.findViewById(android.R.id.empty);
+        this.emptyPrompt = view.findViewById(R.id.fragment_smart_alarm_list_first_prompt);
+
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         this.adapter = new SmartAlarmAdapter(getActivity(), this);
         listView.setAdapter(adapter);
@@ -70,6 +75,8 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
         ImageButton addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
         Views.setSafeOnClickListener(addButton, this::newAlarm);
+
+        startLoading();
 
         return view;
     }
@@ -90,10 +97,28 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         if (requestCode == DELETE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             int position = data.getIntExtra(DeleteAlarmDialogFragment.ARG_INDEX, 0);
 
-            activityIndicator.setVisibility(View.VISIBLE);
+            startLoading();
             bindAndSubscribe(smartAlarmPresenter.deleteSmartAlarm(position),
                              ignored -> activityIndicator.setVisibility(View.GONE),
                              this::presentError);
+        }
+    }
+
+    public void startLoading() {
+        emptyView.setVisibility(View.GONE);
+        emptyPrompt.setVisibility(View.GONE);
+        activityIndicator.setVisibility(View.VISIBLE);
+    }
+
+    public void finishLoading() {
+        activityIndicator.setVisibility(View.GONE);
+
+        if (adapter.getCount() == 0) {
+            emptyView.setVisibility(View.VISIBLE);
+            emptyPrompt.setVisibility(View.VISIBLE);
+        } else {
+            emptyView.setVisibility(View.GONE);
+            emptyPrompt.setVisibility(View.GONE);
         }
     }
 
@@ -103,11 +128,11 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         adapter.clear();
         adapter.addAll(alarms);
 
-        activityIndicator.setVisibility(View.GONE);
+        finishLoading();
     }
 
     public void presentError(Throwable e) {
-        activityIndicator.setVisibility(View.GONE);
+        finishLoading();
 
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
             ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_day_overlap));

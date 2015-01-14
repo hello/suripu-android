@@ -300,4 +300,7 @@
     <string name="dialog_title_new_version">New version</string>
     <string name="dialog_message_new_version">A new version of Sense is available.</string>
     <string name="action_update">Update</string>
+    <string name="title_smart_alarms">Smart Alarms</string>
+    <string name="message_smart_alarm_placeholder">Sense‘s Smart Alarm will wake you up at just the moment in your sleep cycle, so you wake feeling rested. Once set, your alarms will appear here</string>
+    <string name="prompt_set_your_first_alarm">Set your first smart alarm</string>
 </resources>

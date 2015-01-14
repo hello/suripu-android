@@ -8,7 +8,8 @@
     <is.hello.sense.ui.widget.SelectorLinearLayout
         android:id="@+id/fragment_underside_tabs"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/action_bar_height">
+        android:layout_height="@dimen/action_bar_height"
+        android:paddingTop="@dimen/bottom_line">
 
         <ToggleButton
             android:layout_width="0dp"

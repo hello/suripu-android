@@ -169,7 +169,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
         TabsBackgroundDrawable(@NonNull Resources resources, int itemCount) {
             this.itemCount = itemCount;
-            this.lineHeight = resources.getDimensionPixelSize(R.dimen.shadow_size);
+            this.lineHeight = resources.getDimensionPixelSize(R.dimen.bottom_line);
             this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
             this.fillColor = resources.getColor(R.color.light_accent);
             this.dividerColor = resources.getColor(R.color.border);

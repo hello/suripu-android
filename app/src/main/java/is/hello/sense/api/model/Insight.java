@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+
 public class Insight extends ApiResponse {
     @JsonProperty("account_id")
     private long accountId;
@@ -22,6 +24,9 @@ public class Insight extends ApiResponse {
 
     @JsonProperty("category")
     private Category category;
+
+    @JsonProperty("insights_info")
+    private ArrayList<Object> insightsInfo;
 
 
     public long getAccountId() {
