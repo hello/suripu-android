@@ -26,7 +26,7 @@ public interface BluetoothStack {
     /**
      * Performs a scan for peripherals matching a given set of criteria.
      * <p/>
-     * Yields {@see is.hello.onboarding_pair_sense.bluetooth.errors.BluetoothDisabledError}
+     * Yields {@see is.hello.sense.bluetooth.errors.BluetoothDisabledError}
      * if the device's Bluetooth radio is currently disabled.
      *
      * @see is.hello.sense.bluetooth.stacks.util.PeripheralCriteria

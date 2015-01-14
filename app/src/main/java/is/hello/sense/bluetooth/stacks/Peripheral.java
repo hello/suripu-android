@@ -122,7 +122,7 @@ public interface Peripheral {
      * <p/>
      * Does nothing if there is already an active connection.
      * <p/>
-     * Yields an {@see is.hello.onboarding_pair_sense.bluetooth.errors.PeripheralConnectionError} if called
+     * Yields an {@see is.hello.sense.bluetooth.errors.PeripheralConnectionError} if called
      * when peripheral connection status is changing.
      */
     @NonNull Observable<Peripheral> connect();
@@ -130,7 +130,7 @@ public interface Peripheral {
     /**
      * Ends the gatt connection of the peripheral.
      * <p/>
-     * Yields {@see is.hello.onboarding_pair_sense.bluetooth.errors.NotConnectedException}
+     * Yields {@see is.hello.sense.bluetooth.errors.NotConnectedException}
      * if the peripheral is not connected.
      */
     @NonNull Observable<Peripheral> disconnect();

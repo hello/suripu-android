@@ -14,7 +14,7 @@ import rx.functions.Func1;
 
 /**
  * Parses a raw BLE advertising data blob into a multi-map collection for querying by
- * predicates contained in a {@see is.hello.onboarding_pair_sense.bluetooth.stacks.util.PeripheralCriteria}
+ * predicates contained in a {@see is.hello.sense.bluetooth.stacks.util.PeripheralCriteria}
  * instance.
  */
 public final class AdvertisingData {

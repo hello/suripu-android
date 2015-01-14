@@ -15,7 +15,7 @@ import rx.subscriptions.Subscriptions;
  * This means that calls to {@see PresenterSubject.onCompleted} do nothing, and that
  * the subject will continue to emit values even after {@see PresenterSubject.onError}
  * has been called. This subject is intended to hold volatile in-memory state for subclasses
- * of the {@see is.hello.onboarding_pair_sense.graph.presenters.Presenter} class.
+ * of the {@see is.hello.sense.graph.presenters.Presenter} class.
  * <p/>
  * PresenterSubject retains, at most, a single value/error in memory at a time.
  * @param <T>   The type of value contained by the subject.

@@ -26,7 +26,7 @@ public abstract class Presenter {
      * Informs the presenter that its containing Fragment/Activity has been destroyed.
      * <p/>
      * This callback is intended for use with non-singleton presenters. It will be
-     * invoked automatically by {@see is.hello.onboarding_pair_sense.graph.presenters.PresenterContainer}s.
+     * invoked automatically by {@see is.hello.sense.graph.presenters.PresenterContainer}s.
      */
     public void onContainerDestroyed() {
         logEvent("onContainerDestroyed()");
