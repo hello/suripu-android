@@ -1,5 +1,8 @@
 package is.hello.sense.graph.presenters;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,11 +14,16 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import rx.Observable;
 import rx.Subscription;
+import rx.android.observables.AndroidObservable;
 import rx.functions.Func2;
 import rx.subscriptions.Subscriptions;
+
+import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 @Singleton public class PreferencesPresenter extends Presenter {
     public static final String UNIT_SYSTEM = "unit_system_name";
@@ -38,8 +46,11 @@ import rx.subscriptions.Subscriptions;
      */
     private final Set<SharedPreferences.OnSharedPreferenceChangeListener> strongListeners = Collections.synchronizedSet(new HashSet<>());
 
-    public @Inject PreferencesPresenter(@NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences) {
+    public @Inject PreferencesPresenter(@NonNull Context context, @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
+
+        Observable<Intent> logOut = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        logOut.subscribe(ignored -> clear(), Functions.LOG_ERROR);
     }
 
     
@@ -47,6 +58,13 @@ import rx.subscriptions.Subscriptions;
 
     public SharedPreferences.Editor edit() {
         return sharedPreferences.edit();
+    }
+
+    public void clear() {
+        logEvent("Clearing user preferences.");
+
+        edit().clear()
+              .apply();
     }
 
     //endregion
@@ -86,8 +104,9 @@ import rx.subscriptions.Subscriptions;
     private <T> Observable<T> observableValue(@NonNull String key, @Nullable T defaultValue, Func2<String, T, T> producer) {
         return Observable.create((Observable.OnSubscribe<T>) s -> {
             SharedPreferences.OnSharedPreferenceChangeListener changeListener = (prefs, changedKey) -> {
-                if (changedKey.equals(key))
+                if (changedKey.equals(key)) {
                     s.onNext(producer.call(key, defaultValue));
+                }
             };
 
             Subscription subscription = Subscriptions.create(() -> {
