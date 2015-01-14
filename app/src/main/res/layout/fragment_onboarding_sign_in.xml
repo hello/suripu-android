@@ -19,7 +19,10 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/gap_outer"
+            android:paddingTop="@dimen/gap_outer"
+            android:paddingLeft="@dimen/gap_outer"
+            android:paddingRight="@dimen/gap_outer"
+            android:paddingBottom="@dimen/gap_small"
             android:gravity="center"
             android:background="@color/background_onboarding">
 
@@ -55,7 +58,10 @@
         android:id="@+id/fragment_onboarding_sign_in_go"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginBottom="@dimen/gap_outer"
         android:text="@string/action_log_in"
         style="@style/AppTheme.Button.Rounded"/>
 
