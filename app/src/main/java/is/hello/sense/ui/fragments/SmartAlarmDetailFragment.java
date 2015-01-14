@@ -21,7 +21,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.api.model.Alarm;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -49,7 +49,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
-    private SmartAlarm smartAlarm;
+    private Alarm alarm;
     private int index = SmartAlarmDetailActivity.INDEX_NEW;
     private boolean use24Time = false;
 
@@ -62,19 +62,19 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            this.smartAlarm = (SmartAlarm) getActivity().getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
+            this.alarm = (Alarm) getActivity().getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
         } else {
-            this.smartAlarm = (SmartAlarm) savedInstanceState.getSerializable(SmartAlarmDetailActivity.EXTRA_ALARM);
+            this.alarm = (Alarm) savedInstanceState.getSerializable(SmartAlarmDetailActivity.EXTRA_ALARM);
         }
 
-        if (smartAlarm == null) {
-            this.smartAlarm = new SmartAlarm();
+        if (alarm == null) {
+            this.alarm = new Alarm();
         }
 
         this.index = getActivity().getIntent().getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, SmartAlarmDetailActivity.INDEX_NEW);
 
-        if (smartAlarm.getSound() == null) {
-            smartAlarm.setSound(SmartAlarm.Sound.none());
+        if (alarm.getSound() == null) {
+            alarm.setSound(Alarm.Sound.none());
         }
 
         setRetainInstance(true);
@@ -95,17 +95,17 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             int day = DAY_TAGS[i];
             ToggleButton dayButton = (ToggleButton) repeatDays.getChildAt(i);
             dayButton.setOnClickListener(dayClickListener);
-            dayButton.setChecked(smartAlarm.getDaysOfWeek().contains(day));
+            dayButton.setChecked(alarm.getDaysOfWeek().contains(day));
             dayButton.setTag(day);
         }
 
         ToggleButton enabledButton = (ToggleButton) view.findViewById(R.id.fragment_smart_alarm_detail_enabled);
-        enabledButton.setChecked(smartAlarm.isEnabled());
-        enabledButton.setOnCheckedChangeListener((button, isEnabled) -> smartAlarm.setEnabled(isEnabled));
+        enabledButton.setChecked(alarm.isEnabled());
+        enabledButton.setOnCheckedChangeListener((button, isEnabled) -> alarm.setEnabled(isEnabled));
 
         this.soundButton = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_sound);
-        if (smartAlarm.getSound() != null && !TextUtils.isEmpty(smartAlarm.getSound().name)) {
-            soundButton.setText(smartAlarm.getSound().name);
+        if (alarm.getSound() != null && !TextUtils.isEmpty(alarm.getSound().name)) {
+            soundButton.setText(alarm.getSound().name);
         } else {
             soundButton.setText(R.string.no_sound_placeholder);
         }
@@ -138,17 +138,17 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         if (requestCode == TIME_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 7);
             int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 30);
-            smartAlarm.setTime(new LocalTime(hour, minute));
+            alarm.setTime(new LocalTime(hour, minute));
             updateTime();
         } else if (requestCode == SOUND_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             long selectedId = data.getLongExtra(ChooseSoundDialogFragment.ARG_SELECTED_ID, 0);
-            List<SmartAlarm.Sound> sounds = SmartAlarm.Sound.testSounds();
-            SmartAlarm.Sound selectedSound = Lists.findFirst(sounds, s -> s.id == selectedId);
+            List<Alarm.Sound> sounds = Alarm.Sound.testSounds();
+            Alarm.Sound selectedSound = Lists.findFirst(sounds, s -> s.id == selectedId);
             if (selectedSound == null) {
-                selectedSound = SmartAlarm.Sound.none();
+                selectedSound = Alarm.Sound.none();
             }
 
-            smartAlarm.setSound(selectedSound);
+            alarm.setSound(selectedSound);
             soundButton.setText(selectedSound.name);
         }
     }
@@ -157,16 +157,16 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable(SmartAlarmDetailActivity.EXTRA_ALARM, smartAlarm);
+        outState.putSerializable(SmartAlarmDetailActivity.EXTRA_ALARM, alarm);
     }
 
     public void updateTime() {
-        String formattedTime = dateFormatter.formatAsTime(smartAlarm.getTime(), use24Time);
+        String formattedTime = dateFormatter.formatAsTime(alarm.getTime(), use24Time);
         time.setText(formattedTime);
     }
 
     public void selectNewTime(@NonNull View sender) {
-        TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(smartAlarm.getTime());
+        TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(alarm.getTime());
         dialogFragment.setTargetFragment(this, TIME_REQUEST_CODE);
         dialogFragment.show(getFragmentManager(), TimePickerDialogFragment.TAG);
     }
@@ -176,16 +176,16 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         int day = (Integer) dayButton.getTag();
 
         if (dayButton.isChecked()) {
-            smartAlarm.getDaysOfWeek().add(day);
+            alarm.getDaysOfWeek().add(day);
         } else {
-            smartAlarm.getDaysOfWeek().remove(day);
+            alarm.getDaysOfWeek().remove(day);
         }
 
-        smartAlarm.setRepeated(!smartAlarm.getDaysOfWeek().isEmpty());
+        alarm.setRepeated(!alarm.getDaysOfWeek().isEmpty());
     }
 
     public void selectSound(@NonNull View sender) {
-        long selectedId = smartAlarm.getSound() != null ? smartAlarm.getSound().id : 0;
+        long selectedId = alarm.getSound() != null ? alarm.getSound().id : 0;
         ChooseSoundDialogFragment dialogFragment = ChooseSoundDialogFragment.newInstance(selectedId);
         dialogFragment.setTargetFragment(this, SOUND_REQUEST_CODE);
         dialogFragment.show(getFragmentManager(), ChooseSoundDialogFragment.TAG);
@@ -202,7 +202,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void saveAlarm() {
         Intent response = new Intent();
         response.putExtra(SmartAlarmDetailActivity.EXTRA_INDEX, index);
-        response.putExtra(SmartAlarmDetailActivity.EXTRA_ALARM, smartAlarm);
+        response.putExtra(SmartAlarmDetailActivity.EXTRA_ALARM, alarm);
         getActivity().setResult(Activity.RESULT_OK, response);
         getActivity().finish();
     }

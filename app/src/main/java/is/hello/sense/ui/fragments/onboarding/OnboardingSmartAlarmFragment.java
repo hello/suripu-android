@@ -13,7 +13,7 @@ import android.widget.Button;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.api.model.Alarm;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -55,7 +55,7 @@ public class OnboardingSmartAlarmFragment extends InjectionFragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            SmartAlarm newAlarm = (SmartAlarm) data.getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
+            Alarm newAlarm = (Alarm) data.getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
 
             LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(smartAlarmPresenter.save(Lists.newArrayList(newAlarm)),

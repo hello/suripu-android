@@ -8,7 +8,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.MenuItem;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.api.model.Alarm;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 
@@ -20,9 +20,9 @@ public class SmartAlarmDetailActivity extends SenseActivity {
 
     public static final int INDEX_NEW = -1;
 
-    public static Bundle getArguments(@NonNull SmartAlarm smartAlarm, int index) {
+    public static Bundle getArguments(@NonNull Alarm alarm, int index) {
         Bundle arguments = new Bundle();
-        arguments.putSerializable(EXTRA_ALARM, smartAlarm);
+        arguments.putSerializable(EXTRA_ALARM, alarm);
         arguments.putInt(EXTRA_INDEX, index);
         return arguments;
     }

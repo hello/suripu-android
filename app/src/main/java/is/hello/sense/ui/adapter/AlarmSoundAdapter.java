@@ -7,15 +7,15 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.api.model.Alarm;
 
-public class AlarmSoundAdapter extends ArrayAdapter<SmartAlarm.Sound> {
+public class AlarmSoundAdapter extends ArrayAdapter<Alarm.Sound> {
     private long selectedSoundId = -1;
 
     public AlarmSoundAdapter(Context context) {
         super(context, R.layout.item_simple_text);
 
-        addAll(SmartAlarm.Sound.testSounds());
+        addAll(Alarm.Sound.testSounds());
     }
 
     public void setSelectedSoundId(long selectedSoundId) {
@@ -27,7 +27,7 @@ public class AlarmSoundAdapter extends ArrayAdapter<SmartAlarm.Sound> {
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView text = (TextView) super.getView(position, convertView, parent);
 
-        SmartAlarm.Sound sound = getItem(position);
+        Alarm.Sound sound = getItem(position);
         text.setText(sound.name);
 
         if (selectedSoundId == sound.id) {

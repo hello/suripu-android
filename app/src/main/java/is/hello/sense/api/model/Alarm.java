@@ -21,7 +21,7 @@ import java.util.Set;
 import is.hello.sense.R;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SmartAlarm extends ApiResponse {
+public class Alarm extends ApiResponse {
     @JsonProperty("year")
     private int year;
 
@@ -54,13 +54,17 @@ public class SmartAlarm extends ApiResponse {
     @JsonProperty("sound")
     private Sound sound;
 
+    @JsonProperty("smart")
+    private boolean isSmart;
 
-    public SmartAlarm() {
+
+    public Alarm() {
         this.hourOfDay = 7;
         this.minuteOfHour = 30;
         this.isRepeated = true;
         this.isEnabled = true;
         this.isEditable = true;
+        this.isSmart = false;
         this.daysOfWeek = new HashSet<>();
         this.sound = Sound.none();
     }
@@ -95,7 +99,13 @@ public class SmartAlarm extends ApiResponse {
         this.isEnabled = isEnabled;
     }
 
+    public boolean isSmart(){
+        return this.isSmart;
+    }
 
+    public void setSmart(final boolean isSmart){
+        this.isSmart = isSmart;
+    }
 
 
     public boolean isEditable() {
@@ -191,38 +201,42 @@ public class SmartAlarm extends ApiResponse {
          * @param alarms
          * @return
          */
-        public static boolean isValidSmartAlarms(final List<SmartAlarm> alarms, final DateTime now, final DateTimeZone timeZone){
+        public static boolean isValidAlarms(final List<Alarm> alarms){
             final Set<Integer> alarmDays = new HashSet<Integer>();
-            for(final SmartAlarm alarm: alarms){
-                if(alarm.isRepeated) {
-                    for (final Integer dayOfWeek : alarm.daysOfWeek) {
-                        if (alarmDays.contains(dayOfWeek)) {
-                            return false;
-                        } else {
-                            alarmDays.add(dayOfWeek);
-                        }
-                    }
-                }else{
-                    if(!isValidNoneRepeatedAlarm(alarm)){
+            for(final Alarm alarm: alarms){
+                if(!alarm.isRepeated){
+                    if (!isValidNoneRepeatedAlarm(alarm)) {
                         return false;
                     }
 
-                    if(!isAlarmExpired(alarm, now, timeZone)){
-                        final DateTime ringTime = new DateTime(alarm.year, alarm.month, alarm.day, alarm.hourOfDay, alarm.minuteOfHour, 0, timeZone);
-                        final int dayOfWeek = ringTime.getDayOfWeek();
+                    if(alarm.isSmart){
+                        final DateTime expectedRingTime = new DateTime(alarm.year, alarm.month, alarm.day, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
+                        if(alarmDays.contains(expectedRingTime.getDayOfWeek())){
+                            return false;
+                        }
+
+                        alarmDays.add(expectedRingTime.getDayOfWeek());
+                    }
+                }else{
+                    if(!alarm.isSmart) {
+                        continue;
+                    }
+
+                    for (final Integer dayOfWeek : alarm.getDaysOfWeek()) {
                         if (alarmDays.contains(dayOfWeek)) {
                             return false;
-                        } else {
-                            alarmDays.add(dayOfWeek);
                         }
+
+                        alarmDays.add(dayOfWeek);
                     }
+
                 }
             }
 
             return true;
         }
 
-        public static boolean isValidNoneRepeatedAlarm(final SmartAlarm alarm){
+        public static boolean isValidNoneRepeatedAlarm(final Alarm alarm){
             if(alarm.isRepeated){
                 return true;
             }
@@ -234,15 +248,6 @@ public class SmartAlarm extends ApiResponse {
             }
 
             return true;
-        }
-
-        public static boolean isAlarmExpired(final SmartAlarm alarm, final DateTime currentTime, final DateTimeZone timeZone){
-            if(alarm.isRepeated){
-                return false;
-            }
-
-            final DateTime ringTime = new DateTime(alarm.year, alarm.month, alarm.day, alarm.hourOfDay, alarm.minuteOfHour, 0, timeZone);
-            return ringTime.isBefore(currentTime);
         }
 
     }
