@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.api.model.Alarm;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
@@ -41,7 +41,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
     private ProgressBar activityIndicator;
 
-    private ArrayList<SmartAlarm> currentAlarms = new ArrayList<>();
+    private ArrayList<Alarm> currentAlarms = new ArrayList<>();
     private SmartAlarmAdapter adapter;
 
     @Override
@@ -97,7 +97,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         }
     }
 
-    public void bindAlarms(@NonNull ArrayList<SmartAlarm> alarms) {
+    public void bindAlarms(@NonNull ArrayList<Alarm> alarms) {
         this.currentAlarms = alarms;
 
         adapter.clear();
@@ -118,7 +118,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     }
 
 
-    private void editAlarm(@NonNull SmartAlarm alarm, int index) {
+    private void editAlarm(@NonNull Alarm alarm, int index) {
         Bundle arguments = SmartAlarmDetailActivity.getArguments(alarm, index);
         Intent intent = new Intent(getActivity(), SmartAlarmDetailActivity.class);
         intent.putExtras(arguments);
@@ -129,7 +129,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Analytics.trackEvent(Analytics.EVENT_ALARM_ACTION, Analytics.createProperties(Analytics.PROP_ALARM_ACTION, Analytics.PROP_ALARM_ACTION_EDIT));
 
-        SmartAlarm alarm = (SmartAlarm) adapterView.getItemAtPosition(position);
+        Alarm alarm = (Alarm) adapterView.getItemAtPosition(position);
         editAlarm(alarm, position);
     }
 
@@ -143,7 +143,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
     @Override
     public void onAlarmEnabledChanged(int position, boolean enabled) {
-        SmartAlarm smartAlarm = currentAlarms.get(position);
+        Alarm smartAlarm = currentAlarms.get(position);
         smartAlarm.setEnabled(enabled);
         if (enabled && smartAlarm.getDaysOfWeek().isEmpty()) {
             smartAlarm.fireOnceTomorrow();
@@ -161,7 +161,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
     public void newAlarm(@NonNull View sender) {
         Analytics.trackEvent(Analytics.EVENT_ALARM_ACTION, Analytics.createProperties(Analytics.PROP_ALARM_ACTION, Analytics.PROP_ALARM_ACTION_ADD));
-        editAlarm(new SmartAlarm(), SmartAlarmDetailActivity.INDEX_NEW);
+        editAlarm(new Alarm(), SmartAlarmDetailActivity.INDEX_NEW);
     }
 
 

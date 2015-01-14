@@ -13,13 +13,10 @@ import android.widget.Button;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.SmartAlarm;
-import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;

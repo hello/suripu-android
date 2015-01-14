@@ -10,10 +10,10 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.api.model.Alarm;
 import is.hello.sense.util.SafeOnClickListener;
 
-public class SmartAlarmAdapter extends ArrayAdapter<SmartAlarm> implements View.OnClickListener {
+public class SmartAlarmAdapter extends ArrayAdapter<Alarm> implements View.OnClickListener {
     private final LayoutInflater inflater;
     private final OnAlarmEnabledChanged onAlarmEnabledChanged;
     private final SafeOnClickListener onClickListener = new SafeOnClickListener(this);
@@ -40,7 +40,7 @@ public class SmartAlarmAdapter extends ArrayAdapter<SmartAlarm> implements View.
             view.setTag(new ViewHolder(view));
         }
 
-        SmartAlarm alarm = getItem(position);
+        Alarm alarm = getItem(position);
 
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.enabled.setTag(position);

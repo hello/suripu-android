@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import is.hello.sense.api.model.SmartAlarm;
+import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
@@ -17,7 +17,7 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
     @Inject SmartAlarmPresenter presenter;
 
     public void testUpdate() throws Exception {
-        SyncObserver<ArrayList<SmartAlarm>> smartAlarms = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.alarms);
+        SyncObserver<ArrayList<Alarm>> smartAlarms = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.alarms);
         smartAlarms.ignore(1);
 
         presenter.update();
@@ -29,19 +29,27 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
     }
 
     public void testValidateAlarms() throws Exception {
-        SmartAlarm sunday = new SmartAlarm();
+        Alarm sunday = new Alarm();
         sunday.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
+        sunday.setSmart(true);
 
-        SmartAlarm monday = new SmartAlarm();
+        Alarm monday = new Alarm();
         monday.getDaysOfWeek().add(DateTimeConstants.MONDAY);
+        monday.setSmart(true);
 
         assertTrue(presenter.validateAlarms(Lists.newArrayList(sunday, monday)));
         assertFalse(presenter.validateAlarms(Lists.newArrayList(sunday, sunday)));
         assertFalse(presenter.validateAlarms(Lists.newArrayList(monday, monday)));
+
+        final Alarm stupidSunday = new Alarm();
+        stupidSunday.setSmart(false);
+        stupidSunday.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
+        assertTrue(presenter.validateAlarms(Lists.newArrayList(sunday, stupidSunday)));
+
     }
 
     public void testSave() throws Exception {
-        ArrayList<SmartAlarm> goodAlarms = new ArrayList<>();
+        ArrayList<Alarm> goodAlarms = new ArrayList<>();
         SyncObserver<VoidResponse> good = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, presenter.save(goodAlarms));
         good.await();
 
@@ -52,9 +60,10 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
         // --- //
 
 
-        SmartAlarm sunday = new SmartAlarm();
+        Alarm sunday = new Alarm();
         sunday.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
-        ArrayList<SmartAlarm> badAlarms = Lists.newArrayList(sunday, sunday);
+        sunday.setSmart(true);
+        ArrayList<Alarm> badAlarms = Lists.newArrayList(sunday, sunday);
 
         SyncObserver<VoidResponse> bad = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, presenter.save(badAlarms));
         bad.await();
