@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -21,7 +20,6 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingRegisterLocationFragment extends AccountEditingFragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -45,15 +43,14 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_register_location, container, false);
-
-        Button optIn = (Button) view.findViewById(R.id.fragment_onboarding_register_location_yes);
-        Views.setSafeOnClickListener(optIn, ignored -> optIn());
-
-        Button optOut = (Button) view.findViewById(R.id.fragment_onboarding_register_location_no);
-        Views.setSafeOnClickListener(optOut, ignored -> getContainer().onAccountUpdated(this));
-
-        return view;
+        return new OnboardingSimpleStepViewBuilder(this, inflater, container)
+                .setHeadingText(R.string.title_onboarding_register_location)
+                .setSubheadingText(R.string.onboarding_register_info_explanation)
+                .setDiagramImage(R.drawable.onboarding_map)
+                .setPrimaryOnClickListener(ignored -> optIn())
+                .setSecondaryOnClickListener(ignored -> getContainer().onAccountUpdated(this))
+                .hideToolbar()
+                .create();
     }
 
     @Override

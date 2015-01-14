@@ -12,8 +12,6 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.squareup.seismic.ShakeDetector;
@@ -31,8 +29,8 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
@@ -51,11 +49,10 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSetup2ndPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingStaticStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
@@ -305,12 +302,14 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
 
         if (bluetoothAdapter.isEnabled()) {
-            OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
-            builder.setLayout(R.layout.sub_fragment_onboarding_intro_setup_sense);
+            OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
+            builder.setHeadingText(R.string.title_setup_sense);
+            builder.setSubheadingText(R.string.info_setup_sense);
+            builder.setDiagramImage(R.drawable.onboarding_sense_intro);
             builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
             builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_SETUP);
             builder.setHelpStep(UserSupport.OnboardingStep.SETUP_SENSE);
-            showFragment(builder.build(), null, false);
+            showFragment(builder.toFragment(), null, false);
         } else {
             showFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
         }
@@ -335,42 +334,48 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         showFragment(new OnboardingPairPillFragment(), null, false);
     }
 
-    private OnboardingStaticStepFragment.Builder createSenseColorsBuilder() {
-        OnboardingStaticStepFragment.Builder senseColorsBuilder = new OnboardingStaticStepFragment.Builder();
-        senseColorsBuilder.setLayout(R.layout.sub_fragment_onboarding_sense_colors);
+    private OnboardingSimpleStepFragment.Builder createSenseColorsBuilder() {
+        OnboardingSimpleStepFragment.Builder senseColorsBuilder = new OnboardingSimpleStepFragment.Builder(this);
+        senseColorsBuilder.setHeadingText(R.string.title_sense_colors);
+        senseColorsBuilder.setSubheadingText(R.string.info_sense_colors);
+        senseColorsBuilder.setDiagramImage(R.drawable.sense_colors);
         senseColorsBuilder.setHideToolbar(true);
         senseColorsBuilder.setNextWantsBackStackEntry(false);
         senseColorsBuilder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_COLORS);
 
-        OnboardingStaticStepFragment.Builder introBuilder = new OnboardingStaticStepFragment.Builder();
+        OnboardingSimpleStepFragment.Builder introBuilder = new OnboardingSimpleStepFragment.Builder(this);
         introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
-        introBuilder.setLayout(R.layout.sub_fragment_onboarding_room_check_intro);
+        introBuilder.setHeadingText(R.string.onboarding_title_room_check);
+        introBuilder.setSubheadingText(R.string.onboarding_info_room_check);
+        introBuilder.setDiagramImage(R.drawable.onboarding_room_check);
         introBuilder.setHideToolbar(true);
         introBuilder.setExitAnimationName(ANIMATION_ROOM_CHECK);
         introBuilder.setNextWantsBackStackEntry(false);
         introBuilder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_ROOM_CHECK);
-        senseColorsBuilder.setNextFragmentArguments(introBuilder.arguments);
-        senseColorsBuilder.setNextFragmentClass(OnboardingStaticStepFragment.class);
+        senseColorsBuilder.setNextFragmentArguments(introBuilder.toArguments());
+        senseColorsBuilder.setNextFragmentClass(OnboardingSimpleStepFragment.class);
 
         return senseColorsBuilder;
     }
 
     public void showPillInstructions() {
-        OnboardingStaticStepFragment.Builder builder = new OnboardingStaticStepFragment.Builder();
-        builder.setLayout(R.layout.sub_fragment_onboarding_pill_intro);
+        OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
+        builder.setHeadingText(R.string.title_intro_sleep_pill);
+        builder.setSubheadingText(R.string.info_intro_sleep_pill);
+        builder.setDiagramImage(R.drawable.onboarding_clip_pill);
         builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_PILL_PLACEMENT);
         builder.setHelpStep(UserSupport.OnboardingStep.PILL_PLACEMENT);
 
-        builder.setNextFragmentArguments(createSenseColorsBuilder().arguments);
-        builder.setNextFragmentClass(OnboardingStaticStepFragment.class);
+        builder.setNextFragmentArguments(createSenseColorsBuilder().toArguments());
+        builder.setNextFragmentClass(OnboardingSimpleStepFragment.class);
 
-        showFragment(builder.build(), null, true);
+        showFragment(builder.toFragment(), null, true);
     }
 
     public void showSenseColorsInfo() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
 
-        showFragment(createSenseColorsBuilder().build(), null, false);
+        showFragment(createSenseColorsBuilder().toFragment(), null, false);
     }
 
     public void showSmartAlarmInfo() {
@@ -411,24 +416,14 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
     public static final String ANIMATION_ROOM_CHECK = "room_check";
 
-    public @Nullable OnboardingStaticStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
+    public @Nullable OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
         switch (name) {
             case ANIMATION_ROOM_CHECK: {
                 return (container, onCompletion) -> {
-                    float endDelta = getResources().getDimensionPixelSize(R.dimen.gap_outer);
-
-                    View continueButton = container.findViewById(R.id.fragment_onboarding_step_continue);
-                    animate(continueButton)
-                            .slideAndFade(0f, endDelta, 1f, 0f)
+                    animate(container)
+                            .slideAndFade(0f, getResources().getDimensionPixelSize(R.dimen.gap_outer), 1f, 0f)
                             .addOnAnimationCompleted(finished -> onCompletion.run())
                             .start();
-
-                    ViewGroup introContainer = (ViewGroup) container.findViewById(R.id.sub_fragment_onboarding_room_check_intro_container);
-                    for (View child : Views.children(introContainer)) {
-                        animate(child)
-                                .slideAndFade(0f, -endDelta, 1f, 0f)
-                                .start();
-                    }
                 };
             }
 

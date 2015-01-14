@@ -88,7 +88,6 @@ import is.hello.sense.ui.widget.TimestampTextView;
         OnboardingPairPillFragment.class,
         Onboarding2ndPillInfoFragment.class,
         OnboardingRoomCheckFragment.class,
-        OnboardingSmartAlarmFragment.class,
 
         DeviceListFragment.class,
         DevicesPresenter.class,

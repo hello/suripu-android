@@ -6,16 +6,13 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingBluetoothFragment extends HardwareFragment {
@@ -43,16 +40,15 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_bluetooth, container, false);
-
-        Button turnOn = (Button) view.findViewById(R.id.fragment_onboarding_bluetooth_turn_on);
-        Views.setSafeOnClickListener(turnOn, this::turnOn);
-
-        OnboardingToolbar.of(this, view)
-                .setWantsBackButton(false)
-                .setOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.BLUETOOTH));
-
-        return view;
+        return new OnboardingSimpleStepViewBuilder(this, inflater, container)
+                .setHeadingText(R.string.action_turn_on_ble)
+                .setSubheadingText(R.string.info_turn_on_bluetooth)
+                .setPrimaryButtonText(R.string.action_turn_on_ble)
+                .setPrimaryOnClickListener(this::turnOn)
+                .setWantsSecondaryButton(false)
+                .setToolbarWantsBackButton(false)
+                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.BLUETOOTH))
+                .create();
     }
 
     @Override

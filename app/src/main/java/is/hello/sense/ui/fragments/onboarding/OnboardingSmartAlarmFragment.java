@@ -8,26 +8,16 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-
-import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.SmartAlarm;
-import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
-import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingSmartAlarmFragment extends InjectionFragment {
+public class OnboardingSmartAlarmFragment extends SenseFragment {
     private static final int EDIT_REQUEST_CODE = 0x31;
-
-    @Inject SmartAlarmPresenter smartAlarmPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,15 +29,16 @@ public class OnboardingSmartAlarmFragment extends InjectionFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_smart_alarm, container, false);
-
-        Button setAlarm = (Button) view.findViewById(R.id.fragment_onboarding_smart_alarm_set);
-        Views.setSafeOnClickListener(setAlarm, this::createNewAlarm);
-
-        Button skip = (Button) view.findViewById(R.id.fragment_onboarding_smart_alarm_skip);
-        Views.setSafeOnClickListener(skip, ignored -> complete());
-
-        return view;
+        return new OnboardingSimpleStepViewBuilder(this, inflater, container)
+                .setHeadingText(R.string.onboarding_title_smart_alarm)
+                .setSubheadingText(R.string.onboarding_info_smart_alarm)
+                .setDiagramImage(R.drawable.onboarding_smart_alarm)
+                .setPrimaryButtonText(R.string.action_set_smart_alarm_now)
+                .setPrimaryOnClickListener(this::createNewAlarm)
+                .setSecondaryButtonText(R.string.action_do_later)
+                .setSecondaryOnClickListener(ignored -> complete())
+                .hideToolbar()
+                .create();
     }
 
     @Override
