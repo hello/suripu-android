@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/gap_xlarge"
+    android:padding="@dimen/gap_outer"
     android:background="@color/background_onboarding">
 
     <TextView
@@ -23,11 +22,11 @@
         android:src="@drawable/sense_colors"
         android:contentDescription="@string/title_sense_colors"/>
 
-    <is.hello.sense.util.SenseHtmlTextView
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/AppTheme.Text.Subheading"
-        app:senseHtml="@string/info_sense_colors"
+        android:text="@string/info_sense_colors"
         android:lineSpacingMultiplier="@dimen/line_multiple_subheading"/>
 
 </LinearLayout>

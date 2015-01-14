@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
  * Used to report errors from the gatt layer of the Android bluetooth stack.
  * <p/>
  * This error type generally should not be used outside of direct interactions
- * with a {@see is.hello.sense.bluetooth.stacks.Peripheral} object.
+ * with a {@see is.hello.onboarding_pair_sense.bluetooth.stacks.Peripheral} object.
  */
 public class BluetoothGattError extends BluetoothError {
     /**

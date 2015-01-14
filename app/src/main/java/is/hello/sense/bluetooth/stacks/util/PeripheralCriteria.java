@@ -9,7 +9,7 @@ import java.util.List;
 import rx.functions.Func1;
 
 /**
- * Describes what a {@see is.hello.sense.bluetooth.stacks.BluetoothStack} should look for when
+ * Describes what a {@see is.hello.onboarding_pair_sense.bluetooth.stacks.BluetoothStack} should look for when
  * performing a BLE scan. Provides simple device address matching, maximum match count and
  * duration constraints, and a free-form system for matching against advertising data scanned
  * from available BLE peripherals.

@@ -34,7 +34,7 @@
             android:layout_marginBottom="@dimen/gap_medium"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
-            android:src="@drawable/shake_pill"
+            android:src="@drawable/onboarding_shake_pill"
             android:contentDescription="@string/info_pair_pill"/>
 
         <is.hello.sense.ui.widget.TintedProgressBar
