@@ -151,7 +151,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     @Override
     public void showFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
         if (!wantsBackStackEntry) {
-            getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -168,6 +168,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         }
 
         transaction.commit();
+        getFragmentManager().executePendingTransactions();
     }
 
     @Override

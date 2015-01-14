@@ -86,19 +86,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
             apiSessionManager.setSession(session);
             Analytics.trackEvent(Analytics.EVENT_SIGNED_IN, null);
 
-            bindAndSubscribe(apiService.registeredDevices(),
-                             devices -> {
-                                 if (devices.isEmpty()) {
-                                     LoadingDialogFragment.close(getFragmentManager());
-                                     getOnboardingActivity().showSetupSense();
-                                 } else {
-                                     getOnboardingActivity().showHomeActivity();
-                                 }
-                             },
-                             e -> {
-                                 LoadingDialogFragment.close(getFragmentManager());
-                                 ErrorDialogFragment.presentError(getFragmentManager(), e);
-                             });
+            getOnboardingActivity().showHomeActivity();
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             if (ApiException.statusEquals(error, 401)) {
