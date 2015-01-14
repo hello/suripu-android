@@ -17,19 +17,20 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.widget.util.Views;
+import rx.functions.Action1;
 
 public final class OnboardingSimpleStepViewBuilder {
-    private final ViewGroup stepView;
+    public final ViewGroup stepView;
 
-    private final OnboardingToolbar toolbar;
+    public final OnboardingToolbar toolbar;
 
-    private final Button primaryButton;
-    private final Button secondaryButton;
+    public final Button primaryButton;
+    public final Button secondaryButton;
 
-    private final TextView headingText;
-    private final TextView subheadingText;
+    public final TextView headingText;
+    public final TextView subheadingText;
 
-    private final ImageView diagramImage;
+    public final ImageView diagramImage;
 
 
     //region Lifecycle
@@ -46,6 +47,11 @@ public final class OnboardingSimpleStepViewBuilder {
         this.subheadingText = (TextView) stepView.findViewById(R.id.fragment_onboarding_simple_step_subheading);
 
         this.diagramImage = (ImageView) stepView.findViewById(R.id.fragment_onboarding_simple_step_diagram);
+    }
+
+    public OnboardingSimpleStepViewBuilder configure(@NonNull Action1<OnboardingSimpleStepViewBuilder> visitor) {
+        visitor.call(this);
+        return this;
     }
 
     public @NonNull ViewGroup create() {
