@@ -150,10 +150,22 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false), newValue -> {
-            this.use24Time = newValue;
-            updateTime();
-        }, Functions.LOG_ERROR);
+        bindAndSubscribe(preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false),
+                         newValue -> {
+                             this.use24Time = newValue;
+                             updateTime();
+                         },
+                         Functions.LOG_ERROR);
+
+        bindAndSubscribe(smartAlarmPresenter.availableAlarmSounds(),
+                         sounds -> {
+                             if (alarm.getSound() == null && !sounds.isEmpty()) {
+                                 Alarm.Sound sound = sounds.get(0);
+                                 alarm.setSound(sound);
+                                 soundButton.setText(sound.name);
+                             }
+                         },
+                         Functions.LOG_ERROR);
     }
 
     @Override
@@ -177,6 +189,13 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         super.onSaveInstanceState(outState);
 
         outState.putSerializable(SmartAlarmDetailActivity.EXTRA_ALARM, alarm);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        smartAlarmPresenter.forgetAvailableAlarmSoundsCache();
     }
 
     public void updateTime() {
