@@ -97,10 +97,10 @@ public class GraphView extends View {
         footerTextPaint.setSubpixelText(true);
 
         setHeaderTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_section_heading));
-        setHeaderTypeface(Typeface.createFromAsset(resources.getAssets(), Styles.TYPEFACE_HEAVY));
+        setHeaderTypeface(Typeface.create("sans-serif", Typeface.BOLD));
 
         setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_body));
-        setFooterTypeface(Typeface.createFromAsset(resources.getAssets(), Styles.TYPEFACE_LIGHT));
+        setFooterTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
 
         this.highlightPointAreaHalf = getResources().getDimensionPixelSize(R.dimen.series_graph_point_size) / 2f;
         highlightPaint.setAntiAlias(true);

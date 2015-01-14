@@ -22,17 +22,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 
 public final class Styles {
-    public static final String TYPEFACE_BLACK = "fonts/AvenirLTCom-Black.ttf";
-    public static final String TYPEFACE_BLACK_OBLIQUE = "fonts/AvenirLTCom-BlackOblique.ttf";
-    public static final String TYPEFACE_HEAVY = "fonts/AvenirLTCom-Heavy.ttf";
-    public static final String TYPEFACE_HEAVY_OBLIQUE = "fonts/AvenirLTCom-HeavyOblique.ttf";
-    public static final String TYPEFACE_ULTRA_LIGHT = "fonts/AvenirNextLTPro-UltLt.ttf";
-    public static final String TYPEFACE_LIGHT = "fonts/AvenirLTCom-Light.ttf";
-    public static final String TYPEFACE_LIGHT_OBLIQUE = "fonts/AvenirLTCom-LightOblique.ttf";
-    public static final String TYPEFACE_ROMAN = "fonts/AvenirLTCom-Roman.ttf";
-    public static final String TYPEFACE_OBLIQUE = "fonts/AvenirLTCom-Oblique.ttf";
-
-
     public static final int TIMELINE_HOURS_ON_SCREEN = 10;
 
 

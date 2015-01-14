@@ -188,9 +188,9 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
             EventType eventType = segment.getEventType();
             if (eventType != null) {
                 if (eventType == EventType.WAKE_UP || eventType == EventType.SLEEP) {
-                    itemView.setTimestampTypeface(Typeface.createFromAsset(getContext().getAssets(), Styles.TYPEFACE_ROMAN));
+                    itemView.setTimestampTypeface(Typeface.create("sans-serif", Typeface.BOLD));
                 } else {
-                    itemView.setTimestampTypeface(Typeface.createFromAsset(getContext().getAssets(), Styles.TYPEFACE_LIGHT));
+                    itemView.setTimestampTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
                 }
                 itemView.setTimestampString(dateFormatter.formatAsTime(segment.getTimestamp(), use24Time));
             } else {

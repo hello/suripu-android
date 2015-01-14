@@ -73,7 +73,6 @@ t
         <item name="android:textSize">@dimen/action_bar_title_text_size</item>
         <item name="android:textColor">@color/text_dark</item>
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
 
     <style name="AppTheme.Text.ActionMenu">
@@ -155,7 +154,6 @@ t
     <style name="AppTheme.Button.Borderless">
         <item name="android:textStyle">normal</item>
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
         <item name="android:padding">@dimen/gap_small</item>
         <item name="android:background">@drawable/selectable_dark</item>
     </style>
@@ -166,11 +164,12 @@ t
 
     <style name="AppTheme.Button.Borderless.Accent.Heavy">
         <item name="android:textAllCaps">true</item>
-        <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
+        <item name="android:textStyle">bold</item>
+
     </style>
 
     <style name="AppTheme.Button.Borderless.Question">
-        <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:padding">@dimen/gap_outer</item>
         <item name="android:textColor">@color/text_dim</item>
         <item name="android:textAllCaps">true</item>
@@ -199,7 +198,6 @@ t
         <item name="android:textSize">@dimen/text_size_large_button</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
 
     <style name="AppTheme.Button.Rounded">
@@ -207,9 +205,8 @@ t
         <item name="android:background">@drawable/selector_button_rounded</item>
         <item name="android:textColor">@color/text_color_selector_white</item>
         <item name="android:textSize">@dimen/text_size_button</item>
-        <item name="android:textStyle">normal</item>
         <item name="android:textAllCaps">true</item>
-        <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="AppTheme.Button.Rounded.Light">
@@ -256,7 +253,7 @@ t
     </style>
 
     <style name="AppTheme.Button.Dialog.Positive">
-        <item name="fontPath">fonts/AvenirLTCom-Heavy.ttf</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <!-- Spinners -->
