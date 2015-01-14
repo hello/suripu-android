@@ -302,4 +302,7 @@ so you can sleep better.</string>
     <string name="device_support_footer">If you’re having trouble, visit <a href="http://support.hello.is">Support</a> or contact us at <a href="mailto:help@sayhello.com">help@sayhello.com</a>.</string>
     <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
     <string name="label_wifi_network_name">"WiFi network: "</string>
+    <string name="onboarding_info_enhanced_audio">This will allow Sense to pick up snoring, sleep talking and other noise disturbances.\n\nWithout enhanced audio enabled, Sense only looks at background noise.</string>
+    <string name="onboarding_title_enhanced_audio">Enable enhanced audio</string>
+    <string name="action_enable_enhanced_audio">Enable Enhanced Audio</string>
 </resources>

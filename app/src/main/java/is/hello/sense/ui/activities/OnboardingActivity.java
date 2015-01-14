@@ -42,6 +42,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingDoneFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
@@ -295,12 +296,16 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                 Analytics.trackUserSignUp(account.getAccountId(), account.getName(), DateTime.now());
 
                 LoadingDialogFragment.close(getFragmentManager());
-                showSetupSense();
+                showEnhancedAudio();
             }, e -> {
                 LoadingDialogFragment.close(getFragmentManager());
                 ErrorDialogFragment.presentError(getFragmentManager(), e);
             });
         }
+    }
+
+    public void showEnhancedAudio() {
+        showFragment(new OnboardingRegisterAudioFragment(), null, false);
     }
 
     public void showSetupSense() {
