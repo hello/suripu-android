@@ -16,8 +16,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 
-import static rx.android.observables.AndroidObservable.fromBroadcast;
-
 public class WifiPowerController {
     private final Context applicationContext;
     private final @Nullable WifiManager wifiManager;

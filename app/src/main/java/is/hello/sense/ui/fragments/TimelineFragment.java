@@ -2,11 +2,11 @@ package is.hello.sense.ui.fragments;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,28 +27,29 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.PreSleepInsight;
+import is.hello.sense.api.model.SmartAlarm;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
+import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
-import is.hello.sense.ui.widget.TimestampTextView;
-import is.hello.sense.ui.widget.graphing.PieGraphView;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
@@ -56,26 +57,20 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
 
-    private static final int MESSAGE_FADE_OUT = 0;
-    private static final long MESSAGE_FADE_OUT_DELAY = 150;
-
     @Inject DateFormatter dateFormatter;
     @Inject TimelinePresenter timelinePresenter;
+    @Inject PreferencesPresenter preferences;
     @Inject Markdown markdown;
 
     private ListView listView;
     private TimelineSegmentAdapter segmentAdapter;
-
-    private TimestampTextView timeScrubber;
-    private float scrollContentAperture;
-    private float timeScrubberTrackHeight;
 
     private ImageButton menuButton;
     private ImageButton shareButton;
     private ImageButton smartAlarmButton;
 
     private TextView dateText;
-    private PieGraphView scoreGraph;
+    private SleepScoreDrawable scoreGraph;
     private TextView scoreText;
     private TextView messageText;
 
@@ -84,11 +79,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private LinearLayout beforeSleepItemContainer;
     private TextView beforeSleepMessage;
     private int selectedBeforeSleepInsight = -1;
-
-    private final Handler fadeOutHandler = new Handler(message -> {
-        fadeOutTimeScrubber();
-        return true;
-    });
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -107,7 +97,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         timelinePresenter.setDate(getDate());
         addPresenter(timelinePresenter);
 
-        this.segmentAdapter = new TimelineSegmentAdapter(getActivity());
+        this.segmentAdapter = new TimelineSegmentAdapter(getActivity(), dateFormatter);
+
+        boolean defaultValue = DateFormat.is24HourFormat(getActivity());
+        Observable<Boolean> use24HourTime = preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, defaultValue)
+                                                       .subscribeOn(AndroidSchedulers.mainThread());
+        track(use24HourTime.subscribe(segmentAdapter::setUse24Time));
 
         setRetainInstance(true);
     }
@@ -116,8 +111,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
-        this.timeScrubber = (TimestampTextView) view.findViewById(R.id.fragment_timeline_scrubber);
-
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
         listView.setOnItemClickListener(this);
@@ -125,9 +118,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         View headerView = inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
 
-        this.scoreGraph = (PieGraphView) headerView.findViewById(R.id.fragment_timeline_sleep_score_chart);
-        this.scoreText = (TextView) headerView.findViewById(R.id.fragment_timeline_sleep_score);
+        LinearLayout sleepScoreContainer = (LinearLayout) headerView.findViewById(R.id.fragment_timeline_sleep_score_chart);
+        this.scoreText = (TextView) sleepScoreContainer.findViewById(R.id.fragment_timeline_sleep_score);
         this.messageText = (TextView) headerView.findViewById(R.id.fragment_timeline_message);
+
+        this.scoreGraph = new SleepScoreDrawable(getResources());
+        sleepScoreContainer.setBackground(scoreGraph);
+
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
@@ -168,15 +165,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.smartAlarmButton = (ImageButton) view.findViewById(R.id.fragment_timeline_smart_alarm);
         Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
-            // TODO: This is massively hacky
-
-            SharedPreferences preferences = getActivity().getSharedPreferences(Constants.INTERNAL_PREFS, 0);
-            preferences.edit()
-                    .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
-                    .putInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 3)
-                    .apply();
-
-            ((HomeActivity) getActivity()).getSlidingLayersView().open();
+            Intent intent = new Intent(getActivity(), SmartAlarmDetailActivity.class);
+            intent.putExtras(SmartAlarmDetailActivity.getArguments(new SmartAlarm(), SmartAlarmDetailActivity.INDEX_NEW));
+            startActivity(intent);
         });
 
         // Always do this after adding headers and footer views,
@@ -208,13 +199,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
@@ -230,11 +214,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         int scoreColor = Styles.getSleepScoreColor(getActivity(), sleepScore);
         scoreGraph.setFillColor(scoreColor);
         scoreText.setTextColor(scoreColor);
-        ValueAnimator updateAnimation = scoreGraph.animationForNewValue(sleepScore, Animations.Properties.createWithDelay(250));
-        if (updateAnimation != null) {
+
+        if (sleepScore != scoreGraph.getValue()) {
+            ValueAnimator updateAnimation = ValueAnimator.ofInt(scoreGraph.getValue(), sleepScore);
+            Animations.Properties.createWithDelay(250).apply(updateAnimation);
+
             updateAnimation.addUpdateListener(a -> {
-                String score = a.getAnimatedValue().toString();
-                scoreText.setText(score);
+                Integer score = (Integer) a.getAnimatedValue();
+                scoreGraph.setValue(score);
+                scoreText.setText(score.toString());
             });
 
             updateAnimation.start();
@@ -283,22 +271,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 timelineEventsHeader.setVisibility(View.INVISIBLE);
             } else {
                 timelineEventsHeader.setVisibility(View.VISIBLE);
-
-                bindAndSubscribe(Views.observeNextLayout(listView), ignored -> {
-                    this.scrollContentAperture = segmentAdapter.getTotalItemHeight() - listView.getMeasuredHeight();
-                    this.timeScrubberTrackHeight = listView.getMeasuredHeight() - timeScrubber.getMeasuredHeight();
-
-                    updateTimeScrubber();
-                    timeScrubber.forceLayout(); // Does not happen implicitly
-                }, Functions.LOG_ERROR);
             }
         } else {
             scoreGraph.setTrackColor(getResources().getColor(R.color.border));
 
             showInsights(Collections.emptyList());
             timelineEventsHeader.setVisibility(View.INVISIBLE);
-
-            timeScrubber.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -313,8 +291,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         } else {
             messageText.setText(R.string.missing_data_placeholder);
         }
-
-        timeScrubber.setVisibility(View.INVISIBLE);
     }
 
 
@@ -325,7 +301,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     public void showInsight(@NonNull View sender) {
         View view = beforeSleepItemContainer.findViewWithTag(selectedBeforeSleepInsight);
-        if (view == sender) {
+        if (view == sender && !TextUtils.isEmpty(beforeSleepMessage.getText())) {
             beforeSleepMessage.setText(null);
             beforeSleepMessage.setVisibility(View.GONE);
         } else {
@@ -398,95 +374,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     //endregion
 
-    //region Time Scrubber
-
-    private void snapInTimeScrubber() {
-        PropertyAnimatorProxy.stop(timeScrubber);
-        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
-
-        timeScrubber.setAlpha(1f);
-        timeScrubber.setVisibility(View.VISIBLE);
-    }
-
-    private void fadeInTimeScrubber() {
-        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
-
-        if (timeScrubber.getVisibility() == View.INVISIBLE) {
-            animate(timeScrubber)
-                    .setDuration(Animations.DURATION_MINIMUM)
-                    .fadeIn()
-                    .start();
-        }
-    }
-
-    private void fadeOutTimeScrubber() {
-        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
-
-        if (timeScrubber.getAlpha() == 1f) {
-            animate(timeScrubber)
-                    .setDuration(Animations.DURATION_MINIMUM)
-                    .fadeOut(View.INVISIBLE)
-                    .start();
-        }
-    }
-
-    private void scheduleFadeOutTimeScrubber() {
-        fadeOutHandler.removeMessages(MESSAGE_FADE_OUT);
-        fadeOutHandler.sendEmptyMessageDelayed(MESSAGE_FADE_OUT, MESSAGE_FADE_OUT_DELAY);
-    }
-
-    private void updateTimeScrubber() {
-        // OnScrollListener will fire immediately after rotation before
-        // the list view has laid itself out, have to guard against that.
-        if (listView.getChildCount() == 0) {
-            return;
-        }
-
-        int firstVisiblePosition = listView.getFirstVisiblePosition();
-        int firstVisibleSegment = ListViews.getAdapterPosition(listView, firstVisiblePosition);
-
-        float headerInset;
-        float scrollTop;
-        if (firstVisiblePosition < listView.getHeaderViewsCount()) {
-            headerInset = timelineEventsHeader.getBottom();
-            scrollTop = 0f;
-        } else {
-            headerInset = 0f;
-
-            View topView = listView.getChildAt(0);
-            float scaleFactor = -topView.getTop() / (float) topView.getMeasuredHeight();
-            scrollTop = segmentAdapter.getHeightOfItems(0, firstVisibleSegment, scaleFactor);
-        }
-
-        float multiple = Math.min(1f, scrollTop / scrollContentAperture);
-        float timestampY = headerInset + (timeScrubberTrackHeight * multiple);
-
-        int itemPosition = ListViews.getPositionForY(listView, timestampY);
-        TimelineSegment segment = segmentAdapter.getItem(itemPosition);
-        timeScrubber.setY(timestampY);
-        timeScrubber.setDateTime(segment.getTimestamp());
-    }
-
-
     private class TimelineScrollListener extends ListViews.TouchAndScrollListener {
         @Override
         protected void onScrollStateChanged(@NonNull AbsListView absListView, int oldState, int newState) {
-            if (segmentAdapter.getCount() > 0) {
-                if (newState == SCROLL_STATE_FLING) {
-                    snapInTimeScrubber();
-                } else if (newState == SCROLL_STATE_IDLE && oldState == SCROLL_STATE_FLING) {
-                    scheduleFadeOutTimeScrubber();
-                }
-            }
         }
 
         @Override
         public void onScroll(AbsListView listView, int firstVisiblePosition, int visibleItemCount, int totalItemCount) {
-            if (segmentAdapter.getCount() > 0) {
-                updateTimeScrubber();
-            }
-
-            if (firstVisiblePosition == 0) {
+            if (firstVisiblePosition == 0 && ListViews.getEstimatedScrollY(listView) == 0) {
                 pullSmartAlarmOnScreen();
             } else {
                 pushSmartAlarmOffScreen();
@@ -495,14 +390,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         @Override
         protected void onTouchDown(@NonNull AbsListView absListView) {
-            fadeInTimeScrubber();
         }
 
         @Override
         protected void onTouchUp(@NonNull AbsListView absListView) {
-            scheduleFadeOutTimeScrubber();
         }
     }
-
-    //endregion
 }

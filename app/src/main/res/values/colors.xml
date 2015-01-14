@@ -8,6 +8,8 @@
     <color name="light_accent">#009CFF</color>
     <color name="light_accent_dimmed">#6ec2fe</color>
     <color name="light_accent_darkened">#0c67c0</color>
+    <color name="destructive_accent">#e80009</color>
+    <color name="status_bar">#919191</color>
 
     <color name="background">#f8f8f8</color>
     <color name="background_light">@color/white</color>
@@ -41,20 +43,20 @@
     <color name="sleep_score_average">#f1e57f</color>
     <color name="sleep_score_bad">#cc5651</color>
 
-    <color name="sensor_alert">#FF9A00</color>
-    <color name="sensor_warning">#FF0000</color>
-    <color name="sensor_ideal">#41D7AC</color>
+    <color name="sensor_alert">#FF974C</color>
+    <color name="sensor_warning">#FFCC00</color>
+    <color name="sensor_ideal">#1ED7AA</color>
     <color name="sensor_unknown">#565961</color>
 
-    <color name="sleep_light">#009CFF</color>
-    <color name="sleep_intermediate">#487ef7</color>
-    <color name="sleep_deep">#1736E4</color>
-    <color name="sleep_awake">#0025BD</color>
+    <color name="sleep_awake">#009CFF</color>
+    <color name="sleep_light">#487ef7</color>
+    <color name="sleep_intermediate">#1736E4</color>
+    <color name="sleep_deep">#0025BD</color>
 
-    <color name="sleep_light_dimmed">#9BD4FF</color>
-    <color name="sleep_intermediate_dimmed">#9BD4FF</color>
-    <color name="sleep_deep_dimmed">#d7eefe</color>
-    <color name="sleep_awake_dimmed">#9BD4FF</color>
+    <color name="sleep_awake_dimmed">#FFFFFF</color>
+    <color name="sleep_light_dimmed">#EBF8FF</color>
+    <color name="sleep_intermediate_dimmed">#D6F0FF</color>
+    <color name="sleep_deep_dimmed">#C2E8FF</color>
 
     <color name="graph_fill_color">#28000000</color>
     <color name="graph_fill_gradient_top">#23000000</color>

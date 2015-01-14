@@ -15,6 +15,9 @@ public class RoomConditions extends ApiResponse {
     @JsonProperty("particulates")
     private SensorState particulates;
 
+    @JsonProperty("light")
+    private SensorState light;
+
 
     public SensorState getTemperature() {
         return temperature;
@@ -26,6 +29,10 @@ public class RoomConditions extends ApiResponse {
 
     public SensorState getParticulates() {
         return particulates;
+    }
+
+    public SensorState getLight() {
+        return light;
     }
 
 
@@ -40,6 +47,9 @@ public class RoomConditions extends ApiResponse {
             case SensorHistory.SENSOR_NAME_TEMPERATURE:
                 return temperature;
 
+            case SensorHistory.SENSOR_NAME_LIGHT:
+                return light;
+
             default:
                 return null;
         }
@@ -52,6 +62,7 @@ public class RoomConditions extends ApiResponse {
                 "temperature=" + temperature +
                 ", humidity=" + humidity +
                 ", particulates=" + particulates +
+                ", light=" + light +
                 '}';
     }
 }

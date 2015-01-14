@@ -11,7 +11,7 @@ import org.joda.time.LocalDate;
 import is.hello.sense.api.ApiService;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Account extends ApiResponse {
+public class Account extends ApiResponse implements Cloneable {
     @JsonIgnore
     private String id;
 
@@ -49,6 +49,12 @@ public class Account extends ApiResponse {
 
     @JsonProperty("email_verified")
     private boolean emailVerified;
+
+    @JsonProperty("lat")
+    private Double latitude;
+
+    @JsonProperty("long")
+    private Double longitude;
 
     @JsonIgnore
     public String getId() {
@@ -144,6 +150,22 @@ public class Account extends ApiResponse {
         return emailVerified;
     }
 
+    public void setLocation(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+
+
+
+    public final Account clone() {
+        try {
+            return (Account) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @Override
     public String toString() {
@@ -160,6 +182,8 @@ public class Account extends ApiResponse {
                 ", password='" + password + '\'' +
                 ", lastModified=" + lastModified +
                 ", emailVerified=" + emailVerified +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
                 '}';
     }
 }

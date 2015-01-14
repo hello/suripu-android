@@ -7,6 +7,7 @@ import java.util.List;
 
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -16,6 +17,7 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
@@ -30,6 +32,9 @@ import rx.Observable;
 
 public interface ApiService {
     public static final String DATE_FORMAT = "yyyy-MM-dd";
+
+    public static final String UNIT_TEMPERATURE_CELCIUS = "c";
+    public static final String UNIT_TEMPERATURE_US_CUSTOMARY = "f";
 
     //region OAuth
 
@@ -59,6 +64,9 @@ public interface ApiService {
     @POST("/timezone")
     Observable<SenseTimeZone> updateTimeZone(@NonNull @Body SenseTimeZone senseTimeZone);
 
+    @POST("/account/email")
+    Observable<VoidResponse> updateEmailAddress(@NonNull @Body Account account);
+
     //endregion
 
 
@@ -78,7 +86,7 @@ public interface ApiService {
     //region Room Conditions
 
     @GET("/room/current")
-    Observable<RoomConditions> currentRoomConditions();
+    Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit);
 
     @GET("/room/{sensor}/day")
     Observable<ArrayList<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor,
@@ -129,6 +137,24 @@ public interface ApiService {
     @POST("/alarms/{client_time_utc}")
     Observable<VoidResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
                                              @NonNull @Body List<Alarm> alarms);
+
+    @GET("/alarms/sounds")
+    Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds();
+
+    //endregion
+
+
+    //region Trends
+
+    @GET("/insights/trends/list")
+    Observable<ArrayList<AvailableTrendGraph>> availableTrendGraphs();
+
+    @GET("/insights/trends/all")
+    Observable<ArrayList<TrendGraph>> allTrends();
+
+    @GET("/insights/trends/graph")
+    Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
+                                                 @NonNull @Query("time_period") String timePeriod);
 
     //endregion
 }

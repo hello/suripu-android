@@ -39,4 +39,23 @@ public class AccountPresenterTests extends InjectionTestCase {
         assertEquals(updatedAccount.getHeight(), savedAccount.getHeight());
         assertEquals(updatedAccount.getBirthDate(), savedAccount.getBirthDate());
     }
+
+    public void testUpdateEmail() throws Exception {
+        accountPresenter.update();
+        SyncObserver<Account> accountBefore = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, accountPresenter.account);
+        accountBefore.await();
+
+        assertNull(accountBefore.getError());
+        assertNotNull(accountBefore.getLast());
+
+
+        SyncObserver<Account> accountAfter = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, accountPresenter.updateEmail("test@me.com"));
+        accountAfter.await();
+
+        assertNull(accountAfter.getError());
+        assertNotNull(accountAfter.getLast());
+
+        assertNotSame(accountBefore.getLast().getEmail(), accountAfter.getLast().getEmail());
+        assertEquals("test@me.com", accountAfter.getLast().getEmail());
+    }
 }

@@ -1,0 +1,30 @@
+[
+  {
+    "data_type": "sleep_duration",
+    "time_period": "DOW"
+  },
+  {
+    "data_type": "sleep_score",
+    "time_period": "DOW"
+  },
+  {
+    "data_type": "sleep_score",
+    "time_period": "1W"
+  },
+  {
+    "data_type": "sleep_score",
+    "time_period": "2W"
+  },
+  {
+    "data_type": "sleep_score",
+    "time_period": "1M"
+  },
+  {
+    "data_type": "sleep_score",
+    "time_period": "3M"
+  },
+  {
+    "data_type": "sleep_score",
+    "time_period": "ALL"
+  }
+]

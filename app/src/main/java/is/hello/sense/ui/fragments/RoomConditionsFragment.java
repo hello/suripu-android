@@ -19,6 +19,7 @@ import android.widget.TextView;
 import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,13 +28,14 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.ui.widget.graphing.SimpleLineGraphDrawable;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
@@ -41,6 +43,8 @@ import is.hello.sense.util.Markdown;
 import rx.Observable;
 
 public class RoomConditionsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+    private static final long THREE_HOURS = (3 * 60 * 60 * 1000);
+
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
 
@@ -50,6 +54,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
     private final RoomSensorInfo temperature = new RoomSensorInfo(SensorHistory.SENSOR_NAME_TEMPERATURE);
     private final RoomSensorInfo humidity = new RoomSensorInfo(SensorHistory.SENSOR_NAME_HUMIDITY);
     private final RoomSensorInfo particulates = new RoomSensorInfo(SensorHistory.SENSOR_NAME_PARTICULATES);
+    private final RoomSensorInfo light = new RoomSensorInfo(SensorHistory.SENSOR_NAME_LIGHT);
     private Adapter adapter;
 
     @Override
@@ -66,7 +71,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        this.adapter = new Adapter(getActivity(), new RoomSensorInfo[] { temperature, humidity, particulates });
+        this.adapter = new Adapter(getActivity(), new RoomSensorInfo[] { temperature, humidity, particulates, light });
         Styles.addCardSpacingHeaderAndFooter(listView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
@@ -99,7 +104,8 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
             RoomSensorInfo info = adapter.getItem(i);
 
             Observable<ArrayList<SensorHistory>> history = apiService.sensorHistoryForDay(info.sensorName, timestamp);
-            Observable<SensorHistoryAdapter.Update> graphUpdate = history.flatMap(h -> SensorHistory.createAdapterUpdate(h, SensorHistoryPresenter.MODE_DAY, timeZone));
+            Observable<List<SensorHistory>> threeHours = history.map(h -> Lists.filtered(h, item -> (timestamp - item.getTime().getMillis()) < THREE_HOURS));
+            Observable<SensorHistoryAdapter.Update> graphUpdate = threeHours.flatMap(h -> SensorHistory.createAdapterUpdate(h, SensorHistoryPresenter.MODE_DAY, timeZone));
             bindAndSubscribe(graphUpdate,
                              info.graphAdapter::update,
                              e -> {
@@ -114,18 +120,26 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
             temperature.formatter = null;
             temperature.sensorState = null;
 
+            humidity.formatter = null;
             humidity.sensorState = null;
 
             particulates.formatter = null;
             particulates.sensorState = null;
+
+            light.formatter = null;
+            light.sensorState = null;
         } else {
-            temperature.formatter = result.units::formatTemperature;
+            temperature.formatter = result.units.getUnitFormatterForSensor(SensorHistory.SENSOR_NAME_TEMPERATURE);
             temperature.sensorState = result.conditions.getTemperature();
 
+            humidity.formatter = result.units.getUnitFormatterForSensor(SensorHistory.SENSOR_NAME_HUMIDITY);
             humidity.sensorState = result.conditions.getHumidity();
 
-            particulates.formatter = result.units::formatParticulates;
+            particulates.formatter = result.units.getUnitFormatterForSensor(SensorHistory.SENSOR_NAME_PARTICULATES);
             particulates.sensorState = result.conditions.getParticulates();
+
+            light.formatter = result.units.getUnitFormatterForSensor(SensorHistory.SENSOR_NAME_LIGHT);
+            light.sensorState = result.conditions.getLight();
         }
 
         adapter.notifyDataSetChanged();
@@ -137,10 +151,14 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
         temperature.formatter = null;
         temperature.sensorState = null;
 
+        humidity.formatter = null;
         humidity.sensorState = null;
 
         particulates.formatter = null;
         particulates.sensorState = null;
+
+        light.formatter = null;
+        light.sensorState = null;
 
         adapter.notifyDataSetChanged();
     }
@@ -228,13 +246,13 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
         class ViewHolder {
             final TextView reading;
             final TextView message;
-            final SimpleLineGraphDrawable lineGraphDrawable;
+            final LineGraphDrawable lineGraphDrawable;
 
             ViewHolder(@NonNull View view) {
                 this.reading = (TextView) view.findViewById(R.id.item_sensor_condition_reading);
                 this.message = (TextView) view.findViewById(R.id.item_sensor_condition_message);
 
-                this.lineGraphDrawable = new SimpleLineGraphDrawable(getResources());
+                this.lineGraphDrawable = new LineGraphDrawable(getResources());
 
                 View graph = view.findViewById(R.id.fragment_room_sensor_condition_graph);
                 graph.setBackground(lineGraphDrawable);

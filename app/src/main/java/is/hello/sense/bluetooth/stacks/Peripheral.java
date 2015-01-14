@@ -10,7 +10,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
-import is.hello.sense.bluetooth.stacks.util.TakesOwnership;
 import rx.Observable;
 
 /**
@@ -109,11 +108,9 @@ public interface Peripheral {
     //region Timeouts
 
     /**
-     * Returns the singleton operation timeout object pool associated with the Peripheral.
-     * <p/>
-     * A finite number of timeouts exist in a pool, a typical limit is 2.
+     * Returns a new operation timeout for use with the Peripheral.
      */
-    @NonNull OperationTimeout.Pool getOperationTimeoutPool();
+    @NonNull OperationTimeout createOperationTimeout(@NonNull String name, long duration, @NonNull TimeUnit timeUnit);
 
     //endregion
 
@@ -189,7 +186,7 @@ public interface Peripheral {
      *
      * @see Peripheral#getService(java.util.UUID)
      */
-    @NonNull Observable<Collection<PeripheralService>> discoverServices(@NonNull @TakesOwnership OperationTimeout timeout);
+    @NonNull Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout);
 
     /**
      * Looks up a peripheral service by identifier on the peripheral.
@@ -207,17 +204,17 @@ public interface Peripheral {
     @NonNull Observable<UUID> subscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                     @NonNull UUID characteristicIdentifier,
                                                     @NonNull UUID descriptorIdentifier,
-                                                    @NonNull @TakesOwnership OperationTimeout timeout);
+                                                    @NonNull OperationTimeout timeout);
 
     @NonNull Observable<UUID> unsubscribeNotification(@NonNull PeripheralService onPeripheralService,
                                                       @NonNull UUID characteristicIdentifier,
                                                       @NonNull UUID descriptorIdentifier,
-                                                      @NonNull @TakesOwnership OperationTimeout timeout);
+                                                      @NonNull OperationTimeout timeout);
 
     @NonNull Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService,
                                            @NonNull UUID identifier,
                                            @NonNull byte[] payload,
-                                           @NonNull @TakesOwnership OperationTimeout timeout);
+                                           @NonNull OperationTimeout timeout);
 
     /**
      * Associates a given packet handler with the Peripheral.

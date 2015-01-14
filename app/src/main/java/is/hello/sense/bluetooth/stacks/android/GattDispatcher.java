@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import is.hello.sense.bluetooth.errors.BluetoothEarlyDisconnectError;
-import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
@@ -48,7 +47,6 @@ class GattDispatcher extends BluetoothGattCallback {
             Logger.info(Peripheral.LOG_TAG, "onDisconnectListener(" + subscriber.hashCode() + ")");
 
             timeout.unschedule();
-            timeout.recycle();
 
             subscriber.onError(new BluetoothEarlyDisconnectError());
         });

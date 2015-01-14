@@ -121,5 +121,15 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
         return context.getString(R.string.format_date_placeholder);
     }
 
+    public @NonNull String formatAsDayAndTime(@Nullable DateTime time, boolean use24Time) {
+        if (time != null) {
+            if (use24Time)
+                return formatDateTime(time, context.getString(R.string.format_day_and_time_24_hr));
+            else
+                return formatDateTime(time, context.getString(R.string.format_day_and_time_12_hr));
+        }
+        return context.getString(R.string.format_date_placeholder);
+    }
+
     //endregion
 }

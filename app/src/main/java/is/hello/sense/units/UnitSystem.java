@@ -1,12 +1,15 @@
 package is.hello.sense.units;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.units.systems.MetricUnitSystem;
 import is.hello.sense.units.systems.UsCustomaryUnitSystem;
 
@@ -51,6 +54,11 @@ public class UnitSystem implements Serializable {
     //endregion
 
 
+    public String getApiTemperatureUnit() {
+        return ApiService.UNIT_TEMPERATURE_CELCIUS;
+    }
+
+
     //region Formatting
 
     public String formatMass(float mass) {
@@ -69,12 +77,28 @@ public class UnitSystem implements Serializable {
         return (long) (Math.round(decibels)) + "db";
     }
 
-    public String formatLux(float lux) {
-        return (long) (Math.round(lux)) + "lux";
+    public String formatLight(float lux) {
+        return Integer.toString((int) lux);
     }
 
     public String formatParticulates(float particulates) {
         return Long.toString(Math.round(particulates));
+    }
+
+    public @Nullable UnitFormatter.Formatter getUnitFormatterForSensor(@NonNull String sensor) {
+        switch (sensor) {
+            case SensorHistory.SENSOR_NAME_TEMPERATURE:
+                return this::formatTemperature;
+
+            case SensorHistory.SENSOR_NAME_PARTICULATES:
+                return this::formatParticulates;
+
+            case SensorHistory.SENSOR_NAME_LIGHT:
+                return this::formatLight;
+
+            default:
+                return null;
+        }
     }
 
     //endregion

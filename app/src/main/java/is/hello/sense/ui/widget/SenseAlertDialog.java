@@ -105,7 +105,7 @@ public class SenseAlertDialog extends Dialog {
 
     public void setDestructive(boolean isDestructive) {
         if (isDestructive) {
-            positiveButton.setTextColor(getContext().getResources().getColor(R.color.sensor_warning));
+            positiveButton.setTextColor(getContext().getResources().getColor(R.color.destructive_accent));
         } else {
             positiveButton.setTextColor(getContext().getResources().getColor(R.color.light_accent));
         }

@@ -22,15 +22,12 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
-import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.HelpUtil;
-import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -38,28 +35,26 @@ import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 
-import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.wifi_endpoint.sec_type;
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
-public class OnboardingSignIntoWifiFragment extends InjectionFragment {
+public class OnboardingSignIntoWifiFragment extends HardwareFragment {
     private static final String ARG_SCAN_RESULT = OnboardingSignIntoWifiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
     private static final int ERROR_REQUEST_CODE = 0x30;
 
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferences;
-    @Inject HardwarePresenter hardwarePresenter;
 
     private EditText networkName;
     private EditText networkPassword;
     private Spinner networkSecurity;
 
-    private LoadingDialogFragment loadingDialogFragment;
-
-    private @Nullable MorpheusBle.wifi_endpoint network;
+    private @Nullable SenseCommandProtos.wifi_endpoint network;
 
     private boolean hasConnectedToNetwork = false;
+    private boolean hasSentAccessToken = false;
 
-    public static OnboardingSignIntoWifiFragment newInstance(@Nullable MorpheusBle.wifi_endpoint network) {
+    public static OnboardingSignIntoWifiFragment newInstance(@Nullable SenseCommandProtos.wifi_endpoint network) {
         OnboardingSignIntoWifiFragment fragment = new OnboardingSignIntoWifiFragment();
 
         Bundle arguments = new Bundle();
@@ -73,9 +68,10 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.network = (MorpheusBle.wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
+        this.network = (SenseCommandProtos.wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
         if (savedInstanceState != null) {
             this.hasConnectedToNetwork = savedInstanceState.getBoolean("hasConnectedToNetwork", false);
+            this.hasSentAccessToken = savedInstanceState.getBoolean("hasSentAccessToken", false);
         }
 
         Analytics.trackEvent(Analytics.EVENT_ONBOARDING_WIFI_PASSWORD, null);
@@ -99,7 +95,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         Views.setSafeOnClickListener(continueButton, ignored -> sendWifiCredentials());
 
         Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        Views.setSafeOnClickListener(helpButton, ignored -> HelpUtil.showHelp(getActivity(), HelpUtil.Step.ONBOARDING_SIGN_INTO_WIFI));
+        Views.setSafeOnClickListener(helpButton, ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SIGN_INTO_WIFI));
 
         if (network != null) {
             this.networkName.setText(network.getSsid());
@@ -131,6 +127,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("hasConnectedToNetwork", hasConnectedToNetwork);
+        outState.putBoolean("hasSentAccessToken", hasSentAccessToken);
     }
 
     @Override
@@ -142,26 +139,6 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
         }
     }
 
-    private void beginSettingWifi() {
-        this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_connecting_network), true);
-    }
-
-    private void finishedSettingWifi() {
-        SenseTimeZone timeZone = SenseTimeZone.fromDefault();
-        apiService.updateTimeZone(timeZone)
-                  .subscribe(ignored -> {
-                      Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
-
-                      preferences.edit()
-                              .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
-                              .apply();
-                  }, Functions.LOG_ERROR);
-
-        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-            OnboardingActivity activity = (OnboardingActivity) getActivity();
-            activity.showPairPill();
-        });
-    }
 
     private void sendWifiCredentials() {
         String networkName = this.networkName.getText().toString();
@@ -173,7 +150,7 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
             return;
         }
 
-        beginSettingWifi();
+        showBlockingActivity(R.string.title_connecting_network);
 
         if (hardwarePresenter.getPeripheral() == null) {
             Action1<Throwable> onError = this::presentError;
@@ -188,43 +165,86 @@ public class OnboardingSignIntoWifiFragment extends InjectionFragment {
             return;
         }
 
-        if (hasConnectedToNetwork) {
-            sendAccessToken();
-            return;
-        }
+        showHardwareActivity(() -> {
+            if (hasConnectedToNetwork) {
+                sendAccessToken();
+                return;
+            }
 
-        sec_type securityType;
-        if (network != null) {
-            securityType = network.getSecurityType();
-        } else {
-            securityType = (sec_type) networkSecurity.getSelectedItem();
-        }
+            sec_type securityType;
+            if (network != null) {
+                securityType = network.getSecurityType();
+            } else {
+                securityType = (sec_type) networkSecurity.getSelectedItem();
+            }
 
-        bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, securityType, password), ignored -> {
-            this.hasConnectedToNetwork = true;
-            sendAccessToken();
-        }, this::presentError);
+            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, securityType, password), ignored -> {
+                this.hasConnectedToNetwork = true;
+                preferences.edit()
+                           .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
+                           .apply();
+                sendAccessToken();
+            }, this::presentError);
+        });
     }
 
     private void sendAccessToken() {
-        if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false)) {
-            finishedSettingWifi();
+        if (hasSentAccessToken || getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false)) {
+            setDeviceTimeZone();
         } else {
-            loadingDialogFragment.setTitle(getString(R.string.title_linking_account));
-            bindAndSubscribe(hardwarePresenter.linkAccount(), ignored -> finishedSettingWifi(), this::presentError);
+            showBlockingActivity(R.string.title_linking_account);
+
+            bindAndSubscribe(hardwarePresenter.linkAccount(),
+                             ignored -> {
+                                 this.hasSentAccessToken = true;
+                                 setDeviceTimeZone();
+                             },
+                             this::presentError);
         }
+    }
+
+    private void setDeviceTimeZone() {
+        showBlockingActivity(R.string.title_setting_time_zone);
+
+        SenseTimeZone timeZone = SenseTimeZone.fromDefault();
+        bindAndSubscribe(apiService.updateTimeZone(timeZone),
+                         ignored -> {
+                             Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
+
+                             preferences.edit()
+                                     .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
+                                     .apply();
+
+                             pushDeviceData();
+                         },
+                         this::presentError);
+    }
+
+    private void pushDeviceData() {
+        showBlockingActivity(R.string.title_pushing_data);
+
+        bindAndSubscribe(hardwarePresenter.pushData(),
+                         ignored -> finished(),
+                         error -> {
+                             Logger.error(getClass().getSimpleName(), "Could not push Sense data, ignoring.", error);
+                             finished();
+                         });
+    }
+
+    private void finished() {
+        hideAllActivity(true, () -> getOnboardingActivity().showPairPill());
     }
 
 
     public void presentError(Throwable e) {
-        LoadingDialogFragment.close(getFragmentManager());
-
-        if (hardwarePresenter.isErrorFatal(e)) {
-            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
-            fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
-        } else {
-            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
-        }
+        hideAllActivity(false, () -> {
+            if (hardwarePresenter.isErrorFatal(e)) {
+                UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+                fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
+            } else {
+                ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            }
+        });
     }
 
     private static class SecurityTypeAdapter extends ArrayAdapter<sec_type> {

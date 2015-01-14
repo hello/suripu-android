@@ -20,6 +20,7 @@ import is.hello.sense.ui.adapter.TimelineNavigatorAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.TimelineNavigatorLayoutManager;
 import is.hello.sense.ui.widget.TimelineItemDecoration;
+import is.hello.sense.util.DateFormatter;
 
 public class TimelineNavigatorFragment extends InjectionFragment implements TimelineNavigatorAdapter.OnItemClickedListener {
     public static final String TAG = TimelineNavigatorFragment.class.getSimpleName();
@@ -31,6 +32,7 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
     private TextView monthText;
     private RecyclerView recyclerView;
     private TimelineNavigatorLayoutManager layoutManager;
+    private DateTime startDate;
 
     public static TimelineNavigatorFragment newInstance(@NonNull DateTime startTime) {
         TimelineNavigatorFragment fragment = new TimelineNavigatorFragment();
@@ -47,8 +49,9 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DateTime startTime = (DateTime) getArguments().getSerializable(ARG_START_DATE);
-        presenter.setStartTime(startTime);
+        this.startDate = (DateTime) getArguments().getSerializable(ARG_START_DATE);
+
+        presenter.setFirstDate(DateFormatter.lastNight());
         addPresenter(presenter);
 
         setRetainInstance(true);
@@ -62,7 +65,7 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
         this.monthText = (TextView) view.findViewById(R.id.fragment_timeline_navigator_month);
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_navigator_recycler_view);
-        recyclerView.addItemDecoration(new TimelineItemDecoration(getResources(), R.drawable.graph_grid_fill, R.dimen.divider_size));
+        recyclerView.addItemDecoration(new TimelineItemDecoration(getResources(), R.drawable.graph_grid_fill_top_down, R.dimen.divider_size));
 
         TimelineScrollListener timelineScrollListener = new TimelineScrollListener();
         recyclerView.setOnScrollListener(timelineScrollListener);
@@ -77,6 +80,8 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
 
         Button todayButton = (Button) view.findViewById(R.id.fragment_timeline_navigator_today);
         todayButton.setOnClickListener(this::jumpToToday);
+
+        recyclerView.scrollToPosition(presenter.getDateTimePosition(startDate));
 
         return view;
     }

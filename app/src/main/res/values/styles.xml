@@ -2,12 +2,11 @@
 
     <!-- Themes -->
 
-    <style name="AppTheme" parent="android:Theme.Holo.Light">
+    <style name="AppTheme" parent="Platform.Light">
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:textAppearance">@style/AppTheme.Text</item>
 
-        <item name="android:actionBarItemBackground">@drawable/app_theme_selectable_background</item>
         <item name="android:popupMenuStyle">@style/AppTheme.PopupMenu</item>
         <item name="android:dropDownListViewStyle">@style/AppTheme.DropDownListView</item>
         <item name="android:actionBarTabStyle">@style/AppTheme.ActionBarTabStyle</item>
@@ -26,7 +25,8 @@
         <item name="android:editTextStyle">@style/AppTheme.Text.EditText</item>
         <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
         <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
-
+t
+        <item name="android:listSelector">@drawable/selectable_list</item>
         <item name="android:listDivider">@color/border</item>
         <item name="android:dividerHeight">@dimen/divider_size</item>
     </style>
@@ -52,7 +52,7 @@
 
     <!-- Action Bar -->
 
-    <style name="AppTheme.ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid" />
+    <style name="AppTheme.ActionBar" parent="Platform.ActionBar" />
 
     <style name="AppTheme.ActionBar.Solid">
         <item name="android:background">@drawable/app_theme_ab_solid</item>
@@ -76,6 +76,7 @@
     <style name="AppTheme.Text.ActionBar">
         <item name="android:textSize">@dimen/action_bar_title_text_size</item>
         <item name="android:textColor">@color/text_dark</item>
+        <item name="android:fontFamily">sans-serif-light</item>
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
 
@@ -84,46 +85,51 @@
         <item name="android:textAllCaps">false</item>
     </style>
     
-    <style name="AppTheme.PopupMenu" parent="@android:style/Widget.Holo.Light.ListPopupWindow">
+    <style name="AppTheme.PopupMenu" parent="Platform.ListPopupWindow">
         <item name="android:popupBackground">@drawable/app_theme_menu_dropdown_panel</item>
     </style>
 
-    <style name="AppTheme.DropDownListView" parent="@android:style/Widget.Holo.Light.ListView.DropDown">
+    <style name="AppTheme.DropDownListView" parent="Platform.ListDropDown">
         <item name="android:listSelector">@drawable/app_theme_selectable_background</item>
         <item name="android:divider">@null</item>
         <item name="android:dividerHeight">0dp</item>
     </style>
 
-    <style name="AppTheme.ActionBarTabStyle" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
+    <style name="AppTheme.ActionBarTabStyle" parent="Platform.ActionBar.TabView">
         <item name="android:background">@drawable/app_theme_tab_indicator_ab</item>
     </style>
 
-    <style name="AppTheme.DropDownNav" parent="@android:style/Widget.Holo.Light.Spinner">
+    <style name="AppTheme.DropDownNav" parent="Platform.Spinner">
         <item name="android:background">@drawable/spinner_background_selector</item>
         <item name="android:popupBackground">@drawable/app_theme_menu_dropdown_panel</item>
         <item name="android:dropDownSelector">@drawable/app_theme_selectable_background</item>
     </style>
 
-    <style name="AppTheme.ActionButton.CloseMode" parent="@android:style/Widget.Holo.Light.ActionButton.CloseMode">
+    <style name="AppTheme.ActionButton.CloseMode" parent="Platform.ActionBar.ButtonCloseMode">
         <item name="android:background">@drawable/app_theme_btn_cab_done</item>
     </style>
 
-    <style name="ActionOverflowOnboarding" parent="android:style/Widget.Holo.ActionButton.Overflow">
+    <style name="ActionOverflowOnboarding" parent="Platform.ActionBar.ButtonOverflow">
         <item name="android:src">@drawable/action_overflow_onboarding</item>
     </style>
 
-    <style name="ActionOverflow" parent="android:style/Widget.Holo.ActionButton.Overflow">
+    <style name="ActionOverflow" parent="Platform.ActionBar.ButtonOverflow">
         <item name="android:src">@drawable/action_overflow</item>
     </style>
 
     <!-- Dialogs -->
 
-    <style name="AppTheme.Dialog" parent="android:Theme.Holo.Dialog" />
+    <style name="AppTheme.Dialog" parent="Platform.Dialog" />
 
-    <style name="AppTheme.Dialog.Simple" parent="android:Theme.Holo.Dialog.MinWidth">
+    <style name="AppTheme.Dialog.Simple" parent="Platform.Dialog.MinWidth">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@drawable/raised_item_background</item>
         <item name="android:paddingBottom">@dimen/gap_raised_item_inset_bottom</item>
+    </style>
+
+    <style name="AppTheme.Dialog.Selector">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/transparent</item>
     </style>
 
     <style name="AppTheme.Dialog.FullScreen">
@@ -133,13 +139,13 @@
     </style>
 
     <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
-        <item name="android:windowAnimationStyle">@style/Animations.SimpleFade</item>
+        <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
         <item name="android:textColor">@color/black</item>
     </style>
 
-    <style name="Animations" />
+    <style name="WindowAnimations" />
 
-    <style name="Animations.SimpleFade">
+    <style name="WindowAnimations.Fade">
         <item name="android:windowEnterAnimation">@anim/fade_in</item>
         <item name="android:windowShowAnimation">@anim/fade_in</item>
         <item name="android:windowExitAnimation">@anim/fade_out</item>
@@ -148,7 +154,7 @@
 
     <!-- Buttons -->
 
-    <style name="AppTheme.Button" parent="android:Widget.Holo.Light.Button">
+    <style name="AppTheme.Button" parent="Platform.Button">
         <item name="android:minHeight">@dimen/button_min_size</item>
         <item name="android:textAppearance">@style/AppTheme.Text.Button</item>
         <item name="android:background">@drawable/button_background_selector_simple</item>
@@ -156,9 +162,10 @@
 
     <style name="AppTheme.Button.Borderless">
         <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans-serif-light</item>
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
         <item name="android:padding">@dimen/gap_small</item>
-        <item name="android:background">@drawable/button_selector_dark</item>
+        <item name="android:background">@drawable/selectable_dark</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Accent">
@@ -179,7 +186,7 @@
     </style>
 
     <style name="AppTheme.Button.Borderless.Question.Choice">
-        <item name="android:textColor">@drawable/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Toggle">
@@ -187,25 +194,26 @@
     </style>
 
     <style name="AppTheme.Button.Borderless.White">
-        <item name="android:background">@drawable/button_selector_light</item>
+        <item name="android:background">@drawable/selectable_light</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Onboarding">
-        <item name="android:textColor">@drawable/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.White.Thin">
         <item name="android:textSize">@dimen/text_size_large_button</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">sans-serif-light</item>
         <item name="fontPath">fonts/AvenirLTCom-Light.ttf</item>
     </style>
 
     <style name="AppTheme.Button.Rounded">
         <item name="android:minHeight">@dimen/button_rounded_min_height</item>
         <item name="android:background">@drawable/selector_button_rounded</item>
-        <item name="android:textColor">@drawable/text_color_selector_white</item>
+        <item name="android:textColor">@color/text_color_selector_white</item>
         <item name="android:textSize">@dimen/text_size_button</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textAllCaps">true</item>
@@ -218,15 +226,15 @@
     </style>
 
     <style name="AppTheme.Button.ModeSelector">
-        <item name="android:background">@drawable/button_selector_dark</item>
-        <item name="android:textColor">@drawable/text_color_selector_toggle_button</item>
+        <item name="android:background">@drawable/selectable_dark</item>
+        <item name="android:textColor">@color/text_color_selector_toggle_button</item>
         <item name="android:textAppearance">@style/AppTheme.Text.Body.Bold</item>
         <item name="android:padding">@dimen/gap_medium</item>
     </style>
 
     <style name="AppTheme.Button.SmartAlarmDay">
         <item name="android:background">@drawable/smart_alarm_day_toggle_selector</item>
-        <item name="android:textColor">@drawable/text_color_selector_toggle_button</item>
+        <item name="android:textColor">@color/text_color_selector_toggle_button</item>
         <item name="android:textAppearance">@style/AppTheme.Text</item>
         <item name="android:textSize">@dimen/text_size_section_heading</item>
         <item name="android:textAllCaps">true</item>
@@ -240,13 +248,19 @@
         <item name="android:paddingLeft">@dimen/gap_small</item>
         <item name="android:paddingRight">@dimen/gap_small</item>
         <item name="android:background">@drawable/raised_item_background</item>
-        <item name="android:textColor">@drawable/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
         <item name="android:textAppearance">@style/AppTheme.Text.SectionHeading</item>
     </style>
 
     <style name="AppTheme.Button.Dialog" parent="AppTheme.Button.Borderless">
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@drawable/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+    </style>
+
+    <style name="AppTheme.Button.Dialog.SolidBlue">
+        <item name="android:minHeight">@dimen/button_rounded_min_height</item>
+        <item name="android:background">@drawable/selector_button_dialog_blue</item>
+        <item name="android:textColor">@color/text_color_selector_white</item>
     </style>
 
     <style name="AppTheme.Button.Dialog.Positive">
@@ -255,7 +269,7 @@
 
     <!-- Spinners -->
 
-    <style name="AppTheme.Spinner" parent="android:Widget.Holo.Light.Spinner">
+    <style name="AppTheme.Spinner" parent="Platform.Spinner">
         <item name="android:background">@drawable/spinner_background_selector</item>
         <item name="android:paddingEnd">14dp</item>
         <item name="android:popupBackground">@drawable/app_theme_menu_dropdown_panel</item>
@@ -289,7 +303,7 @@
 
     <!-- EditText -->
 
-    <style name="AppTheme.Text.EditText" parent="android:Widget.Holo.Light.EditText">
+    <style name="AppTheme.Text.EditText" parent="Platform.EditText">
         <item name="android:paddingTop">@dimen/gap_small</item>
         <item name="android:paddingBottom">@dimen/gap_small</item>
         <item name="android:paddingLeft">@dimen/gap_tiny</item>

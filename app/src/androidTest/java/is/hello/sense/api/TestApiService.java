@@ -14,6 +14,7 @@ import java.util.List;
 
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -23,6 +24,7 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
@@ -89,7 +91,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> changePassword(@NonNull @Body PasswordUpdate passwordUpdate) {
-        return unimplemented();
+        return Observable.just(new VoidResponse());
     }
 
     @Override
@@ -99,7 +101,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration) {
-        return unimplemented();
+        return Observable.just(new VoidResponse());
     }
 
     @Override
@@ -115,7 +117,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<RoomConditions> currentRoomConditions() {
+    public Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit) {
         return loadResponse("current_conditions", new TypeReference<RoomConditions>() {});
     }
 
@@ -139,13 +141,13 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<VoidResponse> answerQuestion(@Query("account_question_id") long accountId,
                                                    @NonNull @Body List<Question.Choice> answers) {
-        return unimplemented();
+        return Observable.just(new VoidResponse());
     }
 
     @Override
     public Observable<VoidResponse> skipQuestion(@Query("account_question_id") long accountId,
                                                  @Query("id") long questionId) {
-        return unimplemented();
+        return Observable.just(new VoidResponse());
     }
 
     @Override
@@ -155,12 +157,12 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> unregisterPill(@Path("id") @NonNull String pillId) {
-        return unimplemented();
+        return Observable.just(new VoidResponse());
     }
 
     @Override
     public Observable<VoidResponse> unregisterSense(@Path("id") @NonNull String senseId) {
-        return unimplemented();
+        return Observable.just(new VoidResponse());
     }
 
     @Override
@@ -172,5 +174,32 @@ public final class TestApiService implements ApiService {
     public Observable<VoidResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp,
                                                    @NonNull @Body List<Alarm> alarms) {
         return Observable.just(new VoidResponse());
+    }
+
+    @Override
+    public Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<VoidResponse> updateEmailAddress(@NonNull @Body Account account) {
+        return Observable.just(new VoidResponse());
+    }
+
+
+    @Override
+    public Observable<ArrayList<AvailableTrendGraph>> availableTrendGraphs() {
+        return loadResponse("available_trend_graphs", new TypeReference<ArrayList<AvailableTrendGraph>>() {});
+    }
+
+    @Override
+    public Observable<ArrayList<TrendGraph>> allTrends() {
+        return loadResponse("all_trends", new TypeReference<ArrayList<TrendGraph>>() {});
+    }
+
+    @Override
+    public Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
+                                                        @NonNull @Query("time_period") String timePeriod) {
+        return loadResponse("single_trend", new TypeReference<ArrayList<TrendGraph>>() {});
     }
 }

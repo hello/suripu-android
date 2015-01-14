@@ -16,15 +16,15 @@
     <string name="action_log_in">Log in</string>
     <string name="action_register">Sign Up</string>
 
-    <string name="device_sense">Sense</string>
-    <string name="device_pill">Pill</string>
+    <string name="device_sense">Your Sense</string>
+    <string name="device_pill">Your Sleep Pill</string>
     <string name="device_unknown">Other</string>
 
-    <string name="device_state_normal">Normal</string>
-    <string name="device_state_low_battery">Low Battery</string>
+    <string name="device_state_normal">Good</string>
+    <string name="device_state_low_battery">Low</string>
     <string name="device_state_unknown">Unknown</string>
 
-    <string name="dialog_error_title">An Error Occurred</string>
+    <string name="dialog_error_title">Error</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
     <string name="dialog_error_extended_message_format">%1$s\n\n%2$s (Status: %3$d)</string>
     <string name="dialog_loading_message">Loading…</string>
@@ -34,6 +34,8 @@
     <string name="format_birth_date">MM/dd/yy</string>
     <string name="format_time_12_hr">h:mm a</string>
     <string name="format_time_24_hr">H:mm</string>
+    <string name="format_day_and_time_12_hr">EEEE – h:mm a</string>
+    <string name="format_day_and_time_24_hr">EEEE – H:mm</string>
     <string name="format_date_placeholder">--</string>
     <string name="format_date_last_night">Last Night</string>
 
@@ -131,9 +133,8 @@
     <string name="error_bad_wifi_credentials">The wifi network credentials you entered are incorrect.</string>
     <string name="error_wifi_out_of_range">The wifi network you selected could not be found by Sense.</string>
     <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the wifi network you selected.</string>
-    <string name="title_device_last_seen">Last Seen</string>
     <string name="title_device_signal_strength">Signal Strength</string>
-    <string name="title_device_firmware_version">Firmware Version</string>
+    <string name="label_firmware_version">Firmware</string>
     <string name="signal_strong">Strong</string>
     <string name="signal_good">Good</string>
     <string name="signal_weak">Weak</string>
@@ -155,8 +156,9 @@
     <string name="day_friday">Fri</string>
     <string name="day_saturday">Sat</string>
     <string name="day_sunday">Sun</string>
-    <string name="day_separator">, </string>
-    <string name="days_repeat_prefix">"Smart Alarm  ―  "</string>
+    <string name="smart_alarm_day_separator">, </string>
+    <string name="smart_alarm_days_repeat_prefix">"Smart Alarm  ―  "</string>
+    <string name="smart_alarm_non_repeating">Tomorrow</string>
     <string name="never">Never</string>
     <string name="label_time_zone">Time Zone</string>
     <string name="title_sound">Sound</string>
@@ -172,7 +174,7 @@
     <string name="title_timeline_event_fmt">%1$s - %2$s</string>
     <string name="action_pair_new_pill">Pair New Pill</string>
     <string name="action_pair_new_sense">Pair New Sense</string>
-    <string name="action_select_wifi_network">Select Wifi Network</string>
+    <string name="action_select_wifi_network">Edit Wi-Fi</string>
     <string name="title_scanning_for_sense">Looking for Sense…</string>
     <string name="title_connecting">Connecting with Sense…</string>
     <string name="title_discovering_services">Discovering Services…</string>
@@ -194,7 +196,7 @@
     <string name="info_fragment_onboarding_pair_help">Are you adding a second Sleep Pill to a Sense that has been set up previously, or are you setting up Sense for the first time?</string>
     <string name="title_fragment_onboarding_pair_help_2nd_pill">I\'m adding a second sleep pill</string>
     <string name="title_fragment_onboarding_pair_help_new_sense">I\'m setting up a new Sense</string>
-    <string name="info_onboarding_partner_info"><![CDATA[To connect a second Sleep Pill, Sense needs to be put into pairing mode.<br><br>Ask the owner of the first Sleep Pill to stand next to Sense and open the Sense app, then go to <b>Settings &gt; Devices &gt; Sense</b> and tap <b>\'Put Sense into Pairing Mode\'</b>.<br><br>.Sense will glow <color-purple>purple</color-purple> when it is in pairing mode.]]></string>
+    <string name="info_onboarding_partner_info">To connect a second Sleep Pill, Sense needs to be put into Pairing Mode.\n\nPlace your hand on top of Sense for seven seconds, and then remove it.\n\nSense will glow purple when it is in Pairing Mode.</string>
     <string name="title_onboarding_partner_info">Add a second Sleep Pill</string>
     <string name="title_security">Security</string>
     <string name="sec_type_wpa2">WPA2</string>
@@ -256,10 +258,42 @@
     <string name="onboarding_title_room_check">Room Check</string>
     <string name="onboarding_info_room_check">Sense will now check the conditions in the room to assure functionality of the sensors.</string>
     <string name="error_smart_alarm_day_overlap">You cannot set more than one smart alarm per day of the week.</string>
-    <string name="action_unpair">Unpair</string>
-    <string name="dialog_title_unpair_pill">Unpair Sleep Pill</string>
-    <string name="dialog_message_unpair_pill">Are you sure you want to unpair this Sleep Pill from your Sense? You can re-pair it with your Sense later from the device details screen.</string>
+    <string name="action_replace_device">Replace</string>
+    <string name="dialog_title_replace_sleep_pill">Replace Sleep Pill</string>
+    <string name="dialog_message_replace_sleep_pill">Are you sure you want to replace this sleep pill?</string>
+    <string name="dialog_title_replace_sense">Replace Sense</string>
+    <string name="dialog_message_replace_sense">Are you sure you want to replace this Sense?</string>
     <string name="title_trends">Trends</string>
     <string name="title_current_conditions">Current Conditions</string>
     <string name="action_today">Today</string>
+    <string name="title_setting_time_zone">Setting Time Zone…</string>
+    <string name="title_pushing_data">Pushing Data…</string>
+    <string name="error_bluetooth_peripheral_busy">Sense is busy, please retry again in a few moments.</string>
+    <string name="action_change_email">Change Email</string>
+    <string name="label_email_address">Email Address</string>
+    <string name="title_change_email">Change Email</string>
+    <string name="error_session_invalidated">Please login again</string>
+    <string name="error_failed_to_play_alarm_sound">Could not play preview</string>
+    <string name="error_no_smart_alarm_sound">Please select a sound for this smart alarm.</string>
+    <string name="title_turn_off_bluetooth">Turn Off Bluetooth</string>
+    <string name="message_turn_off_bluetooth">Sense no longer requires Bluetooth be turned on, would you like to turn it off?</string>
+    <string name="action_turn_off">Turn Off</string>
+    <string name="title_onboarding_register_location">What\'s your location?</string>
+    <string name="description_onboarding_register_location">Sense uses your location to know sunrise and sunset times, local weather, and more.</string>
+    <string name="action_set_location">Set Location</string>
+    <string name="label_last_seen">Last Seen</string>
+    <string name="label_wifi">Wi-Fi</string>
+    <string name="label_battery_level">Battery Level</string>
+    <string name="label_color">Color</string>
+    <string name="info_no_sense_connected">You don\'t currently have a Sense connected to your account.</string>
+    <string name="info_no_sleep_pill_connected">You don\'t currently have a Sleep Pill connected to your account.</string>
+    <string name="action_replace_this_sense">Replace This Sense</string>
+    <string name="action_replace_sleep_pill">Replace This Sleep Pill</string>
+    <string name="action_troubleshoot">Troubleshoot</string>
+    <string name="info_connecting_to_sense">Connecting with Sense over Bluetooth…</string>
+    <string name="error_no_bluetooth_connectivity">Bluetooth must be turned on to connect to Sense</string>
+    <string name="error_sense_no_connectivity">Your Sense <b>cannot connect to Wi-Fi</b>. Tap below to edit your Wi-Fi credentials.</string>
+    <string name="error_sense_missing_fmt">Your Sense was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
+    <string name="error_sleep_pill_missing_fmt">Your Sleep Pill was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
+    <string name="device_support_footer">If you’re having trouble, visit <a href="http://support.hello.is">Support</a> or contact us at <a href="mailto:help@sayhello.com">help@sayhello.com</a>.</string>
 </resources>

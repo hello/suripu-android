@@ -32,9 +32,10 @@ import rx.Observable;
 
     @Override
     protected Observable<Result> provideUpdateObservable() {
-        return Observable.combineLatest(apiService.currentRoomConditions(),
-                                        unitFormatter.unitSystem,
-                                        Result::new);
+        return unitFormatter.unitSystem.flatMap(unitSystem -> {
+            Observable<RoomConditions> roomConditions = apiService.currentRoomConditions(unitSystem.getApiTemperatureUnit());
+            return roomConditions.map(conditions -> new Result(conditions, unitSystem));
+        });
     }
 
     public static final class Result implements Serializable {

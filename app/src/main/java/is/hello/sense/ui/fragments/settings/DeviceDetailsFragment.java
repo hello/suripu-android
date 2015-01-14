@@ -7,13 +7,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import net.danlew.android.joda.DateUtils;
 
 import javax.inject.Inject;
 
@@ -22,41 +28,46 @@ import is.hello.sense.api.model.Device;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
+import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
-import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.adapter.StaticItemAdapter;
-import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.ui.widget.SensorStateView;
-import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
-import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.functions.Action0;
 
-public class DeviceDetailsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
-    public static final int RESULT_UNPAIRED_PILL = 0x66;
+public class DeviceDetailsFragment extends HardwareFragment implements FragmentNavigationActivity.BackInterceptingFragment {
+    public static final int RESULT_REPLACED_DEVICE = 0x66;
 
     public static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
 
     @Inject ApiSessionManager apiSessionManager;
-    @Inject DateFormatter dateFormatter;
-    @Inject HardwarePresenter hardwarePresenter;
     @Inject DevicesPresenter devicesPresenter;
+    @Inject PreferencesPresenter preferences;
 
-    private ProgressBar activityIndicator;
-    private ViewGroup senseActionsContainer;
-    private @Nullable SensorStateView signalStrength;
-    private Button actionButton;
+    private LinearLayout alertContainer;
+    private ImageView alertIcon;
+    private ProgressBar alertBusy;
+    private TextView alertText;
+    private Button alertAction;
+
+    private LinearLayout actionsContainer;
 
     private Device device;
     private BluetoothAdapter bluetoothAdapter;
+    private boolean didEnableBluetooth = false;
+
+
+    //region Lifecycle
 
     public static DeviceDetailsFragment newInstance(@NonNull Device device) {
         DeviceDetailsFragment fragment = new DeviceDetailsFragment();
@@ -71,6 +82,10 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            this.didEnableBluetooth = savedInstanceState.getBoolean("didEnableBluetooth", false);
+        }
 
         this.device = (Device) getArguments().getSerializable(ARG_DEVICE);
         addPresenter(hardwarePresenter);
@@ -90,44 +105,22 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_device_details, container, false);
 
-        SensorStateView lastSeen = (SensorStateView) view.findViewById(R.id.fragment_device_details_last_seen);
-        lastSeen.setReading(dateFormatter.formatAsDate(device.getLastUpdated()));
+        LinearLayout fragmentContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_container);
+        Animations.Properties.DEFAULT.apply(fragmentContainer.getLayoutTransition(), false);
 
-        SensorStateView version = (SensorStateView) view.findViewById(R.id.fragment_device_details_version);
-        version.setReading(device.getFirmwareVersion());
+        this.alertContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_alert);
+        this.alertIcon = (ImageView) alertContainer.findViewById(R.id.fragment_device_details_alert_icon);
+        this.alertBusy = (ProgressBar) alertContainer.findViewById(R.id.fragment_device_details_alert_busy);
+        this.alertText = (TextView) alertContainer.findViewById(R.id.fragment_device_details_alert_text);
+        this.alertAction = (Button) alertContainer.findViewById(R.id.fragment_device_details_alert_action);
 
-        this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_device_details_activity);
+        this.actionsContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_actions);
 
-        if (device.getType() == Device.Type.SENSE) {
-            this.senseActionsContainer = (ViewGroup) view.findViewById(R.id.fragment_device_details_sense);
-            this.signalStrength = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_signal);
+        TextView footer = (TextView) view.findViewById(R.id.sub_fragment_device_footer);
+        footer.setMovementMethod(LinkMovementMethod.getInstance());
 
-            SensorStateView changeWifi = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_change_wifi);
-            Views.setSafeOnClickListener(changeWifi, this::changeWifiNetwork);
-
-            SensorStateView enterPairingMode = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_pairing_mode);
-            Views.setSafeOnClickListener(enterPairingMode, this::putIntoPairingMode);
-
-            SensorStateView pairNewPill = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_pair_new_pill);
-            Views.setSafeOnClickListener(pairNewPill, this::pairNewPill);
-
-            SensorStateView factoryReset = (SensorStateView) view.findViewById(R.id.fragment_device_details_sense_factory_reset);
-            Views.setSafeOnClickListener(factoryReset, this::factoryReset);
-
-            this.actionButton = (Button) view.findViewById(R.id.fragment_device_details_action);
-            Views.setSafeOnClickListener(actionButton, ignored -> {
-                if (bluetoothAdapter.isEnabled()) {
-                    connectToPeripheral();
-                } else {
-                    enableBluetooth();
-                }
-            });
-        } else if (device.getType() == Device.Type.PILL) {
-            LinearLayout pillActionsContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_pill);
-            pillActionsContainer.setVisibility(View.VISIBLE);
-
-            SensorStateView unpairPill = (SensorStateView) pillActionsContainer.findViewById(R.id.fragment_device_details_pill_unpair);
-            Views.setSafeOnClickListener(unpairPill, this::unpairPill);
+        if (device.getType() == Device.Type.PILL) {
+            showSleepPillActions();
         }
 
         return view;
@@ -146,81 +139,170 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("didEnableBluetooth", didEnableBluetooth);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
         this.hardwarePresenter.clearPeripheral();
     }
 
-
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        StaticItemAdapter.Item item = (StaticItemAdapter.Item) adapterView.getItemAtPosition(position);
-        if (item.getAction() != null)
-            item.getAction().run();
+    public boolean onInterceptBack(@NonNull Runnable back) {
+        if (didEnableBluetooth) {
+            SenseAlertDialog turnOffDialog = new SenseAlertDialog(getActivity());
+            turnOffDialog.setTitle(R.string.title_turn_off_bluetooth);
+            turnOffDialog.setMessage(R.string.message_turn_off_bluetooth);
+            turnOffDialog.setPositiveButton(R.string.action_turn_off, (dialog, which) -> {
+                hardwarePresenter.turnOffBluetooth().subscribe(Functions.NO_OP, Functions.LOG_ERROR);
+                back.run();
+            });
+            turnOffDialog.setNegativeButton(R.string.action_no_thanks, (dialog, which) -> back.run());
+            turnOffDialog.show();
+
+            return true;
+        }
+        return false;
     }
 
+    //endregion
+
+
+    //region Displaying Actions
+
+    private void clearActions() {
+        actionsContainer.removeViews(0, actionsContainer.getChildCount());
+        actionsContainer.setVisibility(View.GONE);
+    }
+
+    private void addDeviceAction(@StringRes int titleRes, boolean wantsDivider, @NonNull View.OnClickListener onClick) {
+        actionsContainer.addView(Styles.createItemView(getActivity(), titleRes, R.style.AppTheme_Text_Actionable, onClick));
+        if (wantsDivider) {
+            actionsContainer.addView(Styles.createHorizontalDivider(getActivity(), ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+    }
+
+    private void showRestrictedSenseActions() {
+        clearActions();
+        actionsContainer.setVisibility(View.VISIBLE);
+
+        addDeviceAction(R.string.action_replace_this_sense, true, this::unpairDevice);
+    }
+
+    private void showConnectedSenseActions(@Nullable SensePeripheral.SenseWifiNetwork network) {
+        clearActions();
+        actionsContainer.setVisibility(View.VISIBLE);
+
+        addDeviceAction(R.string.action_replace_this_sense, true, this::unpairDevice);
+        addDeviceAction(R.string.action_enter_pairing_mode, true, this::putIntoPairingMode);
+        addDeviceAction(R.string.action_factory_reset, true, this::factoryReset);
+        addDeviceAction(R.string.action_select_wifi_network, false, this::changeWifiNetwork);
+
+        if (network == null || TextUtils.isEmpty(network.ssid)) {
+            showTroubleshootingAlert(R.string.error_sense_no_connectivity, R.string.action_troubleshoot, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.WIFI_CONNECTIVITY));
+        } else if (device.isMissing()) {
+            String missingMessage = getString(R.string.error_sense_missing_fmt, DateUtils.getRelativeTimeSpanString(getActivity(), device.getLastUpdated()));
+            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.SENSE_MISSING));
+        } else {
+            hideAlert();
+        }
+    }
+
+    private void showSleepPillActions() {
+        clearActions();
+        actionsContainer.setVisibility(View.VISIBLE);
+
+        addDeviceAction(R.string.action_replace_sleep_pill, true, this::unpairDevice);
+
+        if (device.isMissing()) {
+            String missingMessage = getString(R.string.error_sleep_pill_missing_fmt, DateUtils.getRelativeTimeSpanString(getActivity(), device.getLastUpdated()));
+            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.SLEEP_PILL_MISSING));
+        } else {
+            hideAlert();
+        }
+    }
+
+    //endregion
+
+
+    //region Displaying Alerts
+
+    private void hideAlert() {
+        alertContainer.setVisibility(View.GONE);
+        alertBusy.setVisibility(View.GONE);
+    }
+
+    private void showBlockingAlert(@StringRes int messageRes) {
+        alertIcon.setVisibility(View.GONE);
+        alertBusy.setVisibility(View.VISIBLE);
+        alertAction.setVisibility(View.GONE);
+
+        alertText.setText(messageRes);
+
+        alertContainer.setVisibility(View.VISIBLE);
+        clearActions();
+    }
+
+    private void showTroubleshootingAlert(@NonNull String message,
+                                          @StringRes int buttonTitleRes,
+                                          @NonNull View.OnClickListener onClick) {
+        alertIcon.setVisibility(View.VISIBLE);
+        alertBusy.setVisibility(View.GONE);
+        alertAction.setVisibility(View.VISIBLE);
+
+        alertText.setText(message);
+        alertAction.setText(buttonTitleRes);
+        alertAction.setOnClickListener(onClick);
+
+        alertContainer.setVisibility(View.VISIBLE);
+    }
+
+    private void showTroubleshootingAlert(@StringRes int messageRes,
+                                          @StringRes int buttonTitleRes,
+                                          @NonNull View.OnClickListener onClick) {
+        showTroubleshootingAlert(getString(messageRes), buttonTitleRes, onClick);
+    }
+
+    //endregion
+
+
+    //region Connectivity
 
     public void onBluetoothStateChanged(boolean isEnabled) {
-        if (isEnabled) {
-            actionButton.setText(R.string.action_retry);
-        } else {
-            if (signalStrength != null) {
-                signalStrength.setReading(getString(R.string.missing_data_placeholder));
-                senseActionsContainer.setVisibility(View.GONE);
-                activityIndicator.setVisibility(View.GONE);
-            }
-
-            actionButton.setVisibility(View.VISIBLE);
-            actionButton.setText(R.string.action_turn_on_ble);
+        if (!isEnabled) {
+            showTroubleshootingAlert(R.string.error_no_bluetooth_connectivity, R.string.action_turn_on_ble, this::enableBluetooth);
+            showRestrictedSenseActions();
         }
     }
 
     public void connectToPeripheral() {
-        activityIndicator.setVisibility(View.VISIBLE);
-        senseActionsContainer.setVisibility(View.GONE);
-        actionButton.setVisibility(View.GONE);
-
+        showBlockingAlert(R.string.info_connecting_to_sense);
         bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device), this::bindPeripheral, this::presentError);
     }
 
-    public void enableBluetooth() {
-        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.title_turning_on), true);
+    public void enableBluetooth(@NonNull View sender) {
+        showBlockingAlert(R.string.title_turning_on);
         bindAndSubscribe(hardwarePresenter.turnOnBluetooth(),
                          ignored -> {
-                             LoadingDialogFragment.close(getFragmentManager());
+                             this.didEnableBluetooth = true;
                              connectToPeripheral();
                          },
-                         e -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                             presentError(e);
-                         });
+                         this::presentError);
     }
 
     public void bindPeripheral(@NonNull SensePeripheral peripheral) {
-        int rssi = peripheral.getScannedRssi();
-        String strength;
-        if (rssi <= -30) {
-            strength = getString(R.string.signal_strong);
-        } else if (rssi <= -50) {
-            strength = getString(R.string.signal_good);
-        } else {
-            strength = getString(R.string.signal_weak);
-        }
-
-        if (signalStrength != null) {
-            signalStrength.setReading(strength);
-        }
-
         if (peripheral.isConnected()) {
-            senseActionsContainer.setVisibility(View.VISIBLE);
-            activityIndicator.setVisibility(View.GONE);
+            checkConnectivityState();
         } else {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral),
                              status -> {
                                  if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
-                                     senseActionsContainer.setVisibility(View.VISIBLE);
-                                     activityIndicator.setVisibility(View.GONE);
+                                     checkConnectivityState();
                                  }
                              },
                              this::presentError);
@@ -228,28 +310,45 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
     }
 
     public void presentError(@NonNull Throwable e) {
-        activityIndicator.setVisibility(View.GONE);
-        LoadingDialogFragment.close(getFragmentManager());
+        hideAlert();
+        hideAllActivity(false, () -> {
+            if (hardwarePresenter.isErrorFatal(e)) {
+                UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+                fragment.show(getFragmentManager(), R.id.activity_fragment_navigation_container);
+            } else if (e instanceof PeripheralNotFoundError) {
+                showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_troubleshoot, ignored -> {});
+            } else {
+                ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            }
 
-        if (hardwarePresenter.isErrorFatal(e)) {
-            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
-            fragment.show(getFragmentManager(), R.id.activity_fragment_navigation_container);
-        } else {
-            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
-        }
+            if (device.getType() == Device.Type.SENSE) {
+                showRestrictedSenseActions();
+            }
 
-        Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
-
-        if (signalStrength != null) {
-            signalStrength.setReading(getString(R.string.missing_data_placeholder));
-            senseActionsContainer.setVisibility(View.GONE);
-        }
-
-        if (actionButton != null) {
-            actionButton.setVisibility(View.VISIBLE);
-        }
+            Logger.error(DeviceDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
+        });
     }
 
+
+    public void checkConnectivityState() {
+        bindAndSubscribe(hardwarePresenter.currentWifiNetwork(),
+                         network -> {
+                             preferences.edit()
+                                        .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
+                                        .apply();
+
+                             showConnectedSenseActions(network);
+                         },
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Could not get connectivity state, ignoring.", e);
+                             showConnectedSenseActions(null);
+                         });
+    }
+
+    //endregion
+
+
+    //region Sense Actions
 
     public void changeWifiNetwork(@NonNull View sender) {
         if (hardwarePresenter.getPeripheral() == null)
@@ -266,21 +365,12 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         if (hardwarePresenter.getPeripheral() == null)
             return;
 
-        LoadingDialogFragment.show(getFragmentManager());
-
-        bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                         ignored -> LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> getFragmentManager().popBackStackImmediate()),
-                         this::presentError);
-    }
-
-    public void pairNewPill(@NonNull View sender) {
-        if (hardwarePresenter.getPeripheral() == null)
-            return;
-
-        Intent onboarding = new Intent(getActivity(), OnboardingActivity.class);
-        onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
-        onboarding.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
-        startActivity(onboarding);
+        showBlockingActivity(R.string.dialog_loading_message);
+        showHardwareActivity(() -> {
+            bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
+                             ignored -> hideAllActivity(true, () -> getFragmentManager().popBackStackImmediate()),
+                             this::presentError);
+        });
     }
 
     @SuppressWarnings("CodeBlock2Expr")
@@ -297,40 +387,54 @@ public class DeviceDetailsFragment extends InjectionFragment implements AdapterV
         dialog.setMessage(R.string.dialog_messsage_factory_reset);
         dialog.setNegativeButton(android.R.string.cancel, null);
         dialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> {
-            LoadingDialogFragment.show(getFragmentManager());
-            bindAndSubscribe(hardwarePresenter.factoryReset(), device -> {
-                Logger.info(getClass().getSimpleName(), "Completed Sense factory reset");
-                Action0 finish = () -> {
-                    LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-                        apiSessionManager.logOut(getActivity());
-                        getActivity().finish();
-                    });
-                };
-                bindAndSubscribe(devicesPresenter.unregisterAllDevices(),
-                        ignored -> {
-                            finish.call();
-                        },
-                        e -> {
-                            Logger.error(getClass().getSimpleName(), "Could not unregister all devices, ignoring.", e);
-                            finish.call();
+            showBlockingActivity(R.string.dialog_loading_message);
+            showHardwareActivity(() -> {
+                bindAndSubscribe(hardwarePresenter.factoryReset(), device -> {
+                    Logger.info(getClass().getSimpleName(), "Completed Sense factory reset");
+                    Action0 finish = () -> {
+                        hideAllActivity(true, () -> {
+                            apiSessionManager.logOut();
+                            getActivity().finish();
                         });
-            }, this::presentError);
+                    };
+                    bindAndSubscribe(devicesPresenter.unregisterAllDevices(),
+                            ignored -> {
+                                finish.call();
+                            },
+                            e -> {
+                                Logger.error(getClass().getSimpleName(), "Could not unregister all devices, ignoring.", e);
+                                finish.call();
+                            });
+                }, this::presentError);
+            });
         });
         dialog.show();
     }
 
-    public void unpairPill(@NonNull View sender) {
+    //endregion
+
+
+    //region Pill Actions
+
+    public void unpairDevice(@NonNull View sender) {
         SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
         alertDialog.setDestructive(true);
-        alertDialog.setTitle(R.string.dialog_title_unpair_pill);
-        alertDialog.setMessage(R.string.dialog_message_unpair_pill);
+        if (device.getType() == Device.Type.SENSE) {
+            alertDialog.setTitle(R.string.dialog_title_replace_sense);
+            alertDialog.setMessage(R.string.dialog_message_replace_sense);
+        } else {
+            alertDialog.setTitle(R.string.dialog_title_replace_sleep_pill);
+            alertDialog.setMessage(R.string.dialog_message_replace_sleep_pill);
+        }
+
         alertDialog.setNegativeButton(android.R.string.cancel, null);
-        alertDialog.setPositiveButton(R.string.action_unpair, (d, which) -> {
-            activityIndicator.setVisibility(View.VISIBLE);
+        alertDialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
-                    ignored -> finishWithResult(RESULT_UNPAIRED_PILL, null),
-                    this::presentError);
+                             ignored -> finishWithResult(RESULT_REPLACED_DEVICE, null),
+                             this::presentError);
         });
         alertDialog.show();
     }
+
+    //endregion
 }

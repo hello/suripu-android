@@ -29,7 +29,7 @@ public class Alarm extends ApiResponse {
     private int month;
 
     @JsonProperty("day_of_month")
-    private int day;
+    private int dayOfMonth;
 
     @JsonProperty("hour")
     private int hourOfDay;
@@ -66,7 +66,6 @@ public class Alarm extends ApiResponse {
         this.isEditable = true;
         this.isSmart = false;
         this.daysOfWeek = new HashSet<>();
-        this.sound = Sound.none();
     }
 
 
@@ -79,6 +78,17 @@ public class Alarm extends ApiResponse {
     public void setTime(@NonNull LocalTime time) {
         this.hourOfDay = time.getHourOfDay();
         this.minuteOfHour = time.getMinuteOfHour();
+    }
+
+    @JsonIgnore
+    public void fireOnceTomorrow() {
+        DateTime tomorrow = DateTime.now().withTimeAtStartOfDay().plusDays(1);
+        this.year = tomorrow.getYear();
+        this.month = tomorrow.getMonthOfYear();
+        this.dayOfMonth = tomorrow.getDayOfMonth();
+
+        setRepeated(false);
+        getDaysOfWeek().clear();
     }
 
 
@@ -106,7 +116,6 @@ public class Alarm extends ApiResponse {
     public void setSmart(final boolean isSmart){
         this.isSmart = isSmart;
     }
-
 
     public boolean isEditable() {
         return isEditable;
@@ -148,29 +157,17 @@ public class Alarm extends ApiResponse {
     }
 
     public @NonNull String getDaysOfWeekSummary(@NonNull Context context) {
-        if (daysOfWeek == null || daysOfWeek.isEmpty())
-            return context.getString(R.string.never);
+        if (daysOfWeek == null || daysOfWeek.isEmpty()) {
+            return context.getString(R.string.smart_alarm_non_repeating);
+        }
 
         List<String> days = new ArrayList<>();
         for (Integer dayOfWeek : daysOfWeek) {
             days.add(nameForDayOfWeek(context, dayOfWeek));
         }
 
-        return context.getString(R.string.days_repeat_prefix) + TextUtils.join(context.getString(R.string.day_separator), days);
+        return context.getString(R.string.smart_alarm_days_repeat_prefix) + TextUtils.join(context.getString(R.string.smart_alarm_day_separator), days);
     }
-
-    public int getYear(){
-        return this.year;
-    }
-
-    public int getMonth(){
-        return this.month;
-    }
-
-    public int getDay(){
-        return this.day;
-    }
-
 
     public Sound getSound() {
         return sound;
@@ -184,7 +181,10 @@ public class Alarm extends ApiResponse {
     @Override
     public String toString() {
         return "SmartAlarm{" +
-                "hourOfDay=" + hourOfDay +
+                "year=" + year +
+                ", month=" + month +
+                ", dayOfMonth=" + dayOfMonth +
+                ", hourOfDay=" + hourOfDay +
                 ", minuteOfHour=" + minuteOfHour +
                 ", isRepeated=" + isRepeated +
                 ", isEnabled=" + isEnabled +
@@ -210,7 +210,7 @@ public class Alarm extends ApiResponse {
                     }
 
                     if(alarm.isSmart){
-                        final DateTime expectedRingTime = new DateTime(alarm.year, alarm.month, alarm.day, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
+                        final DateTime expectedRingTime = new DateTime(alarm.year, alarm.month, alarm.dayOfMonth, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
                         if(alarmDays.contains(expectedRingTime.getDayOfWeek())){
                             return false;
                         }
@@ -242,7 +242,7 @@ public class Alarm extends ApiResponse {
             }
 
             try{
-                final DateTime validDateTime = new DateTime(alarm.year, alarm.month, alarm.day, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
+                final DateTime validDateTime = new DateTime(alarm.year, alarm.month, alarm.dayOfMonth, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
             }catch (Exception ex){
                 return false;
             }
@@ -262,22 +262,6 @@ public class Alarm extends ApiResponse {
         @JsonProperty("url")
         public final String url;
 
-
-        public static @NonNull Sound none() {
-            return new Sound(0, "None", "");
-        }
-
-        public static @NonNull List<Sound> testSounds() {
-            List<Sound> sounds = new ArrayList<>();
-
-            sounds.add(Sound.none());
-            sounds.add(new Sound(1, "Bells", ""));
-            sounds.add(new Sound(2, "Birdsong", ""));
-            sounds.add(new Sound(3, "Chime", ""));
-            sounds.add(new Sound(4, "Waterfall", ""));
-
-            return sounds;
-        }
 
         public Sound(@JsonProperty("id") long id,
                      @JsonProperty("name") String name,

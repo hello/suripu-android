@@ -1,8 +1,6 @@
 package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,9 +8,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
 
 public class Insight extends ApiResponse {
-    @JsonProperty("id")
-    private long id;
-
     @JsonProperty("account_id")
     private long accountId;
 
@@ -22,16 +17,12 @@ public class Insight extends ApiResponse {
     @JsonProperty("message")
     private String message;
 
-    @JsonProperty("created_utc")
+    @JsonProperty("timestamp")
     private DateTime created;
 
     @JsonProperty("category")
     private Category category;
 
-
-    public long getId() {
-        return id;
-    }
 
     public long getAccountId() {
         return accountId;
@@ -56,8 +47,7 @@ public class Insight extends ApiResponse {
     @Override
     public String toString() {
         return "Insight{" +
-                "id=" + id +
-                ", accountId=" + accountId +
+                "accountId=" + accountId +
                 ", title='" + title + '\'' +
                 ", message='" + message + '\'' +
                 ", created=" + created +

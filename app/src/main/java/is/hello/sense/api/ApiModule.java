@@ -1,8 +1,10 @@
 package is.hello.sense.api;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +29,6 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
-import retrofit.converter.JacksonConverter;
 
 @Module(
     library = true
@@ -101,6 +102,11 @@ public class ApiModule {
         }
         builder.setLog(Logger.RETROFIT_LOGGER);
         builder.setErrorHandler(error -> {
+            if (error.getResponse().getStatus() == 401) {
+                LocalBroadcastManager.getInstance(applicationContext)
+                                     .sendBroadcast(new Intent(ApiSessionManager.ACTION_SESSION_INVALIDATED));
+            }
+
             ErrorResponse errorResponse;
             try {
                 errorResponse = (ErrorResponse) error.getBodyAs(ErrorResponse.class);
@@ -110,8 +116,9 @@ public class ApiModule {
             return new ApiException(errorResponse, error);
         });
         builder.setRequestInterceptor(request -> {
-            if (sessionManager.hasSession())
+            if (sessionManager.hasSession()) {
                 request.addHeader("Authorization", "Bearer " + sessionManager.getAccessToken());
+            }
         });
         return builder.build();
     }

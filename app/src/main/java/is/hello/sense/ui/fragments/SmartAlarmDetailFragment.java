@@ -22,16 +22,25 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.Alarm.Sound;
+import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ChooseSoundDialogFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.SafeOnClickListener;
+import retrofit.http.HEAD;
+import rx.Observable;
+
 
 public class SmartAlarmDetailFragment extends InjectionFragment {
     private static final int TIME_REQUEST_CODE = 0x747;
@@ -49,6 +58,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
+    @Inject SmartAlarmPresenter smartAlarmPresenter;
+
     private Alarm alarm;
     private int index = SmartAlarmDetailActivity.INDEX_NEW;
     private boolean use24Time = false;
@@ -73,9 +84,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
         this.index = getActivity().getIntent().getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, SmartAlarmDetailActivity.INDEX_NEW);
 
-        if (alarm.getSound() == null) {
-            alarm.setSound(Alarm.Sound.none());
-        }
+        smartAlarmPresenter.update();
+        addPresenter(smartAlarmPresenter);
+        addPresenter(preferences);
 
         setRetainInstance(true);
     }
@@ -141,13 +152,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             alarm.setTime(new LocalTime(hour, minute));
             updateTime();
         } else if (requestCode == SOUND_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            long selectedId = data.getLongExtra(ChooseSoundDialogFragment.ARG_SELECTED_ID, 0);
-            List<Alarm.Sound> sounds = Alarm.Sound.testSounds();
-            Alarm.Sound selectedSound = Lists.findFirst(sounds, s -> s.id == selectedId);
-            if (selectedSound == null) {
-                selectedSound = Alarm.Sound.none();
-            }
-
+            Alarm.Sound selectedSound = (Alarm.Sound) data.getSerializableExtra(SmartAlarmSoundDialogFragment.ARG_SELECTED_SOUND);
             alarm.setSound(selectedSound);
             soundButton.setText(selectedSound.name);
         }
@@ -185,25 +190,52 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void selectSound(@NonNull View sender) {
-        long selectedId = alarm.getSound() != null ? alarm.getSound().id : 0;
-        ChooseSoundDialogFragment dialogFragment = ChooseSoundDialogFragment.newInstance(selectedId);
+        SmartAlarmSoundDialogFragment dialogFragment = SmartAlarmSoundDialogFragment.newInstance(alarm.getSound());
         dialogFragment.setTargetFragment(this, SOUND_REQUEST_CODE);
-        dialogFragment.show(getFragmentManager(), ChooseSoundDialogFragment.TAG);
+        dialogFragment.show(getFragmentManager(), SmartAlarmSoundDialogFragment.TAG);
     }
 
 
     public void deleteAlarm(@NonNull View sender) {
-        Intent response = new Intent();
-        response.putExtra(SmartAlarmDetailActivity.EXTRA_INDEX, index);
-        getActivity().setResult(SmartAlarmDetailActivity.RESULT_DELETE, response);
-        getActivity().finish();
+        LoadingDialogFragment.show(getFragmentManager(), null, false);
+        bindAndSubscribe(smartAlarmPresenter.deleteSmartAlarm(index), ignored -> finish(), this::presentError);
     }
 
     public void saveAlarm() {
-        Intent response = new Intent();
-        response.putExtra(SmartAlarmDetailActivity.EXTRA_INDEX, index);
-        response.putExtra(SmartAlarmDetailActivity.EXTRA_ALARM, alarm);
-        getActivity().setResult(Activity.RESULT_OK, response);
+        if (alarm.getSound() == null) {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_no_smart_alarm_sound));
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        } else {
+            if (alarm.getDaysOfWeek().isEmpty()) {
+                alarm.fireOnceTomorrow();
+            }
+
+            Observable<VoidResponse> saveOperation;
+            if (index == SmartAlarmDetailActivity.INDEX_NEW) {
+                saveOperation = smartAlarmPresenter.addSmartAlarm(alarm);
+            } else {
+                saveOperation = smartAlarmPresenter.saveSmartAlarm(index, alarm);
+            }
+
+            LoadingDialogFragment.show(getFragmentManager(), null, false);
+            bindAndSubscribe(saveOperation, ignored -> finish(), this::presentError);
+        }
+    }
+
+    public void finish() {
+        LoadingDialogFragment.close(getFragmentManager());
+        getActivity().setResult(Activity.RESULT_OK);
         getActivity().finish();
+    }
+
+    public void presentError(Throwable e) {
+        LoadingDialogFragment.close(getFragmentManager());
+
+        if (e instanceof SmartAlarmPresenter.DayOverlapError) {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_day_overlap));
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
     }
 }

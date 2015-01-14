@@ -15,6 +15,7 @@
     <dimen name="text_size_button">16sp</dimen>
     <dimen name="text_size_large_button">20sp</dimen>
     <dimen name="text_size_section_heading">11sp</dimen>
+    <dimen name="text_size_body_small">13sp</dimen>
     <dimen name="text_size_subheading">20sp</dimen>
     <dimen name="text_size_question">24sp</dimen>
     <dimen name="text_size_heading">26sp</dimen>
@@ -54,11 +55,11 @@
 
     <!-- Graphs -->
 
-    <dimen name="sensor_history_graph_min_height">200dp</dimen>
     <dimen name="condition_graph_height">30dp</dimen>
 
-    <dimen name="view_line_graph_line_size">1dp</dimen>
-    <dimen name="view_line_graph_point_size">5dp</dimen>
+    <dimen name="series_graph_min_height">200dp</dimen>
+    <dimen name="series_graph_line_size">1dp</dimen>
+    <dimen name="series_graph_point_size">5dp</dimen>
 
     <dimen name="view_timeline_segment_left_inset">@dimen/gap_outer</dimen>
     <dimen name="view_timeline_segment_right_inset">@dimen/gap_outer</dimen>

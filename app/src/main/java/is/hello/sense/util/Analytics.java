@@ -93,6 +93,11 @@ public class Analytics {
     public static final String EVENT_ONBOARDING_WEIGHT = "Onboarding Weight";
 
     /**
+     * User lands on Location screen (do not log if user comes from Settings)
+     */
+    public static final String EVENT_ONBOARDING_LOCATION = "Onboarding Location";
+
+    /**
      * When user lands on the No BLE screen
      */
     public static final String EVENT_ONBOARDING_NO_BLE = "Onboarding No BLE";

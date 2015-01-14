@@ -20,7 +20,7 @@ public class TimelineNavigatorPresenterTests extends InjectionTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        presenter.setStartTime(startTime);
+        presenter.setFirstDate(startTime);
     }
 
     public void testGetDateTimeAt() throws Exception {

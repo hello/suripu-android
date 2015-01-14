@@ -2,6 +2,7 @@ package is.hello.sense.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -15,26 +16,33 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.TimelineSegmentView;
+import is.hello.sense.util.DateFormatter;
+
+import static is.hello.sense.api.model.TimelineSegment.EventType;
 
 public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
+    private final DateFormatter dateFormatter;
+
     private final int baseItemHeight;
     private final int itemEventImageHeight;
-    private final int stripeCornerRadius;
 
     private float[] itemHeights;
     private float totalItemHeight;
 
+    private boolean use24Time;
+
     //region Lifecycle
 
-    public TimelineSegmentAdapter(@NonNull Context context) {
+    public TimelineSegmentAdapter(@NonNull Context context, @NonNull DateFormatter dateFormatter) {
         super(context, R.layout.item_simple_text);
+
+        this.dateFormatter = dateFormatter;
 
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
         windowManager.getDefaultDisplay().getSize(size);
         this.baseItemHeight = size.y / Styles.TIMELINE_HOURS_ON_SCREEN;
         this.itemEventImageHeight = context.getResources().getDimensionPixelSize(R.dimen.event_image_height);
-        this.stripeCornerRadius = context.getResources().getDimensionPixelOffset(R.dimen.view_timeline_segment_corner_radius);
     }
 
     //endregion
@@ -45,12 +53,9 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     /**
      * Calculates the height required to display the item at a given position.
      */
-    private int calculateItemHeight(int position, @NonNull TimelineSegment segment) {
+    private int calculateItemHeight(@NonNull TimelineSegment segment) {
         if (segment.getEventType() != null) {
             int itemHeight = this.itemEventImageHeight + this.baseItemHeight;
-            return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
-        } else if (position == 0 || position == getCount() - 1) {
-            int itemHeight = this.stripeCornerRadius;
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
         } else {
             return (int) ((segment.getDuration() / 3600f) * this.baseItemHeight);
@@ -66,7 +71,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         this.totalItemHeight = 0;
 
         for (int i = 0, size = itemHeights.length; i < size; i++) {
-            int height = calculateItemHeight(i, segments.get(i));
+            int height = calculateItemHeight(segments.get(i));
             this.itemHeights[i] = height;
             this.totalItemHeight += height;
         }
@@ -134,6 +139,12 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         clear();
     }
 
+    public void setUse24Time(boolean use24Time) {
+        this.use24Time = use24Time;
+        notifyDataSetChanged();
+    }
+
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TimelineSegmentView view = (TimelineSegmentView) convertView;
@@ -173,6 +184,18 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
             itemView.setStripeInset(stripeInset);
             itemView.setRounded(segment.getEventType() != null);
             itemView.setEventResource(Styles.getTimelineSegmentIconRes(segment));
+
+            EventType eventType = segment.getEventType();
+            if (eventType != null) {
+                if (eventType == EventType.WAKE_UP || eventType == EventType.SLEEP) {
+                    itemView.setTimestampTypeface(Typeface.createFromAsset(getContext().getAssets(), Styles.TYPEFACE_ROMAN));
+                } else {
+                    itemView.setTimestampTypeface(Typeface.createFromAsset(getContext().getAssets(), Styles.TYPEFACE_LIGHT));
+                }
+                itemView.setTimestampString(dateFormatter.formatAsTime(segment.getTimestamp(), use24Time));
+            } else {
+                itemView.setTimestampString(null);
+            }
         }
     }
 }

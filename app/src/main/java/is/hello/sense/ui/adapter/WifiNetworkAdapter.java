@@ -10,9 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import is.hello.sense.R;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 
-public class WifiNetworkAdapter extends ArrayAdapter<MorpheusBle.wifi_endpoint> {
+public class WifiNetworkAdapter extends ArrayAdapter<SenseCommandProtos.wifi_endpoint> {
     private final LayoutInflater inflater;
 
     public WifiNetworkAdapter(Context context) {
@@ -30,10 +30,10 @@ public class WifiNetworkAdapter extends ArrayAdapter<MorpheusBle.wifi_endpoint> 
             view.setTag(new ViewHolder(view));
         }
 
-        MorpheusBle.wifi_endpoint item = getItem(position);
+        SenseCommandProtos.wifi_endpoint item = getItem(position);
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.name.setText(item.getSsid());
-        if (item.getSecurityType() == MorpheusBle.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN) {
+        if (item.getSecurityType() == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN) {
             holder.locked.setVisibility(View.GONE);
         } else {
             holder.locked.setVisibility(View.VISIBLE);

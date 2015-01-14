@@ -20,6 +20,8 @@ public class PersistentApiSessionManager extends ApiSessionManager {
     private final ObjectMapper mapper;
 
     public PersistentApiSessionManager(@NonNull Context context, @NonNull ObjectMapper mapper) {
+        super(context);
+
         this.preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
         this.mapper = mapper;
     }

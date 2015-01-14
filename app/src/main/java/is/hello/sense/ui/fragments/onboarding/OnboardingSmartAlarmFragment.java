@@ -13,13 +13,10 @@ import android.widget.Button;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Alarm;
-import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -55,20 +52,7 @@ public class OnboardingSmartAlarmFragment extends InjectionFragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Alarm newAlarm = (Alarm) data.getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
-
-            LoadingDialogFragment.show(getFragmentManager());
-            bindAndSubscribe(smartAlarmPresenter.save(Lists.newArrayList(newAlarm)),
-                             ignored -> complete(),
-                             e -> {
-                                 LoadingDialogFragment.close(getFragmentManager());
-                                 if (e instanceof SmartAlarmPresenter.DayOverlapError) {
-                                     ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_day_overlap));
-                                     dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-                                 } else {
-                                     ErrorDialogFragment.presentError(getFragmentManager(), e);
-                                 }
-                             });
+            complete();
         }
     }
 
@@ -80,6 +64,6 @@ public class OnboardingSmartAlarmFragment extends InjectionFragment {
 
     public void complete() {
         LoadingDialogFragment.close(getFragmentManager());
-        ((OnboardingActivity) getActivity()).showDone();
+        ((OnboardingActivity) getActivity()).show2ndPillIntroduction();
     }
 }

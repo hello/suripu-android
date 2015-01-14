@@ -14,25 +14,19 @@ import android.widget.TextView;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
-
 import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle;
-import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
-import is.hello.sense.ui.common.HelpUtil;
-import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import rx.functions.Action1;
 
-public class OnboardingWifiNetworkFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
-    @Inject HardwarePresenter hardwarePresenter;
-
+public class OnboardingWifiNetworkFragment extends HardwareFragment implements AdapterView.OnItemClickListener {
     private WifiNetworkAdapter networkAdapter;
 
     private TextView infoLabel;
@@ -83,7 +77,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         });
 
         this.helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        Views.setSafeOnClickListener(helpButton, ignored -> HelpUtil.showHelp(getActivity(), HelpUtil.Step.ONBOARDING_WIFI_SCAN));
+        Views.setSafeOnClickListener(helpButton, ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.WIFI_SCAN));
 
         return view;
     }
@@ -106,7 +100,7 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        MorpheusBle.wifi_endpoint network = (MorpheusBle.wifi_endpoint) adapterView.getItemAtPosition(position);
+        SenseCommandProtos.wifi_endpoint network = (SenseCommandProtos.wifi_endpoint) adapterView.getItemAtPosition(position);
         getOnboardingActivity().showSignIntoWifiNetwork(network);
     }
 
@@ -135,37 +129,41 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
             return;
         }
 
-        bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), this::bindScanResults, this::scanResultsUnavailable);
+        showHardwareActivity(() -> bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), this::bindScanResults, this::scanResultsUnavailable));
     }
 
-    public void bindScanResults(@NonNull Collection<MorpheusBle.wifi_endpoint> scanResults) {
-        networkAdapter.clear();
-        networkAdapter.addAll(scanResults);
+    public void bindScanResults(@NonNull Collection<SenseCommandProtos.wifi_endpoint> scanResults) {
+        hideHardwareActivity(() -> {
+            networkAdapter.clear();
+            networkAdapter.addAll(scanResults);
 
-        scanningIndicatorLabel.setVisibility(View.GONE);
-        scanningIndicator.setVisibility(View.GONE);
-        infoLabel.setVisibility(View.VISIBLE);
-        listView.setVisibility(View.VISIBLE);
-        rescanButton.setVisibility(View.VISIBLE);
-        rescanButton.setEnabled(true);
-        helpButton.setVisibility(View.VISIBLE);
+            scanningIndicatorLabel.setVisibility(View.GONE);
+            scanningIndicator.setVisibility(View.GONE);
+            infoLabel.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.VISIBLE);
+            rescanButton.setVisibility(View.VISIBLE);
+            rescanButton.setEnabled(true);
+            helpButton.setVisibility(View.VISIBLE);
+        });
     }
 
     public void scanResultsUnavailable(Throwable e) {
-        scanningIndicatorLabel.setVisibility(View.GONE);
-        scanningIndicator.setVisibility(View.GONE);
-        infoLabel.setVisibility(View.VISIBLE);
-        listView.setVisibility(View.VISIBLE);
-        rescanButton.setVisibility(View.VISIBLE);
-        rescanButton.setEnabled(true);
-        helpButton.setVisibility(View.VISIBLE);
+        hideHardwareActivity(() -> {
+            scanningIndicatorLabel.setVisibility(View.GONE);
+            scanningIndicator.setVisibility(View.GONE);
+            infoLabel.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.VISIBLE);
+            rescanButton.setVisibility(View.VISIBLE);
+            rescanButton.setEnabled(true);
+            helpButton.setVisibility(View.VISIBLE);
 
-        if (hardwarePresenter.isErrorFatal(e)) {
-            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
-            fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
-        } else {
-            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
-        }
+            if (hardwarePresenter.isErrorFatal(e)) {
+                UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
+                fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
+            } else {
+                ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            }
+        });
     }
 
     public void peripheralRediscoveryFailed(Throwable e) {
@@ -182,10 +180,5 @@ public class OnboardingWifiNetworkFragment extends InjectionFragment implements 
         } else {
             ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         }
-    }
-
-
-    private OnboardingActivity getOnboardingActivity() {
-        return (OnboardingActivity) getActivity();
     }
 }

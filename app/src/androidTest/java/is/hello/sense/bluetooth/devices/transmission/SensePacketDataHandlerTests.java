@@ -10,8 +10,8 @@ import is.hello.sense.bluetooth.stacks.transmission.SequencedPacket;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.util.LambdaVar;
 
-import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.MorpheusCommand;
-import static is.hello.sense.bluetooth.devices.transmission.protobuf.MorpheusBle.wifi_endpoint;
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand;
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint;
 
 public class SensePacketDataHandlerTests extends TestCase {
     private final SensePacketDataHandler packetDataHandler = new SensePacketDataHandler();

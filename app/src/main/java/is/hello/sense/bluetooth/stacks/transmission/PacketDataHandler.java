@@ -47,5 +47,9 @@ public abstract class PacketDataHandler<T> {
         this.onResponse = null;
     }
 
+    public boolean hasListeners() {
+        return (this.onError != null && this.onResponse != null);
+    }
+
     //endregion
 }

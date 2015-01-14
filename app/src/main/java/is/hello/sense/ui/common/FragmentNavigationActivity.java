@@ -74,11 +74,14 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
 
     @Override
     public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() > 0) {
-            getFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
+        Fragment topFragment = getTopFragment();
+        if (topFragment instanceof BackInterceptingFragment) {
+            if (((BackInterceptingFragment) topFragment).onInterceptBack(super::onBackPressed)) {
+                return;
+            }
         }
+
+        super.onBackPressed();
     }
 
     @Override
@@ -131,5 +134,10 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
 
     public void setWantsTitleUpdates(boolean wantsTitleUpdates) {
         this.wantsTitleUpdates = wantsTitleUpdates;
+    }
+
+
+    public interface BackInterceptingFragment {
+        boolean onInterceptBack(@NonNull Runnable back);
     }
 }

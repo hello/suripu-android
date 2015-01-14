@@ -40,6 +40,8 @@ import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.graph.presenters.TimelineNavigatorPresenterTests;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
+import is.hello.sense.graph.presenters.TrendsPresenter;
+import is.hello.sense.graph.presenters.TrendsPresenterTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.CachedObjectTests;
 import is.hello.sense.util.DateFormatterTests;
@@ -80,6 +82,9 @@ import is.hello.sense.util.DateFormatterTests;
 
         TimelineNavigatorPresenterTests.class,
         TimelineNavigatorPresenter.class,
+
+        TrendsPresenterTests.class,
+        TrendsPresenter.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -112,8 +117,8 @@ public final class TestModule {
         return new TestApiService(context, objectMapper);
     }
 
-    @Singleton @Provides ApiSessionManager provideApiSessionManager() {
-        return new TransientApiSessionManager();
+    @Singleton @Provides ApiSessionManager provideApiSessionManager(@NonNull @ApiAppContext Context context) {
+        return new TransientApiSessionManager(context);
     }
 
     @Singleton @Provides TestBluetoothStackBehavior provideBluetoothStackConfig() {
