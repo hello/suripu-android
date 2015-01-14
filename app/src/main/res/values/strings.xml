@@ -131,8 +131,7 @@ so you can sleep better.</string>
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
     <string name="info_pair_pill">Shake your Sleep Pill for three seconds to pair it with your Sense. You may need to shake it quickly for it to register.</string>
     <string name="title_sense_colors">Before you sleep</string>
-    <string name="info_sense_colors">Before you go to bed, you’ll want to check that everything’s set for a good nights sleep. Simply wave your hand over Sense, and instantly you’ll know about the conditions in your room. Go ahead, give it a try now.
-Green means everything’s good. Orange means something’s a little off and red means you should adjust something before sleep.</string>
+    <string name="info_sense_colors">You’ll want to check that everything’s set for a good nights sleep. Simply wave your hand over Sense, and instantly you’ll know about the conditions in your room. Go ahead, give it a try now.</string>
     <string name="onboarding_done_message_1">You’re all set up.\nWell done.</string>
     <string name="onboarding_done_message_2">Now, get some sleep.\nSee you in the morning.</string>
     <string name="error_bad_wifi_credentials">The wifi network credentials you entered are incorrect.</string>

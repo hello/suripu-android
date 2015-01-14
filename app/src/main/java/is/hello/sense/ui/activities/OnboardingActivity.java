@@ -338,7 +338,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         OnboardingSimpleStepFragment.Builder senseColorsBuilder = new OnboardingSimpleStepFragment.Builder(this);
         senseColorsBuilder.setHeadingText(R.string.title_sense_colors);
         senseColorsBuilder.setSubheadingText(R.string.info_sense_colors);
-        senseColorsBuilder.setDiagramImage(R.drawable.sense_colors);
+        senseColorsBuilder.setDiagramImage(R.drawable.onboarding_sense_colors);
         senseColorsBuilder.setHideToolbar(true);
         senseColorsBuilder.setNextWantsBackStackEntry(false);
         senseColorsBuilder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_COLORS);
