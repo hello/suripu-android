@@ -26,7 +26,7 @@
         <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
         <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
 t
-        <item name="android:listSelector">@drawable/selectable_list</item>
+        <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
         <item name="android:listDivider">@color/border</item>
         <item name="android:dividerHeight">@dimen/divider_size</item>
     </style>

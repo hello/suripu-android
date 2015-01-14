@@ -1,6 +1,7 @@
 package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +17,18 @@ import rx.Observable;
 
 @Singleton public class SmartAlarmPresenter extends ValuePresenter<ArrayList<Alarm>> {
     private final ApiService apiService;
+    private @Nullable PresenterSubject<ArrayList<Alarm.Sound>> availableAlarmSounds;
 
     public final PresenterSubject<ArrayList<Alarm>> alarms = this.subject;
 
     @Inject SmartAlarmPresenter(@NonNull ApiService apiService) {
         this.apiService = apiService;
+    }
+
+    @Override
+    protected boolean onForgetDataForLowMemory() {
+        forgetAvailableAlarmSoundsCache();
+        return super.onForgetDataForLowMemory();
     }
 
     @Override
@@ -68,7 +76,6 @@ import rx.Observable;
     }
 
     public Observable<VoidResponse> save(@NonNull ArrayList<Alarm> updatedAlarms) {
-
         if (validateAlarms(updatedAlarms)) {
             return apiService.saveSmartAlarms(System.currentTimeMillis(), updatedAlarms)
                              .doOnCompleted(() -> {
@@ -78,6 +85,28 @@ import rx.Observable;
                              .doOnError(this.alarms::onError);
         } else {
             return Observable.error(new DayOverlapError());
+        }
+    }
+
+    public Observable<ArrayList<Alarm.Sound>> availableAlarmSounds() {
+        if (availableAlarmSounds == null) {
+            this.availableAlarmSounds = PresenterSubject.create();
+            apiService.availableSmartAlarmSounds()
+                      .subscribe(availableAlarmSounds::onNext, e -> {
+                          logEvent("Could not load smart alarm sounds " + e);
+                          if (availableAlarmSounds != null) {
+                              availableAlarmSounds.onNext(new ArrayList<>());
+                          }
+                      });
+        }
+
+        return availableAlarmSounds;
+    }
+
+    public void forgetAvailableAlarmSoundsCache() {
+        if (availableAlarmSounds != null) {
+            availableAlarmSounds.forget();
+            this.availableAlarmSounds = null;
         }
     }
 

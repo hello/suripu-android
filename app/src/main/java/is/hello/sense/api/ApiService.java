@@ -8,6 +8,7 @@ import java.util.List;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
+import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -40,6 +41,14 @@ public interface ApiService {
 
     @POST("/oauth2/token")
     Observable<OAuthSession> authorize(@NonNull @Body OAuthCredentials request);
+
+    //endregion
+
+
+    //region Updates
+
+    @POST("/app/checkin")
+    Observable<UpdateCheckIn.Response> checkInForUpdates(@NonNull @Body UpdateCheckIn body);
 
     //endregion
 

@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.adapter.SmartAlarmSoundAdapter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.SenseSelectorDialog;
@@ -26,7 +27,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
 
     public static final String TAG = SmartAlarmSoundDialogFragment.class.getSimpleName();
 
-    @Inject ApiService apiService;
+    @Inject SmartAlarmPresenter presenter;
 
     private Alarm.Sound selectedSound;
     private SmartAlarmSoundAdapter adapter;
@@ -66,10 +67,10 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
         dialog.setMessage("Pre-production Senses will not play the specific ringtone you select.");
         dialog.setOnSelectionListener(this);
         dialog.setAdapter(adapter);
-        dialog.setDoneButtonEnabled(false);
+        dialog.setDoneButtonEnabled(selectedSound != null);
         dialog.setActivityIndicatorVisible(true);
 
-        bindAndSubscribe(apiService.availableSmartAlarmSounds(), this::bindSounds, this::presentError);
+        bindAndSubscribe(presenter.availableAlarmSounds(), this::bindSounds, this::presentError);
 
         return dialog;
     }

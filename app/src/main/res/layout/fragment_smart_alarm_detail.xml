@@ -91,18 +91,20 @@
         <View style="@style/Divider.Horizontal" />
 
         <LinearLayout
+            android:id="@+id/fragment_smart_alarm_detail_enabled_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/gap_outer"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@drawable/selectable_dark_bounded">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="@dimen/gap_small"
-                android:text="@string/title_smart_alarm"
+                android:text="@string/title_enabled"
                 android:textAppearance="@style/AppTheme.Text.Body"/>
 
             <ToggleButton
@@ -118,11 +120,42 @@
         <View style="@style/Divider.Horizontal" />
 
         <LinearLayout
+            android:id="@+id/fragment_smart_alarm_detail_smart_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/gap_outer"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@drawable/selectable_dark_bounded">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/gap_small"
+                android:text="@string/title_smart_alarm"
+                android:textAppearance="@style/AppTheme.Text.Body"/>
+
+            <ToggleButton
+                android:id="@+id/fragment_smart_alarm_detail_smart"
+                android:layout_width="@dimen/switch_width"
+                android:layout_height="@dimen/switch_height"
+                android:textOn=""
+                android:textOff=""
+                android:background="@drawable/switch_selector"/>
+
+        </LinearLayout>
+
+        <View style="@style/Divider.Horizontal" />
+
+        <LinearLayout
+            android:id="@+id/fragment_smart_alarm_detail_sound_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/gap_outer"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:background="@drawable/selectable_dark_bounded">
 
             <TextView
                 android:layout_width="0dp"
@@ -149,7 +182,8 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/gap_outer"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@drawable/selectable_dark_bounded">
 
             <TextView
                 android:layout_width="0dp"

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -8,6 +9,32 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@android:id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/gap_outer"
+        android:padding="@dimen/gap_outer"
+        android:visibility="gone"
+        style="@style/AppTheme.Card">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_outer"
+            android:textAppearance="@style/AppTheme.Text.SectionHeading"
+            android:text="@string/title_smart_alarms"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/AppTheme.Text.Body"
+            android:lineSpacingMultiplier="@dimen/line_multiple_body"
+            android:text="@string/message_smart_alarm_placeholder"/>
+
+    </LinearLayout>
 
     <is.hello.sense.ui.widget.TintedProgressBar
         android:id="@+id/fragment_smart_alarm_list_activity"
@@ -26,5 +53,21 @@
         android:layout_centerHorizontal="true"
         android:src="@drawable/button_smart_alarm_add"
         android:contentDescription="@string/action_new_alarm"/>
+
+    <TextView
+        android:id="@+id/fragment_smart_alarm_list_first_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/gap_outer"
+        android:paddingStart="@dimen/gap_outer"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@id/fragment_smart_alarm_list_add"
+        android:layout_alignTop="@id/fragment_smart_alarm_list_add"
+        android:layout_alignBottom="@id/fragment_smart_alarm_list_add"
+        android:gravity="center_vertical|start"
+        android:textAppearance="@style/AppTheme.Text.SectionHeading"
+        android:text="@string/prompt_set_your_first_alarm"
+        android:visibility="gone"
+        tools:ignore="RtlSymmetry" />
 
 </RelativeLayout>
