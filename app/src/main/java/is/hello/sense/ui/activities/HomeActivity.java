@@ -17,6 +17,8 @@ import org.joda.time.DateTime;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
@@ -24,6 +26,7 @@ import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
@@ -47,6 +50,7 @@ public class HomeActivity
     public static final String EXTRA_IS_NOTIFICATION = HomeActivity.class.getName() + ".EXTRA_IS_NOTIFICATION";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
+    @Inject ApiService apiService;
     @Inject QuestionsPresenter questionsPresenter;
     @Inject BuildValues buildValues;
 
@@ -111,6 +115,8 @@ public class HomeActivity
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
         }, Functions.LOG_ERROR);
+
+        checkInForUpdates();
     }
 
     @Override
@@ -174,6 +180,7 @@ public class HomeActivity
 
     //endregion
 
+
     @Override
     public void onBackPressed() {
         if(slidingLayersView.isOpen()) {
@@ -192,6 +199,18 @@ public class HomeActivity
     public boolean isCurrentFragmentLastNight() {
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
+    }
+
+
+    public void checkInForUpdates() {
+        bindAndSubscribe(apiService.checkInForUpdates(new UpdateCheckIn()),
+                         response -> {
+                             if (response.isNewVersion()) {
+                                 AppUpdateDialogFragment dialogFragment = AppUpdateDialogFragment.newInstance(response);
+                                 dialogFragment.show(getFragmentManager(), AppUpdateDialogFragment.TAG);
+                             }
+                         },
+                         e -> Logger.error(HomeActivity.class.getSimpleName(), "Could not run update check in", e));
     }
 
 
