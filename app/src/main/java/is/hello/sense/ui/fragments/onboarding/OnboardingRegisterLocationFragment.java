@@ -47,6 +47,7 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
                 .setHeadingText(R.string.title_onboarding_register_location)
                 .setSubheadingText(R.string.onboarding_register_info_explanation)
                 .setDiagramImage(R.drawable.onboarding_map)
+                .setPrimaryButtonText(R.string.action_set_location)
                 .setPrimaryOnClickListener(ignored -> optIn())
                 .setSecondaryOnClickListener(ignored -> getContainer().onAccountUpdated(this))
                 .hideToolbar()

@@ -78,7 +78,8 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
         }
 
         this.container = builder.create();
-        return container;
+
+        return this.container;
     }
 
 

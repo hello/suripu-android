@@ -73,8 +73,8 @@
                 android:id="@+id/fragment_onboarding_simple_step_diagram"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:adjustViewBounds="true"
-                android:scaleType="centerInside"
                 tools:ignore="ContentDescription" />
 
         </LinearLayout>
