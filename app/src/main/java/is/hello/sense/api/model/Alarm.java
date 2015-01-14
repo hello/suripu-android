@@ -121,7 +121,7 @@ public class Alarm extends ApiResponse {
         this.isRepeated = true;
         this.isEnabled = true;
         this.isEditable = true;
-        this.isSmart = false;
+        this.isSmart = true;
         this.daysOfWeek = new HashSet<>();
     }
 

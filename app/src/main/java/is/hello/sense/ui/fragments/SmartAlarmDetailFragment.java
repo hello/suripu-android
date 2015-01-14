@@ -16,17 +16,12 @@ import android.widget.ToggleButton;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalTime;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
-import is.hello.sense.api.model.Alarm.Sound;
-import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
@@ -38,7 +33,6 @@ import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.SafeOnClickListener;
-import retrofit.http.HEAD;
 import rx.Observable;
 
 
@@ -110,9 +104,21 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             dayButton.setTag(day);
         }
 
-        ToggleButton enabledButton = (ToggleButton) view.findViewById(R.id.fragment_smart_alarm_detail_enabled);
-        enabledButton.setChecked(alarm.isEnabled());
-        enabledButton.setOnCheckedChangeListener((button, isEnabled) -> alarm.setEnabled(isEnabled));
+        ToggleButton enabledToggle = (ToggleButton) view.findViewById(R.id.fragment_smart_alarm_detail_enabled);
+        enabledToggle.setChecked(alarm.isEnabled());
+        enabledToggle.setOnCheckedChangeListener((button, isEnabled) -> alarm.setEnabled(isEnabled));
+
+        View enabledToggleContainer = view.findViewById(R.id.fragment_smart_alarm_detail_enabled_container);
+        enabledToggleContainer.setOnClickListener(ignored -> enabledToggle.toggle());
+
+
+        ToggleButton smartToggle = (ToggleButton) view.findViewById(R.id.fragment_smart_alarm_detail_smart);
+        smartToggle.setChecked(alarm.isSmart());
+        smartToggle.setOnCheckedChangeListener((button, checked) -> alarm.setSmart(checked));
+
+        View smartToggleContainer = view.findViewById(R.id.fragment_smart_alarm_detail_smart_container);
+        smartToggleContainer.setOnClickListener(ignored -> smartToggle.toggle());
+
 
         this.soundButton = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_sound);
         if (alarm.getSound() != null && !TextUtils.isEmpty(alarm.getSound().name)) {
@@ -122,11 +128,19 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         }
         Views.setSafeOnClickListener(soundButton, this::selectSound);
 
+        View soundButtonContainer = view.findViewById(R.id.fragment_smart_alarm_detail_sound_container);
+        soundButtonContainer.setOnClickListener(ignored -> soundButton.performClick());
+
+
         Button deleteButton = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_delete);
         Views.setSafeOnClickListener(deleteButton, this::deleteAlarm);
 
+        View deleteButtonContainer = view.findViewById(R.id.fragment_smart_alarm_detail_delete_container);
+        deleteButtonContainer.setOnClickListener(ignored -> deleteButton.performClick());
+
+
         if (this.index == SmartAlarmDetailActivity.INDEX_NEW) {
-            view.findViewById(R.id.fragment_smart_alarm_detail_delete_container).setVisibility(View.GONE);
+            deleteButtonContainer.setVisibility(View.GONE);
         }
 
         return view;

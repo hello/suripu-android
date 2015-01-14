@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.WrapperListAdapter;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
@@ -152,7 +151,7 @@ public final class Styles {
                                                    @StyleRes int textAppearanceRes,
                                                    @NonNull View.OnClickListener onClick) {
         TextView itemView = new TextView(context);
-        itemView.setBackgroundResource(R.drawable.selectable_list);
+        itemView.setBackgroundResource(R.drawable.selectable_dark_bounded);
         itemView.setTextAppearance(context, textAppearanceRes);
         itemView.setText(titleRes);
 
