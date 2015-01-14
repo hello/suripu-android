@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -20,9 +21,11 @@
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/gap_outer"
             android:paddingRight="@dimen/gap_outer"
+            android:gravity="center"
             android:background="@color/background_onboarding">
 
             <TextView
+                android:id="@+id/fragment_onboarding_sign_into_wifi_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/gap_outer"
@@ -31,45 +34,30 @@
                 android:lineSpacingMultiplier="@dimen/line_multiple_heading"
                 android:text="@string/title_sign_into_wifi_selection"/>
 
-            <EditText
-                android:id="@+id/fragment_onboarding_sign_into_wifi_network"
+            <TextView
+                android:id="@+id/fragment_onboarding_sign_into_wifi_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/gap_medium"
-                android:nextFocusForward="@+id/fragment_onboarding_sign_into_wifi_password"
-                android:imeOptions="actionNext|flagNoExtractUi"
-                android:hint="@string/label_network_name">
-
-                <requestFocus />
-
-            </EditText>
-
-            <EditText
-                android:id="@+id/fragment_onboarding_sign_into_wifi_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textVisiblePassword"
-                android:imeOptions="actionSend|flagNoExtractUi"
-                android:hint="@string/label_password"/>
+                android:textAppearance="@style/AppTheme.Text.Subheading"
+                android:text="@string/label_wifi_network_name"/>
 
             <RelativeLayout
-                android:id="@+id/fragment_onboarding_sign_into_wifi_security_container"
+                android:id="@+id/fragment_onboarding_sign_into_wifi_other_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_medium"
-                android:background="@drawable/edit_text_background_normal">
+                android:background="@drawable/edit_text_background_normal"
+                android:visibility="gone">
 
-                <TextView
-                    android:id="@+id/fragment_onboarding_sign_into_wifi_security_label"
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/fragment_onboarding_sign_into_wifi_network"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/gap_tiny"
-                    android:layout_marginRight="@dimen/gap_tiny"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:text="@string/title_security"
-                    android:textSize="@dimen/text_size_body"
-                    android:textColor="?android:textColorHint"/>
+                    android:paddingEnd="@dimen/gap_xlarge"
+                    android:nextFocusForward="@+id/fragment_onboarding_sign_into_wifi_password"
+                    android:imeOptions="actionNext|flagNoExtractUi"
+                    android:hint="@string/label_network_name"
+                    tools:ignore="RtlSymmetry" />
 
                 <Spinner
                     android:id="@+id/fragment_onboarding_sign_into_wifi_security"
@@ -78,9 +66,17 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:gravity="end|center_vertical"
-                    style="@style/AppTheme.Spinner"/>
+                    style="@style/AppTheme.Spinner.Borderless"/>
 
             </RelativeLayout>
+
+            <EditText
+                android:id="@+id/fragment_onboarding_sign_into_wifi_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textVisiblePassword"
+                android:imeOptions="actionSend|flagNoExtractUi"
+                android:hint="@string/label_password"/>
 
         </LinearLayout>
 

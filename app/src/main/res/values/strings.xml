@@ -104,6 +104,7 @@
     <string name="title_choose_wifi_network">Connecting Sense to Wifi</string>
     <string name="info_choose_wifi_network">Please select your WiFi network from the list below:</string>
     <string name="title_sign_into_wifi_selection">Enter password for</string>
+    <string name="title_sign_into_wifi_other">Enter WiFi credentials</string>
     <string name="wifi_other_network">Other…</string>
     <string name="label_network_name">Network Name</string>
     <string name="action_skip">Skip for now</string>
@@ -301,4 +302,5 @@ Green means everything’s good. Orange means something’s a little off and red
     <string name="error_sleep_pill_missing_fmt">Your Sleep Pill was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
     <string name="device_support_footer">If you’re having trouble, visit <a href="http://support.hello.is">Support</a> or contact us at <a href="mailto:help@sayhello.com">help@sayhello.com</a>.</string>
     <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
+    <string name="label_wifi_network_name">"WiFi network: "</string>
 </resources>
