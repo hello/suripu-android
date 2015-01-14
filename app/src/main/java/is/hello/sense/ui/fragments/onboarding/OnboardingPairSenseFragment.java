@@ -2,7 +2,6 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,7 +21,6 @@ import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -36,8 +34,6 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 
 public class OnboardingPairSenseFragment extends HardwareFragment {
-    private static int REQUEST_CODE_PAIR_HELP = 0x19;
-
     @Inject ApiService apiService;
     @Inject BuildValues buildValues;
     @Inject PreferencesPresenter preferences;
@@ -67,6 +63,9 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_step_continue);
         Views.setSafeOnClickListener(nextButton, this::next);
 
+        Button pairingModeHelp = (Button) view.findViewById(R.id.fragment_onboarding_pair_sense_mode_help);
+        Views.setSafeOnClickListener(pairingModeHelp, this::showPairingModeHelp);
+
         OnboardingToolbar.of(this, view)
                 .setWantsBackButton(true)
                 .setOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SETUP_SENSE));
@@ -86,16 +85,6 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("hasLinkedAccount", hasLinkedAccount);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_PAIR_HELP && resultCode == OnboardingPairHelpFragment.RESULT_NEW_SENSE) {
-            TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
-            dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
-        }
     }
 
 
@@ -169,6 +158,10 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         hideAllActivity(true, () -> getOnboardingActivity().showPairPill());
     }
 
+    public void showPairingModeHelp(@NonNull View sender) {
+        getOnboardingActivity().showFragment(new OnboardingSensePairingModeHelpFragment(), null, true);
+    }
+
     public void next(@NonNull View sender) {
         showBlockingActivity(R.string.title_pairing);
 
@@ -202,9 +195,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     public void pairingFailed(Throwable e) {
         hideAllActivity(false, () -> {
             if (e instanceof PeripheralNotFoundError) {
-                OnboardingPairHelpFragment pairHelpFragment = new OnboardingPairHelpFragment();
-                pairHelpFragment.setTargetFragment(this, REQUEST_CODE_PAIR_HELP);
-                ((FragmentNavigation) getActivity()).showFragment(pairHelpFragment, null, true);
+                TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
+                dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
             } else if (hardwarePresenter.isErrorFatal(e)) {
                 UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
                 fragment.show(getFragmentManager(), R.id.activity_onboarding_container);

@@ -95,6 +95,8 @@
     <string name="info_setup_sense">Make sure Sense is plugged into a wall outlet next to your bed.</string>
     <string name="title_pair_sense">Pairing with Sense</string>
     <string name="info_pair_sense">Now we’ll pair your phone with Sense. Make sure your Sense is plugged in, nearby, and glowing Purple. Tap Continue when ready.</string>
+    <string name="title_sense_pairing_mode_help">Pairing Mode</string>
+    <string name="info_sense_pairing_mode_help">Before you connect your phone, Sense needs to be put into Pairing Mode.\n\nPlace your hand on top of Sense for seven seconds, and then remove it.\n\nSense will glow purple when it is in Pairing Mode.</string>
     <string name="title_pairing">Pairing</string>
     <string name="title_connecting_network">Connecting</string>
     <string name="wifi_network_secured">Secured Network</string>
@@ -298,4 +300,5 @@ Green means everything’s good. Orange means something’s a little off and red
     <string name="error_sense_missing_fmt">Your Sense was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
     <string name="error_sleep_pill_missing_fmt">Your Sleep Pill was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
     <string name="device_support_footer">If you’re having trouble, visit <a href="http://support.hello.is">Support</a> or contact us at <a href="mailto:help@sayhello.com">help@sayhello.com</a>.</string>
+    <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
 </resources>
