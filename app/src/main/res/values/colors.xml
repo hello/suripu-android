@@ -18,7 +18,7 @@
     <color name="background_questions">#F7f8f8f8</color>
     <color name="background_onboarding">@color/white</color>
 
-    <color name="border">#dcdcdc</color>
+    <color name="border">#e5e5e5</color>
     <color name="shadow_end">#18000000</color>
 
     <color name="timeline_segment_stripe">#19009CFF</color>

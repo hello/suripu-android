@@ -3,6 +3,7 @@
     android:id="@+id/sub_fragment_device_footer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/gap_medium"
     android:gravity="center"
     android:textAppearance="@style/AppTheme.Text.Body.Light.Small"
     android:text="@string/device_support_footer"

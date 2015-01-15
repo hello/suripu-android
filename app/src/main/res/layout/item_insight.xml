@@ -12,10 +12,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_outer"
-        android:layout_marginEnd="@dimen/gap_outer"
-        android:layout_marginStart="@dimen/gap_small"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_marginEnd="@dimen/gap_medium"
+        android:layout_marginStart="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.SectionHeading"
         android:text="@string/mock_time"/>
 
@@ -26,9 +26,9 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_toStartOf="@id/item_insight_date"
-        android:layout_marginTop="@dimen/gap_outer"
-        android:layout_marginStart="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginStart="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.SectionHeading.Accent"
         android:text="@string/app_name"/>
 
@@ -37,11 +37,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/item_insight_title"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginLeft="@dimen/gap_medium"
+        android:layout_marginRight="@dimen/gap_medium"
         android:layout_marginBottom="@dimen/gap_outer"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/mock_event_message"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+        android:lineSpacingMultiplier="@dimen/line_multiple_body_small"/>
 
 </RelativeLayout>
