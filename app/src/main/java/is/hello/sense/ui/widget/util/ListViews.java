@@ -32,7 +32,7 @@ public final class ListViews {
     /**
      * Returns an estimate for the scroll Y position of a given list view.
      * <p/>
-     * The value returned by this method will be non-sense for
+     * The value returned by this method will be non-onboarding_pair_sense for
      * list views with variable view heights.
      */
     public static int getEstimatedScrollY(@NonNull AbsListView listView) {

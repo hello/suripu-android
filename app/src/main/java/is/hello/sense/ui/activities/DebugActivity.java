@@ -50,6 +50,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     private StaticItemAdapter debugActionItems;
     private StaticItemAdapter buildInfoItems;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +115,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
 
     public void changeEnvironment() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        ArrayAdapter<ApiEnvironment> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ApiEnvironment.values());
+        ArrayAdapter<ApiEnvironment> adapter = new ArrayAdapter<>(this, R.layout.item_simple_text, ApiEnvironment.values());
         builder.setAdapter(adapter, (dialog, which) -> {
             ApiEnvironment newEnvironment = adapter.getItem(which);
             if (newEnvironment == currentEnvironment)

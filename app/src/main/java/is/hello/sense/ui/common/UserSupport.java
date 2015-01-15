@@ -36,6 +36,8 @@ public class UserSupport {
 
     public static enum OnboardingStep {
         INFO,
+        BLUETOOTH,
+        ENHANCED_AUDIO,
         SETUP_SENSE,
         WIFI_SCAN,
         SIGN_INTO_WIFI,

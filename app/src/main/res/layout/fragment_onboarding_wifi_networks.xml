@@ -4,23 +4,30 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/gap_xlarge"
-    android:paddingLeft="@dimen/gap_large"
-    android:paddingRight="@dimen/gap_large">
+    android:background="@color/background_onboarding">
+
+    <include layout="@layout/sub_fragment_onboarding_toolbar" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/gap_large"
+        android:layout_marginTop="@dimen/gap_outer"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginBottom="@dimen/gap_small"
         android:textAppearance="@style/AppTheme.Text.Heading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:text="@string/title_choose_wifi_network"/>
 
     <TextView
         android:id="@+id/fragment_onboarding_wifi_networks_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
         android:layout_marginBottom="@dimen/gap_large"
         android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
         android:text="@string/info_choose_wifi_network"
         android:visibility="invisible"/>
 
@@ -33,6 +40,7 @@
             android:id="@android:id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/background_vertical_borders"
             android:visibility="gone"/>
 
         <is.hello.sense.ui.widget.TintedProgressBar
@@ -57,18 +65,8 @@
         android:id="@+id/fragment_onboarding_wifi_networks_rescan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
+        android:layout_margin="@dimen/gap_outer"
         android:text="@string/action_rescan"
-        style="@style/AppTheme.Button.Borderless.Onboarding"
-        android:visibility="invisible"/>
-
-    <Button
-        android:id="@+id/fragment_onboarding_step_help"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_marginBottom="@dimen/gap_large"
-        android:text="@string/action_onboarding_help"
         style="@style/AppTheme.Button.Borderless.Onboarding"
         android:visibility="invisible"/>
 

@@ -19,6 +19,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
@@ -53,6 +54,10 @@ public class OnboardingSignInFragment extends InjectionFragment {
         Button signIn = (Button) view.findViewById(R.id.fragment_onboarding_sign_in_go);
         Views.setSafeOnClickListener(signIn, ignored -> signIn());
 
+        OnboardingToolbar.of(this, view)
+                .setWantsBackButton(true)
+                .setWantsHelpButton(true);
+
         return view;
     }
 
@@ -81,19 +86,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
             apiSessionManager.setSession(session);
             Analytics.trackEvent(Analytics.EVENT_SIGNED_IN, null);
 
-            bindAndSubscribe(apiService.registeredDevices(),
-                             devices -> {
-                                 if (devices.isEmpty()) {
-                                     LoadingDialogFragment.close(getFragmentManager());
-                                     getOnboardingActivity().showSetupSense();
-                                 } else {
-                                     getOnboardingActivity().showHomeActivity();
-                                 }
-                             },
-                             e -> {
-                                 LoadingDialogFragment.close(getFragmentManager());
-                                 ErrorDialogFragment.presentError(getFragmentManager(), e);
-                             });
+            getOnboardingActivity().showHomeActivity();
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             if (ApiException.statusEquals(error, 401)) {

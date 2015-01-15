@@ -23,7 +23,7 @@
         android:layout_marginBottom="@dimen/gap_small"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body"
-        android:lineSpacingMultiplier="@dimen/body_text_line_multiple"
+        android:lineSpacingMultiplier="@dimen/line_multiple_body"
         android:text="@string/mock_question_title"/>
 
     <LinearLayout

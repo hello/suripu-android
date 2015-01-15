@@ -18,20 +18,17 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.BuildValues;
 
 import static android.widget.LinearLayout.LayoutParams;
 
 public class AppSettingsFragment extends InjectionFragment {
     @Inject ApiSessionManager sessionManager;
-    @Inject BuildValues buildValues;
 
     private final LayoutParams itemTextLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     private LayoutParams dividerLayoutParams;
@@ -57,11 +54,7 @@ public class AppSettingsFragment extends InjectionFragment {
         addItem(R.string.label_units_and_time, true, ignored -> showFragment(R.xml.settings_units_and_time, R.string.label_units_and_time));
         addItem(R.string.label_devices, true, ignored -> showFragment(DeviceListFragment.class, R.string.label_devices, null));
         addItem(R.string.action_help, true, this::showHelp);
-        addItem(R.string.action_log_out, buildValues.debugScreenEnabled, this::logOut);
-
-        if (buildValues.debugScreenEnabled) {
-            addItem(R.string.activity_debug, false, ignored -> startActivity(new Intent(getActivity(), DebugActivity.class)));
-        }
+        addItem(R.string.action_log_out, false, this::logOut);
 
         return view;
     }

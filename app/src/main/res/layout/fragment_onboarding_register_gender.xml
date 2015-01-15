@@ -16,6 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:textAppearance="@style/AppTheme.Text.Heading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:text="@string/title_register_gender"/>
 
     <TextView
@@ -24,6 +25,7 @@
         android:layout_marginTop="@dimen/gap_small"
         android:layout_below="@id/fragment_onboarding_register_gender_title"
         android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
         android:text="@string/onboarding_register_info_explanation"/>
     
     <is.hello.sense.ui.widget.SelectorLinearLayout
@@ -56,20 +58,21 @@
     </is.hello.sense.ui.widget.SelectorLinearLayout>
 
     <Button
+        android:id="@+id/fragment_onboarding_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_alignParentBottom="true"
+        android:text="@string/action_next"
+        style="@style/AppTheme.Button.Rounded"/>
+
+    <Button
         android:id="@+id/fragment_onboarding_skip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/gap_small"
+        android:layout_above="@id/fragment_onboarding_next"
         android:text="@string/action_skip"
-        android:layout_alignParentBottom="true"
         style="@style/AppTheme.Button.Borderless.Onboarding"/>
-
-    <Button
-        android:id="@+id/fragment_onboarding_next"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/fragment_onboarding_skip"
-        android:text="@string/action_next"
-        style="@style/AppTheme.Button.Rounded"/>
     
 </RelativeLayout>

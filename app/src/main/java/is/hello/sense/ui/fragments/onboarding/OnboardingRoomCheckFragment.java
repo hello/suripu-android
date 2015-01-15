@@ -365,8 +365,8 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         this.conditions.add(new SensorState(70, "[placeholder] It's a bit loud.", Condition.ALERT, "db", DateTime.now()));
         this.conditionFormatters.add(unitSystem::formatDecibels);
 
-        this.conditions.add(new SensorState(200, "[placeholder] It’s really bright in your room right now, but that’s ok. It’s only midday!", Condition.WARNING, "lux", DateTime.now()));
-        this.conditionFormatters.add(unitSystem::formatDecibels);
+        this.conditions.add(roomConditions.getLight());
+        this.conditionFormatters.add(unitSystem::formatLight);
 
         showConditionAt(0);
     }

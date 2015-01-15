@@ -91,7 +91,7 @@ public class OnboardingDoneFragment extends Fragment {
     public void showSecondMessage() {
         animate(glyph)
                 .fadeOut(View.INVISIBLE)
-                .addOnAnimationCompleted(finished -> glyph.setImageResource(R.drawable.onboarding_done_check))
+                .addOnAnimationCompleted(finished -> glyph.setImageResource(R.drawable.onboarding_done_moon))
                 .andThen()
                 .fadeIn()
                 .start();

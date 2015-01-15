@@ -2,14 +2,12 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import javax.inject.Inject;
 
@@ -22,25 +20,20 @@ import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.ui.common.FragmentNavigation;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
 public class OnboardingPairSenseFragment extends HardwareFragment {
-    private static int REQUEST_CODE_PAIR_HELP = 0x19;
-
     @Inject ApiService apiService;
     @Inject BuildValues buildValues;
     @Inject PreferencesPresenter preferences;
-
-    private Button nextButton;
 
     private boolean hasLinkedAccount = false;
 
@@ -60,22 +53,17 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_pair_sense, container, false);
-
-        this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_step_continue);
-        Views.setSafeOnClickListener(nextButton, this::next);
-
-        Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        Views.setSafeOnClickListener(helpButton, this::next);
-
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        subscribe(hardwarePresenter.bluetoothEnabled, nextButton::setEnabled, Functions.LOG_ERROR);
+        return new OnboardingSimpleStepViewBuilder(this, inflater, container)
+                .setHeadingText(R.string.title_pair_sense)
+                .setSubheadingText(R.string.info_pair_sense)
+                .setDiagramImage(R.drawable.onboarding_pair_sense)
+                .setSecondaryButtonText(R.string.action_sense_pairing_mode_help)
+                .setSecondaryOnClickListener(this::showPairingModeHelp)
+                .setPrimaryOnClickListener(this::next)
+                .setToolbarWantsBackButton(true)
+                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SETUP_SENSE))
+                .configure(b -> subscribe(hardwarePresenter.bluetoothEnabled, b.primaryButton::setEnabled, Functions.LOG_ERROR))
+                .create();
     }
 
     @Override
@@ -83,16 +71,6 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("hasLinkedAccount", hasLinkedAccount);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_PAIR_HELP && resultCode == OnboardingPairHelpFragment.RESULT_NEW_SENSE) {
-            TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
-            dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
-        }
     }
 
 
@@ -166,6 +144,10 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         hideAllActivity(true, () -> getOnboardingActivity().showPairPill());
     }
 
+    public void showPairingModeHelp(@NonNull View sender) {
+        getOnboardingActivity().showFragment(new OnboardingSensePairingModeHelpFragment(), null, true);
+    }
+
     public void next(@NonNull View sender) {
         showBlockingActivity(R.string.title_pairing);
 
@@ -199,9 +181,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     public void pairingFailed(Throwable e) {
         hideAllActivity(false, () -> {
             if (e instanceof PeripheralNotFoundError) {
-                OnboardingPairHelpFragment pairHelpFragment = new OnboardingPairHelpFragment();
-                pairHelpFragment.setTargetFragment(this, REQUEST_CODE_PAIR_HELP);
-                ((FragmentNavigation) getActivity()).showFragment(pairHelpFragment, null, true);
+                TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
+                dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
             } else if (hardwarePresenter.isErrorFatal(e)) {
                 UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
                 fragment.show(getFragmentManager(), R.id.activity_onboarding_container);

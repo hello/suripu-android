@@ -32,7 +32,7 @@
             android:layout_marginLeft="@dimen/gap_outer"
             android:layout_marginRight="@dimen/gap_outer"
             android:textAppearance="@style/AppTheme.Text.Body"
-            android:lineSpacingMultiplier="@dimen/body_text_line_multiple"
+            android:lineSpacingMultiplier="@dimen/line_multiple_body"
             android:text="@string/dialog_loading_message"/>
 
         <is.hello.sense.ui.widget.SelectorLinearLayout
@@ -101,7 +101,7 @@
             android:layout_marginTop="@dimen/gap_medium"
             android:layout_marginBottom="@dimen/gap_medium"
             android:textAppearance="@style/AppTheme.Text.Body"
-            android:lineSpacingMultiplier="@dimen/body_text_line_multiple"/>
+            android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
     </LinearLayout>
 

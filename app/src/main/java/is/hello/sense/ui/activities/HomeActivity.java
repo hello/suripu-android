@@ -2,13 +2,18 @@ package is.hello.sense.ui.activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.squareup.seismic.ShakeDetector;
 
 import net.hockeyapp.android.UpdateManager;
 
@@ -38,6 +43,7 @@ import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.RateLimitingShakeListener;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -61,6 +67,9 @@ public class HomeActivity
 
     private boolean isFirstActivityRun;
 
+    private @Nullable SensorManager sensorManager;
+    private @Nullable ShakeDetector shakeDetector;
+
     //region Lifecycle
 
     @Override
@@ -72,6 +81,16 @@ public class HomeActivity
         if (savedInstanceState != null) {
             this.lastUpdated = savedInstanceState.getLong("lastUpdated");
         }
+
+
+        if (buildValues.debugScreenEnabled) {
+            this.sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            this.shakeDetector = new ShakeDetector(new RateLimitingShakeListener(() -> {
+                Intent intent = new Intent(this, DebugActivity.class);
+                startActivity(intent);
+            }));
+        }
+
 
         // noinspection unchecked
         this.viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
@@ -130,6 +149,10 @@ public class HomeActivity
     protected void onResume() {
         super.onResume();
 
+        if (shakeDetector != null && sensorManager != null) {
+            shakeDetector.start(sensorManager);
+        }
+
         if (!buildValues.isDebugBuild()) {
             UpdateManager.register(this, buildValues.hockeyId);
         }
@@ -148,6 +171,15 @@ public class HomeActivity
             if (navigatorFragment != null) {
                 getFragmentManager().popBackStack();
             }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (shakeDetector != null) {
+            shakeDetector.stop();
         }
     }
 

@@ -13,6 +13,7 @@
         android:layout_marginBottom="@dimen/gap_tiny"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
         android:text="@string/missing_data_placeholder" />
 
     <TextView

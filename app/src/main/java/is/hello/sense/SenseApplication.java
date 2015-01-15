@@ -23,6 +23,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -40,8 +41,6 @@ public class SenseApplication extends Application {
 
     private BuildValues buildValues;
     private ObjectGraph graph;
-
-    @Inject PreferencesPresenter preferences;
 
     @Override
     public void onCreate() {
@@ -61,10 +60,11 @@ public class SenseApplication extends Application {
         Observable<Intent> onLogOut = fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         onLogOut.observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
-                    preferences
+                    Logger.info(getClass().getSimpleName(), "Clearing internal preferences.");
+
+                    getSharedPreferences(Constants.INTERNAL_PREFS, 0)
                             .edit()
-                            .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)
-                            .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE)
+                            .clear()
                             .apply();
                 }, Functions.LOG_ERROR);
 

@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +28,7 @@ import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
@@ -88,27 +92,53 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
         this.networkPassword = (EditText) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_password);
         networkPassword.setOnEditorActionListener(new EditorActionHandler(this::sendWifiCredentials));
 
-        ViewGroup securityContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_security_container);
-        this.networkSecurity = (Spinner) securityContainer.findViewById(R.id.fragment_onboarding_sign_into_wifi_security);
-
         Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_continue);
         Views.setSafeOnClickListener(continueButton, ignored -> sendWifiCredentials());
 
-        Button helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        Views.setSafeOnClickListener(helpButton, ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SIGN_INTO_WIFI));
+        TextView title = (TextView) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_title);
+        TextView networkInfo = (TextView) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_info);
+        ViewGroup otherContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_other_container);
 
         if (network != null) {
-            this.networkName.setText(network.getSsid());
+            networkName.setText(network.getSsid());
             if (network.getSecurityType() == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
                 this.networkPassword.setVisibility(View.GONE);
             } else {
                 this.networkPassword.setVisibility(View.VISIBLE);
                 this.networkPassword.requestFocus();
             }
-            securityContainer.setVisibility(View.GONE);
+
+            SpannableStringBuilder networkInfoBuilder = new SpannableStringBuilder();
+            networkInfoBuilder.append(getString(R.string.label_wifi_network_name));
+            int start = networkInfoBuilder.length();
+            networkInfoBuilder.append(network.getSsid());
+            networkInfoBuilder.setSpan(
+                    new ForegroundColorSpan(getResources().getColor(R.color.text_dark)),
+                    start, networkInfoBuilder.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+            networkInfo.setText(networkInfoBuilder);
+
+            networkInfo.setVisibility(View.VISIBLE);
+            otherContainer.setVisibility(View.GONE);
+
+            title.setText(R.string.title_sign_into_wifi_selection);
         } else {
+            this.networkSecurity = (Spinner) otherContainer.findViewById(R.id.fragment_onboarding_sign_into_wifi_security);
             networkSecurity.setAdapter(new SecurityTypeAdapter(getActivity()));
+            networkSecurity.setSelection(sec_type.SL_SCAN_SEC_TYPE_WPA2_VALUE);
+
+            networkName.requestFocus();
+
+            networkInfo.setVisibility(View.GONE);
+            otherContainer.setVisibility(View.VISIBLE);
+
+            title.setText(R.string.title_sign_into_wifi_other);
         }
+
+        OnboardingToolbar.of(this, view)
+                .setWantsBackButton(true)
+                .setOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SIGN_INTO_WIFI));
 
         return view;
     }

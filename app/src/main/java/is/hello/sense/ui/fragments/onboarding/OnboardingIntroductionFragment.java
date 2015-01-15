@@ -94,7 +94,6 @@ public class OnboardingIntroductionFragment extends Fragment {
                 .fadeOut(View.INVISIBLE)
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.welcome);
-                    titleText.setGravity(Gravity.CENTER);
 
                     Analytics.trackEvent(Analytics.EVENT_ONBOARDING_START, null);
                 })
@@ -147,7 +146,6 @@ public class OnboardingIntroductionFragment extends Fragment {
                 .fadeOut(View.INVISIBLE)
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.title_introduction);
-                    titleText.setGravity(Gravity.LEFT);
                 })
                 .andThen()
                 .fadeIn()

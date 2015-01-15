@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sub_fragment_onboarding_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/action_bar_height">
+
+    <ImageButton
+        android:id="@+id/sub_fragment_onboarding_toolbar_back"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/app_style_ab_up"
+        android:contentDescription="@string/action_back"/>
+
+    <ImageButton
+        android:id="@+id/sub_fragment_onboarding_toolbar_help"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/onboarding_help_icon"
+        android:contentDescription="@string/action_help"/>
+
+</RelativeLayout>

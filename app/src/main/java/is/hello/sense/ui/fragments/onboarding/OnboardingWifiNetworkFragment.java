@@ -18,6 +18,7 @@ import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
+import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
@@ -34,7 +35,6 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
     private ProgressBar scanningIndicator;
     private ListView listView;
     private Button rescanButton;
-    private Button helpButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,8 +76,9 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             rescan();
         });
 
-        this.helpButton = (Button) view.findViewById(R.id.fragment_onboarding_step_help);
-        Views.setSafeOnClickListener(helpButton, ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.WIFI_SCAN));
+        OnboardingToolbar.of(this, view)
+                .setWantsBackButton(false)
+                .setOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.WIFI_SCAN));
 
         return view;
     }
@@ -94,7 +95,6 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             infoLabel.setVisibility(View.VISIBLE);
             listView.setVisibility(View.VISIBLE);
             rescanButton.setVisibility(View.VISIBLE);
-            helpButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -112,7 +112,6 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         listView.setVisibility(View.INVISIBLE);
         rescanButton.setVisibility(View.INVISIBLE);
         rescanButton.setEnabled(false);
-        helpButton.setVisibility(View.INVISIBLE);
         networkAdapter.clear();
 
         if (hardwarePresenter.getPeripheral() == null) {
@@ -143,7 +142,6 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             listView.setVisibility(View.VISIBLE);
             rescanButton.setVisibility(View.VISIBLE);
             rescanButton.setEnabled(true);
-            helpButton.setVisibility(View.VISIBLE);
         });
     }
 
@@ -155,7 +153,6 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             listView.setVisibility(View.VISIBLE);
             rescanButton.setVisibility(View.VISIBLE);
             rescanButton.setEnabled(true);
-            helpButton.setVisibility(View.VISIBLE);
 
             if (hardwarePresenter.isErrorFatal(e)) {
                 UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
@@ -172,8 +169,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         infoLabel.setVisibility(View.VISIBLE);
         listView.setVisibility(View.VISIBLE);
         rescanButton.setVisibility(View.VISIBLE);
-        helpButton.setVisibility(View.VISIBLE);
-        
+
         if (hardwarePresenter.isErrorFatal(e)) {
             UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
             fragment.show(getFragmentManager(), R.id.activity_onboarding_container);

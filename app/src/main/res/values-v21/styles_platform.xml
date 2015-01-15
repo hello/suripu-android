@@ -6,6 +6,7 @@
         <item name="android:colorPrimaryDark">@color/light_accent_darkened</item>
         <item name="android:colorAccent">@color/light_accent</item>
         <item name="android:statusBarColor">@color/status_bar</item>
+        <item name="android:progressBarStyle">@android:style/Widget.Holo.ProgressBar</item>
     </style>
     <style name="Platform.ActionBar" parent="android:Widget.Material.ActionBar.Solid">
         <item name="android:elevation">0dp</item>

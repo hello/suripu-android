@@ -15,17 +15,19 @@
     <dimen name="text_size_button">16sp</dimen>
     <dimen name="text_size_large_button">20sp</dimen>
     <dimen name="text_size_section_heading">11sp</dimen>
+    <dimen name="text_size_subheading">16sp</dimen>
     <dimen name="text_size_body_small">13sp</dimen>
-    <dimen name="text_size_subheading">20sp</dimen>
     <dimen name="text_size_question">24sp</dimen>
-    <dimen name="text_size_heading">26sp</dimen>
+    <dimen name="text_size_heading">24sp</dimen>
     <dimen name="text_size_small_score">40sp</dimen>
     <dimen name="text_size_big_score">76sp</dimen>
     <dimen name="text_size_smart_alarm_time">32sp</dimen>
 
-    <item name="heading_line_multiple" format="float" type="dimen">1.2</item>
-    <item name="subheading_text_line_multiple" format="float" type="dimen">1.2</item>
-    <item name="body_text_line_multiple" format="float" type="dimen">1.5</item>
+    <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
+    <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
+    <item name="line_multiple_body" format="float" type="dimen">1.5</item>
+
+    <dimen name="edit_text_min_height">45dp</dimen>
 
     <!-- Divisions and Borders -->
 
