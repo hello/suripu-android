@@ -29,15 +29,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
         <Button
             android:id="@+id/sub_fragment_new_question_skip"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:padding="@dimen/gap_outer"
             android:text="@string/action_skip"
-            style="@style/AppTheme.Button.Borderless.Question"/>
+            style="@style/AppTheme.Button.Dialog"/>
 
         <View
             android:layout_marginTop="@dimen/gap_medium"
@@ -49,8 +51,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:padding="@dimen/gap_outer"
             android:text="@string/action_answer"
-            style="@style/AppTheme.Button.Borderless.Question.Choice"/>
+            style="@style/AppTheme.Button.Dialog.Positive"/>
 
     </LinearLayout>
 

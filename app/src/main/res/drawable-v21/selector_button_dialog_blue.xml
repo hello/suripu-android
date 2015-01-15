@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/light_accent_darkened">
+    <item>
+        <selector>
+            <item android:state_enabled="false" android:drawable="@drawable/button_dialog_blue_disabled" />
+            <item android:drawable="@drawable/button_dialog_blue_normal" />
+        </selector>
+    </item>
+
+</ripple>
