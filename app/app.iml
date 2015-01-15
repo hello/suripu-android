@@ -121,7 +121,6 @@
     <orderEntry type="library" exported="" scope="TEST" name="espresso-runner-runtime-1.1-r3" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
-    <orderEntry type="library" exported="" name="calligraphy-1.2.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="guava-16.0" level="project" />
     <orderEntry type="library" exported="" name="gson-2.3" level="project" />
     <orderEntry type="library" exported="" name="javawriter-2.5.0" level="project" />
