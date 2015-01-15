@@ -18,10 +18,11 @@
     <style name="Platform.ActionBar.ButtonOverflow" parent="android:style/Widget.Material.ActionButton.Overflow" />
     <style name="Platform.Dialog" parent="android:Theme.Material.Dialog.MinWidth" />
     <style name="Platform.Dialog.MinWidth" parent="android:Theme.Material.Dialog.MinWidth" />
-    <style name="Platform.Spinner" parent="android:style/Widget.Material.Light.Spinner">
+    <style name="Platform.Spinner" parent="android:style/Widget.Holo.Light.Spinner">
         <item name="android:elevation">0dp</item>
     </style>
-    <style name="Platform.Button" parent="android:Widget.Material.Light.Button">
+    <style name="Platform.Button" parent="android:Widget.Holo.Light.Button">
+        <!-- Using the Material button here results in unwanted shadows -->
         <item name="android:elevation">0dp</item>
     </style>
     <style name="Platform.EditText" parent="android:Widget.Material.Light.EditText">
