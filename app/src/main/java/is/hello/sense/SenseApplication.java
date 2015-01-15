@@ -8,8 +8,6 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
-import javax.inject.Inject;
-
 import dagger.ObjectGraph;
 import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiModule;
@@ -17,17 +15,13 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.SenseAppModule;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
@@ -49,7 +43,6 @@ public class SenseApplication extends Application {
         this.buildValues = new BuildValues(this);
 
         JodaTimeAndroid.init(this);
-        CalligraphyConfig.initDefault(Styles.TYPEFACE_ROMAN, R.attr.fontPath);
         Analytics.initialize(this, getString(R.string.build_analytics_api_key));
         if (buildValues.debugScreenEnabled) {
             SessionLogger.init(this);
