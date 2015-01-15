@@ -23,6 +23,7 @@
     <style name="Platform.Button" parent="android:Widget.Holo.Light.Button">
         <!-- Using the Material button here results in unwanted shadows -->
         <item name="android:elevation">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
     </style>
     <style name="Platform.EditText" parent="android:Widget.Material.Light.EditText">
         <item name="android:elevation">0dp</item>
