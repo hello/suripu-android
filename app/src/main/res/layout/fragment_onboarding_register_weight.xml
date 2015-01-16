@@ -1,80 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:padding="@dimen/gap_outer"
+    android:background="@color/background_onboarding">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+    <TextView
+        android:id="@+id/fragment_onboarding_register_weight_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/gap_xlarge"
-        android:paddingBottom="@dimen/gap_large"
-        android:paddingLeft="@dimen/gap_large"
-        android:paddingRight="@dimen/gap_large"
-        android:background="@color/background_onboarding">
+        android:textAppearance="@style/AppTheme.Text.Heading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+        android:text="@string/title_register_weight"/>
 
-        <TextView
-            android:id="@+id/fragment_onboarding_register_weight_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:textAppearance="@style/AppTheme.Text.Heading"
-            android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-            android:text="@string/title_register_weight"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
+        android:text="@string/onboarding_register_info_explanation"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_small"
-            android:layout_below="@id/fragment_onboarding_register_weight_title"
-            android:textAppearance="@style/AppTheme.Text.Subheading"
-            android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
-            android:text="@string/onboarding_register_info_explanation"/>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
-        <EditText
-            android:id="@+id/fragment_onboarding_register_weight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/gap_medium"
-            android:layout_centerInParent="true"
-            android:nextFocusForward="@+id/fragment_onboarding_register_height_inches"
-            android:imeOptions="actionGo|flagNoExtractUi"
-            android:hint="@string/default_weight"
-            android:text="@string/default_weight"
-            style="@style/AppTheme.Text.EditText.Onboarding.Metric">
+    <TextView
+        android:id="@+id/fragment_onboarding_register_weight_scale_reading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/AppTheme.Text.ScaleReading"
+        android:gravity="center" />
 
-            <requestFocus />
+    <TextView
+        android:id="@+id/fragment_onboarding_register_weight_scale_reading_secondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
+        android:gravity="center" />
 
-        </EditText>
+    <is.hello.sense.ui.widget.ScaleView
+        android:id="@+id/fragment_onboarding_register_weight_scale"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/scale_view_size"
+        app:scaleMinValue="0"
+        app:scaleMaxValue="4531"
+        app:scaleOrientation="horizontal"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_toEndOf="@id/fragment_onboarding_register_weight"
-            android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
-            android:text="@string/label_pounds"/>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
-        <Button
-            android:id="@+id/fragment_onboarding_next"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_small"
-            android:layout_alignParentBottom="true"
-            android:text="@string/action_next"
-            style="@style/AppTheme.Button.Rounded"/>
+    <Button
+        android:id="@+id/fragment_onboarding_skip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:text="@string/action_skip"
+        style="@style/AppTheme.Button.Borderless.Onboarding"/>
 
-        <Button
-            android:id="@+id/fragment_onboarding_skip"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_small"
-            android:layout_above="@id/fragment_onboarding_next"
-            android:text="@string/action_skip"
-            style="@style/AppTheme.Button.Borderless.Onboarding"/>
+    <Button
+        android:id="@+id/fragment_onboarding_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:text="@string/action_next"
+        style="@style/AppTheme.Button.Rounded"/>
 
-    </RelativeLayout>
-
-</ScrollView>
+</LinearLayout>

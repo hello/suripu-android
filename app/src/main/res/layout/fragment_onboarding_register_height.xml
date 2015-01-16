@@ -5,10 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/gap_xlarge"
-    android:paddingBottom="@dimen/gap_large"
-    android:paddingLeft="@dimen/gap_large"
-    android:paddingRight="@dimen/gap_large"
+    android:padding="@dimen/gap_outer"
     android:background="@color/background_onboarding">
 
     <TextView

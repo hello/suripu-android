@@ -119,12 +119,10 @@ so you can sleep better.</string>
     <string name="title_register_gender">Are you male or female?</string>
     <string name="title_register_weight">How much do you weigh?</string>
     <string name="title_register_height">How tall are you?</string>
-    <string name="label_feet">Feet</string>
-    <string name="label_inches">Inches</string>
     <string name="height_inches_fmt">%1$d‘ %2$d‘‘</string>
     <string name="height_cm_fmt">%1$d cm</string>
-    <string name="default_weight">130</string>
-    <string name="label_pounds">lbs</string>>
+    <string name="weight_pounds_fmt">%1$d lbs</string>
+    <string name="weight_kg_fmt">%1$d kg</string>
     <string name="title_intro_sleep_pill">Attach Sleep Pill to  your Pillow</string>
     <string name="info_intro_sleep_pill">Clip your Sleep Pill to the pillowcase you sleep on. You may need to pull it taught between two hands.</string>
     <string name="info_onboarding_sleep_pill_color">Choose an LED color for your Sleep Pill so you know which one is yours.</string>

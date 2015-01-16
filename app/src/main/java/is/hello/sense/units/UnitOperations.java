@@ -1,12 +1,16 @@
 package is.hello.sense.units;
 
 public class UnitOperations {
-    public static long poundsToGrams(long pounds) {
-        return Math.round(pounds / 0.0022046);
+    public static int poundsToGrams(int pounds) {
+        return Math.round(pounds / 0.0022046f);
     }
 
-    public static long gramsToPounds(long grams) {
-        return Math.round(grams * 0.0022046);
+    public static int gramsToPounds(int grams) {
+        return Math.round(grams * 0.0022046f);
+    }
+
+    public static int kilogramsToPounds(int kilograms) {
+        return Math.round(kilograms * 2.20462f);
     }
 
     public static int inchesToCentimeters(int inches) {
