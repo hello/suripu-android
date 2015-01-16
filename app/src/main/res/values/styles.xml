@@ -231,6 +231,11 @@ t
         <item name="android:paddingBottom">@dimen/gap_large</item>
     </style>
 
+    <style name="AppTheme.Button.Gender" parent="AppTheme.Button.Borderless.Accent">
+        <item name="android:background">@drawable/button_selector_gender</item>
+        <item name="android:padding">36dp</item>
+    </style>
+
     <style name="AppTheme.Button.Raised">
         <item name="android:minHeight">32dp</item>
         <item name="android:paddingBottom">1dp</item>

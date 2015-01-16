@@ -17,7 +17,9 @@ import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingRegisterGenderFragment extends AccountEditingFragment implements SelectorLinearLayout.OnSelectionChangedListener, SelectorLinearLayout.ButtonStyler {
+import static android.view.ViewGroup.MarginLayoutParams;
+
+public class OnboardingRegisterGenderFragment extends AccountEditingFragment implements SelectorLinearLayout.OnSelectionChangedListener {
     private Account account;
 
     @Override
@@ -36,14 +38,14 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_register_gender, container, false);
 
-        SelectorLinearLayout genderMode = (SelectorLinearLayout) view.findViewById(R.id.fragment_onboarding_register_gender_mode);
-        genderMode.setButtonStyler(this);
-        genderMode.setOnSelectionChangedListener(this);
+        SelectorLinearLayout genderSelector = (SelectorLinearLayout) view.findViewById(R.id.fragment_onboarding_register_gender_mode);
+        genderSelector.setOnSelectionChangedListener(this);
         if (account.getGender() != null) {
-            if (account.getGender() == Gender.OTHER)
-                genderMode.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
-            else
-                genderMode.setSelectedIndex(account.getGender().ordinal());
+            if (account.getGender() == Gender.OTHER) {
+                genderSelector.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
+            } else {
+                genderSelector.setSelectedIndex(account.getGender().ordinal());
+            }
         }
 
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
@@ -66,14 +68,5 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
         account.setGender(Gender.values()[newSelectionIndex]);
-    }
-
-    @Override
-    public void styleButton(ToggleButton button, boolean checked) {
-        if (checked) {
-            button.setAlpha(1f);
-        } else {
-            button.setAlpha(0.4f);
-        }
     }
 }
