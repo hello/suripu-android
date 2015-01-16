@@ -1,5 +1,6 @@
 package is.hello.sense.api.model;
 
+import android.content.Context;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -8,6 +9,8 @@ import android.support.annotation.StringRes;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import net.danlew.android.joda.DateUtils;
 
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
@@ -71,6 +74,14 @@ public class Device extends ApiResponse {
         return lastUpdated;
     }
 
+    public @NonNull CharSequence getLastUpdatedDescription(@NonNull Context context) {
+        if (lastUpdated != null) {
+            return DateUtils.getRelativeTimeSpanString(context, lastUpdated);
+        } else {
+            return context.getString(R.string.format_date_placeholder);
+        }
+    }
+
     @JsonIgnore
     public boolean exists() {
         return exists;
@@ -78,7 +89,8 @@ public class Device extends ApiResponse {
 
     @JsonIgnore
     public boolean isMissing() {
-        return !exists || (Minutes.minutesBetween(getLastUpdated(), DateTime.now()).getMinutes() > 15);
+        return (!exists || (getLastUpdated() == null) ||
+                (Minutes.minutesBetween(getLastUpdated(), DateTime.now()).getMinutes() > 15));
     }
 
     @Override

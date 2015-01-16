@@ -1,6 +1,5 @@
 package is.hello.sense.api.model;
 
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -142,6 +141,8 @@ public class TimelineSegment extends ApiResponse {
         SUNRISE(R.string.event_type_sunrise),
         PARTNER_MOTION(R.string.event_type_partner_moved),
         WAKE_UP(R.string.event_type_wake_up),
+        OUT_OF_BED(R.string.event_type_out_of_bed),
+        IN_BED(R.string.event_type_in_bed),
         UNKNOWN(R.string.event_type_unknown);
 
         @JsonCreator

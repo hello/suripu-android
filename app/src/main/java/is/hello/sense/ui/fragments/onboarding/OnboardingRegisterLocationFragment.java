@@ -21,9 +21,11 @@ import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.ResumeScheduler;
 
 public class OnboardingRegisterLocationFragment extends AccountEditingFragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int RESOLUTION_REQUEST_CODE = 0x99;
+    private final ResumeScheduler.Coordinator coordinator = new ResumeScheduler.Coordinator(this::isResumed);
 
     private Account account;
 
@@ -64,39 +66,47 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
     }
 
     public void optIn() {
-        LoadingDialogFragment.show(getFragmentManager());
-        if (googleApiClient == null) {
-            this.googleApiClient = new GoogleApiClient.Builder(getActivity())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-        googleApiClient.connect();
+        coordinator.postOnResume(() -> {
+            LoadingDialogFragment.show(getFragmentManager());
+            if (googleApiClient == null) {
+                this.googleApiClient = new GoogleApiClient.Builder(getActivity())
+                        .addConnectionCallbacks(this)
+                        .addOnConnectionFailedListener(this)
+                        .addApi(LocationServices.API)
+                        .build();
+            }
+            googleApiClient.connect();
+        });
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-        LoadingDialogFragment.close(getFragmentManager());
-        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-        if (lastLocation != null) {
-            account.setLocation(lastLocation.getLatitude(), lastLocation.getLongitude());
-        }
-        getContainer().onAccountUpdated(this);
+        coordinator.postOnResume(() -> {
+            LoadingDialogFragment.close(getFragmentManager());
+            Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+            if (lastLocation != null) {
+                account.setLocation(lastLocation.getLatitude(), lastLocation.getLongitude());
+            }
+            getContainer().onAccountUpdated(this);
+        });
     }
 
     @Override
     public void onConnectionSuspended(int cause) {
-        LoadingDialogFragment.close(getFragmentManager());
+        coordinator.postOnResume(() -> {
+            LoadingDialogFragment.close(getFragmentManager());
+        });
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        LoadingDialogFragment.close(getFragmentManager());
-        try {
-            connectionResult.startResolutionForResult(getActivity(), RESOLUTION_REQUEST_CODE);
-        } catch (IntentSender.SendIntentException e) {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
-        }
+        coordinator.postOnResume(() -> {
+            LoadingDialogFragment.close(getFragmentManager());
+            try {
+                connectionResult.startResolutionForResult(getActivity(), RESOLUTION_REQUEST_CODE);
+            } catch (IntentSender.SendIntentException e) {
+                ErrorDialogFragment.presentError(getFragmentManager(), e);
+            }
+        });
     }
 }
