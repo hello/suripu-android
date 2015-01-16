@@ -33,6 +33,7 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class DeviceListFragment extends InjectionFragment implements AdapterView.OnItemClickListener, DevicesAdapter.OnPairNewDeviceListener {
     private static final int DEVICE_REQUEST_CODE = 0x14;
+    private static final int PAIR_DEVICE_REQUEST_CODE = 0x15;
 
     @Inject DevicesPresenter devicesPresenter;
     @Inject PreferencesPresenter preferences;
@@ -84,7 +85,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == DEVICE_REQUEST_CODE && resultCode == DeviceDetailsFragment.RESULT_REPLACED_DEVICE) {
+        if (requestCode == DEVICE_REQUEST_CODE || requestCode == PAIR_DEVICE_REQUEST_CODE) {
             adapter.clear();
 
             animate(loadingIndicator)
@@ -145,6 +146,6 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
                 throw new IllegalStateException();
             }
         }
-        startActivity(intent);
+        startActivityForResult(intent, PAIR_DEVICE_REQUEST_CODE);
     }
 }
