@@ -311,7 +311,6 @@ t
 
     <style name="AppTheme.Text.EditText" parent="Platform.EditText">
         <item name="android:minHeight">@dimen/edit_text_min_height</item>
-        <item name="android:gravity">center</item>
 
         <item name="android:paddingTop">@dimen/gap_small</item>
         <item name="android:paddingBottom">@dimen/gap_small</item>
@@ -321,7 +320,6 @@ t
         <item name="android:background">@drawable/edit_text_selector</item>
 
         <item name="android:textSize">@dimen/text_size_body</item>
-        <item name="android:textColor">@color/light_accent</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 

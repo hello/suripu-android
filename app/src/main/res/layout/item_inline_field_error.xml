@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_inline_field_error"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/gap_small"
+    android:paddingBottom="@dimen/gap_small"
+    android:paddingLeft="@dimen/gap_tiny"
+    android:paddingRight="@dimen/gap_tiny"
+    android:textColor="@color/destructive_accent"
+    android:textAppearance="@style/AppTheme.Text.Body"
+    android:text="@string/error_account_generic" />

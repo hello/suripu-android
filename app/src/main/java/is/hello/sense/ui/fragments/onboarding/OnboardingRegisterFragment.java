@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
@@ -22,9 +24,12 @@ import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.api.model.ErrorResponse;
+import is.hello.sense.api.model.RegistrationError;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -37,9 +42,12 @@ import is.hello.sense.util.EditorActionHandler;
 public class OnboardingRegisterFragment extends InjectionFragment {
     private static final Pattern EMAIL = Pattern.compile("^.+@.+\\..+$");
 
+    private LinearLayout credentialsContainer;
     private EditText nameText;
     private EditText emailText;
     private EditText passwordText;
+
+    private TextView registrationErrorText;
 
     private final Account newAccount = new Account();
 
@@ -61,9 +69,13 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_register, container, false);
 
-        this.nameText = (EditText) view.findViewById(R.id.fragment_onboarding_register_name);
-        this.emailText = (EditText) view.findViewById(R.id.fragment_onboarding_register_email);
-        this.passwordText = (EditText) view.findViewById(R.id.fragment_onboarding_register_password);
+        this.registrationErrorText = (TextView) inflater.inflate(R.layout.item_inline_field_error, container, false);
+        this.credentialsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_register_credentials);
+        Animations.Properties.DEFAULT.apply(credentialsContainer.getLayoutTransition(), false);
+
+        this.nameText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_name);
+        this.emailText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_email);
+        this.passwordText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_password);
         passwordText.setOnEditorActionListener(new EditorActionHandler(this::register));
 
         Button register = (Button) view.findViewById(R.id.fragment_onboarding_register_go);
@@ -74,8 +86,49 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         return view;
     }
 
+
+
     private OnboardingActivity getOnboardingActivity() {
         return (OnboardingActivity) getActivity();
+    }
+
+
+    private void displayRegistrationError(@NonNull RegistrationError error) {
+        clearRegistrationError();
+        registrationErrorText.setText(error.messageRes);
+        EditText affectedField;
+        switch (error) {
+            default:
+            case UNKNOWN:
+            case NAME_TOO_LONG:
+            case NAME_TOO_SHORT: {
+                affectedField = nameText;
+                break;
+            }
+
+            case EMAIL_INVALID: {
+                affectedField = emailText;
+                break;
+            }
+
+            case PASSWORD_INSECURE:
+            case PASSWORD_TOO_SHORT: {
+                affectedField = passwordText;
+                break;
+            }
+        }
+
+        credentialsContainer.addView(registrationErrorText, credentialsContainer.indexOfChild(affectedField));
+        affectedField.setBackgroundResource(R.drawable.edit_text_background_error);
+        affectedField.requestFocus();
+    }
+
+    private void clearRegistrationError() {
+        credentialsContainer.removeView(registrationErrorText);
+
+        nameText.setBackgroundResource(R.drawable.edit_text_selector);
+        emailText.setBackgroundResource(R.drawable.edit_text_selector);
+        passwordText.setBackgroundResource(R.drawable.edit_text_selector);
     }
 
 
@@ -87,27 +140,24 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         emailText.setText(email);
 
         if (TextUtils.isEmpty(name)) {
-            ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_invalid_register_name));
-            errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            displayRegistrationError(RegistrationError.NAME_TOO_SHORT);
             nameText.requestFocus();
             return;
         }
 
         if (TextUtils.isEmpty(email) || !EMAIL.matcher(email).matches()) {
-            ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_invalid_register_email));
-            errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-            emailText.requestFocus();
+            displayRegistrationError(RegistrationError.EMAIL_INVALID);
             return;
         }
 
 
         String password = passwordText.getText().toString();
         if (password.length() <= 3) {
-            ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_invalid_register_password));
-            errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-            passwordText.requestFocus();
+            displayRegistrationError(RegistrationError.PASSWORD_TOO_SHORT);
             return;
         }
+
+        clearRegistrationError();
 
 
         newAccount.setName(name);
@@ -122,6 +172,15 @@ public class OnboardingRegisterFragment extends InjectionFragment {
                 String errorMessage = getString(R.string.error_account_email_taken, newAccount.getEmail());
                 ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(errorMessage);
                 dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            } else if (ApiException.statusEquals(error, 400)) {
+                ApiException apiError = (ApiException) error;
+                ErrorResponse errorResponse = apiError.getErrorResponse();
+                if (errorResponse != null) {
+                    RegistrationError registrationError = RegistrationError.fromString(errorResponse.getMessage());
+                    displayRegistrationError(registrationError);
+                } else {
+                    ErrorDialogFragment.presentError(getFragmentManager(), error);
+                }
             } else {
                 ErrorDialogFragment.presentError(getFragmentManager(), error);
             }

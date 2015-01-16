@@ -209,7 +209,13 @@ so you can sleep better.</string>
     <string name="sec_type_open">Open</string>
     <string name="title_smart_alarm">Smart Alarm</string>
     <string name="device_last_seen_fmt">Last Seen %1$s</string>
+    <string name="error_account_generic">Invalid registration credentials</string>
     <string name="error_account_email_taken">An account with the email address %1$s already exists</string>
+    <string name="error_account_name_too_long">Name is too long</string>
+    <string name="error_account_name_too_short">Name is too short</string>
+    <string name="error_account_email_invalid">Please enter a valid email address</string>
+    <string name="error_account_password_insecure">Please enter a stronger password</string>
+    <string name="error_account_password_too_short">Passwords must be longer than 3 characters</string>
     <string name="error_account_invalid_credentials">The email address or password you entered is incorrect.</string>
     <string name="error_account_incomplete_credentials">You must enter your email address and password.</string>
     <string name="title_checking_connectivity">Checking Connectivity…</string>

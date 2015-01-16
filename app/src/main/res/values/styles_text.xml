@@ -141,6 +141,8 @@
     </style>
 
     <style name="AppTheme.Text.Birthday">
+        <item name="android:gravity">center</item>
+
         <item name="android:minHeight">@dimen/edit_text_min_height</item>
         <item name="android:padding">@dimen/gap_medium</item>
 
