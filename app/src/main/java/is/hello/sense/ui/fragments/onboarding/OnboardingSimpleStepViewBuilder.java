@@ -172,5 +172,16 @@ public final class OnboardingSimpleStepViewBuilder {
         return this;
     }
 
+    public OnboardingSimpleStepViewBuilder setDiagramEdgeToEdge(boolean edgeToEdge) {
+        if (edgeToEdge) {
+            diagramImage.setAdjustViewBounds(true);
+            diagramImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        } else {
+            diagramImage.setAdjustViewBounds(false);
+            diagramImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        }
+        return this;
+    }
+
     //endregion
 }
