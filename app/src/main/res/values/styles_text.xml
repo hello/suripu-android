@@ -134,4 +134,10 @@
         <item name="android:textSize">@dimen/text_size_big_score</item>
     </style>
 
+    <style name="AppTheme.Text.ScaleReading">
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textColor">@color/light_accent</item>
+        <item name="android:textSize">@dimen/text_size_scale_reading</item>
+    </style>
+
 </resources>

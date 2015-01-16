@@ -22,6 +22,7 @@
     <dimen name="text_size_small_score">40sp</dimen>
     <dimen name="text_size_big_score">76sp</dimen>
     <dimen name="text_size_smart_alarm_time">32sp</dimen>
+    <dimen name="text_size_scale_reading">64sp</dimen>
 
     <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
@@ -57,6 +58,7 @@
     <dimen name="view_mini_timeline_stripe_width">@dimen/divider_size</dimen>
     <dimen name="timeline_navigator_active_distance">20dp</dimen>
 
+    <dimen name="scale_view_size">90dp</dimen>
     <dimen name="scale_view_diamond">2dp</dimen>
     <dimen name="scale_view_tick">1dp</dimen>
     <dimen name="scale_view_segment">12dp</dimen>

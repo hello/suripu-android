@@ -9,8 +9,8 @@ public class UnitOperations {
         return Math.round(grams * 0.0022046);
     }
 
-    public static long inchesToCentimeters(long inches) {
-        return Math.round(inches / 0.39370);
+    public static int inchesToCentimeters(int inches) {
+        return Math.round(inches / 0.39370f);
     }
 
     public static long centimetersToInches(long inches) {

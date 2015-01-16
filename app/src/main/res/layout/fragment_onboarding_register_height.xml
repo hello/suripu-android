@@ -1,96 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:paddingTop="@dimen/gap_xlarge"
+    android:paddingBottom="@dimen/gap_large"
+    android:paddingLeft="@dimen/gap_large"
+    android:paddingRight="@dimen/gap_large"
+    android:background="@color/background_onboarding">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <TextView
+        android:id="@+id/fragment_onboarding_register_height_heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/gap_xlarge"
-        android:paddingBottom="@dimen/gap_large"
-        android:paddingLeft="@dimen/gap_large"
-        android:paddingRight="@dimen/gap_large"
-        android:background="@color/background_onboarding">
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:textAppearance="@style/AppTheme.Text.Heading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+        android:text="@string/title_register_height"/>
+
+    <TextView
+        android:id="@+id/fragment_onboarding_register_height_subheading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_onboarding_register_height_heading"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="@dimen/gap_small"
+        android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:text="@string/onboarding_register_info_explanation"/>
+
+    <Button
+        android:id="@+id/fragment_onboarding_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:text="@string/action_next"
+        style="@style/AppTheme.Button.Rounded"/>
+
+    <Button
+        android:id="@+id/fragment_onboarding_skip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_alignParentStart="true"
+        android:layout_above="@id/fragment_onboarding_next"
+        android:text="@string/action_skip"
+        style="@style/AppTheme.Button.Borderless.Onboarding"/>
+
+    <RelativeLayout
+        android:id="@+id/fragment_onboarding_register_height_scale_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_above="@id/fragment_onboarding_skip"
+        android:layout_below="@id/fragment_onboarding_register_height_subheading">
+
+        <is.hello.sense.ui.widget.ScaleView
+            android:id="@+id/fragment_onboarding_register_height_scale"
+            android:layout_width="@dimen/scale_view_size"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            app:scaleOrientation="vertical"
+            app:scaleMinValue="91"
+            app:scaleMaxValue="244"
+            app:scaleValue="160"/>
 
         <TextView
+            android:id="@+id/fragment_onboarding_register_height_scale_reading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/AppTheme.Text.Heading"
-            android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-            android:text="@string/title_register_height"/>
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/fragment_onboarding_register_height_scale"
+            android:textAppearance="@style/AppTheme.Text.ScaleReading"
+            android:gravity="center" />
 
         <TextView
+            android:id="@+id/fragment_onboarding_register_height_scale_reading_secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_small"
-            android:textAppearance="@style/AppTheme.Text.Subheading"
-            android:text="@string/onboarding_register_info_explanation"/>
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/fragment_onboarding_register_height_scale"
+            android:layout_below="@id/fragment_onboarding_register_height_scale_reading"
+            android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
+            android:gravity="center" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal">
+    </RelativeLayout>
 
-            <EditText
-                android:id="@+id/fragment_onboarding_register_height_feet"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/gap_medium"
-                android:nextFocusForward="@+id/fragment_onboarding_register_height_inches"
-                android:imeOptions="actionNext|flagNoExtractUi"
-                android:hint="@string/default_feet"
-                android:text="@string/default_feet"
-                style="@style/AppTheme.Text.EditText.Onboarding.Metric">
-
-                <requestFocus />
-
-            </EditText>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
-                android:text="@string/label_feet"/>
-
-            <EditText
-                android:id="@+id/fragment_onboarding_register_height_inches"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/gap_medium"
-                android:imeOptions="actionGo|flagNoExtractUi"
-                android:hint="@string/default_inches"
-                android:text="@string/default_inches"
-                style="@style/AppTheme.Text.EditText.Onboarding.Metric"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
-                android:text="@string/label_inches"/>
-
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/fragment_onboarding_skip"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_small"
-            android:text="@string/action_skip"
-            style="@style/AppTheme.Button.Borderless.Onboarding"/>
-
-        <Button
-            android:id="@+id/fragment_onboarding_next"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_small"
-            android:text="@string/action_next"
-            style="@style/AppTheme.Button.Rounded"/>
-
-    </LinearLayout>
-
-</ScrollView>
+</RelativeLayout>

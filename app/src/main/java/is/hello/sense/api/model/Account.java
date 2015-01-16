@@ -31,7 +31,7 @@ public class Account extends ApiResponse implements Cloneable {
     private Gender gender;
 
     @JsonProperty("height")
-    private Long height;
+    private Integer height;
 
     @JsonProperty("weight")
     private Long weight;
@@ -106,11 +106,11 @@ public class Account extends ApiResponse implements Cloneable {
         this.gender = gender;
     }
 
-    public Long getHeight() {
+    public Integer getHeight() {
         return height;
     }
 
-    public void setHeight(Long height) {
+    public void setHeight(int height) {
         this.height = height;
     }
 

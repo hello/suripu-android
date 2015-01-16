@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -16,12 +18,19 @@ import android.widget.ScrollView;
 import is.hello.sense.R;
 
 public class ScaleView extends FrameLayout {
+    //region Constants
+
     public static final int VERTICAL = 0;
     public static final int HORIZONTAL = 1;
 
     private static final int EMPHASIS_STEP = 5;
     private static final float TICK_NORMAL_SCALE = 0.5f;
     private static final float TICK_EMPHASIS_SCALE = 0.25f;
+
+    //endregion
+
+
+    //region Contents
 
     private final Paint linePaint = new Paint();
     private float diamondHalf;
@@ -31,10 +40,20 @@ public class ScaleView extends FrameLayout {
     private FrameLayout tickFillHost;
     private TickView tickView;
 
+    //endregion
+
+
+    //region Properties
+
     private int orientation;
     private int minValue = 20;
     private int maxValue = 120;
     private @Nullable OnValueChangedListener onValueChangedListener;
+
+    //endregion
+
+
+    //region Lifecycle
 
     public ScaleView(Context context) {
         this(context, null);
@@ -79,7 +98,8 @@ public class ScaleView extends FrameLayout {
                 }
             };
             tickFillHost.setVerticalScrollBarEnabled(false);
-        } else {
+            tickFillHost.setVerticalFadingEdgeEnabled(true);
+        } else if (orientation == HORIZONTAL) {
             this.tickFillHost = new HorizontalScrollView(getContext()) {
                 @Override
                 protected void onScrollChanged(int l, int t, int oldL, int oldT) {
@@ -88,6 +108,9 @@ public class ScaleView extends FrameLayout {
                 }
             };
             tickFillHost.setHorizontalScrollBarEnabled(false);
+            tickFillHost.setHorizontalFadingEdgeEnabled(true);
+        } else {
+            throw new IllegalArgumentException();
         }
 
         Resources resources = getResources();
@@ -99,13 +122,27 @@ public class ScaleView extends FrameLayout {
         this.tickView = new TickView(getContext());
         tickFillHost.addView(tickView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
+        tickFillHost.setFadingEdgeLength(resources.getDimensionPixelSize(R.dimen.shadow_size));
         tickFillHost.setOverScrollMode(ScrollView.OVER_SCROLL_NEVER);
-        addView(tickFillHost);
+        tickFillHost.setBackgroundColor(Color.WHITE);
+        addView(tickFillHost, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         setWillNotDraw(false);
         updateFillArea();
-        setValue(initialValue);
+        setValueAsync(initialValue);
     }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        super.onRestoreInstanceState(state);
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        return super.onSaveInstanceState();
+    }
+
+    //endregion
 
 
     //region Drawing
@@ -180,18 +217,21 @@ public class ScaleView extends FrameLayout {
         updateFillArea();
     }
 
-    public void setValue(int value) {
-        int offset = scaleInset + (segmentSize * (normalizeValue(value) - minValue));
-        if (orientation == VERTICAL) {
-            tickFillHost.scrollTo(0, offset);
-        } else {
-            tickFillHost.scrollTo(offset, 0);
-        }
-        updateFillArea();
+    public void setValueAsync(int value) {
+        post(() -> {
+            int offset = scaleInset + (segmentSize * (normalizeValue(value) - minValue));
+            if (orientation == VERTICAL) {
+                tickFillHost.scrollTo(0, offset);
+            } else {
+                tickFillHost.scrollTo(offset, 0);
+            }
+            updateFillArea();
+        });
     }
 
     public int getValue() {
-        int offset = (orientation == VERTICAL) ? tickFillHost.getScrollY() : tickFillHost.getScrollX();
+        int rawOffset = (orientation == VERTICAL) ? tickFillHost.getScrollY() : tickFillHost.getScrollX();
+        int offset = rawOffset - scaleInset;
         return minValue + (offset / segmentSize);
     }
 
