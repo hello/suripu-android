@@ -93,14 +93,17 @@ public final class Styles {
             }
 
             case LIGHTS_OUT: {
-                return R.drawable.timeline_light;
+                return R.drawable.timeline_lights_out;
             }
 
             case SLEEP_MOTION: {
                 return R.drawable.timeline_movement;
             }
 
-            case IN_BED:
+            case IN_BED: {
+                return R.drawable.timeline_in_bed;
+            }
+
             case SLEEP: {
                 return R.drawable.timeline_asleep;
             }
@@ -117,7 +120,10 @@ public final class Styles {
                 return R.drawable.timeline_partner;
             }
 
-            case OUT_OF_BED:
+            case OUT_OF_BED: {
+                return R.drawable.timeline_out_of_bed;
+            }
+
             case WAKE_UP: {
                 return R.drawable.timeline_wakeup;
             }

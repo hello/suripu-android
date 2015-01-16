@@ -171,7 +171,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        StaticItemAdapter.Item item = debugActionItems.getItem(position);
+        StaticItemAdapter.Item item = (StaticItemAdapter.Item) adapterView.getItemAtPosition(position);
         if (item.getAction() != null) {
             item.getAction().run();
         } else {
