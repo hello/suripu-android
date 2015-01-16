@@ -24,5 +24,8 @@
             <enum name="vertical" value="0" />
             <enum name="horizontal" value="1" />
         </attr>
+        <attr name="scaleMinValue" format="integer" />
+        <attr name="scaleMaxValue" format="integer" />
+        <attr name="scaleValue" format="integer" />
     </declare-styleable>
 </resources>
