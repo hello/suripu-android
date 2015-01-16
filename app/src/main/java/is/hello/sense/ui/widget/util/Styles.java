@@ -100,6 +100,7 @@ public final class Styles {
                 return R.drawable.timeline_movement;
             }
 
+            case IN_BED:
             case SLEEP: {
                 return R.drawable.timeline_asleep;
             }
@@ -116,6 +117,7 @@ public final class Styles {
                 return R.drawable.timeline_partner;
             }
 
+            case OUT_OF_BED:
             case WAKE_UP: {
                 return R.drawable.timeline_wakeup;
             }
