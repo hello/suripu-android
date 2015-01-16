@@ -31,6 +31,9 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     private final int thisYear = DateTime.now().getYear();
     private TextView[] fields;
     private int activeField = 0;
+    private TextView monthText;
+    private TextView dayText;
+    private TextView yearText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,10 +51,10 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_register_birthday, container, false);
 
-        TextView monthText = (TextView) view.findViewById(R.id.fragment_onboarding_register_birthday_month);
-        TextView dayText = (TextView) view.findViewById(R.id.fragment_onboarding_register_birthday_day);
-        TextView yearText = (TextView) view.findViewById(R.id.fragment_onboarding_register_birthday_year);
-        this.fields = new TextView[] {monthText, dayText, yearText };
+        this.monthText = (TextView) view.findViewById(R.id.fragment_onboarding_register_birthday_month);
+        this.dayText = (TextView) view.findViewById(R.id.fragment_onboarding_register_birthday_day);
+        this.yearText = (TextView) view.findViewById(R.id.fragment_onboarding_register_birthday_year);
+        this.fields = new TextView[] {monthText, dayText, yearText};
 
         int hintColor = getResources().getColor(R.color.text_dim_placeholder);
         monthText.setHintTextColor(hintColor);
@@ -205,6 +208,19 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     }
 
     public void next() {
+        int year = Integer.valueOf(yearText.getText().toString(), 10);
+        int month = Integer.valueOf(monthText.getText().toString(), 10);
+        int day = Integer.valueOf(dayText.getText().toString(), 10);
+
+        LocalDate dateWithoutDay = new LocalDate(year, month, 1);
+        LocalDate date;
+        if (day > dateWithoutDay.dayOfMonth().getMaximumValue()) {
+            date = dateWithoutDay.withDayOfMonth(dateWithoutDay.dayOfMonth().getMaximumValue());
+        } else {
+            date = dateWithoutDay.withDayOfMonth(day);
+        }
+
+        account.setBirthDate(date);
         getContainer().onAccountUpdated(this);
     }
 
