@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -134,12 +135,26 @@ public class ScaleView extends FrameLayout {
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
+        if (state != null && state instanceof Bundle) {
+            Bundle savedState = (Bundle) state;
+
+            setMinValue(savedState.getInt("minValue"));
+            setMaxValue(savedState.getInt("maxValue"));
+            setValueAsync(savedState.getInt("value"));
+
+            state = savedState.getParcelable("savedState");
+        }
         super.onRestoreInstanceState(state);
     }
 
     @Override
     protected Parcelable onSaveInstanceState() {
-        return super.onSaveInstanceState();
+        Bundle savedState = new Bundle();
+        savedState.putParcelable("savedState", super.onSaveInstanceState());
+        savedState.putInt("minValue", minValue);
+        savedState.putInt("maxValue", maxValue);
+        savedState.putInt("value", getValue());
+        return savedState;
     }
 
     //endregion
