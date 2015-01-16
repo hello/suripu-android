@@ -11,8 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import net.danlew.android.joda.DateUtils;
-
 import java.util.List;
 
 import is.hello.sense.R;
@@ -156,7 +154,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
         void display(@NonNull Device device) {
             super.display(device);
 
-            lastSeen.setText(DateUtils.getRelativeTimeSpanString(getContext(), device.getLastUpdated()));
+            lastSeen.setText(device.getLastUpdatedDescription(getContext()));
             if (device.isMissing()) {
                 lastSeen.setTextColor(resources.getColor(R.color.destructive_accent));
             } else {

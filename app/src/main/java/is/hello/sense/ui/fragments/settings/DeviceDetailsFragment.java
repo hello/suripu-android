@@ -19,8 +19,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import net.danlew.android.joda.DateUtils;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -206,7 +204,7 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
         if (network == null || TextUtils.isEmpty(network.ssid)) {
             showTroubleshootingAlert(R.string.error_sense_no_connectivity, R.string.action_troubleshoot, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.WIFI_CONNECTIVITY));
         } else if (device.isMissing()) {
-            String missingMessage = getString(R.string.error_sense_missing_fmt, DateUtils.getRelativeTimeSpanString(getActivity(), device.getLastUpdated()));
+            String missingMessage = getString(R.string.error_sense_missing_fmt, device.getLastUpdatedDescription(getActivity()));
             showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.SENSE_MISSING));
         } else {
             hideAlert();
@@ -220,7 +218,7 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
         addDeviceAction(R.string.action_replace_sleep_pill, true, this::unpairDevice);
 
         if (device.isMissing()) {
-            String missingMessage = getString(R.string.error_sleep_pill_missing_fmt, DateUtils.getRelativeTimeSpanString(getActivity(), device.getLastUpdated()));
+            String missingMessage = getString(R.string.error_sleep_pill_missing_fmt, device.getLastUpdatedDescription(getActivity()));
             showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.SLEEP_PILL_MISSING));
         } else {
             hideAlert();
