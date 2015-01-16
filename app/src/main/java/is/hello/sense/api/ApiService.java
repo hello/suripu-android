@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -75,6 +76,9 @@ public interface ApiService {
 
     @POST("/account/email")
     Observable<VoidResponse> updateEmailAddress(@NonNull @Body Account account);
+
+    @PUT("/preferences")
+    Observable<AccountPreference> updatePreference(@NonNull @Body AccountPreference preference);
 
     //endregion
 
