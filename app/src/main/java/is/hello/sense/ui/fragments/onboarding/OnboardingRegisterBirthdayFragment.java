@@ -12,6 +12,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import is.hello.sense.R;
@@ -26,6 +27,8 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
 
     private Account account;
 
+    private final Validator[] FIELD_VALIDATORS = { this::validateMonth, this::validateDay, this::validateYear };
+    private final int thisYear = DateTime.now().getYear();
     private TextView[] fields;
     private int activeField = 0;
 
@@ -48,7 +51,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
         TextView monthText = (TextView) view.findViewById(R.id.fragment_onboarding_register_birthday_month);
         TextView dayText = (TextView) view.findViewById(R.id.fragment_onboarding_register_birthday_day);
         TextView yearText = (TextView) view.findViewById(R.id.fragment_onboarding_register_birthday_year);
-        this.fields = new TextView[] { monthText, dayText, yearText };
+        this.fields = new TextView[] {monthText, dayText, yearText };
 
         int hintColor = getResources().getColor(R.color.text_dim_placeholder);
         monthText.setHintTextColor(hintColor);
@@ -89,6 +92,41 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
         return view;
     }
 
+
+    private boolean validateMonth(@NonNull CharSequence month) {
+        if (month.equals("0")) {
+            return true;
+        }
+
+        try {
+            int value = Integer.valueOf(month.toString(), 10);
+            return (value > 0 && value <= 12);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private boolean validateDay(@NonNull CharSequence day) {
+        if (day.equals("0")) {
+            return true;
+        }
+
+        try {
+            int value = Integer.valueOf(day.toString(), 10);
+            return (value > 0 && value <= 31);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private boolean validateYear(@NonNull CharSequence year) {
+        try {
+            int value = Integer.valueOf(year.toString(), 10);
+            return (value > 0 && value <= thisYear);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
     private void setActiveField(int activeField) {
         int activeColor = getResources().getColor(R.color.light_accent),
@@ -149,13 +187,15 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
         }
 
         String newText = text + numberValue;
-        field.setText(newText);
+        if (FIELD_VALIDATORS[activeField].validate(newText)) {
+            field.setText(newText);
 
-        if (newText.length() == FIELD_LIMITS[activeField]) {
-            if (activeField == fields.length - 1) {
-                next();
-            } else {
-                incrementActiveField();
+            if (newText.length() == FIELD_LIMITS[activeField]) {
+                if (activeField == fields.length - 1) {
+                    next();
+                } else {
+                    incrementActiveField();
+                }
             }
         }
     }
@@ -166,5 +206,10 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
 
     public void next() {
         getContainer().onAccountUpdated(this);
+    }
+
+
+    private interface Validator {
+        boolean validate(@NonNull CharSequence value);
     }
 }
