@@ -8,4 +8,8 @@ public interface FragmentNavigation {
     void showFragment(@NonNull Fragment fragment,
                       @Nullable String title,
                       boolean wantsBackStackEntry);
+
+    interface BackInterceptingFragment {
+        boolean onInterceptBack(@NonNull Runnable back);
+    }
 }

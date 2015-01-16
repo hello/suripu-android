@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.fragments.VideoPlayerActivity;
+import is.hello.sense.ui.widget.PanImageView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
@@ -25,6 +25,7 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class OnboardingIntroductionFragment extends Fragment {
 
+    private PanImageView sceneBackground;
     private TextView titleText;
     private TextView infoText;
     private ImageView play;
@@ -34,6 +35,8 @@ public class OnboardingIntroductionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_introduction, container, false);
+
+        this.sceneBackground = (PanImageView) view.findViewById(R.id.fragment_onboarding_introduction_scene);
 
         this.titleText = (TextView) view.findViewById(R.id.fragment_onboarding_intro_title);
         this.infoText = (TextView) view.findViewById(R.id.fragment_onboarding_intro_info);
@@ -85,8 +88,12 @@ public class OnboardingIntroductionFragment extends Fragment {
                 .start();
 
         animate(play)
-                .fadeOut(View.INVISIBLE)
-                .scale(0f)
+                .slideXAndFade(0f, -(play.getMeasuredWidth() / 2), 1f, 0f)
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        play.setVisibility(View.INVISIBLE);
+                    }
+                })
                 .start();
 
         animate(titleText)
@@ -100,6 +107,8 @@ public class OnboardingIntroductionFragment extends Fragment {
                 .andThen()
                 .fadeIn()
                 .start();
+
+        sceneBackground.animateToPanAmount(1f, Animations.DURATION_DEFAULT, null);
     }
 
     public void playIntroVideo(@NonNull View sender) {
@@ -137,8 +146,7 @@ public class OnboardingIntroductionFragment extends Fragment {
                 .start();
 
         animate(play)
-                .fadeIn()
-                .scale(1f)
+                .slideXAndFade(0f, play.getMeasuredWidth() / 2, 0f, 1f)
                 .start();
 
         animate(titleText)
@@ -150,5 +158,7 @@ public class OnboardingIntroductionFragment extends Fragment {
                 .andThen()
                 .fadeIn()
                 .start();
+
+        sceneBackground.animateToPanAmount(0f, Animations.DURATION_DEFAULT, null);
     }
 }

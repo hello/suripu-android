@@ -135,9 +135,4 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
     public void setWantsTitleUpdates(boolean wantsTitleUpdates) {
         this.wantsTitleUpdates = wantsTitleUpdates;
     }
-
-
-    public interface BackInterceptingFragment {
-        boolean onInterceptBack(@NonNull Runnable back);
-    }
 }
