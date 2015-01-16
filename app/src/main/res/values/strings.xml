@@ -312,4 +312,18 @@ so you can sleep better.</string>
     <string name="title_smart_alarms">Smart Alarms</string>
     <string name="message_smart_alarm_placeholder">Sense‘s Smart Alarm will wake you up at just the moment in your sleep cycle, so you wake feeling rested. Once set, your alarms will appear here</string>
     <string name="prompt_set_your_first_alarm">Set your first smart alarm</string>
+    <string name="number_1">1</string>
+    <string name="number_2">2</string>
+    <string name="number_3">3</string>
+    <string name="number_4">4</string>
+    <string name="number_5">5</string>
+    <string name="number_6">6</string>
+    <string name="number_7">7</string>
+    <string name="number_8">8</string>
+    <string name="number_9">9</string>
+    <string name="action_skip_short">Skip</string>
+    <string name="number_0">0</string>
+    <string name="hint_month">MM</string>
+    <string name="hint_day">DD</string>
+    <string name="hint_year">YYYY</string>
 </resources>

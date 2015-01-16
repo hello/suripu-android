@@ -164,8 +164,8 @@ t
 
     <style name="AppTheme.Button.Borderless.Accent.Heavy">
         <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
-
     </style>
 
     <style name="AppTheme.Button.Borderless.Question">
@@ -234,6 +234,11 @@ t
     <style name="AppTheme.Button.Gender" parent="AppTheme.Button.Borderless.Accent">
         <item name="android:background">@drawable/button_selector_gender</item>
         <item name="android:padding">36dp</item>
+    </style>
+    
+    <style name="AppTheme.Button.Number" parent="AppTheme.Button.Borderless.Accent.Heavy">
+        <item name="android:minHeight">@dimen/button_rounded_min_height</item>
+        <item name="android:background">@drawable/button_selector_number</item>
     </style>
 
     <style name="AppTheme.Button.Raised">
@@ -306,6 +311,7 @@ t
 
     <style name="AppTheme.Text.EditText" parent="Platform.EditText">
         <item name="android:minHeight">@dimen/edit_text_min_height</item>
+        <item name="android:gravity">center</item>
 
         <item name="android:paddingTop">@dimen/gap_small</item>
         <item name="android:paddingBottom">@dimen/gap_small</item>
@@ -315,6 +321,7 @@ t
         <item name="android:background">@drawable/edit_text_selector</item>
 
         <item name="android:textSize">@dimen/text_size_body</item>
+        <item name="android:textColor">@color/light_accent</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 

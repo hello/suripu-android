@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/gap_xlarge"
-    android:paddingBottom="@dimen/gap_large"
-    android:paddingLeft="@dimen/gap_large"
-    android:paddingRight="@dimen/gap_large"
+    android:padding="@dimen/gap_outer"
     android:background="@color/background_onboarding">
 
     <TextView
-        android:id="@+id/fragment_onboarding_register_birthday_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:textAppearance="@style/AppTheme.Text.Heading"
         android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:text="@string/title_register_birthday"/>
@@ -23,36 +18,167 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/gap_small"
-        android:layout_below="@id/fragment_onboarding_register_birthday_title"
         android:textAppearance="@style/AppTheme.Text.Subheading"
         android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
         android:text="@string/onboarding_register_info_explanation"/>
 
-    <DatePicker
-        android:id="@+id/fragment_onboarding_register_birthday_picker"
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:calendarViewShown="false"
-        android:spinnersShown="true"
-        android:layout_centerInParent="true"
-        style="@android:style/Widget.Holo.DatePicker"/>
+        android:gravity="center"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/fragment_onboarding_next"
+        <TextView
+            android:id="@+id/fragment_onboarding_register_birthday_month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_month"
+            style="@style/AppTheme.Text.Birthday"/>
+
+        <TextView
+            android:id="@+id/fragment_onboarding_register_birthday_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/gap_large"
+            android:layout_marginRight="@dimen/gap_large"
+            android:hint="@string/hint_day"
+            style="@style/AppTheme.Text.Birthday"/>
+
+        <TextView
+            android:id="@+id/fragment_onboarding_register_birthday_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_year"
+            style="@style/AppTheme.Text.Birthday"/>
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <TableLayout
+        android:id="@+id/fragment_onboarding_register_birthday_keys"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_alignParentBottom="true"
-        android:text="@string/action_next"
-        style="@style/AppTheme.Button.Rounded"/>
+        android:stretchColumns="0,1,2">
 
-    <Button
-        android:id="@+id/fragment_onboarding_skip"
+        <TableRow
+            android:layout_marginBottom="@dimen/gap_small">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:tag="1"
+                android:text="@string/number_1"
+                style="@style/AppTheme.Button.Number"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/gap_outer"
+                android:layout_marginEnd="@dimen/gap_outer"
+                android:tag="2"
+                android:text="@string/number_2"
+                style="@style/AppTheme.Button.Number"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:tag="3"
+                android:text="@string/number_3"
+                style="@style/AppTheme.Button.Number"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_marginBottom="@dimen/gap_small">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:tag="4"
+                android:text="@string/number_4"
+                style="@style/AppTheme.Button.Number"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/gap_outer"
+                android:layout_marginEnd="@dimen/gap_outer"
+                android:tag="5"
+                android:text="@string/number_5"
+                style="@style/AppTheme.Button.Number"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:tag="6"
+                android:text="@string/number_6"
+                style="@style/AppTheme.Button.Number"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_marginBottom="@dimen/gap_small">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:tag="7"
+                android:text="@string/number_7"
+                style="@style/AppTheme.Button.Number"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/gap_outer"
+                android:layout_marginEnd="@dimen/gap_outer"
+                android:tag="8"
+                android:text="@string/number_8"
+                style="@style/AppTheme.Button.Number"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:tag="9"
+                android:text="@string/number_9"
+                style="@style/AppTheme.Button.Number"/>
+
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/fragment_onboarding_register_birthday_skip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:tag="-1"
+                android:text="@string/action_skip_short"
+                style="@style/AppTheme.Button.Number"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/gap_outer"
+                android:layout_marginEnd="@dimen/gap_outer"
+                android:tag="0"
+                android:text="@string/number_0"
+                style="@style/AppTheme.Button.Number"/>
+            <Button
+                android:id="@+id/fragment_onboarding_register_birthday_delete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:tag="-1"
+                android:text="@string/action_delete"
+                style="@style/AppTheme.Button.Number"/>
+
+        </TableRow>
+
+    </TableLayout>
+
+    <Space
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_above="@id/fragment_onboarding_next"
-        android:text="@string/action_skip"
-        style="@style/AppTheme.Button.Borderless.Onboarding"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
-</RelativeLayout>
+</LinearLayout>
