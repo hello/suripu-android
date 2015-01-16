@@ -8,6 +8,13 @@
 
     <include layout="@layout/sub_fragment_onboarding_toolbar" />
 
+    <Button
+        android:id="@+id/fragment_onboarding_sign_in_forgot_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/action_forgot_password"
+        style="@style/AppTheme.Button.Borderless.Accent"/>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
