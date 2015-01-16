@@ -47,7 +47,7 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
                     Class<? extends Fragment> fragmentClass = (Class<? extends Fragment>) Class.forName(className);
                     Fragment fragment = fragmentClass.newInstance();
                     fragment.setArguments(getIntent().getParcelableExtra(EXTRA_FRAGMENT_ARGUMENTS));
-                    showFragment(fragment, getDefaultTitle(), false);
+                    pushFragment(fragment, getDefaultTitle(), false);
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                     Logger.warn(getClass().getSimpleName(), "Could not create fragment", e);
                 }
@@ -85,7 +85,7 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
     }
 
     @Override
-    public void showFragment(@NonNull Fragment fragment,
+    public void pushFragment(@NonNull Fragment fragment,
                              @Nullable String title,
                              boolean wantsBackStackEntry) {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -120,7 +120,8 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
         }
     }
 
-    protected @Nullable Fragment getTopFragment() {
+    @Override
+    public @Nullable Fragment getTopFragment() {
         return getFragmentManager().findFragmentById(R.id.activity_fragment_navigation_container);
     }
 

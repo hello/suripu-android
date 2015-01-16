@@ -146,7 +146,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     public void showPairingModeHelp(@NonNull View sender) {
-        getOnboardingActivity().showFragment(new OnboardingSensePairingModeHelpFragment(), null, true);
+        getOnboardingActivity().pushFragment(new OnboardingSensePairingModeHelpFragment(), null, true);
     }
 
     public void next(@NonNull View sender) {

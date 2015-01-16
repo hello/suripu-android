@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +15,8 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.common.FragmentNavigation;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.fragments.VideoPlayerActivity;
 import is.hello.sense.ui.widget.PanImageView;
 import is.hello.sense.ui.widget.util.Views;
@@ -23,7 +24,7 @@ import is.hello.sense.util.Analytics;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class OnboardingIntroductionFragment extends Fragment {
+public class OnboardingIntroductionFragment extends SenseFragment implements FragmentNavigation.BackInterceptingFragment {
 
     private PanImageView sceneBackground;
     private TextView titleText;
@@ -67,6 +68,16 @@ public class OnboardingIntroductionFragment extends Fragment {
 
 
         return view;
+    }
+
+    @Override
+    public boolean onInterceptBack(@NonNull Runnable back) {
+        if (infoText.getAlpha() != 1f) {
+            cancel(accountActions);
+            return true;
+        }
+
+        return false;
     }
 
     private OnboardingActivity getOnboardingActivity() {
