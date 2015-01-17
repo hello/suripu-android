@@ -18,6 +18,7 @@ import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
@@ -56,15 +57,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         if (buildValues.isDebugBuild()) {
             View diagram = view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
             diagram.setOnLongClickListener(ignored -> {
-                hardwarePresenter.clearPeripheral(); 
-
-                if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false)) {
-                    hardwarePresenter.clearPeripheral();
-                    getOnboardingActivity().finish();
-                } else {
-                    getOnboardingActivity().showPillInstructions();
-                }
-
+                finishedPairing();
                 return true;
             });
             diagram.setBackgroundResource(R.drawable.selectable_dark);
@@ -91,9 +84,9 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     }
 
     private void finishedPairing() {
-        hardwarePresenter.clearPeripheral();
-
-        completeHardwareActivity(() -> {
+        LoadingDialogFragment.show(getFragmentManager(), null, true);
+        getFragmentManager().executePendingTransactions();
+        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
             if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false)) {
                 hardwarePresenter.clearPeripheral();
                 getOnboardingActivity().finish();
@@ -125,7 +118,11 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             return;
         }
 
-        showHardwareActivity(() -> bindAndSubscribe(hardwarePresenter.linkPill(), ignored -> finishedPairing(), this::presentError));
+        showHardwareActivity(() -> {
+            bindAndSubscribe(hardwarePresenter.linkPill(),
+                             ignored -> completeHardwareActivity(this::finishedPairing),
+                             this::presentError);
+        });
     }
 
     public void presentError(Throwable e) {

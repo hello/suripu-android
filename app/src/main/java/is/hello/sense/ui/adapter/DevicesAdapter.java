@@ -72,7 +72,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
 
 
     @Override
-    public long getItemId(int position) {
+    public int getItemViewType(int position) {
         Device device = getItem(position);
         if (device.exists()) {
             return ID_EXISTS;
@@ -85,7 +85,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
-            if (getItemId(position) == ID_EXISTS) {
+            if (getItemViewType(position) == ID_EXISTS) {
                 view = inflater.inflate(R.layout.item_device, parent, false);
                 view.setTag(new DeviceViewHolder(view));
             } else {
@@ -181,8 +181,12 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
                 case PILL: {
                     status1Label.setText(R.string.label_battery_level);
 
-                    status1.setText(device.getState().nameRes);
-                    status1.setTextColor(resources.getColor(device.getState().colorRes));
+                    Device.State state = device.getState();
+                    if (state == null) {
+                        state = Device.State.UNKNOWN;
+                    }
+                    status1.setText(state.nameRes);
+                    status1.setTextColor(resources.getColor(state.colorRes));
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
 
                     status2Label.setText(R.string.label_color);
