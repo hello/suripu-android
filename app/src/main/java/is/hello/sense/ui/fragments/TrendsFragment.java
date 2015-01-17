@@ -72,9 +72,7 @@ public class TrendsFragment extends InjectionFragment implements TrendsAdapter.O
 
     public void presentError(Throwable e) {
         swipeRefreshLayout.setRefreshing(false);
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
 
-        trendsAdapter.trendsUnavailable(e);
     }
 
 

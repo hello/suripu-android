@@ -1,11 +1,13 @@
 package is.hello.sense.api.model;
 
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.R;
@@ -36,6 +38,20 @@ public class TrendGraph extends ApiResponse {
 
     @JsonProperty("data_points")
     private List<GraphSample> dataPoints;
+
+
+    public TrendGraph() {
+
+    }
+
+    public TrendGraph(@NonNull Throwable e) {
+        this.title = e.getMessage();
+        this.dataType = DataType.SLEEP_DURATION;
+        this.graphType = GraphType.HISTOGRAM;
+        this.timePeriod = TIME_PERIOD_OVER_TIME_ALL;
+        this.options = Collections.emptyList();
+        this.dataPoints = Collections.emptyList();
+    }
 
 
     public String getTitle() {

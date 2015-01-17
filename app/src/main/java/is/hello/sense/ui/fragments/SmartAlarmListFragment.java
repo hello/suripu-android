@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.functional.Functions;
@@ -31,6 +32,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 
 public class SmartAlarmListFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, SmartAlarmAdapter.OnAlarmEnabledChanged {
@@ -133,12 +135,10 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
     public void presentError(Throwable e) {
         finishLoading();
-
-        if (e instanceof SmartAlarmPresenter.DayOverlapError) {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_day_overlap));
-            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-        } else {
+        if (BuildConfig.DEBUG) {
             ErrorDialogFragment.presentError(getFragmentManager(), e);
+        } else {
+            Logger.error(getClass().getSimpleName(), "Could not load smart alarms.", e);
         }
     }
 
