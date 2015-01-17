@@ -72,6 +72,11 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
 
 
     @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
     public int getItemViewType(int position) {
         Device device = getItem(position);
         if (device.exists()) {
