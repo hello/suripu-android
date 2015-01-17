@@ -25,10 +25,9 @@ import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapterCache;
 import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
-public class GraphView extends View {
+public class GraphView extends View implements GraphAdapter.ChangeObserver {
     private static final int NONE = -1;
 
     private @Nullable GraphDrawable graphDrawable;
@@ -51,6 +50,7 @@ public class GraphView extends View {
     private float highlightPointAreaHalf;
 
     private int highlightedSection = NONE, highlightedSegment = NONE;
+    private boolean ignoreTouchUntilEnd = false;
 
     private final Drawable.Callback DRAWABLE_CALLBACK = new Drawable.Callback() {
         @Override
@@ -148,14 +148,16 @@ public class GraphView extends View {
         return getMeasuredHeight() - getDrawingMinY();
     }
 
+    protected boolean isHighlighted() {
+        return (highlightedSection != NONE && highlightedSegment != NONE);
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         int minY = getDrawingMinY();
 
         int width = getDrawingWidth(),
             height = getDrawingHeight();
-
-        boolean isHighlighted = (highlightedSection != NONE && highlightedSegment != NONE);
 
         if (gridDrawable != null && numberOfLines > 0) {
             int lineDistance = width / numberOfLines;
@@ -220,7 +222,7 @@ public class GraphView extends View {
             }
         }
 
-        if (isHighlighted) {
+        if (isHighlighted()) {
             GraphAdapterCache adapterCache = getAdapterCache();
             float sectionWidth = adapterCache.calculateSectionWidth(width);
             float segmentWidth = adapterCache.calculateSegmentWidth(width, highlightedSection);
@@ -274,6 +276,7 @@ public class GraphView extends View {
     public void setGraphDrawable(@Nullable GraphDrawable graphDrawable) {
         if (this.graphDrawable != null) {
             this.graphDrawable.setCallback(null);
+            this.graphDrawable.setChangeObserver(null);
         }
 
         this.graphDrawable = graphDrawable;
@@ -281,6 +284,7 @@ public class GraphView extends View {
 
         if (graphDrawable != null) {
             graphDrawable.setCallback(DRAWABLE_CALLBACK);
+            graphDrawable.setChangeObserver(this);
         }
 
         invalidate();
@@ -289,6 +293,11 @@ public class GraphView extends View {
     public void setAdapter(@Nullable GraphAdapter adapter) {
         if (graphDrawable == null) {
             throw new IllegalStateException("Cannot set the adapter on a compound graph view without specifying a drawable first");
+        }
+
+        if (isHighlighted()) {
+            cancelTouchInteraction();
+            this.ignoreTouchUntilEnd = true;
         }
 
         graphDrawable.setAdapter(adapter);
@@ -407,8 +416,27 @@ public class GraphView extends View {
         alphaAnimator.start();
     }
 
+    private void cancelTouchInteraction() {
+        if (highlightListener != null) {
+            highlightListener.onGraphHighlightEnd();
+        }
+
+        highlightPaint.setAlpha(0);
+        headerTextPaint.setAlpha(255);
+        setHighlightedValue(NONE, NONE);
+    }
+
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
+        if (ignoreTouchUntilEnd) {
+            int action = event.getAction();
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                this.ignoreTouchUntilEnd = false;
+            }
+
+            return false;
+        }
+
         if (!hasData() || highlightListener == null) {
             return false;
         }
@@ -451,19 +479,21 @@ public class GraphView extends View {
             }
 
             case MotionEvent.ACTION_CANCEL: {
-                if (highlightListener != null) {
-                    highlightListener.onGraphHighlightEnd();
-                }
-
-                highlightPaint.setAlpha(0);
-                headerTextPaint.setAlpha(255);
-                setHighlightedValue(NONE, NONE);
+                cancelTouchInteraction();
 
                 break;
             }
         }
 
         return true;
+    }
+
+    @Override
+    public void onGraphAdapterChanged() {
+        if (isHighlighted()) {
+            cancelTouchInteraction();
+            this.ignoreTouchUntilEnd = true;
+        }
     }
 
     //endregion

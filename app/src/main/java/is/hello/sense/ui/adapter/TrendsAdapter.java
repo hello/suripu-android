@@ -43,9 +43,11 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         addAll(trends);
     }
 
-    @SuppressWarnings("UnusedParameters")
     public void trendsUnavailable(Throwable e) {
         clear();
+        if (e != null) {
+            add(new TrendGraph(e));
+        }
     }
 
 

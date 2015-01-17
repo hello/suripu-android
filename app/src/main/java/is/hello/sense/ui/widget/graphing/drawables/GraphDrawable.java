@@ -11,6 +11,7 @@ import is.hello.sense.ui.widget.graphing.adapters.GraphAdapterCache;
 public abstract class GraphDrawable extends Drawable implements GraphAdapter.ChangeObserver {
     protected final GraphAdapterCache adapterCache = new GraphAdapterCache();
     protected int topInset = 0, bottomInset = 0;
+    protected @Nullable GraphAdapter.ChangeObserver changeObserver;
 
 
     //region Properties
@@ -32,6 +33,10 @@ public abstract class GraphDrawable extends Drawable implements GraphAdapter.Cha
     public void setBottomInset(int bottomInset) {
         this.bottomInset = bottomInset;
         invalidateSelf();
+    }
+
+    public void setChangeObserver(@Nullable GraphAdapter.ChangeObserver changeObserver) {
+        this.changeObserver = changeObserver;
     }
 
     public void setAdapter(@Nullable GraphAdapter adapter) {
@@ -61,6 +66,10 @@ public abstract class GraphDrawable extends Drawable implements GraphAdapter.Cha
 
     @Override
     public void onGraphAdapterChanged() {
+        if (changeObserver != null) {
+            changeObserver.onGraphAdapterChanged();
+        }
+
         adapterCache.rebuild();
         invalidateSelf();
     }
