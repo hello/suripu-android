@@ -23,7 +23,6 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
-import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
@@ -48,7 +47,6 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
 
     public static final String ARG_DEVICE = DeviceDetailsFragment.class.getName() + ".ARG_DEVICE";
 
-    @Inject ApiSessionManager apiSessionManager;
     @Inject DevicesPresenter devicesPresenter;
     @Inject PreferencesPresenter preferences;
 
@@ -385,28 +383,26 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
         dialog.setMessage(R.string.dialog_messsage_factory_reset);
         dialog.setNegativeButton(android.R.string.cancel, null);
         dialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> {
-            showBlockingActivity(R.string.dialog_loading_message);
-            showHardwareActivity(() -> {
-                bindAndSubscribe(hardwarePresenter.factoryReset(), device -> {
-                    Logger.info(getClass().getSimpleName(), "Completed Sense factory reset");
-                    Action0 finish = () -> {
-                        hideAllActivity(true, () -> {
-                            apiSessionManager.logOut();
-                            getActivity().finish();
-                        });
-                    };
-                    bindAndSubscribe(devicesPresenter.unregisterAllDevices(),
-                            ignored -> {
-                                finish.call();
-                            },
-                            e -> {
-                                Logger.error(getClass().getSimpleName(), "Could not unregister all devices, ignoring.", e);
-                                finish.call();
-                            });
-                }, this::presentError);
-            });
+            resetAllDevices();
         });
         dialog.show();
+    }
+
+    private void resetAllDevices() {
+        showBlockingActivity(R.string.dialog_loading_message);
+        showHardwareActivity(() -> {
+            bindAndSubscribe(devicesPresenter.unregisterAllDevices(),
+                             ignored -> completeFactoryReset(),
+                             this::presentError);
+        });
+    }
+
+    private void completeFactoryReset() {
+        bindAndSubscribe(hardwarePresenter.factoryReset(),
+                         device -> {
+                             hideBlockingActivity(true, () -> finishWithResult(RESULT_REPLACED_DEVICE, null));
+                         },
+                         this::presentError);
     }
 
     //endregion
