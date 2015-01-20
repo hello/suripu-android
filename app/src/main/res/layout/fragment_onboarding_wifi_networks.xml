@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_onboarding">
+    android:background="@color/background_onboarding"
+    android:keepScreenOn="true">
 
     <include layout="@layout/sub_fragment_onboarding_toolbar" />
 
