@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
@@ -21,13 +20,10 @@ import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Scheduler;
 import rx.subjects.ReplaySubject;
-
-import static rx.android.observables.AndroidObservable.fromBroadcast;
 
 public class AndroidBluetoothStack implements BluetoothStack {
     final @NonNull Context applicationContext;
@@ -45,15 +41,19 @@ public class AndroidBluetoothStack implements BluetoothStack {
         this.bluetoothManager = (BluetoothManager) applicationContext.getSystemService(Context.BLUETOOTH_SERVICE);
         this.adapter = bluetoothManager.getAdapter();
         if (adapter != null) {
-            AtomicBoolean lastEnabledState = new AtomicBoolean(adapter.isEnabled());
-            Observable<Intent> stateChanged = fromBroadcast(applicationContext, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-            stateChanged.observeOn(getScheduler()).subscribe(ignored -> {
-                boolean isEnabled = adapter.isEnabled();
-                if (lastEnabledState.get() != isEnabled) {
-                    enabled.onNext(isEnabled);
+            BroadcastReceiver receiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    int newState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+                    if (newState == BluetoothAdapter.STATE_ON) {
+                        enabled.onNext(true);
+                    } else if (newState == BluetoothAdapter.STATE_OFF || newState == BluetoothAdapter.ERROR) {
+                        enabled.onNext(false);
+                    }
                 }
-            }, Functions.LOG_ERROR);
-            enabled.onNext(lastEnabledState.get());
+            };
+            applicationContext.registerReceiver(receiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+            enabled.onNext(adapter.isEnabled());
         } else {
             Logger.warn(LOG_TAG, "Host device has no bluetooth hardware!");
             enabled.onNext(false);
