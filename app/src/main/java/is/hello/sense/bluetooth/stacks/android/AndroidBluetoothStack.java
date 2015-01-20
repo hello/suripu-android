@@ -2,6 +2,7 @@ package is.hello.sense.bluetooth.stacks.android;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -97,20 +98,80 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
     @Override
     public Observable<Void> turnOn() {
-        if (adapter == null || !adapter.enable()) {
+        if (adapter == null) {
             return Observable.error(new BluetoothPowerChangeError());
         }
 
-        return enabled.filter(Functions.IS_TRUE).map(Functions.TO_VOID);
+        ReplaySubject<Void> turnOnMirror = ReplaySubject.createWithSize(1);
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                int oldState = intent.getIntExtra(BluetoothAdapter.EXTRA_PREVIOUS_STATE, BluetoothAdapter.ERROR);
+                int newState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+                if (oldState == BluetoothAdapter.STATE_OFF && newState == BluetoothAdapter.STATE_TURNING_ON) {
+                    Logger.info(LOG_TAG, "Bluetooth turning on");
+                } else if (oldState == BluetoothAdapter.STATE_TURNING_ON && newState == BluetoothAdapter.STATE_ON) {
+                    Logger.info(LOG_TAG, "Bluetooth turned on");
+
+                    applicationContext.unregisterReceiver(this);
+
+                    turnOnMirror.onNext(null);
+                    turnOnMirror.onCompleted();
+                } else {
+                    Logger.info(LOG_TAG, "Bluetooth failed to turn on");
+
+                    applicationContext.unregisterReceiver(this);
+
+                    turnOnMirror.onError(new BluetoothPowerChangeError());
+                }
+            }
+        };
+        applicationContext.registerReceiver(receiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+        if (!adapter.enable()) {
+            applicationContext.unregisterReceiver(receiver);
+            return Observable.error(new BluetoothPowerChangeError());
+        }
+
+        return turnOnMirror;
     }
 
     @Override
     public Observable<Void> turnOff() {
-        if (adapter == null || !adapter.disable()) {
+        if (adapter == null) {
             return Observable.error(new BluetoothPowerChangeError());
         }
 
-        return enabled.filter(Functions.IS_FALSE).map(Functions.TO_VOID);
+        ReplaySubject<Void> turnOnMirror = ReplaySubject.createWithSize(1);
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                int oldState = intent.getIntExtra(BluetoothAdapter.EXTRA_PREVIOUS_STATE, BluetoothAdapter.ERROR);
+                int newState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+                if (oldState == BluetoothAdapter.STATE_ON && newState == BluetoothAdapter.STATE_TURNING_OFF) {
+                    Logger.info(LOG_TAG, "Bluetooth turning off");
+                } else if (oldState == BluetoothAdapter.STATE_TURNING_OFF && newState == BluetoothAdapter.STATE_OFF) {
+                    Logger.info(LOG_TAG, "Bluetooth turned off");
+
+                    applicationContext.unregisterReceiver(this);
+
+                    turnOnMirror.onNext(null);
+                    turnOnMirror.onCompleted();
+                } else {
+                    Logger.info(LOG_TAG, "Bluetooth failed to turn off");
+
+                    applicationContext.unregisterReceiver(this);
+
+                    turnOnMirror.onError(new BluetoothPowerChangeError());
+                }
+            }
+        };
+        applicationContext.registerReceiver(receiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+        if (!adapter.disable()) {
+            applicationContext.unregisterReceiver(receiver);
+            return Observable.error(new BluetoothPowerChangeError());
+        }
+
+        return turnOnMirror;
     }
 
     @Override

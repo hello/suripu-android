@@ -298,7 +298,10 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
                              this.didEnableBluetooth = true;
                              connectToPeripheral();
                          },
-                         this::presentError);
+                         e -> {
+                             showTroubleshootingAlert(R.string.error_no_bluetooth_connectivity, R.string.action_turn_on_ble, this::enableBluetooth);
+                             presentError(e);
+                         });
     }
 
     public void bindPeripheral(@NonNull SensePeripheral peripheral) {
