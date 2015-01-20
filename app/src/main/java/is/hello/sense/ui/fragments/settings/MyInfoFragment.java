@@ -139,21 +139,21 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
         OnboardingRegisterGenderFragment fragment = new OnboardingRegisterGenderFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().showFragment(fragment, getString(R.string.label_dob), true);
+        getNavigationContainer().showFragment(fragment, getString(R.string.label_gender), true);
     }
 
     public void changeHeight() {
         OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().showFragment(fragment, getString(R.string.label_dob), true);
+        getNavigationContainer().showFragment(fragment, getString(R.string.label_height), true);
     }
 
     public void changeWeight() {
         OnboardingRegisterWeightFragment fragment = new OnboardingRegisterWeightFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().showFragment(fragment, getString(R.string.label_dob), true);
+        getNavigationContainer().showFragment(fragment, getString(R.string.label_weight), true);
     }
 
     public void changeTimeZone() {
