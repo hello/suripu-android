@@ -137,6 +137,7 @@ so you can sleep better.</string>
     <string name="error_bad_wifi_credentials">The wifi network credentials you entered are incorrect.</string>
     <string name="error_wifi_out_of_range">The wifi network you selected could not be found by Sense.</string>
     <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the wifi network you selected.</string>
+    <string name="error_network_failure">Operation could not be completed because your Sense does not have a Wi-Fi network connection.</string>
     <string name="title_device_signal_strength">Signal Strength</string>
     <string name="label_firmware_version">Firmware</string>
     <string name="signal_strong">Strong</string>

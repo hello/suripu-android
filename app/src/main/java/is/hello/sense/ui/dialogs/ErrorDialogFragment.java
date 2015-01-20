@@ -80,6 +80,9 @@ public class ErrorDialogFragment extends DialogFragment {
                     break;
 
                 case NETWORK_ERROR:
+                    message = context.getString(R.string.error_network_failure);
+                    break;
+
                 case WLAN_CONNECTION_ERROR:
                     message = context.getString(R.string.error_bad_wifi_credentials);
                     break;
