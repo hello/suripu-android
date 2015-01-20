@@ -209,6 +209,10 @@ public class ScaleView extends FrameLayout {
         }
     }
 
+    protected int getScaleHeight() {
+        return (tickView.getMeasuredHeight() - (scaleInset * 2));
+    }
+
     public void setMinValue(int minValue) {
         if (minValue == maxValue) {
             throw new IllegalArgumentException("minValue cannot equal maxValue");
@@ -231,7 +235,7 @@ public class ScaleView extends FrameLayout {
         post(() -> {
             int offset = (segmentSize * (normalizeValue(value) - minValue));
             if (orientation == VERTICAL) {
-                tickFillHost.scrollTo(0, offset);
+                tickFillHost.scrollTo(0, (getScaleHeight() - offset));
             } else {
                 tickFillHost.scrollTo(offset, 0);
             }
@@ -240,7 +244,7 @@ public class ScaleView extends FrameLayout {
     }
 
     public int getValue() {
-        int offset = (orientation == VERTICAL) ? tickFillHost.getScrollY() : tickFillHost.getScrollX();
+        int offset = (orientation == VERTICAL) ? (getScaleHeight() - tickFillHost.getScrollY()) : tickFillHost.getScrollX();
         return minValue + (offset / segmentSize);
     }
 
