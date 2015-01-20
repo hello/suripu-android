@@ -180,11 +180,11 @@ public final class Styles {
         int spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_outer);
         View topSpacing = new View(context);
         topSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
-        listView.addHeaderView(topSpacing, null, false);
+        ListViews.addHeaderView(listView, topSpacing, null, false);
 
         View bottomSpacing = new View(context);
         bottomSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
-        listView.addFooterView(bottomSpacing, null, false);
+        ListViews.addFooterView(listView, bottomSpacing, null, false);
     }
 
 

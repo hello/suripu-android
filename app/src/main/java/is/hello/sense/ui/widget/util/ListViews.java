@@ -1,9 +1,13 @@
 package is.hello.sense.ui.widget.util;
 
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.HeaderViewListAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 public final class ListViews {
@@ -56,6 +60,38 @@ public final class ListViews {
             int position = listView.getPositionForView(view);
             return Math.min(lastItem, position);
         }
+    }
+
+    /**
+     * Safe wrapper around ListView#addHeaderView that functions
+     * the same on versions of Android older than KitKat.
+     */
+    public static void addHeaderView(@NonNull ListView listView, @NonNull View v, @Nullable Object data, boolean isSelectable) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            ListAdapter adapter = listView.getAdapter();
+            if (adapter != null && !(adapter instanceof HeaderViewListAdapter)) {
+                HeaderViewListAdapter adapterWrapper = new HeaderViewListAdapter(null, null, adapter);
+                listView.setAdapter(adapterWrapper);
+            }
+        }
+
+        listView.addHeaderView(v, data, isSelectable);
+    }
+
+    /**
+     * Safe wrapper around ListView#addFooterView that functions
+     * the same on versions of Android older than KitKat.
+     */
+    public static void addFooterView(@NonNull ListView listView, @NonNull View v, @Nullable Object data, boolean isSelectable) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            ListAdapter adapter = listView.getAdapter();
+            if (adapter != null && !(adapter instanceof HeaderViewListAdapter)) {
+                HeaderViewListAdapter adapterWrapper = new HeaderViewListAdapter(null, null, adapter);
+                listView.setAdapter(adapterWrapper);
+            }
+        }
+
+        listView.addFooterView(v, data, isSelectable);
     }
 
 
