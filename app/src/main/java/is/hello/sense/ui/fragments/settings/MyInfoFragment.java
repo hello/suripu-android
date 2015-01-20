@@ -170,10 +170,11 @@ public class MyInfoFragment extends InjectionFragment implements AdapterView.OnI
 
     @Override
     public void onAccountUpdated(@NonNull AccountEditingFragment updatedBy) {
-        getFragmentManager().popBackStackImmediate();
-
-        LoadingDialogFragment.show(getFragmentManager());
-        accountPresenter.saveAccount(currentAccount);
+        updatedBy.getFragmentManager().popBackStackImmediate();
+        coordinator.postOnResume(() -> {
+            LoadingDialogFragment.show(getFragmentManager());
+            accountPresenter.saveAccount(currentAccount);
+        });
     }
 
 

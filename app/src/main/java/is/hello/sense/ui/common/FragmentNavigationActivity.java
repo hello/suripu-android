@@ -52,6 +52,10 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
                     Logger.warn(getClass().getSimpleName(), "Could not create fragment", e);
                 }
             }
+        } else {
+            String title = savedInstanceState.getString("title");
+            //noinspection ConstantConditions
+            getActionBar().setTitle(title);
         }
     }
 
@@ -63,6 +67,14 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //noinspection ConstantConditions
+        outState.putString("title", getActionBar().getTitle().toString());
     }
 
     @Override
