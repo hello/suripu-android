@@ -58,7 +58,7 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
                 getContainer().onAccountUpdated(this);
             });
         } else {
-            skipButton.setVisibility(View.INVISIBLE);
+            skipButton.setVisibility(View.GONE);
         }
 
         return view;
