@@ -25,6 +25,7 @@ import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
+import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Markdown;
@@ -75,14 +76,11 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
         Button answerQuestion = (Button) questionContainer.findViewById(R.id.sub_fragment_new_question_answer);
         Views.setSafeOnClickListener(answerQuestion, ignored -> answerQuestion());
 
-        // ListView doesn't re-layout if you set a header/footer's visibility to
-        // GONE, have to wrap the GONE view in question for re-layout to work.
         FrameLayout layoutFix = new FrameLayout(getActivity());
         layoutFix.addView(questionContainer);
-        listView.addHeaderView(layoutFix, null, false);
+        ListViews.addHeaderView(listView, layoutFix, null, false);
 
 
-        // Always do this after setting headers and footers.
         this.insightsAdapter = new InsightsAdapter(getActivity(), markdown, () -> swipeRefreshLayout.setRefreshing(false));
         listView.setAdapter(insightsAdapter);
 

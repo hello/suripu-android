@@ -130,23 +130,23 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
         dateText.setOnClickListener(ignored -> ((HomeActivity) getActivity()).showTimelineNavigator(getDate()));
 
-        listView.addHeaderView(headerView, null, false);
+        ListViews.addHeaderView(listView, headerView, null, false);
 
         this.beforeSleepHeader = (LinearLayout) inflater.inflate(R.layout.sub_fragment_before_sleep, listView, false);
         this.beforeSleepItemContainer = (LinearLayout) beforeSleepHeader.findViewById(R.id.fragment_timeline_before_sleep_container);
         this.beforeSleepMessage = (TextView) beforeSleepHeader.findViewById(R.id.fragment_timeline_before_sleep_message);
         Animations.Properties.DEFAULT.apply(beforeSleepHeader.getLayoutTransition(), false);
         beforeSleepHeader.setVisibility(View.GONE);
-        listView.addHeaderView(beforeSleepHeader, null, false);
+        ListViews.addHeaderView(listView, beforeSleepHeader, null, false);
 
         this.timelineEventsHeader = (TextView) inflater.inflate(R.layout.item_section_header, listView, false);
         timelineEventsHeader.setText(R.string.title_events_timeline);
         timelineEventsHeader.setVisibility(View.INVISIBLE);
-        listView.addHeaderView(timelineEventsHeader, null, false);
+        ListViews.addHeaderView(listView, timelineEventsHeader, null, false);
 
         View spacingFooter = new View(getActivity());
         spacingFooter.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.gap_outer));
-        listView.addFooterView(spacingFooter, null, false);
+        ListViews.addFooterView(listView, spacingFooter, null, false);
 
 
         this.menuButton = (ImageButton) headerView.findViewById(R.id.fragment_timeline_header_menu);
@@ -170,8 +170,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             startActivity(intent);
         });
 
-        // Always do this after adding headers and footer views,
-        // we have to support Android versions under 4.4 KitKat.
         listView.setAdapter(segmentAdapter);
         ListViews.setTouchAndScrollListener(listView, new TimelineScrollListener());
 

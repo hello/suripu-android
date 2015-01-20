@@ -13,12 +13,13 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import is.hello.sense.R;
+import is.hello.sense.functional.Functions;
+import is.hello.sense.functional.Lists;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Alarm extends ApiResponse {
@@ -185,9 +186,7 @@ public class Alarm extends ApiResponse {
         return daysOfWeek;
     }
 
-    public static
-    @NonNull
-    String nameForDayOfWeek(@NonNull Context context, int dayOfWeek) {
+    public static @NonNull String nameForDayOfWeek(@NonNull Context context, int dayOfWeek) {
         switch (dayOfWeek) {
             case DateTimeConstants.MONDAY:
                 return context.getString(R.string.day_monday);
@@ -216,16 +215,24 @@ public class Alarm extends ApiResponse {
     }
 
     public @NonNull String getDaysOfWeekSummary(@NonNull Context context) {
-        if (daysOfWeek == null || daysOfWeek.isEmpty()) {
-            return context.getString(R.string.smart_alarm_non_repeating);
+        if (Lists.isEmpty(daysOfWeek)) {
+            return context.getString(R.string.alarm_non_repeating);
         }
 
-        List<String> days = new ArrayList<>();
-        for (Integer dayOfWeek : daysOfWeek) {
-            days.add(nameForDayOfWeek(context, dayOfWeek));
+        List<Integer> orderedDays = Lists.sorted(daysOfWeek, (leftDay, rightDay) -> {
+            // Joda-Time considers Sunday to be day 7, which is generally
+            // not how it works in English speaking countries.
+            int leftCorrected = (leftDay == DateTimeConstants.SUNDAY) ? 0 : leftDay;
+            int rightCorrected = (rightDay == DateTimeConstants.SUNDAY) ? 0 : rightDay;
+            return Functions.compareInts(leftCorrected, rightCorrected);
+        });
+        List<String> days = Lists.map(orderedDays, day -> nameForDayOfWeek(context, day));
+        String daysString = TextUtils.join(context.getString(R.string.alarm_day_separator), days);
+        if (isSmart()) {
+            return context.getString(R.string.smart_alarm_days_repeat_prefix) + daysString;
+        } else {
+            return context.getString(R.string.alarm_days_repeat_prefix) + daysString;
         }
-
-        return context.getString(R.string.smart_alarm_days_repeat_prefix) + TextUtils.join(context.getString(R.string.smart_alarm_day_separator), days);
     }
 
     public Sound getSound() {
