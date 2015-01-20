@@ -316,8 +316,8 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         });
     }
 
-    public PropertyAnimatorProxy slideAndFade(float startDeltaY, float endDeltaY,
-                                              float startAlpha, float endAlpha) {
+    public PropertyAnimatorProxy slideYAndFade(float startDeltaY, float endDeltaY,
+                                               float startAlpha, float endAlpha) {
         return setOnAnimationWillStart(() -> {
             float y = view.getY();
             float startY = y + startDeltaY;
@@ -325,8 +325,25 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
 
             view.setAlpha(startAlpha);
             view.setY(startY);
+            view.setVisibility(View.VISIBLE);
 
             y(endY);
+            alpha(endAlpha);
+        });
+    }
+
+    public PropertyAnimatorProxy slideXAndFade(float startDeltaX, float endDeltaX,
+                                               float startAlpha, float endAlpha) {
+        return setOnAnimationWillStart(() -> {
+            float x = view.getX();
+            float startX = x + startDeltaX;
+            float endX = x + endDeltaX;
+
+            view.setAlpha(startAlpha);
+            view.setX(startX);
+            view.setVisibility(View.VISIBLE);
+
+            x(endX);
             alpha(endAlpha);
         });
     }

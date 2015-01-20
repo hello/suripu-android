@@ -12,10 +12,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 
 import com.squareup.seismic.ShakeDetector;
 
@@ -154,7 +151,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
 
     @Override
-    public void showFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
+    public void pushFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
         if (!wantsBackStackEntry) {
             getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
@@ -176,8 +173,25 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         getFragmentManager().executePendingTransactions();
     }
 
+    @Nullable
+    @Override
+    public Fragment getTopFragment() {
+        return getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+    }
+
     @Override
     public void onBackPressed() {
+        Fragment topFragment = getTopFragment();
+        if (topFragment instanceof BackInterceptingFragment) {
+            if (((BackInterceptingFragment) topFragment).onInterceptBack(this::back)) {
+                return;
+            }
+        }
+
+        back();
+    }
+
+    public void back() {
         if (getFragmentManager().getBackStackEntryCount() == 0) {
             SenseAlertDialog builder = new SenseAlertDialog(this);
             builder.setTitle(R.string.dialog_title_confirm_leave_onboarding);
@@ -244,15 +258,15 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void showIntroductionFragment() {
-        showFragment(new OnboardingIntroductionFragment(), null, false);
+        pushFragment(new OnboardingIntroductionFragment(), null, false);
     }
 
     public void showSignIn() {
-        showFragment(new OnboardingSignInFragment(), null, true);
+        pushFragment(new OnboardingSignInFragment(), null, true);
     }
 
     public void showRegistration() {
-        showFragment(new OnboardingRegisterFragment(), null, true);
+        pushFragment(new OnboardingRegisterFragment(), null, true);
     }
 
     public void showBirthday(@Nullable Account account) {
@@ -268,9 +282,9 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                     peripheral -> Logger.info(getClass().getSimpleName(), "Found and cached Sense " + peripheral),
                     Functions.LOG_ERROR);
 
-            showFragment(new OnboardingRegisterBirthdayFragment(), null, false);
+            pushFragment(new OnboardingRegisterBirthdayFragment(), null, false);
         } else {
-            showFragment(OnboardingBluetoothFragment.newInstance(true), null, false);
+            pushFragment(OnboardingBluetoothFragment.newInstance(true), null, false);
         }
     }
 
@@ -283,13 +297,13 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     @Override
     public void onAccountUpdated(@NonNull AccountEditingFragment updatedBy) {
         if (updatedBy instanceof OnboardingRegisterBirthdayFragment) {
-            showFragment(new OnboardingRegisterGenderFragment(), null, true);
+            pushFragment(new OnboardingRegisterGenderFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterGenderFragment) {
-            showFragment(new OnboardingRegisterHeightFragment(), null, true);
+            pushFragment(new OnboardingRegisterHeightFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterHeightFragment) {
-            showFragment(new OnboardingRegisterWeightFragment(), null, true);
+            pushFragment(new OnboardingRegisterWeightFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterWeightFragment) {
-            showFragment(new OnboardingRegisterLocationFragment(), null, true);
+            pushFragment(new OnboardingRegisterLocationFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterLocationFragment) {
             LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
             bindAndSubscribe(apiService.updateAccount(account), ignored -> {
@@ -305,7 +319,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void showEnhancedAudio() {
-        showFragment(new OnboardingRegisterAudioFragment(), null, false);
+        pushFragment(new OnboardingRegisterAudioFragment(), null, false);
     }
 
     public void showSetupSense() {
@@ -319,18 +333,18 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
             builder.setAnalyticsEvent(Analytics.EVENT_ONBOARDING_SENSE_SETUP);
             builder.setHelpStep(UserSupport.OnboardingStep.SETUP_SENSE);
-            showFragment(builder.toFragment(), null, false);
+            pushFragment(builder.toFragment(), null, false);
         } else {
-            showFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
+            pushFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
         }
     }
 
     public void showSelectWifiNetwork(boolean wantsBackStackEntry) {
-        showFragment(new OnboardingWifiNetworkFragment(), null, wantsBackStackEntry);
+        pushFragment(new OnboardingWifiNetworkFragment(), null, wantsBackStackEntry);
     }
 
     public void showSignIntoWifiNetwork(@Nullable SenseCommandProtos.wifi_endpoint network) {
-        showFragment(OnboardingSignIntoWifiFragment.newInstance(network), null, true);
+        pushFragment(OnboardingSignIntoWifiFragment.newInstance(network), null, true);
     }
 
     public void showPairPill() {
@@ -341,7 +355,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SENSE);
 
-        showFragment(new OnboardingPairPillFragment(), null, false);
+        pushFragment(new OnboardingPairPillFragment(), null, false);
     }
 
     private OnboardingSimpleStepFragment.Builder createSenseColorsBuilder() {
@@ -379,29 +393,29 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         builder.setNextFragmentArguments(createSenseColorsBuilder().toArguments());
         builder.setNextFragmentClass(OnboardingSimpleStepFragment.class);
 
-        showFragment(builder.toFragment(), null, true);
+        pushFragment(builder.toFragment(), null, true);
     }
 
     public void showSenseColorsInfo() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
 
-        showFragment(createSenseColorsBuilder().toFragment(), null, false);
+        pushFragment(createSenseColorsBuilder().toFragment(), null, false);
     }
 
     public void showSmartAlarmInfo() {
-        showFragment(new OnboardingSmartAlarmFragment(), null, false);
+        pushFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
     public void show2ndPillIntroduction() {
-        showFragment(new OnboardingSetup2ndPillFragment(), null, false);
+        pushFragment(new OnboardingSetup2ndPillFragment(), null, false);
     }
 
     public void show2ndPillPairing() {
-        showFragment(new Onboarding2ndPillInfoFragment(), null, true);
+        pushFragment(new Onboarding2ndPillInfoFragment(), null, true);
     }
 
     public void showDone() {
-        showFragment(new OnboardingDoneFragment(), null, false);
+        pushFragment(new OnboardingDoneFragment(), null, false);
     }
 
     //endregion
@@ -431,7 +445,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             case ANIMATION_ROOM_CHECK: {
                 return (container, onCompletion) -> {
                     animate(container)
-                            .slideAndFade(0f, getResources().getDimensionPixelSize(R.dimen.gap_outer), 1f, 0f)
+                            .slideYAndFade(0f, getResources().getDimensionPixelSize(R.dimen.gap_outer), 1f, 0f)
                             .addOnAnimationCompleted(finished -> onCompletion.run())
                             .start();
                 };

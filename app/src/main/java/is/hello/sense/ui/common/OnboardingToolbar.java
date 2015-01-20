@@ -6,16 +6,19 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Views;
 
 public class OnboardingToolbar {
     private final Fragment fragment;
-    private final View toolbarView;
+    private final FrameLayout toolbarView;
 
     private final View backButton;
     private final View helpButton;
@@ -28,7 +31,7 @@ public class OnboardingToolbar {
 
     private OnboardingToolbar(@NonNull Fragment fragment, @NonNull View toolbarView) {
         this.fragment = fragment;
-        this.toolbarView = toolbarView;
+        this.toolbarView = (FrameLayout) toolbarView;
 
         this.backButton = toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_back);
         Views.setSafeOnClickListener(backButton, this::onBack);
@@ -91,6 +94,14 @@ public class OnboardingToolbar {
         this.onHelpClickListener = onHelpClickListener;
         setWantsHelpButton(onHelpClickListener != null);
 
+        return this;
+    }
+
+    public OnboardingToolbar replaceHelpButton(@NonNull View view) {
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
+        toolbarView.removeViewAt(1);
+        toolbarView.addView(view, layoutParams);
         return this;
     }
 }

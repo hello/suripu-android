@@ -14,7 +14,7 @@ public class UsCustomaryUnitSystem extends UnitSystem {
 
     @Override
     public String formatMass(float mass) {
-        return UnitOperations.gramsToPounds((long) mass) + " lbs";
+        return UnitOperations.gramsToPounds((int) mass) + " lbs";
     }
 
     @Override

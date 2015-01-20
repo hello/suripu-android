@@ -22,6 +22,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -57,6 +58,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 .setHeadingText(R.string.title_pair_sense)
                 .setSubheadingText(R.string.info_pair_sense)
                 .setDiagramImage(R.drawable.onboarding_pair_sense)
+                .setDiagramEdgeToEdge(false)
                 .setSecondaryButtonText(R.string.action_sense_pairing_mode_help)
                 .setSecondaryOnClickListener(this::showPairingModeHelp)
                 .setPrimaryOnClickListener(this::next)
@@ -145,7 +147,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     public void showPairingModeHelp(@NonNull View sender) {
-        getOnboardingActivity().showFragment(new OnboardingSensePairingModeHelpFragment(), null, true);
+        getOnboardingActivity().pushFragment(new OnboardingSensePairingModeHelpFragment(), null, true);
     }
 
     public void next(@NonNull View sender) {
@@ -161,7 +163,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             dialog.setTitle(R.string.debug_title_confirm_sense_pair);
             dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
             dialog.setPositiveButton(android.R.string.ok, (sender, which) -> pairWith(device));
-            dialog.setNegativeButton(android.R.string.cancel, null);
+            dialog.setNegativeButton(android.R.string.cancel, (sender, which) -> LoadingDialogFragment.close(getFragmentManager()));
             dialog.show();
         } else {
             pairWith(device);

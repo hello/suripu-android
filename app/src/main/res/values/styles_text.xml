@@ -134,4 +134,22 @@
         <item name="android:textSize">@dimen/text_size_big_score</item>
     </style>
 
+    <style name="AppTheme.Text.ScaleReading">
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textColor">@color/light_accent</item>
+        <item name="android:textSize">@dimen/text_size_scale_reading</item>
+    </style>
+
+    <style name="AppTheme.Text.Birthday">
+        <item name="android:gravity">center</item>
+
+        <item name="android:minHeight">@dimen/edit_text_min_height</item>
+        <item name="android:padding">@dimen/gap_medium</item>
+
+        <item name="android:background">@drawable/edit_text_background_normal</item>
+
+        <item name="android:textSize">@dimen/text_size_heading</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
 </resources>

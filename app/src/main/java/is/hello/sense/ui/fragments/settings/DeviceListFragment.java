@@ -102,7 +102,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         if (device.exists()) {
             DeviceDetailsFragment fragment = DeviceDetailsFragment.newInstance(device);
             fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
-            ((FragmentNavigation) getActivity()).showFragment(fragment, getString(device.getType().nameRes), true);
+            ((FragmentNavigation) getActivity()).pushFragment(fragment, getString(device.getType().nameRes), true);
         }
     }
 

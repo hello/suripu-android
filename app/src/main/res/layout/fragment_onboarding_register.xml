@@ -9,6 +9,7 @@
     <include layout="@layout/sub_fragment_onboarding_toolbar" />
 
     <ScrollView
+        android:id="@+id/fragment_onboarding_register_scroll_view"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -17,6 +18,7 @@
         style="@style/AppTheme.FadingScrollView">
 
         <LinearLayout
+            android:id="@+id/fragment_onboarding_register_credentials"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/gap_outer"
@@ -25,9 +27,11 @@
             android:paddingBottom="@dimen/gap_small"
             android:orientation="vertical"
             android:background="@color/background_onboarding"
-            android:gravity="center">
+            android:gravity="center"
+            android:animateLayoutChanges="true">
 
             <TextView
+                android:id="@+id/fragment_onboarding_register_heading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/gap_medium"

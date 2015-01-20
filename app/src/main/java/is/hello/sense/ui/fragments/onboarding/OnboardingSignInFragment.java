@@ -1,13 +1,16 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
@@ -45,7 +48,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_sign_in, container, false);
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_onboarding_sign_in, container, false);
 
         this.emailText = (EditText) view.findViewById(R.id.fragment_onboarding_email);
         this.passwordText = (EditText) view.findViewById(R.id.fragment_onboarding_password);
@@ -54,9 +57,14 @@ public class OnboardingSignInFragment extends InjectionFragment {
         Button signIn = (Button) view.findViewById(R.id.fragment_onboarding_sign_in_go);
         Views.setSafeOnClickListener(signIn, ignored -> signIn());
 
+        Button forgotPassword = (Button) view.findViewById(R.id.fragment_onboarding_sign_in_forgot_password);
+        forgotPassword.setOnClickListener(this::forgotPassword);
+        view.removeView(forgotPassword);
+
         OnboardingToolbar.of(this, view)
                 .setWantsBackButton(true)
-                .setWantsHelpButton(true);
+                .setWantsHelpButton(true)
+                .replaceHelpButton(forgotPassword);
 
         return view;
     }
@@ -96,5 +104,8 @@ public class OnboardingSignInFragment extends InjectionFragment {
                 ErrorDialogFragment.presentError(getFragmentManager(), error);
             }
         });
+    }
+
+    public void forgotPassword(@NonNull View sender) {
     }
 }

@@ -329,7 +329,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                     for (View child : Views.children(endContainer)) {
                         animate(child)
                                 .setStartDelay(delay)
-                                .slideAndFade(slideAmount, 0f, 0f, 1f)
+                                .slideYAndFade(slideAmount, 0f, 0f, 1f)
                                 .start();
 
                         delay -= END_CONTAINER_DELAY_MS;

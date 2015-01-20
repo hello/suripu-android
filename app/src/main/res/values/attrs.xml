@@ -18,4 +18,19 @@
     <declare-styleable name="SenseHtmlTextView">
         <attr name="senseHtml" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="ScaleView">
+        <attr name="scaleOrientation" format="enum">
+            <enum name="vertical" value="0" />
+            <enum name="horizontal" value="1" />
+        </attr>
+        <attr name="scaleMinValue" format="integer" />
+        <attr name="scaleMaxValue" format="integer" />
+        <attr name="scaleValue" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="PanImageView">
+        <attr name="panImage" format="reference" />
+        <attr name="panAmount" format="float" />
+    </declare-styleable>
 </resources>
