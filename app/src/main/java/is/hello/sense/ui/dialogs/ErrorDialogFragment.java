@@ -53,7 +53,12 @@ public class ErrorDialogFragment extends DialogFragment {
         } else if (e instanceof OperationTimeoutError) {
             message = context.getString(R.string.error_generic_bluetooth_timeout);
         } else if (e instanceof PeripheralBondAlterationError) {
-            message = context.getString(R.string.error_bluetooth_bonding_change_fmt, e.toString());
+            int failureReason = ((PeripheralBondAlterationError) e).reason;
+            if (failureReason == PeripheralBondAlterationError.REASON_REMOTE_DEVICE_DOWN) {
+                message = context.getString(R.string.error_bluetooth_out_of_range);
+            } else {
+                message = context.getString(R.string.error_bluetooth_bonding_change_fmt, e.toString());
+            }
         } else if (e instanceof PeripheralConnectionError) {
             message = context.getString(R.string.error_bluetooth_no_connection);
         } else if (e instanceof PeripheralServiceDiscoveryFailedError) {
