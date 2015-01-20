@@ -60,11 +60,6 @@ public class ScaleView extends FrameLayout {
         this(context, null);
     }
 
-    public ScaleView(Context context, int orientation) {
-        super(context);
-        initialize(orientation, 0);
-    }
-
     public ScaleView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
@@ -89,7 +84,6 @@ public class ScaleView extends FrameLayout {
     }
 
     protected void initialize(int orientation, int initialValue) {
-        this.orientation = orientation;
         if (orientation == VERTICAL) {
             this.tickFillHost = new ScrollView(getContext()) {
                 @Override
@@ -113,6 +107,7 @@ public class ScaleView extends FrameLayout {
         } else {
             throw new IllegalArgumentException();
         }
+        this.orientation = orientation;
 
         Resources resources = getResources();
 
