@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
@@ -130,6 +131,11 @@ public class ChangePasswordFragment extends InjectionFragment {
 
     public void presentError(@Nullable Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        if (ApiException.statusEquals(e, 409)) {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_message_current_pw_wrong));
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
     }
 }

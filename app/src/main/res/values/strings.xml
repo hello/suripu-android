@@ -333,4 +333,5 @@ so you can sleep better.</string>
     <string name="hint_month">MM</string>
     <string name="hint_day">DD</string>
     <string name="hint_year">YYYY</string>
+    <string name="error_message_current_pw_wrong">The current password you entered is incorrect.</string>
 </resources>
