@@ -229,7 +229,7 @@ public class ScaleView extends FrameLayout {
 
     public void setValueAsync(int value) {
         post(() -> {
-            int offset = scaleInset + (segmentSize * (normalizeValue(value) - minValue));
+            int offset = (segmentSize * (normalizeValue(value) - minValue));
             if (orientation == VERTICAL) {
                 tickFillHost.scrollTo(0, offset);
             } else {
@@ -240,8 +240,7 @@ public class ScaleView extends FrameLayout {
     }
 
     public int getValue() {
-        int rawOffset = (orientation == VERTICAL) ? tickFillHost.getScrollY() : tickFillHost.getScrollX();
-        int offset = rawOffset - scaleInset;
+        int offset = (orientation == VERTICAL) ? tickFillHost.getScrollY() : tickFillHost.getScrollX();
         return minValue + (offset / segmentSize);
     }
 

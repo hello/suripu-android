@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import is.hello.sense.R;
@@ -17,7 +16,6 @@ import is.hello.sense.ui.widget.ScaleView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
 
 public class OnboardingRegisterWeightFragment extends AccountEditingFragment implements ScaleView.OnValueChangedListener {
