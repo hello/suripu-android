@@ -312,7 +312,7 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
                 UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
                 fragment.show(getFragmentManager(), R.id.activity_fragment_navigation_container);
             } else if (e instanceof PeripheralNotFoundError) {
-                showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_troubleshoot, ignored -> {});
+                showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_retry, ignored -> connectToPeripheral());
             } else {
                 ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
             }
