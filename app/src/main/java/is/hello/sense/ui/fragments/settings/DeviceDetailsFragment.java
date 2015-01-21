@@ -39,6 +39,7 @@ import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
@@ -113,7 +114,7 @@ public class DeviceDetailsFragment extends HardwareFragment implements FragmentN
         this.actionsContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_actions);
 
         TextView footer = (TextView) view.findViewById(R.id.sub_fragment_device_footer);
-        footer.setMovementMethod(LinkMovementMethod.getInstance());
+        Views.makeTextViewLinksClickable(footer);
 
         if (device.getType() == Device.Type.PILL) {
             showSleepPillActions();

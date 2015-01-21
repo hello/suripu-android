@@ -2,10 +2,15 @@ package is.hello.sense.ui.widget.util;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.TextView;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -65,6 +70,8 @@ public final class Views {
     }
 
 
+    //region Child Iterator
+
     public static Iterable<View> children(@NonNull ViewGroup view) {
         return new Iterable<View>() {
             @Override
@@ -105,5 +112,40 @@ public final class Views {
 
     public static void setSafeOnClickListener(@NonNull View view, @NonNull View.OnClickListener onClickListener) {
         view.setOnClickListener(new SafeOnClickListener(onClickListener));
+    }
+
+    //endregion
+
+
+    public static void makeTextViewLinksClickable(@NonNull TextView textView) {
+        // From <http://stackoverflow.com/questions/8558732/listview-textview-with-linkmovementmethod-makes-list-item-unclickable>
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        textView.setOnTouchListener((v, event) -> {
+            Spannable spannableText = Spannable.Factory.getInstance().newSpannable(textView.getText());
+            int action = event.getAction();
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_DOWN) {
+                int x = (int) event.getX();
+                int y = (int) event.getY();
+
+                x -= textView.getTotalPaddingLeft();
+                y -= textView.getTotalPaddingTop();
+
+                x += textView.getScrollX();
+                y += textView.getScrollY();
+
+                Layout layout = textView.getLayout();
+                int line = layout.getLineForVertical(y);
+                int off = layout.getOffsetForHorizontal(line, x);
+
+                ClickableSpan[] link = spannableText.getSpans(off, off, ClickableSpan.class);
+                if (link.length != 0) {
+                    if (action == MotionEvent.ACTION_UP) {
+                        link[0].onClick(textView);
+                    }
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 }

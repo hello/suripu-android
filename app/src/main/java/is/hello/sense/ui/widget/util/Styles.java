@@ -3,7 +3,6 @@ package is.hello.sense.ui.widget.util;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.ColorRes;
@@ -23,11 +22,6 @@ import is.hello.sense.api.model.TimelineSegment;
 
 public final class Styles {
     public static final int TIMELINE_HOURS_ON_SCREEN = 10;
-
-
-    public static @NonNull Typeface getTypeface(@NonNull Context context, @NonNull String typeface) {
-        return Typeface.createFromAsset(context.getAssets(), typeface);
-    }
 
 
     public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth) {
