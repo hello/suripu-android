@@ -16,13 +16,14 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 import static android.widget.LinearLayout.LayoutParams;
@@ -50,10 +51,16 @@ public class AppSettingsFragment extends InjectionFragment {
 
         this.itemContainer = (LinearLayout) view.findViewById(R.id.fragment_app_settings_container);
         addItem(R.string.label_account, true, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account, null));
-        addItem(R.string.label_units_and_time, true, ignored -> showFragment(R.xml.settings_units_and_time, R.string.label_units_and_time));
         addItem(R.string.label_devices, true, ignored -> showFragment(DeviceListFragment.class, R.string.label_devices, null));
-        addItem(R.string.action_help, true, this::showHelp);
+        addItem(R.string.label_notifications, true, ignored -> {});
+        addItem(R.string.label_units_and_time, true, ignored -> showFragment(R.xml.settings_units_and_time, R.string.label_units_and_time));
         addItem(R.string.action_log_out, false, this::logOut);
+
+        TextView footer = (TextView) view.findViewById(R.id.sub_fragment_device_footer);
+        Views.makeTextViewLinksClickable(footer);
+
+        TextView version = (TextView) view.findViewById(R.id.fragment_app_settings_version);
+        version.setText(getString(R.string.app_version_fmt, getString(R.string.app_name), BuildConfig.VERSION_NAME));
 
         return view;
     }
@@ -85,10 +92,6 @@ public class AppSettingsFragment extends InjectionFragment {
     private void showFragment(@XmlRes int prefsRes,
                               @StringRes int titleRes) {
         showFragment(StaticPreferencesFragment.class, titleRes, StaticPreferencesFragment.getArguments(prefsRes));
-    }
-
-    public void showHelp(@NonNull View sender) {
-        UserSupport.show(getActivity());
     }
 
     public void logOut(@NonNull View sender) {

@@ -30,6 +30,7 @@ import is.hello.sense.ui.adapter.DevicesAdapter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
@@ -70,7 +71,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         Styles.addCardSpacingHeaderAndFooter(listView);
         TextView footer = (TextView) inflater.inflate(R.layout.sub_fragment_device_footer, listView, false);
         Views.makeTextViewLinksClickable(footer);
-        listView.addFooterView(footer, null, false);
+        ListViews.addFooterView(listView, footer, null, false);
         listView.setAdapter(adapter);
 
 
