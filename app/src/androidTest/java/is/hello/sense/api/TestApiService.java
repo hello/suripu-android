@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
@@ -97,8 +98,13 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<AccountPreference> updatePreference(@NonNull @Body AccountPreference preference) {
-        return null;
+    public Observable<AccountPreference> updateAccountPreference(@NonNull @Body AccountPreference preference) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<HashMap<AccountPreference.Key, Object>> accountPreferences() {
+        return unimplemented();
     }
 
     @Override

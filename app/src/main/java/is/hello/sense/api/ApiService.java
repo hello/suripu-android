@@ -3,6 +3,7 @@ package is.hello.sense.api;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
@@ -77,8 +78,11 @@ public interface ApiService {
     @POST("/account/email")
     Observable<VoidResponse> updateEmailAddress(@NonNull @Body Account account);
 
+    @GET("/preferences")
+    Observable<HashMap<AccountPreference.Key, Object>> accountPreferences();
+
     @PUT("/preferences")
-    Observable<AccountPreference> updatePreference(@NonNull @Body AccountPreference preference);
+    Observable<AccountPreference> updateAccountPreference(@NonNull @Body AccountPreference preference);
 
     //endregion
 

@@ -29,7 +29,6 @@ import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
-import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
 
@@ -48,7 +47,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_piru_pea);
+        setContentView(R.layout.list_view_static);
 
         this.listView = (ListView) findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
@@ -58,20 +57,20 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
         this.peripheralActions = new StaticItemAdapter(this);
 
-        peripheralActions.addItem("Disconnect", null, this::disconnect);
-        peripheralActions.addItem("Pairing Mode", null, this::putIntoPairingMode);
-        peripheralActions.addItem("Normal Mode", null, this::putIntoNormalMode);
-        peripheralActions.addItem("Clear Paired Phone", null, this::clearPairedPhone);
-        peripheralActions.addItem("Device Factory Reset", null, this::factoryReset);
-        peripheralActions.addItem("Get WiFi Network", null, this::getWifiNetwork);
-        peripheralActions.addItem("Set WiFi Network", null, this::setWifiNetwork);
-        peripheralActions.addItem("Pair Pill Mode", null, this::pairPillMode);
-        peripheralActions.addItem("Link Account", null, this::linkAccount);
-        peripheralActions.addItem("Push Data", null, this::pushData);
-        peripheralActions.addItem("Busy LEDs", null, this::busyLedAnimation);
-        peripheralActions.addItem("Trippy LEDs", null, this::trippyLedAnimation);
-        peripheralActions.addItem("Fade Out LEDs", null, this::stopAnimationWithFade);
-        peripheralActions.addItem("Turn Off LEDs", null, this::stopAnimationWithoutFade);
+        peripheralActions.addTextItem("Disconnect", null, this::disconnect);
+        peripheralActions.addTextItem("Pairing Mode", null, this::putIntoPairingMode);
+        peripheralActions.addTextItem("Normal Mode", null, this::putIntoNormalMode);
+        peripheralActions.addTextItem("Clear Paired Phone", null, this::clearPairedPhone);
+        peripheralActions.addTextItem("Device Factory Reset", null, this::factoryReset);
+        peripheralActions.addTextItem("Get WiFi Network", null, this::getWifiNetwork);
+        peripheralActions.addTextItem("Set WiFi Network", null, this::setWifiNetwork);
+        peripheralActions.addTextItem("Pair Pill Mode", null, this::pairPillMode);
+        peripheralActions.addTextItem("Link Account", null, this::linkAccount);
+        peripheralActions.addTextItem("Push Data", null, this::pushData);
+        peripheralActions.addTextItem("Busy LEDs", null, this::busyLedAnimation);
+        peripheralActions.addTextItem("Trippy LEDs", null, this::trippyLedAnimation);
+        peripheralActions.addTextItem("Fade Out LEDs", null, this::stopAnimationWithFade);
+        peripheralActions.addTextItem("Turn Off LEDs", null, this::stopAnimationWithoutFade);
     }
 
     @Override
@@ -119,13 +118,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
     public void presentError(Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
-
-        if (hardwarePresenter.isErrorFatal(e)) {
-            UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
-            fragment.show(getFragmentManager(), R.id.activity_piru_pea_container);
-        } else {
-            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), this, e);
-        }
+        ErrorDialogFragment.presentBluetoothError(getFragmentManager(), this, e);
     }
 
     //endregion

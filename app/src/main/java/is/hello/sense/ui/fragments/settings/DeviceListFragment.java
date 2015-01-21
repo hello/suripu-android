@@ -4,12 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Layout;
-import android.text.Spannable;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -30,6 +25,7 @@ import is.hello.sense.ui.adapter.DevicesAdapter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
@@ -68,9 +64,9 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         adapter.setOnPairNewDeviceListener(this);
 
         Styles.addCardSpacingHeaderAndFooter(listView);
-        TextView footer = (TextView) inflater.inflate(R.layout.sub_fragment_device_footer, listView, false);
+        TextView footer = (TextView) inflater.inflate(R.layout.footer_help, listView, false);
         Views.makeTextViewLinksClickable(footer);
-        listView.addFooterView(footer, null, false);
+        ListViews.addFooterView(listView, footer, null, false);
         listView.setAdapter(adapter);
 
 

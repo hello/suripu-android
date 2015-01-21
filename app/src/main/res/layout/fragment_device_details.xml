@@ -68,6 +68,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/gap_outer"
         android:layout_marginBottom="@dimen/gap_outer"
-        layout="@layout/sub_fragment_device_footer" />
+        layout="@layout/footer_help" />
 
 </LinearLayout>

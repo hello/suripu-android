@@ -1,105 +1,204 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import is.hello.sense.R;
 
 public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     private final LayoutInflater layoutInflater;
-    private int valueMaxLength = Integer.MAX_VALUE;
+    private final Resources resources;
 
     public StaticItemAdapter(Context context) {
-        super(context, R.layout.item_simple_horizontal);
+        super(context, R.layout.item_static_text);
 
         this.layoutInflater = LayoutInflater.from(context);
+        this.resources = context.getResources();
     }
 
-    public Item addItem(@NonNull String title, @Nullable String value, @Nullable Runnable action) {
-        Item item = new Item(title, value, action);
+
+    //region Adding Items
+
+    public Item addSectionTitle(@NonNull String title) {
+        Item item = new Item(title, null);
         add(item);
         return item;
     }
 
-    public Item addItem(@NonNull String title, @Nullable String value) {
-        Item item = new Item(title, value, null);
+    public Item addSectionTitle(@StringRes int titleRes) {
+        return addSectionTitle(resources.getString(titleRes));
+    }
+
+    public TextItem addTextItem(@NonNull String title, @Nullable String value, @Nullable Runnable action) {
+        TextItem item = new TextItem(title, value, action);
         add(item);
         return item;
     }
 
-    public int getValueMaxLength() {
-        return valueMaxLength;
+    public TextItem addTextItem(@StringRes int titleRes, @StringRes int valueRes, @Nullable Runnable action) {
+        return addTextItem(resources.getString(titleRes), resources.getString(valueRes), action);
     }
 
-    public void setValueMaxLength(int valueMaxLength) {
-        this.valueMaxLength = valueMaxLength;
-        notifyDataSetChanged();
+    public TextItem addTextItem(@NonNull String title, @Nullable String value) {
+        TextItem item = new TextItem(title, value, null);
+        add(item);
+        return item;
+    }
+
+    public TextItem addTextItem(@StringRes int titleRes, @StringRes int valueRes) {
+        return addTextItem(resources.getString(titleRes), resources.getString(valueRes));
+    }
+
+    public CheckItem addCheckItem(@NonNull String title, boolean checked, @Nullable Runnable action) {
+        CheckItem item = new CheckItem(title, checked, action);
+        add(item);
+        return item;
+    }
+
+    public CheckItem addCheckItem(@StringRes int titleRes, boolean checked, @Nullable Runnable action) {
+        return addCheckItem(resources.getString(titleRes), checked, action);
+    }
+
+    //endregion
+
+
+    //region Views
+
+    @Override
+    public int getViewTypeCount() {
+        return ItemType.values().length;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        Item item = getItem(position);
+        return item.getType().ordinal();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
-        if (view == null) {
-            view = layoutInflater.inflate(R.layout.item_simple_horizontal, parent, false);
-            view.setTag(new ViewHolder(view));
-        }
-
         Item item = getItem(position);
-        ViewHolder holder = (ViewHolder) view.getTag();
-        holder.title.setText(item.title);
-        if (item.value != null && item.value.length() > getValueMaxLength())
-            holder.detail.setText(item.value.substring(0, getValueMaxLength()) + "…");
-        else
-            holder.detail.setText(item.value);
+        ItemType type = item.getType();
+
+        switch (type) {
+            case SECTION_TITLE: {
+                if (view == null) {
+                    view = layoutInflater.inflate(R.layout.item_section_title, parent, false);
+                    view.setTag(new SectionItemViewHolder(view));
+                }
+
+                SectionItemViewHolder holder = (SectionItemViewHolder) view.getTag();
+                holder.title.setText(item.getTitle());
+                if (position == 0) {
+                    holder.divider.setVisibility(View.GONE);
+                } else {
+                    holder.divider.setVisibility(View.VISIBLE);
+                }
+
+                break;
+            }
+
+            case TEXT_ITEM: {
+                if (view == null) {
+                    view = layoutInflater.inflate(R.layout.item_static_text, parent, false);
+                    view.setTag(new TextItemViewHolder(view));
+                }
+
+                TextItem textItem = (TextItem) item;
+                TextItemViewHolder holder = (TextItemViewHolder) view.getTag();
+                holder.title.setText(textItem.getTitle());
+                holder.detail.setText(textItem.getDetail());
+
+                break;
+            }
+
+            case CHECK_ITEM: {
+                if (view == null) {
+                    view = layoutInflater.inflate(R.layout.item_static_check, parent, false);
+                    view.setTag(new CheckItemViewHolder(view));
+                }
+
+                CheckItem checkItem = (CheckItem) item;
+                CheckItemViewHolder holder = (CheckItemViewHolder) view.getTag();
+                holder.title.setText(checkItem.getTitle());
+                holder.check.setChecked(checkItem.isChecked());
+
+                break;
+            }
+
+            default: {
+                throw new IllegalArgumentException("Unknown type " + type);
+            }
+        }
 
         return view;
     }
 
-    private class ViewHolder {
-        private final TextView title;
-        private final TextView detail;
+    static class SectionItemViewHolder {
+        final View divider;
+        final TextView title;
 
-        private ViewHolder(@NonNull View view) {
-            this.title = (TextView) view.findViewById(R.id.list_horizontal_item_title);
-            this.detail = (TextView) view.findViewById(R.id.list_horizontal_item_detail);
+        SectionItemViewHolder(@NonNull View view) {
+            this.divider = view.findViewById(R.id.item_section_title_divider);
+            this.title = (TextView) view.findViewById(R.id.item_section_title_text);
         }
     }
 
+    static class TextItemViewHolder {
+        final TextView title;
+        final TextView detail;
 
-    public class Item {
-        private String title;
-        private String value;
+        TextItemViewHolder(@NonNull View view) {
+            this.title = (TextView) view.findViewById(R.id.item_static_text_title);
+            this.detail = (TextView) view.findViewById(R.id.item_static_text_detail);
+        }
+    }
+
+    static class CheckItemViewHolder {
+        final TextView title;
+        final CheckBox check;
+
+        CheckItemViewHolder(@NonNull View view) {
+            this.title = (TextView) view.findViewById(R.id.item_static_check_title);
+            this.check = (CheckBox) view.findViewById(R.id.item_static_check_box);
+        }
+    }
+
+    //endregion
+
+
+    public static class Item {
+        private final ItemType type;
+        private final String title;
         private Runnable action;
 
-        public Item(@NonNull String title, @Nullable String value, @Nullable Runnable action) {
+        protected Item(ItemType type, String title, Runnable action) {
+            this.type = type;
             this.title = title;
-            this.value = value;
             this.action = action;
         }
 
+        public Item(@NonNull String title, @Nullable Runnable action) {
+            this(ItemType.SECTION_TITLE, title, action);
+        }
+
+
+        public ItemType getType() {
+            return type;
+        }
 
         public String getTitle() {
             return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-            notifyDataSetChanged();
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-            notifyDataSetChanged();
         }
 
         public Runnable getAction() {
@@ -109,5 +208,49 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
         public void setAction(Runnable action) {
             this.action = action;
         }
+    }
+
+    public class TextItem extends Item {
+        private String detail;
+
+        public TextItem(@NonNull String title, @Nullable String detail, @Nullable Runnable action) {
+            super(ItemType.TEXT_ITEM, title, action);
+            this.detail = detail;
+        }
+
+        public String getDetail() {
+            return detail;
+        }
+
+        public void setDetail(String detail) {
+            this.detail = detail;
+            notifyDataSetChanged();
+        }
+    }
+
+    public class CheckItem extends Item {
+        private boolean checked;
+
+        public CheckItem(@NonNull String title, boolean checked, @Nullable Runnable action) {
+            super(ItemType.CHECK_ITEM, title, action);
+
+            this.checked = checked;
+        }
+
+        public boolean isChecked() {
+            return checked;
+        }
+
+        public void setChecked(boolean checked) {
+            this.checked = checked;
+            notifyDataSetChanged();
+        }
+    }
+
+
+    public static enum ItemType {
+        SECTION_TITLE,
+        TEXT_ITEM,
+        CHECK_ITEM,
     }
 }

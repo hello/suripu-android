@@ -58,7 +58,6 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
 
 
         this.buildInfoItems = new StaticItemAdapter(this);
-        buildInfoItems.setValueMaxLength(30);
         populateBuildInfoItems();
 
         this.debugActionItems = new StaticItemAdapter(this);
@@ -80,23 +79,23 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     private void populateBuildInfoItems() {
         try {
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            buildInfoItems.addItem("App Version", packageInfo.versionName);
-            buildInfoItems.addItem("Build Number", Integer.toString(packageInfo.versionCode));
+            buildInfoItems.addTextItem("App Version", packageInfo.versionName);
+            buildInfoItems.addTextItem("Build Number", Integer.toString(packageInfo.versionCode));
         } catch (PackageManager.NameNotFoundException e) {
             Logger.debug(DebugActivity.class.getSimpleName(), "Could not look up app version", e);
         }
-        buildInfoItems.addItem("Build Type", buildValues.type);
-        buildInfoItems.addItem("Device Model", Build.MODEL);
-        buildInfoItems.addItem("BLE Device Support", bluetoothStack.getDeviceSupportLevel().toString());
-        buildInfoItems.addItem("BLE Stack Traits", TextUtils.join(", ", bluetoothStack.getTraits()));
-        buildInfoItems.addItem("Access Token", sessionManager.getAccessToken());
-        buildInfoItems.addItem("GCM ID", getSharedPreferences(Constants.NOTIFICATION_PREFS, 0).getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, "<none>"));
-        buildInfoItems.addItem("Host", currentEnvironment.baseUrl);
-        buildInfoItems.addItem("Client ID", currentEnvironment.clientId);
+        buildInfoItems.addTextItem("Build Type", buildValues.type);
+        buildInfoItems.addTextItem("Device Model", Build.MODEL);
+        buildInfoItems.addTextItem("BLE Device Support", bluetoothStack.getDeviceSupportLevel().toString());
+        buildInfoItems.addTextItem("BLE Stack Traits", TextUtils.join(", ", bluetoothStack.getTraits()));
+        buildInfoItems.addTextItem("Access Token", sessionManager.getAccessToken());
+        buildInfoItems.addTextItem("GCM ID", getSharedPreferences(Constants.NOTIFICATION_PREFS, 0).getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, "<none>"));
+        buildInfoItems.addTextItem("Host", currentEnvironment.baseUrl);
+        buildInfoItems.addTextItem("Client ID", currentEnvironment.clientId);
     }
 
     private void populateDebugActionItems() {
-        debugActionItems.addItem("Piru-Pea", null, () -> {
+        debugActionItems.addTextItem("Piru-Pea", null, () -> {
             try {
                 startActivity(new Intent(this, Class.forName("is.hello.sense.debug.PiruPeaActivity")));
             } catch (ClassNotFoundException e) {
@@ -104,12 +103,12 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
                 dialog.show(getFragmentManager(), MessageDialogFragment.TAG);
             }
         });
-        debugActionItems.addItem("Set Environment", currentEnvironment.toString(), this::changeEnvironment);
-        debugActionItems.addItem("View Log", null, this::viewLog);
-        debugActionItems.addItem("Clear Log", null, this::clearLog);
-        debugActionItems.addItem("Share Log", null, this::sendLog);
-        debugActionItems.addItem("Clear Http Cache", null, this::clearHttpCache);
-        debugActionItems.addItem("Clear OAuth Session", null, this::clearOAuthSession);
+        debugActionItems.addTextItem("Set Environment", currentEnvironment.toString(), this::changeEnvironment);
+        debugActionItems.addTextItem("View Log", null, this::viewLog);
+        debugActionItems.addTextItem("Clear Log", null, this::clearLog);
+        debugActionItems.addTextItem("Share Log", null, this::sendLog);
+        debugActionItems.addTextItem("Clear Http Cache", null, this::clearHttpCache);
+        debugActionItems.addTextItem("Clear OAuth Session", null, this::clearOAuthSession);
     }
 
 
@@ -171,11 +170,11 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        StaticItemAdapter.Item item = (StaticItemAdapter.Item) adapterView.getItemAtPosition(position);
+        StaticItemAdapter.TextItem item = (StaticItemAdapter.TextItem) adapterView.getItemAtPosition(position);
         if (item.getAction() != null) {
             item.getAction().run();
         } else {
-            String value = item.getTitle() + ": " + item.getValue();
+            String value = item.getTitle() + ": " + item.getDetail();
             ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
             clipboardManager.setPrimaryClip(ClipData.newPlainText(item.getTitle(), value));
             Toast.makeText(getApplicationContext(), "Copied to Clipboard", Toast.LENGTH_SHORT).show();
