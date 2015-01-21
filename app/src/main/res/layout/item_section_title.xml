@@ -7,6 +7,7 @@
     <View
         android:id="@+id/item_section_title_divider"
         android:layout_marginTop="@dimen/gap_large"
+        android:layout_marginBottom="@dimen/gap_medium"
         style="@style/Divider.Horizontal" />
 
     <TextView
