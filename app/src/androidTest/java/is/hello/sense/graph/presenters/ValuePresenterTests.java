@@ -1,7 +1,6 @@
 package is.hello.sense.graph.presenters;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 
 import junit.framework.TestCase;
 
@@ -54,13 +53,10 @@ public class ValuePresenterTests extends TestCase {
         presenter.update();
         observer.await();
 
-        Parcelable savedState = presenter.onSaveState();
+        Bundle savedState = presenter.onSaveState();
         assertNotNull(savedState);
-        assertTrue(savedState instanceof Bundle);
-
-        Bundle bundle = (Bundle) savedState;
-        assertTrue(bundle.containsKey(ValuePresenter.SAVED_STATE_KEY));
-        assertEquals(observer.getSingle(), bundle.getSerializable(ValuePresenter.SAVED_STATE_KEY));
+        assertTrue(savedState.containsKey(ValuePresenter.SAVED_STATE_KEY));
+        assertEquals(observer.getSingle(), savedState.getSerializable(ValuePresenter.SAVED_STATE_KEY));
     }
 
     public void testOnRestoreStateLogic() throws Exception {

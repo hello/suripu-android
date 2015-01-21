@@ -1,6 +1,7 @@
 package is.hello.sense.graph.presenters;
 
 import android.content.ComponentCallbacks2;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -84,12 +85,12 @@ public abstract class Presenter {
         return stateRestored;
     }
 
-    public void onRestoreState(@NonNull Parcelable savedState) {
+    public void onRestoreState(@NonNull Bundle savedState) {
         logEvent("onRestoreState(" + savedState + ")");
         this.stateRestored = true;
     }
 
-    public @Nullable Parcelable onSaveState() {
+    public @Nullable Bundle onSaveState() {
         logEvent("onSaveState()");
         return null;
     }

@@ -47,7 +47,7 @@ public class PresenterContainer {
     }
 
     /**
-     * @see is.hello.sense.graph.presenters.Presenter#onRestoreState(android.os.Parcelable)
+     * @see is.hello.sense.graph.presenters.Presenter#onRestoreState(android.os.Bundle)
      */
     public void onRestoreState(@NonNull Bundle inState) {
         for (Presenter presenter : presenters) {
@@ -55,7 +55,7 @@ public class PresenterContainer {
                 continue;
             }
 
-            Parcelable savedState = inState.getParcelable(presenter.getSavedStateKey());
+            Bundle savedState = inState.getParcelable(presenter.getSavedStateKey());
             presenter.onRestoreState(savedState);
         }
     }
@@ -65,7 +65,7 @@ public class PresenterContainer {
      */
     public void onSaveState(Bundle outState) {
         for (Presenter presenter : presenters) {
-            Parcelable savedState = presenter.onSaveState();
+            Bundle savedState = presenter.onSaveState();
             outState.putParcelable(presenter.getSavedStateKey(), savedState);
         }
     }

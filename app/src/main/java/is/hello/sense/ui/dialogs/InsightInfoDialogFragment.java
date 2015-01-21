@@ -14,15 +14,17 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Markdown;
 
-public class InsightDetailsDialogFragment extends InjectionDialogFragment {
-    public static final String TAG = InsightDetailsDialogFragment.class.getSimpleName();
+public class InsightInfoDialogFragment extends InjectionDialogFragment {
+    public static final String TAG = InsightInfoDialogFragment.class.getSimpleName();
 
-    private static final String ARG_INSIGHT = InsightDetailsDialogFragment.class.getName() + ".ARG_INSIGHT";
+    private static final String ARG_INSIGHT = InsightInfoDialogFragment.class.getName() + ".ARG_INSIGHT";
 
+    @Inject InsightInfoPresenter presenter;
     @Inject Markdown markdown;
 
     private Insight insight;
@@ -30,8 +32,8 @@ public class InsightDetailsDialogFragment extends InjectionDialogFragment {
     private TextView title;
     private TextView message;
 
-    public static InsightDetailsDialogFragment newInstance(@NonNull Insight insight) {
-        InsightDetailsDialogFragment dialogFragment = new InsightDetailsDialogFragment();
+    public static InsightInfoDialogFragment newInstance(@NonNull Insight insight) {
+        InsightInfoDialogFragment dialogFragment = new InsightInfoDialogFragment();
 
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_INSIGHT, insight);
@@ -50,7 +52,7 @@ public class InsightDetailsDialogFragment extends InjectionDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
-        dialog.setContentView(R.layout.fragment_dialog_insight_details);
+        dialog.setContentView(R.layout.fragment_dialog_insight_info);
 
         this.title = (TextView) dialog.findViewById(R.id.fragment_dialog_insight_details_title);
         this.message = (TextView) dialog.findViewById(R.id.fragment_dialog_insight_details_message);

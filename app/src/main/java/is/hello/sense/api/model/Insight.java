@@ -1,13 +1,8 @@
 package is.hello.sense.api.model;
 
-import android.support.annotation.NonNull;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
-
-import java.util.ArrayList;
 
 public class Insight extends ApiResponse {
     @JsonProperty("account_id")
@@ -23,10 +18,7 @@ public class Insight extends ApiResponse {
     private DateTime created;
 
     @JsonProperty("category")
-    private Category category;
-
-    @JsonProperty("insights_info")
-    private ArrayList<Object> insightsInfo;
+    private InsightCategory category;
 
 
     public long getAccountId() {
@@ -45,9 +37,10 @@ public class Insight extends ApiResponse {
         return created;
     }
 
-    public Category getCategory() {
+    public InsightCategory getCategory() {
         return category;
     }
+
 
     @Override
     public String toString() {
@@ -61,28 +54,4 @@ public class Insight extends ApiResponse {
     }
 
 
-    public static enum Category {
-        GENERIC,
-        SLEEP_HYGIENE,
-        LIGHT,
-        SOUND,
-        TEMPERATURE,
-        HUMIDITY,
-        AIR_QUALITY,
-        SLEEP_DURATION,
-        SLEEP_TIME,
-        WAKEUP_TIME,
-        WORKOUT,
-        CAFFEINE,
-        ALCOHOL,
-        DAYTIME_SLEEPINESS,
-        DIET,
-        SLEEP_QUALITY;
-
-        @JsonCreator
-        @SuppressWarnings("UnusedDeclaration")
-        public static Category fromString(@NonNull String value) {
-                return Enums.fromString(value, values(), GENERIC);
-        }
-    }
 }
