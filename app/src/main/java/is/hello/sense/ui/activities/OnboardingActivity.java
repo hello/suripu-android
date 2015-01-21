@@ -192,7 +192,11 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void back() {
-        if (getFragmentManager().getBackStackEntryCount() == 0) {
+        boolean hasStartCheckPoint = getIntent().hasExtra(EXTRA_START_CHECKPOINT);
+        boolean wifiChangeOnly = getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false);
+        boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
+        boolean wantsDialog = (!hasStartCheckPoint && !wifiChangeOnly && !pairOnly);
+        if (wantsDialog && getFragmentManager().getBackStackEntryCount() == 0) {
             SenseAlertDialog builder = new SenseAlertDialog(this);
             builder.setTitle(R.string.dialog_title_confirm_leave_onboarding);
             builder.setMessage(R.string.dialog_message_confirm_leave_onboarding);
