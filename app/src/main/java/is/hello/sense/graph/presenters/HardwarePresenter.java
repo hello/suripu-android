@@ -288,7 +288,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                      .doOnError(this.respondToError)
                      .map(networks -> {
                          if (!networks.isEmpty()) {
-                             Collections.sort(networks, (l, r) -> Functions.compareInts(r.getRssi(), l.getRssi()));
+                             Collections.sort(networks, (l, r) -> Functions.compareInts(l.getRssi(), r.getRssi()));
                          }
 
                          return networks;
