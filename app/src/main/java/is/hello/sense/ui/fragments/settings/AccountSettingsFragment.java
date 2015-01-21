@@ -70,23 +70,24 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.simple_list_view, container, false);
+        View view = inflater.inflate(R.layout.list_view_static_item, container, false);
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
 
-        String placeholder = getString(R.string.missing_data_placeholder);
-        this.nameItem = adapter.addItem(getString(R.string.label_name), placeholder);
-        this.emailItem = adapter.addItem(getString(R.string.label_email), placeholder, this::changeEmail);
-        adapter.addItem(getString(R.string.title_change_password), null, this::changePassword);
+        adapter.addTitle(R.string.title_info);
+        this.nameItem = adapter.addItem(R.string.label_name, R.string.missing_data_placeholder);
+        this.emailItem = adapter.addItem(R.string.label_email, R.string.missing_data_placeholder, this::changeEmail);
+        adapter.addItem(R.string.title_change_password, R.string.detail_change_password, this::changePassword);
 
-        this.birthdayItem = adapter.addItem(getString(R.string.label_dob), placeholder, this::changeBirthDate);
-        this.genderItem = adapter.addItem(getString(R.string.label_gender), placeholder, this::changeGender);
-        this.heightItem = adapter.addItem(getString(R.string.label_height), placeholder, this::changeHeight);
-        this.weightItem = adapter.addItem(getString(R.string.label_weight), placeholder, this::changeWeight);
-        this.timeZoneItem = adapter.addItem(getString(R.string.label_time_zone), placeholder, this::changeTimeZone);
+        adapter.addTitle(R.string.title_demographics);
+        this.birthdayItem = adapter.addItem(R.string.label_dob, R.string.missing_data_placeholder, this::changeBirthDate);
+        this.genderItem = adapter.addItem(R.string.label_gender, R.string.missing_data_placeholder, this::changeGender);
+        this.heightItem = adapter.addItem(R.string.label_height, R.string.missing_data_placeholder, this::changeHeight);
+        this.weightItem = adapter.addItem(R.string.label_weight, R.string.missing_data_placeholder, this::changeWeight);
+        this.timeZoneItem = adapter.addItem(R.string.label_time_zone, R.string.missing_data_placeholder, this::changeTimeZone);
 
         listView.setAdapter(adapter);
 
@@ -155,14 +156,14 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         Account account = forAccount.first;
         UnitSystem unitSystem = forAccount.second;
 
-        nameItem.setValue(account.getName());
-        emailItem.setValue(account.getEmail());
+        nameItem.setDetail(account.getName());
+        emailItem.setDetail(account.getEmail());
 
-        birthdayItem.setValue(dateFormatter.formatAsBirthDate(account.getBirthDate()));
-        genderItem.setValue(getString(account.getGender().nameRes));
-        heightItem.setValue(unitSystem.formatHeight(account.getHeight()));
-        weightItem.setValue(unitSystem.formatMass(account.getWeight()));
-        timeZoneItem.setValue(DateTimeZone.forOffsetMillis(account.getTimeZoneOffset()).getName(DateTimeUtils.currentTimeMillis()));
+        birthdayItem.setDetail(dateFormatter.formatAsBirthDate(account.getBirthDate()));
+        genderItem.setDetail(getString(account.getGender().nameRes));
+        heightItem.setDetail(unitSystem.formatHeight(account.getHeight()));
+        weightItem.setDetail(unitSystem.formatMass(account.getWeight()));
+        timeZoneItem.setDetail(DateTimeZone.forOffsetMillis(account.getTimeZoneOffset()).getName(DateTimeUtils.currentTimeMillis()));
 
         this.currentAccount = account;
     }

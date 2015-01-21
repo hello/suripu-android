@@ -58,7 +58,6 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
 
 
         this.buildInfoItems = new StaticItemAdapter(this);
-        buildInfoItems.setValueMaxLength(30);
         populateBuildInfoItems();
 
         this.debugActionItems = new StaticItemAdapter(this);
@@ -175,7 +174,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         if (item.getAction() != null) {
             item.getAction().run();
         } else {
-            String value = item.getTitle() + ": " + item.getValue();
+            String value = item.getTitle() + ": " + item.getDetail();
             ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
             clipboardManager.setPrimaryClip(ClipData.newPlainText(item.getTitle(), value));
             Toast.makeText(getApplicationContext(), "Copied to Clipboard", Toast.LENGTH_SHORT).show();

@@ -85,6 +85,8 @@
     <string name="title_before_you_slept">Before Sleep</string>
     <string name="title_time_frame_24_hrs">Last Day</string>
     <string name="title_time_frame_week">Past Week</string>
+    <string name="title_info">Info</string>
+    <string name="title_demographics">Demographics</string>
 
     <string name="title_thank_you">Thank You</string>
 
@@ -249,7 +251,8 @@ so you can sleep better.</string>
     <string name="info_turn_on_bluetooth">Sense uses Bluetooth to communicate with your mobile device. Please turn on your Bluetooth to continue.</string>
     <string name="debug_title_confirm_sense_pair">Pair With Sense</string>
     <string name="debug_message_confirm_sense_pair_fmt">Are you sure you want to pair with ‘%1$s’?</string>
-    <string name="title_change_password">Change Password</string>
+    <string name="title_change_password">Password</string>
+    <string name="detail_change_password">••••</string>
     <string name="label_current_password">Current Password</string>
     <string name="label_new_password">New Password</string>
     <string name="label_confirm_new_password">Confirm New Password</string>
