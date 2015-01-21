@@ -72,13 +72,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:minHeight="@dimen/series_graph_min_height">
+            android:layout_weight="1">
 
             <is.hello.sense.ui.widget.graphing.GraphView
                 android:id="@+id/fragment_sensor_history_graph"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:minHeight="@dimen/series_graph_min_height"
                 app:senseGridDrawable="@drawable/graph_grid_fill_top_down" />
 
             <is.hello.sense.ui.widget.TintedProgressBar
