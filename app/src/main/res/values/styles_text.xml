@@ -32,6 +32,7 @@
     </style>
     
     <style name="AppTheme.Text.Actionable">
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/text_size_body_small</item>
         <item name="android:textAllCaps">true</item>
@@ -39,6 +40,7 @@
     </style>
 
     <style name="AppTheme.Text.SectionHeading">
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/text_size_section_heading</item>
         <item name="android:textAllCaps">true</item>
@@ -70,6 +72,7 @@
     </style>
 
     <style name="AppTheme.Text.Body.Bold">
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -79,6 +82,7 @@
 
 
     <style name="AppTheme.Text.FieldLabel">
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/text_size_body</item>
     </style>
