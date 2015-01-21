@@ -28,6 +28,7 @@ import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 
 @Module(
@@ -102,7 +103,7 @@ public class ApiModule {
         }
         builder.setLog(Logger.RETROFIT_LOGGER);
         builder.setErrorHandler(error -> {
-            if (error.getResponse().getStatus() == 401) {
+            if (error.getKind() == RetrofitError.Kind.HTTP && error.getResponse().getStatus() == 401) {
                 LocalBroadcastManager.getInstance(applicationContext)
                                      .sendBroadcast(new Intent(ApiSessionManager.ACTION_SESSION_INVALIDATED));
             }
