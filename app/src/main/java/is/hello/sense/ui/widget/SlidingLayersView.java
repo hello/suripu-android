@@ -254,7 +254,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     }
 
     protected boolean isListViewAtTop(@Nullable ListView listView) {
-        return (listView == null) || (ListViews.getEstimatedScrollY(listView) == 0);
+        return ((topViewY > 0f) || (listView == null) ||
+                (ListViews.getEstimatedScrollY(listView) == 0));
     }
 
     //endregion
@@ -378,7 +379,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 this.isAnimating = false;
                 PropertyAnimatorProxy.stop(topView);
 
-                if (isOpen && lastEventY >= getMeasuredHeight() - topViewOpenHeight) {
+                if (isOpen && lastEventY >= topViewY) {
                     this.isTrackingTouchEvents = true;
                     return true;
                 }
