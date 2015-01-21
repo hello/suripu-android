@@ -339,4 +339,7 @@ so you can sleep better.</string>
     <string name="hint_year">YYYY</string>
     <string name="error_message_current_pw_wrong">The current password you entered is incorrect.</string>
     <string name="label_notifications">Notifications</string>
+    <string name="label_options">Options</string>
+    <string name="label_enhanced_audio">Enhanced Audio</string>
+    <string name="info_enhanced_audio">Enhanced audio allows Sense to pick up snoring, sleep talking, and other noise disturbances</string>
 </resources>

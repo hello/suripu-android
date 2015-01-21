@@ -17,7 +17,7 @@
             android:orientation="vertical"
             style="@style/AppTheme.Card"/>
 
-        <include layout="@layout/sub_fragment_device_footer" />
+        <include layout="@layout/footer_help" />
 
         <TextView
             android:id="@+id/fragment_app_settings_version"

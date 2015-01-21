@@ -7,7 +7,7 @@
     android:background="?android:selectableItemBackground">
 
     <TextView
-        android:id="@+id/list_horizontal_item_title"
+        android:id="@+id/item_static_text_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -21,10 +21,10 @@
         android:text="@string/app_name"/>
 
     <TextView
-        android:id="@+id/list_horizontal_item_detail"
+        android:id="@+id/item_static_text_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/list_horizontal_item_title"
+        android:layout_toEndOf="@id/item_static_text_title"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="@dimen/gap_small"
         android:layout_marginEnd="@dimen/gap_outer"
@@ -34,7 +34,5 @@
         android:gravity="end|center_vertical"
         android:textAppearance="@style/AppTheme.Text.Body.Light"
         android:text="@string/app_name"/>
-
-
 
 </RelativeLayout>

@@ -97,7 +97,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<AccountPreference> updatePreference(@NonNull @Body AccountPreference preference) {
+    public Observable<AccountPreference> updateAccountPreference(@NonNull @Body AccountPreference preference) {
         return null;
     }
 

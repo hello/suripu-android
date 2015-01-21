@@ -15,10 +15,13 @@ import android.widget.ListView;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 
+import java.util.HashMap;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
@@ -33,6 +36,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
+import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.DateFormatter;
@@ -55,6 +59,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     private StaticItemAdapter.TextItem weightItem;
     private StaticItemAdapter.TextItem timeZoneItem;
 
+    private StaticItemAdapter.CheckItem enhancedAudioItem;
+
     private Account currentAccount;
 
 
@@ -70,25 +76,30 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.list_view_static_item, container, false);
+        View view = inflater.inflate(R.layout.list_view_static, container, false);
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
 
-        adapter.addTitle(R.string.title_info);
-        this.nameItem = adapter.addItem(R.string.label_name, R.string.missing_data_placeholder);
-        this.emailItem = adapter.addItem(R.string.label_email, R.string.missing_data_placeholder, this::changeEmail);
-        adapter.addItem(R.string.title_change_password, R.string.detail_change_password, this::changePassword);
+        adapter.addSectionTitle(R.string.title_info);
+        this.nameItem = adapter.addTextItem(R.string.label_name, R.string.missing_data_placeholder);
+        this.emailItem = adapter.addTextItem(R.string.label_email, R.string.missing_data_placeholder, this::changeEmail);
+        adapter.addTextItem(R.string.title_change_password, R.string.detail_change_password, this::changePassword);
 
-        adapter.addTitle(R.string.title_demographics);
-        this.birthdayItem = adapter.addItem(R.string.label_dob, R.string.missing_data_placeholder, this::changeBirthDate);
-        this.genderItem = adapter.addItem(R.string.label_gender, R.string.missing_data_placeholder, this::changeGender);
-        this.heightItem = adapter.addItem(R.string.label_height, R.string.missing_data_placeholder, this::changeHeight);
-        this.weightItem = adapter.addItem(R.string.label_weight, R.string.missing_data_placeholder, this::changeWeight);
-        this.timeZoneItem = adapter.addItem(R.string.label_time_zone, R.string.missing_data_placeholder, this::changeTimeZone);
+        adapter.addSectionTitle(R.string.title_demographics);
+        this.birthdayItem = adapter.addTextItem(R.string.label_dob, R.string.missing_data_placeholder, this::changeBirthDate);
+        this.genderItem = adapter.addTextItem(R.string.label_gender, R.string.missing_data_placeholder, this::changeGender);
+        this.heightItem = adapter.addTextItem(R.string.label_height, R.string.missing_data_placeholder, this::changeHeight);
+        this.weightItem = adapter.addTextItem(R.string.label_weight, R.string.missing_data_placeholder, this::changeWeight);
+        this.timeZoneItem = adapter.addTextItem(R.string.label_time_zone, R.string.missing_data_placeholder, this::changeTimeZone);
 
+        adapter.addSectionTitle(R.string.label_options);
+        this.enhancedAudioItem = adapter.addCheckItem(R.string.label_enhanced_audio, false, this::changeEnhancedAudio);
+
+        View enhancedAudioFooter = inflater.inflate(R.layout.footer_enhanced_audio, listView, false);
+        ListViews.addFooterView(listView, enhancedAudioFooter, null, false);
         listView.setAdapter(adapter);
 
         return view;
@@ -103,7 +114,11 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         Observable<Pair<Account, UnitSystem>> forAccount = Observable.combineLatest(accountPresenter.account,
                                                                                     unitFormatter.unitSystem,
                                                                                     Pair::new);
-        bindAndSubscribe(forAccount, this::bindAccount, this::accountUnavailable);
+        bindAndSubscribe(forAccount, this::bindAccount, this::presentError);
+
+        bindAndSubscribe(accountPresenter.preferences(),
+                         this::bindAccountPreferences,
+                         this::presentError);
     }
 
     @Override
@@ -168,7 +183,12 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         this.currentAccount = account;
     }
 
-    public void accountUnavailable(Throwable e) {
+    public void bindAccountPreferences(@NonNull HashMap<AccountPreference.Key, Object> settings) {
+        boolean enhancedAudio = (boolean) settings.get(AccountPreference.Key.ENHANCED_AUDIO);
+        enhancedAudioItem.setChecked(enhancedAudio);
+    }
+
+    public void presentError(Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
@@ -225,6 +245,26 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         TimeZoneDialogFragment dialogFragment = new TimeZoneDialogFragment();
         dialogFragment.setTargetFragment(this, REQUEST_CODE_TIME_ZONE);
         dialogFragment.show(getFragmentManager(), TimeZoneDialogFragment.TAG);
+    }
+
+    //endregion
+
+
+    //region Preferences
+
+    public void changeEnhancedAudio() {
+        boolean newSetting = !enhancedAudioItem.isChecked();
+        AccountPreference update = new AccountPreference(AccountPreference.Key.ENHANCED_AUDIO);
+        update.setEnabled(newSetting);
+        enhancedAudioItem.setChecked(newSetting);
+
+        LoadingDialogFragment.show(getFragmentManager());
+        bindAndSubscribe(accountPresenter.updatePreference(update),
+                         ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                         e -> {
+                             enhancedAudioItem.setChecked(!newSetting);
+                             presentError(e);
+                         });
     }
 
     //endregion

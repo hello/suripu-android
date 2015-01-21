@@ -50,7 +50,7 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
 
         AccountPreference preferenceUpdate = new AccountPreference(AccountPreference.Key.ENHANCED_AUDIO);
         preferenceUpdate.setEnabled(enabled);
-        bindAndSubscribe(apiService.updatePreference(preferenceUpdate),
+        bindAndSubscribe(apiService.updateAccountPreference(preferenceUpdate),
                          ignored -> {
                              LoadingDialogFragment.close(getFragmentManager());
                              ((OnboardingActivity) getActivity()).showSetupSense();

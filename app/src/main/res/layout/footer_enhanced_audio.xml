@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sub_fragment_device_footer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/gap_outer"
+    android:paddingRight="@dimen/gap_outer"
+    android:paddingTop="@dimen/gap_medium"
+    android:paddingBottom="@dimen/gap_medium"
+    android:textAppearance="@style/AppTheme.Text.Body.Light.Small"
+    android:text="@string/info_enhanced_audio"
+    android:lineSpacingMultiplier="@dimen/line_multiple_body"/>

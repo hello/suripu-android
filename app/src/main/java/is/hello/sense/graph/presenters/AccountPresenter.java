@@ -2,12 +2,14 @@ package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
 
+import java.util.HashMap;
+
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
@@ -49,5 +51,13 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     public Observable<SenseTimeZone> updateTimeZone(@NonNull SenseTimeZone senseTimeZone) {
         return apiService.updateTimeZone(senseTimeZone);
+    }
+
+    public Observable<HashMap<AccountPreference.Key, Object>> preferences() {
+        return apiService.accountPreferences();
+    }
+
+    public Observable<AccountPreference> updatePreference(@NonNull AccountPreference update) {
+        return apiService.updateAccountPreference(update);
     }
 }
