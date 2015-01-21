@@ -67,6 +67,10 @@ public class Alarm extends ApiResponse {
     public static boolean validateAlarms(final List<Alarm> alarms) {
         final Set<Integer> alarmDays = new HashSet<>();
         for (final Alarm alarm : alarms) {
+            if (!alarm.isEnabled()) {
+                continue;
+            }
+
             if (!alarm.isRepeated) {
                 if (!validateNonRepeatingAlarm(alarm)) {
                     return false;

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
@@ -25,6 +26,7 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TrendGraph;
+import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
@@ -87,6 +89,16 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<Account> updateAccount(@NonNull @Body Account account) {
         return Observable.just(account);
+    }
+
+    @Override
+    public Observable<UpdateCheckIn.Response> checkInForUpdates(@NonNull @Body UpdateCheckIn body) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<AccountPreference> updatePreference(@NonNull @Body AccountPreference preference) {
+        return null;
     }
 
     @Override

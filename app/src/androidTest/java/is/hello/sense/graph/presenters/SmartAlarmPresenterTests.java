@@ -46,6 +46,11 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
         stupidSunday.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
         assertTrue(presenter.validateAlarms(Lists.newArrayList(sunday, stupidSunday)));
 
+        Alarm disabledSunday = new Alarm();
+        disabledSunday.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
+        disabledSunday.setSmart(true);
+        disabledSunday.setEnabled(false);
+        assertTrue(presenter.validateAlarms(Lists.newArrayList(sunday, disabledSunday)));
     }
 
     public void testSave() throws Exception {

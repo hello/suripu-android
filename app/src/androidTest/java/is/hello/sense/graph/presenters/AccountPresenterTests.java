@@ -23,8 +23,8 @@ public class AccountPresenterTests extends InjectionTestCase {
 
     public void testSaveAccount() throws Exception {
         Account updatedAccount = new Account();
-        updatedAccount.setWeight(120L);
-        updatedAccount.setHeight(2000L);
+        updatedAccount.setWeight(120);
+        updatedAccount.setHeight(2000);
         updatedAccount.setBirthDate(LocalDate.now());
 
         SyncObserver<Account> account = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, accountPresenter.account);
