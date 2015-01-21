@@ -52,10 +52,11 @@ public class ApiException extends Exception {
     }
 
     public @Nullable String getReason() {
-        if (networkStackError.getResponse() != null)
+        if (networkStackError.getResponse() != null) {
             return networkStackError.getResponse().getReason();
-        else
+        } else {
             return null;
+        }
     }
 
 

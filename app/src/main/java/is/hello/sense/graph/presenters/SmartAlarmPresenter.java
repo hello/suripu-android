@@ -1,7 +1,6 @@
 package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +13,13 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.ReplaySubject;
 
 @Singleton public class SmartAlarmPresenter extends ValuePresenter<ArrayList<Alarm>> {
     private final ApiService apiService;
-    private @Nullable PresenterSubject<ArrayList<Alarm.Sound>> availableAlarmSounds;
+    private ArrayList<Alarm.Sound> availableAlarmSounds;
+    private ReplaySubject<ArrayList<Alarm.Sound>> pendingAlarmSounds;
 
     public final PresenterSubject<ArrayList<Alarm>> alarms = this.subject;
 
@@ -89,25 +91,39 @@ import rx.Observable;
     }
 
     public Observable<ArrayList<Alarm.Sound>> availableAlarmSounds() {
-        if (availableAlarmSounds == null) {
-            this.availableAlarmSounds = PresenterSubject.create();
-            apiService.availableSmartAlarmSounds()
-                      .subscribe(availableAlarmSounds::onNext, e -> {
-                          logEvent("Could not load smart alarm sounds " + e);
-                          if (availableAlarmSounds != null) {
-                              availableAlarmSounds.onNext(new ArrayList<>());
-                          }
-                      });
+        if (availableAlarmSounds != null) {
+            return Observable.just(availableAlarmSounds);
         }
 
-        return availableAlarmSounds;
+        if (pendingAlarmSounds != null) {
+            return pendingAlarmSounds;
+        }
+
+        this.pendingAlarmSounds = ReplaySubject.createWithSize(1);
+
+        logEvent("Loading smart alarm sounds");
+
+        Observable<ArrayList<Alarm.Sound>> alarmSounds = apiService.availableSmartAlarmSounds();
+        alarmSounds.observeOn(AndroidSchedulers.mainThread())
+                   .subscribe(sounds -> {
+                       logEvent("Loaded smart alarm sounds");
+                       this.availableAlarmSounds = sounds;
+
+                       pendingAlarmSounds.onNext(sounds);
+                       pendingAlarmSounds.onCompleted();
+                       this.pendingAlarmSounds = null;
+                   }, e -> {
+                       logEvent("Could not load smart alarm sounds");
+
+                       pendingAlarmSounds.onError(e);
+                       this.pendingAlarmSounds = null;
+                   });
+
+        return pendingAlarmSounds;
     }
 
     public void forgetAvailableAlarmSoundsCache() {
-        if (availableAlarmSounds != null) {
-            availableAlarmSounds.forget();
-            this.availableAlarmSounds = null;
-        }
+        this.availableAlarmSounds = null;
     }
 
 

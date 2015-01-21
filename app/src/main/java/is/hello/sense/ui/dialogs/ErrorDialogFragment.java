@@ -123,8 +123,10 @@ public class ErrorDialogFragment extends DialogFragment {
                 ApiException error = (ApiException) e;
                 arguments.putBoolean(ARG_HAS_REQUEST_INFO, true);
                 arguments.putString(ARG_URL, error.getUrl());
-                if (error.getStatus() != null)
+
+                if (error.getStatus() != null) {
                     arguments.putInt(ARG_RESPONSE_STATUS, error.getStatus());
+                }
                 arguments.putString(ARG_RESPONSE_REASON, error.getReason());
             }
         }
