@@ -78,8 +78,7 @@
 
     <string name="title_register">Introduce yourself</string>
     <string name="title_introduction">Meet Sense</string>
-    <string name="label_my_info">My Info</string>
-    <string name="label_account">Account</string>
+    <string name="label_account">My Account</string>
     <string name="label_units_and_time">Units and Time</string>
     <string name="label_devices">Devices</string>
     <string name="title_before_you_slept">Before Sleep</string>

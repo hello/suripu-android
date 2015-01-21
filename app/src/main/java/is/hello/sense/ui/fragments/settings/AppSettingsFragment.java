@@ -49,7 +49,6 @@ public class AppSettingsFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_app_settings, container, false);
 
         this.itemContainer = (LinearLayout) view.findViewById(R.id.fragment_app_settings_container);
-        addItem(R.string.label_my_info, true, ignored -> showFragment(MyInfoFragment.class, R.string.label_my_info, null));
         addItem(R.string.label_account, true, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account, null));
         addItem(R.string.label_units_and_time, true, ignored -> showFragment(R.xml.settings_units_and_time, R.string.label_units_and_time));
         addItem(R.string.label_devices, true, ignored -> showFragment(DeviceListFragment.class, R.string.label_devices, null));
