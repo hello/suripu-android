@@ -139,6 +139,7 @@ so you can sleep better.</string>
     <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the wifi network you selected.</string>
     <string name="error_network_failure">The operation could not be completed due to connectivity issues. Please try again.</string>
     <string name="error_network_failure_pair_pill">Your Sleep Pill could not be Paired due to connectivity issues. Please try again.</string>
+    <string name="error_pill_already_paired">Your Sleep Pill is already paired to this account.</string>
     <string name="title_device_signal_strength">Signal Strength</string>
     <string name="label_firmware_version">Firmware</string>
     <string name="signal_strong">Strong</string>
