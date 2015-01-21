@@ -124,7 +124,7 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Insight insight = (Insight) adapterView.getItemAtPosition(position);
-        InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight);
+        InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight.getCategory());
         dialogFragment.show(getFragmentManager(), InsightInfoDialogFragment.TAG);
     }
 
