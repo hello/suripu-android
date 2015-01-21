@@ -37,6 +37,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.EditorActionHandler;
 
 public class OnboardingRegisterFragment extends InjectionFragment {
@@ -152,7 +153,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
 
         String password = passwordText.getText().toString();
-        if (password.length() <= 3) {
+        if (password.length() < Constants.MIN_PASSWORD_LENGTH) {
             displayRegistrationError(RegistrationError.PASSWORD_TOO_SHORT);
             return;
         }

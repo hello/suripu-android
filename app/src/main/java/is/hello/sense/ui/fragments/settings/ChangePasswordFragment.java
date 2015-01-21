@@ -25,6 +25,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.BuildValues;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.EditorActionHandler;
 import rx.Observable;
 
@@ -96,8 +97,8 @@ public class ChangePasswordFragment extends InjectionFragment {
             return;
         }
 
-        if (newPassword.getText().length() <= 3) {
-            ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_invalid_register_password));
+        if (newPassword.getText().length() < Constants.MIN_PASSWORD_LENGTH) {
+            ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_account_password_too_short));
             errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
             newPassword.requestFocus();
             return;
