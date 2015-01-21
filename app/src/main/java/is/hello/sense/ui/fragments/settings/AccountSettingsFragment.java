@@ -46,14 +46,14 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     @Inject DateFormatter dateFormatter;
     @Inject UnitFormatter unitFormatter;
 
-    private StaticItemAdapter.Item nameItem;
-    private StaticItemAdapter.Item emailItem;
+    private StaticItemAdapter.TextItem nameItem;
+    private StaticItemAdapter.TextItem emailItem;
 
-    private StaticItemAdapter.Item birthdayItem;
-    private StaticItemAdapter.Item genderItem;
-    private StaticItemAdapter.Item heightItem;
-    private StaticItemAdapter.Item weightItem;
-    private StaticItemAdapter.Item timeZoneItem;
+    private StaticItemAdapter.TextItem birthdayItem;
+    private StaticItemAdapter.TextItem genderItem;
+    private StaticItemAdapter.TextItem heightItem;
+    private StaticItemAdapter.TextItem weightItem;
+    private StaticItemAdapter.TextItem timeZoneItem;
 
     private Account currentAccount;
 

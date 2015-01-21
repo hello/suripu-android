@@ -14,10 +14,6 @@ import android.widget.TextView;
 import is.hello.sense.R;
 
 public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
-    private static final int ID_ITEM = 0;
-    private static final int ID_TITLE = 1;
-    private static final int ID_COUNT = 2;
-
     private final LayoutInflater layoutInflater;
     private final Resources resources;
 
@@ -31,28 +27,28 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
 
     //region Adding Items
 
-    public Item addItem(@NonNull String title, @Nullable String value, @Nullable Runnable action) {
-        Item item = new Item(ID_ITEM, title, value, action);
+    public TextItem addItem(@NonNull String title, @Nullable String value, @Nullable Runnable action) {
+        TextItem item = new TextItem(title, value, action);
         add(item);
         return item;
     }
 
-    public Item addItem(@StringRes int titleRes, @StringRes int valueRes, @Nullable Runnable action) {
+    public TextItem addItem(@StringRes int titleRes, @StringRes int valueRes, @Nullable Runnable action) {
         return addItem(resources.getString(titleRes), resources.getString(valueRes), action);
     }
 
-    public Item addItem(@NonNull String title, @Nullable String value) {
-        Item item = new Item(ID_ITEM, title, value, null);
+    public TextItem addItem(@NonNull String title, @Nullable String value) {
+        TextItem item = new TextItem(title, value, null);
         add(item);
         return item;
     }
 
-    public Item addItem(@StringRes int titleRes, @StringRes int valueRes) {
+    public TextItem addItem(@StringRes int titleRes, @StringRes int valueRes) {
         return addItem(resources.getString(titleRes), resources.getString(valueRes));
     }
 
     public Item addTitle(@NonNull String title) {
-        Item item = new Item(ID_TITLE, title, null, null);
+        Item item = new Item(title, null);
         add(item);
         return item;
     }
@@ -68,36 +64,37 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
 
     @Override
     public int getViewTypeCount() {
-        return ID_COUNT;
+        return ItemType.values().length;
     }
 
     @Override
     public int getItemViewType(int position) {
         Item item = getItem(position);
-        return item.getType();
+        return item.getType().ordinal();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         Item item = getItem(position);
-        int type = item.getType();
+        ItemType type = item.getType();
 
         switch (type) {
-            case ID_ITEM: {
+            case TEXT_ITEM: {
                 if (view == null) {
                     view = layoutInflater.inflate(R.layout.item_static, parent, false);
                     view.setTag(new HorizontalItemViewHolder(view));
                 }
 
+                TextItem textItem = (TextItem) item;
                 HorizontalItemViewHolder holder = (HorizontalItemViewHolder) view.getTag();
-                holder.title.setText(item.title);
-                holder.detail.setText(item.detail);
+                holder.title.setText(textItem.getTitle());
+                holder.detail.setText(textItem.getDetail());
 
                 break;
             }
 
-            case ID_TITLE: {
+            case SECTION_TITLE: {
                 if (view == null) {
                     view = layoutInflater.inflate(R.layout.item_section_title, parent, false);
                     view.setTag(new SectionItemViewHolder(view));
@@ -145,26 +142,45 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     //endregion
 
 
-    public class Item {
-        private final int type;
+    public static class Item {
+        private final ItemType type;
         private final String title;
-        private String detail;
         private Runnable action;
 
-        public Item(int type, @NonNull String title, @Nullable String detail, @Nullable Runnable action) {
+        protected Item(ItemType type, String title, Runnable action) {
             this.type = type;
             this.title = title;
-            this.detail = detail;
             this.action = action;
         }
 
+        public Item(@NonNull String title, @Nullable Runnable action) {
+            this(ItemType.SECTION_TITLE, title, action);
+        }
 
-        public int getType() {
+
+        public ItemType getType() {
             return type;
         }
 
         public String getTitle() {
             return title;
+        }
+
+        public Runnable getAction() {
+            return action;
+        }
+
+        public void setAction(Runnable action) {
+            this.action = action;
+        }
+    }
+
+    public class TextItem extends Item {
+        private String detail;
+
+        public TextItem(@NonNull String title, @Nullable String detail, @Nullable Runnable action) {
+            super(ItemType.TEXT_ITEM, title, action);
+            this.detail = detail;
         }
 
         public String getDetail() {
@@ -175,13 +191,11 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
             this.detail = detail;
             notifyDataSetChanged();
         }
+    }
 
-        public Runnable getAction() {
-            return action;
-        }
 
-        public void setAction(Runnable action) {
-            this.action = action;
-        }
+    public static enum ItemType {
+        SECTION_TITLE,
+        TEXT_ITEM,
     }
 }
