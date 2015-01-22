@@ -214,7 +214,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         this.headerMode = headerMode;
-        headerView.addView(headerMode.view, 1);
+        headerView.addView(headerMode.view, 2); // Between the Spaces
     }
 
     @Override

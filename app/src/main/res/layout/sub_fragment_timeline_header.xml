@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:minHeight="@dimen/timeline_header_min_height"
     android:background="@drawable/background_timeline_header">
 
     <RelativeLayout
@@ -44,6 +45,16 @@
             android:background="@drawable/selectable_dark"/>
 
     </RelativeLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
     <is.hello.sense.ui.widget.SelectorLinearLayout
         android:id="@+id/sub_fragment_timeline_header_mode"

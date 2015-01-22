@@ -66,6 +66,8 @@
     <dimen name="scale_view_tick">1dp</dimen>
     <dimen name="scale_view_segment">12dp</dimen>
 
+    <dimen name="timeline_header_min_height">344dp</dimen>
+
     <!-- Graphs -->
 
     <dimen name="condition_graph_height">30dp</dimen>
