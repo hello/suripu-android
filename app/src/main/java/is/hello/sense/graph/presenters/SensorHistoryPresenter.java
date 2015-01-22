@@ -31,20 +31,17 @@ public class SensorHistoryPresenter extends ValuePresenter<SensorHistoryPresente
     public final PresenterSubject<Result> history = this.subject;
 
     @Override
-    public void onRestoreState(@NonNull Parcelable savedState) {
+    public void onRestoreState(@NonNull Bundle savedState) {
         super.onRestoreState(savedState);
 
-        if (savedState instanceof Bundle) {
-            Bundle state = ((Bundle) savedState);
-            this.mode = state.getInt("mode");
-            this.sensorName = state.getString("sensorName");
-            update();
-        }
+        this.mode = savedState.getInt("mode");
+        this.sensorName = savedState.getString("sensorName");
+        update();
     }
 
     @Nullable
     @Override
-    public Parcelable onSaveState() {
+    public Bundle onSaveState() {
         Bundle state = new Bundle();
         state.putString("sensorName", sensorName);
         state.putInt("mode", mode);

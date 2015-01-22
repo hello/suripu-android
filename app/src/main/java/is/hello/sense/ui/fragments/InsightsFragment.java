@@ -23,7 +23,7 @@ import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
+import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
@@ -124,8 +124,8 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Insight insight = (Insight) adapterView.getItemAtPosition(position);
-        InsightDetailsDialogFragment dialogFragment = InsightDetailsDialogFragment.newInstance(insight);
-        dialogFragment.show(getFragmentManager(), InsightDetailsDialogFragment.TAG);
+        InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight.getCategory());
+        dialogFragment.show(getFragmentManager(), InsightInfoDialogFragment.TAG);
     }
 
     @Override

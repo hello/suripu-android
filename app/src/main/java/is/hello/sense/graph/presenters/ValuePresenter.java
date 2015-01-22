@@ -70,21 +70,18 @@ public abstract class ValuePresenter<T extends Serializable> extends Presenter {
     //region State Saving
 
     @Override
-    public void onRestoreState(@NonNull Parcelable savedState) {
+    public void onRestoreState(@NonNull Bundle savedState) {
         super.onRestoreState(savedState);
 
-        if (savedState instanceof Bundle) {
-            Bundle inState = (Bundle) savedState;
-            if (inState.containsKey(SAVED_STATE_KEY)) {
-                //noinspection unchecked
-                subject.onNext((T) inState.getSerializable(SAVED_STATE_KEY));
-            }
+        if (savedState.containsKey(SAVED_STATE_KEY)) {
+            //noinspection unchecked
+            subject.onNext((T) savedState.getSerializable(SAVED_STATE_KEY));
         }
     }
 
     @Nullable
     @Override
-    public Parcelable onSaveState() {
+    public Bundle onSaveState() {
         Bundle state = new Bundle();
         subject.saveState(SAVED_STATE_KEY, state);
         return state;

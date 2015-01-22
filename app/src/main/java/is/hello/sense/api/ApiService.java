@@ -10,6 +10,8 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
+import is.hello.sense.api.model.InsightCategory;
+import is.hello.sense.api.model.InsightInfo;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
@@ -96,6 +98,9 @@ public interface ApiService {
 
     @GET("/insights")
     Observable<ArrayList<Insight>> currentInsights();
+
+    @GET("/insights/info/{category}")
+    Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") InsightCategory category);
 
     //endregion
 

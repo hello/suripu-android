@@ -1,5 +1,6 @@
 package is.hello.sense.util;
 
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,14 +57,14 @@ public class MockPresenter extends Presenter {
     }
 
     @Override
-    public void onRestoreState(@NonNull Parcelable savedState) {
+    public void onRestoreState(@NonNull Bundle savedState) {
         super.onRestoreState(savedState);
         onRestoreStateCalled = true;
     }
 
     @Nullable
     @Override
-    public Parcelable onSaveState() {
+    public Bundle onSaveState() {
         onSaveStateCalled = true;
         return super.onSaveState();
     }

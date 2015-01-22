@@ -171,7 +171,7 @@ public final class Styles {
         Context context = listView.getContext();
         Resources resources = listView.getResources();
 
-        int spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_outer);
+        int spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_medium);
         View topSpacing = new View(context);
         topSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
         ListViews.addHeaderView(listView, topSpacing, null, false);

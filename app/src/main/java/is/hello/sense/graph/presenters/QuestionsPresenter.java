@@ -55,16 +55,14 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     @Override
-    public void onRestoreState(@NonNull Parcelable savedState) {
+    public void onRestoreState(@NonNull Bundle savedState) {
         super.onRestoreState(savedState);
 
-        if (savedState instanceof Bundle) {
-            setOffset(((Bundle) savedState).getInt("offset"));
-        }
+        setOffset(savedState.getInt("offset"));
     }
 
     @Override
-    public @Nullable Parcelable onSaveState() {
+    public @Nullable Bundle onSaveState() {
         Bundle savedState = new Bundle();
         savedState.putInt("offset", offset);
         return savedState;

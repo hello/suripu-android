@@ -35,18 +35,15 @@ public class TimelineNavigatorPresenter extends Presenter {
     }
 
     @Override
-    public void onRestoreState(@NonNull Parcelable savedState) {
+    public void onRestoreState(@NonNull Bundle savedState) {
         super.onRestoreState(savedState);
 
-        if (savedState instanceof Bundle) {
-            Bundle state = (Bundle) savedState;
-            setFirstDate((DateTime) state.getSerializable(STATE_KEY_FIRST_DATE));
-        }
+        setFirstDate((DateTime) savedState.getSerializable(STATE_KEY_FIRST_DATE));
     }
 
     @Nullable
     @Override
-    public Parcelable onSaveState() {
+    public Bundle onSaveState() {
         Bundle savedState = new Bundle();
         savedState.putSerializable(STATE_KEY_FIRST_DATE, firstDate);
         return savedState;
