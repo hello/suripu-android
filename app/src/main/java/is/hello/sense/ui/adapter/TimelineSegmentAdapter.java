@@ -182,16 +182,10 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
             int sleepDepth = segment.getSleepDepth() < 0 ? 0 : segment.getSleepDepth();
             itemView.setSleepDepth(sleepDepth);
             itemView.setStripeInset(stripeInset);
-            itemView.setRounded(segment.getEventType() != null);
             itemView.setEventResource(Styles.getTimelineSegmentIconRes(segment));
 
             EventType eventType = segment.getEventType();
             if (eventType != null) {
-                if (eventType == EventType.WAKE_UP || eventType == EventType.SLEEP) {
-                    itemView.setTimestampTypeface(Typeface.create("sans-serif", Typeface.BOLD));
-                } else {
-                    itemView.setTimestampTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                }
                 itemView.setRightTimestampString(dateFormatter.formatAsTime(segment.getTimestamp(), use24Time));
             } else {
                 itemView.setRightTimestampString(null);

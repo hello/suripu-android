@@ -31,7 +31,6 @@ public final class TimelineSegmentView extends View {
     private float leftInset;
     private float rightInset;
     private float stripeWidth;
-    private float cornerRadius;
 
     //endregion
 
@@ -54,7 +53,7 @@ public final class TimelineSegmentView extends View {
     private Drawable eventDrawable;
     private int sleepDepth;
     private StripeInset stripeInset = StripeInset.NONE;
-    private boolean rounded;
+    private @Nullable String leftTimestampString;
     private @Nullable String rightTimestampString;
 
     //endregion
@@ -97,8 +96,6 @@ public final class TimelineSegmentView extends View {
         this.leftInset = resources.getDimension(R.dimen.view_timeline_segment_left_inset);
         this.rightInset = resources.getDimension(R.dimen.view_timeline_segment_right_inset);
         this.stripeWidth = resources.getDimension(R.dimen.view_timeline_segment_stripe_width);
-
-        this.cornerRadius = resources.getDimension(R.dimen.view_timeline_segment_corner_radius);
     }
 
     //endregion
@@ -121,11 +118,7 @@ public final class TimelineSegmentView extends View {
         float percentage = sleepDepth / 100f;
         float fillWidth = width * percentage;
         rect.set(midX - fillWidth / 2f, minY, midX + fillWidth / 2f, maxY);
-        if (rounded) {
-            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, fillPaint);
-        } else {
-            canvas.drawRect(rect, fillPaint);
-        }
+        canvas.drawRect(rect, fillPaint);
 
 
         float stripeTop = minY,
@@ -216,16 +209,6 @@ public final class TimelineSegmentView extends View {
 
     public void setStripeInset(StripeInset stripeInset) {
         this.stripeInset = stripeInset;
-        invalidate();
-    }
-
-    public void setRounded(boolean rounded) {
-        this.rounded = rounded;
-        invalidate();
-    }
-
-    public void setTimestampTypeface(@NonNull Typeface typeface) {
-        rightTimestampPaint.setTypeface(typeface);
         invalidate();
     }
 
