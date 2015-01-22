@@ -192,9 +192,9 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
                 } else {
                     itemView.setTimestampTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
                 }
-                itemView.setTimestampString(dateFormatter.formatAsTime(segment.getTimestamp(), use24Time));
+                itemView.setRightTimestampString(dateFormatter.formatAsTime(segment.getTimestamp(), use24Time));
             } else {
-                itemView.setTimestampString(null);
+                itemView.setRightTimestampString(null);
             }
         }
     }

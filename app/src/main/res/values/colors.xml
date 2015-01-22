@@ -23,6 +23,7 @@
     <color name="shadow_end">#18000000</color>
 
     <color name="timeline_segment_stripe">#19009CFF</color>
+    <color name="timeline_segment_underline_right">#62009cff</color>
 
 
     <color name="text_dark">#4D4D4D</color>

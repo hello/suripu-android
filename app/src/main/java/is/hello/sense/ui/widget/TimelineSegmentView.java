@@ -3,7 +3,9 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -40,7 +42,9 @@ public final class TimelineSegmentView extends View {
     private final Paint fillPaint = new Paint();
     private final Paint stripePaint = new Paint();
     private final Rect textRect = new Rect();
-    private final Paint timestampPaint = new Paint();
+    private final Paint rightTimestampPaint = new Paint();
+    private final Paint timestampStrokePaint = new Paint();
+    private final Path timestampStrokePath = new Path();
 
     //endregion
 
@@ -51,7 +55,7 @@ public final class TimelineSegmentView extends View {
     private int sleepDepth;
     private StripeInset stripeInset = StripeInset.NONE;
     private boolean rounded;
-    private @Nullable String timestampString;
+    private @Nullable String rightTimestampString;
 
     //endregion
 
@@ -79,10 +83,16 @@ public final class TimelineSegmentView extends View {
         stripePaint.setAntiAlias(true);
         stripePaint.setColor(resources.getColor(R.color.timeline_segment_stripe));
 
-        timestampPaint.setAntiAlias(true);
-        timestampPaint.setSubpixelText(true);
-        timestampPaint.setColor(resources.getColor(R.color.text_dim));
-        timestampPaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_body));
+        rightTimestampPaint.setAntiAlias(true);
+        rightTimestampPaint.setSubpixelText(true);
+        rightTimestampPaint.setColor(resources.getColor(R.color.light_accent));
+        rightTimestampPaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_timeline_time));
+
+        float strokeGap = resources.getDimension(R.dimen.view_timeline_segment_stroke_gap);
+        timestampStrokePaint.setColor(resources.getColor(R.color.timeline_segment_underline_right));
+        timestampStrokePaint.setStyle(Paint.Style.STROKE);
+        timestampStrokePaint.setStrokeWidth(resources.getDimension(R.dimen.divider_size));
+        timestampStrokePaint.setPathEffect(new DashPathEffect(new float[] { strokeGap, strokeGap }, 0));
 
         this.leftInset = resources.getDimension(R.dimen.view_timeline_segment_left_inset);
         this.rightInset = resources.getDimension(R.dimen.view_timeline_segment_right_inset);
@@ -143,6 +153,24 @@ public final class TimelineSegmentView extends View {
         //endregion
 
 
+        //region Timestamp
+
+        if (rightTimestampString != null) {
+            timestampStrokePath.reset();
+            timestampStrokePath.moveTo(midX, midY);
+            timestampStrokePath.lineTo(maxX + rightInset, midY);
+            canvas.drawPath(timestampStrokePath, timestampStrokePaint);
+
+            rightTimestampPaint.getTextBounds(rightTimestampString, 0, rightTimestampString.length(), textRect);
+
+            float textX = Math.round(maxX - textRect.width());
+            float textY = Math.round(midY - textRect.height());
+            canvas.drawText(rightTimestampString, textX, textY, rightTimestampPaint);
+        }
+
+        //endregion
+
+
         //region Event Icon
 
         if (eventDrawable != null) {
@@ -156,19 +184,6 @@ public final class TimelineSegmentView extends View {
                     Math.round(midY + drawableHeight / 2f)
             );
             eventDrawable.draw(canvas);
-        }
-
-        //endregion
-
-
-        //region Timestamp
-
-        if (timestampString != null) {
-            timestampPaint.getTextBounds(timestampString, 0, timestampString.length(), textRect);
-
-            float textX = Math.round(maxX - textRect.width());
-            float textY = Math.round(midY - textRect.centerY());
-            canvas.drawText(timestampString, textX, textY, timestampPaint);
         }
 
         //endregion
@@ -210,13 +225,13 @@ public final class TimelineSegmentView extends View {
     }
 
     public void setTimestampTypeface(@NonNull Typeface typeface) {
-        timestampPaint.setTypeface(typeface);
+        rightTimestampPaint.setTypeface(typeface);
         invalidate();
     }
 
-    public void setTimestampString(@Nullable String timestampString) {
-        if (!TextUtils.equals(timestampString, this.timestampString)) {
-            this.timestampString = timestampString;
+    public void setRightTimestampString(@Nullable String rightTimestampString) {
+        if (!TextUtils.equals(rightTimestampString, this.rightTimestampString)) {
+            this.rightTimestampString = rightTimestampString;
             invalidate();
         }
     }
