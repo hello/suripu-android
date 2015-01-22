@@ -42,6 +42,7 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
+import is.hello.sense.ui.widget.TimelineTabsDrawable;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
@@ -122,6 +123,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         dateText.setOnClickListener(ignored -> ((HomeActivity) getActivity()).showTimelineNavigator(getDate()));
 
         SelectorLinearLayout headerModeSelector = (SelectorLinearLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
+        headerModeSelector.setBackground(new TimelineTabsDrawable(getResources()));
         headerModeSelector.setOnSelectionChangedListener(this);
 
         this.timelineScore = new ScoreViewMode(inflater, headerView);

@@ -71,6 +71,7 @@
             android:textOff="@string/label_sleep_summary"
             android:textAllCaps="true"
             android:checked="true"
+            android:background="@color/transparent"
             style="@style/AppTheme.Button.ModeSelector.Timeline"/>
 
         <View
@@ -86,6 +87,7 @@
             android:textOn="@string/label_before_sleep"
             android:textOff="@string/label_before_sleep"
             android:textAllCaps="true"
+            android:background="@color/transparent"
             style="@style/AppTheme.Button.ModeSelector.Timeline"/>
 
     </is.hello.sense.ui.widget.SelectorLinearLayout>
