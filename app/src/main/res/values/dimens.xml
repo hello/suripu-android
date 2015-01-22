@@ -66,7 +66,7 @@
     <dimen name="scale_view_tick">1dp</dimen>
     <dimen name="scale_view_segment">12dp</dimen>
 
-    <dimen name="timeline_header_min_height">344dp</dimen>
+    <dimen name="timeline_header_min_height">372dp</dimen>
 
     <dimen name="timeline_tabs_top_inset">0dp</dimen>
     <dimen name="timeline_tabs_stroke_width">1px</dimen>
