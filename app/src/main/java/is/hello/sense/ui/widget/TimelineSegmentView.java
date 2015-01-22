@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -32,6 +31,11 @@ public final class TimelineSegmentView extends View {
     private float rightInset;
     private float stripeWidth;
 
+    private int leftUnderlineColor;
+    private int leftTimestampColor;
+    private int rightUnderlineColor;
+    private int rightTimestampColor;
+
     //endregion
 
 
@@ -40,8 +44,9 @@ public final class TimelineSegmentView extends View {
     private final RectF rect = new RectF();
     private final Paint fillPaint = new Paint();
     private final Paint stripePaint = new Paint();
-    private final Rect textRect = new Rect();
-    private final Paint rightTimestampPaint = new Paint();
+
+    private final Rect timestampTextRect = new Rect();
+    private final Paint timestampPaint = new Paint();
     private final Paint timestampStrokePaint = new Paint();
     private final Path timestampStrokePath = new Path();
 
@@ -53,8 +58,8 @@ public final class TimelineSegmentView extends View {
     private Drawable eventDrawable;
     private int sleepDepth;
     private StripeInset stripeInset = StripeInset.NONE;
-    private @Nullable String leftTimestampString;
-    private @Nullable String rightTimestampString;
+    private TimestampSide timestampSide = TimestampSide.RIGHT;
+    private @Nullable String timestampString;
 
     //endregion
 
@@ -82,13 +87,11 @@ public final class TimelineSegmentView extends View {
         stripePaint.setAntiAlias(true);
         stripePaint.setColor(resources.getColor(R.color.timeline_segment_stripe));
 
-        rightTimestampPaint.setAntiAlias(true);
-        rightTimestampPaint.setSubpixelText(true);
-        rightTimestampPaint.setColor(resources.getColor(R.color.light_accent));
-        rightTimestampPaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_timeline_time));
+        timestampPaint.setAntiAlias(true);
+        timestampPaint.setSubpixelText(true);
+        timestampPaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_timeline_time));
 
         float strokeGap = resources.getDimension(R.dimen.view_timeline_segment_stroke_gap);
-        timestampStrokePaint.setColor(resources.getColor(R.color.timeline_segment_underline_right));
         timestampStrokePaint.setStyle(Paint.Style.STROKE);
         timestampStrokePaint.setStrokeWidth(resources.getDimension(R.dimen.divider_size));
         timestampStrokePaint.setPathEffect(new DashPathEffect(new float[] { strokeGap, strokeGap }, 0));
@@ -96,6 +99,12 @@ public final class TimelineSegmentView extends View {
         this.leftInset = resources.getDimension(R.dimen.view_timeline_segment_left_inset);
         this.rightInset = resources.getDimension(R.dimen.view_timeline_segment_right_inset);
         this.stripeWidth = resources.getDimension(R.dimen.view_timeline_segment_stripe_width);
+
+        this.leftUnderlineColor = resources.getColor(R.color.timeline_segment_underline_left);
+        this.leftTimestampColor = resources.getColor(R.color.text_dim);
+
+        this.rightUnderlineColor = resources.getColor(R.color.timeline_segment_underline_right);
+        this.rightTimestampColor = resources.getColor(R.color.light_accent);
     }
 
     //endregion
@@ -116,7 +125,7 @@ public final class TimelineSegmentView extends View {
         //region Stripe + Background Fills
 
         float percentage = sleepDepth / 100f;
-        float fillWidth = width * percentage;
+        float fillWidth = (width - leftInset - rightInset) * percentage;
         rect.set(midX - fillWidth / 2f, minY, midX + fillWidth / 2f, maxY);
         canvas.drawRect(rect, fillPaint);
 
@@ -148,17 +157,34 @@ public final class TimelineSegmentView extends View {
 
         //region Timestamp
 
-        if (rightTimestampString != null) {
+        if (timestampString != null) {
             timestampStrokePath.reset();
-            timestampStrokePath.moveTo(midX, midY);
-            timestampStrokePath.lineTo(maxX + rightInset, midY);
+            timestampPaint.getTextBounds(timestampString, 0, timestampString.length(), timestampTextRect);
+
+            float textX, textY;
+            if (timestampSide == TimestampSide.RIGHT) {
+                timestampStrokePaint.setColor(rightUnderlineColor);
+                timestampPaint.setColor(rightTimestampColor);
+
+                timestampStrokePath.moveTo(midX, midY);
+                timestampStrokePath.lineTo(maxX + rightInset, midY);
+
+                textX = Math.round(maxX - timestampTextRect.width());
+                textY = Math.round(midY - timestampTextRect.height());
+            } else {
+                timestampStrokePaint.setColor(leftUnderlineColor);
+                timestampPaint.setColor(leftTimestampColor);
+
+                textX = minX;
+                textY = Math.round(midY + timestampTextRect.height() / 2f);
+
+                float lineY = textY + timestampTextRect.height() / 2f;
+                timestampStrokePath.moveTo(minX - leftInset, lineY);
+                timestampStrokePath.lineTo(midX, lineY);
+            }
+
             canvas.drawPath(timestampStrokePath, timestampStrokePaint);
-
-            rightTimestampPaint.getTextBounds(rightTimestampString, 0, rightTimestampString.length(), textRect);
-
-            float textX = Math.round(maxX - textRect.width());
-            float textY = Math.round(midY - textRect.height());
-            canvas.drawText(rightTimestampString, textX, textY, rightTimestampPaint);
+            canvas.drawText(timestampString, textX, textY, timestampPaint);
         }
 
         //endregion
@@ -212,9 +238,10 @@ public final class TimelineSegmentView extends View {
         invalidate();
     }
 
-    public void setRightTimestampString(@Nullable String rightTimestampString) {
-        if (!TextUtils.equals(rightTimestampString, this.rightTimestampString)) {
-            this.rightTimestampString = rightTimestampString;
+    public void setTimestampString(@Nullable String timestampString, @NonNull TimestampSide side) {
+        if (!TextUtils.equals(timestampString, this.timestampString)) {
+            this.timestampString = timestampString;
+            this.timestampSide = side;
             invalidate();
         }
     }
@@ -226,6 +253,11 @@ public final class TimelineSegmentView extends View {
         NONE,
         TOP,
         BOTTOM,
+    }
+
+    public static enum TimestampSide {
+        LEFT,
+        RIGHT,
     }
 }
 
