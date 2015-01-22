@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,11 +24,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.PreSleepInsight;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
@@ -47,7 +43,6 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
-import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -74,10 +69,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private TextView scoreText;
     private TextView messageText;
 
-    private TextView timelineEventsHeader;
-    private LinearLayout beforeSleepHeader;
-    private LinearLayout beforeSleepItemContainer;
-    private TextView beforeSleepMessage;
+    private View timelineEventsHeader;
     private int selectedBeforeSleepInsight = -1;
 
 
@@ -132,16 +124,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         ListViews.addHeaderView(listView, headerView, null, false);
 
-        this.beforeSleepHeader = (LinearLayout) inflater.inflate(R.layout.sub_fragment_before_sleep, listView, false);
-        this.beforeSleepItemContainer = (LinearLayout) beforeSleepHeader.findViewById(R.id.fragment_timeline_before_sleep_container);
-        this.beforeSleepMessage = (TextView) beforeSleepHeader.findViewById(R.id.fragment_timeline_before_sleep_message);
-        Animations.Properties.DEFAULT.apply(beforeSleepHeader.getLayoutTransition(), false);
-        beforeSleepHeader.setVisibility(View.GONE);
-        ListViews.addHeaderView(listView, beforeSleepHeader, null, false);
-
-        this.timelineEventsHeader = (TextView) inflater.inflate(R.layout.item_section_header, listView, false);
-        timelineEventsHeader.setText(R.string.title_events_timeline);
+        this.timelineEventsHeader = new View(getActivity());
+        timelineEventsHeader.setBackgroundResource(R.drawable.background_timeline_top);
         timelineEventsHeader.setVisibility(View.INVISIBLE);
+        timelineEventsHeader.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.gap_outer));
         ListViews.addHeaderView(listView, timelineEventsHeader, null, false);
 
         View spacingFooter = new View(getActivity());
@@ -227,43 +213,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
     }
 
-    public void showInsights(@NonNull List<PreSleepInsight> preSleepInsights) {
-        if (preSleepInsights.isEmpty()) {
-            beforeSleepHeader.setVisibility(View.GONE);
-        } else {
-            beforeSleepItemContainer.removeViews(0, beforeSleepItemContainer.getChildCount());
-
-            LayoutInflater inflater = LayoutInflater.from(getActivity());
-            int dividerWidth = (int) (0.14f * beforeSleepHeader.getMeasuredWidth()); // from comp
-            View.OnClickListener onClick = new SafeOnClickListener(this::showInsight);
-            for (int i = 0, size = preSleepInsights.size(); i < size; i++) {
-                PreSleepInsight preSleepInsight = preSleepInsights.get(i);
-
-                ImageView insightImage = (ImageView) inflater.inflate(R.layout.item_before_sleep, beforeSleepItemContainer, false);
-                insightImage.setImageDrawable(preSleepInsight.getIcon(getActivity()));
-                insightImage.setTag(i);
-                insightImage.setTag(R.id.fragment_timeline_before_sleep_item_tag_insight, preSleepInsight);
-                insightImage.setOnClickListener(onClick);
-                beforeSleepItemContainer.addView(insightImage);
-
-                if (i != size - 1) {
-                    beforeSleepItemContainer.addView(Styles.createHorizontalDivider(getActivity(), dividerWidth));
-                }
-            }
-
-            beforeSleepHeader.setVisibility(View.VISIBLE);
-            beforeSleepHeader.forceLayout();
-        }
-    }
-
     public void bindTimeline(@Nullable Timeline timeline) {
         if (timeline != null) {
             showSleepScore(timeline.getScore());
-
-            if (timeline.getPreSleepInsights() != null && !timeline.getPreSleepInsights().isEmpty()) {
-                showInsights(timeline.getPreSleepInsights());
-            }
-
 
             if (timeline.getSegments().isEmpty()) {
                 timelineEventsHeader.setVisibility(View.INVISIBLE);
@@ -272,8 +224,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             }
         } else {
             scoreGraph.setTrackColor(getResources().getColor(R.color.border));
-
-            showInsights(Collections.emptyList());
             timelineEventsHeader.setVisibility(View.INVISIBLE);
         }
     }
@@ -294,22 +244,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     public DateTime getDate() {
         return (DateTime) getArguments().getSerializable(ARG_DATE);
-    }
-
-
-    public void showInsight(@NonNull View sender) {
-        View view = beforeSleepItemContainer.findViewWithTag(selectedBeforeSleepInsight);
-        if (view == sender && !TextUtils.isEmpty(beforeSleepMessage.getText())) {
-            beforeSleepMessage.setText(null);
-            beforeSleepMessage.setVisibility(View.GONE);
-        } else {
-            PreSleepInsight insight = (PreSleepInsight) sender.getTag(R.id.fragment_timeline_before_sleep_item_tag_insight);
-            beforeSleepMessage.setText(insight.getMessage());
-            bindAndSubscribe(markdown.render(insight.getMessage()), beforeSleepMessage::setText, Functions.LOG_ERROR);
-            beforeSleepMessage.setVisibility(View.VISIBLE);
-
-            this.selectedBeforeSleepInsight = (int) sender.getTag();
-        }
     }
 
 
