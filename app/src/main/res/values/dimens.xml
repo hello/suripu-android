@@ -12,12 +12,13 @@
     <!-- Text -->
 
     <dimen name="text_size_body">16sp</dimen>
+    <dimen name="text_size_body_medium">14sp</dimen>
+    <dimen name="text_size_body_small">13sp</dimen>
     <dimen name="text_size_button">16sp</dimen>
     <dimen name="text_size_large_button">20sp</dimen>
     <dimen name="text_size_section_heading">11sp</dimen>
     <dimen name="text_size_timeline_time">11sp</dimen>
     <dimen name="text_size_subheading">16sp</dimen>
-    <dimen name="text_size_body_small">13sp</dimen>
     <dimen name="text_size_question">24sp</dimen>
     <dimen name="text_size_heading">24sp</dimen>
     <dimen name="text_size_small_score">40sp</dimen>
@@ -28,6 +29,7 @@
     <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
     <item name="line_multiple_body" format="float" type="dimen">1.5</item>
+    <item name="line_multiple_body_medium" format="float" type="dimen">1.4</item>
     <item name="line_multiple_body_small" format="float" type="dimen">1.2</item>
 
     <dimen name="edit_text_min_height">45dp</dimen>

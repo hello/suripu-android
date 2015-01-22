@@ -72,6 +72,10 @@
          this if we want to distinguish again. -->
     <style name="AppTheme.Text.Body.Light" />
 
+    <style name="AppTheme.Text.Body.Light.Medium">
+        <item name="android:textSize">@dimen/text_size_body_medium</item>
+    </style>
+
     <style name="AppTheme.Text.Body.Light.Small">
         <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>

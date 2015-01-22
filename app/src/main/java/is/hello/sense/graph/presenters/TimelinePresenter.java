@@ -22,10 +22,11 @@ public class TimelinePresenter extends Presenter {
 
     public final PresenterSubject<ArrayList<Timeline>> timeline = PresenterSubject.create();
     public final Observable<Timeline> mainTimeline = timeline.map(timelines -> {
-        if (timelines.isEmpty())
+        if (timelines.isEmpty()) {
             return null;
-        else
+        } else {
             return timelines.get(0);
+        }
     });
     public final Observable<CharSequence> renderedTimelineMessage = mainTimeline.map(timeline -> {
         if (timeline != null) {

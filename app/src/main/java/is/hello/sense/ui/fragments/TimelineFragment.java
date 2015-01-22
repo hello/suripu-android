@@ -2,11 +2,14 @@ package is.hello.sense.ui.fragments;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +29,11 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.PreSleepInsight;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
@@ -37,6 +42,7 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
+import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.util.ListViews;
@@ -50,7 +56,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
 
-public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener {
+public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
 
     @Inject DateFormatter dateFormatter;
@@ -67,7 +73,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private ViewGroup headerView;
     private TextView dateText;
     private HeaderViewMode headerMode;
-    private SummaryViewMode timelineSummary;
+
+    private ScoreViewMode timelineScore;
+    private BeforeSleepHeaderMode beforeSleep;
 
     private View timelineEventsHeader;
 
@@ -113,10 +121,16 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
         dateText.setOnClickListener(ignored -> ((HomeActivity) getActivity()).showTimelineNavigator(getDate()));
 
-        this.timelineSummary = new SummaryViewMode(inflater, headerView);
-        setHeaderMode(timelineSummary);
+        SelectorLinearLayout headerModeSelector = (SelectorLinearLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
+        headerModeSelector.setOnSelectionChangedListener(this);
+
+        this.timelineScore = new ScoreViewMode(inflater, headerView);
+        this.beforeSleep = new BeforeSleepHeaderMode(inflater, headerView);
+
+        setHeaderMode(timelineScore);
 
         ListViews.addHeaderView(listView, headerView, null, false);
+
 
         this.timelineEventsHeader = new View(getActivity());
         timelineEventsHeader.setBackgroundResource(R.drawable.background_timeline_top);
@@ -173,7 +187,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         subscribe(segments, segmentAdapter::bindSegments, segmentAdapter::handleError);
 
         Observable<CharSequence> renderedMessage = timelinePresenter.renderedTimelineMessage;
-        bindAndSubscribe(renderedMessage, timelineSummary.messageText::setText, Functions.LOG_ERROR);
+        bindAndSubscribe(renderedMessage, timelineScore.messageText::setText, Functions.LOG_ERROR);
     }
 
     @Override
@@ -191,6 +205,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     //region Headers
 
     private void setHeaderMode(@NonNull HeaderViewMode headerMode) {
+        if (this.headerMode == headerMode) {
+            return;
+        }
+
         if (this.headerMode != null) {
             headerView.removeView(this.headerMode.view);
         }
@@ -199,11 +217,26 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         headerView.addView(headerMode.view, 1);
     }
 
+    @Override
+    public void onSelectionChanged(int newSelectionIndex) {
+        switch (newSelectionIndex) {
+            case 0:
+                setHeaderMode(timelineScore);
+                break;
+            case 1:
+                setHeaderMode(beforeSleep);
+                break;
+            default:
+                break;
+        }
+    }
+
     //endregion
+
 
     public void bindTimeline(@Nullable Timeline timeline) {
         if (timeline != null) {
-            timelineSummary.showSleepScore(timeline.getScore());
+            timelineScore.showSleepScore(timeline.getScore());
 
             if (timeline.getSegments().isEmpty()) {
                 timelineEventsHeader.setVisibility(View.INVISIBLE);
@@ -211,13 +244,16 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 timelineEventsHeader.setVisibility(View.VISIBLE);
             }
         } else {
-            timelineSummary.showSleepScore(-1);
+            timelineScore.showSleepScore(-1);
             timelineEventsHeader.setVisibility(View.INVISIBLE);
         }
+
+        beforeSleep.bindTimeline(timeline);
     }
 
     public void timelineUnavailable(@Nullable Throwable e) {
-        timelineSummary.presentError(e);
+        timelineScore.presentError(e);
+        beforeSleep.presentError(e);
     }
 
 
@@ -310,25 +346,28 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
 
 
+    //region Header Modes
+
     class HeaderViewMode {
         final View view;
 
-        HeaderViewMode(@NonNull View view) {
-            this.view = view;
+        HeaderViewMode(@LayoutRes int layoutRes, @NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
+            this.view = inflater.inflate(layoutRes, container, false);
         }
     }
 
-    class SummaryViewMode extends HeaderViewMode {
+    class ScoreViewMode extends HeaderViewMode {
         final SleepScoreDrawable scoreGraph;
         final TextView scoreText;
         final TextView messageText;
 
-        SummaryViewMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-            super(inflater.inflate(R.layout.sub_fragment_timeline_summary, container, false));
+        ScoreViewMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
+            super(R.layout.sub_fragment_timeline_score, inflater, container);
 
             LinearLayout sleepScoreContainer = (LinearLayout) view.findViewById(R.id.fragment_timeline_sleep_score_chart);
             this.scoreText = (TextView) sleepScoreContainer.findViewById(R.id.fragment_timeline_sleep_score);
             this.messageText = (TextView) view.findViewById(R.id.fragment_timeline_message);
+            Views.makeTextViewLinksClickable(messageText);
 
             this.scoreGraph = new SleepScoreDrawable(getResources());
             sleepScoreContainer.setBackground(scoreGraph);
@@ -367,6 +406,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         void presentError(Throwable e) {
             scoreGraph.setTrackColor(getResources().getColor(R.color.border));
             scoreGraph.setValue(0);
+
             scoreText.setText(R.string.missing_data_placeholder);
             scoreText.setTextColor(getResources().getColor(R.color.text_dark));
 
@@ -377,4 +417,55 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             }
         }
     }
+
+    class BeforeSleepHeaderMode extends HeaderViewMode {
+        final LinearLayout container;
+        final LayoutInflater inflater;
+
+        BeforeSleepHeaderMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
+            super(R.layout.sub_fragment_timeline_before_sleep, inflater, container);
+
+            this.container = (LinearLayout) view.findViewById(R.id.sub_fragment_timeline_before_sleep_container);
+            this.inflater = inflater;
+        }
+
+
+        TextView inflateNewItem() {
+            return (TextView) inflater.inflate(R.layout.item_before_sleep_insight, container, false);
+        }
+
+        void bindTimeline(@Nullable Timeline timeline) {
+            container.removeAllViews();
+
+            if (timeline != null && !Lists.isEmpty(timeline.getPreSleepInsights())) {
+                Context context = getActivity();
+                for (PreSleepInsight insight : timeline.getPreSleepInsights()) {
+                    TextView text = inflateNewItem();
+                    text.setCompoundDrawablesRelativeWithIntrinsicBounds(insight.getIcon(context), null, null, null);
+                    text.setText(insight.getMessage());
+                    container.addView(text);
+                }
+            } else {
+                TextView text = inflateNewItem();
+                text.setGravity(Gravity.CENTER);
+                text.setText(R.string.placeholder_no_before_sleep_insights);
+                container.addView(text);
+            }
+        }
+
+        void presentError(@Nullable Throwable e) {
+            container.removeAllViews();
+
+            TextView text = inflateNewItem();
+            text.setGravity(Gravity.CENTER);
+            if (e != null) {
+                text.setText(getString(R.string.timeline_error_message, e.getMessage()));
+            } else {
+                text.setText(R.string.missing_data_placeholder);
+            }
+            container.addView(text);
+        }
+    }
+
+    //endregion
 }

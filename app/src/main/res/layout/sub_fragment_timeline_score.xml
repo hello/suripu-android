@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:id="@+id/fragment_timeline_sleep_score_chart"
@@ -33,10 +33,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="@dimen/gap_outer"
-        android:textAppearance="@style/AppTheme.Text.Body"
+        android:layout_marginTop="@dimen/gap_outer"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:textAppearance="@style/AppTheme.Text.Body.Light.Medium"
         android:gravity="center"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
+        android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
         android:text="@string/dialog_loading_message"/>
 
 </LinearLayout>

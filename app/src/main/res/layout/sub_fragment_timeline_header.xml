@@ -45,4 +45,38 @@
 
     </RelativeLayout>
 
+    <is.hello.sense.ui.widget.SelectorLinearLayout
+        android:id="@+id/sub_fragment_timeline_header_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/label_sleep_summary"
+            android:textOn="@string/label_sleep_summary"
+            android:textOff="@string/label_sleep_summary"
+            android:textAllCaps="true"
+            android:checked="true"
+            style="@style/AppTheme.Button.ModeSelector.Timeline"/>
+
+        <View
+            android:layout_marginTop="@dimen/gap_medium"
+            android:layout_marginBottom="@dimen/gap_medium"
+            style="@style/Divider.Vertical" />
+
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/label_before_sleep"
+            android:textOn="@string/label_before_sleep"
+            android:textOff="@string/label_before_sleep"
+            android:textAllCaps="true"
+            style="@style/AppTheme.Button.ModeSelector.Timeline"/>
+
+    </is.hello.sense.ui.widget.SelectorLinearLayout>
+
 </LinearLayout>
