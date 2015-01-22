@@ -4,17 +4,11 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.format.DateFormat;
-import android.text.style.ImageSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +19,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import org.joda.time.DateTime;
 
@@ -49,10 +42,11 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
-import is.hello.sense.ui.widget.TimelineTabsDrawable;
+import is.hello.sense.ui.widget.IconAndTextDrawable;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.TimelineTabsDrawable;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -132,15 +126,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         SelectorLinearLayout headerModeSelector = (SelectorLinearLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
         headerModeSelector.setBackground(new TimelineTabsDrawable(getResources()));
         headerModeSelector.setOnSelectionChangedListener(this);
-        headerModeSelector.setButtonStyler((button, checked) -> {
-            Drawable icon = button.getCompoundDrawablesRelative()[0].mutate();
-            if (checked) {
-                icon.setColorFilter(getResources().getColor(R.color.light_accent), PorterDuff.Mode.SRC_ATOP);
-            } else {
-                icon.setColorFilter(null);
-            }
-            button.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
-        });
+        IconAndTextDrawable.replaceBuiltInDrawing(headerModeSelector.getToggleButtons());
         headerModeSelector.setSelectedIndex(0);
 
         this.timelineScore = new ScoreViewMode(inflater, headerView);
