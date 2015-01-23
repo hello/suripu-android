@@ -3,6 +3,9 @@
     <string name="setting_title_units">Units</string>
     <string name="setting_title_use_24_time">Use 24 hour time</string>
 
+    <string name="unit_system_us_customary">Imperial</string>
+    <string name="unit_system_metric">Metric</string>
+
     <string-array name="setting_entries_units">
         <item>UsCustomary</item>
         <item>Metric</item>

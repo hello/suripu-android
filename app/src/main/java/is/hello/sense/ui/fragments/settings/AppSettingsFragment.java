@@ -53,7 +53,7 @@ public class AppSettingsFragment extends InjectionFragment {
         addItem(R.string.label_account, true, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account, null));
         addItem(R.string.label_devices, true, ignored -> showFragment(DeviceListFragment.class, R.string.label_devices, null));
         addItem(R.string.label_notifications, true, ignored -> showFragment(NotificationsSettingsFragment.class, R.string.label_notifications, null));
-        addItem(R.string.label_units_and_time, true, ignored -> showFragment(R.xml.settings_units_and_time, R.string.label_units_and_time));
+        addItem(R.string.label_units_and_time, true, ignored -> showFragment(UnitSettingsFragments.class, R.string.label_units_and_time, null));
         addItem(R.string.action_log_out, false, this::logOut);
 
         TextView footer = (TextView) view.findViewById(R.id.sub_fragment_device_footer);

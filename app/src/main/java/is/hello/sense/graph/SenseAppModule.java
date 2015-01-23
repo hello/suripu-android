@@ -61,6 +61,7 @@ import is.hello.sense.ui.fragments.settings.ChangePasswordFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
+import is.hello.sense.ui.fragments.settings.UnitSettingsFragments;
 import is.hello.sense.ui.widget.TimestampTextView;
 
 @Module(
@@ -125,6 +126,7 @@ import is.hello.sense.ui.widget.TimestampTextView;
         AccountSettingsFragment.class,
         ChangePasswordFragment.class,
         ChangeEmailFragment.class,
+        UnitSettingsFragments.class,
         AccountPresenter.class,
 
         UnstableBluetoothFragment.class,
