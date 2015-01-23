@@ -32,7 +32,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     private float[] itemHeights;
     private float totalItemHeight;
 
-    private Set<Integer> timeIndexes = new HashSet<>();
+    private Set<Integer> positionsWithTime = new HashSet<>();
 
     private boolean use24Time;
 
@@ -62,7 +62,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         if (segment.getEventType() != null) {
             int itemHeight = this.itemEventImageHeight + this.baseItemHeight;
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
-        } else if (timeIndexes.contains(position)) {
+        } else if (positionsWithTime.contains(position)) {
             return (int) ((segment.getDuration() / 3600f) * (this.baseItemHeight * 2f));
         } else {
             return (int) ((segment.getDuration() / 3600f) * this.baseItemHeight);
@@ -129,7 +129,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
     //region Representative Time Indexes
 
-    private void calculateTimeIndexes(@NonNull List<TimelineSegment> segments) {
+    private void calculatePositionsWithTime(@NonNull List<TimelineSegment> segments) {
         Set<Integer> hoursRepresented = new HashSet<>();
         for (int i = 1; i < segments.size(); i++) {
             TimelineSegment segment = segments.get(i);
@@ -138,7 +138,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
                 continue;
             }
 
-            timeIndexes.add(i);
+            positionsWithTime.add(i);
             hoursRepresented.add(hour);
         }
     }
@@ -152,14 +152,14 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         clear();
 
         if (segments != null) {
-            calculateTimeIndexes(segments);
+            calculatePositionsWithTime(segments);
             calculateItemHeights(segments);
             addAll(segments);
         } else {
             this.itemHeights = null;
             this.totalItemHeight = 0;
 
-            timeIndexes.clear();
+            positionsWithTime.clear();
         }
     }
 
@@ -209,7 +209,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
             if (eventType != null) {
                 itemView.setTimestampString(dateFormatter.formatAsTime(segment.getTimestamp(), use24Time),
                                             TimelineSegmentView.TimestampSide.RIGHT);
-            } else if (timeIndexes.contains(position)) {
+            } else if (positionsWithTime.contains(position)) {
                 LocalDateTime time = segment.getTimestamp().withMinuteOfHour(0);
                 itemView.setTimestampString(dateFormatter.formatAsTime(time, use24Time),
                                             TimelineSegmentView.TimestampSide.LEFT);

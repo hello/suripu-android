@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Markdown;
 import rx.Observable;
@@ -22,7 +23,7 @@ public class TimelinePresenter extends Presenter {
 
     public final PresenterSubject<ArrayList<Timeline>> timeline = PresenterSubject.create();
     public final Observable<Timeline> mainTimeline = timeline.map(timelines -> {
-        if (timelines.isEmpty()) {
+        if (Lists.isEmpty(timelines)) {
             return null;
         } else {
             return timelines.get(0);

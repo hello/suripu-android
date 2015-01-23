@@ -91,11 +91,11 @@ public class IconAndTextDrawable extends Drawable {
         int iconHeight = iconDrawable.getIntrinsicHeight();
         int iconMidY = iconHeight / 2;
 
-        float textX = midX - textBounds.centerX() + iconMidX + iconPadding / 2;
+        float textX = (midX - textBounds.centerX()) + iconMidX + (iconPadding / 2);
         float textY = midY - textBounds.centerY();
         canvas.drawText(text, textX, textY, textPaint);
 
-        int iconRight = (int) textX - iconPadding / 2;
+        int iconRight = (int) textX - (iconPadding / 2);
         int iconLeft = iconRight - iconWidth;
         iconDrawable.setBounds(iconLeft, midY - iconMidY, iconRight, midY + iconMidY);
         iconDrawable.draw(canvas);
