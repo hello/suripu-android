@@ -22,7 +22,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
 
     public static PillDetailsFragment newInstance(@NonNull Device device) {
         PillDetailsFragment fragment = new PillDetailsFragment();
-        fragment.setArguments(getArguments(device));
+        fragment.setArguments(createArguments(device));
         return fragment;
     }
 
@@ -31,11 +31,11 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         super.onViewCreated(view, savedInstanceState);
 
         showActions();
-        addDeviceAction(R.string.action_replace_sleep_pill, true, this::unpairDevice);
+        addDeviceAction(R.string.action_replace_sleep_pill, true, this::unregisterDevice);
 
         if (device.isMissing()) {
             String missingMessage = getString(R.string.error_sleep_pill_missing_fmt, device.getLastUpdatedDescription(getActivity()));
-            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.SLEEP_PILL_MISSING));
+            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.SLEEP_PILL_MISSING));
         } else {
             hideAlert();
         }
@@ -60,7 +60,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         });
     }
 
-    public void unpairDevice(@NonNull View sender) {
+    public void unregisterDevice() {
         SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
         alertDialog.setDestructive(true);
         alertDialog.setTitle(R.string.dialog_title_replace_sleep_pill);

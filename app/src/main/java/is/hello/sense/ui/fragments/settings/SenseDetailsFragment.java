@@ -31,6 +31,8 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class SenseDetailsFragment extends DeviceDetailsFragment implements FragmentNavigationActivity.BackInterceptingFragment {
+    private static final int WIFI_REQUEST_CODE = 0x94;
+
     @Inject DevicesPresenter devicesPresenter;
     @Inject PreferencesPresenter preferences;
 
@@ -42,7 +44,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     public static SenseDetailsFragment newInstance(@NonNull Device device) {
         SenseDetailsFragment fragment = new SenseDetailsFragment();
-        fragment.setArguments(getArguments(device));
+        fragment.setArguments(createArguments(device));
         return fragment;
     }
 
@@ -94,6 +96,18 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == WIFI_REQUEST_CODE) {
+            if (hardwarePresenter.getPeripheral() != null && hardwarePresenter.getPeripheral().isConnected()) {
+                hideAlert();
+                checkConnectivityState();
+            }
+        }
+    }
+
+    @Override
     public boolean onInterceptBack(@NonNull Runnable back) {
         if (didEnableBluetooth) {
             SenseAlertDialog turnOffDialog = new SenseAlertDialog(getActivity());
@@ -120,23 +134,23 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         clearActions();
         showActions();
 
-        addDeviceAction(R.string.action_replace_this_sense, true, this::unpairDevice);
+        addDeviceAction(R.string.action_replace_this_sense, true, this::unregisterDevice);
     }
 
     private void showConnectedSenseActions(@Nullable SensePeripheral.SenseWifiNetwork network) {
         clearActions();
         showActions();
 
-        addDeviceAction(R.string.action_replace_this_sense, true, this::unpairDevice);
+        addDeviceAction(R.string.action_replace_this_sense, true, this::unregisterDevice);
         addDeviceAction(R.string.action_enter_pairing_mode, true, this::putIntoPairingMode);
         addDeviceAction(R.string.action_factory_reset, true, this::factoryReset);
         addDeviceAction(R.string.action_select_wifi_network, false, this::changeWifiNetwork);
 
         if (network == null || TextUtils.isEmpty(network.ssid)) {
-            showTroubleshootingAlert(R.string.error_sense_no_connectivity, R.string.action_troubleshoot, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.WIFI_CONNECTIVITY));
+            showTroubleshootingAlert(R.string.error_sense_no_connectivity, R.string.action_troubleshoot, this::changeWifiNetwork);
         } else if (device.isMissing()) {
             String missingMessage = getString(R.string.error_sense_missing_fmt, device.getLastUpdatedDescription(getActivity()));
-            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.SENSE_MISSING));
+            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.SENSE_MISSING));
         } else {
             hideAlert();
         }
@@ -159,7 +173,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device), this::bindPeripheral, this::presentError);
     }
 
-    public void enableBluetooth(@NonNull View sender) {
+    public void enableBluetooth() {
         showBlockingAlert(R.string.title_turning_on);
         bindAndSubscribe(hardwarePresenter.turnOnBluetooth(),
                          ignored -> {
@@ -193,7 +207,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                 UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
                 fragment.show(getFragmentManager(), R.id.activity_fragment_navigation_container);
             } else if (e instanceof PeripheralNotFoundError) {
-                showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_retry, ignored -> connectToPeripheral());
+                showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_retry, this::connectToPeripheral);
             } else {
                 ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
             }
@@ -225,16 +239,16 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     //region Sense Actions
 
-    public void changeWifiNetwork(@NonNull View sender) {
+    public void changeWifiNetwork() {
         if (hardwarePresenter.getPeripheral() == null)
             return;
 
         Intent intent = new Intent(getActivity(), OnboardingActivity.class);
         intent.putExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, true);
-        startActivity(intent);
+        startActivityForResult(intent, WIFI_REQUEST_CODE);
     }
 
-    public void putIntoPairingMode(@NonNull View sender) {
+    public void putIntoPairingMode() {
         Analytics.trackEvent(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE));
 
         if (hardwarePresenter.getPeripheral() == null)
@@ -248,8 +262,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         });
     }
 
-    @SuppressWarnings("CodeBlock2Expr")
-    public void factoryReset(@NonNull View sender) {
+    public void factoryReset() {
         Analytics.trackEvent(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_FACTORY_RESTORE));
 
         if (hardwarePresenter.getPeripheral() == null) {
@@ -282,12 +295,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                          this::presentError);
     }
 
-    public void unpairDevice(@NonNull View sender) {
+    public void unregisterDevice() {
         SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
         alertDialog.setDestructive(true);
         alertDialog.setTitle(R.string.dialog_title_replace_sense);
         alertDialog.setMessage(R.string.dialog_message_replace_sense);
-
         alertDialog.setNegativeButton(android.R.string.cancel, null);
         alertDialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),

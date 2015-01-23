@@ -16,6 +16,7 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -35,9 +36,10 @@ public abstract class DeviceDetailsFragment extends HardwareFragment {
 
     protected Device device;
 
+
     //region Lifecycle
 
-    protected static Bundle getArguments(@NonNull Device device) {
+    protected static Bundle createArguments(@NonNull Device device) {
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_DEVICE, device);
         return arguments;
@@ -92,11 +94,18 @@ public abstract class DeviceDetailsFragment extends HardwareFragment {
         actionsContainer.setVisibility(View.VISIBLE);
     }
 
-    protected void addDeviceAction(@StringRes int titleRes, boolean wantsDivider, @NonNull View.OnClickListener onClick) {
-        actionsContainer.addView(Styles.createItemView(getActivity(), titleRes, R.style.AppTheme_Text_Actionable, onClick));
+    protected void addDeviceAction(@StringRes int titleRes, boolean wantsDivider, @NonNull Runnable onClick) {
+        View itemView = Styles.createItemView(getActivity(), titleRes, R.style.AppTheme_Text_Actionable, ignored -> onClick.run());
+        actionsContainer.addView(itemView);
+
         if (wantsDivider) {
-            actionsContainer.addView(Styles.createHorizontalDivider(getActivity(), ViewGroup.LayoutParams.MATCH_PARENT));
+            View dividerView = Styles.createHorizontalDivider(getActivity(), ViewGroup.LayoutParams.MATCH_PARENT);
+            actionsContainer.addView(dividerView);
         }
+    }
+
+    protected void showSupportFor(@NonNull UserSupport.DeviceIssue deviceIssue) {
+        UserSupport.showForDeviceIssue(getActivity(), deviceIssue);
     }
 
     //endregion
@@ -121,22 +130,22 @@ public abstract class DeviceDetailsFragment extends HardwareFragment {
     }
 
     protected void showTroubleshootingAlert(@NonNull String message,
-                                          @StringRes int buttonTitleRes,
-                                          @NonNull View.OnClickListener onClick) {
+                                            @StringRes int buttonTitleRes,
+                                            @NonNull Runnable onClick) {
         alertIcon.setVisibility(View.VISIBLE);
         alertBusy.setVisibility(View.GONE);
         alertAction.setVisibility(View.VISIBLE);
 
         alertText.setText(message);
         alertAction.setText(buttonTitleRes);
-        alertAction.setOnClickListener(onClick);
+        alertAction.setOnClickListener(ignored -> onClick.run());
 
         alertContainer.setVisibility(View.VISIBLE);
     }
 
     protected void showTroubleshootingAlert(@StringRes int messageRes,
-                                          @StringRes int buttonTitleRes,
-                                          @NonNull View.OnClickListener onClick) {
+                                            @StringRes int buttonTitleRes,
+                                            @NonNull Runnable onClick) {
         showTroubleshootingAlert(getString(messageRes), buttonTitleRes, onClick);
     }
 
