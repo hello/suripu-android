@@ -14,12 +14,14 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
+import is.hello.sense.units.systems.MetricUnitSystem;
+import is.hello.sense.units.systems.UsCustomaryUnitSystem;
 import rx.Observable;
 import rx.Subscription;
-import rx.android.observables.AndroidObservable;
 import rx.functions.Func2;
 import rx.subscriptions.Subscriptions;
 
@@ -39,6 +41,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 
     private final SharedPreferences sharedPreferences;
+    private final AccountPresenter accountPresenter;
 
     /**
      * SharedPreferences only keeps a weak reference to its OnSharedPreferenceChangeListener,
@@ -46,8 +49,11 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
      */
     private final Set<SharedPreferences.OnSharedPreferenceChangeListener> strongListeners = Collections.synchronizedSet(new HashSet<>());
 
-    public @Inject PreferencesPresenter(@NonNull Context context, @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences) {
+    public @Inject PreferencesPresenter(@NonNull Context context,
+                                        @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences,
+                                        @NonNull AccountPresenter accountPresenter) {
         this.sharedPreferences = sharedPreferences;
+        this.accountPresenter = accountPresenter;
 
         Observable<Intent> logOut = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         logOut.subscribe(ignored -> clear(), Functions.LOG_ERROR);
@@ -65,6 +71,52 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
         edit().clear()
               .apply();
+    }
+
+    public Observable<Void> pullAccountPreferences() {
+        logEvent("Pulling preferences from backend");
+
+        return Observable.create(s -> {
+            accountPresenter.preferences()
+                            .subscribe(prefs -> {
+                                Boolean use24Time = (Boolean) prefs.get(AccountPreference.Key.TIME_TWENTY_FOUR_HOUR);
+                                Boolean useMetric = (Boolean) prefs.get(AccountPreference.Key.TEMP_CELCIUS);
+
+                                String unitSystemName;
+                                if (useMetric != null && useMetric) {
+                                    unitSystemName = MetricUnitSystem.NAME;
+                                } else {
+                                    unitSystemName = UsCustomaryUnitSystem.NAME;
+                                }
+
+                                edit().putString(UNIT_SYSTEM, unitSystemName)
+                                        .putBoolean(USE_24_TIME, use24Time != null && use24Time)
+                                        .apply();
+
+                                logEvent("Pulled preferences");
+
+                                s.onNext(null);
+                                s.onCompleted();
+                            }, e -> {
+                                logEvent("Could not pull preferences from backend. " + e);
+
+                                s.onError(e);
+                            });
+        });
+    }
+
+    public Observable<Void> pushAccountPreferences() {
+        logEvent("Pushing account preferences");
+
+        AccountPreference use24Time = new AccountPreference(AccountPreference.Key.TIME_TWENTY_FOUR_HOUR);
+        use24Time.setEnabled(getBoolean(USE_24_TIME, false));
+
+        AccountPreference useMetric = new AccountPreference(AccountPreference.Key.TEMP_CELCIUS);
+        useMetric.setEnabled(MetricUnitSystem.NAME.equals(getString(UNIT_SYSTEM, UsCustomaryUnitSystem.NAME)));
+
+        return Observable.combineLatest(accountPresenter.updatePreference(use24Time),
+                                        accountPresenter.updatePreference(useMetric),
+                                        (l, r) -> null);
     }
 
     //endregion

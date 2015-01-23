@@ -46,6 +46,8 @@ public class AccountPreference extends ApiResponse {
 
     public static enum Key {
         ENHANCED_AUDIO,
+        TEMP_CELCIUS,
+        TIME_TWENTY_FOUR_HOUR,
         UNKNOWN;
 
         @JsonCreator
