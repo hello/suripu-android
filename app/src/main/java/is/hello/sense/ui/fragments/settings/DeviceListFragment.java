@@ -101,7 +101,14 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Device device = (Device) adapterView.getItemAtPosition(position);
         if (device.exists()) {
-            DeviceDetailsFragment fragment = DeviceDetailsFragment.newInstance(device);
+            DeviceDetailsFragment fragment;
+            if (device.getType() == Device.Type.SENSE) {
+                fragment = SenseDetailsFragment.newInstance(device);
+            } else if (device.getType() == Device.Type.PILL) {
+                fragment = PillDetailsFragment.newInstance(device);
+            } else {
+                return;
+            }
             fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
             ((FragmentNavigation) getActivity()).pushFragment(fragment, getString(device.getType().nameRes), true);
         }
