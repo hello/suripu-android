@@ -143,10 +143,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         timelineEventsHeader.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.gap_outer));
         ListViews.addHeaderView(listView, timelineEventsHeader, null, false);
 
-        View spacingFooter = new View(getActivity());
-        spacingFooter.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.gap_outer));
-        ListViews.addFooterView(listView, spacingFooter, null, false);
-
 
         this.menuButton = (ImageButton) headerView.findViewById(R.id.fragment_timeline_header_menu);
         Views.setSafeOnClickListener(menuButton, ignored -> {

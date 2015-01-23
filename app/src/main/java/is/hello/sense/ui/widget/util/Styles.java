@@ -3,17 +3,14 @@ package is.hello.sense.ui.widget.util;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.StateSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -36,17 +33,6 @@ public final class Styles {
             return R.color.sleep_light;
         else
             return R.color.sleep_intermediate;
-    }
-
-    public static @ColorRes @DrawableRes int getSleepDepthDimmedColorRes(int sleepDepth) {
-        if (sleepDepth == 0)
-            return R.color.sleep_awake_dimmed;
-        else if (sleepDepth == 100)
-            return R.color.sleep_deep_dimmed;
-        else if (sleepDepth < 60)
-            return R.color.sleep_light_dimmed;
-        else
-            return R.color.sleep_intermediate_dimmed;
     }
 
     public static @ColorRes @DrawableRes int getSleepScoreColorRes(int sleepScore) {

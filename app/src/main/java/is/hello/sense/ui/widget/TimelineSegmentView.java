@@ -152,9 +152,9 @@ public final class TimelineSegmentView extends View {
                 timestampPaint.setColor(leftTimestampColor);
 
                 textX = minX;
-                textY = Math.round(midY + timestampTextRect.height() / 2f);
+                textY = Math.round(midY + timestampTextRect.centerY());
 
-                float lineY = textY + timestampTextRect.height() / 2f;
+                float lineY = textY + timestampTextRect.height();
                 timestampStrokePath.moveTo(minX - leftInset, lineY);
                 timestampStrokePath.lineTo(midX, lineY);
             }
@@ -204,7 +204,7 @@ public final class TimelineSegmentView extends View {
         this.sleepDepth = sleepDepth;
 
         Resources resources = getResources();
-        fillPaint.setColor(resources.getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth)));
+        fillPaint.setColor(resources.getColor(Styles.getSleepDepthColorRes(sleepDepth)));
 
         invalidate();
     }
