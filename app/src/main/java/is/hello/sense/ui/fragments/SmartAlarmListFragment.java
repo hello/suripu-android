@@ -30,6 +30,7 @@ import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -74,6 +75,10 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
+
+        View spacer = new View(getActivity());
+        spacer.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
+        ListViews.addFooterView(listView, spacer, null, false);
 
         ImageButton addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
         Views.setSafeOnClickListener(addButton, this::newAlarm);
