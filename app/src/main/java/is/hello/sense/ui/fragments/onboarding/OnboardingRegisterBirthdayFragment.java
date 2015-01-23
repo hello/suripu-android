@@ -28,7 +28,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     private Account account;
 
     private final Validator[] FIELD_VALIDATORS = { this::validateMonth, this::validateDay, this::validateYear };
-    private final int thisYear = DateTime.now().getYear();
+    private final DateTime today = DateTime.now();
     private TextView[] fields;
     private int activeField = 0;
     private TextView monthText;
@@ -125,7 +125,13 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     private boolean validateYear(@NonNull CharSequence year) {
         try {
             int value = Integer.valueOf(year.toString(), 10);
-            return (value > 0 && value <= thisYear);
+            if (value == today.getYear()) {
+                int month = Integer.valueOf(monthText.getText().toString(), 10);
+                int day = Integer.valueOf(dayText.getText().toString(), 10);
+                return (month <= today.getMonthOfYear() && day <= today.getDayOfMonth());
+            } else {
+                return (value > 0 && value < today.getYear());
+            }
         } catch (NumberFormatException e) {
             return false;
         }
