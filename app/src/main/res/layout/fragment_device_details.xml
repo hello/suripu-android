@@ -1,73 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_device_details_container"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/gap_outer"
-    android:animateLayoutChanges="true"
-    style="@style/AppTheme.ListView.Cards">
+    android:fillViewport="true"
+    style="@style/AppTheme.FadingScrollView">
 
     <LinearLayout
-        android:id="@+id/fragment_device_details_alert"
+        android:id="@+id/fragment_device_details_container"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/gap_medium"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:visibility="gone"
-        style="@style/AppTheme.Card">
+        android:padding="@dimen/gap_outer"
+        android:animateLayoutChanges="true"
+        android:background="@color/background"
+        style="@style/AppTheme.ListView.Cards">
 
-        <ImageView
-            android:id="@+id/fragment_device_details_alert_icon"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/fragment_device_details_alert"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/icon_warning"
-            tools:ignore="ContentDescription" />
-
-        <is.hello.sense.ui.widget.TintedProgressBar
-            android:id="@+id/fragment_device_details_alert_busy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:padding="@dimen/gap_medium"
+            android:layout_marginBottom="@dimen/gap_small"
             android:visibility="gone"
-            style="@android:style/Widget.Holo.ProgressBar" />
+            style="@style/AppTheme.Card">
 
-        <TextView
-            android:id="@+id/fragment_device_details_alert_text"
+            <ImageView
+                android:id="@+id/fragment_device_details_alert_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/icon_warning"
+                tools:ignore="ContentDescription" />
+
+            <is.hello.sense.ui.widget.TintedProgressBar
+                android:id="@+id/fragment_device_details_alert_busy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                style="@android:style/Widget.Holo.ProgressBar" />
+
+            <TextView
+                android:id="@+id/fragment_device_details_alert_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_medium"
+                android:gravity="center"
+                android:textAppearance="@style/AppTheme.Text.Body"
+                android:text="@string/app_name"
+                android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+
+            <Button
+                android:id="@+id/fragment_device_details_alert_action"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_medium"
+                android:text="@string/action_troubleshoot"
+                style="@style/AppTheme.Button.Rounded" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fragment_device_details_actions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_medium"
-            android:gravity="center"
-            android:textAppearance="@style/AppTheme.Text.Body"
-            android:text="@string/app_name"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+            android:orientation="vertical"
+            android:visibility="gone"
+            style="@style/AppTheme.Card"/>
 
-        <Button
-            android:id="@+id/fragment_device_details_alert_action"
+        <include
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_medium"
-            android:text="@string/action_troubleshoot"
-            style="@style/AppTheme.Button.Rounded" />
+            android:layout_marginTop="@dimen/gap_outer"
+            layout="@layout/footer_help" />
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/fragment_device_details_actions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone"
-        style="@style/AppTheme.Card"/>
-
-    <include
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_outer"
-        layout="@layout/footer_help" />
-
-</LinearLayout>
+</ScrollView>
