@@ -30,7 +30,6 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.DateFormatter;
@@ -317,14 +316,16 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         @Override
         public void onGraphHighlightEnd() {
-            readingText.setText(savedReading);
-            this.savedReading = null;
+            coordinator.postOnResume(() -> {
+                readingText.setText(savedReading);
+                this.savedReading = null;
 
-            messageText.setText(savedMessage);
-            this.savedMessage = null;
+                messageText.setText(savedMessage);
+                this.savedMessage = null;
 
-            messageText.setGravity(Gravity.START);
-            messageText.setTextColor(getResources().getColor(R.color.text_dark));
+                messageText.setGravity(Gravity.START);
+                messageText.setTextColor(getResources().getColor(R.color.text_dark));
+            });
         }
 
         //endregion
