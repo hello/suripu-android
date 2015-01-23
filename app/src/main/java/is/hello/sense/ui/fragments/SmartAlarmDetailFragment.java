@@ -207,7 +207,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void selectNewTime(@NonNull View sender) {
-        TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(alarm.getTime());
+        TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(alarm.getTime(), use24Time);
         dialogFragment.setTargetFragment(this, TIME_REQUEST_CODE);
         dialogFragment.show(getFragmentManager(), TimePickerDialogFragment.TAG);
     }
