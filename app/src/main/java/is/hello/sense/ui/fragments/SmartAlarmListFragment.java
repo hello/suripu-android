@@ -89,7 +89,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
         Observable<Boolean> use24Time = preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false);
         bindAndSubscribe(use24Time, adapter::setUse24Time, Functions.LOG_ERROR);
-        bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::presentError);
+        bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::alarmsUnavailable);
     }
 
     @Override
@@ -133,13 +133,18 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         finishLoading();
     }
 
-    public void presentError(Throwable e) {
+    public void alarmsUnavailable(Throwable e) {
         finishLoading();
         if (BuildConfig.DEBUG) {
             ErrorDialogFragment.presentError(getFragmentManager(), e);
         } else {
             Logger.error(getClass().getSimpleName(), "Could not load smart alarms.", e);
         }
+    }
+
+    public void presentError(Throwable e) {
+        finishLoading();
+        ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 
 
