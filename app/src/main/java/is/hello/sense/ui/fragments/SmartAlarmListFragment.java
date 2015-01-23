@@ -181,7 +181,13 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         activityIndicator.setVisibility(View.VISIBLE);
         bindAndSubscribe(smartAlarmPresenter.saveSmartAlarm(position, smartAlarm),
                          ignored -> activityIndicator.setVisibility(View.GONE),
-                         this::presentError);
+                         e -> {
+                             // Revert on error
+                             smartAlarm.setEnabled(!enabled);
+                             adapter.notifyDataSetChanged();
+
+                             presentError(e);
+                         });
     }
 
     public void newAlarm(@NonNull View sender) {
