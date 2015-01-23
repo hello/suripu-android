@@ -4,9 +4,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.RelativeSizeSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,12 +30,12 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
-import is.hello.sense.util.SuperscriptSpanAdjuster;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -120,28 +117,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         return (SensorHistoryActivity) getActivity();
     }
 
-    public CharSequence spanFormattedValue(@NonNull String sensor, @NonNull String formattedValue) {
-        if (!SensorHistory.SENSOR_NAME_PARTICULATES.equals(sensor) && !SensorHistory.SENSOR_NAME_LIGHT.equals(sensor)) {
-            SpannableString spannedValue = new SpannableString(formattedValue);
-
-            boolean isTemperature = SensorHistory.SENSOR_NAME_TEMPERATURE.equals(sensor);
-            float unitScale = isTemperature ? 0.5f : 0.25f;
-            float adjustment = isTemperature ? 0.75f : 2.2f;
-            spannedValue.setSpan(new RelativeSizeSpan(unitScale),
-                                 spannedValue.length() - 1,
-                                 spannedValue.length(),
-                                 Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            spannedValue.setSpan(new SuperscriptSpanAdjuster(adjustment),
-                                 spannedValue.length() - 1,
-                                 spannedValue.length(),
-                                 Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-
-            return spannedValue;
-        }
-
-        return formattedValue;
-    }
-
     public void bindConditions(@Nullable RoomConditionsPresenter.Result result) {
         if (result == null) {
             readingText.setText(R.string.missing_data_placeholder);
@@ -152,9 +127,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             if (condition != null) {
                 UnitFormatter.Formatter formatter = result.units.getUnitFormatterForSensor(sensor);
 
-                String formattedValue = condition.getFormattedValue(formatter);
+                CharSequence formattedValue = condition.getFormattedValue(formatter);
                 if (formattedValue != null) {
-                    readingText.setText(spanFormattedValue(sensor, formattedValue));
+                    readingText.setText(formattedValue);
                 } else {
                     readingText.setText(R.string.missing_data_placeholder);
                 }
@@ -255,19 +230,25 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             notifyDataChanged();
         }
 
-        private String formatSensorValue(float value) {
+        private CharSequence formatSensorValue(long value) {
             switch (sensor) {
                 case SensorHistory.SENSOR_NAME_TEMPERATURE:
                     return unitSystem.formatTemperature(value);
 
+                case SensorHistory.SENSOR_NAME_HUMIDITY:
+                    return unitSystem.formatHumidity(value);
+
                 case SensorHistory.SENSOR_NAME_PARTICULATES:
                     return unitSystem.formatParticulates(value);
 
-                case SensorHistory.SENSOR_NAME_HUMIDITY:
-                    return Integer.toString((int) value) + "%";
+                case SensorHistory.SENSOR_NAME_SOUND:
+                    return unitSystem.formatDecibels(value);
+
+                case SensorHistory.SENSOR_NAME_LIGHT:
+                    return unitSystem.formatLight(value);
 
                 default:
-                    return Integer.toString((int) value);
+                    return Long.toString(value);
             }
         }
 
@@ -302,8 +283,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @NonNull
         @Override
         public String getSectionFooter(int section) {
-            float value = getSection(section).getAverage();
-            return formatSensorValue(value);
+            long value = getSection(section).getAverage();
+            return formatSensorValue(value).toString();
         }
 
         //endregion
@@ -326,7 +307,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public void onGraphValueHighlighted(int section, int position) {
             SensorHistory instant = getSection(section).get(position);
-            readingText.setText(spanFormattedValue(sensor, formatSensorValue(instant.getValue())));
+            readingText.setText(formatSensorValue(instant.getValue()));
             if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
                 messageText.setText(dateFormatter.formatAsDayAndTime(instant.getTime(), use24Time));
             } else {

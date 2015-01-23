@@ -10,6 +10,7 @@ import java.util.Map;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorHistory;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.systems.MetricUnitSystem;
 import is.hello.sense.units.systems.UsCustomaryUnitSystem;
 
@@ -61,28 +62,32 @@ public class UnitSystem implements Serializable {
 
     //region Formatting
 
-    public String formatMass(float mass) {
-        return (long) (Math.round(mass)) + "g";
+    public CharSequence formatMass(long mass) {
+        return Styles.assembleReadingAndUnit(mass, "g");
     }
 
-    public String formatTemperature(float temperature) {
-        return (long) (Math.round(temperature)) + "º";
+    public CharSequence formatTemperature(long temperature) {
+        return Styles.assembleReadingAndUnit(temperature, "º");
     }
 
-    public String formatHeight(float distance) {
-        return (long) (Math.round(distance)) + "cm";
+    public CharSequence formatHumidity(long humidity) {
+        return Styles.assembleReadingAndUnit(humidity, "%");
     }
 
-    public String formatDecibels(float decibels) {
-        return (long) (Math.round(decibels)) + "db";
+    public CharSequence formatHeight(long distance) {
+        return Styles.assembleReadingAndUnit(distance, "cm");
     }
 
-    public String formatLight(float lux) {
-        return Integer.toString((int) lux);
+    public CharSequence formatDecibels(long decibels) {
+        return Styles.assembleReadingAndUnit(decibels, "db");
     }
 
-    public String formatParticulates(float particulates) {
-        return Long.toString(Math.round(particulates));
+    public CharSequence formatLight(long lux) {
+        return Styles.assembleReadingAndUnit(lux, "lux");
+    }
+
+    public CharSequence formatParticulates(long particulates) {
+        return Long.toString(particulates);
     }
 
     public @Nullable UnitFormatter.Formatter getUnitFormatterForSensor(@NonNull String sensor) {
@@ -92,9 +97,6 @@ public class UnitSystem implements Serializable {
 
             case SensorHistory.SENSOR_NAME_PARTICULATES:
                 return this::formatParticulates;
-
-            case SensorHistory.SENSOR_NAME_LIGHT:
-                return this::formatLight;
 
             default:
                 return null;

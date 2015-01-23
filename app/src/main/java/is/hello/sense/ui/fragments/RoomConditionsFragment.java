@@ -55,6 +55,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
     private final RoomSensorInfo humidity = new RoomSensorInfo(SensorHistory.SENSOR_NAME_HUMIDITY);
     private final RoomSensorInfo particulates = new RoomSensorInfo(SensorHistory.SENSOR_NAME_PARTICULATES);
     private final RoomSensorInfo light = new RoomSensorInfo(SensorHistory.SENSOR_NAME_LIGHT);
+    private final RoomSensorInfo sound = new RoomSensorInfo(SensorHistory.SENSOR_NAME_SOUND);
     private Adapter adapter;
 
     @Override
@@ -71,7 +72,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        this.adapter = new Adapter(getActivity(), new RoomSensorInfo[] { temperature, humidity, particulates, light });
+        this.adapter = new Adapter(getActivity(), new RoomSensorInfo[] { temperature, humidity, particulates, light, sound });
         Styles.addCardSpacingHeaderAndFooter(listView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
@@ -140,6 +141,9 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
 
             light.formatter = result.units.getUnitFormatterForSensor(SensorHistory.SENSOR_NAME_LIGHT);
             light.sensorState = result.conditions.getLight();
+
+            sound.formatter = result.units.getUnitFormatterForSensor(SensorHistory.SENSOR_NAME_SOUND);
+            sound.sensorState = result.conditions.getSound();
         }
 
         adapter.notifyDataSetChanged();
@@ -159,6 +163,9 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
 
         light.formatter = null;
         light.sensorState = null;
+
+        sound.formatter = null;
+        sound.sensorState = null;
 
         adapter.notifyDataSetChanged();
     }
@@ -215,7 +222,7 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
             if (roomSensorInfo.sensorState != null) {
                 int sensorColor = resources.getColor(roomSensorInfo.sensorState.getCondition().colorRes);
 
-                String readingText = roomSensorInfo.sensorState.getFormattedValue(roomSensorInfo.formatter);
+                CharSequence readingText = roomSensorInfo.sensorState.getFormattedValue(roomSensorInfo.formatter);
                 if (!TextUtils.isEmpty(readingText)) {
                     holder.reading.setText(readingText);
                     holder.reading.setTextColor(sensorColor);

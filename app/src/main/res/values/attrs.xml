@@ -2,12 +2,6 @@
 <resources>
     <attr name="fontPath" format="string"/>
 
-    <declare-styleable name="SensorStateView">
-        <attr name="sensorTitle" format="string" />
-        <attr name="sensorIcon" format="integer" />
-        <attr name="wantsReading" format="boolean" />
-    </declare-styleable>
-
     <declare-styleable name="GraphView">
         <attr name="senseNumberOfLines" format="integer" />
         <attr name="senseGridDrawable" format="integer" />

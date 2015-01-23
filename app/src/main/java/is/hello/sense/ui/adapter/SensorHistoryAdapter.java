@@ -102,7 +102,7 @@ public class SensorHistoryAdapter implements GraphAdapter {
 
     public static class Section {
         private final List<SensorHistory> instants;
-        private final float average;
+        private final long average;
 
         public Section(@NonNull List<SensorHistory> instants) {
             this.instants = instants;
@@ -111,7 +111,7 @@ public class SensorHistoryAdapter implements GraphAdapter {
                 average += instant.getValue();
             }
             average /= instants.size();
-            this.average = average;
+            this.average = (long) average;
         }
 
         public SensorHistory get(int i) {
@@ -122,7 +122,7 @@ public class SensorHistoryAdapter implements GraphAdapter {
             return instants.size();
         }
 
-        public float getAverage() {
+        public long getAverage() {
             return average;
         }
 
