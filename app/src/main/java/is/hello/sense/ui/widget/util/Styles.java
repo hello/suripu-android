@@ -113,7 +113,7 @@ public final class Styles {
 
             default:
             case UNKNOWN: {
-                return R.drawable.timeline_movement;
+                return R.drawable.timeline_unknown;
             }
         }
     }
