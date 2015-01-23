@@ -57,9 +57,9 @@ public class PreSleepInsight extends ApiResponse {
         TEMPERATURE(R.drawable.before_sleep_insight_temperature),
         HUMIDITY(R.drawable.before_sleep_insight_humidity),
         PARTICULATES(R.drawable.before_sleep_insight_particulates),
-        SOUND(R.drawable.before_sleep_insight_sound),
+        SOUND(R.drawable.before_sleep_insight_noise),
         LIGHT(R.drawable.before_sleep_insight_light),
-        UNKNOWN(R.drawable.before_sleep_insight_phone);
+        UNKNOWN(R.drawable.before_sleep_insight_unknown);
 
         public final @DrawableRes int iconRes;
 

@@ -40,17 +40,6 @@ public final class Styles {
             return R.color.sleep_intermediate;
     }
 
-    public static @ColorRes @DrawableRes int getSleepDepthDimmedColorRes(int sleepDepth) {
-        if (sleepDepth == 0)
-            return R.color.sleep_awake_dimmed;
-        else if (sleepDepth == 100)
-            return R.color.sleep_deep_dimmed;
-        else if (sleepDepth < 60)
-            return R.color.sleep_light_dimmed;
-        else
-            return R.color.sleep_intermediate_dimmed;
-    }
-
     public static @ColorRes @DrawableRes int getSleepScoreColorRes(int sleepScore) {
         if (sleepScore < 45)
             return R.color.sensor_warning;
@@ -129,7 +118,7 @@ public final class Styles {
 
             default:
             case UNKNOWN: {
-                return R.drawable.timeline_movement;
+                return R.drawable.timeline_unknown;
             }
         }
     }

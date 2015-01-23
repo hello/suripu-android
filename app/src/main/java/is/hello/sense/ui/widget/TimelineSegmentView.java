@@ -3,13 +3,13 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -29,7 +29,11 @@ public final class TimelineSegmentView extends View {
     private float leftInset;
     private float rightInset;
     private float stripeWidth;
-    private float cornerRadius;
+
+    private int leftUnderlineColor;
+    private int leftTimestampColor;
+    private int rightUnderlineColor;
+    private int rightTimestampColor;
 
     //endregion
 
@@ -39,8 +43,11 @@ public final class TimelineSegmentView extends View {
     private final RectF rect = new RectF();
     private final Paint fillPaint = new Paint();
     private final Paint stripePaint = new Paint();
-    private final Rect textRect = new Rect();
+
+    private final Rect timestampTextRect = new Rect();
     private final Paint timestampPaint = new Paint();
+    private final Paint timestampStrokePaint = new Paint();
+    private final Path timestampStrokePath = new Path();
 
     //endregion
 
@@ -49,8 +56,7 @@ public final class TimelineSegmentView extends View {
 
     private Drawable eventDrawable;
     private int sleepDepth;
-    private StripeInset stripeInset = StripeInset.NONE;
-    private boolean rounded;
+    private TimestampSide timestampSide = TimestampSide.RIGHT;
     private @Nullable String timestampString;
 
     //endregion
@@ -81,14 +87,22 @@ public final class TimelineSegmentView extends View {
 
         timestampPaint.setAntiAlias(true);
         timestampPaint.setSubpixelText(true);
-        timestampPaint.setColor(resources.getColor(R.color.text_dim));
-        timestampPaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_body));
+        timestampPaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_timeline_time));
+
+        float strokeGap = resources.getDimension(R.dimen.view_timeline_segment_stroke_gap);
+        timestampStrokePaint.setStyle(Paint.Style.STROKE);
+        timestampStrokePaint.setStrokeWidth(resources.getDimension(R.dimen.divider_size));
+        timestampStrokePaint.setPathEffect(new DashPathEffect(new float[] { strokeGap, strokeGap }, 0));
 
         this.leftInset = resources.getDimension(R.dimen.view_timeline_segment_left_inset);
         this.rightInset = resources.getDimension(R.dimen.view_timeline_segment_right_inset);
         this.stripeWidth = resources.getDimension(R.dimen.view_timeline_segment_stripe_width);
 
-        this.cornerRadius = resources.getDimension(R.dimen.view_timeline_segment_corner_radius);
+        this.leftUnderlineColor = resources.getColor(R.color.timeline_segment_underline_left);
+        this.leftTimestampColor = resources.getColor(R.color.text_dim);
+
+        this.rightUnderlineColor = resources.getColor(R.color.timeline_segment_underline_right);
+        this.rightTimestampColor = resources.getColor(R.color.light_accent);
     }
 
     //endregion
@@ -109,36 +123,45 @@ public final class TimelineSegmentView extends View {
         //region Stripe + Background Fills
 
         float percentage = sleepDepth / 100f;
-        float fillWidth = width * percentage;
+        float fillWidth = (width - leftInset - rightInset) * percentage;
         rect.set(midX - fillWidth / 2f, minY, midX + fillWidth / 2f, maxY);
-        if (rounded) {
-            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, fillPaint);
-        } else {
-            canvas.drawRect(rect, fillPaint);
+        canvas.drawRect(rect, fillPaint);
+        canvas.drawRect(midX - stripeWidth / 2f, minY, midX + stripeWidth / 2f, maxY, stripePaint);
+
+        //endregion
+
+
+        //region Timestamp
+
+        if (timestampString != null) {
+            timestampStrokePath.reset();
+            timestampPaint.getTextBounds(timestampString, 0, timestampString.length(), timestampTextRect);
+
+            float textX, textY;
+            if (timestampSide == TimestampSide.RIGHT) {
+                timestampStrokePaint.setColor(rightUnderlineColor);
+                timestampPaint.setColor(rightTimestampColor);
+
+                timestampStrokePath.moveTo(midX, midY);
+                timestampStrokePath.lineTo(maxX + rightInset, midY);
+
+                textX = Math.round(maxX - timestampTextRect.width());
+                textY = Math.round(midY - timestampTextRect.height());
+            } else {
+                timestampStrokePaint.setColor(leftUnderlineColor);
+                timestampPaint.setColor(leftTimestampColor);
+
+                textX = minX;
+                textY = Math.round(midY + timestampTextRect.centerY());
+
+                float lineY = textY + timestampTextRect.height();
+                timestampStrokePath.moveTo(minX - leftInset, lineY);
+                timestampStrokePath.lineTo(midX, lineY);
+            }
+
+            canvas.drawPath(timestampStrokePath, timestampStrokePaint);
+            canvas.drawText(timestampString, textX, textY, timestampPaint);
         }
-
-
-        float stripeTop = minY,
-              stripeBottom = maxY;
-
-        switch (stripeInset) {
-            case TOP: {
-                stripeTop += height / 2f;
-                break;
-            }
-
-            case BOTTOM: {
-                stripeBottom -= height / 2f;
-                break;
-            }
-
-            case NONE:
-            default: {
-                break;
-            }
-        }
-
-        canvas.drawRect(midX - stripeWidth / 2f, stripeTop, midX + stripeWidth / 2f, stripeBottom, stripePaint);
 
         //endregion
 
@@ -156,19 +179,6 @@ public final class TimelineSegmentView extends View {
                     Math.round(midY + drawableHeight / 2f)
             );
             eventDrawable.draw(canvas);
-        }
-
-        //endregion
-
-
-        //region Timestamp
-
-        if (timestampString != null) {
-            timestampPaint.getTextBounds(timestampString, 0, timestampString.length(), textRect);
-
-            float textX = Math.round(maxX - textRect.width());
-            float textY = Math.round(midY - textRect.centerY());
-            canvas.drawText(timestampString, textX, textY, timestampPaint);
         }
 
         //endregion
@@ -194,29 +204,15 @@ public final class TimelineSegmentView extends View {
         this.sleepDepth = sleepDepth;
 
         Resources resources = getResources();
-        fillPaint.setColor(resources.getColor(Styles.getSleepDepthDimmedColorRes(sleepDepth)));
+        fillPaint.setColor(resources.getColor(Styles.getSleepDepthColorRes(sleepDepth)));
 
         invalidate();
     }
 
-    public void setStripeInset(StripeInset stripeInset) {
-        this.stripeInset = stripeInset;
-        invalidate();
-    }
-
-    public void setRounded(boolean rounded) {
-        this.rounded = rounded;
-        invalidate();
-    }
-
-    public void setTimestampTypeface(@NonNull Typeface typeface) {
-        timestampPaint.setTypeface(typeface);
-        invalidate();
-    }
-
-    public void setTimestampString(@Nullable String timestampString) {
+    public void setTimestampString(@Nullable String timestampString, @Nullable TimestampSide side) {
         if (!TextUtils.equals(timestampString, this.timestampString)) {
             this.timestampString = timestampString;
+            this.timestampSide = side;
             invalidate();
         }
     }
@@ -224,10 +220,9 @@ public final class TimelineSegmentView extends View {
     //endregion
 
 
-    public static enum StripeInset {
-        NONE,
-        TOP,
-        BOTTOM,
+    public static enum TimestampSide {
+        LEFT,
+        RIGHT,
     }
 }
 

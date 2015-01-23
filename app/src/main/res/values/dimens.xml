@@ -12,11 +12,13 @@
     <!-- Text -->
 
     <dimen name="text_size_body">16sp</dimen>
+    <dimen name="text_size_body_mid_sized">14sp</dimen>
+    <dimen name="text_size_body_small">13sp</dimen>
     <dimen name="text_size_button">16sp</dimen>
     <dimen name="text_size_large_button">20sp</dimen>
     <dimen name="text_size_section_heading">11sp</dimen>
+    <dimen name="text_size_timeline_time">11sp</dimen>
     <dimen name="text_size_subheading">16sp</dimen>
-    <dimen name="text_size_body_small">13sp</dimen>
     <dimen name="text_size_question">24sp</dimen>
     <dimen name="text_size_heading">24sp</dimen>
     <dimen name="text_size_small_score">40sp</dimen>
@@ -27,6 +29,7 @@
     <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
     <item name="line_multiple_body" format="float" type="dimen">1.5</item>
+    <item name="line_multiple_body_medium" format="float" type="dimen">1.4</item>
     <item name="line_multiple_body_small" format="float" type="dimen">1.2</item>
 
     <dimen name="edit_text_min_height">45dp</dimen>
@@ -63,6 +66,14 @@
     <dimen name="scale_view_tick">1dp</dimen>
     <dimen name="scale_view_segment">12dp</dimen>
 
+    <dimen name="timeline_header_min_height">372dp</dimen>
+
+    <dimen name="timeline_tabs_top_inset">0dp</dimen>
+    <dimen name="timeline_tabs_stroke_width">1px</dimen>
+    <dimen name="timeline_tabs_triangle_width">16dp</dimen>
+    <!-- The 2:1 relationship should be maintained here-->
+    <dimen name="timeline_tabs_triangle_height">8dp</dimen>
+
     <!-- Graphs -->
 
     <dimen name="condition_graph_height">30dp</dimen>
@@ -73,8 +84,8 @@
 
     <dimen name="view_timeline_segment_left_inset">@dimen/gap_outer</dimen>
     <dimen name="view_timeline_segment_right_inset">@dimen/gap_outer</dimen>
-    <dimen name="view_timeline_segment_corner_radius">3dp</dimen>
-    <dimen name="view_timeline_segment_stripe_width">2dp</dimen>
+    <dimen name="view_timeline_segment_stripe_width">@dimen/divider_size</dimen>
+    <dimen name="view_timeline_segment_stroke_gap">2dp</dimen>
 
     <!-- Buttons -->
 

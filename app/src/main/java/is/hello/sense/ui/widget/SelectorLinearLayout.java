@@ -2,8 +2,14 @@ package is.hello.sense.ui.widget;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.DynamicDrawableSpan;
+import android.text.style.ImageSpan;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -22,8 +28,9 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
 
     private final List<ToggleButton> toggleButtons = new ArrayList<>();
     private int selectedIndex = EMPTY_SELECTION;
-    private OnSelectionChangedListener onSelectionChangedListener;
-    private ButtonStyler buttonStyler;
+    private @Nullable SelectionAwareDrawable selectionAwareBackground;
+    private @Nullable OnSelectionChangedListener onSelectionChangedListener;
+    private @Nullable ButtonStyler buttonStyler;
 
     @SuppressWarnings("UnusedDeclaration")
     public SelectorLinearLayout(Context context) {
@@ -38,6 +45,18 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
     @SuppressWarnings("UnusedDeclaration")
     public SelectorLinearLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    @Override
+    public void setBackground(Drawable background) {
+        super.setBackground(background);
+
+        if (background instanceof SelectionAwareDrawable) {
+            this.selectionAwareBackground = (SelectionAwareDrawable) background;
+            synchronizeButtonStates();
+        } else {
+            this.selectionAwareBackground = null;
+        }
     }
 
     @Override
@@ -73,6 +92,11 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
             }
             button.setChecked(isSelected);
         }
+
+        if (selectionAwareBackground != null) {
+            selectionAwareBackground.setNumberOfItems(toggleButtons.size());
+            selectionAwareBackground.setSelectedIndex(selectedIndex);
+        }
     }
 
 
@@ -85,11 +109,11 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
         synchronizeButtonStates();
     }
 
-    public OnSelectionChangedListener getOnSelectionChangedListener() {
+    public @Nullable OnSelectionChangedListener getOnSelectionChangedListener() {
         return onSelectionChangedListener;
     }
 
-    public void setOnSelectionChangedListener(OnSelectionChangedListener onSelectionChangedListener) {
+    public void setOnSelectionChangedListener(@Nullable OnSelectionChangedListener onSelectionChangedListener) {
         this.onSelectionChangedListener = onSelectionChangedListener;
     }
 
@@ -149,7 +173,26 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
         void onSelectionChanged(int newSelectionIndex);
     }
 
-    public static interface ButtonStyler {
+    public interface ButtonStyler {
         void styleButton(ToggleButton button, boolean checked);
+    }
+
+    public static abstract class SelectionAwareDrawable extends Drawable {
+        protected int numberOfItems = 0;
+        protected int selectedIndex = EMPTY_SELECTION;
+
+        protected boolean isSelectionValid() {
+            return (numberOfItems > 0 && selectedIndex != EMPTY_SELECTION);
+        }
+
+        public void setNumberOfItems(int numberOfItems) {
+            this.numberOfItems = numberOfItems;
+            invalidateSelf();
+        }
+
+        public void setSelectedIndex(int selectedIndex) {
+            this.selectedIndex = selectedIndex;
+            invalidateSelf();
+        }
     }
 }

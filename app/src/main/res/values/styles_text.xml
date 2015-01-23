@@ -63,7 +63,7 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
-    <style name="AppTheme.Text.Medium">
+    <style name="AppTheme.Text.Body.Medium">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">normal</item>
     </style>
@@ -71,6 +71,10 @@
     <!-- All body text is light right now, leaving
          this if we want to distinguish again. -->
     <style name="AppTheme.Text.Body.Light" />
+
+    <style name="AppTheme.Text.Body.Light.MidSized">
+        <item name="android:textSize">@dimen/text_size_body_mid_sized</item>
+    </style>
 
     <style name="AppTheme.Text.Body.Light.Small">
         <item name="android:textSize">@dimen/text_size_body_small</item>

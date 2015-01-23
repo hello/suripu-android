@@ -342,4 +342,7 @@ so you can sleep better.</string>
     <string name="label_options">Options</string>
     <string name="label_enhanced_audio">Enhanced Audio</string>
     <string name="info_enhanced_audio">Enhanced audio allows Sense to pick up snoring, sleep talking, and other noise disturbances</string>
+    <string name="label_sleep_summary">Sleep Summary</string>
+    <string name="label_before_sleep">Before Sleep</string>
+    <string name="placeholder_no_before_sleep_insights">No before sleep insights.</string>
 </resources>

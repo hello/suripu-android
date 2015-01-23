@@ -2,7 +2,6 @@ package is.hello.sense.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -10,7 +9,11 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 
+import org.joda.time.LocalDateTime;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
@@ -28,6 +31,8 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
     private float[] itemHeights;
     private float totalItemHeight;
+
+    private Set<Integer> positionsWithTime = new HashSet<>();
 
     private boolean use24Time;
 
@@ -53,10 +58,12 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     /**
      * Calculates the height required to display the item at a given position.
      */
-    private int calculateItemHeight(@NonNull TimelineSegment segment) {
+    private int calculateItemHeight(int position, @NonNull TimelineSegment segment) {
         if (segment.getEventType() != null) {
             int itemHeight = this.itemEventImageHeight + this.baseItemHeight;
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
+        } else if (positionsWithTime.contains(position)) {
+            return (int) ((segment.getDuration() / 3600f) * (this.baseItemHeight * 2f));
         } else {
             return (int) ((segment.getDuration() / 3600f) * this.baseItemHeight);
         }
@@ -71,7 +78,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         this.totalItemHeight = 0;
 
         for (int i = 0, size = itemHeights.length; i < size; i++) {
-            int height = calculateItemHeight(segments.get(i));
+            int height = calculateItemHeight(i, segments.get(i));
             this.itemHeights[i] = height;
             this.totalItemHeight += height;
         }
@@ -120,17 +127,39 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     //endregion
 
 
+    //region Representative Time Indexes
+
+    private void calculatePositionsWithTime(@NonNull List<TimelineSegment> segments) {
+        Set<Integer> hoursRepresented = new HashSet<>();
+        for (int i = 1; i < segments.size(); i++) {
+            TimelineSegment segment = segments.get(i);
+            int hour = segment.getTimestamp().getHourOfDay();
+            if (hoursRepresented.contains(hour)) {
+                continue;
+            }
+
+            positionsWithTime.add(i);
+            hoursRepresented.add(hour);
+        }
+    }
+
+    //endregion
+
+
     //region Bindings
 
     public void bindSegments(@Nullable List<TimelineSegment> segments) {
         clear();
 
         if (segments != null) {
+            calculatePositionsWithTime(segments);
             calculateItemHeights(segments);
             addAll(segments);
         } else {
             this.itemHeights = null;
             this.totalItemHeight = 0;
+
+            positionsWithTime.clear();
         }
     }
 
@@ -155,15 +184,8 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
         SegmentViewHolder segmentViewHolder = (SegmentViewHolder) view.getTag();
 
-        TimelineSegmentView.StripeInset segmentPosition = TimelineSegmentView.StripeInset.NONE;
-        if (position == 0) {
-            segmentPosition = TimelineSegmentView.StripeInset.TOP;
-        } else if (position == getCount() - 1) {
-            segmentPosition = TimelineSegmentView.StripeInset.BOTTOM;
-        }
-
         TimelineSegment segment = getItem(position);
-        segmentViewHolder.displaySegment(segment, segmentPosition);
+        segmentViewHolder.displaySegment(position, segment);
         segmentViewHolder.itemView.setMinimumHeight((int) getItemHeight(position));
 
         return view;
@@ -178,23 +200,21 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
         //region Displaying Data
 
-        public void displaySegment(@NonNull TimelineSegment segment, @NonNull TimelineSegmentView.StripeInset stripeInset) {
+        public void displaySegment(int position, @NonNull TimelineSegment segment) {
             int sleepDepth = segment.getSleepDepth() < 0 ? 0 : segment.getSleepDepth();
             itemView.setSleepDepth(sleepDepth);
-            itemView.setStripeInset(stripeInset);
-            itemView.setRounded(segment.getEventType() != null);
             itemView.setEventResource(Styles.getTimelineSegmentIconRes(segment));
 
             EventType eventType = segment.getEventType();
             if (eventType != null) {
-                if (eventType == EventType.WAKE_UP || eventType == EventType.SLEEP) {
-                    itemView.setTimestampTypeface(Typeface.create("sans-serif", Typeface.BOLD));
-                } else {
-                    itemView.setTimestampTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                }
-                itemView.setTimestampString(dateFormatter.formatAsTime(segment.getTimestamp(), use24Time));
+                itemView.setTimestampString(dateFormatter.formatAsTime(segment.getTimestamp(), use24Time),
+                                            TimelineSegmentView.TimestampSide.RIGHT);
+            } else if (positionsWithTime.contains(position)) {
+                LocalDateTime time = segment.getTimestamp().withMinuteOfHour(0);
+                itemView.setTimestampString(dateFormatter.formatAsTime(time, use24Time),
+                                            TimelineSegmentView.TimestampSide.LEFT);
             } else {
-                itemView.setTimestampString(null);
+                itemView.setTimestampString(null, null);
             }
         }
     }
