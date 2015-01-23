@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.annotation.XmlRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,11 +86,6 @@ public class AppSettingsFragment extends InjectionFragment {
         Intent intent = new Intent(getActivity(), FragmentNavigationActivity.class);
         intent.putExtras(intentArguments);
         startActivity(intent);
-    }
-
-    private void showFragment(@XmlRes int prefsRes,
-                              @StringRes int titleRes) {
-        showFragment(StaticPreferencesFragment.class, titleRes, StaticPreferencesFragment.getArguments(prefsRes));
     }
 
     public void logOut(@NonNull View sender) {

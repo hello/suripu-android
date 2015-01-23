@@ -6,16 +6,6 @@
     <string name="unit_system_us_customary">Imperial</string>
     <string name="unit_system_metric">Metric</string>
 
-    <string-array name="setting_entries_units">
-        <item>UsCustomary</item>
-        <item>Metric</item>
-    </string-array>
-    <string-array name="setting_entry_titles_units">
-        <item>Imperial</item>
-        <item>Metric</item>
-    </string-array>
-    <string name="setting_default_units">UsCustomary</string>
-
     <!--
         Derived from AoSP https://github.com/android/platform_packages_apps_settings/blob/master/res/xml/timezones.xml
 
