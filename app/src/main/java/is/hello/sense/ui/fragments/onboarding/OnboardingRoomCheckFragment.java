@@ -18,8 +18,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
@@ -252,11 +249,11 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 if (condition.getValue() == null || condition.getValue() == 0f) {
                     deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
                 } else {
-                    this.currentValueAnimator = Animations.Properties.DEFAULT.apply(ValueAnimator.ofFloat(0f, condition.getValue()));
+                    this.currentValueAnimator = Animations.Properties.DEFAULT.apply(ValueAnimator.ofInt(0, condition.getValue().intValue()));
                     currentValueAnimator.addUpdateListener(a -> {
-                        float value = (Float) a.getAnimatedValue();
+                        int value = (int) a.getAnimatedValue();
                         if (formatter != null) {
-                            itemValue.setText(formatter.format(value));
+                            itemValue.setText(formatter.format((long) value));
                         } else {
                             itemContainer.setTag(value + condition.getValue());
                         }
@@ -357,12 +354,12 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         this.conditionFormatters.add(unitSystem::formatTemperature);
 
         this.conditions.add(roomConditions.getHumidity());
-        this.conditionFormatters.add(null);
+        this.conditionFormatters.add(unitSystem::formatHumidity);
 
         this.conditions.add(roomConditions.getParticulates());
         this.conditionFormatters.add(unitSystem::formatParticulates);
 
-        this.conditions.add(new SensorState(70, "[placeholder] It's a bit loud.", Condition.ALERT, "db", DateTime.now()));
+        this.conditions.add(roomConditions.getSound());
         this.conditionFormatters.add(unitSystem::formatDecibels);
 
         this.conditions.add(roomConditions.getLight());

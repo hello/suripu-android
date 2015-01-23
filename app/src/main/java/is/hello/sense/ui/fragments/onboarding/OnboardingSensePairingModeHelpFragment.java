@@ -8,8 +8,18 @@ import android.view.ViewGroup;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.util.Analytics;
 
 public class OnboardingSensePairingModeHelpFragment extends SenseFragment {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_PAIRING_MODE_HELP, null);
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

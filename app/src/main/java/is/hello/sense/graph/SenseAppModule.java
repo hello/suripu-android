@@ -14,6 +14,7 @@ import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
@@ -30,8 +31,8 @@ import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
-import is.hello.sense.ui.dialogs.InsightDetailsDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
@@ -104,7 +105,8 @@ import is.hello.sense.ui.widget.TimestampTextView;
 
         InsightsPresenter.class,
         InsightsFragment.class,
-        InsightDetailsDialogFragment.class,
+        InsightInfoDialogFragment.class,
+        InsightInfoPresenter.class,
         RoomConditionsFragment.class,
         RoomConditionsPresenter.class,
         SensorHistoryFragment.class,

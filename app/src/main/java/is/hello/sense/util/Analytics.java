@@ -98,9 +98,19 @@ public class Analytics {
     public static final String EVENT_ONBOARDING_LOCATION = "Onboarding Location";
 
     /**
+     * User lands on Enhanced Audio screen
+     */
+    public static final String EVENT_ONBOARDING_SENSE_AUDIO = "Onboarding Sense Audio";
+
+    /**
      * When user lands on the No BLE screen
      */
     public static final String EVENT_ONBOARDING_NO_BLE = "Onboarding No BLE";
+
+    /**
+     * When user lands on the pairing mode help screen (not glowing purple)
+     */
+    public static final String EVENT_ONBOARDING_PAIRING_MODE_HELP = "Onboarding Pairing Mode Help";
 
     /**
      * When user lands on the Setting up Sense screen
@@ -141,6 +151,11 @@ public class Analytics {
      * When user lands on screen where it asks user to place the pill on the pillow
      */
     public static final String EVENT_ONBOARDING_PILL_PLACEMENT = "Onboarding Pill Placement";
+
+    /**
+     * User lands on screen which asks whether they want to pair another pill.
+     */
+    public static final String EVENT_ONBOARDING_ANOTHER_PILL = "Onboarding Another Pill";
 
     /**
      * When user lands on the screen that tells them "To connect a second Sleep Pill, Sense needs to be put into pairing mode"

@@ -176,8 +176,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
         birthdayItem.setDetail(dateFormatter.formatAsBirthDate(account.getBirthDate()));
         genderItem.setDetail(getString(account.getGender().nameRes));
-        heightItem.setDetail(unitSystem.formatHeight(account.getHeight()));
-        weightItem.setDetail(unitSystem.formatMass(account.getWeight()));
+        heightItem.setDetail(unitSystem.formatHeight(account.getHeight()).toString());
+        weightItem.setDetail(unitSystem.formatMass(account.getWeight()).toString());
         timeZoneItem.setDetail(DateTimeZone.forOffsetMillis(account.getTimeZoneOffset()).getName(DateTimeUtils.currentTimeMillis()));
 
         this.currentAccount = account;

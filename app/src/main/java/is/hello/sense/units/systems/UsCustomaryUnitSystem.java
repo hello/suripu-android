@@ -1,6 +1,7 @@
 package is.hello.sense.units.systems;
 
 import is.hello.sense.api.ApiService;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitOperations;
 import is.hello.sense.units.UnitSystem;
 
@@ -13,18 +14,18 @@ public class UsCustomaryUnitSystem extends UnitSystem {
     }
 
     @Override
-    public String formatMass(float mass) {
-        return UnitOperations.gramsToPounds((int) mass) + " lbs";
+    public CharSequence formatMass(long mass) {
+        return Styles.assembleReadingAndUnit(UnitOperations.gramsToPounds((int) mass), "lbs");
     }
 
     @Override
-    public String formatTemperature(float temperature) {
-        return UnitOperations.celsiusToFahrenheit((long) temperature) + "º";
+    public CharSequence formatTemperature(long temperature) {
+        return Styles.assembleReadingAndUnit(UnitOperations.celsiusToFahrenheit(temperature), "º");
     }
 
     @Override
-    public String formatHeight(float distance) {
-        long totalInches = UnitOperations.centimetersToInches((long) distance);
+    public CharSequence formatHeight(long distance) {
+        long totalInches = UnitOperations.centimetersToInches(distance);
         long feet = totalInches / 12;
         long remainingInches = totalInches % 12;
         if (remainingInches > 0) {

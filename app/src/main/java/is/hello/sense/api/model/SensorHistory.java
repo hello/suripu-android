@@ -25,9 +25,10 @@ public class SensorHistory extends ApiResponse {
     public static final String SENSOR_NAME_HUMIDITY = "humidity";
     public static final String SENSOR_NAME_PARTICULATES = "particulates";
     public static final String SENSOR_NAME_LIGHT = "light";
+    public static final String SENSOR_NAME_SOUND = "sound";
 
     @JsonProperty("value")
-    private float value;
+    private long value;
 
     @JsonProperty("datetime")
     private DateTime time;
@@ -36,7 +37,7 @@ public class SensorHistory extends ApiResponse {
     private long offset;
 
 
-    public float getValue() {
+    public long getValue() {
         return value;
     }
 

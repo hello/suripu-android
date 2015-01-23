@@ -26,6 +26,6 @@ public final class UnitFormatter {
 
 
     public interface Formatter {
-        String format(Float value);
+        @NonNull CharSequence format(Long value);
     }
 }

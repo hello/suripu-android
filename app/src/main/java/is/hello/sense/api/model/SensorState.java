@@ -8,11 +8,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
 
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitFormatter;
 
 public class SensorState extends ApiResponse {
     @JsonProperty("value")
-    private Float value;
+    private Long value;
 
     @JsonProperty("message")
     private String message;
@@ -34,7 +35,7 @@ public class SensorState extends ApiResponse {
     }
 
     @JsonIgnore
-    public SensorState(float value,
+    public SensorState(long value,
                        @NonNull String message,
                        @NonNull Condition condition,
                        @NonNull String unit,
@@ -46,7 +47,7 @@ public class SensorState extends ApiResponse {
         this.lastUpdated = lastUpdated;
     }
 
-    public Float getValue() {
+    public Long getValue() {
         return value;
     }
 
@@ -70,13 +71,13 @@ public class SensorState extends ApiResponse {
         return idealConditions;
     }
 
-    public @Nullable String getFormattedValue(@Nullable UnitFormatter.Formatter formatter) {
+    public @Nullable CharSequence getFormattedValue(@Nullable UnitFormatter.Formatter formatter) {
         if (getValue() == null) {
             return null;
         } else if (formatter != null) {
             return formatter.format(getValue());
         } else {
-            return getValue().longValue() + getUnit();
+            return Styles.assembleReadingAndUnit(getValue(), getUnit());
         }
     }
 

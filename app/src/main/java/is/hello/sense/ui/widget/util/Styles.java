@@ -11,6 +11,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -19,6 +23,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
+import is.hello.sense.util.SuperscriptSpanAdjuster;
 
 public final class Styles {
     public static final int TIMELINE_HOURS_ON_SCREEN = 10;
@@ -119,6 +124,20 @@ public final class Styles {
     }
 
 
+    public static CharSequence createUnitSuffixSpan(@NonNull String suffix) {
+        SpannableString spannableSuffix = new SpannableString(suffix);
+        spannableSuffix.setSpan(new RelativeSizeSpan(0.5f), 0, suffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        spannableSuffix.setSpan(new SuperscriptSpanAdjuster(0.75f), 0, suffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        return spannableSuffix;
+    }
+
+    public static CharSequence assembleReadingAndUnit(long value, @NonNull String suffix) {
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        builder.append(Long.toString(value));
+        builder.append(createUnitSuffixSpan(suffix));
+        return builder;
+    }
+
     public static @NonNull Drawable createGraphFillDrawable(@NonNull Resources resources) {
         return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
                 resources.getColor(R.color.graph_fill_gradient_top),
@@ -160,7 +179,7 @@ public final class Styles {
         Context context = listView.getContext();
         Resources resources = listView.getResources();
 
-        int spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_outer);
+        int spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_medium);
         View topSpacing = new View(context);
         topSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
         ListViews.addHeaderView(listView, topSpacing, null, false);

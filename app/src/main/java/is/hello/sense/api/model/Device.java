@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import net.danlew.android.joda.DateUtils;
 
 import org.joda.time.DateTime;
-import org.joda.time.Minutes;
+import org.joda.time.Hours;
 
 import is.hello.sense.R;
 
@@ -90,7 +90,7 @@ public class Device extends ApiResponse {
     @JsonIgnore
     public boolean isMissing() {
         return (!exists || (getLastUpdated() == null) ||
-                (Minutes.minutesBetween(getLastUpdated(), DateTime.now()).getMinutes() > 15));
+                (Hours.hoursBetween(getLastUpdated(), DateTime.now()).getHours() >= 24));
     }
 
     @Override
