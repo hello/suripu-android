@@ -90,8 +90,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                                 }
 
                                 edit().putString(UNIT_SYSTEM, unitSystemName)
-                                        .putBoolean(USE_24_TIME, use24Time != null && use24Time)
-                                        .apply();
+                                      .putBoolean(USE_24_TIME, use24Time != null && use24Time)
+                                      .apply();
 
                                 logEvent("Pulled preferences");
 

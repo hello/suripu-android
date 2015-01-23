@@ -20,6 +20,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -33,6 +34,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
     @Inject ApiSessionManager apiSessionManager;
     @Inject ApiService apiService;
     @Inject ApiEnvironment environment;
+    @Inject PreferencesPresenter preferencesPresenter;
 
     private EditText emailText;
     private EditText passwordText;
@@ -92,6 +94,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         OAuthCredentials credentials = new OAuthCredentials(environment, email, password);
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             apiSessionManager.setSession(session);
+            preferencesPresenter.pullAccountPreferences().subscribe();
             Analytics.trackEvent(Analytics.EVENT_SIGNED_IN, null);
 
             getOnboardingActivity().showHomeActivity();
