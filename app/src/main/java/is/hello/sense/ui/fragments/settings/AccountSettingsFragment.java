@@ -70,7 +70,14 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            this.currentAccount = (Account) savedInstanceState.getSerializable("currentAccount");
+        }
+
+        accountPresenter.update();
         addPresenter(accountPresenter);
+
+        setRetainInstance(true);
     }
 
     @Nullable
@@ -109,8 +116,6 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        accountPresenter.update();
-
         Observable<Pair<Account, UnitSystem>> forAccount = Observable.combineLatest(accountPresenter.account,
                                                                                     unitFormatter.unitSystem,
                                                                                     Pair::new);
@@ -119,6 +124,13 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         bindAndSubscribe(accountPresenter.preferences(),
                          this::bindAccountPreferences,
                          this::presentError);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable("currentAccount", currentAccount);
     }
 
     @Override
