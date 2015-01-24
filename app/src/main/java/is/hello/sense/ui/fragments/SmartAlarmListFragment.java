@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
@@ -141,7 +142,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     public void alarmsUnavailable(Throwable e) {
         finishLoading();
         if (BuildConfig.DEBUG) {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            presentError(e);
         } else {
             Logger.error(getClass().getSimpleName(), "Could not load smart alarms.", e);
         }
@@ -149,7 +150,16 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
     public void presentError(Throwable e) {
         finishLoading();
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+
+        if (e instanceof SmartAlarmPresenter.DayOverlapError) {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_day_overlap));
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        } else if (ApiException.statusEquals(e, 400)) {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_clock_drift));
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        } else {
+            ErrorDialogFragment.presentError(getFragmentManager(), e);
+        }
     }
 
 
