@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import javax.inject.Inject;
@@ -27,10 +28,11 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
+
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class PiruPeaActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject BluetoothStack stack;
@@ -42,12 +44,15 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     private PeripheralAdapter scannedPeripheralsAdapter;
     private StaticItemAdapter peripheralActions;
     private ListView listView;
+    private ProgressBar loadingIndicator;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_view_static);
+
+        this.loadingIndicator = (ProgressBar) findViewById(R.id.list_view_static_loading);
 
         this.listView = (ListView) findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
@@ -101,23 +106,46 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     }
 
 
+    //region Activity
+
+    private void showLoadingIndicator() {
+        animate(listView)
+                .fadeOut(View.INVISIBLE)
+                .start();
+        animate(loadingIndicator)
+                .fadeIn()
+                .start();
+    }
+
+    private void hideLoadingIndicator() {
+        animate(loadingIndicator)
+                .fadeOut(View.INVISIBLE)
+                .start();
+        animate(listView)
+                .fadeIn()
+                .start();
+    }
+
+    //endregion
+
+
     //region Scanning
 
     public void scan() {
         disconnect();
         scannedPeripheralsAdapter.clear();
 
-        LoadingDialogFragment.show(getFragmentManager());
+        showLoadingIndicator();
         bindAndSubscribe(SensePeripheral.discover(stack, new PeripheralCriteria()),
                          peripherals -> {
                              scannedPeripheralsAdapter.addAll(peripherals);
-                             LoadingDialogFragment.close(getFragmentManager());
+                             hideLoadingIndicator();
                          },
                          this::presentError);
     }
 
     public void presentError(Throwable e) {
-        LoadingDialogFragment.close(getFragmentManager());
+        hideLoadingIndicator();
         ErrorDialogFragment.presentBluetoothError(getFragmentManager(), this, e);
     }
 
@@ -127,9 +155,9 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     //region Actions
 
     public <T> void runSimpleCommand(@NonNull Observable<T> command) {
-        LoadingDialogFragment.show(getFragmentManager());
+        showLoadingIndicator();
         bindAndSubscribe(command,
-                         ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                         ignored -> hideLoadingIndicator(),
                          this::presentError);
     }
 
@@ -166,10 +194,10 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     }
 
     public void getWifiNetwork() {
-        LoadingDialogFragment.show(getFragmentManager());
+        showLoadingIndicator();
         bindAndSubscribe(selectedPeripheral.getWifiNetwork(),
                 network -> {
-                    LoadingDialogFragment.close(getFragmentManager());
+                    hideLoadingIndicator();
                     MessageDialogFragment dialogFragment = MessageDialogFragment.newInstance("Wifi Network", network.ssid + "\n" + network.connectionState);
                     dialogFragment.show(getFragmentManager(), MessageDialogFragment.TAG);
                 },
@@ -220,13 +248,11 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         if (selectedPeripheral == null) {
             this.selectedPeripheral = scannedPeripheralsAdapter.getItem(position);
 
-            LoadingDialogFragment loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager());
+            showLoadingIndicator();
             bindAndSubscribe(selectedPeripheral.connect(), status -> {
                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
-                    LoadingDialogFragment.close(getFragmentManager());
+                    hideLoadingIndicator();
                     listView.setAdapter(peripheralActions);
-                } else {
-                    loadingDialogFragment.setTitle(getString(status.messageRes));
                 }
             }, this::presentError);
         } else {
