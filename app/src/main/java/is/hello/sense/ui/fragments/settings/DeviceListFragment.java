@@ -41,6 +41,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
 
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;
+    private TextView supportInfoFooter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,9 +65,10 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         adapter.setOnPairNewDeviceListener(this);
 
         Styles.addCardSpacingHeaderAndFooter(listView);
-        TextView footer = (TextView) inflater.inflate(R.layout.footer_help, listView, false);
-        Views.makeTextViewLinksClickable(footer);
-        ListViews.addFooterView(listView, footer, null, false);
+        this.supportInfoFooter = (TextView) inflater.inflate(R.layout.footer_help, listView, false);
+        supportInfoFooter.setVisibility(View.INVISIBLE);
+        Views.makeTextViewLinksClickable(supportInfoFooter);
+        ListViews.addFooterView(listView, supportInfoFooter, null, false);
         listView.setAdapter(adapter);
 
 
@@ -89,6 +91,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         if (requestCode == DEVICE_REQUEST_CODE || requestCode == PAIR_DEVICE_REQUEST_CODE) {
             adapter.clear();
 
+            supportInfoFooter.setVisibility(View.INVISIBLE);
             animate(loadingIndicator)
                     .fadeIn()
                     .start();
@@ -101,7 +104,14 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Device device = (Device) adapterView.getItemAtPosition(position);
         if (device.exists()) {
-            DeviceDetailsFragment fragment = DeviceDetailsFragment.newInstance(device);
+            DeviceDetailsFragment fragment;
+            if (device.getType() == Device.Type.SENSE) {
+                fragment = SenseDetailsFragment.newInstance(device);
+            } else if (device.getType() == Device.Type.PILL) {
+                fragment = PillDetailsFragment.newInstance(device);
+            } else {
+                return;
+            }
             fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
             ((FragmentNavigation) getActivity()).pushFragment(fragment, getString(device.getType().nameRes), true);
         }
@@ -111,6 +121,11 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
     public void bindDevices(@NonNull List<Device> devices) {
         animate(loadingIndicator)
                 .fadeOut(View.GONE)
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        supportInfoFooter.setVisibility(View.VISIBLE);
+                    }
+                })
                 .start();
 
         adapter.bindDevices(devices);

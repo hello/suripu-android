@@ -28,6 +28,7 @@ import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.model.RegistrationError;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -55,6 +56,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     @Inject ApiService apiService;
     @Inject ApiSessionManager sessionManager;
     @Inject ApiEnvironment environment;
+    @Inject PreferencesPresenter preferencesPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -192,6 +194,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         OAuthCredentials credentials = new OAuthCredentials(environment, emailText.getText().toString(), passwordText.getText().toString());
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             sessionManager.setSession(session);
+            preferencesPresenter.pullAccountPreferences().subscribe();
             Analytics.trackEvent(Analytics.EVENT_SIGNED_IN, null);
 
             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),

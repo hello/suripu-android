@@ -58,8 +58,10 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.fragments.settings.ChangeEmailFragment;
 import is.hello.sense.ui.fragments.settings.ChangePasswordFragment;
-import is.hello.sense.ui.fragments.settings.DeviceDetailsFragment;
+import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
+import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
+import is.hello.sense.ui.fragments.settings.UnitSettingsFragments;
 import is.hello.sense.ui.widget.TimestampTextView;
 
 @Module(
@@ -92,7 +94,8 @@ import is.hello.sense.ui.widget.TimestampTextView;
 
         DeviceListFragment.class,
         DevicesPresenter.class,
-        DeviceDetailsFragment.class,
+        SenseDetailsFragment.class,
+        PillDetailsFragment.class,
 
         TimelineFragment.class,
         TimelinePresenter.class,
@@ -123,6 +126,7 @@ import is.hello.sense.ui.widget.TimestampTextView;
         AccountSettingsFragment.class,
         ChangePasswordFragment.class,
         ChangeEmailFragment.class,
+        UnitSettingsFragments.class,
         AccountPresenter.class,
 
         UnstableBluetoothFragment.class,

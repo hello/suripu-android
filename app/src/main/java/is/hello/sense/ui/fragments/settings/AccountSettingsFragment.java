@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
@@ -30,7 +31,6 @@ import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimeZoneDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
@@ -43,12 +43,16 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+
 public class AccountSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
     private static final int REQUEST_CODE_TIME_ZONE = 0x19;
 
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject UnitFormatter unitFormatter;
+
+    private ProgressBar loadingIndicator;
 
     private StaticItemAdapter.TextItem nameItem;
     private StaticItemAdapter.TextItem emailItem;
@@ -62,6 +66,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     private StaticItemAdapter.CheckItem enhancedAudioItem;
 
     private Account currentAccount;
+    private ListView listView;
 
 
     //region Lifecycle
@@ -85,7 +90,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list_view_static, container, false);
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
+
+        this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
@@ -143,7 +150,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
             int offset = timeZone.getOffset(DateTimeUtils.currentTimeMillis());
             currentAccount.setTimeZoneOffset(offset);
 
-            LoadingDialogFragment.show(getFragmentManager());
+            showLoadingIndicator();
             accountPresenter.saveAccount(currentAccount);
             accountPresenter.updateTimeZone(SenseTimeZone.fromDateTimeZone(timeZone))
                             .subscribe(ignored -> Logger.info(getClass().getSimpleName(), "Updated time zone"),
@@ -172,13 +179,31 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         return (FragmentNavigation) getActivity();
     }
 
+    private void showLoadingIndicator() {
+        animate(listView)
+                .fadeOut(View.INVISIBLE)
+                .start();
+        animate(loadingIndicator)
+                .fadeIn()
+                .start();
+    }
+
+    private void hideLoadingIndicator() {
+        animate(loadingIndicator)
+                .fadeOut(View.INVISIBLE)
+                .start();
+        animate(listView)
+                .fadeIn()
+                .start();
+    }
+
     //endregion
 
 
     //region Binding Data
 
     public void bindAccount(@NonNull Pair<Account, UnitSystem> forAccount) {
-        LoadingDialogFragment.close(getFragmentManager());
+        hideLoadingIndicator();
 
         Account account = forAccount.first;
         UnitSystem unitSystem = forAccount.second;
@@ -201,7 +226,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     }
 
     public void presentError(Throwable e) {
-        LoadingDialogFragment.close(getFragmentManager());
+        hideLoadingIndicator();
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 
@@ -270,9 +295,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         update.setEnabled(newSetting);
         enhancedAudioItem.setChecked(newSetting);
 
-        LoadingDialogFragment.show(getFragmentManager());
+        showLoadingIndicator();
         bindAndSubscribe(accountPresenter.updatePreference(update),
-                         ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                         ignored -> hideLoadingIndicator(),
                          e -> {
                              enhancedAudioItem.setChecked(!newSetting);
                              presentError(e);
@@ -294,7 +319,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     public void onAccountUpdated(@NonNull AccountEditingFragment updatedBy) {
         updatedBy.getFragmentManager().popBackStackImmediate();
         coordinator.postOnResume(() -> {
-            LoadingDialogFragment.show(getFragmentManager());
+            showLoadingIndicator();
             accountPresenter.saveAccount(currentAccount);
         });
     }

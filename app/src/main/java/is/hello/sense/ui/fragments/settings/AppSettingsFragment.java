@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.annotation.XmlRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +52,7 @@ public class AppSettingsFragment extends InjectionFragment {
         addItem(R.string.label_account, true, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account, null));
         addItem(R.string.label_devices, true, ignored -> showFragment(DeviceListFragment.class, R.string.label_devices, null));
         addItem(R.string.label_notifications, true, ignored -> showFragment(NotificationsSettingsFragment.class, R.string.label_notifications, null));
-        addItem(R.string.label_units_and_time, true, ignored -> showFragment(R.xml.settings_units_and_time, R.string.label_units_and_time));
+        addItem(R.string.label_units_and_time, true, ignored -> showFragment(UnitSettingsFragments.class, R.string.label_units_and_time, null));
         addItem(R.string.action_log_out, false, this::logOut);
 
         TextView footer = (TextView) view.findViewById(R.id.sub_fragment_device_footer);
@@ -87,11 +86,6 @@ public class AppSettingsFragment extends InjectionFragment {
         Intent intent = new Intent(getActivity(), FragmentNavigationActivity.class);
         intent.putExtras(intentArguments);
         startActivity(intent);
-    }
-
-    private void showFragment(@XmlRes int prefsRes,
-                              @StringRes int titleRes) {
-        showFragment(StaticPreferencesFragment.class, titleRes, StaticPreferencesFragment.getArguments(prefsRes));
     }
 
     public void logOut(@NonNull View sender) {
