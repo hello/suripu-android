@@ -11,6 +11,7 @@ import is.hello.sense.api.model.Device;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Logger;
@@ -46,20 +47,6 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
 
     //region Pill Actions
 
-    public void presentError(@NonNull Throwable e) {
-        hideAlert();
-        hideAllActivity(false, () -> {
-            if (hardwarePresenter.isErrorFatal(e)) {
-                UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
-                fragment.show(getFragmentManager(), R.id.activity_fragment_navigation_container);
-            } else {
-                ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
-            }
-
-            Logger.error(SenseDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
-        });
-    }
-
     public void unregisterDevice() {
         SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
         alertDialog.setDestructive(true);
@@ -67,9 +54,16 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         alertDialog.setMessage(R.string.dialog_message_replace_sleep_pill);
         alertDialog.setNegativeButton(android.R.string.cancel, null);
         alertDialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
+            LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
-                             ignored -> finishDeviceReplaced(),
-                             this::presentError);
+                             ignored -> {
+                                 LoadingDialogFragment.close(getFragmentManager());
+                                 finishDeviceReplaced();
+                             },
+                             e -> {
+                                 LoadingDialogFragment.close(getFragmentManager());
+                                 ErrorDialogFragment.presentError(getFragmentManager(), e);
+                             });
         });
         alertDialog.show();
     }
