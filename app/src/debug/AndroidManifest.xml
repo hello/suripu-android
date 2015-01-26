@@ -21,6 +21,45 @@
             </intent-filter>
         </receiver>
 
+        <!--region Widgets-->
+
+        <receiver
+            android:name="is.hello.sense.remote.RoomConditionsWidgetProvider"
+            android:label="@string/widget_label_room_conditions">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_ENABLED" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_DELETED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/room_conditions_appwidget_info" />
+
+        </receiver>
+
+        <receiver
+            android:name="is.hello.sense.remote.LastNightWidgetProvider"
+            android:label="@string/widget_label_last_night">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_ENABLED" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_DELETED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/last_night_appwidget_info" />
+
+        </receiver>
+
+        <service android:name="is.hello.sense.remote.RoomConditionsWidgetProvider$UpdateService" />
+        <service android:name="is.hello.sense.remote.LastNightWidgetProvider$LastNightService" />
+
+        <!--endregion-->
+
     </application>
 
 </manifest>
