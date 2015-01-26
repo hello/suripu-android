@@ -35,8 +35,9 @@ public class AccountPresenter extends ValuePresenter<Account> {
     }
 
 
-    public void saveAccount(@NonNull Account updatedAccount) {
-        apiService.updateAccount(updatedAccount).subscribe(account);
+    public Observable<Account> saveAccount(@NonNull Account updatedAccount) {
+        return apiService.updateAccount(updatedAccount)
+                         .doOnNext(account::onNext);
     }
 
     public Observable<Account> updateEmail(@NonNull String email) {

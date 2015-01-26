@@ -150,8 +150,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
             int offset = timeZone.getOffset(DateTimeUtils.currentTimeMillis());
             currentAccount.setTimeZoneOffset(offset);
 
-            showLoadingIndicator();
-            accountPresenter.saveAccount(currentAccount);
+            saveAccount();
             accountPresenter.updateTimeZone(SenseTimeZone.fromDateTimeZone(timeZone))
                             .subscribe(ignored -> Logger.info(getClass().getSimpleName(), "Updated time zone"),
                             Functions.LOG_ERROR);
@@ -203,8 +202,6 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     //region Binding Data
 
     public void bindAccount(@NonNull Pair<Account, UnitSystem> forAccount) {
-        hideLoadingIndicator();
-
         Account account = forAccount.first;
         UnitSystem unitSystem = forAccount.second;
 
@@ -318,9 +315,15 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     @Override
     public void onAccountUpdated(@NonNull AccountEditingFragment updatedBy) {
         updatedBy.getFragmentManager().popBackStackImmediate();
+        saveAccount();
+    }
+
+    private void saveAccount() {
         coordinator.postOnResume(() -> {
             showLoadingIndicator();
-            accountPresenter.saveAccount(currentAccount);
+            bindAndSubscribe(accountPresenter.saveAccount(currentAccount),
+                             ignored -> hideLoadingIndicator(),
+                             this::presentError);
         });
     }
 
