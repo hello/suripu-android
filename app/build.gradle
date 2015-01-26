@@ -41,8 +41,11 @@ android {
         testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
     signingConfigs {
+        debug {
+            storeFile file("../../Hello-Android-Internal.keystore")
+        }
         release {
-            storeFile file("../../Hello-Android.keystore")
+            storeFile file("../../Hello-Android-Release.keystore")
             storePassword "hellogoodbye"
             keyAlias "suripu"
             keyPassword "hellogoodbye"
@@ -63,6 +66,8 @@ android {
             buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.VERBOSE"
             buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, TRUE
             buildConfigField TYPE_BOOLEAN, CLEAR_LOG_ON_START, FALSE
+
+            signingConfig signingConfigs.debug
 
             applicationIdSuffix ".debug"
             minifyEnabled false // when we hit the 0xffff method limit, switch this to true
