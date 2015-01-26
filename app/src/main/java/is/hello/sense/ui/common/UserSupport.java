@@ -37,6 +37,7 @@ public class UserSupport {
     public static enum DeviceIssue {
         SENSE_MISSING,
         SLEEP_PILL_MISSING,
+        REPLACE_BATTERY,
     }
 
     public static enum OnboardingStep {

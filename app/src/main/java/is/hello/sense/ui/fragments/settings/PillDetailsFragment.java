@@ -12,10 +12,8 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Logger;
 
 public class PillDetailsFragment extends DeviceDetailsFragment {
     @Inject DevicesPresenter devicesPresenter;
@@ -43,6 +41,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
 
         showActions();
         addDeviceAction(R.string.action_replace_sleep_pill, true, this::unregisterDevice);
+        addDeviceAction(R.string.action_replace_battery, true, this::replaceBattery);
 
         if (device.isMissing()) {
             String missingMessage = getString(R.string.error_sleep_pill_missing_fmt, device.getLastUpdatedDescription(getActivity()));
@@ -78,6 +77,11 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
                              });
         });
         alertDialog.show();
+    }
+
+    public void replaceBattery() {
+        showSupportFor(UserSupport.DeviceIssue.REPLACE_BATTERY);
+        
     }
 
     //endregion
