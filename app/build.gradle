@@ -73,10 +73,20 @@ android {
             minifyEnabled false // when we hit the 0xffff method limit, switch this to true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
-        release {
+        beta {
             buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.VERBOSE"
             buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, TRUE
             buildConfigField TYPE_BOOLEAN, CLEAR_LOG_ON_START, FALSE
+
+            signingConfig signingConfigs.release
+
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
+        }
+        store {
+            buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.ERROR"
+            buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, FALSE
+            buildConfigField TYPE_BOOLEAN, CLEAR_LOG_ON_START, TRUE
 
             signingConfig signingConfigs.release
 

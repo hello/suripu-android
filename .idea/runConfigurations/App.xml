@@ -19,6 +19,8 @@
     <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
     <RunnerSettings RunnerId="AndroidDebugRunner" />
     <ConfigurationWrapper RunnerId="AndroidDebugRunner" />
-    <method />
+    <method>
+      <option name="Android.Gradle.BeforeRunTask" enabled="true" goal="" />
+    </method>
   </configuration>
 </component>
