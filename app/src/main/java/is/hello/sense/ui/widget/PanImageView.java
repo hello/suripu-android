@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
@@ -39,6 +40,8 @@ public class PanImageView extends View {
             setPanAmount(attributes.getFloat(R.styleable.PanImageView_panAmount, 0f));
             attributes.recycle();
         }
+
+        setBackgroundColor(Color.BLACK);
     }
 
 
@@ -75,7 +78,10 @@ public class PanImageView extends View {
             float viewHeight = getMeasuredHeight();
             float imageHeight = image.getIntrinsicHeight();
             float imageWidth = image.getIntrinsicWidth();
-            if (imageHeight > 0f) {
+            if (viewHeight > imageHeight) {
+                float scaleY = viewHeight / imageHeight;
+                this.scaledImageWidth = Math.round(imageWidth * scaleY);
+            } else if (imageHeight > 0f) {
                 float scaleY = imageHeight / viewHeight;
                 this.scaledImageWidth = Math.round(imageWidth * scaleY);
             } else {
