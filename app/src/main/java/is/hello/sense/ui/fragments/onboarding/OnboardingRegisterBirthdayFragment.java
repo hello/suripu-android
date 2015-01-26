@@ -212,7 +212,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
             if (shouldAddLeadingZero(newText)) {
                 newText = LEADING_ZERO + newText;
             }
-            
+
             field.setText(newText);
 
             if (newText.length() == FIELD_LIMITS[activeField]) {

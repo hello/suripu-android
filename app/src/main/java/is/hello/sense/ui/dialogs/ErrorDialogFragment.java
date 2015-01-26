@@ -8,10 +8,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.TextUtils;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.api.model.ErrorResponse;
+import is.hello.sense.api.model.RegistrationError;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
@@ -30,12 +33,15 @@ public class ErrorDialogFragment extends DialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();
 
     private static final String ARG_MESSAGE = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE";
+    private static final String ARG_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE_RES";
     private static final String ARG_HAS_REQUEST_INFO = ErrorDialogFragment.class.getName() + ".ARG_HAS_REQUEST_INFO";
-    private static final String ARG_URL = ErrorDialogFragment.class.getName() + ".ARG_URL";
     private static final String ARG_RESPONSE_STATUS = ErrorDialogFragment.class.getName() + ".ARG_RESPONSE_STATUS";
     private static final String ARG_RESPONSE_REASON = ErrorDialogFragment.class.getName() + ".ARG_RESPONSE_REASON";
 
     private static final int RESPONSE_STATUS_UNKNOWN = -1;
+
+
+    //region Creation
 
     public static void presentError(@NonNull FragmentManager fm, @Nullable Throwable e) {
         ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(e);
@@ -122,12 +128,19 @@ public class ErrorDialogFragment extends DialogFragment {
             if (e instanceof ApiException) {
                 ApiException error = (ApiException) e;
                 arguments.putBoolean(ARG_HAS_REQUEST_INFO, true);
-                arguments.putString(ARG_URL, error.getUrl());
-
                 if (error.getStatus() != null) {
                     arguments.putInt(ARG_RESPONSE_STATUS, error.getStatus());
                 }
                 arguments.putString(ARG_RESPONSE_REASON, error.getReason());
+
+                ErrorResponse errorResponse = error.getErrorResponse();
+                if (errorResponse != null) {
+                    RegistrationError registrationError = RegistrationError.fromString(errorResponse.getMessage());
+                    if (registrationError != RegistrationError.UNKNOWN) {
+                        arguments.putInt(ARG_MESSAGE_RES, registrationError.messageRes);
+                        arguments.remove(ARG_MESSAGE);
+                    }
+                }
             }
         }
         fragment.setArguments(arguments);
@@ -144,6 +157,19 @@ public class ErrorDialogFragment extends DialogFragment {
 
         return fragment;
     }
+
+    public static ErrorDialogFragment newInstance(@StringRes int messageRes) {
+        ErrorDialogFragment fragment = new ErrorDialogFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putInt(ARG_MESSAGE_RES, messageRes);
+        fragment.setArguments(arguments);
+
+        return fragment;
+    }
+
+    //endregion
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -185,15 +211,15 @@ public class ErrorDialogFragment extends DialogFragment {
     }
 
     private String getMessage() {
-        return getArguments().getString(ARG_MESSAGE);
+        if (getArguments().containsKey(ARG_MESSAGE_RES)) {
+            return getString(getArguments().getInt(ARG_MESSAGE_RES));
+        } else {
+            return getArguments().getString(ARG_MESSAGE);
+        }
     }
 
     private boolean hasRequestInfo() {
         return getArguments().getBoolean(ARG_HAS_REQUEST_INFO, false);
-    }
-
-    private String getUrl() {
-        return getArguments().getString(ARG_URL);
     }
 
     private String getResponseReason() {
