@@ -29,20 +29,20 @@ public class UnitFormatterTests extends InjectionTestCase {
     }
 
     public void testFormatMass() throws Exception {
-        String formattedMass = unitSystem.formatMass(2500);
+        CharSequence formattedMass = unitSystem.formatMass(2500);
         assertNotNull(formattedMass);
-        assertEquals("6 lbs", formattedMass);
+        assertEquals("6lbs", formattedMass.toString());
     }
 
     public void testFormatTemperature() throws Exception {
-        String formattedTemperature = unitSystem.formatTemperature(4);
+        CharSequence formattedTemperature = unitSystem.formatTemperature(4);
         assertNotNull(formattedTemperature);
-        assertEquals("39º", formattedTemperature);
+        assertEquals("39º", formattedTemperature.toString());
     }
 
     public void testFormatDistance() throws Exception {
-        String formattedDistance = unitSystem.formatHeight(250);
+        CharSequence formattedDistance = unitSystem.formatHeight(250);
         assertNotNull(formattedDistance);
-        assertEquals("8' 2''", formattedDistance);
+        assertEquals("8' 2''", formattedDistance.toString());
     }
 }

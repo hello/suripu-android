@@ -106,7 +106,7 @@ public final class TestModule {
     }
 
     @Singleton @Provides ObjectMapper provideObjectMapper() {
-        return ApiModule.createConfiguredObjectMapper(null);
+        return ApiModule.createConfiguredObjectMapper();
     }
 
     @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {

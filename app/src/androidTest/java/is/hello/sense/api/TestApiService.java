@@ -19,6 +19,8 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
+import is.hello.sense.api.model.InsightCategory;
+import is.hello.sense.api.model.InsightInfo;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
@@ -219,5 +221,10 @@ public final class TestApiService implements ApiService {
     public Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
                                                         @NonNull @Query("time_period") String timePeriod) {
         return loadResponse("single_trend", new TypeReference<ArrayList<TrendGraph>>() {});
+    }
+
+    @Override
+    public Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") InsightCategory category) {
+        return unimplemented();
     }
 }

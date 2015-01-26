@@ -27,8 +27,7 @@ public class AccountPresenterTests extends InjectionTestCase {
         updatedAccount.setHeight(2000);
         updatedAccount.setBirthDate(LocalDate.now());
 
-        SyncObserver<Account> account = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, accountPresenter.account);
-        accountPresenter.saveAccount(updatedAccount);
+        SyncObserver<Account> account = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, accountPresenter.saveAccount(updatedAccount));
         account.await();
 
         assertNull(account.getError());
