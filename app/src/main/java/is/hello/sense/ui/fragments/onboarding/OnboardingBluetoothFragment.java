@@ -32,7 +32,7 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_NO_BLE, null);
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_ONBOARDING_NO_BLE, null);
 
         setRetainInstance(true);
     }

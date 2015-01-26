@@ -27,7 +27,7 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_SENSE_AUDIO, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_ONBOARDING_SENSE_AUDIO, null);
         }
     }
 

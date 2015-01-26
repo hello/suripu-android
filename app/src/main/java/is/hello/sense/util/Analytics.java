@@ -53,141 +53,151 @@ public class Analytics {
     //endregion
 
 
-    //region Onboarding
-
     /**
-     * Whenever user taps on a "help" button
+     * Events specific to onboarding.
      */
-    public static final String EVENT_HELP = "Help";
-    public static final String PROP_HELP_STEP = "step";
+    public static interface Onboarding {
+        /**
+         * Whenever user taps on a "help" button
+         */
+        String EVENT_HELP = "Help";
+        String PROP_HELP_STEP = "step";
 
+        /**
+         * Whenever user taps on a "play" button within the Onboarding flow
+         */
+        String EVENT_PLAY_VIDEO = "Play Video";
 
-    /**
-     * Whenever user taps on a "play" button within the Onboarding flow
-     */
-    public static final String EVENT_PLAY_VIDEO = "Play Video";
+        /**
+         * Whenever user taps on a "skip" button within the onboarding flow
+         */
+        String EVENT_SKIP = "Skip";
 
-    /**
-     * After user taps on Sign Up / lands on Sign Up screen
-     */
-    public static final String EVENT_ONBOARDING_START = "Onboarding Start";
+        /**
+         * Whenever user taps a "back" button within the onboarding flow.
+         */
+        String EVENT_BACK = "Back";
 
-    /**
-     * User lands on Birthday screen (do not log if user comes from Settings)
-     */
-    public static final String EVENT_ONBOARDING_BIRTHDAY = "Onboarding Birthday";
+        /**
+         * After user taps on Sign Up / lands on Sign Up screen
+         */
+        String EVENT_ONBOARDING_START = "Onboarding Start";
 
-    /**
-     * User lands on Gender screen (do not log if user comes from Settings)
-     */
-    public static final String EVENT_ONBOARDING_GENDER = "Onboarding Gender";
+        /**
+         * User lands on Birthday screen (do not log if user comes from Settings)
+         */
+        String EVENT_ONBOARDING_BIRTHDAY = "Onboarding Birthday";
+        /**
 
-    /**
-     * User lands on Height screen (do not log if user comes from Settings)
-     */
-    public static final String EVENT_ONBOARDING_HEIGHT = "Onboarding Height";
+         * User lands on Gender screen (do not log if user comes from Settings)
+         */
+        String EVENT_ONBOARDING_GENDER = "Onboarding Gender";
+        /**
 
-    /**
-     * User lands on Weight screen (do not log if user comes from Settings)
-     */
-    public static final String EVENT_ONBOARDING_WEIGHT = "Onboarding Weight";
+         * User lands on Height screen (do not log if user comes from Settings)
+         */
+        String EVENT_ONBOARDING_HEIGHT = "Onboarding Height";
 
-    /**
-     * User lands on Location screen (do not log if user comes from Settings)
-     */
-    public static final String EVENT_ONBOARDING_LOCATION = "Onboarding Location";
+        /**
+         * User lands on Weight screen (do not log if user comes from Settings)
+         */
+        String EVENT_ONBOARDING_WEIGHT = "Onboarding Weight";
 
-    /**
-     * User lands on Enhanced Audio screen
-     */
-    public static final String EVENT_ONBOARDING_SENSE_AUDIO = "Onboarding Sense Audio";
+        /**
+         * User lands on Location screen (do not log if user comes from Settings)
+         */
+        String EVENT_ONBOARDING_LOCATION = "Onboarding Location";
 
-    /**
-     * When user lands on the No BLE screen
-     */
-    public static final String EVENT_ONBOARDING_NO_BLE = "Onboarding No BLE";
+        /**
+         * User lands on Enhanced Audio screen
+         */
+        String EVENT_ONBOARDING_SENSE_AUDIO = "Onboarding Sense Audio";
 
-    /**
-     * When user lands on the pairing mode help screen (not glowing purple)
-     */
-    public static final String EVENT_ONBOARDING_PAIRING_MODE_HELP = "Onboarding Pairing Mode Help";
+        /**
+         * When user lands on the No BLE screen
+         */
+        String EVENT_ONBOARDING_NO_BLE = "Onboarding No BLE";
 
-    /**
-     * When user lands on the Setting up Sense screen
-     */
-    public static final String EVENT_ONBOARDING_SENSE_SETUP = "Onboarding Sense Setup";
+        /**
+         * When user lands on the pairing mode help screen (not glowing purple)
+         */
+        String EVENT_ONBOARDING_PAIRING_MODE_HELP = "Onboarding Pairing Mode Help";
 
-    /**
-     * When user encounters an error during Sense Pairing and is asked whether he/she is setting up second pill or first
-     */
-    public static final String EVENT_ONBOARDING_SECOND_PILL_CHECK = "Onboarding Second Pill Check";
+        /**
+         * When user lands on the Setting up Sense screen
+         */
+        String EVENT_ONBOARDING_SENSE_SETUP = "Onboarding Sense Setup";
 
-    /**
-     * When user lands on the "Pair your Sense" screen
-     */
-    public static final String EVENT_ONBOARDING_PAIR_SENSE = "Onboarding Pair Sense";
+        /**
+         * When user encounters an error during Sense Pairing and is asked whether he/she is setting up second pill or first
+         */
+        String EVENT_ONBOARDING_SECOND_PILL_CHECK = "Onboarding Second Pill Check";
 
-    /**
-     * When user lands on the screen to scan for wifi
-     */
-    public static final String EVENT_ONBOARDING_WIFI = "Onboarding WiFi";
+        /**
+         * When user lands on the "Pair your Sense" screen
+         */
+        String EVENT_ONBOARDING_PAIR_SENSE = "Onboarding Pair Sense";
 
-    /**
-     * When the user explicitly rescans for wifi networks.
-     */
-    public static final String EVENT_ONBOARDING_WIFI_SCAN = "Onboarding WiFi Scan";
+        /**
+         * When user lands on the screen to scan for wifi
+         */
+        String EVENT_ONBOARDING_WIFI = "Onboarding WiFi";
 
-    /**
-     * When the user lands on the "Enter Wifi Password" screen
-     */
-    public static final String EVENT_ONBOARDING_WIFI_PASSWORD = "Onboarding WiFi Password";
+        /**
+         * When the user explicitly rescans for wifi networks.
+         */
+        String EVENT_ONBOARDING_WIFI_SCAN = "Onboarding WiFi Scan";
 
-    /**
-     * When user lands on the "Pairing your Sleep Pill" screen
-     */
-    public static final String EVENT_ONBOARDING_PAIR_PILL = "Onboarding Pair Pill";
+        /**
+         * When the user lands on the "Enter Wifi Password" screen
+         */
+        String EVENT_ONBOARDING_WIFI_PASSWORD = "Onboarding WiFi Password";
 
-    /**
-     * When user lands on screen where it asks user to place the pill on the pillow
-     */
-    public static final String EVENT_ONBOARDING_PILL_PLACEMENT = "Onboarding Pill Placement";
+        /**
+         * When user lands on the "Pairing your Sleep Pill" screen
+         */
+        String EVENT_ONBOARDING_PAIR_PILL = "Onboarding Pair Pill";
 
-    /**
-     * User lands on screen which asks whether they want to pair another pill.
-     */
-    public static final String EVENT_ONBOARDING_ANOTHER_PILL = "Onboarding Another Pill";
+        /**
+         * When user lands on screen where it asks user to place the pill on the pillow
+         */
+        String EVENT_ONBOARDING_PILL_PLACEMENT = "Onboarding Pill Placement";
 
-    /**
-     * When user lands on the screen that tells them "To connect a second Sleep Pill, Sense needs to be put into pairing mode"
-     */
-    public static final String EVENT_ONBOARDING_PAIRING_MODE_OFF = "Onboarding Pairing Mode Off";
+        /**
+         * User lands on screen which asks whether they want to pair another pill.
+         */
+        String EVENT_ONBOARDING_ANOTHER_PILL = "Onboarding Another Pill";
 
-    /**
-     * When user lands on screen that tells partner to get app from hello.is/app
-     */
-    public static final String EVENT_ONBOARDING_GET_APP = "Onboarding Get App";
+        /**
+         * When user lands on the screen that tells them "To connect a second Sleep Pill, Sense needs to be put into pairing mode"
+         */
+        String EVENT_ONBOARDING_PAIRING_MODE_OFF = "Onboarding Pairing Mode Off";
 
-    /**
-     * When user lands on the screen that explains what the colors of Sense mean.  also known as 'before you sleep"
-     */
-    public static final String EVENT_ONBOARDING_SENSE_COLORS = "Onboarding Sense Colors";
+        /**
+         * When user lands on screen that tells partner to get app from hello.is/app
+         */
+        String EVENT_ONBOARDING_GET_APP = "Onboarding Get App";
 
-    /**
-     * When user is shown the Room Check screen
-     */
-    public static final String EVENT_ONBOARDING_ROOM_CHECK = "Onboarding Room Check";
+        /**
+         * When user lands on the screen that explains what the colors of Sense mean.  also known as 'before you sleep"
+         */
+        String EVENT_ONBOARDING_SENSE_COLORS = "Onboarding Sense Colors";
 
-    /**
-     * When user is asked to set up their smart alarm during onboarding
-     */
-    public static final String EVENT_ONBOARDING_FIRST_ALARM = "Onboarding First Alarm";
+        /**
+         * When user is shown the Room Check screen
+         */
+        String EVENT_ONBOARDING_ROOM_CHECK = "Onboarding Room Check";
 
-    /**
-     * When user lands on the last onboarding Screen
-     */
-    public static final String EVENT_ONBOARDING_END = "Onboarding End";
+        /**
+         * When user is asked to set up their smart alarm during onboarding
+         */
+        String EVENT_ONBOARDING_FIRST_ALARM = "Onboarding First Alarm";
 
-    //endregion
+        /**
+         * When user lands on the last onboarding Screen
+         */
+        String EVENT_ONBOARDING_END = "Onboarding End";
+    }
 
 
     //region In App

@@ -78,7 +78,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
             this.hasSentAccessToken = savedInstanceState.getBoolean("hasSentAccessToken", false);
         }
 
-        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_WIFI_PASSWORD, null);
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_ONBOARDING_WIFI_PASSWORD, null);
 
         setRetainInstance(true);
     }

@@ -23,7 +23,7 @@ public class OnboardingSmartAlarmFragment extends SenseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_FIRST_ALARM, null);
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_ONBOARDING_FIRST_ALARM, null);
     }
 
     @Nullable
