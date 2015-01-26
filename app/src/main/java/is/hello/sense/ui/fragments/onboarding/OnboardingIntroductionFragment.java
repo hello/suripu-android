@@ -132,6 +132,8 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
     }
 
     public void buySense(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_SENSE, null);
+
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://hello.is")));
     }
 

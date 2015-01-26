@@ -47,13 +47,6 @@ public class Analytics {
 
 
         /**
-         * Whenever user taps on a "help" button
-         */
-        String EVENT_HELP = "Help";
-        String PROP_HELP_STEP = "step";
-
-
-        /**
          * When user lands on the Sign in screen
          */
         String EVENT_SIGN_IN_START = "Sign In Start";
@@ -67,12 +60,14 @@ public class Analytics {
          * When the user signs out
          */
         String EVENT_SIGNED_OUT = "Signed Out";
+
+
+        /**
+         * When the user opens the app
+         */
+        String APP_LAUNCHED = "App Launched";
     }
 
-
-    /**
-     * Events specific to onboarding.
-     */
     public interface Onboarding {
 
         /**
@@ -94,6 +89,11 @@ public class Analytics {
          * After user taps on Sign Up / lands on Sign Up screen
          */
         String EVENT_START = "Onboarding Start";
+
+        /**
+         * When user taps "I don't have a Sense" button.
+         */
+        String EVENT_NO_SENSE = "I don't have a Sense";
 
         /**
          * User lands on Birthday screen (do not log if user comes from Settings)
@@ -209,8 +209,13 @@ public class Analytics {
          * When user lands on the last onboarding Screen
          */
         String EVENT_END = "Onboarding End";
-    }
 
+        /**
+         * Whenever user taps on a "help" button
+         */
+        String EVENT_HELP = "Onboarding Help";
+        String PROP_HELP_STEP = "onboarding_step";
+    }
 
     public interface Timeline {
         String EVENT_TIMELINE_DATE_CHANGED = "Timeline date changed";
@@ -264,10 +269,13 @@ public class Analytics {
         String EVENT_REPLACE_BATTERY = "Replace Battery";
 
         String EVENT_TROUBLESHOOTING_LINK = "Troubleshooting link";
+        String PROP_TROUBLESHOOTING_ISSUE = "issue";
+
         String EVENT_NOTIFICATIONS = "Notifications";
         String EVENT_UNITS_TIME = "Units/Time";
         String EVENT_SIGN_OUT = "Sign Out";
 
+        String EVENT_HELP = "Settings Help";
         String EVENT_CONTACT_SUPPORT = "Contact Support";
     }
 
@@ -280,6 +288,7 @@ public class Analytics {
          * When the user deletes a home screen widget.
          */
         String EVENT_WIDGET_DELETED = "Widget Deleted";
+
         String PROP_WIDGET_NAME = "widget name";
     }
 

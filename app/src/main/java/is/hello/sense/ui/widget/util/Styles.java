@@ -1,5 +1,6 @@
 package is.hello.sense.ui.widget.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
@@ -14,7 +15,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.text.style.RelativeSizeSpan;
+import android.text.style.URLSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -23,6 +27,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
 
 public final class Styles {
@@ -187,6 +192,38 @@ public final class Styles {
         View bottomSpacing = new View(context);
         bottomSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
         ListViews.addFooterView(listView, bottomSpacing, null, false);
+    }
+
+    public static void initializeSupportFooter(@NonNull Activity activity, @NonNull TextView footer) {
+        SpannableStringBuilder contents = new SpannableStringBuilder(footer.getText());
+        URLSpan[] spans = contents.getSpans(0, contents.length(), URLSpan.class);
+        for (URLSpan urlSpan : spans) {
+            String url = urlSpan.getURL();
+
+            ClickableSpan clickableSpan = null;
+            if ("#support".equals(url)) {
+                clickableSpan = new ClickableSpan() {
+                    @Override
+                    public void onClick(View widget) {
+                        UserSupport.showSupport(activity);
+                    }
+                };
+            } else if ("#email".equals(url)) {
+                clickableSpan = new ClickableSpan() {
+                    @Override
+                    public void onClick(View widget) {
+                        UserSupport.showEmail(activity);
+                    }
+                };
+            }
+
+            int spanStart = contents.getSpanStart(urlSpan);
+            int spanEnd = contents.getSpanEnd(urlSpan);
+            contents.setSpan(clickableSpan, spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            contents.removeSpan(urlSpan);
+        }
+        footer.setText(contents);
+        Views.makeTextViewLinksClickable(footer);
     }
 
 

@@ -59,8 +59,8 @@ public class AppSettingsFragment extends InjectionFragment {
         addItem(R.string.label_units_and_time, true, ignored -> showFragment(UnitSettingsFragments.class, R.string.label_units_and_time, null));
         addItem(R.string.action_log_out, false, this::logOut);
 
-        TextView footer = (TextView) view.findViewById(R.id.sub_fragment_device_footer);
-        Views.makeTextViewLinksClickable(footer);
+        TextView footer = (TextView) view.findViewById(R.id.footer_help);
+        Styles.initializeSupportFooter(getActivity(), footer);
 
         TextView version = (TextView) view.findViewById(R.id.fragment_app_settings_version);
         version.setText(getString(R.string.app_version_fmt, getString(R.string.app_name), BuildConfig.VERSION_NAME));

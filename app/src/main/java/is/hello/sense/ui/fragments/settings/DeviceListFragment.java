@@ -72,7 +72,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         Styles.addCardSpacingHeaderAndFooter(listView);
         this.supportInfoFooter = (TextView) inflater.inflate(R.layout.footer_help, listView, false);
         supportInfoFooter.setVisibility(View.INVISIBLE);
-        Views.makeTextViewLinksClickable(supportInfoFooter);
+        Styles.initializeSupportFooter(getActivity(), supportInfoFooter);
         ListViews.addFooterView(listView, supportInfoFooter, null, false);
         listView.setAdapter(adapter);
 
