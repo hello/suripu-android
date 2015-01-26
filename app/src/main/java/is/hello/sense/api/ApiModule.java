@@ -3,7 +3,6 @@ package is.hello.sense.api;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -20,11 +19,11 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.sense.BuildConfig;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.PersistentApiSessionManager;
-import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import retrofit.RestAdapter;
@@ -38,11 +37,10 @@ import retrofit.client.OkClient;
 public class ApiModule {
     private final Context applicationContext;
     private final ApiEnvironment environment;
-    private final BuildValues buildValues;
 
-    public static ObjectMapper createConfiguredObjectMapper(@Nullable BuildValues buildValues) {
+    public static ObjectMapper createConfiguredObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
-        if (buildValues == null || !buildValues.isDebugBuild()) {
+        if (BuildConfig.DEBUG) {
             mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         }
         mapper.registerModule(new JodaModule());
@@ -50,11 +48,9 @@ public class ApiModule {
     }
 
     public ApiModule(@NonNull Context applicationContext,
-                     @NonNull ApiEnvironment environment,
-                     @NonNull BuildValues buildValues) {
+                     @NonNull ApiEnvironment environment) {
         this.applicationContext = applicationContext.getApplicationContext();
         this.environment = environment;
-        this.buildValues = buildValues;
     }
 
     @Provides @ApiAppContext Context providesApiApplicationContext() {
@@ -67,7 +63,7 @@ public class ApiModule {
     }
 
     @Singleton @Provides ObjectMapper provideObjectMapper() {
-        return createConfiguredObjectMapper(buildValues);
+        return createConfiguredObjectMapper();
     }
 
     @Singleton @Provides Cache provideCache(@NonNull @ApiAppContext Context context) {
@@ -90,13 +86,12 @@ public class ApiModule {
 
     @Singleton @Provides RestAdapter provideRestAdapter(@NonNull ObjectMapper mapper,
                                                         @NonNull OkHttpClient httpClient,
-                                                        @NonNull ApiSessionManager sessionManager,
-                                                        @NonNull BuildValues buildValues) {
+                                                        @NonNull ApiSessionManager sessionManager) {
         RestAdapter.Builder builder = new RestAdapter.Builder();
         builder.setClient(new OkClient(httpClient));
         builder.setConverter(new ApiJacksonConverter(mapper));
         builder.setEndpoint(environment.baseUrl);
-        if (buildValues.isDebugBuild()) {
+        if (BuildConfig.DEBUG) {
             builder.setLogLevel(RestAdapter.LogLevel.FULL);
         } else {
             builder.setLogLevel(RestAdapter.LogLevel.BASIC);
@@ -130,9 +125,5 @@ public class ApiModule {
 
     @Provides ApiEnvironment provideEnvironment() {
         return environment;
-    }
-
-    @Provides BuildValues provideBuildValues() {
-        return buildValues;
     }
 }

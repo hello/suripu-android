@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import rx.Observable;
@@ -136,7 +137,8 @@ public final class SessionLogger {
         }
 
         try {
-            SessionLogger.printWriter = new PrintWriter(new FileOutputStream(logFile, true));
+            //noinspection PointlessBooleanExpression
+            SessionLogger.printWriter = new PrintWriter(new FileOutputStream(logFile, !BuildConfig.CLEAR_LOG_ON_START));
             SessionLogger.logFile = logFile;
             HandlerThread workerThread = new HandlerThread("SessionLogger.handlerThread");
             workerThread.start();

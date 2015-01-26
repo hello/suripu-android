@@ -49,12 +49,30 @@ android {
         }
     }
     buildTypes {
+        def TYPE_INT = "int"
+        def TYPE_BOOLEAN = "boolean"
+
+        def MIN_LOGGING_LEVEL = "MIN_LOGGING_LEVEL"
+        def DEBUG_SCREEN_ENABLED = "DEBUG_SCREEN_ENABLED"
+        def CLEAR_LOG_ON_START = "CLEAR_LOG_ON_START"
+
+        def TRUE = "true"
+        def FALSE = "false"
+
         debug {
+            buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.VERBOSE"
+            buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, TRUE
+            buildConfigField TYPE_BOOLEAN, CLEAR_LOG_ON_START, FALSE
+
             applicationIdSuffix ".debug"
             minifyEnabled false // when we hit the 0xffff method limit, switch this to true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
         release {
+            buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.VERBOSE"
+            buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, TRUE
+            buildConfigField TYPE_BOOLEAN, CLEAR_LOG_ON_START, FALSE
+
             signingConfig signingConfigs.release
 
             minifyEnabled false

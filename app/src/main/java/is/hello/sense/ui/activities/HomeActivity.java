@@ -21,6 +21,7 @@ import org.joda.time.DateTime;
 
 import javax.inject.Inject;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -39,7 +40,6 @@ import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
@@ -58,7 +58,6 @@ public class HomeActivity
 
     @Inject ApiService apiService;
     @Inject QuestionsPresenter questionsPresenter;
-    @Inject BuildValues buildValues;
 
     private long lastUpdated = Long.MAX_VALUE;
 
@@ -83,7 +82,7 @@ public class HomeActivity
         }
 
 
-        if (buildValues.debugScreenEnabled) {
+        if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             this.sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
             this.shakeDetector = new ShakeDetector(new RateLimitingShakeListener(() -> {
                 Intent intent = new Intent(this, DebugActivity.class);
@@ -118,7 +117,8 @@ public class HomeActivity
             }
         }
 
-        if (!buildValues.isDebugBuild() && buildValues.debugScreenEnabled) {
+        //noinspection PointlessBooleanExpression,ConstantConditions
+        if (!BuildConfig.DEBUG && BuildConfig.DEBUG_SCREEN_ENABLED) {
             UpdateManager.register(this, getString(R.string.build_hockey_id));
         }
     }
@@ -153,8 +153,8 @@ public class HomeActivity
             shakeDetector.start(sensorManager);
         }
 
-        if (!buildValues.isDebugBuild()) {
-            UpdateManager.register(this, buildValues.hockeyId);
+        if (!BuildConfig.DEBUG) {
+            UpdateManager.register(this, getString(R.string.build_hockey_id));
         }
 
         if (getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false)) {

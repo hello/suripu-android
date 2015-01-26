@@ -7,11 +7,11 @@ import com.crashlytics.android.Crashlytics;
 
 import javax.inject.Inject;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
@@ -19,14 +19,14 @@ import is.hello.sense.util.Logger;
 public class LaunchActivity extends InjectionActivity {
     @Inject ApiSessionManager sessionManager;
     @Inject PreferencesPresenter preferences;
-    @Inject BuildValues buildValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!buildValues.isDebugBuild()) {
+        if (!BuildConfig.DEBUG) {
             Crashlytics.start(this);
+            Crashlytics.setString("BuildValues_type", BuildConfig.FLAVOR);
         }
 
         if (sessionManager.getSession() != null) {

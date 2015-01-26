@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import is.hello.sense.BuildConfig;
 import retrofit.RestAdapter;
 
 /**
@@ -13,13 +14,18 @@ import retrofit.RestAdapter;
  * class to allow uploading of logs to services.
  */
 public class Logger {
+    private static final int MIN_LOGGING_LEVEL = BuildConfig.MIN_LOGGING_LEVEL;
+
     //region Primitive
 
     public static void println(int priority, @NonNull String tag, @NonNull String message) {
-        if (Crashlytics.getInstance().isInitialized())
-            Crashlytics.log(priority, tag, message);
-        SessionLogger.println(priority, tag, message);
-        Log.println(priority, tag, message);
+        if (priority >= MIN_LOGGING_LEVEL) {
+            if (Crashlytics.getInstance().isInitialized()) {
+                Crashlytics.log(priority, tag, message);
+            }
+            SessionLogger.println(priority, tag, message);
+            Log.println(priority, tag, message);
+        }
     }
 
     public static String formatMessage(@NonNull String message, @Nullable Throwable e) {

@@ -16,7 +16,6 @@ import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.SenseAppModule;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
@@ -33,20 +32,15 @@ public class SenseApplication extends Application {
         return instance;
     }
 
-    private BuildValues buildValues;
     private ObjectGraph graph;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        this.buildValues = new BuildValues(this);
-
         JodaTimeAndroid.init(this);
         Analytics.initialize(this, getString(R.string.build_analytics_api_key));
-        if (buildValues.debugScreenEnabled) {
-            SessionLogger.init(this);
-        }
+        SessionLogger.init(this);
 
         buildGraph();
 
@@ -67,13 +61,13 @@ public class SenseApplication extends Application {
 
     public ApiEnvironment getApiEnvironment() {
         SharedPreferences internalPreferences = getSharedPreferences(Constants.INTERNAL_PREFS, 0);
-        String envName = internalPreferences.getString(Constants.INTERNAL_PREF_API_ENV_NAME, buildValues.defaultApiEnvironment);
+        String envName = internalPreferences.getString(Constants.INTERNAL_PREF_API_ENV_NAME, getString(R.string.build_default_api_env));
         return ApiEnvironment.fromString(envName);
     }
 
     public void buildGraph() {
         this.graph = ObjectGraph.create(
-                new ApiModule(this, getApiEnvironment(), buildValues),
+                new ApiModule(this, getApiEnvironment()),
                 new SenseAppModule(this),
                 new BluetoothModule()
         );

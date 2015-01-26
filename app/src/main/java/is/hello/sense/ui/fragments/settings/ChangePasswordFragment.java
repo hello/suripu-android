@@ -24,7 +24,6 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.EditorActionHandler;
 import rx.Observable;
@@ -34,7 +33,6 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 public class ChangePasswordFragment extends InjectionFragment {
     private static final String ARG_EMAIL = ChangePasswordFragment.class.getName() + ".ARG_EMAIL";
 
-    @Inject BuildValues buildValues;
     @Inject ApiService apiService;
     @Inject ApiSessionManager apiSessionManager;
 
@@ -118,7 +116,7 @@ public class ChangePasswordFragment extends InjectionFragment {
     }
 
     public void recreateSession() {
-        ApiEnvironment apiEnvironment = ApiEnvironment.fromString(buildValues.defaultApiEnvironment);
+        ApiEnvironment apiEnvironment = ApiEnvironment.fromString(getString(R.string.build_default_api_env));
         String password = newPassword.getText().toString();
         Observable<OAuthSession> authorize = apiService.authorize(new OAuthCredentials(apiEnvironment, email, password));
         bindAndSubscribe(authorize,

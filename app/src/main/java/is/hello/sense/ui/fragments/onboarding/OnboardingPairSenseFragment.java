@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import javax.inject.Inject;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
@@ -27,13 +28,11 @@ import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
 public class OnboardingPairSenseFragment extends HardwareFragment {
     @Inject ApiService apiService;
-    @Inject BuildValues buildValues;
     @Inject PreferencesPresenter preferences;
 
     private boolean hasLinkedAccount = false;
@@ -158,7 +157,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     public void tryToPairWith(@NonNull SensePeripheral device) {
-        if (buildValues.isDebugBuild()) {
+        if (BuildConfig.DEBUG) {
             SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
             dialog.setTitle(R.string.debug_title_confirm_sense_pair);
             dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));

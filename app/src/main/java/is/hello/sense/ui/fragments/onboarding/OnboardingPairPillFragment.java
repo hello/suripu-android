@@ -9,8 +9,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import javax.inject.Inject;
-
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
@@ -24,11 +23,8 @@ import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.BuildValues;
 
 public class OnboardingPairPillFragment extends HardwareFragment {
-    @Inject BuildValues buildValues;
-
     private ProgressBar activityIndicator;
     private TextView activityStatus;
     private Button retryButton;
@@ -54,7 +50,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_retry);
         Views.setSafeOnClickListener(retryButton, ignored -> pairPill());
 
-        if (buildValues.isDebugBuild()) {
+        if (BuildConfig.DEBUG) {
             View diagram = view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
             diagram.setOnLongClickListener(ignored -> {
                 finishedPairing();

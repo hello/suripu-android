@@ -20,6 +20,7 @@ import org.joda.time.DateTime;
 
 import javax.inject.Inject;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
@@ -55,7 +56,6 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.RateLimitingShakeListener;
@@ -69,7 +69,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public static final String EXTRA_WIFI_CHANGE_ONLY = OnboardingActivity.class.getName() + ".EXTRA_WIFI_CHANGE_ONLY";
     public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
 
-    @Inject BuildValues buildValues;
     @Inject ApiService apiService;
     @Inject HardwarePresenter hardwarePresenter;
     @Inject PreferencesPresenter preferences;
@@ -85,7 +84,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 
-        if (buildValues.debugScreenEnabled) {
+        if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             this.sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
             this.shakeDetector = new ShakeDetector(new RateLimitingShakeListener(this::showDebugOptions));
         }

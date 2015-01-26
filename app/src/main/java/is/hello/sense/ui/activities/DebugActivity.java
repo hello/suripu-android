@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.sessions.ApiSessionManager;
@@ -35,7 +36,6 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
-import is.hello.sense.util.BuildValues;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
@@ -43,7 +43,6 @@ import is.hello.sense.util.SessionLogger;
 public class DebugActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject ApiSessionManager sessionManager;
     @Inject Cache httpCache;
-    @Inject BuildValues buildValues;
     @Inject ApiEnvironment currentEnvironment;
     @Inject BluetoothStack bluetoothStack;
 
@@ -84,7 +83,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         } catch (PackageManager.NameNotFoundException e) {
             Logger.debug(DebugActivity.class.getSimpleName(), "Could not look up app version", e);
         }
-        buildInfoItems.addTextItem("Build Type", buildValues.type);
+        buildInfoItems.addTextItem("Build Type", BuildConfig.BUILD_TYPE);
         buildInfoItems.addTextItem("Device Model", Build.MODEL);
         buildInfoItems.addTextItem("BLE Device Support", bluetoothStack.getDeviceSupportLevel().toString());
         buildInfoItems.addTextItem("BLE Stack Traits", TextUtils.join(", ", bluetoothStack.getTraits()));
