@@ -28,6 +28,7 @@ import is.hello.sense.R;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
 import static is.hello.sense.ui.adapter.StaticFragmentAdapter.Item;
@@ -54,6 +55,10 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         super.onCreate(savedInstanceState);
 
         this.preferences = getActivity().getSharedPreferences(Constants.INTERNAL_PREFS, 0);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_TOP_VIEW, null);
+        }
     }
 
     @Nullable

@@ -14,6 +14,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class PillDetailsFragment extends DeviceDetailsFragment {
@@ -25,6 +26,15 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         PillDetailsFragment fragment = new PillDetailsFragment();
         fragment.setArguments(createArguments(device));
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_PILL_DETAIL, null);
+        }
     }
 
     @Override
@@ -48,6 +58,8 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
     //region Pill Actions
 
     public void unregisterDevice() {
+        Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_PILL, null);
+
         SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
         alertDialog.setDestructive(true);
         alertDialog.setTitle(R.string.dialog_title_replace_sleep_pill);

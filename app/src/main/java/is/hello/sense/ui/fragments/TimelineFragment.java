@@ -52,6 +52,7 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -152,6 +153,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.shareButton = (ImageButton) headerView.findViewById(R.id.fragment_timeline_header_share);
         Views.setSafeOnClickListener(shareButton, ignored -> {
+            Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
+
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_TEXT, "http://hello.is");
@@ -282,11 +285,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         TimelineSegment segment = (TimelineSegment) adapterView.getItemAtPosition(position);
         if (segment.getEventType() != null) {
+            Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
+
             TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment);
             dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
         }
 
-        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.Timeline.PROP_TIMELINE_ACTION, Analytics.Timeline.PROP_TIMELINE_ACTION_TAP_EVENT));
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
     }
 
 
@@ -440,10 +445,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
             if (timeline != null && !Lists.isEmpty(timeline.getPreSleepInsights())) {
                 Context context = getActivity();
+                View.OnClickListener onClick = new SafeOnClickListener(ignored -> {
+                    Analytics.trackEvent(Analytics.Timeline.EVENT_BEFORE_SLEEP_EVENT_TAPPED, null);
+                });
                 for (PreSleepInsight insight : timeline.getPreSleepInsights()) {
                     TextView text = inflateNewItem();
                     text.setCompoundDrawablesRelativeWithIntrinsicBounds(insight.getIcon(context), null, null, null);
                     text.setText(insight.getMessage());
+                    text.setOnClickListener(onClick);
                     container.addView(text);
                 }
             } else {

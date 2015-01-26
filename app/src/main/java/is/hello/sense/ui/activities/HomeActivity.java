@@ -281,7 +281,7 @@ public class HomeActivity
         this.lastUpdated = System.currentTimeMillis();
 
         fragment.onTransitionCompleted();
-        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.Timeline.PROP_TIMELINE_ACTION, Analytics.Timeline.PROP_TIMELINE_ACTION_CHANGE_DATE));
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_DATE_CHANGED, null);
     }
 
     //endregion
@@ -305,6 +305,8 @@ public class HomeActivity
 
     @Override
     public void onUserWillPullDownTopView() {
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_OPENED, null);
+
         if (getFragmentManager().findFragmentById(R.id.activity_home_underside_container) == null) {
             getFragmentManager()
                     .beginTransaction()
@@ -319,6 +321,8 @@ public class HomeActivity
 
     @Override
     public void onUserDidPushUpTopView() {
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_CLOSED, null);
+
         Fragment underside = getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
         if (underside != null) {
             getFragmentManager()
@@ -336,6 +340,8 @@ public class HomeActivity
     //region Timeline Navigation
 
     public void showTimelineNavigator(@NonNull DateTime startDate) {
+        Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
+
         ViewGroup undersideContainer = (ViewGroup) findViewById(R.id.activity_home_content_container);
 
         TimelineNavigatorFragment navigatorFragment = TimelineNavigatorFragment.newInstance(startDate);
@@ -375,6 +381,8 @@ public class HomeActivity
 
     @Override
     public void onTimelineDateSelected(@NonNull DateTime date) {
+        Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_OUT, null);
+
         if (!date.equals(viewPager.getCurrentFragment().getDate())) {
             viewPager.setCurrentFragment(TimelineFragment.newInstance(date));
         }

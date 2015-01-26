@@ -20,6 +20,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -38,6 +39,10 @@ public class ChangeEmailFragment extends InjectionFragment {
         addPresenter(accountPresenter);
 
         setRetainInstance(true);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_CHANGE_EMAIL, null);
+        }
     }
 
     @Nullable

@@ -41,6 +41,10 @@ public class AppSettingsFragment extends InjectionFragment {
 
         Resources resources = getResources();
         this.dividerLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, resources.getDimensionPixelSize(R.dimen.divider_size));
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_SETTINGS, null);
+        }
     }
 
     @Nullable
@@ -89,6 +93,8 @@ public class AppSettingsFragment extends InjectionFragment {
     }
 
     public void logOut(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_SIGN_OUT, null);
+
         SenseAlertDialog builder = new SenseAlertDialog(getActivity());
         builder.setTitle(R.string.dialog_title_log_out);
         builder.setMessage(R.string.dialog_message_log_out);

@@ -28,6 +28,7 @@ import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Markdown;
 
 public class InsightsFragment extends InjectionFragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -48,6 +49,10 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
 
         addPresenter(insightsPresenter);
         addPresenter(questionsPresenter);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_MAIN_VIEW, null);
+        }
     }
 
     @Nullable
@@ -123,6 +128,8 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
+
         Insight insight = (Insight) adapterView.getItemAtPosition(position);
         InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight.getCategory());
         dialogFragment.show(getFragmentManager(), InsightInfoDialogFragment.TAG);

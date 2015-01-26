@@ -213,44 +213,62 @@ public class Analytics {
 
 
     public interface Timeline {
-        /**
-         * When the user switches dates in the timeline (swipe, taps an event)
-         */
-        String EVENT_TIMELINE_ACTION = "Timeline Action";
-        String PROP_TIMELINE_ACTION = "action";
-        String PROP_TIMELINE_ACTION_CHANGE_DATE = "change_date";
-        String PROP_TIMELINE_ACTION_TAP_EVENT = "tap_event";
-
+        String EVENT_TIMELINE_DATE_CHANGED = "Timeline date changed";
         String EVENT_TIMELINE_OPENED = "Timeline opened";
         String EVENT_TIMELINE_CLOSED = "Timeline closed";
         String EVENT_SLEEP_SCORE_BREAKDOWN = "Sleep Score breakdown";
-        String EVENT_SHARE = "Share";
-        String EVENT_ZOOMED_OUT = "Zoomed out";
-        String EVENT_ZOOMED_IN = "Zoomed in";
-        String EVENT_TAP = "Tap";
+        String EVENT_SHARE = "Share Timeline";
+        String EVENT_ZOOMED_OUT = "Timeline zoomed out";
+        String EVENT_ZOOMED_IN = "Timeline zoomed in";
+        String EVENT_TAP = "Timeline tap";
         String EVENT_BEFORE_SLEEP_EVENT_TAPPED = "Before sleep event tapped";
         String EVENT_TIMELINE_EVENT_TAPPED = "Timeline Event tapped";
     }
 
-    public interface Alarms {
-        /**
-         * When the user adds an alarm
-         */
-        String EVENT_ACTION = "Alarm Action";
-        String PROP_ACTION = "action";
-        String PROP_ACTION_ADD = "add";
-        String PROP_ACTION_EDIT = "edit";
-        String PROP_ACTION_DISABLE = "disable";
-    }
-
     public interface TopView {
-        /**
-         * When user takes a device action in the 'device management' area of the application
-         */
-        String EVENT_DEVICE_ACTION = "Device Action";
-        String PROP_DEVICE_ACTION = "action";
-        String PROP_DEVICE_ACTION_FACTORY_RESTORE = "factory restore";
-        String PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE = "enable pairing mode";
+        String EVENT_TOP_VIEW = "Top View";
+
+        String EVENT_CURRENT_CONDITIONS = "Current Conditions";
+        String EVENT_SENSOR_HISTORY = "Sensor History";
+        String PROP_SENSOR_NAME = "sensor_name";
+
+        String EVENT_TRENDS = "Trends";
+
+        String EVENT_MAIN_VIEW = "Main View";
+        String EVENT_INSIGHT_DETAIL = "Insight Detail";
+        String EVENT_SHARE = "Share Insight";
+        String EVENT_QUESTION = "Question";
+        String EVENT_SKIP_QUESTION = "Skip Question";
+        String EVENT_ANSWER_QUESTION = "Answer Question";
+
+        String EVENT_ALARMS = "Alarms";
+        String EVENT_NEW_ALARM = "New Alarm";
+        String EVENT_ALARM_SAVED = "Alarm Saved";
+        String EVENT_ALARM_ON_OFF = "Alarm On/Off";
+        String EVENT_EDIT_ALARM = "Edit Alarm";
+
+        String EVENT_SETTINGS = "Settings";
+        String EVENT_ACCOUNT = "Account";
+        String EVENT_CHANGE_EMAIL = "Change email";
+        String EVENT_CHANGE_PASSWORD = "Change password";
+
+        String EVENT_DEVICES = "Devices";
+        String EVENT_SENSE_DETAIL = "Sense detail";
+        String EVENT_REPLACE_SENSE = "Replace Sense";
+        String EVENT_PUT_INTO_PAIRING_MODE = "Put into Pairing Mode";
+        String EVENT_FACTORY_RESET = "Factory Reset";
+        String EVENT_EDIT_WIFI = "Edit WiFi";
+
+        String EVENT_PILL_DETAIL = "Pill detail";
+        String EVENT_REPLACE_PILL = "Replace Pill";
+        String EVENT_REPLACE_BATTERY = "Replace Battery";
+
+        String EVENT_TROUBLESHOOTING_LINK = "Troubleshooting link";
+        String EVENT_NOTIFICATIONS = "Notifications";
+        String EVENT_UNITS_TIME = "Units/Time";
+        String EVENT_SIGN_OUT = "Sign Out";
+
+        String EVENT_CONTACT_SUPPORT = "Contact Support";
     }
 
     public interface Widgets {
