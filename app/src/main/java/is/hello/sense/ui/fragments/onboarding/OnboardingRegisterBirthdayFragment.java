@@ -23,7 +23,9 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
+    private static final String LEADING_ZERO = "0";
     private static final int[] FIELD_LIMITS = { 2, 2, 4 };
+    private static final int[] MIN_INSERT_ZERO_VALUES = { 2, 4, Integer.MAX_VALUE };
 
     private Account account;
 
@@ -96,13 +98,17 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     }
 
 
+    private int parseString(@NonNull CharSequence value) throws NumberFormatException {
+        return Integer.valueOf(value.toString(), 10);
+    }
+
     private boolean validateMonth(@NonNull CharSequence month) {
-        if (month.equals("0")) {
+        if (month.equals(LEADING_ZERO)) {
             return true;
         }
 
         try {
-            int value = Integer.valueOf(month.toString(), 10);
+            int value = parseString(month);
             return (value > 0 && value <= 12);
         } catch (NumberFormatException e) {
             return false;
@@ -110,12 +116,12 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     }
 
     private boolean validateDay(@NonNull CharSequence day) {
-        if (day.equals("0")) {
+        if (day.equals(LEADING_ZERO)) {
             return true;
         }
 
         try {
-            int value = Integer.valueOf(day.toString(), 10);
+            int value = parseString(day);
             return (value > 0 && value <= 31);
         } catch (NumberFormatException e) {
             return false;
@@ -124,10 +130,10 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
 
     private boolean validateYear(@NonNull CharSequence year) {
         try {
-            int value = Integer.valueOf(year.toString(), 10);
+            int value = parseString(year);
             if (value == today.getYear()) {
-                int month = Integer.valueOf(monthText.getText().toString(), 10);
-                int day = Integer.valueOf(dayText.getText().toString(), 10);
+                int month = parseString(monthText.getText());
+                int day = parseString(dayText.getText());
                 return (month <= today.getMonthOfYear() && day <= today.getDayOfMonth());
             } else {
                 return (value > 0 && value < today.getYear());
@@ -168,6 +174,12 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
         setActiveField(activeField + 1);
     }
 
+    private boolean shouldAddLeadingZero(@NonNull String newText) {
+        return (newText.length() < 2 &&
+                !newText.startsWith(LEADING_ZERO) &&
+                parseString(newText) >= MIN_INSERT_ZERO_VALUES[activeField]);
+    }
+
 
     public void backspace(@NonNull View sender) {
         TextView field = fields[activeField];
@@ -197,6 +209,10 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
 
         String newText = text + numberValue;
         if (FIELD_VALIDATORS[activeField].validate(newText)) {
+            if (shouldAddLeadingZero(newText)) {
+                newText = LEADING_ZERO + newText;
+            }
+            
             field.setText(newText);
 
             if (newText.length() == FIELD_LIMITS[activeField]) {
@@ -214,9 +230,9 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     }
 
     public void next() {
-        int year = Integer.valueOf(yearText.getText().toString(), 10);
-        int month = Integer.valueOf(monthText.getText().toString(), 10);
-        int day = Integer.valueOf(dayText.getText().toString(), 10);
+        int year = parseString(yearText.getText());
+        int month = parseString(monthText.getText());
+        int day = parseString(dayText.getText());
 
         LocalDate dateWithoutDay = new LocalDate(year, month, 1);
         LocalDate date;
