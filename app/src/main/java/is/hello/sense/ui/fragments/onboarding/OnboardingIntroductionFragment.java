@@ -113,7 +113,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.welcome);
 
-                    Analytics.trackEvent(Analytics.Onboarding.EVENT_ONBOARDING_START, null);
+                    Analytics.trackEvent(Analytics.Onboarding.EVENT_START, null);
                 })
                 .andThen()
                 .fadeIn()

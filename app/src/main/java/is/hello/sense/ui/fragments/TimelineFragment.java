@@ -286,7 +286,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
         }
 
-        Analytics.trackEvent(Analytics.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.PROP_TIMELINE_ACTION, Analytics.PROP_TIMELINE_ACTION_TAP_EVENT));
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.Timeline.PROP_TIMELINE_ACTION, Analytics.Timeline.PROP_TIMELINE_ACTION_TAP_EVENT));
     }
 
 

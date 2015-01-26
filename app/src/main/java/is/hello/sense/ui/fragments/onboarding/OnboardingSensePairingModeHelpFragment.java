@@ -16,7 +16,7 @@ public class OnboardingSensePairingModeHelpFragment extends SenseFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_ONBOARDING_PAIRING_MODE_HELP, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
         }
     }
 

@@ -281,7 +281,7 @@ public class HomeActivity
         this.lastUpdated = System.currentTimeMillis();
 
         fragment.onTransitionCompleted();
-        Analytics.trackEvent(Analytics.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.PROP_TIMELINE_ACTION, Analytics.PROP_TIMELINE_ACTION_CHANGE_DATE));
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_ACTION, Analytics.createProperties(Analytics.Timeline.PROP_TIMELINE_ACTION, Analytics.Timeline.PROP_TIMELINE_ACTION_CHANGE_DATE));
     }
 
     //endregion

@@ -17,7 +17,7 @@ public class OnboardingSetup2ndPillFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_ONBOARDING_ANOTHER_PILL, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_ANOTHER_PILL, null);
         }
     }
 

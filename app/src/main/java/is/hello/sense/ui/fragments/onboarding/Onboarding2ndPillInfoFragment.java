@@ -22,7 +22,7 @@ public class Onboarding2ndPillInfoFragment extends HardwareFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_ONBOARDING_GET_APP, null);
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_GET_APP, null);
 
         putSenseIntoPairingMode();
         setRetainInstance(true);

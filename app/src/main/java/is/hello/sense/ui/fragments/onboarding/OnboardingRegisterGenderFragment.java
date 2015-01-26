@@ -26,7 +26,7 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
         this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_ONBOARDING_GENDER, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_GENDER, null);
         }
     }
 

@@ -15,53 +15,65 @@ import org.json.JSONObject;
 
 public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
+    public static final String PLATFORM = "android";
 
     private static @Nullable MixpanelAPI provider;
     private static @Nullable SharedPreferences preferences;
 
+    public interface Global {
 
-    //region Global Properties
+        /**
+         * iOS | android
+         */
+        String GLOBAL_PROP_PLATFORM = "Platform";
 
-    /**
-     * iOS | android
-     */
-    public static final String GLOBAL_PROP_PLATFORM = "Platform";
-    public static final String PLATFORM = "android";
+        /**
+         * The actual Name of the user that was set upon registration
+         */
+        String GLOBAL_PROP_NAME = "Name";
 
-    /**
-     * The actual Name of the user that was set upon registration
-     */
-    public static final String GLOBAL_PROP_NAME = "Name";
-
-    /**
-     * The account id of the user
-     */
-    public static final String GLOBAL_PROP_ACCOUNT_ID = "Account Id";
-
-    //endregion
+        /**
+         * The account id of the user
+         */
+        String GLOBAL_PROP_ACCOUNT_ID = "Account Id";
 
 
-    //region Errors
-
-    /**
-     * Anytime an error is encountered, even if it came from server.  MAKE SURE you don't log Error in a loop ... I've seen it happen where 10,000 events get logged :)
-     */
-    public static final String EVENT_ERROR = "Error";
-    public static final String PROP_ERROR_CODE = "code";
-    public static final String PROP_ERROR_MESSAGE = "message";
-
-    //endregion
+        /**
+         * Anytime an error is encountered, even if it came from server.  MAKE SURE you don't log Error in a loop ... I've seen it happen where 10,000 events get logged :)
+         */
+        String EVENT_ERROR = "Error";
+        String PROP_ERROR_CODE = "code";
+        String PROP_ERROR_MESSAGE = "message";
 
 
-    /**
-     * Events specific to onboarding.
-     */
-    public static interface Onboarding {
         /**
          * Whenever user taps on a "help" button
          */
         String EVENT_HELP = "Help";
         String PROP_HELP_STEP = "step";
+
+
+        /**
+         * When user lands on the Sign in screen
+         */
+        String EVENT_SIGN_IN_START = "Sign In Start";
+
+        /**
+         * When the user signs in
+         */
+        String EVENT_SIGNED_IN = "Signed In";
+
+        /**
+         * When the user signs out
+         */
+        String EVENT_SIGNED_OUT = "Signed Out";
+    }
+
+
+    /**
+     * Events specific to onboarding.
+     */
+    public interface Onboarding {
 
         /**
          * Whenever user taps on a "play" button within the Onboarding flow
@@ -81,187 +93,177 @@ public class Analytics {
         /**
          * After user taps on Sign Up / lands on Sign Up screen
          */
-        String EVENT_ONBOARDING_START = "Onboarding Start";
+        String EVENT_START = "Onboarding Start";
 
         /**
          * User lands on Birthday screen (do not log if user comes from Settings)
          */
-        String EVENT_ONBOARDING_BIRTHDAY = "Onboarding Birthday";
+        String EVENT_BIRTHDAY = "Onboarding Birthday";
         /**
 
          * User lands on Gender screen (do not log if user comes from Settings)
          */
-        String EVENT_ONBOARDING_GENDER = "Onboarding Gender";
+        String EVENT_GENDER = "Onboarding Gender";
         /**
 
          * User lands on Height screen (do not log if user comes from Settings)
          */
-        String EVENT_ONBOARDING_HEIGHT = "Onboarding Height";
+        String EVENT_HEIGHT = "Onboarding Height";
 
         /**
          * User lands on Weight screen (do not log if user comes from Settings)
          */
-        String EVENT_ONBOARDING_WEIGHT = "Onboarding Weight";
+        String EVENT_WEIGHT = "Onboarding Weight";
 
         /**
          * User lands on Location screen (do not log if user comes from Settings)
          */
-        String EVENT_ONBOARDING_LOCATION = "Onboarding Location";
+        String EVENT_LOCATION = "Onboarding Location";
 
         /**
          * User lands on Enhanced Audio screen
          */
-        String EVENT_ONBOARDING_SENSE_AUDIO = "Onboarding Sense Audio";
+        String EVENT_SENSE_AUDIO = "Onboarding Sense Audio";
 
         /**
          * When user lands on the No BLE screen
          */
-        String EVENT_ONBOARDING_NO_BLE = "Onboarding No BLE";
+        String EVENT_NO_BLE = "Onboarding No BLE";
 
         /**
          * When user lands on the pairing mode help screen (not glowing purple)
          */
-        String EVENT_ONBOARDING_PAIRING_MODE_HELP = "Onboarding Pairing Mode Help";
+        String EVENT_PAIRING_MODE_HELP = "Onboarding Pairing Mode Help";
 
         /**
          * When user lands on the Setting up Sense screen
          */
-        String EVENT_ONBOARDING_SENSE_SETUP = "Onboarding Sense Setup";
+        String EVENT_SENSE_SETUP = "Onboarding Sense Setup";
 
         /**
          * When user encounters an error during Sense Pairing and is asked whether he/she is setting up second pill or first
          */
-        String EVENT_ONBOARDING_SECOND_PILL_CHECK = "Onboarding Second Pill Check";
+        String EVENT_SECOND_PILL_CHECK = "Onboarding Second Pill Check";
 
         /**
          * When user lands on the "Pair your Sense" screen
          */
-        String EVENT_ONBOARDING_PAIR_SENSE = "Onboarding Pair Sense";
+        String EVENT_PAIR_SENSE = "Onboarding Pair Sense";
 
         /**
          * When user lands on the screen to scan for wifi
          */
-        String EVENT_ONBOARDING_WIFI = "Onboarding WiFi";
+        String EVENT_WIFI = "Onboarding WiFi";
 
         /**
          * When the user explicitly rescans for wifi networks.
          */
-        String EVENT_ONBOARDING_WIFI_SCAN = "Onboarding WiFi Scan";
+        String EVENT_WIFI_SCAN = "Onboarding WiFi Scan";
 
         /**
          * When the user lands on the "Enter Wifi Password" screen
          */
-        String EVENT_ONBOARDING_WIFI_PASSWORD = "Onboarding WiFi Password";
+        String EVENT_WIFI_PASSWORD = "Onboarding WiFi Password";
 
         /**
          * When user lands on the "Pairing your Sleep Pill" screen
          */
-        String EVENT_ONBOARDING_PAIR_PILL = "Onboarding Pair Pill";
+        String EVENT_PAIR_PILL = "Onboarding Pair Pill";
 
         /**
          * When user lands on screen where it asks user to place the pill on the pillow
          */
-        String EVENT_ONBOARDING_PILL_PLACEMENT = "Onboarding Pill Placement";
+        String EVENT_PILL_PLACEMENT = "Onboarding Pill Placement";
 
         /**
          * User lands on screen which asks whether they want to pair another pill.
          */
-        String EVENT_ONBOARDING_ANOTHER_PILL = "Onboarding Another Pill";
+        String EVENT_ANOTHER_PILL = "Onboarding Another Pill";
 
         /**
          * When user lands on the screen that tells them "To connect a second Sleep Pill, Sense needs to be put into pairing mode"
          */
-        String EVENT_ONBOARDING_PAIRING_MODE_OFF = "Onboarding Pairing Mode Off";
+        String EVENT_PAIRING_MODE_OFF = "Onboarding Pairing Mode Off";
 
         /**
          * When user lands on screen that tells partner to get app from hello.is/app
          */
-        String EVENT_ONBOARDING_GET_APP = "Onboarding Get App";
+        String EVENT_GET_APP = "Onboarding Get App";
 
         /**
          * When user lands on the screen that explains what the colors of Sense mean.  also known as 'before you sleep"
          */
-        String EVENT_ONBOARDING_SENSE_COLORS = "Onboarding Sense Colors";
+        String EVENT_SENSE_COLORS = "Onboarding Sense Colors";
 
         /**
          * When user is shown the Room Check screen
          */
-        String EVENT_ONBOARDING_ROOM_CHECK = "Onboarding Room Check";
+        String EVENT_ROOM_CHECK = "Onboarding Room Check";
 
         /**
          * When user is asked to set up their smart alarm during onboarding
          */
-        String EVENT_ONBOARDING_FIRST_ALARM = "Onboarding First Alarm";
+        String EVENT_FIRST_ALARM = "Onboarding First Alarm";
 
         /**
          * When user lands on the last onboarding Screen
          */
-        String EVENT_ONBOARDING_END = "Onboarding End";
+        String EVENT_END = "Onboarding End";
     }
 
 
-    //region In App
+    public interface Timeline {
+        /**
+         * When the user switches dates in the timeline (swipe, taps an event)
+         */
+        String EVENT_TIMELINE_ACTION = "Timeline Action";
+        String PROP_TIMELINE_ACTION = "action";
+        String PROP_TIMELINE_ACTION_CHANGE_DATE = "change_date";
+        String PROP_TIMELINE_ACTION_TAP_EVENT = "tap_event";
 
-    /**
-     * When the user switches dates in the timeline (swipe, taps an event)
-     */
-    public static final String EVENT_TIMELINE_ACTION = "Timeline Action";
-    public static final String PROP_TIMELINE_ACTION = "action";
-    public static final String PROP_TIMELINE_ACTION_CHANGE_DATE = "change_date";
-    public static final String PROP_TIMELINE_ACTION_TAP_EVENT = "tap_event";
+        String EVENT_TIMELINE_OPENED = "Timeline opened";
+        String EVENT_TIMELINE_CLOSED = "Timeline closed";
+        String EVENT_SLEEP_SCORE_BREAKDOWN = "Sleep Score breakdown";
+        String EVENT_SHARE = "Share";
+        String EVENT_ZOOMED_OUT = "Zoomed out";
+        String EVENT_ZOOMED_IN = "Zoomed in";
+        String EVENT_TAP = "Tap";
+        String EVENT_BEFORE_SLEEP_EVENT_TAPPED = "Before sleep event tapped";
+        String EVENT_TIMELINE_EVENT_TAPPED = "Timeline Event tapped";
+    }
 
+    public interface Alarms {
+        /**
+         * When the user adds an alarm
+         */
+        String EVENT_ACTION = "Alarm Action";
+        String PROP_ACTION = "action";
+        String PROP_ACTION_ADD = "add";
+        String PROP_ACTION_EDIT = "edit";
+        String PROP_ACTION_DISABLE = "disable";
+    }
 
-    /**
-     * When the user adds an alarm
-     */
-    public static final String EVENT_ALARM_ACTION = "Alarm Action";
-    public static final String PROP_ALARM_ACTION = "action";
-    public static final String PROP_ALARM_ACTION_ADD = "add";
-    public static final String PROP_ALARM_ACTION_EDIT = "edit";
-    public static final String PROP_ALARM_ACTION_DISABLE = "disable";
+    public interface TopView {
+        /**
+         * When user takes a device action in the 'device management' area of the application
+         */
+        String EVENT_DEVICE_ACTION = "Device Action";
+        String PROP_DEVICE_ACTION = "action";
+        String PROP_DEVICE_ACTION_FACTORY_RESTORE = "factory restore";
+        String PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE = "enable pairing mode";
+    }
 
-
-    /**
-     * When user lands on the Sign in screen
-     */
-    public static final String EVENT_SIGN_IN_START = "Sign In Start";
-
-    /**
-     * When the user signs in
-     */
-    public static final String EVENT_SIGNED_IN = "Signed In";
-
-    /**
-     * When the user signs out
-     */
-    public static final String EVENT_SIGNED_OUT = "Signed Out";
-
-    /**
-     * When user takes a device action in the 'device management' area of the application
-     */
-    public static final String EVENT_DEVICE_ACTION = "Device Action";
-    public static final String PROP_DEVICE_ACTION = "action";
-    public static final String PROP_DEVICE_ACTION_FACTORY_RESTORE = "factory restore";
-    public static final String PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE = "enable pairing mode";
-
-    //endregion
-
-
-    //region Widgets
-
-    /**
-     * When the user creates their first home screen widget of a certain type.
-     */
-    public static final String EVENT_WIDGET_CREATED = "Widget Created";
-
-    /**
-     * When the user deletes a home screen widget.
-     */
-    public static final String EVENT_WIDGET_DELETED = "Widget Deleted";
-
-    public static final String PROP_WIDGET_NAME = "widget name";
-
-    //endregion
+    public interface Widgets {
+        /**
+         * When the user creates their first home screen widget of a certain type.
+         */
+        String EVENT_WIDGET_CREATED = "Widget Created";
+        /**
+         * When the user deletes a home screen widget.
+         */
+        String EVENT_WIDGET_DELETED = "Widget Deleted";
+        String PROP_WIDGET_NAME = "widget name";
+    }
 
 
     //region Lifecycle
@@ -327,12 +329,12 @@ public class Analytics {
 
             provider.getPeople().set("$name", name);
             provider.getPeople().set("$created", created.toString());
-            provider.getPeople().set(GLOBAL_PROP_ACCOUNT_ID, accountId);
-            provider.getPeople().set(GLOBAL_PROP_PLATFORM, PLATFORM);
+            provider.getPeople().set(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+            provider.getPeople().set(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
 
             provider.registerSuperProperties(createProperties(
-                    GLOBAL_PROP_NAME, name,
-                    GLOBAL_PROP_PLATFORM, PLATFORM
+                    Global.GLOBAL_PROP_NAME, name,
+                    Global.GLOBAL_PROP_PLATFORM, PLATFORM
             ));
         }
     }
@@ -366,7 +368,7 @@ public class Analytics {
     }
 
     public static void trackError(@NonNull String message, int code) {
-        trackEvent(EVENT_ERROR, createProperties(PROP_ERROR_MESSAGE, message, PROP_ERROR_CODE, code));
+        trackEvent(Global.EVENT_ERROR, createProperties(Global.PROP_ERROR_MESSAGE, message, Global.PROP_ERROR_CODE, code));
     }
 
     //endregion

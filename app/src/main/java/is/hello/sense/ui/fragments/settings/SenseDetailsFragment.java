@@ -249,7 +249,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     public void putIntoPairingMode() {
-        Analytics.trackEvent(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE));
+        Analytics.trackEvent(Analytics.TopView.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.TopView.PROP_DEVICE_ACTION, Analytics.TopView.PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE));
 
         if (hardwarePresenter.getPeripheral() == null)
             return;
@@ -263,7 +263,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     public void factoryReset() {
-        Analytics.trackEvent(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_FACTORY_RESTORE));
+        Analytics.trackEvent(Analytics.TopView.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.TopView.PROP_DEVICE_ACTION, Analytics.TopView.PROP_DEVICE_ACTION_FACTORY_RESTORE));
 
         if (hardwarePresenter.getPeripheral() == null) {
             return;

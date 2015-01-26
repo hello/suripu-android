@@ -334,7 +334,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             builder.setSubheadingText(R.string.info_setup_sense);
             builder.setDiagramImage(R.drawable.onboarding_sense_intro);
             builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
-            builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_ONBOARDING_SENSE_SETUP);
+            builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
             builder.setHelpStep(UserSupport.OnboardingStep.SETUP_SENSE);
             pushFragment(builder.toFragment(), null, false);
         } else {
@@ -368,7 +368,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         senseColorsBuilder.setDiagramImage(R.drawable.onboarding_sense_colors);
         senseColorsBuilder.setHideToolbar(true);
         senseColorsBuilder.setNextWantsBackStackEntry(false);
-        senseColorsBuilder.setAnalyticsEvent(Analytics.Onboarding.EVENT_ONBOARDING_SENSE_COLORS);
+        senseColorsBuilder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_COLORS);
 
         OnboardingSimpleStepFragment.Builder introBuilder = new OnboardingSimpleStepFragment.Builder(this);
         introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
@@ -378,7 +378,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         introBuilder.setHideToolbar(true);
         introBuilder.setExitAnimationName(ANIMATION_ROOM_CHECK);
         introBuilder.setNextWantsBackStackEntry(false);
-        introBuilder.setAnalyticsEvent(Analytics.Onboarding.EVENT_ONBOARDING_ROOM_CHECK);
+        introBuilder.setAnalyticsEvent(Analytics.Onboarding.EVENT_ROOM_CHECK);
         senseColorsBuilder.setNextFragmentArguments(introBuilder.toArguments());
         senseColorsBuilder.setNextFragmentClass(OnboardingSimpleStepFragment.class);
 
@@ -390,7 +390,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         builder.setHeadingText(R.string.title_intro_sleep_pill);
         builder.setSubheadingText(R.string.info_intro_sleep_pill);
         builder.setDiagramImage(R.drawable.onboarding_clip_pill);
-        builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_ONBOARDING_PILL_PLACEMENT);
+        builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_PLACEMENT);
         builder.setHelpStep(UserSupport.OnboardingStep.PILL_PLACEMENT);
 
         builder.setNextFragmentArguments(createSenseColorsBuilder().toArguments());
