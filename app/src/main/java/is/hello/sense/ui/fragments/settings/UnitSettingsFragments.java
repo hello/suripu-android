@@ -23,6 +23,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.units.systems.MetricUnitSystem;
 import is.hello.sense.units.systems.UsCustomaryUnitSystem;
+import is.hello.sense.util.Analytics;
 import rx.Observable;
 
 public class UnitSettingsFragments extends InjectionFragment implements AdapterView.OnItemClickListener {
@@ -30,6 +31,15 @@ public class UnitSettingsFragments extends InjectionFragment implements AdapterV
 
     private StaticItemAdapter.TextItem unitSystemItem;
     private StaticItemAdapter.CheckItem use24TimeItem;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_UNITS_TIME, null);
+        }
+    }
 
     @Nullable
     @Override

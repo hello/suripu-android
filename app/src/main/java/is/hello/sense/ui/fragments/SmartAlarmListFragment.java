@@ -55,6 +55,8 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_ALARMS, null);
+
             smartAlarmPresenter.update();
         }
 
@@ -172,7 +174,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Analytics.trackEvent(Analytics.EVENT_ALARM_ACTION, Analytics.createProperties(Analytics.PROP_ALARM_ACTION, Analytics.PROP_ALARM_ACTION_EDIT));
+        Analytics.trackEvent(Analytics.TopView.EVENT_EDIT_ALARM, null);
 
         Alarm alarm = (Alarm) adapterView.getItemAtPosition(position);
         editAlarm(alarm, position);
@@ -194,9 +196,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
             smartAlarm.fireOnceTomorrow();
         }
 
-        if (!enabled) {
-            Analytics.trackEvent(Analytics.EVENT_ALARM_ACTION, Analytics.createProperties(Analytics.PROP_ALARM_ACTION, Analytics.PROP_ALARM_ACTION_DISABLE));
-        }
+        Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_ON_OFF, null);
 
         activityIndicator.setVisibility(View.VISIBLE);
         bindAndSubscribe(smartAlarmPresenter.saveSmartAlarm(position, smartAlarm),
@@ -211,7 +211,7 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
     }
 
     public void newAlarm(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.EVENT_ALARM_ACTION, Analytics.createProperties(Analytics.PROP_ALARM_ACTION, Analytics.PROP_ALARM_ACTION_ADD));
+        Analytics.trackEvent(Analytics.TopView.EVENT_NEW_ALARM, null);
         editAlarm(new Alarm(), SmartAlarmDetailActivity.INDEX_NEW);
     }
 

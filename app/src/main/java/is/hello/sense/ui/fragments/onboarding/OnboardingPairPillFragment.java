@@ -35,7 +35,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_PAIR_PILL, null);
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_PILL, null);
 
         setRetainInstance(true);
     }

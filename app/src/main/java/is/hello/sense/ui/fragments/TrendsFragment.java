@@ -21,6 +21,7 @@ import is.hello.sense.ui.adapter.TrendsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.util.Analytics;
 
 public class TrendsFragment extends InjectionFragment implements TrendsAdapter.OnTrendOptionSelected {
     @Inject TrendsPresenter trendsPresenter;
@@ -34,6 +35,10 @@ public class TrendsFragment extends InjectionFragment implements TrendsAdapter.O
 
         trendsPresenter.update();
         addPresenter(trendsPresenter);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_TRENDS, null);
+        }
     }
 
     @Nullable

@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ToggleButton;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
@@ -16,8 +15,6 @@ import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
-
-import static android.view.ViewGroup.MarginLayoutParams;
 
 public class OnboardingRegisterGenderFragment extends AccountEditingFragment implements SelectorLinearLayout.OnSelectionChangedListener {
     private Account account;
@@ -29,7 +26,7 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
         this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
-            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_GENDER, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_GENDER, null);
         }
     }
 
@@ -54,6 +51,8 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
         Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
         if (getWantsSkipButton()) {
             Views.setSafeOnClickListener(skipButton, ignored -> {
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, null);
+
                 account.setGender(Gender.OTHER);
                 getContainer().onAccountUpdated(this);
             });

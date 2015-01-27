@@ -32,6 +32,7 @@ import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
@@ -65,6 +66,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         sensorHistoryPresenter.setSensorName(sensor);
         addPresenter(sensorHistoryPresenter);
         addPresenter(conditionsPresenter);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_SENSOR_HISTORY, Analytics.createProperties(Analytics.TopView.PROP_SENSOR_NAME, sensor));
+        }
 
         setRetainInstance(true);
     }

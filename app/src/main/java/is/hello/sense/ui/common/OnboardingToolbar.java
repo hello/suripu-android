@@ -2,7 +2,6 @@ package is.hello.sense.ui.common;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +14,7 @@ import android.widget.FrameLayout;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 
 public class OnboardingToolbar {
     private final Fragment fragment;
@@ -54,6 +54,8 @@ public class OnboardingToolbar {
             }
 
             activity.onBackPressed();
+
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_BACK, null);
         }
     }
 

@@ -12,9 +12,8 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.util.Logger;
+import is.hello.sense.util.Analytics;
 
 public class PillDetailsFragment extends DeviceDetailsFragment {
     @Inject DevicesPresenter devicesPresenter;
@@ -28,11 +27,21 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_PILL_DETAIL, null);
+        }
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         showActions();
         addDeviceAction(R.string.action_replace_sleep_pill, true, this::unregisterDevice);
+        addDeviceAction(R.string.action_replace_battery, true, this::replaceBattery);
 
         if (device.isMissing()) {
             String missingMessage = getString(R.string.error_sleep_pill_missing_fmt, device.getLastUpdatedDescription(getActivity()));
@@ -48,6 +57,8 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
     //region Pill Actions
 
     public void unregisterDevice() {
+        Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_PILL, null);
+
         SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
         alertDialog.setDestructive(true);
         alertDialog.setTitle(R.string.dialog_title_replace_sleep_pill);
@@ -66,6 +77,12 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
                              });
         });
         alertDialog.show();
+    }
+
+    public void replaceBattery() {
+        Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_BATTERY, null);
+
+        showSupportFor(UserSupport.DeviceIssue.REPLACE_BATTERY);
     }
 
     //endregion

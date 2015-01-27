@@ -28,6 +28,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -51,6 +52,10 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         addPresenter(devicesPresenter);
 
         setRetainInstance(true);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_DEVICES, null);
+        }
     }
 
     @Nullable
@@ -67,7 +72,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         Styles.addCardSpacingHeaderAndFooter(listView);
         this.supportInfoFooter = (TextView) inflater.inflate(R.layout.footer_help, listView, false);
         supportInfoFooter.setVisibility(View.INVISIBLE);
-        Views.makeTextViewLinksClickable(supportInfoFooter);
+        Styles.initializeSupportFooter(getActivity(), supportInfoFooter);
         ListViews.addFooterView(listView, supportInfoFooter, null, false);
         listView.setAdapter(adapter);
 

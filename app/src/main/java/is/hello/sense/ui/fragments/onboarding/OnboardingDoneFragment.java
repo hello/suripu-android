@@ -50,7 +50,7 @@ public class OnboardingDoneFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_END, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_END, null);
         }
     }
 

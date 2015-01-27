@@ -32,6 +32,7 @@ import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SafeOnClickListener;
 
 import static android.widget.LinearLayout.LayoutParams;
@@ -67,6 +68,8 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
 
         if (savedInstanceState != null) {
             this.hasClearedAllViews = savedInstanceState.getBoolean("hasClearedAllViews", false);
+        } else {
+            Analytics.trackEvent(Analytics.TopView.EVENT_QUESTION, null);
         }
 
         this.checkedDrawable = getResources().getDrawable(R.drawable.questions_check);
@@ -384,6 +387,8 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
     //region Button Callbacks
 
     public void nextQuestion(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_ANSWER_QUESTION, null);
+
         clearQuestions(true, () -> {
             Question question = (Question) sender.getTag(R.id.fragment_questions_tag_question);
             bindAndSubscribe(questionsPresenter.answerQuestion(question, selectedAnswers),
@@ -396,11 +401,14 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
     }
 
     public void skipQuestion(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_SKIP_QUESTION, null);
         questionsPresenter.skipQuestion();
     }
 
 
     public void singleChoiceSelected(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_ANSWER_QUESTION, null);
+
         clearQuestions(true, () -> {
             Question question = (Question) sender.getTag(R.id.fragment_questions_tag_question);
             Question.Choice choice = (Question.Choice) sender.getTag(R.id.fragment_questions_tag_choice);

@@ -44,7 +44,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
         this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
-            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_BIRTHDAY, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_BIRTHDAY, null);
         }
     }
 
@@ -226,6 +226,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     }
 
     public void skip(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, null);
         getContainer().onAccountUpdated(this);
     }
 

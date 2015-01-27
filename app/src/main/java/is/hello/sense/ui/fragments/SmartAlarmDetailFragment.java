@@ -35,6 +35,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
@@ -110,7 +111,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
         ToggleButton enabledToggle = (ToggleButton) view.findViewById(R.id.fragment_smart_alarm_detail_enabled);
         enabledToggle.setChecked(alarm.isEnabled());
-        enabledToggle.setOnCheckedChangeListener((button, isEnabled) -> alarm.setEnabled(isEnabled));
+        enabledToggle.setOnCheckedChangeListener((button, isEnabled) -> {
+            Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_ON_OFF, null);
+            alarm.setEnabled(isEnabled);
+        });
 
         View enabledToggleContainer = view.findViewById(R.id.fragment_smart_alarm_detail_enabled_container);
         enabledToggleContainer.setOnClickListener(ignored -> enabledToggle.toggle());
@@ -260,6 +264,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void finish() {
+        Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_SAVED, null);
+
         LoadingDialogFragment.close(getFragmentManager());
         getActivity().setResult(Activity.RESULT_OK);
         getActivity().finish();
