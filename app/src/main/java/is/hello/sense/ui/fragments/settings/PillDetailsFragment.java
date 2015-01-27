@@ -80,8 +80,9 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
     }
 
     public void replaceBattery() {
+        Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_BATTERY, null);
+
         showSupportFor(UserSupport.DeviceIssue.REPLACE_BATTERY);
-        
     }
 
     //endregion

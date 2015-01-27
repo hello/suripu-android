@@ -283,13 +283,13 @@ public class Analytics {
         /**
          * When the user creates their first home screen widget of a certain type.
          */
-        String EVENT_WIDGET_CREATED = "Widget Created";
+        String EVENT_CREATED = "Widget Created";
         /**
          * When the user deletes a home screen widget.
          */
-        String EVENT_WIDGET_DELETED = "Widget Deleted";
+        String EVENT_DELETED = "Widget Deleted";
 
-        String PROP_WIDGET_NAME = "widget name";
+        String PROP_NAME = "widget_name";
     }
 
 

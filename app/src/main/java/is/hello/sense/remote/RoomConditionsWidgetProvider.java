@@ -34,7 +34,7 @@ public class RoomConditionsWidgetProvider extends AppWidgetProvider {
         super.onEnabled(context);
 
         Logger.info(getClass().getSimpleName(), "onEnabled()");
-        Analytics.trackEvent(Analytics.Widgets.EVENT_WIDGET_CREATED, Analytics.createProperties(Analytics.Widgets.PROP_WIDGET_NAME, WIDGET_NAME));
+        Analytics.trackEvent(Analytics.Widgets.EVENT_CREATED, Analytics.createProperties(Analytics.Widgets.PROP_NAME, WIDGET_NAME));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class RoomConditionsWidgetProvider extends AppWidgetProvider {
         super.onDeleted(context, appWidgetIds);
 
         Logger.info(getClass().getSimpleName(), "onDeleted()");
-        Analytics.trackEvent(Analytics.Widgets.EVENT_WIDGET_DELETED, Analytics.createProperties(Analytics.Widgets.PROP_WIDGET_NAME, WIDGET_NAME));
+        Analytics.trackEvent(Analytics.Widgets.EVENT_DELETED, Analytics.createProperties(Analytics.Widgets.PROP_NAME, WIDGET_NAME));
     }
 
     public static class UpdateService extends WidgetService {
