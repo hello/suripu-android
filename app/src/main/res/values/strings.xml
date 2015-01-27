@@ -349,4 +349,10 @@ so you can sleep better.</string>
     <string name="label_sleep_summary">Sleep Summary</string>
     <string name="label_before_sleep">Before Sleep</string>
     <string name="placeholder_no_before_sleep_insights">No before sleep insights.</string>
+
+    <string name="welcome_dialog_timeline_title_intro">Understanding your sleep</string>
+    <string name="welcome_dialog_timeline_intro">Your Sense collects an immense amount of data about your sleep, your behavior, and the environment in your bedroom.\n\nWe take all this data and present it in a detailed but simple way — this quick walk-through will show you how to read your first night of sleep data.</string>
+    <string name="welcome_dialog_timeline_score">Your Sleep Score takes all the data Sense collects about your sleep, and expresses it as one simple, rich measure of your sleep quality — out of 100.</string>
+    <string name="welcome_dialog_timeline_before_sleep">The “Before Sleep” tab will summarize the conditions of your bedroom before you went to sleep. Too hot? Noisy? You‘ll see it here.</string>
+    <string name="welcome_dialog_timeline_events">Your Sleep Timeline shows you a minute-by-minute record of your night, broken into three categories:\n\nLight, Medium, and Deep Sleep.</string>
 </resources>

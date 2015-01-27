@@ -1,20 +1,17 @@
 package is.hello.sense.ui.dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.annotation.XmlRes;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +19,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Logger;
+import is.hello.sense.util.WelcomeDialogParser;
 
 public class WelcomeDialog extends DialogFragment {
     public static final String TAG = WelcomeDialog.class.getSimpleName();
@@ -36,6 +39,21 @@ public class WelcomeDialog extends DialogFragment {
 
 
     //region Lifecycle
+
+    public static boolean show(@NonNull Activity activity, @XmlRes int welcomeRes) {
+        try {
+            WelcomeDialogParser parser = new WelcomeDialogParser(activity.getResources(), welcomeRes);
+            WelcomeDialog.Item[] items = parser.parse();
+
+            WelcomeDialog welcomeDialog = WelcomeDialog.newInstance(items);
+            welcomeDialog.show(activity.getFragmentManager(), WelcomeDialog.TAG);
+        } catch (XmlPullParserException | IOException e) {
+            Logger.error(TAG, "Could not parse welcome document", e);
+            return false;
+        }
+
+        return true;
+    }
 
     public static WelcomeDialog newInstance(@NonNull Item[] items) {
         WelcomeDialog fragment = new WelcomeDialog();
@@ -127,8 +145,18 @@ public class WelcomeDialog extends DialogFragment {
             }
 
             private void bindItem(@NonNull Item item) {
-                diagram.setImageResource(item.diagramRes);
-                title.setText(item.titleRes);
+                if (item.diagramRes != WelcomeDialogParser.MISSING_RES) {
+                    diagram.setImageResource(item.diagramRes);
+                } else {
+                    diagram.setImageDrawable(null);
+                }
+
+                if (item.titleRes != WelcomeDialogParser.MISSING_RES) {
+                    title.setText(item.titleRes);
+                } else {
+                    title.setText("");
+                }
+
                 message.setText(item.messageRes);
             }
         }
