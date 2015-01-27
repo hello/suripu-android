@@ -12,7 +12,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,7 +61,7 @@ public class WelcomeDialog extends DialogFragment {
         dialog.setContentView(R.layout.dialog_welcome);
 
         this.viewPager = (ViewPager) dialog.findViewById(R.id.dialog_welcome_view_pager);
-        this.adapter = new ItemAdapter(getChildFragmentManager());
+        this.adapter = new ItemAdapter();
         viewPager.setAdapter(adapter);
 
         return dialog;
@@ -77,10 +79,8 @@ public class WelcomeDialog extends DialogFragment {
     }
 
 
-    public class ItemAdapter extends FragmentStatePagerAdapter {
-        public ItemAdapter(FragmentManager fm) {
-            super(fm);
-        }
+    public class ItemAdapter extends PagerAdapter {
+        private final LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         @Override
         public int getCount() {
@@ -88,61 +88,52 @@ public class WelcomeDialog extends DialogFragment {
         }
 
         @Override
-        public Fragment getItem(int position) {
-            return ItemFragment.newInstance(WelcomeDialog.this, items[position]);
-        }
-    }
-
-    public static class ItemFragment extends Fragment {
-        private static final String ARG_ITEM = ItemFragment.class.getName() + ".ARG_ITEM";
-
-        private Item item;
-        private WelcomeDialog parentFragment;
-
-
-        //region Lifecycle
-
-        public static ItemFragment newInstance(@NonNull WelcomeDialog targetFragment, @NonNull Item item) {
-            ItemFragment fragment = new ItemFragment();
-
-            Bundle arguments = new Bundle();
-            arguments.putParcelable(ARG_ITEM, item);
-            fragment.setArguments(arguments);
-            fragment.setTargetFragment(targetFragment, 0x00);
-
-            return fragment;
+        public boolean isViewFromObject(View view, Object object) {
+            ViewHolder holder = (ViewHolder) object;
+            return (holder.itemView == view);
         }
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            this.item = getArguments().getParcelable(ARG_ITEMS);
-            this.parentFragment = (WelcomeDialog) getTargetFragment();
+        public Object instantiateItem(ViewGroup container, int position) {
+            View itemView = inflater.inflate(R.layout.fragment_dialog_welcome_item, container, false);
+            ViewHolder holder = new ViewHolder(itemView);
+            holder.bindItem(items[position]);
+            container.addView(itemView);
+            return holder;
         }
 
-        @Nullable
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_dialog_welcome_item, container, false);
-
-            ImageView diagram = (ImageView) view.findViewById(R.id.fragment_dialog_welcome_item_diagram);
-            diagram.setImageResource(item.diagramRes);
-
-            TextView title = (TextView) view.findViewById(R.id.fragment_dialog_welcome_item_title);
-            title.setText(item.titleRes);
-
-            TextView message = (TextView) view.findViewById(R.id.fragment_dialog_welcome_item_message);
-            message.setText(item.messageRes);
-
-            Button next = (Button) view.findViewById(R.id.fragment_dialog_welcome_item_next);
-            Views.setSafeOnClickListener(next, ignored -> parentFragment.next());
-
-            return view;
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            ViewHolder holder = (ViewHolder) object;
+            container.removeView(holder.itemView);
         }
 
-        //endregion
+
+        private class ViewHolder {
+            final View itemView;
+            private final ImageView diagram;
+            private final TextView title;
+            private final TextView message;
+
+            private ViewHolder(@NonNull View itemView) {
+                this.itemView = itemView;
+
+                this.diagram = (ImageView) itemView.findViewById(R.id.fragment_dialog_welcome_item_diagram);
+                this.title = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_title);
+                this.message = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_message);
+
+                Button next = (Button) itemView.findViewById(R.id.fragment_dialog_welcome_item_next);
+                Views.setSafeOnClickListener(next, ignored -> next());
+            }
+
+            private void bindItem(@NonNull Item item) {
+                diagram.setImageResource(item.diagramRes);
+                title.setText(item.titleRes);
+                message.setText(item.messageRes);
+            }
+        }
     }
+
 
     public static class Item implements Parcelable {
         public final @DrawableRes int diagramRes;

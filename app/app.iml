@@ -115,7 +115,6 @@
     <orderEntry type="library" exported="" name="mixpanel-android-4.4.1" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-21.0.3" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-core-1.1" level="project" />
-    <orderEntry type="library" exported="" name="support-v4-r7" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="espresso-runner-1.1-r3" level="project" />
     <orderEntry type="library" exported="" name="support-v13-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="seismic-1.0.1" level="project" />

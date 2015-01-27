@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog>
+    <item
+        diagram="@drawable/onboarding_enhanced_audio"
+        title="@string/app_name"
+        message="@string/error_bluetooth_no_connection"/>
+</dialog>
