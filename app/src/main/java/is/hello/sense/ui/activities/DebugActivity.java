@@ -35,6 +35,7 @@ import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
+import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
@@ -106,6 +107,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         debugActionItems.addTextItem("View Log", null, this::viewLog);
         debugActionItems.addTextItem("Clear Log", null, this::clearLog);
         debugActionItems.addTextItem("Share Log", null, this::sendLog);
+        debugActionItems.addTextItem("Clear Handholding settings", null, this::clearHandholdingSettings);
         debugActionItems.addTextItem("Clear Http Cache", null, this::clearHttpCache);
         debugActionItems.addTextItem("Clear OAuth Session", null, this::clearOAuthSession);
     }
@@ -151,6 +153,11 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
             intent.setType("text/plain");
             startActivity(Intent.createChooser(intent, "Share Log"));
         }, Functions.LOG_ERROR);
+    }
+
+    public void clearHandholdingSettings() {
+        WelcomeDialog.clearShownStates(this);
+        Toast.makeText(getApplicationContext(), "Preferences Cleared", Toast.LENGTH_SHORT).show();
     }
 
     public void clearHttpCache() {

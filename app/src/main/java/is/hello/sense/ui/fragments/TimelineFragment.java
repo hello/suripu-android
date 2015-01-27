@@ -42,6 +42,7 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
+import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.IconAndTextDrawable;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
@@ -81,6 +82,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private BeforeSleepHeaderMode beforeSleep;
 
     private View timelineEventsHeader;
+
+    private boolean showTimelineWelcomeOnLayersUp = false;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
@@ -246,6 +249,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 timelineEventsHeader.setVisibility(View.INVISIBLE);
             } else {
                 timelineEventsHeader.setVisibility(View.VISIBLE);
+
+                HomeActivity activity = (HomeActivity) getActivity();
+                if (activity.getSlidingLayersView().isOpen()) {
+                    this.showTimelineWelcomeOnLayersUp = true;
+                } else {
+                    WelcomeDialog.show(activity, R.xml.welcome_dialog_timeline);
+                }
             }
         } else {
             timelineScore.showSleepScore(-1);
@@ -322,6 +332,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             animate(smartAlarmButton)
                     .y(contentHeight - buttonHeight)
                     .start();
+        }
+
+        if (showTimelineWelcomeOnLayersUp) {
+            WelcomeDialog.show(getActivity(), R.xml.welcome_dialog_timeline);
+            this.showTimelineWelcomeOnLayersUp = false;
         }
     }
 

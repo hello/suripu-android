@@ -20,6 +20,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -100,6 +101,10 @@ public class AppSettingsFragment extends InjectionFragment {
         builder.setMessage(R.string.dialog_message_log_out);
         builder.setNegativeButton(android.R.string.cancel, null);
         builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+            if (BuildConfig.DEBUG) {
+                WelcomeDialog.clearShownStates(getActivity());
+            }
+
             sessionManager.logOut();
             Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_OUT, null);
         });

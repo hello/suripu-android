@@ -48,6 +48,15 @@ public class WelcomeDialog extends DialogFragment {
         return "dialog_" + resourceName + "_shown";
     }
 
+    public static void clearShownStates(@NonNull Context context) {
+        Logger.info(TAG, "Clearing already shown dialog states");
+
+        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        preferences.edit()
+                   .clear()
+                   .apply();
+    }
+
     public static boolean shouldShow(@NonNull Context context, @XmlRes int welcomeRes) {
         String key = getPreferenceKey(context, welcomeRes);
         SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
@@ -74,7 +83,7 @@ public class WelcomeDialog extends DialogFragment {
             WelcomeDialog welcomeDialog = WelcomeDialog.newInstance(items);
             welcomeDialog.show(activity.getFragmentManager(), WelcomeDialog.TAG);
 
-            //markShown(activity, welcomeRes);
+            markShown(activity, welcomeRes);
         } catch (XmlPullParserException | IOException e) {
             Logger.error(TAG, "Could not parse welcome document", e);
             return false;
@@ -150,7 +159,7 @@ public class WelcomeDialog extends DialogFragment {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             View itemView = inflater.inflate(R.layout.item_dialog_welcome, container, false);
-            ViewHolder holder = new ViewHolder(itemView);
+            ViewHolder holder = new ViewHolder(itemView, (position == getCount() - 1));
             holder.bindItem(items[position]);
             container.addView(itemView);
             return holder;
@@ -165,35 +174,42 @@ public class WelcomeDialog extends DialogFragment {
 
         private class ViewHolder {
             final View itemView;
-            private final ImageView diagram;
-            private final TextView title;
-            private final TextView message;
+            final ImageView diagramImage;
+            final TextView titleText;
+            final TextView messageText;
 
-            private ViewHolder(@NonNull View itemView) {
+            private ViewHolder(@NonNull View itemView, boolean lastItem) {
                 this.itemView = itemView;
 
-                this.diagram = (ImageView) itemView.findViewById(R.id.fragment_dialog_welcome_item_diagram);
-                this.title = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_title);
-                this.message = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_message);
+                this.diagramImage = (ImageView) itemView.findViewById(R.id.fragment_dialog_welcome_item_diagram);
+                this.titleText = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_title);
+                this.messageText = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_message);
 
                 Button next = (Button) itemView.findViewById(R.id.fragment_dialog_welcome_item_next);
+                if (lastItem) {
+                    next.setText(android.R.string.ok);
+                } else {
+                    next.setText(R.string.action_next);
+                }
                 Views.setSafeOnClickListener(next, ignored -> next());
             }
 
             private void bindItem(@NonNull Item item) {
                 if (item.diagramRes != WelcomeDialogParser.MISSING_RES) {
-                    diagram.setImageResource(item.diagramRes);
+                    diagramImage.setImageResource(item.diagramRes);
                 } else {
-                    diagram.setImageDrawable(null);
+                    diagramImage.setImageDrawable(null);
                 }
 
                 if (item.titleRes != WelcomeDialogParser.MISSING_RES) {
-                    title.setText(item.titleRes);
+                    titleText.setText(item.titleRes);
                 } else {
-                    title.setText("");
+                    titleText.setText("");
                 }
 
-                message.setText(item.messageRes);
+                String message = getString(item.messageRes);
+                diagramImage.setContentDescription(message);
+                messageText.setText(message);
             }
         }
     }
