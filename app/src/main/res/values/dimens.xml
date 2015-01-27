@@ -45,6 +45,7 @@
 
     <dimen name="gap_raised_item_inset_side">1px</dimen>
     <dimen name="gap_raised_item_inset_bottom">1dp</dimen>
+    <dimen name="raised_item_corner_radius">3dp</dimen>
 
     <!-- Misc -->
 

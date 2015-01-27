@@ -6,7 +6,7 @@
                 android:color="#0A000000" />
 
             <corners
-                android:radius="3dp" />
+                android:radius="@dimen/raised_item_corner_radius" />
         </shape>
     </item>
 
@@ -19,7 +19,7 @@
                 android:color="@color/background_light" />
 
             <corners
-                android:radius="3dp" />
+                android:radius="@dimen/raised_item_corner_radius" />
         </shape>
     </item>
 </layer-list>

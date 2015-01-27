@@ -3,6 +3,8 @@ package is.hello.sense.ui.dialogs;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -25,6 +27,7 @@ import java.io.IOException;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.WelcomeDialogParser;
 
@@ -40,13 +43,38 @@ public class WelcomeDialog extends DialogFragment {
 
     //region Lifecycle
 
+    private static String getPreferenceKey(@NonNull Context context, @XmlRes int welcomeRes) {
+        String resourceName = context.getResources().getResourceEntryName(welcomeRes);
+        return "dialog_" + resourceName + "_shown";
+    }
+
+    public static boolean shouldShow(@NonNull Context context, @XmlRes int welcomeRes) {
+        String key = getPreferenceKey(context, welcomeRes);
+        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        return !preferences.getBoolean(key, false);
+    }
+
+    public static void markShown(@NonNull Context context, @XmlRes int welcomeRes) {
+        String key = getPreferenceKey(context, welcomeRes);
+        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        preferences.edit()
+                   .putBoolean(key, true)
+                   .apply();
+    }
+
     public static boolean show(@NonNull Activity activity, @XmlRes int welcomeRes) {
+        if (!shouldShow(activity, welcomeRes)) {
+            return false;
+        }
+
         try {
             WelcomeDialogParser parser = new WelcomeDialogParser(activity.getResources(), welcomeRes);
             WelcomeDialog.Item[] items = parser.parse();
 
             WelcomeDialog welcomeDialog = WelcomeDialog.newInstance(items);
             welcomeDialog.show(activity.getFragmentManager(), WelcomeDialog.TAG);
+
+            //markShown(activity, welcomeRes);
         } catch (XmlPullParserException | IOException e) {
             Logger.error(TAG, "Could not parse welcome document", e);
             return false;

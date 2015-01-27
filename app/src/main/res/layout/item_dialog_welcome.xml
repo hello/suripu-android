@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<is.hello.sense.ui.widget.RoundedRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -20,6 +20,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_above="@id/fragment_dialog_welcome_item_next"
+        android:scrollbars="none"
         style="@style/AppTheme.FadingScrollView">
 
         <LinearLayout
@@ -59,4 +60,4 @@
 
     </ScrollView>
 
-</RelativeLayout>
+</is.hello.sense.ui.widget.RoundedRelativeLayout>
