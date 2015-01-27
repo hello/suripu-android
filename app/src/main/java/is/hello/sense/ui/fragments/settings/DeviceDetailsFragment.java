@@ -70,7 +70,7 @@ public abstract class DeviceDetailsFragment extends HardwareFragment {
 
         this.actionsContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_actions);
 
-        TextView footer = (TextView) view.findViewById(R.id.sub_fragment_device_footer);
+        TextView footer = (TextView) view.findViewById(R.id.footer_help);
         Views.makeTextViewLinksClickable(footer);
 
         return view;

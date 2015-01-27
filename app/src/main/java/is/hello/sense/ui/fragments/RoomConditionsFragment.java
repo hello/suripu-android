@@ -37,6 +37,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
@@ -63,6 +64,10 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
         super.onCreate(savedInstanceState);
 
         addPresenter(presenter);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_CURRENT_CONDITIONS, null);
+        }
     }
 
     @Nullable

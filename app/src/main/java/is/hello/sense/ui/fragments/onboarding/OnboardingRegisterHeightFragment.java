@@ -33,7 +33,7 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
         this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
-            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_HEIGHT, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_HEIGHT, null);
         }
     }
 
@@ -59,7 +59,10 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
 
         Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
         if (getWantsSkipButton()) {
-            Views.setSafeOnClickListener(skipButton, ignored -> getContainer().onAccountUpdated(this));
+            Views.setSafeOnClickListener(skipButton, ignored -> {
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, null);
+                getContainer().onAccountUpdated(this);
+            });
         } else {
             skipButton.setVisibility(View.INVISIBLE);
         }

@@ -54,6 +54,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         if (savedInstanceState != null) {
             this.didEnableBluetooth = savedInstanceState.getBoolean("didEnableBluetooth", false);
+        } else {
+            Analytics.trackEvent(Analytics.TopView.EVENT_SENSE_DETAIL, null);
         }
 
         devicesPresenter.update();
@@ -240,8 +242,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     //region Sense Actions
 
     public void changeWifiNetwork() {
-        if (hardwarePresenter.getPeripheral() == null)
+        if (hardwarePresenter.getPeripheral() == null) {
             return;
+        }
+
+        Analytics.trackEvent(Analytics.TopView.EVENT_EDIT_WIFI, null);
 
         Intent intent = new Intent(getActivity(), OnboardingActivity.class);
         intent.putExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, true);
@@ -249,10 +254,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     public void putIntoPairingMode() {
-        Analytics.trackEvent(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_ENABLE_PAIRING_MODE));
-
-        if (hardwarePresenter.getPeripheral() == null)
+        if (hardwarePresenter.getPeripheral() == null) {
             return;
+        }
+
+        Analytics.trackEvent(Analytics.TopView.EVENT_PUT_INTO_PAIRING_MODE, null);
 
         showBlockingActivity(R.string.dialog_loading_message);
         showHardwareActivity(() -> {
@@ -263,11 +269,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     public void factoryReset() {
-        Analytics.trackEvent(Analytics.EVENT_DEVICE_ACTION, Analytics.createProperties(Analytics.PROP_DEVICE_ACTION, Analytics.PROP_DEVICE_ACTION_FACTORY_RESTORE));
-
         if (hardwarePresenter.getPeripheral() == null) {
             return;
         }
+
+        Analytics.trackEvent(Analytics.TopView.EVENT_FACTORY_RESET, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
         dialog.setDestructive(true);
@@ -296,6 +302,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     public void unregisterDevice() {
+        Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_SENSE, null);
+
         SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
         alertDialog.setDestructive(true);
         alertDialog.setTitle(R.string.dialog_title_replace_sense);

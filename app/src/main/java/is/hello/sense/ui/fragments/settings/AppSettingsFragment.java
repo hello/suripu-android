@@ -41,6 +41,10 @@ public class AppSettingsFragment extends InjectionFragment {
 
         Resources resources = getResources();
         this.dividerLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, resources.getDimensionPixelSize(R.dimen.divider_size));
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_SETTINGS, null);
+        }
     }
 
     @Nullable
@@ -55,8 +59,8 @@ public class AppSettingsFragment extends InjectionFragment {
         addItem(R.string.label_units_and_time, true, ignored -> showFragment(UnitSettingsFragments.class, R.string.label_units_and_time, null));
         addItem(R.string.action_log_out, false, this::logOut);
 
-        TextView footer = (TextView) view.findViewById(R.id.sub_fragment_device_footer);
-        Views.makeTextViewLinksClickable(footer);
+        TextView footer = (TextView) view.findViewById(R.id.footer_help);
+        Styles.initializeSupportFooter(getActivity(), footer);
 
         TextView version = (TextView) view.findViewById(R.id.fragment_app_settings_version);
         version.setText(getString(R.string.app_version_fmt, getString(R.string.app_name), BuildConfig.VERSION_NAME));
@@ -89,13 +93,15 @@ public class AppSettingsFragment extends InjectionFragment {
     }
 
     public void logOut(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_SIGN_OUT, null);
+
         SenseAlertDialog builder = new SenseAlertDialog(getActivity());
         builder.setTitle(R.string.dialog_title_log_out);
         builder.setMessage(R.string.dialog_message_log_out);
         builder.setNegativeButton(android.R.string.cancel, null);
         builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
             sessionManager.logOut();
-            Analytics.trackEvent(Analytics.EVENT_SIGNED_OUT, null);
+            Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_OUT, null);
         });
         builder.show();
     }

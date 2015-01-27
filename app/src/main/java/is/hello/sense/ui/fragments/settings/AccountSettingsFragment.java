@@ -39,6 +39,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -78,6 +79,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
         if (savedInstanceState != null) {
             this.currentAccount = (Account) savedInstanceState.getSerializable("currentAccount");
+        } else {
+            Analytics.trackEvent(Analytics.TopView.EVENT_ACCOUNT, null);
         }
 
         accountPresenter.update();

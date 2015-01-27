@@ -24,6 +24,10 @@ public class LaunchActivity extends InjectionActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
+        }
+
         if (!BuildConfig.DEBUG) {
             Crashlytics.start(this);
             Crashlytics.setString("BuildValues_type", BuildConfig.FLAVOR);

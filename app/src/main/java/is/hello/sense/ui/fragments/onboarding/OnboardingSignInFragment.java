@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +43,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.EVENT_SIGN_IN_START, null);
+            Analytics.trackEvent(Analytics.Global.EVENT_SIGN_IN_START, null);
         }
     }
 
@@ -95,7 +94,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             apiSessionManager.setSession(session);
             preferencesPresenter.pullAccountPreferences().subscribe();
-            Analytics.trackEvent(Analytics.EVENT_SIGNED_IN, null);
+            Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
             getOnboardingActivity().showHomeActivity();
         }, error -> {

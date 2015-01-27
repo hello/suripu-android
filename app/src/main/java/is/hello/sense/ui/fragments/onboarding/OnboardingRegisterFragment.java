@@ -195,7 +195,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             sessionManager.setSession(session);
             preferencesPresenter.pullAccountPreferences().subscribe();
-            Analytics.trackEvent(Analytics.EVENT_SIGNED_IN, null);
+            Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
                     () -> getOnboardingActivity().showBirthday(createdAccount));

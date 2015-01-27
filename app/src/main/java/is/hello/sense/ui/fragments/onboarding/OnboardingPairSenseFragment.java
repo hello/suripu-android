@@ -46,7 +46,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             this.hasLinkedAccount = savedInstanceState.getBoolean("hasLinkedAccount", false);
         }
 
-        Analytics.trackEvent(Analytics.EVENT_ONBOARDING_PAIR_SENSE, null);
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_SENSE, null);
 
         setRetainInstance(true);
     }
@@ -211,7 +211,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            Analytics.trackEvent(Analytics.EVENT_ONBOARDING_SECOND_PILL_CHECK, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_SECOND_PILL_CHECK, null);
         }
 
         @Override

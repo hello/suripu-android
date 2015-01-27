@@ -11,27 +11,33 @@ import is.hello.sense.util.Analytics;
 
 public class UserSupport {
     private static final String SUPPORT_URL = "https://support.hello.is";
+    private static final String SUPPORT_EMAIL = "help@sayhello.com";
 
-    public static void show(@NonNull Context from) {
-        Analytics.trackEvent(Analytics.EVENT_HELP, null);
+    public static void showSupport(@NonNull Context from) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_HELP, null);
         from.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SUPPORT_URL)));
     }
 
+    public static void showEmail(@NonNull Context from) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
+        from.startActivity(new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", SUPPORT_EMAIL, null)));
+    }
+
     public static void showForOnboardingStep(@NonNull Context from, @NonNull OnboardingStep onboardingStep) {
-        Analytics.trackEvent(Analytics.EVENT_HELP, Analytics.createProperties(Analytics.PROP_HELP_STEP, onboardingStep.toString()));
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP, onboardingStep.toString()));
         from.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SUPPORT_URL)));
     }
 
     public static void showForDeviceIssue(@NonNull Context from, @NonNull DeviceIssue issue) {
-        Analytics.trackEvent(Analytics.EVENT_HELP, Analytics.createProperties(Analytics.PROP_HELP_STEP, issue));
+        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE, issue.toString()));
         from.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SUPPORT_URL)));
     }
 
 
     public static enum DeviceIssue {
-        WIFI_CONNECTIVITY,
         SENSE_MISSING,
         SLEEP_PILL_MISSING,
+        REPLACE_BATTERY,
     }
 
     public static enum OnboardingStep {
