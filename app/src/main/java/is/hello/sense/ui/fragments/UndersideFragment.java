@@ -34,6 +34,8 @@ import is.hello.sense.util.Constants;
 import static is.hello.sense.ui.adapter.StaticFragmentAdapter.Item;
 
 public class UndersideFragment extends Fragment implements ViewPager.OnPageChangeListener, SelectorLinearLayout.OnSelectionChangedListener {
+    private static final int DEFAULT_START_ITEM = 0;
+
     private SharedPreferences preferences;
 
     private SelectorLinearLayout tabs;
@@ -83,6 +85,8 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         if ((System.currentTimeMillis() - itemLastUpdated) <= Constants.STALE_INTERVAL_MS) {
             int currentItem = preferences.getInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 0);
             setCurrentItem(currentItem, false);
+        } else {
+            setCurrentItem(DEFAULT_START_ITEM, false);
         }
 
         pager.setOnPageChangeListener(this);

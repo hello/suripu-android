@@ -58,6 +58,10 @@ public class WelcomeDialog extends DialogFragment {
     }
 
     public static boolean shouldShow(@NonNull Context context, @XmlRes int welcomeRes) {
+        if (welcomeRes == WelcomeDialogParser.MISSING_RES) {
+            return false;
+        }
+
         String key = getPreferenceKey(context, welcomeRes);
         SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
         return !preferences.getBoolean(key, false);
