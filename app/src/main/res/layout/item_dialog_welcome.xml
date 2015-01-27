@@ -4,7 +4,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/gap_xlarge"
     style="@style/AppTheme.Card">
 
     <Button
@@ -59,6 +58,5 @@
         </LinearLayout>
 
     </ScrollView>
-
 
 </RelativeLayout>

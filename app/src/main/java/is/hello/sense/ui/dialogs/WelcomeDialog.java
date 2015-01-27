@@ -77,8 +77,16 @@ public class WelcomeDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
         dialog.setContentView(R.layout.dialog_welcome);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(true);
 
         this.viewPager = (ViewPager) dialog.findViewById(R.id.dialog_welcome_view_pager);
+
+        int pageMargin = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+        viewPager.setClipToPadding(false);
+        viewPager.setPadding(pageMargin, 0, pageMargin, 0);
+        viewPager.setPageMargin(pageMargin);
+
         this.adapter = new ItemAdapter();
         viewPager.setAdapter(adapter);
 
@@ -113,7 +121,7 @@ public class WelcomeDialog extends DialogFragment {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            View itemView = inflater.inflate(R.layout.fragment_dialog_welcome_item, container, false);
+            View itemView = inflater.inflate(R.layout.item_dialog_welcome, container, false);
             ViewHolder holder = new ViewHolder(itemView);
             holder.bindItem(items[position]);
             container.addView(itemView);
