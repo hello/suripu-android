@@ -149,7 +149,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 break;
             }
         }
-        WelcomeDialog.show(getActivity(), welcomeDialogRes);
+        WelcomeDialog.showIfNeeded(getActivity(), welcomeDialogRes);
     }
 
     public SensorHistoryActivity getSensorHistoryActivity() {

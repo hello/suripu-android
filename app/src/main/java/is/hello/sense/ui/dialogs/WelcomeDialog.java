@@ -75,7 +75,7 @@ public class WelcomeDialog extends DialogFragment {
                    .apply();
     }
 
-    public static boolean show(@NonNull Activity activity, @XmlRes int welcomeRes) {
+    public static boolean showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes) {
         if (!shouldShow(activity, welcomeRes)) {
             return false;
         }

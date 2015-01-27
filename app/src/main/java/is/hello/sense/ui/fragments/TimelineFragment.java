@@ -254,7 +254,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 if (activity.getSlidingLayersView().isOpen()) {
                     this.showTimelineWelcomeOnLayersUp = true;
                 } else {
-                    WelcomeDialog.show(activity, R.xml.welcome_dialog_timeline);
+                    WelcomeDialog.showIfNeeded(activity, R.xml.welcome_dialog_timeline);
                 }
             }
         } else {
@@ -335,7 +335,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         if (showTimelineWelcomeOnLayersUp) {
-            WelcomeDialog.show(getActivity(), R.xml.welcome_dialog_timeline);
+            WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_timeline);
             this.showTimelineWelcomeOnLayersUp = false;
         }
     }

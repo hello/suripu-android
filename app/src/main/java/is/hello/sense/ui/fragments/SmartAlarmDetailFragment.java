@@ -178,7 +178,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onResume() {
         super.onResume();
 
-        WelcomeDialog.show(getActivity(), R.xml.welcome_dialog_alarm);
+        WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm);
     }
 
     @Override
