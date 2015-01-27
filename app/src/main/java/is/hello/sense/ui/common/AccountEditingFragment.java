@@ -1,12 +1,11 @@
 package is.hello.sense.ui.common;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.api.model.Account;
 
-public class AccountEditingFragment extends Fragment {
+public class AccountEditingFragment extends SenseFragment {
     protected static final String ARG_WANTS_SKIP_BUTTON = AccountEditingFragment.class.getSimpleName() + ".ARG_WANTS_SKIP_BUTTON";
 
     public void setWantsSkipButton(boolean wantsSkipButton) {

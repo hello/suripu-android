@@ -256,6 +256,7 @@ so you can sleep better.</string>
     <string name="label_current_password">Current Password</string>
     <string name="label_new_password">New Password</string>
     <string name="label_confirm_new_password">Confirm New Password</string>
+    <string name="action_change_password">Change Password</string>
     <string name="onboarding_title_smart_alarm">Set a Smart Alarm</string>
     <string name="onboarding_info_smart_alarm">The Sense Smart Alarm knows where you are in your sleep cycle and will wake you up at the right time for you. Just wave your hand over Sense to turn it off.</string>
     <string name="action_do_later">I\'ll do this later</string>
@@ -288,6 +289,7 @@ so you can sleep better.</string>
     <string name="action_change_email">Change Email</string>
     <string name="label_email_address">Email Address</string>
     <string name="title_change_email">Change Email</string>
+    <string name="action_change_name">Change Name</string>
     <string name="error_session_invalidated">Please login again</string>
     <string name="error_failed_to_play_alarm_sound">Could not play preview</string>
     <string name="error_no_smart_alarm_sound">Please select a sound for this smart alarm.</string>

@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.settings;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -82,7 +83,7 @@ public class ChangeEmailFragment extends InjectionFragment {
         bindAndSubscribe(accountPresenter.updateEmail(newEmail),
                          ignored -> {
                              LoadingDialogFragment.close(getFragmentManager());
-                             getFragmentManager().popBackStack();
+                             finishWithResult(Activity.RESULT_OK, null);
                          },
                          this::presentError);
     }
