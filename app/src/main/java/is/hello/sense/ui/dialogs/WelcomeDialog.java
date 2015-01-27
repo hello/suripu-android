@@ -46,7 +46,7 @@ public class WelcomeDialog extends DialogFragment {
 
         ViewPager viewPager = (ViewPager) dialog.findViewById(R.id.dialog_welcome_view_pager);
         viewPager.setAdapter(new ItemAdapter(getChildFragmentManager()));
-        
+
         return dialog;
     }
 
