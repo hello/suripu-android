@@ -47,6 +47,7 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class AccountSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
     private static final int REQUEST_CODE_TIME_ZONE = 0x19;
+    private static final int REQUEST_CODE_PASSWORD = 0x20;
 
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
@@ -154,6 +155,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
             accountPresenter.updateTimeZone(SenseTimeZone.fromDateTimeZone(timeZone))
                             .subscribe(ignored -> Logger.info(getClass().getSimpleName(), "Updated time zone"),
                             Functions.LOG_ERROR);
+        } else if (requestCode == REQUEST_CODE_PASSWORD && resultCode == Activity.RESULT_OK) {
+            accountPresenter.update();
         }
     }
 
@@ -234,7 +237,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     public void changeEmail() {
         FragmentNavigation navigation = (FragmentNavigation) getActivity();
-        navigation.pushFragment(new ChangeEmailFragment(), getString(R.string.title_change_email), true);
+        ChangeEmailFragment fragment = new ChangeEmailFragment();
+        fragment.setTargetFragment(this, REQUEST_CODE_PASSWORD);
+        navigation.pushFragment(fragment, getString(R.string.title_change_email), true);
     }
 
     public void changePassword() {

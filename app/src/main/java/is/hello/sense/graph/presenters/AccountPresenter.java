@@ -45,8 +45,7 @@ public class AccountPresenter extends ValuePresenter<Account> {
             Account updatedAccount = account.clone();
             updatedAccount.setEmail(email);
             return apiService.updateEmailAddress(updatedAccount)
-                             .map(ignored -> updatedAccount)
-                             .doOnCompleted(() -> this.account.onNext(updatedAccount));
+                             .doOnNext(this.account::onNext);
         });
     }
 

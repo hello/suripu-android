@@ -78,7 +78,7 @@ public interface ApiService {
     Observable<SenseTimeZone> updateTimeZone(@NonNull @Body SenseTimeZone senseTimeZone);
 
     @POST("/account/email")
-    Observable<VoidResponse> updateEmailAddress(@NonNull @Body Account account);
+    Observable<Account> updateEmailAddress(@NonNull @Body Account account);
 
     @GET("/preferences")
     Observable<HashMap<AccountPreference.Key, Object>> accountPreferences();
