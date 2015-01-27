@@ -21,6 +21,7 @@ import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -142,7 +143,14 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     private void finished() {
-        hideAllActivity(true, () -> getOnboardingActivity().showPairPill());
+        hideAllActivity(true, () -> {
+            if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false)) {
+                hardwarePresenter.clearPeripheral();
+                getOnboardingActivity().finish();
+            } else {
+                getOnboardingActivity().showPairPill();
+            }
+        });
     }
 
     public void showPairingModeHelp(@NonNull View sender) {
