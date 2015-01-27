@@ -6,7 +6,6 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import is.hello.sense.R;
@@ -28,11 +27,18 @@ public class RoundedRelativeLayout extends RelativeLayout {
     public RoundedRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        float radius = context.getResources().getDimension(R.dimen.raised_item_corner_radius);
-        cornerRadii = new float[] {
+        if (isInEditMode()) {
+            this.cornerRadii = new float[]{
+                0f, 0f, 0f, 0f,
+                0f, 0f, 0f, 0f,
+            };
+        } else {
+            float radius = context.getResources().getDimension(R.dimen.raised_item_corner_radius);
+            this.cornerRadii = new float[]{
                 radius, radius, radius, radius,
-                0f, 0f, 0f, 0f
-        };
+                0f, 0f, 0f, 0f,
+            };
+        }
 
         setWillNotDraw(false);
     }
