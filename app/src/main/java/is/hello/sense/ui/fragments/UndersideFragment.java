@@ -39,6 +39,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     private SelectorLinearLayout tabs;
     private TabsBackgroundDrawable tabLine;
     private ViewPager pager;
+    private StaticFragmentAdapter adapter;
 
     private static int[] getButtonIcons() {
         return new int[] {
@@ -69,18 +70,19 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         Resources resources = getResources();
 
         this.pager = (ViewPager) view.findViewById(R.id.fragment_underside_pager);
-        pager.setAdapter(new StaticFragmentAdapter(getChildFragmentManager(),
+        this.adapter = new StaticFragmentAdapter(getChildFragmentManager(),
                 new Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                 new Item(TrendsFragment.class, getString(R.string.title_trends)),
                 new Item(InsightsFragment.class, getString(R.string.action_insights)),
                 new Item(SmartAlarmListFragment.class, getString(R.string.action_alarm)),
                 new Item(AppSettingsFragment.class, getString(R.string.action_settings))
-        ));
+        );
+        pager.setAdapter(adapter);
 
         long itemLastUpdated = preferences.getLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, 0);
         if ((System.currentTimeMillis() - itemLastUpdated) <= Constants.STALE_INTERVAL_MS) {
             int currentItem = preferences.getInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 0);
-            pager.setCurrentItem(currentItem, false);
+            setCurrentItem(currentItem, false);
         }
 
         pager.setOnPageChangeListener(this);
@@ -123,9 +125,25 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     }
 
     public void jumpToStart() {
-        pager.setCurrentItem(0, true);
+        setCurrentItem(0, true);
     }
 
+
+    public void notifyPageSelected() {
+        pager.postDelayed(() -> {
+            // This depends on semi-undefined behavior. It may break in a future update
+            // of the Android support library, but won't break if the host OS changes.
+            long itemId = adapter.getItemId(pager.getCurrentItem());
+            String tag = "android:switcher:" + pager.getId() + ":" + itemId;
+            UndersideTabFragment fragment = (UndersideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
+            fragment.pageSelected();
+        }, 500);
+    }
+
+    public void setCurrentItem(int currentItem, boolean animate) {
+        pager.setCurrentItem(currentItem, animate);
+        notifyPageSelected();
+    }
 
     public void saveCurrentItem(int currentItem) {
         preferences.edit()
@@ -145,6 +163,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     public void onPageSelected(int position) {
         tabs.setSelectedIndex(position);
         saveCurrentItem(position);
+        notifyPageSelected();
     }
 
     @Override
@@ -154,7 +173,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        pager.setCurrentItem(newSelectionIndex, true);
+        setCurrentItem(newSelectionIndex, true);
     }
 
 

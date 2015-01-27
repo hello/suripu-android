@@ -43,7 +43,7 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import rx.Observable;
 
-public class RoomConditionsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+public class RoomConditionsFragment extends UndersideTabFragment implements AdapterView.OnItemClickListener {
     private static final long THREE_HOURS = (3 * 60 * 60 * 1000);
 
     @Inject RoomConditionsPresenter presenter;
@@ -98,6 +98,11 @@ public class RoomConditionsFragment extends InjectionFragment implements Adapter
         super.onResume();
 
         presenter.update();
+    }
+
+    @Override
+    public void onSwipeInteractionDidFinish() {
+
     }
 
 

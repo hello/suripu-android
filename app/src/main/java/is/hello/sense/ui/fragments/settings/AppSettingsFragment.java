@@ -21,6 +21,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
+import is.hello.sense.ui.fragments.UndersideTabFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -28,7 +29,7 @@ import is.hello.sense.util.Analytics;
 
 import static android.widget.LinearLayout.LayoutParams;
 
-public class AppSettingsFragment extends InjectionFragment {
+public class AppSettingsFragment extends UndersideTabFragment {
     @Inject ApiSessionManager sessionManager;
 
     private final LayoutParams itemTextLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -67,6 +68,11 @@ public class AppSettingsFragment extends InjectionFragment {
         version.setText(getString(R.string.app_version_fmt, getString(R.string.app_name), BuildConfig.VERSION_NAME));
 
         return view;
+    }
+
+    @Override
+    public void onSwipeInteractionDidFinish() {
+
     }
 
 
