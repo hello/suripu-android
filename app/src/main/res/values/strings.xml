@@ -349,4 +349,6 @@ so you can sleep better.</string>
     <string name="label_sleep_summary">Sleep Summary</string>
     <string name="label_before_sleep">Before Sleep</string>
     <string name="placeholder_no_before_sleep_insights">No before sleep insights.</string>
+    <string name="action_fix_later">Later</string>
+    <string name="action_fix_now">Fix Now</string>
 </resources>
