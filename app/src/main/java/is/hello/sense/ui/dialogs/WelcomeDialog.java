@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -31,10 +32,14 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.WelcomeDialogParser;
 
-public class WelcomeDialog extends DialogFragment {
+import static android.widget.LinearLayout.LayoutParams;
+
+public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageChangeListener {
     public static final String TAG = WelcomeDialog.class.getSimpleName();
 
     private static final String ARG_ITEMS = WelcomeDialog.class.getName() + ".ARG_ITEMS";
+
+    private LinearLayout pageDots;
 
     private Item[] items;
     private ItemAdapter adapter;
@@ -121,12 +126,28 @@ public class WelcomeDialog extends DialogFragment {
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(true);
 
+        this.pageDots = (LinearLayout) dialog.findViewById(R.id.dialog_welcome_page_dots);
+        if (items.length > 1) {
+            int dotSize = getResources().getDimensionPixelSize(R.dimen.page_dot_size);
+            int dotMargin = getResources().getDimensionPixelSize(R.dimen.page_dot_margin);
+            LayoutParams dotLayout = new LayoutParams(dotSize, dotSize);
+            dotLayout.setMargins(dotMargin, dotMargin, dotMargin, dotMargin);
+            for (Item ignored : items) {
+                ImageView dot = new ImageView(getActivity());
+                dot.setScaleType(ImageView.ScaleType.CENTER);
+                dot.setImageResource(R.drawable.page_dot_selected);
+                pageDots.addView(dot, dotLayout);
+            }
+            setSelectedPageDot(0);
+        }
+
         this.viewPager = (ViewPager) dialog.findViewById(R.id.dialog_welcome_view_pager);
 
         int pageMargin = getResources().getDimensionPixelSize(R.dimen.gap_outer);
         viewPager.setClipToPadding(false);
         viewPager.setPadding(pageMargin, 0, pageMargin, 0);
         viewPager.setPageMargin(pageMargin);
+        viewPager.setOnPageChangeListener(this);
 
         this.adapter = new ItemAdapter();
         viewPager.setAdapter(adapter);
@@ -136,6 +157,30 @@ public class WelcomeDialog extends DialogFragment {
 
     //endregion
 
+
+    public void setSelectedPageDot(int selection) {
+        for (int i = 0, count = pageDots.getChildCount(); i < count; i++) {
+            ImageView dot = (ImageView) pageDots.getChildAt(i);
+            if (i == selection) {
+                dot.setImageResource(R.drawable.page_dot_selected);
+            } else {
+                dot.setImageResource(R.drawable.page_dot_unselected);
+            }
+        }
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        setSelectedPageDot(position);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
 
     public void next() {
         if (viewPager.getCurrentItem() < adapter.getCount() - 1) {
