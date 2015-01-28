@@ -56,12 +56,16 @@ public class SmartAlarmDetailActivity extends SenseActivity {
 
     @Override
     public void onBackPressed() {
-        SenseAlertDialog backConfirmation = new SenseAlertDialog(this);
-        backConfirmation.setTitle(R.string.dialog_title_smart_alarm_edit_cancel);
-        backConfirmation.setMessage(R.string.dialog_message_smart_alarm_edit_cancel);
-        backConfirmation.setPositiveButton(R.string.action_exit, (dialog, which) -> super.onBackPressed());
-        backConfirmation.setNegativeButton(R.string.action_continue, null);
-        backConfirmation.setDestructive(true);
-        backConfirmation.show();
+        if (detailFragment.isDirty()) {
+            SenseAlertDialog backConfirmation = new SenseAlertDialog(this);
+            backConfirmation.setTitle(R.string.dialog_title_smart_alarm_edit_cancel);
+            backConfirmation.setMessage(R.string.dialog_message_smart_alarm_edit_cancel);
+            backConfirmation.setPositiveButton(R.string.action_exit, (dialog, which) -> super.onBackPressed());
+            backConfirmation.setNegativeButton(R.string.action_continue, null);
+            backConfirmation.setDestructive(true);
+            backConfirmation.show();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

@@ -57,6 +57,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     @Inject PreferencesPresenter preferences;
     @Inject SmartAlarmPresenter smartAlarmPresenter;
 
+    private boolean dirty = false;
+
     private Alarm alarm;
     private int index = SmartAlarmDetailActivity.INDEX_NEW;
     private boolean use24Time = false;
@@ -73,6 +75,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             this.alarm = (Alarm) getActivity().getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
         } else {
             this.alarm = (Alarm) savedInstanceState.getSerializable(SmartAlarmDetailActivity.EXTRA_ALARM);
+            this.dirty = savedInstanceState.getBoolean("dirty", false);
         }
 
         if (alarm == null) {
@@ -112,6 +115,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         enabledToggle.setOnCheckedChangeListener((button, isEnabled) -> {
             Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_ON_OFF, null);
             alarm.setEnabled(isEnabled);
+            markDirty();
         });
 
         View enabledToggleContainer = view.findViewById(R.id.fragment_smart_alarm_detail_enabled_container);
@@ -120,7 +124,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
         ToggleButton smartToggle = (ToggleButton) view.findViewById(R.id.fragment_smart_alarm_detail_smart);
         smartToggle.setChecked(alarm.isSmart());
-        smartToggle.setOnCheckedChangeListener((button, checked) -> alarm.setSmart(checked));
+        smartToggle.setOnCheckedChangeListener((button, checked) -> {
+            alarm.setSmart(checked);
+            markDirty();
+        });
 
         View smartToggleContainer = view.findViewById(R.id.fragment_smart_alarm_detail_smart_container);
         smartToggleContainer.setOnClickListener(ignored -> smartToggle.toggle());
@@ -190,10 +197,14 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 30);
             alarm.setTime(new LocalTime(hour, minute));
             updateTime();
+
+            markDirty();
         } else if (requestCode == SOUND_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Alarm.Sound selectedSound = (Alarm.Sound) data.getSerializableExtra(SmartAlarmSoundDialogFragment.ARG_SELECTED_SOUND);
             alarm.setSound(selectedSound);
             soundButton.setText(selectedSound.name);
+
+            markDirty();
         }
     }
 
@@ -202,6 +213,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         super.onSaveInstanceState(outState);
 
         outState.putSerializable(SmartAlarmDetailActivity.EXTRA_ALARM, alarm);
+        outState.putBoolean("dirty", dirty);
     }
 
     @Override
@@ -233,6 +245,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         }
 
         alarm.setRepeated(!alarm.getDaysOfWeek().isEmpty());
+
+        markDirty();
     }
 
     public void selectSound(@NonNull View sender) {
@@ -266,6 +280,14 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             LoadingDialogFragment.show(getFragmentManager(), null, false);
             bindAndSubscribe(saveOperation, ignored -> finish(), this::presentError);
         }
+    }
+
+    private void markDirty() {
+        this.dirty = true;
+    }
+
+    public boolean isDirty() {
+        return dirty;
     }
 
     public void finish() {
