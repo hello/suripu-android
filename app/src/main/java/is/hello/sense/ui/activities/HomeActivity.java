@@ -9,8 +9,13 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.seismic.ShakeDetector;
@@ -19,26 +24,35 @@ import net.hockeyapp.android.UpdateManager;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+
 import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.notifications.NotificationType;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
+import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
@@ -56,13 +70,19 @@ public class HomeActivity
     public static final String EXTRA_IS_NOTIFICATION = HomeActivity.class.getName() + ".EXTRA_IS_NOTIFICATION";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
+    private final PresenterContainer presenterContainer = new PresenterContainer();
+
     @Inject ApiService apiService;
+    @Inject DevicesPresenter devicesPresenter;
     @Inject QuestionsPresenter questionsPresenter;
 
     private long lastUpdated = Long.MAX_VALUE;
 
+    private RelativeLayout rootContainer;
     private SlidingLayersView slidingLayersView;
     private FragmentPageView<TimelineFragment> viewPager;
+
+    private @Nullable View deviceAlert;
 
     private boolean isFirstActivityRun;
 
@@ -76,10 +96,16 @@ public class HomeActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        presenterContainer.addPresenter(devicesPresenter);
+        presenterContainer.addPresenter(questionsPresenter);
+
         this.isFirstActivityRun = (savedInstanceState == null);
         if (savedInstanceState != null) {
             this.lastUpdated = savedInstanceState.getLong("lastUpdated");
+            presenterContainer.onRestoreState(savedInstanceState);
         }
+
+        devicesPresenter.update();
 
 
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
@@ -89,6 +115,9 @@ public class HomeActivity
                 startActivity(intent);
             }));
         }
+
+
+        this.rootContainer = (RelativeLayout) findViewById(R.id.activity_home_container);
 
 
         // noinspection unchecked
@@ -128,12 +157,20 @@ public class HomeActivity
         super.onPostCreate(savedInstanceState);
 
         Observable<Intent> onLogOut = fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
-        bindAndSubscribe(onLogOut, ignored -> {
-            Toast.makeText(getApplicationContext(), R.string.error_session_invalidated, Toast.LENGTH_SHORT).show();
+        bindAndSubscribe(onLogOut,
+                         ignored -> {
+                             Toast.makeText(getApplicationContext(), R.string.error_session_invalidated, Toast.LENGTH_SHORT).show();
 
-            startActivity(new Intent(this, OnboardingActivity.class));
-            finish();
-        }, Functions.LOG_ERROR);
+                             startActivity(new Intent(this, OnboardingActivity.class));
+                             finish();
+                         },
+                         Functions.LOG_ERROR);
+
+        if (isFirstActivityRun && !getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false)) {
+            bindAndSubscribe(devicesPresenter.devices.take(1),
+                             this::bindDevices,
+                             this::devicesUnavailable);
+        }
 
         checkInForUpdates();
     }
@@ -143,6 +180,7 @@ public class HomeActivity
         super.onSaveInstanceState(outState);
 
         outState.putLong("lastUpdated", lastUpdated);
+        presenterContainer.onSaveState(outState);
     }
 
     @Override
@@ -172,6 +210,8 @@ public class HomeActivity
                 getFragmentManager().popBackStack();
             }
         }
+
+        presenterContainer.onContainerResumed();
     }
 
     @Override
@@ -187,7 +227,16 @@ public class HomeActivity
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
 
-        questionsPresenter.onTrimMemory(level);
+        presenterContainer.onTrimMemory(level);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (isFinishing()) {
+            presenterContainer.onContainerDestroyed();
+        }
     }
 
     @Override
@@ -292,6 +341,97 @@ public class HomeActivity
     public void answerQuestion() {
         QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
         dialogFragment.show(getFragmentManager(), QuestionsDialogFragment.TAG);
+    }
+
+    //endregion
+
+
+    //region Alerts
+
+    public void showDevices() {
+        Bundle intentArguments = FragmentNavigationActivity.getArguments(getString(R.string.label_devices), DeviceListFragment.class, null);
+        Intent intent = new Intent(this, FragmentNavigationActivity.class);
+        intent.putExtras(intentArguments);
+        startActivity(intent);
+    }
+
+    public void bindDevices(@NonNull ArrayList<Device> devices) {
+        EnumSet<Device.Type> deviceTypes = Device.getDeviceTypes(devices);
+        boolean hasSense = deviceTypes.contains(Device.Type.SENSE);
+        boolean hasPill = deviceTypes.contains(Device.Type.PILL);
+        if (!hasSense) {
+            showDeviceAlert(R.string.alert_title_no_sense, R.string.alert_message_no_sense, this::showDevices);
+        } else if (!hasPill) {
+            showDeviceAlert(R.string.alert_title_no_pill, R.string.alert_message_no_pill, this::showDevices);
+        } else {
+            hideDeviceAlert();
+        }
+    }
+
+    public void devicesUnavailable(Throwable e) {
+        Logger.error(getClass().getSimpleName(), "Devices list was unavailable.", e);
+        hideDeviceAlert();
+    }
+
+    public void showDeviceAlert(@StringRes int titleRes,
+                                @StringRes int messageRes,
+                                @NonNull Runnable action) {
+        if (deviceAlert != null) {
+            return;
+        }
+
+        LayoutInflater inflater = getLayoutInflater();
+        this.deviceAlert = inflater.inflate(R.layout.item_bottom_alert, rootContainer, false);
+
+        TextView title = (TextView) deviceAlert.findViewById(R.id.item_bottom_alert_title);
+        title.setText(titleRes);
+
+        TextView message = (TextView) deviceAlert.findViewById(R.id.item_bottom_alert_message);
+        message.setText(messageRes);
+
+        Button later = (Button) deviceAlert.findViewById(R.id.item_bottom_alert_later);
+        Views.setSafeOnClickListener(later, ignored -> hideDeviceAlert());
+
+        Button fixNow = (Button) deviceAlert.findViewById(R.id.item_bottom_alert_fix_now);
+        Views.setSafeOnClickListener(fixNow, ignored -> {
+            hideDeviceAlert();
+            action.run();
+        });
+
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) deviceAlert.getLayoutParams();
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        deviceAlert.setVisibility(View.INVISIBLE);
+
+        Views.observeNextLayout(deviceAlert).subscribe(container -> {
+            int alertViewHeight = deviceAlert.getMeasuredHeight();
+            int alertViewY = (int) deviceAlert.getY();
+
+            deviceAlert.setY(alertViewY + alertViewHeight);
+            deviceAlert.setVisibility(View.VISIBLE);
+
+            animate(deviceAlert)
+                    .y(alertViewY)
+                    .start();
+        });
+        rootContainer.post(() -> rootContainer.addView(deviceAlert));
+    }
+
+    public void hideDeviceAlert() {
+        if (deviceAlert == null) {
+            return;
+        }
+
+        coordinator.postOnResume(() -> {
+            int alertViewHeight = deviceAlert.getMeasuredHeight();
+            int alertViewY = (int) deviceAlert.getY();
+            animate(deviceAlert)
+                    .y(alertViewY + alertViewHeight)
+                    .addOnAnimationCompleted(finished -> {
+                        rootContainer.removeView(deviceAlert);
+                        this.deviceAlert = null;
+                    })
+                    .start();
+        });
     }
 
     //endregion
