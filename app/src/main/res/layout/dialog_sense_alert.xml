@@ -3,9 +3,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="2dp"
-    android:paddingRight="2dp"
-    android:paddingBottom="2dp">
+    android:paddingLeft="@dimen/gap_raised_item_inset_side"
+    android:paddingRight="@dimen/gap_raised_item_inset_side">
 
     <TextView
         android:id="@+id/dialog_sense_alert_title"
@@ -38,7 +37,7 @@
         <Button
             android:id="@+id/dialog_sense_alert_cancel"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center"
             android:padding="@dimen/gap_medium"
@@ -46,10 +45,17 @@
             android:visibility="gone"
             style="@style/AppTheme.Button.Dialog"/>
 
+        <View
+            android:id="@+id/dialog_sense_alert_button_divider"
+            android:layout_marginTop="@dimen/gap_medium"
+            android:layout_marginBottom="@dimen/gap_medium"
+            style="@style/Divider.Vertical"
+            android:visibility="gone"/>
+
         <Button
             android:id="@+id/dialog_sense_alert_ok"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center"
             android:padding="@dimen/gap_medium"

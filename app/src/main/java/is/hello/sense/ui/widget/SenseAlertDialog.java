@@ -18,6 +18,7 @@ public class SenseAlertDialog extends Dialog {
     private TextView titleText;
     private TextView messageText;
 
+    private View buttonDivider;
     private Button negativeButton;
     private Button positiveButton;
 
@@ -32,6 +33,7 @@ public class SenseAlertDialog extends Dialog {
         this.titleText = (TextView) findViewById(R.id.dialog_sense_alert_title);
         this.messageText = (TextView) findViewById(R.id.dialog_sense_alert_message);
 
+        this.buttonDivider = findViewById(R.id.dialog_sense_alert_button_divider);
         this.negativeButton = (Button) findViewById(R.id.dialog_sense_alert_cancel);
         this.positiveButton = (Button) findViewById(R.id.dialog_sense_alert_ok);
     }
@@ -75,6 +77,14 @@ public class SenseAlertDialog extends Dialog {
         }
     }
 
+    private void updateButtonDivider() {
+        if (positiveButton.getVisibility() == View.VISIBLE && negativeButton.getVisibility() == View.VISIBLE) {
+            buttonDivider.setVisibility(View.VISIBLE);
+        } else {
+            buttonDivider.setVisibility(View.GONE);
+        }
+    }
+
     public void setPositiveButton(@Nullable CharSequence title, @Nullable OnClickListener onClickListener) {
         if (title != null) {
             positiveButton.setVisibility(View.VISIBLE);
@@ -83,6 +93,8 @@ public class SenseAlertDialog extends Dialog {
         } else {
             positiveButton.setVisibility(View.GONE);
         }
+
+        updateButtonDivider();
     }
 
     public void setPositiveButton(@StringRes int titleId, @Nullable OnClickListener onClickListener) {
@@ -95,8 +107,10 @@ public class SenseAlertDialog extends Dialog {
             negativeButton.setText(title);
             Views.setSafeOnClickListener(negativeButton, createClickListener(onClickListener, DialogInterface.BUTTON_NEGATIVE));
         } else {
-            positiveButton.setVisibility(View.GONE);
+            negativeButton.setVisibility(View.GONE);
         }
+
+        updateButtonDivider();
     }
 
     public void setNegativeButton(@StringRes int titleId, @Nullable OnClickListener onClickListener) {
