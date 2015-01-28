@@ -165,9 +165,11 @@ public class HomeActivity
                          },
                          Functions.LOG_ERROR);
 
-        bindAndSubscribe(devicesPresenter.devices.take(1),
-                         this::bindDevices,
-                         this::devicesUnavailable);
+        if (isFirstActivityRun && !getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false)) {
+            bindAndSubscribe(devicesPresenter.devices.take(1),
+                             this::bindDevices,
+                             this::devicesUnavailable);
+        }
 
         checkInForUpdates();
     }
