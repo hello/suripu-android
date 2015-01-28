@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -15,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,25 +24,31 @@ import net.hockeyapp.android.UpdateManager;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.notifications.NotificationType;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
+import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.util.Views;
@@ -65,7 +69,10 @@ public class HomeActivity
     public static final String EXTRA_IS_NOTIFICATION = HomeActivity.class.getName() + ".EXTRA_IS_NOTIFICATION";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
+    private final PresenterContainer presenterContainer = new PresenterContainer();
+
     @Inject ApiService apiService;
+    @Inject DevicesPresenter devicesPresenter;
     @Inject QuestionsPresenter questionsPresenter;
 
     private long lastUpdated = Long.MAX_VALUE;
@@ -88,10 +95,16 @@ public class HomeActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        presenterContainer.addPresenter(devicesPresenter);
+        presenterContainer.addPresenter(questionsPresenter);
+
         this.isFirstActivityRun = (savedInstanceState == null);
         if (savedInstanceState != null) {
             this.lastUpdated = savedInstanceState.getLong("lastUpdated");
+            presenterContainer.onRestoreState(savedInstanceState);
         }
+
+        devicesPresenter.update();
 
 
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
@@ -143,12 +156,18 @@ public class HomeActivity
         super.onPostCreate(savedInstanceState);
 
         Observable<Intent> onLogOut = fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
-        bindAndSubscribe(onLogOut, ignored -> {
-            Toast.makeText(getApplicationContext(), R.string.error_session_invalidated, Toast.LENGTH_SHORT).show();
+        bindAndSubscribe(onLogOut,
+                         ignored -> {
+                             Toast.makeText(getApplicationContext(), R.string.error_session_invalidated, Toast.LENGTH_SHORT).show();
 
-            startActivity(new Intent(this, OnboardingActivity.class));
-            finish();
-        }, Functions.LOG_ERROR);
+                             startActivity(new Intent(this, OnboardingActivity.class));
+                             finish();
+                         },
+                         Functions.LOG_ERROR);
+
+        bindAndSubscribe(devicesPresenter.devices.take(1),
+                         this::bindDevices,
+                         this::devicesUnavailable);
 
         checkInForUpdates();
     }
@@ -158,6 +177,7 @@ public class HomeActivity
         super.onSaveInstanceState(outState);
 
         outState.putLong("lastUpdated", lastUpdated);
+        presenterContainer.onSaveState(outState);
     }
 
     @Override
@@ -187,6 +207,8 @@ public class HomeActivity
                 getFragmentManager().popBackStack();
             }
         }
+
+        presenterContainer.onContainerResumed();
     }
 
     @Override
@@ -202,7 +224,16 @@ public class HomeActivity
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
 
-        questionsPresenter.onTrimMemory(level);
+        presenterContainer.onTrimMemory(level);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (isFinishing()) {
+            presenterContainer.onContainerDestroyed();
+        }
     }
 
     @Override
@@ -314,6 +345,37 @@ public class HomeActivity
 
     //region Alerts
 
+    public void showDevices() {
+        Bundle intentArguments = FragmentNavigationActivity.getArguments(getString(R.string.label_devices), DeviceListFragment.class, null);
+        Intent intent = new Intent(this, FragmentNavigationActivity.class);
+        intent.putExtras(intentArguments);
+        startActivity(intent);
+    }
+
+    public void bindDevices(@NonNull ArrayList<Device> devices) {
+        boolean hasSense = false, hasPill = false;
+        for (Device device : devices) {
+            Device.Type type = device.getType();
+            if (type == Device.Type.SENSE) {
+                hasSense = true;
+            } else if (type == Device.Type.PILL) {
+                hasPill = true;
+            }
+        }
+
+        if (!hasSense) {
+            showDeviceAlert(R.string.alert_title_no_sense, R.string.alert_message_no_sense, this::showDevices);
+        } else if (!hasPill) {
+            showDeviceAlert(R.string.alert_title_no_pill, R.string.alert_message_no_pill, this::showDevices);
+        } else {
+            hideDeviceAlert();
+        }
+    }
+
+    public void devicesUnavailable(Throwable e) {
+        Logger.error(getClass().getSimpleName(), "Devices list was unavailable.", e);
+    }
+
     public void showDeviceAlert(@StringRes int titleRes,
                                 @StringRes int messageRes,
                                 @NonNull Runnable action) {
@@ -362,15 +424,17 @@ public class HomeActivity
             return;
         }
 
-        int alertViewHeight = deviceAlert.getMeasuredHeight();
-        int alertViewY = (int) deviceAlert.getY();
-        animate(deviceAlert)
-                .y(alertViewY + alertViewHeight)
-                .addOnAnimationCompleted(finished -> {
-                    rootContainer.removeView(deviceAlert);
-                    this.deviceAlert = null;
-                })
-                .start();
+        coordinator.postOnResume(() -> {
+            int alertViewHeight = deviceAlert.getMeasuredHeight();
+            int alertViewY = (int) deviceAlert.getY();
+            animate(deviceAlert)
+                    .y(alertViewY + alertViewHeight)
+                    .addOnAnimationCompleted(finished -> {
+                        rootContainer.removeView(deviceAlert);
+                        this.deviceAlert = null;
+                    })
+                    .start();
+        });
     }
 
     //endregion

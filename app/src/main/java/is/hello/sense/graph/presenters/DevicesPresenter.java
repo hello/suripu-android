@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Device;
@@ -14,6 +15,7 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
+@Singleton
 public class DevicesPresenter extends ValuePresenter<ArrayList<Device>> {
     @Inject ApiService apiService;
 
