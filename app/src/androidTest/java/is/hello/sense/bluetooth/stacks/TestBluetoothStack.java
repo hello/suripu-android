@@ -65,11 +65,6 @@ public class TestBluetoothStack implements BluetoothStack {
     }
 
     @Override
-    public boolean isErrorFatal(@Nullable Throwable e) {
-        return false;
-    }
-
-    @Override
     public EnumSet<Traits> getTraits() {
         return EnumSet.noneOf(Traits.class);
     }

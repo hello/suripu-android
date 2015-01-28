@@ -204,7 +204,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Account> updateEmailAddress(@NonNull @Body Account account) {
-        return getAccount();
+        return Observable.just(account);
     }
 
 
@@ -232,6 +232,6 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
                                                            @Query("from_utc") long timestamp) {
-        return unimplemented();
+        return loadResponse("room_sensor_history", new TypeReference<RoomSensorHistory>() {});
     }
 }
