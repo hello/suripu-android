@@ -25,6 +25,7 @@ import net.hockeyapp.android.UpdateManager;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 import javax.inject.Inject;
 
@@ -355,16 +356,9 @@ public class HomeActivity
     }
 
     public void bindDevices(@NonNull ArrayList<Device> devices) {
-        boolean hasSense = false, hasPill = false;
-        for (Device device : devices) {
-            Device.Type type = device.getType();
-            if (type == Device.Type.SENSE) {
-                hasSense = true;
-            } else if (type == Device.Type.PILL) {
-                hasPill = true;
-            }
-        }
-
+        EnumSet<Device.Type> deviceTypes = Device.getDeviceTypes(devices);
+        boolean hasSense = deviceTypes.contains(Device.Type.SENSE);
+        boolean hasPill = deviceTypes.contains(Device.Type.PILL);
         if (!hasSense) {
             showDeviceAlert(R.string.alert_title_no_sense, R.string.alert_message_no_sense, this::showDevices);
         } else if (!hasPill) {
@@ -376,6 +370,7 @@ public class HomeActivity
 
     public void devicesUnavailable(Throwable e) {
         Logger.error(getClass().getSimpleName(), "Devices list was unavailable.", e);
+        hideDeviceAlert();
     }
 
     public void showDeviceAlert(@StringRes int titleRes,

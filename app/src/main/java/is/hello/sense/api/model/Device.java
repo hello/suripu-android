@@ -15,6 +15,9 @@ import net.danlew.android.joda.DateUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import is.hello.sense.R;
 
 public class Device extends ApiResponse {
@@ -35,6 +38,19 @@ public class Device extends ApiResponse {
 
     @JsonIgnore
     private boolean exists = true;
+
+
+    //region Util
+
+    public static EnumSet<Type> getDeviceTypes(@NonNull Iterable<Device> devices) {
+        EnumSet<Type> types = EnumSet.noneOf(Type.class);
+        for (Device device : devices) {
+            types.add(device.getType());
+        }
+        return types;
+    }
+
+    //endregion
 
 
     //region Creation

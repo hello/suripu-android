@@ -128,12 +128,11 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
                 .fadeOut(View.GONE)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
+                        adapter.bindDevices(devices);
                         supportInfoFooter.setVisibility(View.VISIBLE);
                     }
                 })
                 .start();
-
-        adapter.bindDevices(devices);
     }
 
     public void devicesUnavailable(Throwable e) {
