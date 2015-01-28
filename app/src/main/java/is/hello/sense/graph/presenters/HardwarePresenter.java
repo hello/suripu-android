@@ -186,7 +186,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
         String address = preferencesPresenter.getString(PreferencesPresenter.PAIRED_DEVICE_ADDRESS, null);
         if (TextUtils.isEmpty(address)) {
-            return Observable.error(new PeripheralNotFoundError());
+            return closestPeripheral();
         } else {
             Observable<SensePeripheral> rediscovery = SensePeripheral.discover(bluetoothStack, PeripheralCriteria.forAddress(address)).flatMap(peripherals -> {
                 this.pendingDiscovery = null;

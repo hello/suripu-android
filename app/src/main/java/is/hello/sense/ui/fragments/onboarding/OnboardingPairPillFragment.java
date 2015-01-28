@@ -21,12 +21,15 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingPairPillFragment extends HardwareFragment {
     private ProgressBar activityIndicator;
     private TextView activityStatus;
+
+    private Button skipButton;
     private Button retryButton;
 
     private boolean isPairing = false;
@@ -47,6 +50,10 @@ public class OnboardingPairPillFragment extends HardwareFragment {
 
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_pair_pill_activity);
         this.activityStatus = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_status);
+
+        this.skipButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_skip);
+        Views.setSafeOnClickListener(skipButton, ignored -> skipPairingPill());
+
         this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_retry);
         Views.setSafeOnClickListener(retryButton, ignored -> pairPill());
 
@@ -76,6 +83,8 @@ public class OnboardingPairPillFragment extends HardwareFragment {
 
         activityIndicator.setVisibility(View.VISIBLE);
         activityStatus.setVisibility(View.VISIBLE);
+
+        skipButton.setVisibility(View.GONE);
         retryButton.setVisibility(View.GONE);
     }
 
@@ -92,6 +101,16 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         });
     }
 
+
+    public void skipPairingPill() {
+        SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
+        confirmation.setTitle(R.string.alert_title_skip_pair_pill);
+        confirmation.setMessage(R.string.alert_message_skip_pair_pill);
+        confirmation.setPositiveButton(R.string.action_skip, (dialog, which) -> finishedPairing());
+        confirmation.setNegativeButton(android.R.string.cancel, null);
+        confirmation.setDestructive(true);
+        confirmation.show();
+    }
 
     public void pairPill() {
         beginPairing();
@@ -127,6 +146,8 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         hideAllActivity(false, () -> {
             activityIndicator.setVisibility(View.GONE);
             activityStatus.setVisibility(View.GONE);
+
+            skipButton.setVisibility(View.VISIBLE);
             retryButton.setVisibility(View.VISIBLE);
 
             if (hardwarePresenter.isErrorFatal(e)) {

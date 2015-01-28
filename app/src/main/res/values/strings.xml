@@ -380,4 +380,6 @@ so you can sleep better.</string>
     <string name="welcome_dialog_sensor_light">Too much light keeps you awake. Here you‘ll see detailed historical data on the light levels in your bedroom.</string>
     <string name="welcome_dialog_sensor_sound_title">Sound</string>
     <string name="welcome_dialog_sensor_sound">Too much sound keeps you awake. Here you‘ll see detailed historical data on the sound levels in your bedroom.</string>
+    <string name="alert_title_skip_pair_pill">Are you sure?</string>
+    <string name="alert_message_skip_pair_pill">Sense is not designed to work without a Sleep Pill. You will not be able to track your sleep, or set Smart Alarms. If you\'re having trouble, you can skip for now, and pair a Sleep Pill later.</string>
 </resources>
