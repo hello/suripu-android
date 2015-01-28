@@ -250,10 +250,20 @@ public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageCha
                     diagramImage.setImageDrawable(null);
                 }
 
+                if (item.scaleDiagram) {
+                    diagramImage.setAdjustViewBounds(true);
+                    diagramImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                } else {
+                    diagramImage.setAdjustViewBounds(false);
+                    diagramImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                }
+
                 if (item.titleRes != WelcomeDialogParser.MISSING_RES) {
                     titleText.setText(item.titleRes);
+                    titleText.setVisibility(View.VISIBLE);
                 } else {
                     titleText.setText("");
+                    titleText.setVisibility(View.GONE);
                 }
 
                 String message = getString(item.messageRes);
@@ -268,13 +278,16 @@ public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageCha
         public final @DrawableRes int diagramRes;
         public final @StringRes int titleRes;
         public final @StringRes int messageRes;
+        public final boolean scaleDiagram;
 
         public Item(@DrawableRes int diagramRes,
                     @StringRes int titleRes,
-                    @StringRes int messageRes) {
+                    @StringRes int messageRes,
+                    boolean scaleDiagram) {
             this.diagramRes = diagramRes;
             this.titleRes = titleRes;
             this.messageRes = messageRes;
+            this.scaleDiagram = scaleDiagram;
         }
 
         @Override
@@ -283,6 +296,7 @@ public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageCha
                     "diagramRes=" + diagramRes +
                     ", titleRes=" + titleRes +
                     ", messageRes=" + messageRes +
+                    ", scaleDiagram=" + scaleDiagram +
                     '}';
         }
 
@@ -299,10 +313,11 @@ public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageCha
             out.writeInt(diagramRes);
             out.writeInt(titleRes);
             out.writeInt(messageRes);
+            out.writeInt(scaleDiagram ? 1 : 0);
         }
 
         private Item(@NonNull Parcel in) {
-            this(in.readInt(), in.readInt(), in.readInt());
+            this(in.readInt(), in.readInt(), in.readInt(), in.readInt() == 1);
         }
 
         public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {

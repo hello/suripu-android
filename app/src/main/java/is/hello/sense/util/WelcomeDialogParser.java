@@ -40,6 +40,11 @@ public class WelcomeDialogParser {
     private static final String ATTR_ITEM_DIAGRAM_RES = "diagram";
 
     /**
+     * A boolean. Optional. Defaults to true.
+     */
+    private static final String ATTR_ITEM_SCALE_DIAGRAM = "scaleDiagram";
+
+    /**
      * A <code>@string</code> resource reference. Optional.
      */
     private static final String ATTR_ITEM_TITLE_RES = "title";
@@ -77,7 +82,8 @@ public class WelcomeDialogParser {
         int diagramRes = getResourceAttribute(document, ATTR_ITEM_DIAGRAM_RES, false);
         int titleRes = getResourceAttribute(document, ATTR_ITEM_TITLE_RES, false);
         int messageRes = getResourceAttribute(document, ATTR_ITEM_MESSAGE_RES, true);
-        return new WelcomeDialog.Item(diagramRes, titleRes, messageRes);
+        boolean scaleDiagram = document.getAttributeBooleanValue(null, ATTR_ITEM_SCALE_DIAGRAM, true);
+        return new WelcomeDialog.Item(diagramRes, titleRes, messageRes, scaleDiagram);
     }
 
     private WelcomeDialog.Item[] parseDialog(@NonNull XmlResourceParser document) throws XmlPullParserException, IOException {
