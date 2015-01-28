@@ -33,11 +33,14 @@
                 android:id="@+id/fragment_dialog_insight_info_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_outer"
+                android:layout_marginTop="@dimen/gap_xlarge"
                 android:layout_marginLeft="@dimen/gap_outer"
                 android:layout_marginRight="@dimen/gap_outer"
-                android:layout_marginBottom="@dimen/gap_medium"
-                android:textAppearance="@style/AppTheme.Text.SectionHeading"
+                android:layout_marginBottom="@dimen/gap_outer"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/text_dark"
+                android:textSize="@dimen/text_size_heading"
+                android:lineSpacingMultiplier="@dimen/line_multiple_heading"
                 android:text="@string/dialog_loading_message"
                 android:visibility="gone"/>
 
@@ -49,7 +52,8 @@
                 android:layout_marginRight="@dimen/gap_outer"
                 android:layout_marginBottom="@dimen/gap_outer"
                 android:textAppearance="@style/AppTheme.Text.Body"
-                android:lineSpacingMultiplier="@dimen/line_multiple_body"
+                android:textColor="@color/text_medium"
+                android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
                 android:visibility="gone"/>
 
             <is.hello.sense.ui.widget.TintedProgressBar

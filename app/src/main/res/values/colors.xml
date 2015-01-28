@@ -60,9 +60,9 @@
     <color name="sensor_unknown">#565961</color>
 
     <color name="sleep_awake">#ffffff</color>
-    <color name="sleep_light">#ffb3e9ff</color>
-    <color name="sleep_intermediate">#ff7bd9ff</color>
-    <color name="sleep_deep">#ff3ac9ff</color>
+    <color name="sleep_light">#ffccecff</color>
+    <color name="sleep_intermediate">#ffa6ddff</color>
+    <color name="sleep_deep">#ff7fceff</color>
 
     <color name="graph_fill_color">#28000000</color>
     <color name="graph_fill_gradient_top">#23000000</color>
