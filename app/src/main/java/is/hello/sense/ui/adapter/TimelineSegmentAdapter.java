@@ -205,16 +205,18 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
             itemView.setSleepDepth(sleepDepth);
             itemView.setEventResource(Styles.getTimelineSegmentIconRes(segment));
 
+            if (positionsWithTime.contains(position)) {
+                LocalDateTime time = segment.getTimestamp().withMinuteOfHour(0);
+                itemView.setLeftTime(dateFormatter.formatAsTimelineStamp(time, use24Time));
+            } else {
+                itemView.setLeftTime(null);
+            }
+
             EventType eventType = segment.getEventType();
             if (eventType != null) {
-                itemView.setTimestampString(dateFormatter.formatAsTime(segment.getTimestamp(), use24Time),
-                                            TimelineSegmentView.TimestampSide.RIGHT);
-            } else if (positionsWithTime.contains(position)) {
-                LocalDateTime time = segment.getTimestamp().withMinuteOfHour(0);
-                itemView.setTimestampString(dateFormatter.formatAsTime(time, use24Time),
-                                            TimelineSegmentView.TimestampSide.LEFT);
+                itemView.setRightTime(dateFormatter.formatAsTimelineStamp(segment.getTimestamp(), use24Time));
             } else {
-                itemView.setTimestampString(null, null);
+                itemView.setRightTime(null);
             }
         }
     }
