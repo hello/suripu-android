@@ -384,4 +384,5 @@ so you can sleep better.</string>
     <string name="alert_title_skip_pair_pill">Are you sure?</string>
     <string name="alert_message_skip_pair_pill">Sense is not designed to work without a Sleep Pill. You will not be able to track your sleep, or set Smart Alarms. If you\'re having trouble, you can skip for now, and pair a Sleep Pill later.</string>
     <string name="action_support">Support</string>
+    <string name="error_could_not_load_conditions">Could not load latest room conditions</string>
 </resources>

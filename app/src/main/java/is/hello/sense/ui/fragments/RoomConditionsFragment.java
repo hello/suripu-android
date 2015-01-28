@@ -23,10 +23,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.RoomConditions;
-import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
@@ -72,12 +70,12 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
         // Always change order of RoomSensorHistory and RoomConditions too.
-        this.adapter = new Adapter(getActivity(), new RoomSensorInfo[] {
-                new RoomSensorInfo(SensorHistory.SENSOR_NAME_TEMPERATURE),
-                new RoomSensorInfo(SensorHistory.SENSOR_NAME_HUMIDITY),
-                new RoomSensorInfo(SensorHistory.SENSOR_NAME_PARTICULATES),
-                new RoomSensorInfo(SensorHistory.SENSOR_NAME_LIGHT),
-                new RoomSensorInfo(SensorHistory.SENSOR_NAME_SOUND),
+        this.adapter = new Adapter(getActivity(), new SensorEntry[] {
+                new SensorEntry(SensorHistory.SENSOR_NAME_TEMPERATURE),
+                new SensorEntry(SensorHistory.SENSOR_NAME_HUMIDITY),
+                new SensorEntry(SensorHistory.SENSOR_NAME_PARTICULATES),
+                new SensorEntry(SensorHistory.SENSOR_NAME_LIGHT),
+                new SensorEntry(SensorHistory.SENSOR_NAME_SOUND),
         });
         Styles.addCardSpacingHeaderAndFooter(listView);
         listView.setAdapter(adapter);
@@ -115,11 +113,12 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
         List<SensorState> sensors = result.conditions.toList();
 
         for (int i = 0, count = adapter.getCount(); i < count; i++) {
-            RoomSensorInfo sensorInfo = adapter.getItem(i);
+            SensorEntry sensorInfo = adapter.getItem(i);
 
             SensorState sensor = sensors.get(i);
             sensorInfo.formatter = result.units.getUnitFormatterForSensor(sensorInfo.sensorName);
             sensorInfo.sensorState = sensor;
+            sensorInfo.errorMessage = null;
 
             ArrayList<SensorHistory> sensorDataRun = histories.get(i);
             Observable<Update> update = SensorHistory.createAdapterUpdate(sensorDataRun, SensorHistoryPresenter.MODE_DAY, timeZone);
@@ -137,10 +136,12 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     public void conditionsUnavailable(@NonNull Throwable e) {
         Logger.error(RoomConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
 
+        String errorMessage = BuildConfig.DEBUG ? e.getMessage() : getString(R.string.error_could_not_load_conditions);
         for (int i = 0, count = adapter.getCount(); i < count; i++) {
-            RoomSensorInfo sensorInfo = adapter.getItem(i);
+            SensorEntry sensorInfo = adapter.getItem(i);
             sensorInfo.formatter = null;
             sensorInfo.sensorState = null;
+            sensorInfo.errorMessage = errorMessage;
         }
 
         adapter.notifyDataSetChanged();
@@ -157,27 +158,28 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        RoomSensorInfo condition = (RoomSensorInfo) adapterView.getItemAtPosition(position);
-        showSensorHistory(condition.sensorName);
+        SensorEntry sensorEntry = (SensorEntry) adapterView.getItemAtPosition(position);
+        showSensorHistory(sensorEntry.sensorName);
     }
 
 
-    static class RoomSensorInfo {
+    static class SensorEntry {
         final SensorHistoryAdapter graphAdapter = new SensorHistoryAdapter();
         final @NonNull String sensorName;
 
         @Nullable UnitFormatter.Formatter formatter;
         @Nullable SensorState sensorState;
+        @Nullable String errorMessage;
 
-        RoomSensorInfo(@NonNull String sensorName) {
+        SensorEntry(@NonNull String sensorName) {
             this.sensorName = sensorName;
         }
     }
 
-    class Adapter extends ArrayAdapter<RoomSensorInfo> {
+    class Adapter extends ArrayAdapter<SensorEntry> {
         private final LayoutInflater inflater;
 
-        Adapter(@NonNull Context context, @NonNull RoomSensorInfo[] conditions) {
+        Adapter(@NonNull Context context, @NonNull SensorEntry[] conditions) {
             super(context, R.layout.item_room_sensor_condition, conditions);
 
             this.inflater = LayoutInflater.from(context);
@@ -192,13 +194,13 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
                 view.setTag(new ViewHolder(view));
             }
 
-            RoomSensorInfo roomSensorInfo = getItem(position);
+            SensorEntry sensorEntry = getItem(position);
             ViewHolder holder = (ViewHolder) view.getTag();
             Resources resources = getContext().getResources();
-            if (roomSensorInfo.sensorState != null) {
-                int sensorColor = resources.getColor(roomSensorInfo.sensorState.getCondition().colorRes);
+            if (sensorEntry.sensorState != null) {
+                int sensorColor = resources.getColor(sensorEntry.sensorState.getCondition().colorRes);
 
-                CharSequence readingText = roomSensorInfo.sensorState.getFormattedValue(roomSensorInfo.formatter);
+                CharSequence readingText = sensorEntry.sensorState.getFormattedValue(sensorEntry.formatter);
                 if (!TextUtils.isEmpty(readingText)) {
                     holder.reading.setText(readingText);
                     holder.reading.setTextColor(sensorColor);
@@ -207,17 +209,21 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
                     holder.reading.setTextColor(resources.getColor(R.color.sensor_unknown));
                 }
 
-                String message = roomSensorInfo.sensorState.getMessage();
+                String message = sensorEntry.sensorState.getMessage();
                 holder.message.setText(message);
                 markdown.render(message)
                         .subscribe(holder.message::setText, Functions.LOG_ERROR);
 
                 holder.lineGraphDrawable.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
-                holder.lineGraphDrawable.setAdapter(roomSensorInfo.graphAdapter);
+                holder.lineGraphDrawable.setAdapter(sensorEntry.graphAdapter);
             } else {
                 holder.reading.setText(R.string.missing_data_placeholder);
                 holder.reading.setTextColor(resources.getColor(R.color.sensor_unknown));
-                holder.message.setText(R.string.missing_data_placeholder);
+                if (TextUtils.isEmpty(sensorEntry.errorMessage)) {
+                    holder.message.setText(R.string.missing_data_placeholder);
+                } else {
+                    holder.message.setText(sensorEntry.errorMessage);
+                }
 
                 holder.lineGraphDrawable.setColorFilter(null);
                 holder.lineGraphDrawable.setAdapter(null);
