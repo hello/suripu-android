@@ -9,12 +9,16 @@ import javax.inject.Singleton;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.RoomConditions;
+import is.hello.sense.api.model.RoomSensorHistory;
+import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import rx.Observable;
 
 @Singleton public class RoomConditionsPresenter extends ValuePresenter<RoomConditionsPresenter.Result> {
+    public static final int HISTORY_HOURS = 3;
+
     @Inject ApiService apiService;
     @Inject UnitFormatter unitFormatter;
 
@@ -34,16 +38,22 @@ import rx.Observable;
     protected Observable<Result> provideUpdateObservable() {
         return unitFormatter.unitSystem.flatMap(unitSystem -> {
             Observable<RoomConditions> roomConditions = apiService.currentRoomConditions(unitSystem.getApiTemperatureUnit());
-            return roomConditions.map(conditions -> new Result(conditions, unitSystem));
+            Observable<RoomSensorHistory> roomHistory = apiService.roomSensorHistory(HISTORY_HOURS, SensorHistory.timeForLatest());
+            return Observable.combineLatest(roomConditions, roomHistory,
+                    (conditions, history) -> new Result(conditions, history, unitSystem));
         });
     }
 
     public static final class Result implements Serializable {
         public final RoomConditions conditions;
+        public final RoomSensorHistory roomSensorHistory;
         public final UnitSystem units;
 
-        public Result(@NonNull RoomConditions conditions, @NonNull UnitSystem units) {
+        public Result(@NonNull RoomConditions conditions,
+                      @NonNull RoomSensorHistory roomSensorHistory,
+                      @NonNull UnitSystem units) {
             this.conditions = conditions;
+            this.roomSensorHistory = roomSensorHistory;
             this.units = units;
         }
     }

@@ -12,6 +12,7 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
+import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
@@ -109,6 +110,10 @@ public interface ApiService {
 
     @GET("/room/current")
     Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit);
+
+    @GET("/room/all_sensors/hours")
+    Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
+                                                    @Query("from_utc") long timestamp);
 
     @GET("/room/{sensor}/day")
     Observable<ArrayList<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor,

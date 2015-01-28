@@ -5,6 +5,10 @@ import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
+import is.hello.sense.functional.Lists;
+
 public class RoomConditions extends ApiResponse {
     @JsonProperty("temperature")
     private SensorState temperature;
@@ -40,6 +44,11 @@ public class RoomConditions extends ApiResponse {
 
     public SensorState getSound() {
         return sound;
+    }
+
+    public List<SensorState> toList() {
+        // Always change order of RoomSensorHistory and RoomConditionsFragment too.
+        return Lists.newArrayList(temperature, humidity, particulates, light, sound);
     }
 
     public @Nullable SensorState getSensorStateWithName(@NonNull String name) {
