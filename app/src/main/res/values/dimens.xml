@@ -88,8 +88,9 @@
     <dimen name="series_graph_line_size">1dp</dimen>
     <dimen name="series_graph_point_size">5dp</dimen>
 
-    <dimen name="view_timeline_segment_left_inset">@dimen/gap_outer</dimen>
-    <dimen name="view_timeline_segment_right_inset">@dimen/gap_outer</dimen>
+    <dimen name="view_timeline_segment_left_inset">55dp</dimen>
+    <dimen name="view_timeline_segment_right_inset">55dp</dimen>
+    <dimen name="view_timeline_segment_text_inset">10dp</dimen>
     <dimen name="view_timeline_segment_stripe_width">@dimen/divider_size</dimen>
     <dimen name="view_timeline_segment_stroke_gap">2dp</dimen>
 
@@ -99,6 +100,7 @@
     <dimen name="button_rounded_min_height">50dp</dimen>
     <dimen name="button_corner_radius">3dp</dimen>
     <dimen name="button_rounded_border_width">1dp</dimen>
+    <dimen name="button_bottom_alert">72dp</dimen>
 
     <!-- Switch -->
 

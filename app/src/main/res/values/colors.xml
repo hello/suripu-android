@@ -24,7 +24,9 @@
     <color name="shadow_end">#18000000</color>
 
     <color name="timeline_segment_stripe">#40009cff</color>
+    <color name="timeline_segment_text_left">@color/text_dim</color>
     <color name="timeline_segment_underline_left">#26000000</color>
+    <color name="timeline_segment_text_right">@color/light_accent</color>
     <color name="timeline_segment_underline_right">#62009cff</color>
 
 

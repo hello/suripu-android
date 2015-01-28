@@ -39,6 +39,8 @@
     <string name="format_day_and_time_24_hr">EEEE – H:mm</string>
     <string name="format_date_placeholder">--</string>
     <string name="format_date_last_night">Last Night</string>
+    <string name="format_timeline_time_12_hr">h:mm</string>
+    <string name="format_timeline_time_24_hr">H:mm</string>
 
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>
@@ -349,6 +351,13 @@ so you can sleep better.</string>
     <string name="label_sleep_summary">Sleep Summary</string>
     <string name="label_before_sleep">Before Sleep</string>
     <string name="placeholder_no_before_sleep_insights">No before sleep insights.</string>
+    <string name="action_fix_later">Later</string>
+    <string name="action_fix_now">Fix Now</string>
+
+    <string name="alert_title_no_sense">Sense Not Paired</string>
+    <string name="alert_message_no_sense">Your account does not have a Sense paired.  Sense is required to track your sleep behavior.</string>
+    <string name="alert_title_no_pill">Sleep Pill Not Paired</string>
+    <string name="alert_message_no_pill">Your account does not have a Sleep Pill paired.  A Sleep Pill is required to track your sleep behavior.</string>
 
     <string name="welcome_dialog_timeline_title_intro">Understanding your sleep</string>
     <string name="welcome_dialog_timeline_intro">Your Sense collects an immense amount of data about your sleep, your behavior, and the environment in your bedroom.\n\nWe take all this data and present it in a detailed but simple way — this quick walk-through will show you how to read your first night of sleep data.</string>
