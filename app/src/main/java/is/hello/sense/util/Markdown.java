@@ -19,6 +19,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @Singleton public final class Markdown {
     private final MarkdownProcessor processor = new MarkdownProcessor();
@@ -44,10 +46,12 @@ import rx.Observable;
     }
 
     public @NonNull Observable<CharSequence> render(@Nullable String markdown) {
-        if (TextUtils.isEmpty(markdown))
-            return Observable.just("");
+        if (TextUtils.isEmpty(markdown)) {
+            return Observable.just((CharSequence) "")
+                             .observeOn(AndroidSchedulers.mainThread());
+        }
 
-        return Observable.create((Observable.OnSubscribe<CharSequence>) s -> {
+        Observable<CharSequence> renderTask = Observable.create(s -> {
             try {
                 CharSequence rendered = toSpanned(markdown);
                 s.onNext(rendered);
@@ -56,6 +60,8 @@ import rx.Observable;
                 s.onError(e);
             }
         });
+        return renderTask.subscribeOn(Schedulers.computation())
+                         .observeOn(AndroidSchedulers.mainThread());
     }
 
     public @NonNull Observable<CharSequence> renderWithEmphasisColor(int color, @Nullable String markdown) {

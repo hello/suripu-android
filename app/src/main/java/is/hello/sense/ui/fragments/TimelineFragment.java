@@ -53,6 +53,7 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -66,6 +67,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Inject DateFormatter dateFormatter;
     @Inject TimelinePresenter timelinePresenter;
     @Inject PreferencesPresenter preferences;
+    @Inject Markdown markdown;
 
     private ListView listView;
     private TimelineSegmentAdapter segmentAdapter;
@@ -468,6 +470,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                     text.setCompoundDrawablesRelativeWithIntrinsicBounds(insight.getIcon(context), null, null, null);
                     text.setText(insight.getMessage());
                     text.setOnClickListener(onClick);
+                    markdown.render(insight.getMessage())
+                            .subscribe(text::setText, Functions.LOG_ERROR);
                     container.addView(text);
                 }
             } else {

@@ -70,7 +70,7 @@
     <dimen name="scale_view_tick">1dp</dimen>
     <dimen name="scale_view_segment">12dp</dimen>
 
-    <dimen name="timeline_header_min_height">372dp</dimen>
+    <dimen name="timeline_header_min_height">391dp</dimen>
 
     <dimen name="timeline_tabs_top_inset">0dp</dimen>
     <dimen name="timeline_tabs_stroke_width">1px</dimen>
@@ -88,8 +88,8 @@
     <dimen name="series_graph_line_size">1dp</dimen>
     <dimen name="series_graph_point_size">5dp</dimen>
 
-    <dimen name="view_timeline_segment_left_inset">55dp</dimen>
-    <dimen name="view_timeline_segment_right_inset">55dp</dimen>
+    <dimen name="view_timeline_segment_left_inset">@dimen/gap_outer</dimen>
+    <dimen name="view_timeline_segment_right_inset">@dimen/gap_outer</dimen>
     <dimen name="view_timeline_segment_text_inset">10dp</dimen>
     <dimen name="view_timeline_segment_stripe_width">@dimen/divider_size</dimen>
     <dimen name="view_timeline_segment_stroke_gap">2dp</dimen>
