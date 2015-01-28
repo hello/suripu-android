@@ -111,10 +111,6 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return peripheral;
     }
 
-    public boolean isErrorFatal(@Nullable Throwable e) {
-        return bluetoothStack.isErrorFatal(e);
-    }
-
     private @NonNull <T> Observable<T> noDeviceError() {
         return Observable.error(new NoConnectedPeripheralException());
     }

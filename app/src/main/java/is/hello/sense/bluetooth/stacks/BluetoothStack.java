@@ -75,13 +75,6 @@ public interface BluetoothStack {
     boolean errorRequiresReconnect(@Nullable Throwable e);
 
     /**
-     * Returns whether or not the given error is severe enough that
-     * it likely cannot be recovered from unless the user restarts
-     * all of the wireless radios on their phone.
-     */
-    boolean isErrorFatal(@Nullable Throwable e);
-
-    /**
      * Returns the behaviors of the stack that are implementation specific.
      */
     EnumSet<Traits> getTraits();

@@ -182,31 +182,6 @@ public class AndroidBluetoothStack implements BluetoothStack {
     }
 
     @Override
-    public boolean isErrorFatal(@Nullable Throwable e) {
-        if (e == null) {
-            return false;
-        }
-
-        if (e instanceof BluetoothGattError) {
-            // If STACK_ERROR/133 is reported more than once, the gatt
-            // layer is unstable, and won't be fixed until the user
-            // power cycles their phone's wireless radios.
-            int statusCode = ((BluetoothGattError) e).statusCode;
-            return (statusCode == BluetoothGattError.STACK_ERROR);
-        }
-
-        if (e instanceof PeripheralBondAlterationError) {
-            // If REASON_REMOVED/9 is reported, it indicates that the
-            // bond state of the bluetooth device has gotten into a broken
-            // state, and won't be fixed until the user restarts their phone.
-            int reason = ((PeripheralBondAlterationError) e).reason;
-            return (reason == PeripheralBondAlterationError.REASON_REMOVED);
-        }
-
-        return false;
-    }
-
-    @Override
     public EnumSet<Traits> getTraits() {
         return EnumSet.of(Traits.BONDS_NOT_PERSISTENT);
     }

@@ -18,6 +18,7 @@ import is.hello.sense.api.model.RegistrationError;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
+import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.errors.BluetoothPowerChangeError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
@@ -26,6 +27,7 @@ import is.hello.sense.bluetooth.errors.PeripheralBusyError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 
@@ -37,6 +39,7 @@ public class ErrorDialogFragment extends DialogFragment {
     private static final String ARG_HAS_REQUEST_INFO = ErrorDialogFragment.class.getName() + ".ARG_HAS_REQUEST_INFO";
     private static final String ARG_RESPONSE_STATUS = ErrorDialogFragment.class.getName() + ".ARG_RESPONSE_STATUS";
     private static final String ARG_RESPONSE_REASON = ErrorDialogFragment.class.getName() + ".ARG_RESPONSE_REASON";
+    private static final String ARG_SHOW_BLE_SUPPORT = ErrorDialogFragment.class.getName() + ".ARG_SHOW_BLE_SUPPORT";
 
     private static final int RESPONSE_STATUS_UNKNOWN = -1;
 
@@ -112,7 +115,13 @@ public class ErrorDialogFragment extends DialogFragment {
             }
         }
 
+        boolean isFatal = BluetoothError.isFatal(e);
+        if (isFatal) {
+            message += context.getString(R.string.error_addendum_unstable_stack);
+        }
+
         ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(message);
+        dialogFragment.setShowBluetoothSupport(isFatal);
         dialogFragment.show(fm, TAG);
     }
 
@@ -199,6 +208,11 @@ public class ErrorDialogFragment extends DialogFragment {
         }
 
         dialog.setPositiveButton(android.R.string.ok, null);
+        if (getShowBluetoothSupport()) {
+            dialog.setNegativeButton(R.string.action_support, (button, which) -> {
+                UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH);
+            });
+        }
 
         return dialog;
     }
@@ -208,6 +222,14 @@ public class ErrorDialogFragment extends DialogFragment {
         super.onStart();
 
         Analytics.trackError(getMessage(), getResponseStatus());
+    }
+
+    private void setShowBluetoothSupport(boolean showBluetoothSupport) {
+        getArguments().putBoolean(ARG_SHOW_BLE_SUPPORT, showBluetoothSupport);
+    }
+
+    private boolean getShowBluetoothSupport() {
+        return getArguments().getBoolean(ARG_SHOW_BLE_SUPPORT, false);
     }
 
     private String getMessage() {

@@ -63,4 +63,12 @@ public class BluetoothGattError extends BluetoothError {
 
         this.statusCode = statusCode;
     }
+
+    @Override
+    public boolean isFatal() {
+        // If STACK_ERROR/133 is reported more than once, the gatt
+        // layer is unstable, and won't be fixed until the user
+        // power cycles their phone's wireless radios.
+        return (statusCode == BluetoothGattError.STACK_ERROR);
+    }
 }

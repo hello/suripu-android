@@ -35,6 +35,7 @@ public class UserSupport {
 
 
     public static enum DeviceIssue {
+        UNSTABLE_BLUETOOTH,
         SENSE_MISSING,
         SLEEP_PILL_MISSING,
         REPLACE_BATTERY,

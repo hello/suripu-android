@@ -32,7 +32,6 @@ import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
-import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
@@ -268,12 +267,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
 
     public void presentError(Throwable e) {
         hideAllActivity(false, () -> {
-            if (hardwarePresenter.isErrorFatal(e)) {
-                UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
-                fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
-            } else {
-                ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
-            }
+            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         });
     }
 

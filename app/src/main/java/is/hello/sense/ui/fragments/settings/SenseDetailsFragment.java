@@ -25,7 +25,6 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -205,10 +204,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void presentError(@NonNull Throwable e) {
         hideAlert();
         hideAllActivity(false, () -> {
-            if (hardwarePresenter.isErrorFatal(e)) {
-                UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
-                fragment.show(getFragmentManager(), R.id.activity_fragment_navigation_container);
-            } else if (e instanceof PeripheralNotFoundError) {
+            if (e instanceof PeripheralNotFoundError) {
                 showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_retry, this::connectToPeripheral);
             } else {
                 ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);

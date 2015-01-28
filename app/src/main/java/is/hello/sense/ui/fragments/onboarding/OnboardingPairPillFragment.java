@@ -20,7 +20,6 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
-import is.hello.sense.ui.fragments.UnstableBluetoothFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -150,10 +149,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             skipButton.setVisibility(View.VISIBLE);
             retryButton.setVisibility(View.VISIBLE);
 
-            if (hardwarePresenter.isErrorFatal(e)) {
-                UnstableBluetoothFragment fragment = new UnstableBluetoothFragment();
-                fragment.show(getFragmentManager(), R.id.activity_onboarding_container);
-            } else if (e instanceof OperationTimeoutError || SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
+            if (e instanceof OperationTimeoutError || SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
                 MessageDialogFragment messageDialogFragment = MessageDialogFragment.newInstance(getString(R.string.error_title_sleep_pill_scan_timeout), getString(R.string.error_message_sleep_pill_scan_timeout));
                 messageDialogFragment.show(getFragmentManager(), MessageDialogFragment.TAG);
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {

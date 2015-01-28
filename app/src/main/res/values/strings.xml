@@ -144,6 +144,7 @@ so you can sleep better.</string>
     <string name="error_network_failure">The operation could not be completed due to connectivity issues. Please try again.</string>
     <string name="error_network_failure_pair_pill">Your Sleep Pill could not be Paired due to connectivity issues. Please try again.</string>
     <string name="error_pill_already_paired">Your Sleep Pill is already paired to this account.</string>
+    <string name="error_addendum_unstable_stack">\n\nIf this problem persists, please visit our support site.</string>
     <string name="title_device_signal_strength">Signal Strength</string>
     <string name="label_firmware_version">Firmware</string>
     <string name="signal_strong">Strong</string>
@@ -191,8 +192,6 @@ so you can sleep better.</string>
     <string name="title_connecting">Connecting with Sense…</string>
     <string name="title_discovering_services">Discovering Services…</string>
     <string name="title_linking_account">Linking Your Account…</string>
-    <string name="error_message_ble_radio_borked">Your phone\'s bluetooth appears to be unstable. Restarting your bluetooth and wifi radios should help fix any issues you are experiencing.\n\nIf issues persist after restarting bluetooth and wifi, it is recommended you restart your phone.</string>
-    <string name="action_restart_radios"><![CDATA[Restart Bluetooth & Wifi]]></string>
     <string name="label_searching_for_pill">Looking for your Sleep Pill</string>
     <string name="title_onboarding_setup_2nd_pill">Set up another Sleep Pill?</string>
     <string name="info_onboarding_setup_2nd_pill">You can always do this later by visiting Settings.</string>
@@ -382,4 +381,5 @@ so you can sleep better.</string>
     <string name="welcome_dialog_sensor_sound">Too much sound keeps you awake. Here you‘ll see detailed historical data on the sound levels in your bedroom.</string>
     <string name="alert_title_skip_pair_pill">Are you sure?</string>
     <string name="alert_message_skip_pair_pill">Sense is not designed to work without a Sleep Pill. You will not be able to track your sleep, or set Smart Alarms. If you\'re having trouble, you can skip for now, and pair a Sleep Pill later.</string>
+    <string name="action_support">Support</string>
 </resources>

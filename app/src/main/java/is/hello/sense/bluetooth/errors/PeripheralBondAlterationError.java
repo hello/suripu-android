@@ -159,4 +159,13 @@ public class PeripheralBondAlterationError extends BluetoothError {
     }
 
     //endregion
+
+
+    @Override
+    public boolean isFatal() {
+        // If REASON_REMOVED/9 is reported, it indicates that the
+        // bond state of the bluetooth device has gotten into a broken
+        // state, and won't be fixed until the user restarts their phone.
+        return (reason == PeripheralBondAlterationError.REASON_REMOVED);
+    }
 }
