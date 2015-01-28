@@ -112,9 +112,14 @@ public interface BluetoothStack {
      */
     public enum SupportLevel {
         /**
-         * The device is explicitly unsupported, one or more core operations are known to fail.
+         * The device is unsupported, one or more core operations are known to fail.
          */
-        UNSUPPORTED,
+        UNSUPPORTED_DEVICE,
+
+        /**
+         * The device + OS configuration is unsupported, one or more core operations are known to fail.
+         */
+        UNSUPPORTED_OS,
 
         /**
          * The device has not been tested, so one or more core operations may not work.
@@ -122,7 +127,7 @@ public interface BluetoothStack {
         UNTESTED,
 
         /**
-         * The device is explicitly tested and known to work.
+         * The device is tested and known to work.
          */
         SUPPORTED,
     }
