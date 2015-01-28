@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -170,10 +171,22 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
                 case SENSE: {
                     status1Label.setText(R.string.label_wifi);
 
-                    String wifiSsidName = preferences.getString(PreferencesPresenter.PAIRED_DEVICE_SSID, getContext().getString(R.string.device_state_unknown));
-                    status1.setText(wifiSsidName);
+                    String networkName = preferences.getString(PreferencesPresenter.PAIRED_DEVICE_SSID, null);
+                    if (TextUtils.isEmpty(networkName)) {
+                        if (device.isMissing()) {
+                            status1.setText(R.string.missing_data_placeholder);
+                            status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
+                        } else {
+                            status1.setText(R.string.device_network_unknown);
+                            status1.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.wifi_network, 0, 0, 0);
+                        }
+                        status1.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold_Italic);
+                    } else {
+                        status1.setText(networkName);
+                        status1.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold);
+                        status1.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.wifi_network, 0, 0, 0);
+                    }
                     status1.setTextColor(resources.getColor(R.color.text_dark));
-                    status1.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.wifi_network, 0, 0, 0);
 
                     status2Label.setText(R.string.label_firmware_version);
                     status2.setText(device.getFirmwareVersion());
@@ -191,6 +204,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
                         state = Device.State.UNKNOWN;
                     }
                     status1.setText(state.nameRes);
+                    status1.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold);
                     status1.setTextColor(resources.getColor(state.colorRes));
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
 

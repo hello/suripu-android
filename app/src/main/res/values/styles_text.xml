@@ -85,6 +85,10 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="AppTheme.Text.Body.Bold.Italic">
+        <item name="android:textStyle">bold|italic</item>
+    </style>
+
     <style name="AppTheme.Text.Body.Bold.Small">
         <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
