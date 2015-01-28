@@ -8,9 +8,9 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -43,15 +43,22 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     private ViewPager pager;
     private StaticFragmentAdapter adapter;
 
-    private static int[] getButtonIcons() {
-        return new int[] {
-                R.drawable.underside_icon_currently,
-                R.drawable.underside_icon_trends,
-                R.drawable.underside_icon_insights,
-                R.drawable.underside_icon_alarm,
-                R.drawable.underside_icon_settings,
-        };
-    }
+    private final int[] ICONS_INACTIVE = {
+            R.drawable.underside_icon_currently,
+            R.drawable.underside_icon_trends,
+            R.drawable.underside_icon_insights,
+            R.drawable.underside_icon_alarm,
+            R.drawable.underside_icon_settings,
+    };
+
+    private final int[] ICONS_ACTIVE = {
+            R.drawable.underside_icon_currently_active,
+            R.drawable.underside_icon_trends_active,
+            R.drawable.underside_icon_insights_active,
+            R.drawable.underside_icon_alarm_active,
+            R.drawable.underside_icon_settings_active,
+    };
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,28 +100,19 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
         this.tabs = (SelectorLinearLayout) view.findViewById(R.id.fragment_underside_tabs);
         List<ToggleButton> toggleButtons = tabs.getToggleButtons();
-        int[] iconResources = getButtonIcons();
         for (int i = 0; i < toggleButtons.size(); i++) {
             ToggleButton button = toggleButtons.get(i);
-            ImageSpan imageSpan = new ImageSpan(getActivity(), iconResources[i]);
-            SpannableString content = new SpannableString("X");
-            content.setSpan(imageSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            button.setText(content);
-            button.setTextOn(content);
-            button.setTextOff(content);
+
+            SpannableString inactiveContent = createIconSpan(ICONS_INACTIVE[i]);
+            button.setText(inactiveContent);
+            button.setTextOff(inactiveContent);
+
+            SpannableString activeContent = createIconSpan(ICONS_ACTIVE[i]);
+            button.setTextOn(activeContent);
+
             button.setPadding(0, 0, 0, 0);
             button.setBackground(null);
-            button.setTag(R.id.underside_tab_tag_icon, imageSpan.getDrawable());
         }
-        int accentColor = resources.getColor(R.color.light_accent);
-        tabs.setButtonStyler((button, checked) -> {
-            Drawable icon = (Drawable) button.getTag(R.id.underside_tab_tag_icon);
-            if (checked) {
-                icon.setColorFilter(accentColor, PorterDuff.Mode.SRC_ATOP);
-            } else {
-                icon.setColorFilter(null);
-            }
-        });
         tabs.setSelectedIndex(pager.getCurrentItem());
         tabs.setOnSelectionChangedListener(this);
 
@@ -123,6 +121,14 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
         return view;
     }
+
+    private SpannableString createIconSpan(@DrawableRes int iconRes) {
+        ImageSpan image = new ImageSpan(getActivity(), iconRes);
+        SpannableString span = new SpannableString("X");
+        span.setSpan(image, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return span;
+    }
+
 
     public boolean isAtStart() {
         return (pager.getCurrentItem() == 0);

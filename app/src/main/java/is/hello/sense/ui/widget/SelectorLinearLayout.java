@@ -88,7 +88,7 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
             int index = (Integer) button.getTag(R.id.layout_linear_selector_tag_key_index);
             boolean isSelected = (index == selectedIndex);
             if (buttonStyler != null) {
-                buttonStyler.styleButton(button, isSelected);
+                buttonStyler.styleButton(button, index, isSelected);
             }
             button.setChecked(isSelected);
         }
@@ -174,7 +174,7 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
     }
 
     public interface ButtonStyler {
-        void styleButton(ToggleButton button, boolean checked);
+        void styleButton(ToggleButton button, int position, boolean checked);
     }
 
     public static abstract class SelectionAwareDrawable extends Drawable {

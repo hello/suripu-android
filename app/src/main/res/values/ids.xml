@@ -10,6 +10,4 @@
     <item name="layout_linear_selector_tag_key_user" type="id" />
 
     <item name="fragment_timeline_before_sleep_item_tag_insight" type="id" />
-
-    <item name="underside_tab_tag_icon" type="id" />
 </resources>
