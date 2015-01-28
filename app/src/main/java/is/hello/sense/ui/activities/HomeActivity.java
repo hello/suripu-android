@@ -38,14 +38,10 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
-import is.hello.sense.graph.presenters.QuestionsPresenter;
-import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
-import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
-import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
@@ -74,7 +70,6 @@ public class HomeActivity
 
     @Inject ApiService apiService;
     @Inject DevicesPresenter devicesPresenter;
-    @Inject QuestionsPresenter questionsPresenter;
 
     private long lastUpdated = Long.MAX_VALUE;
 
@@ -85,6 +80,7 @@ public class HomeActivity
     private @Nullable View deviceAlert;
 
     private boolean isFirstActivityRun;
+    private boolean showUnderside;
 
     private @Nullable SensorManager sensorManager;
     private @Nullable ShakeDetector shakeDetector;
@@ -97,12 +93,17 @@ public class HomeActivity
         setContentView(R.layout.activity_home);
 
         presenterContainer.addPresenter(devicesPresenter);
-        presenterContainer.addPresenter(questionsPresenter);
 
         this.isFirstActivityRun = (savedInstanceState == null);
         if (savedInstanceState != null) {
+            this.showUnderside = false;
             this.lastUpdated = savedInstanceState.getLong("lastUpdated");
             presenterContainer.onRestoreState(savedInstanceState);
+        } else {
+            this.showUnderside = getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false);
+            if (NotificationRegistration.shouldRegister(this)) {
+                new NotificationRegistration(this).register();
+            }
         }
 
         devicesPresenter.update();
@@ -135,16 +136,6 @@ public class HomeActivity
         slidingLayersView.setOnInteractionListener(this);
         slidingLayersView.setGestureInterceptingChild(viewPager);
 
-
-        if (savedInstanceState == null) {
-            if (getIntent().getBooleanExtra(EXTRA_IS_NOTIFICATION, false)) {
-                onNotificationIntent(getIntent());
-            }
-
-            if (NotificationRegistration.shouldRegister(this)) {
-                new NotificationRegistration(this).register();
-            }
-        }
 
         //noinspection PointlessBooleanExpression,ConstantConditions
         if (!BuildConfig.DEBUG && BuildConfig.DEBUG_SCREEN_ENABLED) {
@@ -195,8 +186,9 @@ public class HomeActivity
             UpdateManager.register(this, getString(R.string.build_hockey_id));
         }
 
-        if (getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false)) {
+        if (showUnderside) {
             slidingLayersView.openWithoutAnimation();
+            this.showUnderside = false;
         }
 
         if ((System.currentTimeMillis() - lastUpdated) > Constants.STALE_INTERVAL_MS && !isCurrentFragmentLastNight()) {
@@ -236,26 +228,6 @@ public class HomeActivity
 
         if (isFinishing()) {
             presenterContainer.onContainerDestroyed();
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        if (intent.getBooleanExtra(EXTRA_IS_NOTIFICATION, false)) {
-            onNotificationIntent(intent);
-        } else if (isFirstActivityRun && intent.getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false)) {
-            slidingLayersView.openWithoutAnimation();
-        }
-    }
-
-    protected void onNotificationIntent(@NonNull Intent intent) {
-        Logger.info(HomeActivity.class.getSimpleName(), "HomeActivity received notification");
-
-        NotificationType type = NotificationType.fromString(intent.getStringExtra(NotificationReceiver.EXTRA_TYPE));
-        if (type == NotificationType.QUESTION && intent.hasExtra(NotificationReceiver.EXTRA_QUESTION_ID)) {
-            answerQuestion();
         }
     }
 
@@ -331,16 +303,6 @@ public class HomeActivity
 
         fragment.onTransitionCompleted();
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_DATE_CHANGED, null);
-    }
-
-    //endregion
-
-
-    //region Questions
-
-    public void answerQuestion() {
-        QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
-        dialogFragment.show(getFragmentManager(), QuestionsDialogFragment.TAG);
     }
 
     //endregion
