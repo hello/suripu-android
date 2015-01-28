@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog>
+    <item
+        title="@string/welcome_dialog_sensor_light_title"
+        message="@string/welcome_dialog_sensor_light"/>
+</dialog>

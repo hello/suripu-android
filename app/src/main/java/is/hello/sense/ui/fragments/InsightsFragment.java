@@ -31,7 +31,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Markdown;
 
-public class InsightsFragment extends InjectionFragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class InsightsFragment extends UndersideTabFragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     @Inject InsightsPresenter insightsPresenter;
     @Inject Markdown markdown;
 
@@ -112,6 +112,11 @@ public class InsightsFragment extends InjectionFragment implements AdapterView.O
         super.onResume();
 
         onRefresh();
+    }
+
+    @Override
+    public void onSwipeInteractionDidFinish() {
+
     }
 
     @Override

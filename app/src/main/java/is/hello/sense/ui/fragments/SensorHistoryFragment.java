@@ -27,6 +27,7 @@ import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
@@ -36,6 +37,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
+import is.hello.sense.util.WelcomeDialogParser;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -116,6 +118,39 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        int welcomeDialogRes;
+        switch (sensor) {
+            case SensorHistory.SENSOR_NAME_TEMPERATURE: {
+                welcomeDialogRes = R.xml.welcome_dialog_sensor_temperature;
+                break;
+            }
+            case SensorHistory.SENSOR_NAME_HUMIDITY: {
+                welcomeDialogRes = R.xml.welcome_dialog_sensor_humidity;
+                break;
+            }
+            case SensorHistory.SENSOR_NAME_PARTICULATES: {
+                welcomeDialogRes = R.xml.welcome_dialog_sensor_particulates;
+                break;
+            }
+            case SensorHistory.SENSOR_NAME_SOUND: {
+                welcomeDialogRes = R.xml.welcome_dialog_sensor_sound;
+                break;
+            }
+            case SensorHistory.SENSOR_NAME_LIGHT: {
+                welcomeDialogRes = R.xml.welcome_dialog_sensor_light;
+                break;
+            }
+            default: {
+                welcomeDialogRes = WelcomeDialogParser.MISSING_RES;
+                break;
+            }
+        }
+        WelcomeDialog.showIfNeeded(getActivity(), welcomeDialogRes);
+    }
 
     public SensorHistoryActivity getSensorHistoryActivity() {
         return (SensorHistoryActivity) getActivity();

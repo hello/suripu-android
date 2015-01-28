@@ -20,6 +20,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.WelcomeDialog;
+import is.hello.sense.ui.fragments.UndersideTabFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -27,7 +29,7 @@ import is.hello.sense.util.Analytics;
 
 import static android.widget.LinearLayout.LayoutParams;
 
-public class AppSettingsFragment extends InjectionFragment {
+public class AppSettingsFragment extends UndersideTabFragment {
     @Inject ApiSessionManager sessionManager;
 
     private final LayoutParams itemTextLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -68,6 +70,11 @@ public class AppSettingsFragment extends InjectionFragment {
         return view;
     }
 
+    @Override
+    public void onSwipeInteractionDidFinish() {
+
+    }
+
 
     public void addItem(@StringRes int titleRes, boolean wantsDivider, @NonNull View.OnClickListener onClick) {
         TextView itemView = Styles.createItemView(getActivity(), titleRes, R.style.AppTheme_Text_Body_Light, onClick);
@@ -100,6 +107,10 @@ public class AppSettingsFragment extends InjectionFragment {
         builder.setMessage(R.string.dialog_message_log_out);
         builder.setNegativeButton(android.R.string.cancel, null);
         builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+            if (BuildConfig.DEBUG) {
+                WelcomeDialog.clearShownStates(getActivity());
+            }
+
             sessionManager.logOut();
             Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_OUT, null);
         });

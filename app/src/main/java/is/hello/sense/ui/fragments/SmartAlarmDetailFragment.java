@@ -1,10 +1,7 @@
 package is.hello.sense.ui.fragments;
 
-import android.animation.StateListAnimator;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -34,6 +31,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
+import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -174,6 +172,13 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                              }
                          },
                          Functions.LOG_ERROR);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm);
     }
 
     @Override
