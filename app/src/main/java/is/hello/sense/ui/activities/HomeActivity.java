@@ -7,10 +7,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.seismic.ShakeDetector;
@@ -27,6 +34,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
@@ -39,6 +47,7 @@ import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
@@ -61,8 +70,11 @@ public class HomeActivity
 
     private long lastUpdated = Long.MAX_VALUE;
 
+    private RelativeLayout rootContainer;
     private SlidingLayersView slidingLayersView;
     private FragmentPageView<TimelineFragment> viewPager;
+
+    private @Nullable View deviceAlert;
 
     private boolean isFirstActivityRun;
 
@@ -89,6 +101,9 @@ public class HomeActivity
                 startActivity(intent);
             }));
         }
+
+
+        this.rootContainer = (RelativeLayout) findViewById(R.id.activity_home_container);
 
 
         // noinspection unchecked
@@ -292,6 +307,70 @@ public class HomeActivity
     public void answerQuestion() {
         QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
         dialogFragment.show(getFragmentManager(), QuestionsDialogFragment.TAG);
+    }
+
+    //endregion
+
+
+    //region Alerts
+
+    public void showDeviceAlert(@StringRes int titleRes,
+                                @StringRes int messageRes,
+                                @NonNull Runnable action) {
+        if (deviceAlert != null) {
+            return;
+        }
+
+        LayoutInflater inflater = getLayoutInflater();
+        this.deviceAlert = inflater.inflate(R.layout.item_bottom_alert, rootContainer, false);
+
+        TextView title = (TextView) deviceAlert.findViewById(R.id.item_bottom_alert_title);
+        title.setText(titleRes);
+
+        TextView message = (TextView) deviceAlert.findViewById(R.id.item_bottom_alert_message);
+        message.setText(messageRes);
+
+        Button later = (Button) deviceAlert.findViewById(R.id.item_bottom_alert_later);
+        Views.setSafeOnClickListener(later, ignored -> hideDeviceAlert());
+
+        Button fixNow = (Button) deviceAlert.findViewById(R.id.item_bottom_alert_fix_now);
+        Views.setSafeOnClickListener(fixNow, ignored -> {
+            hideDeviceAlert();
+            action.run();
+        });
+
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) deviceAlert.getLayoutParams();
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        deviceAlert.setVisibility(View.INVISIBLE);
+
+        Views.observeNextLayout(deviceAlert).subscribe(container -> {
+            int alertViewHeight = deviceAlert.getMeasuredHeight();
+            int alertViewY = (int) deviceAlert.getY();
+
+            deviceAlert.setY(alertViewY + alertViewHeight);
+            deviceAlert.setVisibility(View.VISIBLE);
+
+            animate(deviceAlert)
+                    .y(alertViewY)
+                    .start();
+        });
+        rootContainer.post(() -> rootContainer.addView(deviceAlert));
+    }
+
+    public void hideDeviceAlert() {
+        if (deviceAlert == null) {
+            return;
+        }
+
+        int alertViewHeight = deviceAlert.getMeasuredHeight();
+        int alertViewY = (int) deviceAlert.getY();
+        animate(deviceAlert)
+                .y(alertViewY + alertViewHeight)
+                .addOnAnimationCompleted(finished -> {
+                    rootContainer.removeView(deviceAlert);
+                    this.deviceAlert = null;
+                })
+                .start();
     }
 
     //endregion

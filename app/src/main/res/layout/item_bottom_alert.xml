@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_bottom_alert"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -16,24 +17,22 @@
         android:orientation="vertical"
         android:background="@color/background_light">
 
-        <ImageView
-            android:id="@+id/item_bottom_alert_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/gap_medium"
-            android:layout_marginLeft="@dimen/gap_medium"
-            android:layout_marginRight="@dimen/gap_medium"
-            android:layout_marginBottom="@dimen/gap_small"
-            android:src="@drawable/ic_launcher"
-            tools:ignore="ContentDescription" />
-
         <TextView
+            android:id="@+id/item_bottom_alert_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/gap_medium"
-            android:layout_marginRight="@dimen/gap_medium"
-            android:layout_marginBottom="@dimen/gap_small"
+            android:layout_margin="@dimen/gap_outer"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.SectionHeading"
+            android:text="@string/app_name"/>
+
+        <TextView
+            android:id="@+id/item_bottom_alert_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/gap_outer"
+            android:layout_marginRight="@dimen/gap_outer"
+            android:layout_marginBottom="@dimen/gap_xsmall"
             android:gravity="center"
             android:textAppearance="@style/AppTheme.Text.Body"
             android:lineSpacingMultiplier="@dimen/line_multiple_body"
@@ -41,11 +40,12 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_rounded_min_height"
+            android:layout_height="@dimen/button_bottom_alert"
             android:gravity="center"
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/item_bottom_alert_later"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -54,11 +54,12 @@
                 style="@style/AppTheme.Button.Dialog.Positive"/>
 
             <View
-                android:layout_marginTop="@dimen/gap_small"
-                android:layout_marginBottom="@dimen/gap_small"
+                android:layout_marginTop="@dimen/gap_medium"
+                android:layout_marginBottom="@dimen/gap_medium"
                 style="@style/Divider.Vertical" />
 
             <Button
+                android:id="@+id/item_bottom_alert_fix_now"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
