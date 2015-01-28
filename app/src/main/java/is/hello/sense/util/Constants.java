@@ -13,6 +13,8 @@ public final class Constants {
     public static final String NOTIFICATION_PREF_REGISTRATION_ID = "registration_id";
     public static final String NOTIFICATION_PREF_APP_VERSION = "app_version_code";
 
+    public static final String HANDHOLDING_PREFS = "handholding_prefs";
+
     /**
      * The point at which a gesture's velocity dictates that
      * it be completed regardless of relative position.

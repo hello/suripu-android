@@ -18,12 +18,11 @@ import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.adapter.TrendsAdapter;
-import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
-public class TrendsFragment extends InjectionFragment implements TrendsAdapter.OnTrendOptionSelected {
+public class TrendsFragment extends UndersideTabFragment implements TrendsAdapter.OnTrendOptionSelected {
     @Inject TrendsPresenter trendsPresenter;
 
     private TrendsAdapter trendsAdapter;
@@ -67,6 +66,11 @@ public class TrendsFragment extends InjectionFragment implements TrendsAdapter.O
 
         swipeRefreshLayout.setRefreshing(true);
         bindAndSubscribe(trendsPresenter.trends, this::bindTrends, this::presentError);
+    }
+
+    @Override
+    public void onSwipeInteractionDidFinish() {
+        WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_trends);
     }
 
 

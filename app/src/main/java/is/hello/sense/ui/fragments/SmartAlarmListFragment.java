@@ -37,7 +37,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class SmartAlarmListFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, SmartAlarmAdapter.OnAlarmEnabledChanged {
+public class SmartAlarmListFragment extends UndersideTabFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, SmartAlarmAdapter.OnAlarmEnabledChanged {
     private static final int DELETE_REQUEST_CODE = 0x11;
 
     @Inject SmartAlarmPresenter smartAlarmPresenter;
@@ -113,6 +113,12 @@ public class SmartAlarmListFragment extends InjectionFragment implements Adapter
                              this::presentError);
         }
     }
+
+    @Override
+    public void onSwipeInteractionDidFinish() {
+
+    }
+
 
     public void startLoading() {
         emptyView.setVisibility(View.GONE);

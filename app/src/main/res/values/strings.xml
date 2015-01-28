@@ -351,4 +351,26 @@ so you can sleep better.</string>
     <string name="placeholder_no_before_sleep_insights">No before sleep insights.</string>
     <string name="action_fix_later">Later</string>
     <string name="action_fix_now">Fix Now</string>
+
+    <string name="welcome_dialog_timeline_title_intro">Understanding your sleep</string>
+    <string name="welcome_dialog_timeline_intro">Your Sense collects an immense amount of data about your sleep, your behavior, and the environment in your bedroom.\n\nWe take all this data and present it in a detailed but simple way — this quick walk-through will show you how to read your first night of sleep data.</string>
+    <string name="welcome_dialog_timeline_score">Your Sleep Score takes all the data Sense collects about your sleep, and expresses it as one simple, rich measure of your sleep quality — out of 100.</string>
+    <string name="welcome_dialog_timeline_before_sleep">The “Before Sleep” tab will summarize the conditions of your bedroom before you went to sleep. Too hot? Noisy? You‘ll see it here.</string>
+    <string name="welcome_dialog_timeline_events">Your Sleep Timeline shows you a minute-by-minute record of your night, broken into three categories:\n\nLight, Medium, and Deep Sleep.</string>
+    <string name="welcome_dialog_current_conditions_title">Current Conditions</string>
+    <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom. You‘ll see a value and a graph for Temperature, Humidity, Particulates, Light, and Sound. Tap a card for more details.</string>
+    <string name="welcome_dialog_trends_title">Trends</string>
+    <string name="welcome_dialog_trends">To see how your sleep is changing over time, sometimes it‘s helpful to take a step back. This view will show you historical data on your sleep patterns.</string>
+    <string name="welcome_dialog_alarm_title">Your first alarm</string>
+    <string name="welcome_dialog_alarm">When your alarm rings in the morning, Sense will glow and softly play your selected tone. Just wave your hand over Sense to dismiss.</string>
+    <string name="welcome_dialog_sensor_temperature_title">Temperature</string>
+    <string name="welcome_dialog_sensor_temperature">A proper temperature in your bedroom is key to a good night‘s sleep. Here you‘ll see detailed historical data on the temperature levels in your bedroom.</string>
+    <string name="welcome_dialog_sensor_humidity_title">Humidity</string>
+    <string name="welcome_dialog_sensor_humidity">A proper humidity in your bedroom is key to a good night‘s sleep. Here you‘ll see detailed historical data on the humidity levels in your bedroom.</string>
+    <string name="welcome_dialog_sensor_particulates_title">Particulates</string>
+    <string name="welcome_dialog_sensor_particulates">Having too many particulates is bad. Here you‘ll see detailed historical data on the particulate levels in your bedroom.</string>
+    <string name="welcome_dialog_sensor_light_title">Light</string>
+    <string name="welcome_dialog_sensor_light">Too much light keeps you awake. Here you‘ll see detailed historical data on the light levels in your bedroom.</string>
+    <string name="welcome_dialog_sensor_sound_title">Sound</string>
+    <string name="welcome_dialog_sensor_sound">Too much sound keeps you awake. Here you‘ll see detailed historical data on the sound levels in your bedroom.</string>
 </resources>
