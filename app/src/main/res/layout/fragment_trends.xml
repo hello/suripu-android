@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_trends_refresh_container"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@android:id/list"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/fragment_trends_refresh_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        style="@style/AppTheme.ListView.Cards" />
+        android:layout_height="match_parent">
 
-</android.support.v4.widget.SwipeRefreshLayout>
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            style="@style/AppTheme.ListView.Cards" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/fragment_trends_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
+        android:lineSpacingMultiplier="@dimen/line_multiple_body"
+        android:gravity="center"
+        android:text="@string/trends_message_not_enough_data"
+        android:visibility="gone"/>
+
+</FrameLayout>
