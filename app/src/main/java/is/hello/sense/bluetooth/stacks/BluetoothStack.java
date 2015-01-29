@@ -122,6 +122,14 @@ public interface BluetoothStack {
         /**
          * The device is tested and known to work.
          */
-        SUPPORTED,
+        SUPPORTED;
+
+
+        /**
+         * Returns whether or not the level of support is unsupported.
+         */
+        public boolean isUnsupported() {
+            return (this == UNSUPPORTED_OS || this == UNSUPPORTED_DEVICE);
+        }
     }
 }

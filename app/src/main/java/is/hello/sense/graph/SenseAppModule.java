@@ -52,6 +52,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
@@ -83,6 +84,7 @@ import is.hello.sense.ui.widget.TimestampTextView;
         OnboardingRegisterFragment.class,
         OnboardingBluetoothFragment.class,
         OnboardingRegisterAudioFragment.class,
+        OnboardingUnsupportedDeviceFragment.class,
         OnboardingPairSenseFragment.class,
         HardwarePresenter.class,
         OnboardingWifiNetworkFragment.class,

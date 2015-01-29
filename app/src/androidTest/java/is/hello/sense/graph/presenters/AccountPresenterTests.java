@@ -48,7 +48,7 @@ public class AccountPresenterTests extends InjectionTestCase {
         assertNotNull(accountBefore.getLast());
 
 
-        SyncObserver<Account> accountAfter = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, accountPresenter.updateEmail("test@me.com"));
+        SyncObserver<Account> accountAfter = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, accountPresenter.updateEmail("test@me.com"));
         accountAfter.await();
 
         assertNull(accountAfter.getError());

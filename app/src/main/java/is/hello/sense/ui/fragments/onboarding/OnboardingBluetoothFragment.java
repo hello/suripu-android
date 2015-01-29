@@ -64,7 +64,7 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
             if (getArguments().getBoolean(ARG_IS_BEFORE_BIRTHDAY, false)) {
                 getOnboardingActivity().showBirthday(null);
             } else {
-                getOnboardingActivity().showSetupSense();
+                getOnboardingActivity().showSetupSense(false);
             }
         });
     }
