@@ -1,6 +1,7 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     private final DateFormatter dateFormatter;
 
     private final int baseItemHeight;
+    private final int minTimeItemHeight;
     private final int itemEventImageHeight;
 
     private float[] itemHeights;
@@ -43,11 +45,16 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
         this.dateFormatter = dateFormatter;
 
+        Resources resources = context.getResources();
+        int minItemHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
+
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
         windowManager.getDefaultDisplay().getSize(size);
-        this.baseItemHeight = size.y / Styles.TIMELINE_HOURS_ON_SCREEN;
-        this.itemEventImageHeight = context.getResources().getDimensionPixelSize(R.dimen.event_image_height);
+        this.baseItemHeight = Math.max(minItemHeight, size.y / Styles.TIMELINE_HOURS_ON_SCREEN);
+
+        this.minTimeItemHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height_time);
+        this.itemEventImageHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_image_height);
     }
 
     //endregion
@@ -63,7 +70,8 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
             int itemHeight = this.itemEventImageHeight + this.baseItemHeight;
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
         } else if (positionsWithTime.contains(position)) {
-            return (int) ((segment.getDuration() / 3600f) * (this.baseItemHeight * 2f));
+            int rawHeight = (int) ((segment.getDuration() / 3600f) * (this.baseItemHeight * 2f));
+            return Math.max(minTimeItemHeight, rawHeight);
         } else {
             return (int) ((segment.getDuration() / 3600f) * this.baseItemHeight);
         }
