@@ -49,8 +49,8 @@ if options.test
   puts "-- Tests Passed".green
 end
 
-puts "-> Assembling Release Build".blue
-system "./gradlew assembleRelease"
+puts "-> Assembling Beta Build".blue
+system "./gradlew assembleBeta"
 abort "-- Build Failed".red if last_command_failed?
 puts "-- Build Completed".green
 
@@ -58,7 +58,7 @@ puts "-> Uploading to HockeyApp".blue
 raw_response = `curl -X POST \
   -F "status=1" \
   -F "notify=0" \
-  -F "ipa=@app/build/outputs/apk/app-release.apk" \
+  -F "ipa=@app/build/outputs/apk/app-beta.apk" \
   -H "X-HockeyAppToken: 515446b7e7c640fe96f42bda64d55eb2" \
   https://rink.hockeyapp.net/api/2/apps/805427569ce2035dcda0b99e4d984256/app_versions/upload`
 abort "-- Upload Failed".red if last_command_failed?
