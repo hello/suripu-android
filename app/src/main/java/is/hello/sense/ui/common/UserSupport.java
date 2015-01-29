@@ -48,7 +48,8 @@ public class UserSupport {
         SETUP_SENSE,
         WIFI_SCAN,
         SIGN_INTO_WIFI,
-        PILL_PLACEMENT;
+        PILL_PLACEMENT,
+        UNSUPPORTED_DEVICE;
 
 
         public static OnboardingStep fromString(@Nullable String string) {

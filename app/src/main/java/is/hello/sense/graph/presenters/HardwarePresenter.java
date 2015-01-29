@@ -111,6 +111,10 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return peripheral;
     }
 
+    public BluetoothStack.SupportLevel getDeviceSupportLevel() {
+        return bluetoothStack.getDeviceSupportLevel();
+    }
+
     private @NonNull <T> Observable<T> noDeviceError() {
         return Observable.error(new NoConnectedPeripheralException());
     }

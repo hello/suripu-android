@@ -17,5 +17,6 @@ public class RoomConditionsPresenterTests extends InjectionTestCase {
         assertNotNull(conditions.getSingle());
         assertNotNull(conditions.getSingle().conditions);
         assertNotNull(conditions.getSingle().units);
+        assertNotNull(conditions.getSingle().roomSensorHistory);
     }
 }

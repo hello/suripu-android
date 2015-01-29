@@ -25,6 +25,7 @@ import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
+import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.Timeline;
@@ -202,8 +203,8 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<VoidResponse> updateEmailAddress(@NonNull @Body Account account) {
-        return Observable.just(new VoidResponse());
+    public Observable<Account> updateEmailAddress(@NonNull @Body Account account) {
+        return Observable.just(account);
     }
 
 
@@ -226,5 +227,11 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") InsightCategory category) {
         return unimplemented();
+    }
+
+    @Override
+    public Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
+                                                           @Query("from_utc") long timestamp) {
+        return loadResponse("room_sensor_history", new TypeReference<RoomSensorHistory>() {});
     }
 }

@@ -63,7 +63,7 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
         bindAndSubscribe(apiService.updateAccountPreference(preferenceUpdate),
                          ignored -> {
                              LoadingDialogFragment.close(getFragmentManager());
-                             ((OnboardingActivity) getActivity()).showSetupSense();
+                             ((OnboardingActivity) getActivity()).showSetupSense(false);
                          },
                          e -> {
                              LoadingDialogFragment.close(getFragmentManager());

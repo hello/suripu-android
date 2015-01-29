@@ -146,7 +146,9 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
             long itemId = adapter.getItemId(pager.getCurrentItem());
             String tag = "android:switcher:" + pager.getId() + ":" + itemId;
             UndersideTabFragment fragment = (UndersideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
-            fragment.pageSelected();
+            if (fragment != null) {
+                fragment.pageSelected();
+            }
         }, 500);
     }
 
