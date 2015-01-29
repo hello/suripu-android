@@ -7,7 +7,8 @@ import junit.framework.TestCase;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.graph.PresenterSubject;
-import is.hello.sense.util.SyncObserver;
+import is.hello.sense.util.LambdaVar;
+import is.hello.sense.util.Sync;
 import rx.Observable;
 
 public class ValuePresenterTests extends TestCase {
@@ -16,47 +17,42 @@ public class ValuePresenterTests extends TestCase {
         CounterPresenter presenter = new CounterPresenter();
 
         presenter.update();
-        SyncObserver<Integer> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.value);
-        presenter.update();
-        observer.await();
 
-        assertEquals(1, observer.getResults().size());
-        assertEquals(2, observer.getSingle().intValue());
+        LambdaVar<Integer> lastValue = LambdaVar.of(0);
+        LambdaVar<Integer> numberOfCalls = LambdaVar.of(0);
+        Sync.wrapAfter(presenter::update, presenter.value)
+            .forEach(value -> {
+                presenter.update();
+                lastValue.set(value);
+                numberOfCalls.getAndMutate(i -> i + 1);
+            });
+
+        assertEquals(1, numberOfCalls.get().intValue());
+        assertEquals(2, lastValue.get().intValue());
     }
 
     public void testLowMemoryLogic() throws Exception {
         CounterPresenter presenter = new CounterPresenter();
 
-        SyncObserver<Integer> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.value);
-        presenter.update();
-        observer.await();
-
-        assertEquals(1, observer.getSingle().intValue());
-
-        observer.reset().subscribeTo(presenter.value);
+        assertEquals(1, Sync.wrapAfter(presenter::update, presenter.value).last().intValue());
 
         presenter.onTrimMemory(Presenter.BASE_TRIM_LEVEL);
         presenter.onContainerResumed();
 
         Thread.sleep(500, 0);
 
-        observer.await();
-
-        assertEquals(2, observer.getLast().intValue());
+        assertEquals(2, Sync.next(presenter.value).intValue());
     }
 
 
     public void testOnSaveStateLogic() throws Exception {
         CounterPresenter presenter = new CounterPresenter();
 
-        SyncObserver<Integer> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.value);
-        presenter.update();
-        observer.await();
-
+        int value = Sync.wrapAfter(presenter::update, presenter.value).last();
         Bundle savedState = presenter.onSaveState();
         assertNotNull(savedState);
         assertTrue(savedState.containsKey(ValuePresenter.SAVED_STATE_KEY));
-        assertEquals(observer.getSingle(), savedState.getSerializable(ValuePresenter.SAVED_STATE_KEY));
+        assertEquals(value, savedState.getSerializable(ValuePresenter.SAVED_STATE_KEY));
     }
 
     public void testOnRestoreStateLogic() throws Exception {
@@ -67,10 +63,8 @@ public class ValuePresenterTests extends TestCase {
 
         presenter.onRestoreState(bundle);
 
-        SyncObserver<Integer> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.value);
-        observer.await();
-
-        assertEquals(observer.getSingle().intValue(), 12);
+        int value = Sync.wrapAfter(presenter::update, presenter.value).last();
+        assertEquals(12, value);
     }
 
 
