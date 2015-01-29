@@ -323,7 +323,11 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public String getSectionFooter(int section) {
             long value = getSection(section).getAverage();
-            return formatSensorValue(value).toString();
+            if (value == SensorHistory.PLACEHOLDER_VALUE) {
+                return getString(R.string.missing_data_placeholder);
+            } else {
+                return formatSensorValue(value).toString();
+            }
         }
 
         //endregion
@@ -346,7 +350,12 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public void onGraphValueHighlighted(int section, int position) {
             SensorHistory instant = getSection(section).get(position);
-            readingText.setText(formatSensorValue(instant.getValue()));
+            if (instant.isValuePlaceholder()) {
+                readingText.setText(R.string.missing_data_placeholder);
+            } else {
+                readingText.setText(formatSensorValue(instant.getValue()));
+            }
+
             if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
                 messageText.setText(dateFormatter.formatAsDayAndTime(instant.getTime(), use24Time));
             } else {

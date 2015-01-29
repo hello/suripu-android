@@ -47,6 +47,10 @@ public class SensorHistory extends ApiResponse {
         return value;
     }
 
+    public long getNormalizedValue() {
+        return Math.max(0, value);
+    }
+
     public DateTime getTime() {
         return time;
     }
@@ -99,9 +103,9 @@ public class SensorHistory extends ApiResponse {
                 List<List<SensorHistory>> segments = segment(segmentKeyProducer, history);
                 List<SensorHistoryAdapter.Section> sections = map(segments, SensorHistoryAdapter.Section::new);
 
-                Comparator<SensorHistory> comparator = (l, r) -> Float.compare(r.getValue(), l.getValue());
-                float peak = Collections.max(history, comparator).getValue();
-                float base = Collections.min(history, comparator).getValue();
+                Comparator<SensorHistory> comparator = (l, r) -> Float.compare(r.getNormalizedValue(), l.getNormalizedValue());
+                float peak = Collections.max(history, comparator).getNormalizedValue();
+                float base = Collections.min(history, comparator).getNormalizedValue();
 
                 s.onNext(new SensorHistoryAdapter.Update(sections, peak, base));
                 s.onCompleted();

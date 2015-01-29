@@ -68,7 +68,7 @@ public class SensorHistoryAdapter implements GraphAdapter {
 
     @Override
     public float getMagnitudeAt(int section, int position) {
-        return sections.get(section).get(position).getValue();
+        return sections.get(section).get(position).getNormalizedValue();
     }
 
     @Override
@@ -106,12 +106,22 @@ public class SensorHistoryAdapter implements GraphAdapter {
 
         public Section(@NonNull List<SensorHistory> instants) {
             this.instants = instants;
-            float average = 0f;
+            double average = 0f;
+            int placeholderCount = 0;
             for (SensorHistory instant : instants) {
-                average += instant.getValue();
+                if (instant.isValuePlaceholder()) {
+                    placeholderCount++;
+                }
+
+                average += instant.getNormalizedValue();
             }
-            average /= instants.size();
-            this.average = (long) average;
+            if (placeholderCount == instants.size() / 2) {
+                average = SensorHistory.PLACEHOLDER_VALUE;
+            } else {
+                average /= instants.size();
+            }
+
+            this.average = Math.round(average);
         }
 
         public SensorHistory get(int i) {
