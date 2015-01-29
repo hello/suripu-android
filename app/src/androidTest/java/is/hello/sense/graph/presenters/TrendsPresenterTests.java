@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
@@ -22,8 +21,8 @@ public class TrendsPresenterTests extends InjectionTestCase {
 
 
     public void testAvailableTrendGraphs() throws Exception {
-        ArrayList<AvailableTrendGraph> availableGraphs = Sync.last(trendsPresenter.availableTrendGraphs());
-        assertFalse(Lists.isEmpty(availableGraphs));
+        Sync.wrap(trendsPresenter.availableTrendGraphs())
+            .assertFalse(Lists::isEmpty);
     }
 
     public void testUpdateTrend() throws Exception {

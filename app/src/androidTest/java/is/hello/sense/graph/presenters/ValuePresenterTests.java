@@ -34,14 +34,15 @@ public class ValuePresenterTests extends TestCase {
     public void testLowMemoryLogic() throws Exception {
         CounterPresenter presenter = new CounterPresenter();
 
-        assertEquals(1, Sync.wrapAfter(presenter::update, presenter.value).last().intValue());
+        Sync.wrapAfter(presenter::update, presenter.value)
+            .assertEquals(1);
 
         presenter.onTrimMemory(Presenter.BASE_TRIM_LEVEL);
         presenter.onContainerResumed();
 
         Thread.sleep(500, 0);
 
-        assertEquals(2, Sync.next(presenter.value).intValue());
+        Sync.wrap(presenter.value).assertEquals(2);
     }
 
 

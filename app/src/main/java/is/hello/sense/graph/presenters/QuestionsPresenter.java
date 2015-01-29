@@ -24,6 +24,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
@@ -98,24 +99,28 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         }
 
         logEvent("loading today's questions");
-        currentQuestions().subscribe(questions -> {
-            this.questions.onNext(questions);
-            updateCurrentQuestion();
-        }, e -> {
-            Logger.error(QuestionsPresenter.class.getSimpleName(), "Could not load questions.", e);
+        currentQuestions()
+                .observeOn(Schedulers.computation())
+                .subscribe(questions -> {
+                    this.questions.onNext(questions);
+                    updateCurrentQuestion();
+                }, e -> {
+                    Logger.error(QuestionsPresenter.class.getSimpleName(), "Could not load questions.", e);
 
-            this.questions.onError(e);
-            this.currentQuestion.onError(e);
-        });
+                    this.questions.onError(e);
+                    this.currentQuestion.onError(e);
+                });
     }
 
     public void updateCurrentQuestion() {
-        questions.take(1).subscribe(questions -> {
-            if (offset < questions.size())
-                currentQuestion.onNext(questions.get(offset));
-            else
-                currentQuestion.onNext(null);
-        }, currentQuestion::onError);
+        questions.take(1)
+                 .observeOn(Schedulers.computation())
+                 .subscribe(questions -> {
+                     if (offset < questions.size())
+                         currentQuestion.onNext(questions.get(offset));
+                     else
+                         currentQuestion.onNext(null);
+                 }, currentQuestion::onError);
     }
 
     //endregion
@@ -146,8 +151,13 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     public void skipQuestion() {
-        currentQuestion.take(1).subscribe(question -> apiService.skipQuestion(question.getAccountId(), question.getId()).subscribe(ignored ->
-                                       logEvent("skipped question"), Functions.LOG_ERROR), Functions.LOG_ERROR);
+        currentQuestion.take(1)
+                       .subscribe(question -> {
+                                   apiService.skipQuestion(question.getAccountId(), question.getId())
+                                             .subscribe(ignored -> logEvent("skipped question"),
+                                                        Functions.LOG_ERROR);
+                               },
+                               Functions.LOG_ERROR);
         nextQuestion();
     }
 

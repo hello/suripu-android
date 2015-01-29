@@ -2,12 +2,15 @@ package is.hello.sense.util;
 
 import android.support.annotation.NonNull;
 
+import junit.framework.Assert;
+
 import java.util.Iterator;
 
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.observables.BlockingObservable;
 
 /**
@@ -104,6 +107,64 @@ public final class Sync<T> implements Iterable<T> {
      */
     public T last() {
         return observable.last();
+    }
+
+    //endregion
+
+
+    //region Assertions
+
+    /**
+     * Blocks until the observable errors out.
+     * <p/>
+     * This method raises an assertion failure if the observable does not fail,
+     * or if the error passed out of the observable does not match the given class.
+     */
+    public <E extends Throwable> void assertThrows(@NonNull Class<E> errorClass) {
+        try {
+            last();
+            Assert.fail("Observable did not fail as expected");
+        } catch (Throwable e) {
+            if (!errorClass.isAssignableFrom(e.getClass()) &&
+                    !errorClass.isAssignableFrom(e.getCause().getClass())) {
+                Assert.fail("Unexpected failure '" + e.getClass() + "'");
+            }
+        }
+    }
+
+    /**
+     * Blocks until the observable completes, <code>assert</code>ing the last value is not null.
+     */
+    public void assertNotNull() {
+        Assert.assertNotNull(last());
+    }
+
+    /**
+     * Blocks until the observable completes, <code>assert</code>ing the last value is null.
+     */
+    public void assertNull() {
+        Assert.assertNull(last());
+    }
+
+    /**
+     * Blocks until the observable completes, <code>assert</code>ing the last value equals a given value.
+     */
+    public void assertEquals(T value) {
+        Assert.assertEquals(value, last());
+    }
+
+    /**
+     * Blocks until the observable completes <code>assert</code>ing the last value meets a given condition.
+     */
+    public void assertTrue(@NonNull Func1<T, Boolean> predicate) {
+        Assert.assertTrue(predicate.call(last()));
+    }
+
+    /**
+     * Blocks until the observable completes <code>assert</code>ing the last value does not meet a given condition.
+     */
+    public void assertFalse(@NonNull Func1<T, Boolean> predicate) {
+        Assert.assertTrue(!predicate.call(last()));
     }
 
     //endregion
