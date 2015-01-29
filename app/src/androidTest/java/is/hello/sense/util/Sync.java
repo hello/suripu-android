@@ -13,7 +13,8 @@ import rx.observables.BlockingObservable;
 /**
  * A wrapper around BlockingObservable to make it more or
  * less idiot-proof to use when writing tests.
- *
+ * <p/>
+ * All operators throw exceptions emitted by the source observable.
  * @param <T>   The type emitted by the Sync wrapper.
  */
 public final class Sync<T> implements Iterable<T> {
@@ -103,6 +104,31 @@ public final class Sync<T> implements Iterable<T> {
      */
     public T last() {
         return observable.last();
+    }
+
+    //endregion
+
+
+    //region Convenience
+
+    /**
+     * Shorthand for <code>Sync.wrap(observable).last();</code>.
+     *
+     * @see #wrap(rx.Observable)
+     * @see #last()
+     */
+    public static <T> T last(@NonNull Observable<T> source) {
+        return wrap(source).last();
+    }
+
+    /**
+     * Shorthand for <code>Sync.wrap(subject).last();</code>.
+     *
+     * @see #wrap(is.hello.sense.graph.PresenterSubject)
+     * @see #last()
+     */
+    public static <T> T next(@NonNull PresenterSubject<T> source) {
+        return wrap(source).last();
     }
 
     //endregion

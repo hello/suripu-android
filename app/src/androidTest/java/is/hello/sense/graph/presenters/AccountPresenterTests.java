@@ -26,7 +26,7 @@ public class AccountPresenterTests extends InjectionTestCase {
         updatedAccount.setHeight(2000);
         updatedAccount.setBirthDate(LocalDate.now());
 
-        Account savedAccount = Sync.wrap(accountPresenter.saveAccount(updatedAccount)).last();
+        Account savedAccount = Sync.last(accountPresenter.saveAccount(updatedAccount));
         assertEquals(updatedAccount.getWeight(), savedAccount.getWeight());
         assertEquals(updatedAccount.getHeight(), savedAccount.getHeight());
         assertEquals(updatedAccount.getBirthDate(), savedAccount.getBirthDate());
@@ -34,7 +34,7 @@ public class AccountPresenterTests extends InjectionTestCase {
 
     public void testUpdateEmail() throws Exception {
         Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
-        Account accountAfter = Sync.wrap(accountPresenter.updateEmail("test@me.com")).last();
+        Account accountAfter = Sync.last(accountPresenter.updateEmail("test@me.com"));
         assertNotSame(accountBefore.getEmail(), accountAfter.getEmail());
         assertEquals("test@me.com", accountAfter.getEmail());
     }

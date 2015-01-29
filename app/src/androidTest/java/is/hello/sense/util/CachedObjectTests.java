@@ -9,7 +9,6 @@ import java.io.File;
 import javax.inject.Inject;
 
 import is.hello.sense.graph.InjectionTestCase;
-import rx.Observable;
 
 public class CachedObjectTests extends InjectionTestCase {
     private static final String FILENAME = "Suripu-Unit-Test";
@@ -32,30 +31,15 @@ public class CachedObjectTests extends InjectionTestCase {
 
     public void testGet() throws Exception {
         Name name = new Name("John", "Smith");
-        Observable<Name> setObservable = cachedObject.set(name);
-        SyncObserver<Name> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, setObservable);
-        observer.await();
+        assertNotNull(Sync.last(cachedObject.set(name)));
 
-        assertNull(observer.getError());
-        assertEquals(name, observer.getSingle());
-
-
-        Observable<Name> getObservable = cachedObject.get();
-        observer.reset().subscribeTo(getObservable);
-        observer.await();
-
-        assertNull(observer.getError());
-        assertEquals(name, observer.getSingle());
+        Name retrievedName = Sync.last(cachedObject.get());
+        assertEquals(retrievedName, name);
     }
 
     public void testSet() throws Exception {
         Name name = new Name("John", "Smith");
-        Observable<Name> setObservable = cachedObject.set(name);
-        SyncObserver<Name> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, setObservable);
-        observer.await();
-
-        assertNull(observer.getError());
-        assertEquals(name, observer.getSingle());
+        assertEquals(name, Sync.last(cachedObject.set(name)));
     }
 
 

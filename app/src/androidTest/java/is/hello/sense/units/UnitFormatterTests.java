@@ -23,8 +23,7 @@ public class UnitFormatterTests extends InjectionTestCase {
                    .remove(PreferencesPresenter.UNIT_SYSTEM)
                    .commit();
 
-        Sync<UnitSystem> unitSystem = Sync.of(1, formatter.unitSystem);
-        this.unitSystem = unitSystem.last();
+        this.unitSystem = Sync.next(formatter.unitSystem);
     }
 
     public void testFormatMass() throws Exception {
