@@ -21,6 +21,8 @@ import static is.hello.sense.functional.Lists.map;
 import static is.hello.sense.functional.Lists.segment;
 
 public class SensorHistory extends ApiResponse {
+    public static final long PLACEHOLDER_VALUE = -1;
+
     public static final String SENSOR_NAME_TEMPERATURE = "temperature";
     public static final String SENSOR_NAME_HUMIDITY = "humidity";
     public static final String SENSOR_NAME_PARTICULATES = "particulates";
@@ -36,6 +38,10 @@ public class SensorHistory extends ApiResponse {
     @JsonProperty("offset_millis")
     private long offset;
 
+
+    public boolean isValuePlaceholder() {
+        return (value == PLACEHOLDER_VALUE);
+    }
 
     public long getValue() {
         return value;
@@ -60,7 +66,7 @@ public class SensorHistory extends ApiResponse {
     }
 
 
-    //No more region Time Zone Fun
+    //region Time Zone Fun
 
     /**
      * Returns the user's current time, in the UTC timezone. For use with sensor history.
