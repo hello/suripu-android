@@ -12,6 +12,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
+@Deprecated
 public final class SyncObserver<T> implements Observer<T> {
     public static final long STANDARD_TIMEOUT = 750;
 

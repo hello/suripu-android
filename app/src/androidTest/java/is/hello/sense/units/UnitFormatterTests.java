@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.util.SyncObserver;
+import is.hello.sense.util.Sync;
 
 public class UnitFormatterTests extends InjectionTestCase {
     @Inject UnitFormatter formatter;
@@ -23,9 +23,8 @@ public class UnitFormatterTests extends InjectionTestCase {
                    .remove(PreferencesPresenter.UNIT_SYSTEM)
                    .commit();
 
-        SyncObserver<UnitSystem> unitSystemObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, formatter.unitSystem);
-        unitSystemObserver.await();
-        this.unitSystem = unitSystemObserver.getSingle();
+        Sync<UnitSystem> unitSystem = Sync.of(1, formatter.unitSystem);
+        this.unitSystem = unitSystem.last();
     }
 
     public void testFormatMass() throws Exception {
