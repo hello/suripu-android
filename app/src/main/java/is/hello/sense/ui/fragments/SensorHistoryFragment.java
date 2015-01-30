@@ -35,7 +35,6 @@ import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
@@ -330,7 +329,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public String getSectionFooter(int section) {
             long value = getSection(section).getAverage();
-            if (value == Constants.PLACEHOLDER_VALUE) {
+            if (value == ApiService.PLACEHOLDER_VALUE) {
                 return getString(R.string.missing_data_placeholder);
             } else {
                 return formatSensorValue(value).toString();

@@ -55,7 +55,7 @@ public class UnitSystem implements Serializable {
 
 
     public String getApiTemperatureUnit() {
-        return ApiService.UNIT_TEMPERATURE_CELCIUS;
+        return ApiService.UNIT_TEMPERATURE_CELSIUS;
     }
 
 

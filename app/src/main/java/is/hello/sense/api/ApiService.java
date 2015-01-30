@@ -39,7 +39,7 @@ import rx.Observable;
 public interface ApiService {
     String DATE_FORMAT = "yyyy-MM-dd";
 
-    String UNIT_TEMPERATURE_CELCIUS = "c";
+    String UNIT_TEMPERATURE_CELSIUS = "c";
     String UNIT_TEMPERATURE_US_CUSTOMARY = "f";
 
     String SENSOR_NAME_TEMPERATURE = "temperature";
@@ -47,6 +47,13 @@ public interface ApiService {
     String SENSOR_NAME_PARTICULATES = "particulates";
     String SENSOR_NAME_LIGHT = "light";
     String SENSOR_NAME_SOUND = "sound";
+
+
+    /**
+     * Sentinel value used by graphing APIs.
+     */
+    int PLACEHOLDER_VALUE = -1;
+
 
     //region OAuth
 
@@ -123,11 +130,11 @@ public interface ApiService {
 
     @GET("/room/{sensor}/day")
     Observable<ArrayList<SensorGraphSample>> sensorHistoryForDay(@Path("sensor") String sensor,
-                                                             @Query("from") long timestamp);
+                                                                 @Query("from") long timestamp);
 
     @GET("/room/{sensor}/week")
     Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
-                                                              @Query("from") long timestamp);
+                                                                  @Query("from") long timestamp);
 
     //endregion
 

@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.GraphType;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.functional.Lists;
@@ -18,7 +19,6 @@ import is.hello.sense.ui.widget.graphing.Extremes;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -67,8 +67,8 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
 
                 Extremes<Float> extremes;
                 if (dataPoints.size() == 1) {
-                    extremes = new Extremes<>(0f, Constants.PLACEHOLDER_VALUE,
-                                              dataPoints.get(0).getYValue(), Constants.PLACEHOLDER_VALUE);
+                    extremes = new Extremes<>(0f, ApiService.PLACEHOLDER_VALUE,
+                                              dataPoints.get(0).getYValue(), ApiService.PLACEHOLDER_VALUE);
                 } else {
                     Comparator<GraphSample> comparator = (l, r) -> Float.compare(l.getYValue(), r.getYValue());
                     extremes = Extremes.of(dataPoints, comparator)
@@ -106,7 +106,7 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
     public LineGraphDrawable.Marker[] getMarkers() {
         int baseIndex = getBaseIndex();
         int peakIndex = getPeakIndex();
-        if (baseIndex == Constants.PLACEHOLDER_VALUE || peakIndex == Constants.PLACEHOLDER_VALUE) {
+        if (baseIndex == ApiService.PLACEHOLDER_VALUE || peakIndex == ApiService.PLACEHOLDER_VALUE) {
             return null;
         } else {
             String base = Integer.toString((int) getBaseMagnitude());
@@ -124,7 +124,7 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
     }
 
     public int getBaseIndex() {
-        return extremes != null ? extremes.minPosition : Constants.PLACEHOLDER_VALUE;
+        return extremes != null ? extremes.minPosition : ApiService.PLACEHOLDER_VALUE;
     }
 
     @Override
@@ -133,7 +133,7 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
     }
 
     public int getPeakIndex() {
-        return extremes != null ? extremes.maxPosition : Constants.PLACEHOLDER_VALUE;
+        return extremes != null ? extremes.maxPosition : ApiService.PLACEHOLDER_VALUE;
     }
 
     @Override

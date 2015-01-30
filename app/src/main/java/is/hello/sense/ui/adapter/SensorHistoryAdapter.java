@@ -9,12 +9,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.functional.Function;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.widget.graphing.Extremes;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
-import is.hello.sense.util.Constants;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -163,7 +163,7 @@ public class SensorHistoryAdapter implements GraphAdapter {
                 average += instant.getNormalizedValue();
             }
             if (placeholderCount == instants.size() / 2) {
-                average = Constants.PLACEHOLDER_VALUE;
+                average = ApiService.PLACEHOLDER_VALUE;
             } else {
                 average /= instants.size();
             }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import is.hello.sense.util.Constants;
+import is.hello.sense.api.ApiService;
 
 public class SensorGraphSample extends ApiResponse {
     @JsonProperty("value")
@@ -19,7 +19,7 @@ public class SensorGraphSample extends ApiResponse {
 
 
     public boolean isValuePlaceholder() {
-        return (value == Constants.PLACEHOLDER_VALUE);
+        return (value == ApiService.PLACEHOLDER_VALUE);
     }
 
     public long getValue() {

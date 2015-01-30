@@ -16,8 +16,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.joda.time.DateTimeZone;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +36,6 @@ import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import rx.Observable;
@@ -48,7 +45,6 @@ import static is.hello.sense.ui.adapter.SensorHistoryAdapter.Update;
 public class RoomConditionsFragment extends UndersideTabFragment implements AdapterView.OnItemClickListener {
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
-    @Inject DateFormatter dateFormatter;
 
     private Adapter adapter;
 
@@ -108,8 +104,6 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     //region Displaying Data
 
     public void bindConditions(@NonNull RoomConditionsPresenter.Result result) {
-        DateTimeZone timeZone = dateFormatter.getTargetTimeZone();
-
         List<ArrayList<SensorGraphSample>> histories = result.roomSensorHistory.toList();
         List<SensorState> sensors = result.conditions.toList();
 
