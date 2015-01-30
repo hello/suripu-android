@@ -39,6 +39,7 @@ import retrofit.http.Body;
 import retrofit.http.Path;
 import retrofit.http.Query;
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 public final class TestApiService implements ApiService {
     private final Context context;
@@ -56,7 +57,7 @@ public final class TestApiService implements ApiService {
         try {
             stream = assetManager.open(filename + ".json");
             T response = objectMapper.readValue(stream, responseType);
-            return Observable.just(response);
+            return safeJust(response);
         } catch (IOException e) {
             return Observable.error(e);
         } finally {
@@ -92,7 +93,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Account> updateAccount(@NonNull @Body Account account) {
-        return Observable.just(account);
+        return safeJust(account);
     }
 
     @Override
@@ -112,7 +113,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> changePassword(@NonNull @Body PasswordUpdate passwordUpdate) {
-        return Observable.just(new VoidResponse());
+        return safeJust(new VoidResponse());
     }
 
     @Override
@@ -122,7 +123,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration) {
-        return Observable.just(new VoidResponse());
+        return safeJust(new VoidResponse());
     }
 
     @Override
@@ -162,13 +163,13 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<VoidResponse> answerQuestion(@Query("account_question_id") long accountId,
                                                    @NonNull @Body List<Question.Choice> answers) {
-        return Observable.just(new VoidResponse());
+        return safeJust(new VoidResponse());
     }
 
     @Override
     public Observable<VoidResponse> skipQuestion(@Query("account_question_id") long accountId,
                                                  @Query("id") long questionId) {
-        return Observable.just(new VoidResponse());
+        return safeJust(new VoidResponse());
     }
 
     @Override
@@ -178,12 +179,12 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> unregisterPill(@Path("id") @NonNull String pillId) {
-        return Observable.just(new VoidResponse());
+        return safeJust(new VoidResponse());
     }
 
     @Override
     public Observable<VoidResponse> unregisterSense(@Path("id") @NonNull String senseId) {
-        return Observable.just(new VoidResponse());
+        return safeJust(new VoidResponse());
     }
 
     @Override
@@ -194,7 +195,7 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<VoidResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp,
                                                    @NonNull @Body List<Alarm> alarms) {
-        return Observable.just(new VoidResponse());
+        return safeJust(new VoidResponse());
     }
 
     @Override
@@ -204,7 +205,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Account> updateEmailAddress(@NonNull @Body Account account) {
-        return Observable.just(account);
+        return safeJust(account);
     }
 
 
@@ -233,5 +234,24 @@ public final class TestApiService implements ApiService {
     public Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
                                                            @Query("from_utc") long timestamp) {
         return loadResponse("room_sensor_history", new TypeReference<RoomSensorHistory>() {});
+    }
+    
+    
+    private static <T> Observable<T> safeJust(T value) {
+        Observable<T> observable = Observable.create(s -> {
+            if (s.isUnsubscribed()) {
+                return;
+            }
+
+            s.onNext(value);
+
+            if (s.isUnsubscribed()) {
+                return;
+            }
+
+            s.onCompleted();
+        });
+
+        return observable.subscribeOn(Schedulers.computation());
     }
 }

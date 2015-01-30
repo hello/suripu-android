@@ -4,72 +4,44 @@ import android.os.Bundle;
 
 import junit.framework.TestCase;
 
-import is.hello.sense.util.SyncObserver;
+import is.hello.sense.util.Sync;
 
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions"})
 public class PresenterSubjectTests extends TestCase {
     public void testSimplePropagation() throws Exception {
         PresenterSubject<Integer> subject = PresenterSubject.create();
-        SyncObserver<Integer> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, subject);
-        subject.onNext(42);
-        observer.await();
-
-        assertNull(observer.getError());
-        assertEquals(42, (int) observer.getSingle());
-
-        observer.reset().subscribeTo(subject);
-
-        subject.onError(new IllegalStateException());
-        observer.await();
-
-        assertNotNull(observer.getError());
-        assertEquals(IllegalStateException.class, observer.getError().getClass());
-    }
-
-    public void testHistory() throws Exception {
-        PresenterSubject<Integer> subject = PresenterSubject.create();
         subject.onNext(42);
 
-        SyncObserver<Integer> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, subject);
-        observer.await();
-
-        assertNull(observer.getError());
-        assertEquals(42, (int) observer.getSingle());
-
-
-        observer.reset().subscribeTo(subject);
+        int value = Sync.next(subject);
+        assertEquals(42, value);
 
         subject.onError(new IllegalStateException());
-        observer.await();
-
-        assertNotNull(observer.getError());
-        assertEquals(IllegalStateException.class, observer.getError().getClass());
+        try {
+            Sync.next(subject);
+            fail("Subject did not propagate error");
+        } catch (Throwable e) {
+            assertEquals(IllegalStateException.class, e.getClass());
+        }
     }
 
     public void testResumesAfterError() throws Exception {
         PresenterSubject<Integer> subject = PresenterSubject.create();
         subject.onNext(42);
 
-        SyncObserver<Integer> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, subject);
-        observer.await();
-
-        assertNull(observer.getError());
-        assertEquals(42, (int) observer.getSingle());
-
-        observer.reset();
+        int value1 = Sync.next(subject);
+        assertEquals(42, value1);
 
         subject.onError(new IllegalStateException());
-        observer.subscribeTo(subject).await();
-
-        assertNotNull(observer.getError());
-        assertEquals(IllegalStateException.class, observer.getError().getClass());
-
-        observer.reset();
+        try {
+            Sync.next(subject);
+            fail("Subject did not propagate error");
+        } catch (Throwable e) {
+            assertEquals(IllegalStateException.class, e.getClass());
+        }
 
         subject.onNext(9000);
-        observer.subscribeTo(subject).await();
-
-        assertEquals(9000, (int) observer.getLast());
+        int value2 = Sync.next(subject);
+        assertEquals(9000, value2);
     }
 
     public void testNonCompletion() throws Exception {
@@ -77,11 +49,8 @@ public class PresenterSubjectTests extends TestCase {
         subject.onCompleted();
         subject.onNext(42);
 
-        SyncObserver<Integer> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, subject);
-        observer.await();
-
-        assertNull(observer.getError());
-        assertEquals(42, (int) observer.getSingle());
+        int value = Sync.next(subject);
+        assertEquals(42, value);
     }
 
     public void testSerialization() throws Exception {

@@ -7,8 +7,7 @@ import javax.inject.Inject;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.LambdaVar;
-import is.hello.sense.util.SyncObserver;
-import rx.Observable;
+import is.hello.sense.util.Sync;
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 public class TimelineNavigatorPresenterTests extends InjectionTestCase {
@@ -47,13 +46,8 @@ public class TimelineNavigatorPresenterTests extends InjectionTestCase {
         presenter.post("tag", () -> called.set(true));
         assertFalse(called.get());
 
-        Observable<Timeline> timeline = presenter.timelineForDate(startTime);
-        SyncObserver<Timeline> observer = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, timeline);
-        observer.await();
-
-        assertNotNull(observer.getError());
-        assertTrue(observer.getError() instanceof IllegalStateException);
-
+        Sync.wrap(presenter.timelineForDate(startTime))
+            .assertThrows(IllegalStateException.class);
         presenter.resume();
 
         assertTrue(called.get());
@@ -73,22 +67,13 @@ public class TimelineNavigatorPresenterTests extends InjectionTestCase {
     }
 
     public void testTimelineForDate() throws Exception {
-        Observable<Timeline> firstTimeline = presenter.timelineForDate(startTime);
-        SyncObserver<Timeline> firstObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, firstTimeline);
-        firstObserver.await();
+        Timeline firstTimeline = Sync.last(presenter.timelineForDate(startTime));
+        assertNotNull(firstTimeline);
+        assertEquals(77, firstTimeline.getScore());
 
-        assertNull(firstObserver.getError());
-        assertNotNull(firstObserver.getSingle());
-        assertEquals(77, firstObserver.getSingle().getScore());
-
-
-        Observable<Timeline> secondTimeline = presenter.timelineForDate(startTime);
-        SyncObserver<Timeline> secondObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, secondTimeline);
-        secondObserver.await();
-
-        assertNull(secondObserver.getError());
-        assertNotNull(secondObserver.getSingle());
-        assertEquals(77, secondObserver.getSingle().getScore());
-        assertSame(secondObserver.getSingle(), firstObserver.getSingle());
+        Timeline secondTimeline = Sync.last(presenter.timelineForDate(startTime));
+        assertNotNull(secondTimeline);
+        assertEquals(77, secondTimeline.getScore());
+        assertSame(secondTimeline, firstTimeline);
     }
 }

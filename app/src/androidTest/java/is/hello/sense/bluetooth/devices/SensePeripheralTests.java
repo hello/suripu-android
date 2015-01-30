@@ -1,7 +1,5 @@
 package is.hello.sense.bluetooth.devices;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
@@ -14,8 +12,7 @@ import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.functional.Either;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.AdvertisingDataBuilder;
-import is.hello.sense.util.SyncObserver;
-import rx.Observable;
+import is.hello.sense.util.Sync;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand;
 
@@ -54,11 +51,8 @@ public class SensePeripheralTests extends InjectionTestCase {
         stackBehavior.addPeripheralInRange(device2);
 
         PeripheralCriteria peripheralCriteria = new PeripheralCriteria();
-        SyncObserver<List<SensePeripheral>> peripherals = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, SensePeripheral.discover(stack, peripheralCriteria));
-        peripherals.await();
-
-        assertNull(peripherals.getError());
-        assertEquals(2, peripherals.getSingle().size());
+        Sync.wrap(SensePeripheral.discover(stack, peripheralCriteria))
+            .assertTrue(peripherals -> peripherals.size() == 2);
     }
 
     public void testRediscovery() throws Exception {
@@ -71,12 +65,8 @@ public class SensePeripheralTests extends InjectionTestCase {
         device.setAdvertisingData(advertisingData);
         stackBehavior.addPeripheralInRange(device);
 
-        SyncObserver<SensePeripheral> peripherals = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, SensePeripheral.rediscover(stack, TEST_DEVICE_ID));
-        peripherals.await();
-
-        assertNull(peripherals.getError());
-        assertNotNull(peripherals.getSingle());
-        assertEquals("Sense-Test", peripherals.getSingle().getName());
+        Sync.wrap(SensePeripheral.rediscover(stack, TEST_DEVICE_ID))
+            .assertTrue(p -> "Sense-Test".equals(p.getName()));
     }
 
 
@@ -91,11 +81,7 @@ public class SensePeripheralTests extends InjectionTestCase {
                 .setWifiSSID("00:00:00:00:00:00")
                 .setSecurityType(SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN)
                 .build();
-        Observable<Void> write = peripheral.writeLargeCommand(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND, command.toByteArray());
-        SyncObserver<Void> writeObserver = SyncObserver.subscribe(SyncObserver.WaitingFor.COMPLETED, write);
-        writeObserver.await();
-
-        assertNull(writeObserver.getError());
+        Sync.last(peripheral.writeLargeCommand(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND, command.toByteArray()));
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.WRITE_COMMAND));
         assertEquals(3, peripheralBehavior.getCalledMethods().size());
     }
