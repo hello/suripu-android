@@ -164,7 +164,7 @@ public final class Sync<T> implements Iterable<T> {
      * Blocks until the observable completes <code>assert</code>ing the last value does not meet a given condition.
      */
     public void assertFalse(@NonNull Func1<T, Boolean> predicate) {
-        Assert.assertTrue(!predicate.call(last()));
+        Assert.assertFalse(predicate.call(last()));
     }
 
     //endregion

@@ -1,18 +1,14 @@
 package is.hello.sense.graph.presenters;
 
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 import javax.inject.Inject;
 
-import is.hello.sense.api.model.Question;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthSession;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
-import is.hello.sense.util.SyncObserver;
+import is.hello.sense.util.Sync;
 
 public class QuestionsPresenterTests extends InjectionTestCase {
     @Inject ApiSessionManager apiSessionManager;
@@ -38,47 +34,27 @@ public class QuestionsPresenterTests extends InjectionTestCase {
     }
 
     public void testUpdate() throws Exception {
-        SyncObserver<ArrayList<Question>> questions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.questions);
-        questions.await();
-
-        assertNull(questions.getError());
-        assertNotNull(questions.getLast());
+        Sync.wrap(presenter.questions)
+            .assertNotNull();
     }
 
     public void testCurrentQuestion() throws Exception {
-        SyncObserver<Question> question1 = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.currentQuestion);
-        question1.await();
+        Sync.next(presenter.questions);
 
-        assertNull(question1.getError());
-        assertNotNull(question1.getSingle());
+        Sync.wrap(presenter.currentQuestion)
+            .assertNotNull();
 
-        SyncObserver<Question> question2 = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.currentQuestion)
-                                                       .ignore(1);
         presenter.nextQuestion();
-        question2.await();
-
-        assertNull(question2.getError());
-        assertNull(question2.getLast());
+        Sync.wrap(presenter.currentQuestion)
+            .assertNull();
     }
 
     public void testLogOutSideEffects() throws Exception {
-        LocalBroadcastManager.getInstance(getInstrumentation().getContext())
-                             .sendBroadcastSync(new Intent(ApiSessionManager.ACTION_LOGGED_OUT));
+        presenter.onUserLoggedOut(new Intent(ApiSessionManager.ACTION_LOGGED_OUT));
+        Sync.wrap(presenter.currentQuestion)
+            .assertNull();
 
-
-        SyncObserver<Question> currentQuestion = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.currentQuestion)
-                                                             .ignore(1);
-        currentQuestion.await();
-
-        assertNull(currentQuestion.getError());
-        assertNull(currentQuestion.getLast());
-
-
-        SyncObserver<ArrayList<Question>> questions = SyncObserver.subscribe(SyncObserver.WaitingFor.NEXT, presenter.questions)
-                                                                  .ignore(1);
-        questions.await();
-
-        assertNull(questions.getError());
-        assertEquals(Collections.<Question>emptyList(), questions.getLast());
+        Sync.wrap(presenter.questions)
+            .assertTrue(Lists::isEmpty);
     }
 }
