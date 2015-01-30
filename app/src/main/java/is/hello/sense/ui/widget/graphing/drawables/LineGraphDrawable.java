@@ -5,13 +5,19 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class LineGraphDrawable extends GraphDrawable {
+    private final Resources resources;
+
     private final Paint linePaint = new Paint();
     private final Path linePath = new Path();
     private final Path fillPath = new Path();
@@ -19,11 +25,16 @@ public class LineGraphDrawable extends GraphDrawable {
     private final float topLineHeight;
     private final Drawable fillDrawable;
 
+    private @Nullable MarkerState markers;
+
 
     public LineGraphDrawable(@NonNull Resources resources) {
+        this.resources = resources;
+
         this.topLineHeight = resources.getDimensionPixelSize(R.dimen.series_graph_line_size);
 
         Styles.applyGraphLineParameters(linePaint);
+        //noinspection SuspiciousNameCombination
         linePaint.setStrokeWidth(topLineHeight);
 
         linePaint.setColor(resources.getColor(R.color.graph_fill_color));
@@ -34,13 +45,18 @@ public class LineGraphDrawable extends GraphDrawable {
     @Override
     public void draw(Canvas canvas) {
         int sectionCount = adapterCache.getNumberSections();
+        float halfOfTopLine = topLineHeight / 2f;
+
+        int minY = Math.round(halfOfTopLine) + topInset;
+        int width = canvas.getWidth();
+        int height = canvas.getHeight() - minY - bottomInset;
+
+        if (markers != null) {
+            minY += halfOfTopLine;
+            height -= halfOfTopLine;
+        }
+
         if (sectionCount > 0) {
-            float halfOfTopLine = topLineHeight / 2f;
-
-            int minY = Math.round(halfOfTopLine) + topInset;
-            int width = canvas.getWidth();
-            int height = canvas.getHeight() - minY - bottomInset;
-
             fillPath.reset();
             linePath.reset();
 
@@ -90,6 +106,10 @@ public class LineGraphDrawable extends GraphDrawable {
             canvas.restore();
 
             canvas.drawPath(linePath, linePaint);
+
+            if (markers != null) {
+                markers.draw(canvas, minY, width, height);
+            }
         }
     }
 
@@ -112,5 +132,102 @@ public class LineGraphDrawable extends GraphDrawable {
         invalidateSelf();
     }
 
+    public void setMarkers(@Nullable Marker[] markers) {
+        if (markers != null && markers.length > 0) {
+            this.markers = new MarkerState(resources, markers);
+        } else {
+            this.markers = null;
+        }
+        invalidateSelf();
+    }
+
     //endregion
+
+
+    private final class MarkerState {
+        private final Marker[] points;
+
+        private final float pointSizeHalf;
+        private final float edgeInset;
+
+        private final Paint paint = new Paint();
+        private final RectF markerRect = new RectF();
+        private final Rect textBounds = new Rect();
+        private final Paint.FontMetrics fontMetrics = new Paint.FontMetrics();
+
+        private MarkerState(@NonNull Resources resources, @NonNull Marker[] points) {
+            this.points = points;
+
+            this.pointSizeHalf = resources.getDimensionPixelSize(R.dimen.graph_point_size) / 2f;
+            this.edgeInset = resources.getDimensionPixelSize(R.dimen.gap_tiny);
+
+            paint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_graph_footer));
+            paint.setAntiAlias(true);
+            paint.setSubpixelText(true);
+        }
+
+        private void draw(@NonNull Canvas canvas, int minY, int width, int height) {
+            float sectionWidth = adapterCache.calculateSectionWidth(width);
+            for (Marker marker : points) {
+                float segmentWidth = adapterCache.calculateSegmentWidth(width, marker.section);
+
+                float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, marker.section, marker.segment);
+                float segmentY = minY + adapterCache.calculateSegmentY(height, marker.section, marker.segment);
+
+                paint.setColor(marker.color);
+
+                markerRect.set(segmentX - pointSizeHalf, minY + (segmentY - pointSizeHalf),
+                               segmentX + pointSizeHalf, minY + (segmentY + pointSizeHalf));
+                canvas.drawOval(markerRect, paint);
+
+                if (!TextUtils.isEmpty(marker.value)) {
+                    paint.getTextBounds(marker.value, 0, marker.value.length(), textBounds);
+
+                    float textX = segmentX - textBounds.centerX();
+                    float textY = segmentY - textBounds.height();
+                    if (textX < 0f) {
+                        textX = edgeInset + pointSizeHalf;
+                        textY = segmentY - textBounds.centerY();
+                    } else if (textX > width) {
+                        textX = width - edgeInset - textBounds.width();
+                    }
+
+                    if (textY < minY) {
+                        paint.getFontMetrics(fontMetrics);
+                        float fontSpacing = fontMetrics.leading + fontMetrics.bottom + fontMetrics.descent;
+                        textY = segmentY + textBounds.height() + pointSizeHalf + fontSpacing;
+                    }
+
+                    canvas.drawText(marker.value, textX, textY, paint);
+                }
+            }
+        }
+    }
+
+    public static class Marker {
+        public final int section;
+        public final int segment;
+        public final int color;
+        public final @Nullable String value;
+
+        public Marker(int section,
+                      int segment,
+                      int color,
+                      @Nullable String value) {
+            this.section = section;
+            this.segment = segment;
+            this.color = color;
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return "Marker{" +
+                    "section=" + section +
+                    ", segment=" + segment +
+                    ", color=" + color +
+                    ", value='" + value + '\'' +
+                    '}';
+        }
+    }
 }

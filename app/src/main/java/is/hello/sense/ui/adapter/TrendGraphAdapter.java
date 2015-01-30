@@ -18,6 +18,7 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.graphing.Extremes;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
+import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -103,7 +104,7 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
         }
     }
 
-    public GraphView.Marker[] getMarkers() {
+    public LineGraphDrawable.Marker[] getMarkers() {
         int baseIndex = getBaseIndex();
         int peakIndex = getPeakIndex();
         if (baseIndex == SensorHistory.PLACEHOLDER_VALUE || peakIndex == SensorHistory.PLACEHOLDER_VALUE) {
@@ -111,9 +112,9 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
         } else {
             String base = Integer.toString((int) getBaseMagnitude());
             String peak = Integer.toString((int) getPeakMagnitude());
-            return new GraphView.Marker[] {
-                new GraphView.Marker(baseIndex, 0, resources.getColor(R.color.sensor_alert), base),
-                new GraphView.Marker(peakIndex, 0, resources.getColor(R.color.sensor_ideal), peak),
+            return new LineGraphDrawable.Marker[] {
+                new LineGraphDrawable.Marker(baseIndex, 0, resources.getColor(R.color.sensor_alert), base),
+                new LineGraphDrawable.Marker(peakIndex, 0, resources.getColor(R.color.sensor_ideal), peak),
             };
         }
     }

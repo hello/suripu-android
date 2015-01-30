@@ -513,30 +513,4 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         void onGraphHighlightEnd();
     }
 
-    public static class Marker {
-        public final int section;
-        public final int segment;
-        public final int color;
-        public final @Nullable String value;
-
-        public Marker(int section,
-                      int segment,
-                      int color,
-                      @Nullable String value) {
-            this.section = section;
-            this.segment = segment;
-            this.color = color;
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return "Marker{" +
-                    "section=" + section +
-                    ", segment=" + segment +
-                    ", color=" + color +
-                    ", value='" + value + '\'' +
-                    '}';
-        }
-    }
 }

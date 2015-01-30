@@ -78,7 +78,7 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         holder.graphView.setNumberOfLines(TrendGraphAdapter.getNumberOfLines(graph));
         holder.graphAdapter.bindTrendGraph(graph, () -> {
             if (graphDrawable instanceof LineGraphDrawable) {
-
+                ((LineGraphDrawable) graphDrawable).setMarkers(holder.graphAdapter.getMarkers());
             }
         });
 
