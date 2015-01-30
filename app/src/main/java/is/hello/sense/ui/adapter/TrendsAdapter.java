@@ -43,14 +43,6 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         addAll(trends);
     }
 
-    public void trendsUnavailable(Throwable e) {
-        clear();
-        if (e != null) {
-            add(new TrendGraph(e));
-        }
-    }
-
-
     public void setOnTrendOptionSelected(@Nullable OnTrendOptionSelected onTrendOptionSelected) {
         this.onTrendOptionSelected = onTrendOptionSelected;
     }
@@ -72,7 +64,6 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         GraphDrawable graphDrawable = graph.getGraphType().createDrawable(resources);
         holder.graphView.setGraphDrawable(graphDrawable);
         holder.graphView.setTintColor(graphTintColor);
-        holder.graphView.setNumberOfLines(graph.getDataPoints().size());
         holder.graphView.setAdapter(holder.graphAdapter);
         holder.graphView.setWantsHeaders(graph.getGraphType() == GraphType.HISTOGRAM);
         holder.graphView.setHeaderFooterProvider(holder.graphAdapter);
@@ -83,6 +74,7 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
             holder.addOptionSelector(position, graph.getOptions(), graph.getTimePeriod());
         }
 
+        holder.graphView.setNumberOfLines(TrendGraphAdapter.getNumberOfLines(graph));
         holder.graphAdapter.setTrendGraph(graph);
 
         return view;

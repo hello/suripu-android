@@ -14,6 +14,8 @@
     <dimen name="text_size_body">16sp</dimen>
     <dimen name="text_size_body_mid_sized">14sp</dimen>
     <dimen name="text_size_body_small">13sp</dimen>
+    <dimen name="text_size_graph_header">10sp</dimen>
+    <dimen name="text_size_graph_footer">13sp</dimen>
     <dimen name="text_size_button">16sp</dimen>
     <dimen name="text_size_large_button">20sp</dimen>
     <dimen name="text_size_section_heading">11sp</dimen>

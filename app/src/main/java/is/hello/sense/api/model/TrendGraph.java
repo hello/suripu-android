@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.joda.time.DateTime;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -94,7 +96,7 @@ public class TrendGraph extends ApiResponse {
 
     public static class GraphSample extends ApiResponse {
         @JsonProperty("datetime")
-        private long dateTime;
+        private DateTime dateTime;
 
         @JsonProperty("y_value")
         private float yValue;
@@ -109,7 +111,7 @@ public class TrendGraph extends ApiResponse {
         private DataLabel dataLabel;
 
 
-        public long getDateTime() {
+        public DateTime getDateTime() {
             return dateTime;
         }
 

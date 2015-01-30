@@ -96,10 +96,10 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         footerTextPaint.setAntiAlias(true);
         footerTextPaint.setSubpixelText(true);
 
-        setHeaderTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_section_heading));
+        setHeaderTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_graph_header));
         setHeaderTypeface(Typeface.create("sans-serif", Typeface.BOLD));
 
-        setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_body));
+        setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_graph_footer));
         setFooterTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
 
         this.highlightPointAreaHalf = getResources().getDimensionPixelSize(R.dimen.series_graph_point_size) / 2f;
@@ -174,7 +174,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         }
 
         if (headerFooterProvider != null) {
-            int sectionCount = headerFooterProvider.getSectionCount();
+            int sectionCount = headerFooterProvider.getSectionHeaderFooterCount();
             if (sectionCount > 0) {
                 int headerHeight = calculateHeaderHeight(),
                     footerHeight = calculateFooterHeight();
@@ -500,7 +500,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
 
     public interface HeaderFooterProvider {
-        int getSectionCount();
+        int getSectionHeaderFooterCount();
         int getSectionHeaderTextColor(int section);
         int getSectionFooterTextColor(int section);
         @NonNull String getSectionHeader(int section);

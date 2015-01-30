@@ -251,7 +251,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public void update(@NonNull Update update) {
             super.update(update);
-            graphView.setNumberOfLines(getSectionCount());
+            graphView.setNumberOfLines(getSectionHeaderFooterCount());
         }
 
         @Override
@@ -292,8 +292,13 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         }
 
         @Override
+        public int getSectionHeaderFooterCount() {
+            return getSectionCount();
+        }
+
+        @Override
         public int getSectionHeaderTextColor(int section) {
-            if (section == getSectionCount() - 1) {
+            if (section == getSectionHeaderFooterCount() - 1) {
                 return Color.BLACK;
             } else {
                 return Color.GRAY;
