@@ -59,7 +59,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         if (BuildConfig.DEBUG) {
             View diagram = view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
             diagram.setOnLongClickListener(ignored -> {
-                finishedPairing();
+                skipPairingPill();
                 return true;
             });
             diagram.setBackgroundResource(R.drawable.selectable_dark);
@@ -87,7 +87,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         retryButton.setVisibility(View.GONE);
     }
 
-    private void finishedPairing() {
+    private void finishedPairing(boolean success) {
         LoadingDialogFragment.show(getFragmentManager(), null, true);
         getFragmentManager().executePendingTransactions();
         LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
@@ -95,7 +95,11 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                 hardwarePresenter.clearPeripheral();
                 getOnboardingActivity().finish();
             } else {
-                getOnboardingActivity().showPillInstructions();
+                if (success) {
+                    getOnboardingActivity().showPillInstructions();
+                } else {
+                    getOnboardingActivity().showSenseColorsInfo();
+                }
             }
         });
     }
@@ -105,7 +109,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
         confirmation.setTitle(R.string.alert_title_skip_pair_pill);
         confirmation.setMessage(R.string.alert_message_skip_pair_pill);
-        confirmation.setPositiveButton(R.string.action_skip, (dialog, which) -> finishedPairing());
+        confirmation.setPositiveButton(R.string.action_skip, (dialog, which) -> finishedPairing(false));
         confirmation.setNegativeButton(android.R.string.cancel, null);
         confirmation.setDestructive(true);
         confirmation.show();
@@ -134,7 +138,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
 
         showHardwareActivity(() -> {
             bindAndSubscribe(hardwarePresenter.linkPill(),
-                             ignored -> completeHardwareActivity(this::finishedPairing),
+                             ignored -> completeHardwareActivity(() -> finishedPairing(true)),
                              this::presentError);
         });
     }
