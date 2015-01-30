@@ -121,7 +121,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_SENSE:
-                    showPairPill();
+                    showPairPill(!getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false));
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_PILL:
@@ -355,7 +355,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         pushFragment(OnboardingSignIntoWifiFragment.newInstance(network), null, true);
     }
 
-    public void showPairPill() {
+    public void showPairPill(boolean showIntroduction) {
         if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {
             finish();
             return;
@@ -363,7 +363,17 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SENSE);
 
-        pushFragment(new OnboardingPairPillFragment(), null, false);
+        if (showIntroduction) {
+            OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
+            builder.setHeadingText(R.string.onboarding_title_sleep_pill_intro);
+            builder.setSubheadingText(R.string.onboarding_message_sleep_pill_intro);
+            builder.setDiagramImage(R.drawable.onboarding_clip_pill);
+            builder.setHideToolbar(true);
+            builder.setNextFragmentClass(OnboardingPairPillFragment.class);
+            pushFragment(builder.toFragment(), null, false);
+        } else {
+            pushFragment(new OnboardingPairPillFragment(), null, false);
+        }
     }
 
     private OnboardingSimpleStepFragment.Builder createSenseColorsBuilder() {

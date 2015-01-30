@@ -147,7 +147,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 hardwarePresenter.clearPeripheral();
                 getOnboardingActivity().finish();
             } else {
-                getOnboardingActivity().showPairPill();
+                getOnboardingActivity().showPairPill(true);
             }
         });
     }

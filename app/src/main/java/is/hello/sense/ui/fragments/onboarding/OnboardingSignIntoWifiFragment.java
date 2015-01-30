@@ -261,7 +261,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
     }
 
     private void finished() {
-        hideAllActivity(true, () -> getOnboardingActivity().showPairPill());
+        hideAllActivity(true, () -> getOnboardingActivity().showPairPill(true));
     }
 
 
