@@ -72,7 +72,9 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
                 }
 
                 List<TrendGraph.GraphSample> sectionSamples;
-                if (trendGraph.getDataPoints().size() > DAY_CUT_OFF) {
+                if (TrendGraph.TIME_PERIOD_OVER_TIME_ALL.equals(trendGraph.getTimePeriod())) {
+                    sectionSamples = Collections.emptyList();
+                } else if (trendGraph.getDataPoints().size() > DAY_CUT_OFF) {
                     sectionSamples = new ArrayList<>();
                     List<TrendGraph.GraphSample> samples = trendGraph.getDataPoints();
                     for (int i = 0, count = samples.size(); i < count; i++) {
@@ -191,26 +193,22 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
 
         TrendGraph.GraphSample sample = sectionSamples.get(section);
         float value = sample.getYValue();
+        if (value <= 0f) {
+            return resources.getString(R.string.missing_data_placeholder);
+        }
+
         switch (trendGraph.getDataType()) {
             default:
             case NONE:
             case SLEEP_SCORE: {
-                if (value <= 0f) {
-                    return resources.getString(R.string.missing_data_placeholder);
+                if (trendGraph.getGraphType() == GraphType.TIME_SERIES_LINE) {
+                    return sample.getDateTime().toString("MMM d");
                 } else {
-                    if (trendGraph.getGraphType() == GraphType.TIME_SERIES_LINE) {
-                        return sample.getDateTime().toString("MMM d");
-                    } else {
-                        return String.format("%.0f", value);
-                    }
+                    return String.format("%.0f", value);
                 }
             }
 
             case SLEEP_DURATION: {
-                if (value <= 0f) {
-                    return resources.getString(R.string.missing_data_placeholder);
-                }
-
                 int durationInHours = ((int) value) / 60;
                 int remainingMinutes = ((int) value) % 60;
 
