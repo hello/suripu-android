@@ -25,7 +25,8 @@ import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.api.model.SensorHistory;
+import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
@@ -71,11 +72,11 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
 
         // Always change order of RoomSensorHistory and RoomConditions too.
         this.adapter = new Adapter(getActivity(), new SensorEntry[] {
-                new SensorEntry(SensorHistory.SENSOR_NAME_TEMPERATURE),
-                new SensorEntry(SensorHistory.SENSOR_NAME_HUMIDITY),
-                new SensorEntry(SensorHistory.SENSOR_NAME_PARTICULATES),
-                new SensorEntry(SensorHistory.SENSOR_NAME_LIGHT),
-                new SensorEntry(SensorHistory.SENSOR_NAME_SOUND),
+                new SensorEntry(ApiService.SENSOR_NAME_TEMPERATURE),
+                new SensorEntry(ApiService.SENSOR_NAME_HUMIDITY),
+                new SensorEntry(ApiService.SENSOR_NAME_PARTICULATES),
+                new SensorEntry(ApiService.SENSOR_NAME_LIGHT),
+                new SensorEntry(ApiService.SENSOR_NAME_SOUND),
         });
         Styles.addCardSpacingHeaderAndFooter(listView);
         listView.setAdapter(adapter);
@@ -109,7 +110,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     public void bindConditions(@NonNull RoomConditionsPresenter.Result result) {
         DateTimeZone timeZone = dateFormatter.getTargetTimeZone();
 
-        List<ArrayList<SensorHistory>> histories = result.roomSensorHistory.toList();
+        List<ArrayList<SensorGraphSample>> histories = result.roomSensorHistory.toList();
         List<SensorState> sensors = result.conditions.toList();
 
         for (int i = 0, count = adapter.getCount(); i < count; i++) {
@@ -120,8 +121,8 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
             sensorInfo.sensorState = sensor;
             sensorInfo.errorMessage = null;
 
-            ArrayList<SensorHistory> sensorDataRun = histories.get(i);
-            Observable<Update> update = SensorHistory.createAdapterUpdate(sensorDataRun, SensorHistoryPresenter.MODE_DAY, timeZone);
+            ArrayList<SensorGraphSample> sensorDataRun = histories.get(i);
+            Observable<Update> update = Update.forHistorySeries(sensorDataRun, SensorHistoryPresenter.Mode.DAY);
             bindAndSubscribe(update,
                              sensorInfo.graphAdapter::update,
                              e -> {

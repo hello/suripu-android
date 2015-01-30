@@ -31,6 +31,11 @@ public final class Constants {
 
     public static final int MIN_PASSWORD_LENGTH = 6;
 
+    /**
+     * Sentinel value used by graphing APIs.
+     */
+    public static final int PLACEHOLDER_VALUE = -1;
+
     // From Retrofit
     public static final int HTTP_CONNECT_TIMEOUT_MILLIS = 15 * 1000; // 15s
     public static final int HTTP_READ_TIMEOUT_MILLIS = 20 * 1000; // 20s

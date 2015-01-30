@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.systems.MetricUnitSystem;
 import is.hello.sense.units.systems.UsCustomaryUnitSystem;
@@ -92,10 +91,10 @@ public class UnitSystem implements Serializable {
 
     public @Nullable UnitFormatter.Formatter getUnitFormatterForSensor(@NonNull String sensor) {
         switch (sensor) {
-            case SensorHistory.SENSOR_NAME_TEMPERATURE:
+            case ApiService.SENSOR_NAME_TEMPERATURE:
                 return this::formatTemperature;
 
-            case SensorHistory.SENSOR_NAME_PARTICULATES:
+            case ApiService.SENSOR_NAME_PARTICULATES:
                 return this::formatParticulates;
 
             default:

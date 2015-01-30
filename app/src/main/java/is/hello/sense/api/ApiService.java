@@ -13,6 +13,7 @@ import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
 import is.hello.sense.api.model.RoomSensorHistory;
+import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Insight;
@@ -21,7 +22,6 @@ import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.VoidResponse;
@@ -37,10 +37,16 @@ import retrofit.http.Query;
 import rx.Observable;
 
 public interface ApiService {
-    public static final String DATE_FORMAT = "yyyy-MM-dd";
+    String DATE_FORMAT = "yyyy-MM-dd";
 
-    public static final String UNIT_TEMPERATURE_CELCIUS = "c";
-    public static final String UNIT_TEMPERATURE_US_CUSTOMARY = "f";
+    String UNIT_TEMPERATURE_CELCIUS = "c";
+    String UNIT_TEMPERATURE_US_CUSTOMARY = "f";
+
+    String SENSOR_NAME_TEMPERATURE = "temperature";
+    String SENSOR_NAME_HUMIDITY = "humidity";
+    String SENSOR_NAME_PARTICULATES = "particulates";
+    String SENSOR_NAME_LIGHT = "light";
+    String SENSOR_NAME_SOUND = "sound";
 
     //region OAuth
 
@@ -116,11 +122,11 @@ public interface ApiService {
                                                     @Query("from_utc") long timestamp);
 
     @GET("/room/{sensor}/day")
-    Observable<ArrayList<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor,
+    Observable<ArrayList<SensorGraphSample>> sensorHistoryForDay(@Path("sensor") String sensor,
                                                              @Query("from") long timestamp);
 
     @GET("/room/{sensor}/week")
-    Observable<ArrayList<SensorHistory>> sensorHistoryForWeek(@Path("sensor") String sensor,
+    Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
                                                               @Query("from") long timestamp);
 
     //endregion

@@ -83,26 +83,4 @@ public class Lists {
 
         return null;
     }
-
-    public static <T> Extremes<T> extremes(@NonNull Iterable<T> haystack, @NonNull Comparator<T> comparator) {
-        Iterator<T> iterator = haystack.iterator();
-
-        T min = iterator.next();
-        int minIndex = 0;
-
-        T max = min;
-        int maxIndex = 0;
-
-        while (iterator.hasNext()) {
-            T next = iterator.next();
-            if (comparator.compare(max, next) < 0) {
-                max = next;
-            }
-            if (comparator.compare(min, next) > 0) {
-                min = next;
-            }
-        }
-
-        return new Extremes<>(min, minIndex, max, maxIndex);
-    }
 }

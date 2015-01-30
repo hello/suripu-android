@@ -9,42 +9,42 @@ import is.hello.sense.functional.Lists;
 
 public class RoomSensorHistory extends ApiResponse {
     @JsonProperty("humidity")
-    private ArrayList<SensorHistory> humidity;
+    private ArrayList<SensorGraphSample> humidity;
 
     @JsonProperty("light")
-    private ArrayList<SensorHistory> light;
+    private ArrayList<SensorGraphSample> light;
 
     @JsonProperty("particulates")
-    private ArrayList<SensorHistory> particulates;
+    private ArrayList<SensorGraphSample> particulates;
 
     @JsonProperty("sound")
-    private ArrayList<SensorHistory> sound;
+    private ArrayList<SensorGraphSample> sound;
 
     @JsonProperty("temperature")
-    private ArrayList<SensorHistory> temperature;
+    private ArrayList<SensorGraphSample> temperature;
 
 
-    public ArrayList<SensorHistory> getHumidity() {
+    public ArrayList<SensorGraphSample> getHumidity() {
         return humidity;
     }
 
-    public ArrayList<SensorHistory> getLight() {
+    public ArrayList<SensorGraphSample> getLight() {
         return light;
     }
 
-    public ArrayList<SensorHistory> getParticulates() {
+    public ArrayList<SensorGraphSample> getParticulates() {
         return particulates;
     }
 
-    public ArrayList<SensorHistory> getSound() {
+    public ArrayList<SensorGraphSample> getSound() {
         return sound;
     }
 
-    public ArrayList<SensorHistory> getTemperature() {
+    public ArrayList<SensorGraphSample> getTemperature() {
         return temperature;
     }
 
-    public List<ArrayList<SensorHistory>> toList() {
+    public List<ArrayList<SensorGraphSample>> toList() {
         // Always change order of RoomConditions and RoomConditionsFragment too.
         return Lists.newArrayList(temperature, humidity, particulates, light, sound);
     }
