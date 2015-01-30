@@ -2,7 +2,6 @@ package is.hello.sense.ui.dialogs;
 
 import android.animation.LayoutTransition;
 import android.app.Dialog;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
@@ -57,11 +56,6 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
 
     private boolean hasClearedAllViews = false;
 
-    private Drawable checkedDrawable;
-    private Drawable emptyCheckedDrawable;
-    private Drawable uncheckedDrawable;
-    private Drawable emptyUncheckedDrawable;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,14 +65,6 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         } else {
             Analytics.trackEvent(Analytics.TopView.EVENT_QUESTION, null);
         }
-
-        this.checkedDrawable = getResources().getDrawable(R.drawable.questions_check);
-        this.emptyCheckedDrawable = new ColorDrawable();
-        emptyCheckedDrawable.setBounds(checkedDrawable.copyBounds());
-
-        this.uncheckedDrawable = getResources().getDrawable(R.drawable.questions_circle);
-        this.emptyUncheckedDrawable = new ColorDrawable();
-        emptyUncheckedDrawable.setBounds(uncheckedDrawable.copyBounds());
 
         addPresenter(questionsPresenter);
         setRetainInstance(true);
@@ -357,11 +343,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
             choiceButton.setTag(R.id.fragment_questions_tag_choice, choice);
             choiceButton.setOnCheckedChangeListener(this);
 
-            TransitionDrawable left = new TransitionDrawable(new Drawable[] {uncheckedDrawable, emptyUncheckedDrawable});
-            left.setCrossFadeEnabled(true);
-            TransitionDrawable right = new TransitionDrawable(new Drawable[] {emptyCheckedDrawable, checkedDrawable});
-            right.setCrossFadeEnabled(true);
-            choiceButton.setCompoundDrawablesWithIntrinsicBounds(left, null, right, null);
+            choiceButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.item_question_check, 0, 0, 0);
             choiceButton.setOnTouchListener(POP_LISTENER);
 
             choicesContainer.addView(choiceButton, choiceLayoutParams);
@@ -435,7 +417,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN: {
                 animate(view)
-                        .scale(0.7f)
+                        .scale(0.8f)
                         .start();
                 break;
             }
@@ -444,7 +426,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
             case MotionEvent.ACTION_UP: {
                 PropertyAnimatorProxy.stop(view);
                 animate(view)
-                        .simplePop(1.15f)
+                        .simplePop(1.10f)
                         .start();
                 break;
             }
