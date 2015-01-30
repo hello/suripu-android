@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import is.hello.sense.ui.widget.graphing.Extremes;
 
 public class Lists {
     @SafeVarargs
@@ -44,6 +47,18 @@ public class Lists {
         return new ArrayList<>(result.values());
     }
 
+    public static <T> List<T> takeEvery(@NonNull Iterable<T> source, int step) {
+        List<T> result = new ArrayList<>();
+        int i = 0;
+        for (T value : source) {
+            if ((i % step) == 0) {
+                result.add(value);
+            }
+            i++;
+        }
+        return result;
+    }
+
     public static <T extends Comparable<T>> List<T> sorted(@NonNull Collection<T> toSort, @NonNull Comparator<T> comparator) {
         List<T> sortedCopy = new ArrayList<>(toSort.size());
         sortedCopy.addAll(toSort);
@@ -67,5 +82,27 @@ public class Lists {
         }
 
         return null;
+    }
+
+    public static <T> Extremes<T> extremes(@NonNull Iterable<T> haystack, @NonNull Comparator<T> comparator) {
+        Iterator<T> iterator = haystack.iterator();
+
+        T min = iterator.next();
+        int minIndex = 0;
+
+        T max = min;
+        int maxIndex = 0;
+
+        while (iterator.hasNext()) {
+            T next = iterator.next();
+            if (comparator.compare(max, next) < 0) {
+                max = next;
+            }
+            if (comparator.compare(min, next) > 0) {
+                min = next;
+            }
+        }
+
+        return new Extremes<>(min, minIndex, max, maxIndex);
     }
 }

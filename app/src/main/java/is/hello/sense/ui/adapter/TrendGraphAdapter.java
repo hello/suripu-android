@@ -12,14 +12,18 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.GraphType;
+import is.hello.sense.api.model.SensorHistory;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.ui.widget.graphing.Extremes;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import static is.hello.sense.api.model.TrendGraph.GraphSample;
 
 public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterProvider {
     private static final int DAY_CUT_OFF = 9;
@@ -28,9 +32,9 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
     private final Resources resources;
     private final List<ChangeObserver> observers = new ArrayList<>();
     private TrendGraph trendGraph;
-    private List<TrendGraph.GraphSample> sectionSamples = Collections.emptyList();
-    private float baseMagnitude = 0f;
-    private float peakMagnitude = 0f;
+    private List<GraphSample> sectionSamples = Collections.emptyList();
+    private @Nullable
+    Extremes<Float> extremes = null;
 
     public TrendGraphAdapter(@NonNull Resources resources) {
         this.resources = resources;
@@ -49,44 +53,38 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
         }
     }
 
-    public void setTrendGraph(@Nullable TrendGraph trendGraph) {
+    public void bindTrendGraph(@Nullable TrendGraph trendGraph, @NonNull Runnable onDataChanged) {
         if (trendGraph == null || Lists.isEmpty(trendGraph.getDataPoints())) {
             this.trendGraph = null;
             this.sectionSamples = Collections.emptyList();
-            this.baseMagnitude = 0f;
-            this.peakMagnitude = 0f;
+            this.extremes = null;
 
+            onDataChanged.run();
             notifyDataChanged();
         } else {
             Observable<Result> calculateMagnitudes = Observable.create(s -> {
-                List<TrendGraph.GraphSample> dataPoints = trendGraph.getDataPoints();
+                List<GraphSample> dataPoints = trendGraph.getDataPoints();
 
-                float base, peak;
+                Extremes<Float> extremes;
                 if (dataPoints.size() == 1) {
-                    base = 0f;
-                    peak = dataPoints.get(0).getYValue();
+                    extremes = new Extremes<>(0f, SensorHistory.PLACEHOLDER_VALUE,
+                                              dataPoints.get(0).getYValue(), SensorHistory.PLACEHOLDER_VALUE);
                 } else {
-                    Comparator<TrendGraph.GraphSample> comparator = (l, r) -> Float.compare(r.getYValue(), l.getYValue());
-                    peak = Collections.max(dataPoints, comparator).getYValue();
-                    base = Collections.min(dataPoints, comparator).getYValue();
+                    Comparator<GraphSample> comparator = (l, r) -> Float.compare(l.getYValue(), r.getYValue());
+                    extremes = Extremes.of(dataPoints, comparator)
+                                       .map(GraphSample::getYValue);
                 }
 
-                List<TrendGraph.GraphSample> sectionSamples;
+                List<GraphSample> sectionSamples;
                 if (TrendGraph.TIME_PERIOD_OVER_TIME_ALL.equals(trendGraph.getTimePeriod())) {
                     sectionSamples = Collections.emptyList();
                 } else if (trendGraph.getDataPoints().size() > DAY_CUT_OFF) {
-                    sectionSamples = new ArrayList<>();
-                    List<TrendGraph.GraphSample> samples = trendGraph.getDataPoints();
-                    for (int i = 0, count = samples.size(); i < count; i++) {
-                        if (i % DAY_STEP == 0) {
-                            sectionSamples.add(samples.get(i));
-                        }
-                    }
+                    sectionSamples = Lists.takeEvery(trendGraph.getDataPoints(), DAY_STEP);
                 } else {
                     sectionSamples = trendGraph.getDataPoints();
                 }
 
-                s.onNext(new Result(sectionSamples, base, peak));
+                s.onNext(new Result(sectionSamples, extremes));
                 s.onCompleted();
             });
 
@@ -95,9 +93,9 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
                                .subscribe(result -> {
                                    this.trendGraph = trendGraph;
                                    this.sectionSamples = result.sectionSamples;
-                                   this.baseMagnitude = result.baseMagnitude;
-                                   this.peakMagnitude = result.peakMagnitude;
+                                   this.extremes = result.extremes;
 
+                                   onDataChanged.run();
                                    notifyDataChanged();
                                }, e -> {
                                    Logger.error(getClass().getSimpleName(), "Could not calculate min-max magnitudes", e);
@@ -105,14 +103,37 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
         }
     }
 
+    public GraphView.Marker[] getMarkers() {
+        int baseIndex = getBaseIndex();
+        int peakIndex = getPeakIndex();
+        if (baseIndex == SensorHistory.PLACEHOLDER_VALUE || peakIndex == SensorHistory.PLACEHOLDER_VALUE) {
+            return null;
+        } else {
+            String base = Integer.toString((int) getBaseMagnitude());
+            String peak = Integer.toString((int) getPeakMagnitude());
+            return new GraphView.Marker[] {
+                new GraphView.Marker(baseIndex, 0, resources.getColor(R.color.sensor_alert), base),
+                new GraphView.Marker(peakIndex, 0, resources.getColor(R.color.sensor_ideal), peak),
+            };
+        }
+    }
+
     @Override
     public float getBaseMagnitude() {
-        return baseMagnitude;
+        return extremes != null ? extremes.minValue : 0f;
+    }
+
+    public int getBaseIndex() {
+        return extremes != null ? extremes.minPosition : SensorHistory.PLACEHOLDER_VALUE;
     }
 
     @Override
     public float getPeakMagnitude() {
-        return peakMagnitude;
+        return extremes != null ? extremes.maxValue : 0f;
+    }
+
+    public int getPeakIndex() {
+        return extremes != null ? extremes.maxPosition : SensorHistory.PLACEHOLDER_VALUE;
     }
 
     @Override
@@ -136,7 +157,7 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
 
     @Override
     public float getMagnitudeAt(int section, int position) {
-        TrendGraph.GraphSample sample = trendGraph.getDataPoints().get(section);
+        GraphSample sample = trendGraph.getDataPoints().get(section);
         return sample.getYValue();
     }
 
@@ -167,7 +188,7 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
     public int getSectionFooterTextColor(int section) {
         if (trendGraph.getDataType() == TrendGraph.DataType.SLEEP_SCORE) {
             if (trendGraph.getGraphType() == GraphType.HISTOGRAM) {
-                TrendGraph.GraphSample sample = sectionSamples.get(section);
+                GraphSample sample = sectionSamples.get(section);
                 return resources.getColor(sample.getDataLabel().colorRes);
             } else {
                 return Color.GRAY;
@@ -180,7 +201,7 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
     @NonNull
     @Override
     public String getSectionHeader(int section) {
-        TrendGraph.GraphSample sample = sectionSamples.get(section);
+        GraphSample sample = sectionSamples.get(section);
         return sample.getXValue();
     }
 
@@ -191,7 +212,7 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
             return "";
         }
 
-        TrendGraph.GraphSample sample = sectionSamples.get(section);
+        GraphSample sample = sectionSamples.get(section);
         float value = sample.getYValue();
         if (value <= 0f) {
             return resources.getString(R.string.missing_data_placeholder);
@@ -224,16 +245,13 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
 
 
     private static class Result {
-        private final List<TrendGraph.GraphSample> sectionSamples;
-        private final float baseMagnitude;
-        private final float peakMagnitude;
+        private final List<GraphSample> sectionSamples;
+        private final Extremes<Float> extremes;
 
-        private Result(@NonNull List<TrendGraph.GraphSample> sectionSamples,
-                       float baseMagnitude,
-                       float peakMagnitude) {
+        private Result(@NonNull List<GraphSample> sectionSamples,
+                       @NonNull Extremes<Float> extremes) {
             this.sectionSamples = sectionSamples;
-            this.baseMagnitude = baseMagnitude;
-            this.peakMagnitude = peakMagnitude;
+            this.extremes = extremes;
         }
     }
 }

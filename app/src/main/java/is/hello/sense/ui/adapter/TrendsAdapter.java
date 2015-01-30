@@ -20,6 +20,7 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
+import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
@@ -75,7 +76,11 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         }
 
         holder.graphView.setNumberOfLines(TrendGraphAdapter.getNumberOfLines(graph));
-        holder.graphAdapter.setTrendGraph(graph);
+        holder.graphAdapter.bindTrendGraph(graph, () -> {
+            if (graphDrawable instanceof LineGraphDrawable) {
+
+            }
+        });
 
         return view;
     }

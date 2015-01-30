@@ -14,11 +14,13 @@ import java.util.List;
 import is.hello.sense.functional.Function;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
+import is.hello.sense.ui.widget.graphing.Extremes;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import static is.hello.sense.functional.Lists.map;
 import static is.hello.sense.functional.Lists.segment;
+import static is.hello.sense.ui.adapter.SensorHistoryAdapter.Update;
 
 public class SensorHistory extends ApiResponse {
     public static final int PLACEHOLDER_VALUE = -1;
@@ -85,10 +87,10 @@ public class SensorHistory extends ApiResponse {
 
     //region Generating Graphs
 
-    public static Observable<SensorHistoryAdapter.Update> createAdapterUpdate(@NonNull List<SensorHistory> history, int mode, @NonNull DateTimeZone timeZone) {
-        return Observable.create((Observable.OnSubscribe<SensorHistoryAdapter.Update>) s -> {
+    public static Observable<Update> createAdapterUpdate(@NonNull List<SensorHistory> history, int mode, @NonNull DateTimeZone timeZone) {
+        return Observable.create((Observable.OnSubscribe<Update>) s -> {
             if (history.isEmpty()) {
-                s.onNext(new SensorHistoryAdapter.Update(Collections.emptyList(), 0f, 0f));
+                s.onNext(new Update(Collections.emptyList(), 0f, 0f));
                 s.onCompleted();
             } else {
                 Function<SensorHistory, Integer> segmentKeyProducer;
@@ -104,10 +106,11 @@ public class SensorHistory extends ApiResponse {
                 List<SensorHistoryAdapter.Section> sections = map(segments, SensorHistoryAdapter.Section::new);
 
                 Comparator<SensorHistory> comparator = (l, r) -> Float.compare(l.getNormalizedValue(), r.getNormalizedValue());
-                float peak = Collections.max(history, comparator).getNormalizedValue();
-                float base = Collections.min(history, comparator).getNormalizedValue();
+                Extremes<SensorHistory> extremes = Extremes.of(history, comparator);
+                float peak = extremes.maxValue.getNormalizedValue();
+                float base = extremes.minValue.getNormalizedValue();
 
-                s.onNext(new SensorHistoryAdapter.Update(sections, peak, base));
+                s.onNext(new Update(sections, peak, base));
                 s.onCompleted();
             }
         }).subscribeOn(Schedulers.computation());
