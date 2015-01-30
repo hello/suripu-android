@@ -81,6 +81,7 @@ public final class PresenterSubject<T> extends Subject<T, T> {
      * increasing memory pressure.
      */
     public void forget() {
+        subscriptionManager.state = SubscriptionManager.STATE_EMPTY;
         subscriptionManager.value = null;
         subscriptionManager.error = null;
     }
@@ -104,6 +105,10 @@ public final class PresenterSubject<T> extends Subject<T, T> {
 
 
     private static class SubscriptionManager<T> implements OnSubscribe<T> {
+        private static final int STATE_EMPTY = 0;
+        private static final int STATE_VALUE = 1;
+        private static final int STATE_ERROR = 2;
+
         /*
             Have to use a concurrent collection to back the subscription manager,
             multiple threads can be creating and destroying subscriptions.
@@ -119,6 +124,7 @@ public final class PresenterSubject<T> extends Subject<T, T> {
         */
         private final ConcurrentLinkedQueue<Subscriber<? super T>> subscribers = new ConcurrentLinkedQueue<>();
 
+        private int state = STATE_EMPTY;
         private T value = null;
         private Throwable error = null;
 
@@ -129,15 +135,16 @@ public final class PresenterSubject<T> extends Subject<T, T> {
             if (!subscriber.isUnsubscribed()) {
                 subscribers.add(subscriber);
 
-                if (value != null) {
+                if (state == STATE_VALUE) {
                     subscriber.onNext(value);
-                } else if (error != null) {
+                } else if (state == STATE_ERROR) {
                     subscriber.onError(error);
                 }
             }
         }
 
         public void next(T value) {
+            this.state = STATE_VALUE;
             this.value = value;
             this.error = null;
 
@@ -147,6 +154,7 @@ public final class PresenterSubject<T> extends Subject<T, T> {
         }
 
         public void error(Throwable e) {
+            this.state = STATE_ERROR;
             this.value = null;
             this.error = e;
 
