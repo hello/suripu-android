@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
 import java.util.HashSet;
@@ -213,8 +214,9 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
             itemView.setSleepDepth(sleepDepth);
             itemView.setEventResource(Styles.getTimelineSegmentIconRes(segment));
 
+            DateTime segmentTimestamp = segment.getShiftedTimestamp();
             if (positionsWithTime.contains(position)) {
-                LocalDateTime time = segment.getTimestamp().withMinuteOfHour(0);
+                DateTime time = segmentTimestamp.withMinuteOfHour(0);
                 itemView.setLeftTime(dateFormatter.formatAsTimelineStamp(time, use24Time));
             } else {
                 itemView.setLeftTime(null);
@@ -222,7 +224,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
             EventType eventType = segment.getEventType();
             if (eventType != null) {
-                itemView.setRightTime(dateFormatter.formatAsTimelineStamp(segment.getTimestamp(), use24Time));
+                itemView.setRightTime(dateFormatter.formatAsTimelineStamp(segmentTimestamp, use24Time));
             } else {
                 itemView.setRightTime(null);
             }

@@ -91,7 +91,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
         }
     }
 
-    public @NonNull String formatAsTimelineStamp(@Nullable LocalDateTime date, boolean use24Time) {
+    public @NonNull String formatAsTimelineStamp(@Nullable DateTime date, boolean use24Time) {
         if (date != null) {
             if (use24Time)
                 return date.toString(context.getString(R.string.format_timeline_time_24_hr));

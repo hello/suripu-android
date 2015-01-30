@@ -3,10 +3,6 @@ package is.hello.sense.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TimelineSensor extends ApiResponse {
-    public static final String NAME_TEMPERATURE = "temperature";
-    public static final String NAME_HUMIDITY = "humidity";
-    public static final String NAME_PARTICULATES = "particulates";
-
     @JsonProperty("name")
     private String name;
 

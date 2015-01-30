@@ -7,9 +7,12 @@ import android.text.TextUtils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
 import java.util.List;
@@ -21,8 +24,7 @@ public class TimelineSegment extends ApiResponse {
     private String id;
 
     @JsonProperty("timestamp")
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private LocalDateTime timestamp;
+    private DateTime timestamp;
 
     @JsonProperty("duration")
     private long duration;
@@ -41,17 +43,20 @@ public class TimelineSegment extends ApiResponse {
     private EventType eventType;
 
     @JsonProperty("offset_millis")
-    private long offset;
+    private int offset;
 
     @JsonProperty("sound")
     private SoundInfo sound;
+
+    @JsonIgnore
+    private @Nullable DateTime shiftedTimestamp;
 
 
     public String getId() {
         return id;
     }
 
-    public LocalDateTime getTimestamp() {
+    public DateTime getTimestamp() {
         return timestamp;
     }
 
@@ -75,8 +80,16 @@ public class TimelineSegment extends ApiResponse {
         return eventType;
     }
 
-    public long getOffset() {
-        return offset;
+    public DateTimeZone getTimeZone() {
+        return DateTimeZone.forOffsetMillis(offset);
+    }
+
+    public DateTime getShiftedTimestamp() {
+        if (shiftedTimestamp == null) {
+            this.shiftedTimestamp = getTimestamp().withZone(getTimeZone());
+        }
+
+        return shiftedTimestamp;
     }
 
     public SoundInfo getSound() {
@@ -88,9 +101,13 @@ public class TimelineSegment extends ApiResponse {
         return "TimelineSegment{" +
                 "id='" + id + '\'' +
                 ", timestamp=" + timestamp +
+                ", duration=" + duration +
                 ", message='" + message + '\'' +
+                ", sensors=" + sensors +
                 ", sleepDepth=" + sleepDepth +
+                ", eventType=" + eventType +
                 ", offset=" + offset +
+                ", sound=" + sound +
                 '}';
     }
 
