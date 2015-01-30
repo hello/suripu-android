@@ -21,7 +21,7 @@ import static is.hello.sense.functional.Lists.map;
 import static is.hello.sense.functional.Lists.segment;
 
 public class SensorHistory extends ApiResponse {
-    public static final long PLACEHOLDER_VALUE = -1;
+    public static final int PLACEHOLDER_VALUE = -1;
 
     public static final String SENSOR_NAME_TEMPERATURE = "temperature";
     public static final String SENSOR_NAME_HUMIDITY = "humidity";
@@ -103,7 +103,7 @@ public class SensorHistory extends ApiResponse {
                 List<List<SensorHistory>> segments = segment(segmentKeyProducer, history);
                 List<SensorHistoryAdapter.Section> sections = map(segments, SensorHistoryAdapter.Section::new);
 
-                Comparator<SensorHistory> comparator = (l, r) -> Float.compare(r.getNormalizedValue(), l.getNormalizedValue());
+                Comparator<SensorHistory> comparator = (l, r) -> Float.compare(l.getNormalizedValue(), r.getNormalizedValue());
                 float peak = Collections.max(history, comparator).getNormalizedValue();
                 float base = Collections.min(history, comparator).getNormalizedValue();
 
