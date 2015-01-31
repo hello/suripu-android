@@ -80,7 +80,7 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
     protected void completeHardwareActivity(@NonNull Runnable onCompletion) {
-        bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.FADE_OUT),
+        bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.STOP),
                          ignored -> onCompletion.run(),
                          error -> onCompletion.run());
     }
