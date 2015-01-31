@@ -367,7 +367,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
             builder.setHeadingText(R.string.onboarding_title_sleep_pill_intro);
             builder.setSubheadingText(R.string.onboarding_message_sleep_pill_intro);
-            builder.setDiagramImage(R.drawable.onboarding_clip_pill);
+            builder.setDiagramImage(R.drawable.onboarding_sleep_pill_intro);
             builder.setHideToolbar(true);
             builder.setNextFragmentClass(OnboardingPairPillFragment.class);
             pushFragment(builder.toFragment(), null, false);

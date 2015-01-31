@@ -39,7 +39,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     private static final long STACK_OPERATION_TIMEOUT_S = 30;
     private static final long SIMPLE_COMMAND_TIMEOUT_S = 45;
-    private static final long ANIMATION_TIMEOUT_S = 7;
+    private static final long ANIMATION_TIMEOUT_S = 20;
     private static final long PAIR_PILL_TIMEOUT_S = 90; // Per Pang
     private static final long SET_WIFI_TIMEOUT_S = 90;
     private static final long WIFI_SCAN_TIMEOUT_S = 30;

@@ -26,6 +26,7 @@ public class OnboardingSensePairingModeHelpFragment extends SenseFragment {
         return new OnboardingSimpleStepViewBuilder(this, inflater, container)
                 .setHeadingText(R.string.title_sense_pairing_mode_help)
                 .setSubheadingText(R.string.info_sense_pairing_mode_help)
+                .setDiagramImage(R.drawable.onboarding_pairing_mode_help)
                 .setPrimaryOnClickListener(ignored -> getFragmentManager().popBackStack())
                 .setWantsSecondaryButton(false)
                 .hideToolbar()
