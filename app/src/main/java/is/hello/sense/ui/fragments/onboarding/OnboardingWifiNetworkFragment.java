@@ -127,7 +127,11 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             return;
         }
 
-        showHardwareActivity(() -> bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(), this::bindScanResults, this::scanResultsUnavailable));
+        showHardwareActivity(() -> {
+            bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(),
+                             this::bindScanResults,
+                             this::scanResultsUnavailable);
+        }, this::scanResultsUnavailable);
     }
 
     public void bindScanResults(@NonNull Collection<SenseCommandProtos.wifi_endpoint> scanResults) {
@@ -141,7 +145,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             listView.setVisibility(View.VISIBLE);
             rescanButton.setVisibility(View.VISIBLE);
             rescanButton.setEnabled(true);
-        });
+        }, null);
     }
 
     public void scanResultsUnavailable(Throwable e) {
@@ -154,7 +158,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             rescanButton.setEnabled(true);
 
             ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
-        });
+        }, null);
     }
 
     public void peripheralRediscoveryFailed(Throwable e) {

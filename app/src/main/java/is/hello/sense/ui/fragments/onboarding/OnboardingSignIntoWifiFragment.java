@@ -214,7 +214,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
                            .apply();
                 sendAccessToken();
             }, this::presentError);
-        });
+        }, this::presentError);
     }
 
     private void sendAccessToken() {
@@ -261,12 +261,13 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
     }
 
     private void finished() {
-        hideAllActivity(true, () -> getOnboardingActivity().showPairPill(true));
+        hideAllActivityForSuccess(() -> getOnboardingActivity().showPairPill(true),
+                                  this::presentError);
     }
 
 
     public void presentError(Throwable e) {
-        hideAllActivity(false, () -> {
+        hideAllActivityForFailure(() -> {
             ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
         });
     }

@@ -140,13 +140,13 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             bindAndSubscribe(hardwarePresenter.linkPill(),
                              ignored -> completeHardwareActivity(() -> finishedPairing(true)),
                              this::presentError);
-        });
+        }, this::presentError);
     }
 
     public void presentError(Throwable e) {
         this.isPairing = false;
 
-        hideAllActivity(false, () -> {
+        hideAllActivityForFailure(() -> {
             activityIndicator.setVisibility(View.GONE);
             activityStatus.setVisibility(View.GONE);
 

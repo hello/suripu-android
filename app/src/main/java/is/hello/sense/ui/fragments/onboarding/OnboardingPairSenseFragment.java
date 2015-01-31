@@ -86,13 +86,15 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
                     linkAccount();
                 } else {
-                    hideAllActivity(true, () -> getOnboardingActivity().showSelectWifiNetwork(true));
+                    hideAllActivityForSuccess(() -> getOnboardingActivity().showSelectWifiNetwork(true),
+                                              this::pairingFailed);
                 }
             }, e -> {
                 Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not get Sense's wifi network", e);
-                hideAllActivity(true, () -> getOnboardingActivity().showSelectWifiNetwork(true));
+                hideAllActivityForSuccess(() -> getOnboardingActivity().showSelectWifiNetwork(true),
+                                          this::pairingFailed);
             });
-        });
+        }, this::pairingFailed);
     }
 
     private void linkAccount() {
@@ -142,14 +144,14 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     private void finished() {
-        hideAllActivity(true, () -> {
+        hideAllActivityForSuccess(() -> {
             if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false)) {
                 hardwarePresenter.clearPeripheral();
                 getOnboardingActivity().finish();
             } else {
                 getOnboardingActivity().showPairPill(true);
             }
-        });
+        }, this::pairingFailed);
     }
 
     public void showPairingModeHelp(@NonNull View sender) {
@@ -187,7 +189,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     public void pairingFailed(Throwable e) {
-        hideAllActivity(false, () -> {
+        hideAllActivityForFailure(() -> {
             if (e instanceof PeripheralNotFoundError) {
                 TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
                 dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
