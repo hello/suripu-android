@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
-import is.hello.sense.api.model.SensorHistory;
+import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
@@ -38,7 +38,7 @@ import rx.Observable;
     protected Observable<Result> provideUpdateObservable() {
         return unitFormatter.unitSystem.flatMap(unitSystem -> {
             Observable<RoomConditions> roomConditions = apiService.currentRoomConditions(unitSystem.getApiTemperatureUnit());
-            Observable<RoomSensorHistory> roomHistory = apiService.roomSensorHistory(HISTORY_HOURS, SensorHistory.timeForLatest());
+            Observable<RoomSensorHistory> roomHistory = apiService.roomSensorHistory(HISTORY_HOURS, SensorGraphSample.timeForLatest());
             return Observable.combineLatest(roomConditions, roomHistory,
                     (conditions, history) -> new Result(conditions, history, unitSystem));
         });

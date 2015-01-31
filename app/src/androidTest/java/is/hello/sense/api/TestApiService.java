@@ -27,7 +27,7 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.api.model.SensorHistory;
+import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -144,13 +144,13 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<SensorHistory>> sensorHistoryForDay(@Path("sensor") String sensor,
+    public Observable<ArrayList<SensorGraphSample>> sensorHistoryForDay(@Path("sensor") String sensor,
                                                                @Query("timestamp_millis") long timestamp) {
         return unimplemented();
     }
 
     @Override
-    public Observable<ArrayList<SensorHistory>> sensorHistoryForWeek(@Path("sensor") String sensor,
+    public Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
                                                                 @Query("timestamp_millis") long timestamp) {
         return unimplemented();
     }

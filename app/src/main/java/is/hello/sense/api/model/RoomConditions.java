@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
+import is.hello.sense.api.ApiService;
 import is.hello.sense.functional.Lists;
 
 public class RoomConditions extends ApiResponse {
@@ -53,19 +54,19 @@ public class RoomConditions extends ApiResponse {
 
     public @Nullable SensorState getSensorStateWithName(@NonNull String name) {
         switch (name) {
-            case SensorHistory.SENSOR_NAME_HUMIDITY:
+            case ApiService.SENSOR_NAME_HUMIDITY:
                 return humidity;
 
-            case SensorHistory.SENSOR_NAME_PARTICULATES:
+            case ApiService.SENSOR_NAME_PARTICULATES:
                 return particulates;
 
-            case SensorHistory.SENSOR_NAME_TEMPERATURE:
+            case ApiService.SENSOR_NAME_TEMPERATURE:
                 return temperature;
 
-            case SensorHistory.SENSOR_NAME_LIGHT:
+            case ApiService.SENSOR_NAME_LIGHT:
                 return light;
 
-            case SensorHistory.SENSOR_NAME_SOUND:
+            case ApiService.SENSOR_NAME_SOUND:
                 return sound;
 
             default:

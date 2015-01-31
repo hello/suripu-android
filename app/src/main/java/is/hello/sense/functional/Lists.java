@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import is.hello.sense.ui.widget.graphing.Extremes;
 
 public class Lists {
     @SafeVarargs
@@ -42,6 +45,18 @@ public class Lists {
             segment.add(value);
         }
         return new ArrayList<>(result.values());
+    }
+
+    public static <T> List<T> takeEvery(@NonNull Iterable<T> source, int step) {
+        List<T> result = new ArrayList<>();
+        int i = 0;
+        for (T value : source) {
+            if ((i % step) == 0) {
+                result.add(value);
+            }
+            i++;
+        }
+        return result;
     }
 
     public static <T extends Comparable<T>> List<T> sorted(@NonNull Collection<T> toSort, @NonNull Comparator<T> comparator) {

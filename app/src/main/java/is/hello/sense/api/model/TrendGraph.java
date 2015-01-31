@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.util.Collections;
 import java.util.List;
@@ -105,7 +106,7 @@ public class TrendGraph extends ApiResponse {
         private String xValue;
 
         @JsonProperty("offset_millis")
-        private int offsetMillis;
+        private int offset;
 
         @JsonProperty("data_label")
         private DataLabel dataLabel;
@@ -123,8 +124,12 @@ public class TrendGraph extends ApiResponse {
             return xValue;
         }
 
-        public int getOffsetMillis() {
-            return offsetMillis;
+        public DateTimeZone getTimeZone() {
+            return DateTimeZone.forOffsetMillis(offset);
+        }
+
+        public DateTime getShiftedDateTime() {
+            return dateTime.withZone(getTimeZone());
         }
 
         public DataLabel getDataLabel() {
@@ -138,7 +143,7 @@ public class TrendGraph extends ApiResponse {
                     "dateTime=" + dateTime +
                     ", yValue=" + yValue +
                     ", xValue='" + xValue + '\'' +
-                    ", offsetMillis=" + offsetMillis +
+                    ", offset=" + offset +
                     ", dataLabel=" + dataLabel +
                     '}';
         }

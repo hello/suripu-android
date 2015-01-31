@@ -46,7 +46,7 @@ public class GraphAdapterCache {
     //region Calculations
 
     public float calculateMagnitudePercentage(float magnitude) {
-        return (magnitude - baseMagnitude) / (peakMagnitude - baseMagnitude);
+        return (magnitude - peakMagnitude) / (baseMagnitude - peakMagnitude);
     }
 
     public float calculateSectionWidth(float hostWidth) {

@@ -45,9 +45,10 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
     private int headerFooterPadding;
 
+    private float markerPointHalf;
+
     private final Paint highlightPaint = new Paint();
-    private final RectF highlightPointBounds = new RectF();
-    private float highlightPointAreaHalf;
+    private final RectF pointBounds = new RectF();
 
     private int highlightedSection = NONE, highlightedSegment = NONE;
     private boolean ignoreTouchUntilEnd = false;
@@ -89,6 +90,8 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
     protected void initialize(@Nullable AttributeSet attrs, int defStyleAttr) {
         Resources resources = getResources();
 
+        this.markerPointHalf = resources.getDimensionPixelSize(R.dimen.graph_point_size) / 2f;
+
         this.headerFooterPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
 
         headerTextPaint.setAntiAlias(true);
@@ -102,7 +105,6 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_graph_footer));
         setFooterTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
 
-        this.highlightPointAreaHalf = getResources().getDimensionPixelSize(R.dimen.series_graph_point_size) / 2f;
         highlightPaint.setAntiAlias(true);
         highlightPaint.setAlpha(0);
 
@@ -222,20 +224,18 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
             }
         }
 
+        GraphAdapterCache adapterCache = getAdapterCache();
         if (isHighlighted()) {
-            GraphAdapterCache adapterCache = getAdapterCache();
             float sectionWidth = adapterCache.calculateSectionWidth(width);
             float segmentWidth = adapterCache.calculateSegmentWidth(width, highlightedSection);
             float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, highlightedSection, highlightedSegment);
             float segmentY = adapterCache.calculateSegmentY(height, highlightedSection, highlightedSegment);
 
-            highlightPointBounds.set(segmentX - highlightPointAreaHalf,
-                                     minY + (segmentY - highlightPointAreaHalf),
-                                     segmentX + highlightPointAreaHalf,
-                                     minY + (segmentY + highlightPointAreaHalf));
-            canvas.drawOval(highlightPointBounds, highlightPaint);
+            pointBounds.set(segmentX - markerPointHalf, minY + (segmentY - markerPointHalf),
+                            segmentX + markerPointHalf, minY + (segmentY + markerPointHalf));
+            canvas.drawOval(pointBounds, highlightPaint);
 
-            canvas.drawRect(highlightPointBounds.centerX(), 0f, highlightPointBounds.centerX() + 1f, getDrawingHeight(), highlightPaint);
+            canvas.drawRect(pointBounds.centerX(), 0f, pointBounds.centerX() + 1f, getDrawingHeight(), highlightPaint);
         }
     }
 
@@ -512,4 +512,5 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         void onGraphValueHighlighted(int section, int position);
         void onGraphHighlightEnd();
     }
+
 }

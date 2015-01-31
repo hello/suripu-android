@@ -16,7 +16,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.SensorHistory;
+import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -95,7 +96,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         this.historyModeSelector = (SelectorLinearLayout) view.findViewById(R.id.fragment_sensor_history_mode);
         historyModeSelector.setOnSelectionChangedListener(this);
-        historyModeSelector.setButtonTags(SensorHistoryPresenter.MODE_DAY, SensorHistoryPresenter.MODE_WEEK);
+        historyModeSelector.setButtonTags(SensorHistoryPresenter.Mode.DAY, SensorHistoryPresenter.Mode.WEEK);
 
         return view;
     }
@@ -124,23 +125,23 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         int welcomeDialogRes;
         switch (sensor) {
-            case SensorHistory.SENSOR_NAME_TEMPERATURE: {
+            case ApiService.SENSOR_NAME_TEMPERATURE: {
                 welcomeDialogRes = R.xml.welcome_dialog_sensor_temperature;
                 break;
             }
-            case SensorHistory.SENSOR_NAME_HUMIDITY: {
+            case ApiService.SENSOR_NAME_HUMIDITY: {
                 welcomeDialogRes = R.xml.welcome_dialog_sensor_humidity;
                 break;
             }
-            case SensorHistory.SENSOR_NAME_PARTICULATES: {
+            case ApiService.SENSOR_NAME_PARTICULATES: {
                 welcomeDialogRes = R.xml.welcome_dialog_sensor_particulates;
                 break;
             }
-            case SensorHistory.SENSOR_NAME_SOUND: {
+            case ApiService.SENSOR_NAME_SOUND: {
                 welcomeDialogRes = R.xml.welcome_dialog_sensor_sound;
                 break;
             }
-            case SensorHistory.SENSOR_NAME_LIGHT: {
+            case ApiService.SENSOR_NAME_LIGHT: {
                 welcomeDialogRes = R.xml.welcome_dialog_sensor_light;
                 break;
             }
@@ -211,7 +212,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 .start();
         sensorDataSource.clear();
 
-        int newMode = (Integer) historyModeSelector.getButtonTag(newSelectionIndex);
+        SensorHistoryPresenter.Mode newMode = (SensorHistoryPresenter.Mode) historyModeSelector.getButtonTag(newSelectionIndex);
         sensorHistoryPresenter.setMode(newMode);
     }
 
@@ -221,13 +222,13 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         private boolean use24Time = false;
 
         public void bindHistory(@NonNull SensorHistoryPresenter.Result historyAndUnits) {
-            List<SensorHistory> history = historyAndUnits.data;
+            List<SensorGraphSample> history = historyAndUnits.data;
             if (history.isEmpty()) {
                 clear();
                 return;
             }
 
-            Observable<Update> update = SensorHistory.createAdapterUpdate(history, sensorHistoryPresenter.getMode(), dateFormatter.getTargetTimeZone());
+            Observable<Update> update = Update.forHistorySeries(history, sensorHistoryPresenter.getMode());
             bindAndSubscribe(update, this::update, Functions.LOG_ERROR);
 
             this.unitSystem = historyAndUnits.unitSystem;
@@ -271,19 +272,19 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         private CharSequence formatSensorValue(long value) {
             switch (sensor) {
-                case SensorHistory.SENSOR_NAME_TEMPERATURE:
+                case ApiService.SENSOR_NAME_TEMPERATURE:
                     return unitSystem.formatTemperature(value);
 
-                case SensorHistory.SENSOR_NAME_HUMIDITY:
+                case ApiService.SENSOR_NAME_HUMIDITY:
                     return unitSystem.formatHumidity(value);
 
-                case SensorHistory.SENSOR_NAME_PARTICULATES:
+                case ApiService.SENSOR_NAME_PARTICULATES:
                     return unitSystem.formatParticulates(value);
 
-                case SensorHistory.SENSOR_NAME_SOUND:
+                case ApiService.SENSOR_NAME_SOUND:
                     return unitSystem.formatDecibels(value);
 
-                case SensorHistory.SENSOR_NAME_LIGHT:
+                case ApiService.SENSOR_NAME_LIGHT:
                     return unitSystem.formatLight(value);
 
                 default:
@@ -313,8 +314,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @NonNull
         @Override
         public String getSectionHeader(int section) {
-            SensorHistory value = getSection(section).getRepresentativeValue();
-            if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
+            SensorGraphSample value = getSection(section).getRepresentativeValue();
+            if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.Mode.WEEK) {
                 return dateFormatter.formatDateTime(value.getTime(), "E").substring(0, 1);
             } else {
                 if (use24Time)
@@ -328,7 +329,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public String getSectionFooter(int section) {
             long value = getSection(section).getAverage();
-            if (value == SensorHistory.PLACEHOLDER_VALUE) {
+            if (value == ApiService.PLACEHOLDER_VALUE) {
                 return getString(R.string.missing_data_placeholder);
             } else {
                 return formatSensorValue(value).toString();
@@ -354,14 +355,14 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         @Override
         public void onGraphValueHighlighted(int section, int position) {
-            SensorHistory instant = getSection(section).get(position);
+            SensorGraphSample instant = getSection(section).get(position);
             if (instant.isValuePlaceholder()) {
                 readingText.setText(R.string.missing_data_placeholder);
             } else {
                 readingText.setText(formatSensorValue(instant.getValue()));
             }
 
-            if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.MODE_WEEK) {
+            if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.Mode.WEEK) {
                 messageText.setText(dateFormatter.formatAsDayAndTime(instant.getTime(), use24Time));
             } else {
                 messageText.setText(dateFormatter.formatAsTime(instant.getTime(), use24Time));

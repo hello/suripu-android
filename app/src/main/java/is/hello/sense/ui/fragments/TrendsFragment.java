@@ -93,7 +93,8 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
 
     public void presentError(Throwable e) {
         swipeRefreshLayout.setRefreshing(false);
-        
+        trendsAdapter.clear();
+
         noDataPlaceholder.setText(R.string.trends_message_error);
         noDataPlaceholder.setVisibility(View.VISIBLE);
     }

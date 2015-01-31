@@ -35,6 +35,22 @@ public abstract class GraphDrawable extends Drawable implements GraphAdapter.Cha
         invalidateSelf();
     }
 
+    public int getBottomInset() {
+        return bottomInset;
+    }
+
+    public int getTopInset() {
+        return topInset;
+    }
+
+    public int getContentHeight() {
+        return getBounds().height() - (topInset + bottomInset);
+    }
+
+    public int getContentWidth() {
+        return getBounds().width();
+    }
+
     public void setChangeObserver(@Nullable GraphAdapter.ChangeObserver changeObserver) {
         this.changeObserver = changeObserver;
     }
