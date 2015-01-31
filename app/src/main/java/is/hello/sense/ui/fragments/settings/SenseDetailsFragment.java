@@ -203,7 +203,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     public void presentError(@NonNull Throwable e) {
         hideAlert();
-        hideAllActivity(false, () -> {
+        hideAllActivityForFailure(() -> {
             if (e instanceof PeripheralNotFoundError) {
                 showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_retry, this::connectToPeripheral);
             } else {
@@ -259,9 +259,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         showBlockingActivity(R.string.dialog_loading_message);
         showHardwareActivity(() -> {
             bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                             ignored -> hideAllActivity(true, () -> getFragmentManager().popBackStackImmediate()),
+                             ignored -> hideAllActivityForSuccess(() -> getFragmentManager().popBackStackImmediate(), this::presentError),
                              this::presentError);
-        });
+        }, this::presentError);
     }
 
     public void factoryReset() {
@@ -286,7 +286,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
             bindAndSubscribe(devicesPresenter.unregisterAllDevices(),
                              ignored -> completeFactoryReset(),
                              this::presentError);
-        });
+        }, this::presentError);
     }
 
     private void completeFactoryReset() {

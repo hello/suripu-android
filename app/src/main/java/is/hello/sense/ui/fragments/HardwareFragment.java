@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import javax.inject.Inject;
@@ -10,6 +11,8 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.util.Logger;
+import rx.functions.Action1;
 
 /**
  * Extends InjectionFragment to add support for displaying
@@ -46,17 +49,31 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
 
-    protected void showHardwareActivity(@NonNull Runnable onCompletion) {
+    protected void showHardwareActivity(@NonNull Runnable onCompletion,
+                                        @NonNull Action1<Throwable> onError) {
         bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.BUSY),
                          ignored -> onCompletion.run(),
-                         error -> onCompletion.run());
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Error occurred when showing hardware activity, clearing peripheral.", e);
+                             hardwarePresenter.clearPeripheral();
+                             onError.call(e);
+                         });
     }
 
-    protected void hideHardwareActivity(@NonNull Runnable onCompletion) {
-        if (hardwarePresenter.getPeripheral() != null) {
+    protected void hideHardwareActivity(@NonNull Runnable onCompletion,
+                                        @Nullable Action1<Throwable> onError) {
+        if (hardwarePresenter.getPeripheral() != null && hardwarePresenter.getPeripheral().isConnected()) {
             bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.TRIPPY),
                              ignored -> onCompletion.run(),
-                             error -> onCompletion.run());
+                             e -> {
+                                 Logger.error(getClass().getSimpleName(), "Error occurred when hiding hardware activity, clearing peripheral.", e);
+                                 hardwarePresenter.clearPeripheral();
+                                 if (onError != null) {
+                                     onError.call(e);
+                                 } else {
+                                     onCompletion.run();
+                                 }
+                             });
         } else {
             coordinator.postOnResume(onCompletion);
         }
@@ -69,10 +86,16 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
 
-    protected void hideAllActivity(boolean success, @NonNull Runnable onCompletion) {
-        hideHardwareActivity(() -> hideBlockingActivity(success, onCompletion));
+    protected void hideAllActivityForSuccess(@NonNull Runnable onCompletion,
+                                             @NonNull Action1<Throwable> onError) {
+        hideHardwareActivity(() -> hideBlockingActivity(true, onCompletion),
+                             e -> hideBlockingActivity(false, () -> onError.call(e)));
     }
 
+    protected void hideAllActivityForFailure(@NonNull Runnable onCompletion) {
+        Runnable next = () -> hideBlockingActivity(false, onCompletion);
+        hideHardwareActivity(next, ignored -> next.run());
+    }
 
 
     protected OnboardingActivity getOnboardingActivity() {
