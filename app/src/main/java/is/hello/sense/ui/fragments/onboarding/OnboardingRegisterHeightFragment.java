@@ -50,8 +50,7 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
 
         if (account.getHeight() != null) {
             int height = account.getHeight();
-            scale.setValueAsync(height);
-            onValueChanged(height);
+            scale.setValueAsync(height, true);
         }
 
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);

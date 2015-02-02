@@ -84,6 +84,7 @@ public class ScaleView extends FrameLayout {
     }
 
     protected void initialize(int orientation, int initialValue) {
+        LayoutParams tickLayoutParams;
         if (orientation == VERTICAL) {
             this.tickFillHost = new ScrollView(getContext()) {
                 @Override
@@ -94,6 +95,8 @@ public class ScaleView extends FrameLayout {
             };
             tickFillHost.setVerticalScrollBarEnabled(false);
             tickFillHost.setVerticalFadingEdgeEnabled(true);
+
+            tickLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         } else if (orientation == HORIZONTAL) {
             this.tickFillHost = new HorizontalScrollView(getContext()) {
                 @Override
@@ -104,6 +107,7 @@ public class ScaleView extends FrameLayout {
             };
             tickFillHost.setHorizontalScrollBarEnabled(false);
             tickFillHost.setHorizontalFadingEdgeEnabled(true);
+            tickLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
         } else {
             throw new IllegalArgumentException();
         }
@@ -116,16 +120,16 @@ public class ScaleView extends FrameLayout {
         this.segmentSize = resources.getDimensionPixelSize(R.dimen.scale_view_segment);
 
         this.tickView = new TickView(getContext());
-        tickFillHost.addView(tickView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        tickFillHost.addView(tickView, tickLayoutParams);
 
         tickFillHost.setFadingEdgeLength(resources.getDimensionPixelSize(R.dimen.shadow_size));
         tickFillHost.setOverScrollMode(ScrollView.OVER_SCROLL_NEVER);
         tickFillHost.setBackgroundColor(Color.WHITE);
-        addView(tickFillHost, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        addView(tickFillHost, tickLayoutParams);
 
         setWillNotDraw(false);
         updateFillArea();
-        setValueAsync(initialValue);
+        setValueAsync(initialValue, false);
     }
 
     @Override
@@ -135,7 +139,7 @@ public class ScaleView extends FrameLayout {
 
             setMinValue(savedState.getInt("minValue"));
             setMaxValue(savedState.getInt("maxValue"));
-            setValueAsync(savedState.getInt("value"));
+            setValueAsync(savedState.getInt("value"), true);
 
             state = savedState.getParcelable("savedState");
         }
@@ -197,6 +201,7 @@ public class ScaleView extends FrameLayout {
         } else {
             tickView.setMinimumWidth(area);
         }
+        invalidate();
     }
 
     protected int normalizeValue(int value) {
@@ -231,7 +236,9 @@ public class ScaleView extends FrameLayout {
         updateFillArea();
     }
 
-    public void setValueAsync(int value) {
+    public void setValueAsync(int value, boolean notifyListener) {
+        updateFillArea();
+
         post(() -> {
             int offset = (segmentSize * (normalizeValue(value) - minValue));
             if (orientation == VERTICAL) {
@@ -239,7 +246,9 @@ public class ScaleView extends FrameLayout {
             } else {
                 tickFillHost.scrollTo(offset, 0);
             }
-            updateFillArea();
+            if (notifyListener) {
+                onFillHostScrolled();
+            }
         });
     }
 
