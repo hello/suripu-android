@@ -24,6 +24,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -76,6 +77,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     private BluetoothAdapter bluetoothAdapter;
 
     private Account account;
+    private @Nullable DevicesInfo devicesInfo;
 
     private @Nullable SensorManager sensorManager;
     private @Nullable ShakeDetector shakeDetector;
@@ -364,10 +366,18 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SENSE);
 
         if (showIntroduction) {
+            bindAndSubscribe(apiService.devicesInfo(),
+                             devicesInfo -> {
+                                 Logger.info(getClass().getSimpleName(), "Loaded devices info");
+                                 this.devicesInfo = devicesInfo;
+                             }, e -> {
+                                 Logger.error(getClass().getSimpleName(), "Failed to silently load devices info, will retry later", e);
+                             });
+
             OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
             builder.setHeadingText(R.string.onboarding_title_sleep_pill_intro);
             builder.setSubheadingText(R.string.onboarding_message_sleep_pill_intro);
-            builder.setDiagramImage(R.drawable.onboarding_sleep_pill_intro);
+            builder.setDiagramImage(R.drawable.onboarding_clip_pill);
             builder.setHideToolbar(true);
             builder.setNextFragmentClass(OnboardingPairPillFragment.class);
             pushFragment(builder.toFragment(), null, false);
@@ -425,7 +435,23 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void show2ndPillIntroduction() {
-        pushFragment(new OnboardingSetup2ndPillFragment(), null, false);
+        if (devicesInfo != null) {
+            if (devicesInfo.getNumberPairedAccounts() > 1) {
+                showDone();
+            } else {
+                pushFragment(new OnboardingSetup2ndPillFragment(), null, false);
+            }
+        } else {
+            LoadingDialogFragment.show(getFragmentManager());
+            bindAndSubscribe(apiService.devicesInfo(),
+                             devicesInfo -> {
+                                 this.devicesInfo = devicesInfo;
+                                 show2ndPillIntroduction();
+                             }, e -> {
+                                 Logger.error(getClass().getSimpleName(), "Could not retrieve devices info", e);
+                                 pushFragment(new OnboardingSetup2ndPillFragment(), null, false);
+                             });
+        }
     }
 
     public void show2ndPillPairing() {
