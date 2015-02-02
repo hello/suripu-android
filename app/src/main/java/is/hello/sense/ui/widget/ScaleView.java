@@ -218,6 +218,15 @@ public class ScaleView extends FrameLayout {
         return (tickView.getMeasuredHeight() - (scaleInset * 2));
     }
 
+    protected int calculateOffset(int value) {
+        int rawOffset = (segmentSize * (normalizeValue(value) - minValue));
+        if (orientation == VERTICAL) {
+            return (getScaleHeight() - rawOffset);
+        } else {
+            return rawOffset;
+        }
+    }
+
     public void setMinValue(int minValue) {
         if (minValue == maxValue) {
             throw new IllegalArgumentException("minValue cannot equal maxValue");
@@ -240,9 +249,9 @@ public class ScaleView extends FrameLayout {
         updateFillArea();
 
         post(() -> {
-            int offset = (segmentSize * (normalizeValue(value) - minValue));
+            int offset = calculateOffset(value);
             if (orientation == VERTICAL) {
-                tickFillHost.scrollTo(0, (getScaleHeight() - offset));
+                tickFillHost.scrollTo(0, offset);
             } else {
                 tickFillHost.scrollTo(offset, 0);
             }
@@ -283,6 +292,8 @@ public class ScaleView extends FrameLayout {
             this.lineHeightHalf = resources.getDimensionPixelSize(R.dimen.scale_view_tick) / 2f;
             this.normalColor = resources.getColor(R.color.view_scale_tick_normal);
             this.emphasizedColor = resources.getColor(R.color.view_scale_tick_emphasized);
+
+            setDrawingCacheQuality(DRAWING_CACHE_QUALITY_LOW);
         }
 
         protected float getScaleForTick(int tick) {
@@ -325,6 +336,11 @@ public class ScaleView extends FrameLayout {
                     canvas.drawRect(tickX - lineHeightHalf, tickStart, tickX + lineHeightHalf, height, linePaint);
                 }
             }
+        }
+
+        @Override
+        public boolean isOpaque() {
+            return true;
         }
     }
 
