@@ -36,7 +36,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
-import is.hello.sense.ui.widget.util.ListViews;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
@@ -115,9 +115,11 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
         adapter.addSectionTitle(R.string.label_options);
         this.enhancedAudioItem = adapter.addCheckItem(R.string.label_enhanced_audio, false, this::changeEnhancedAudio);
+        adapter.addFooterItem(R.string.info_enhanced_audio);
 
-        View enhancedAudioFooter = inflater.inflate(R.layout.footer_enhanced_audio, listView, false);
-        ListViews.addFooterView(listView, enhancedAudioFooter, null, false);
+        adapter.addSectionDivider();
+        adapter.addTextItem(R.string.action_log_out, 0, this::signOut);
+
         listView.setAdapter(adapter);
 
         return view;
@@ -314,6 +316,26 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
                              enhancedAudioItem.setChecked(!newSetting);
                              presentError(e);
                          });
+    }
+
+    //endregion
+
+
+    //region Actions
+
+    public void signOut() {
+        Analytics.trackEvent(Analytics.TopView.EVENT_SIGN_OUT, null);
+
+        SenseAlertDialog builder = new SenseAlertDialog(getActivity());
+        builder.setTitle(R.string.dialog_title_log_out);
+        builder.setMessage(R.string.dialog_message_log_out);
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.setPositiveButton(R.string.action_log_out, (dialog, which) -> {
+            accountPresenter.logOut();
+            Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_OUT, null);
+        });
+        builder.setDestructive(true);
+        builder.show();
     }
 
     //endregion

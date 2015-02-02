@@ -73,8 +73,8 @@
     <string name="label_new_question">New Question</string>
     <string name="action_skip_question">Skip This Question</string>
 
-    <string name="dialog_title_log_out">Log Out</string>
-    <string name="dialog_message_log_out">Are you sure you want to log out?</string>
+    <string name="dialog_title_log_out">Sign Out</string>
+    <string name="dialog_message_log_out">Are you sure you want to sign out?</string>
     <string name="action_log_out">Sign Out</string>
 
     <string name="action_alarm">Alarm</string>

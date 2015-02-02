@@ -13,23 +13,16 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import javax.inject.Inject;
-
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
-import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.fragments.UndersideTabFragment;
-import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
 import static android.widget.LinearLayout.LayoutParams;
 
 public class AppSettingsFragment extends UndersideTabFragment {
-    @Inject ApiSessionManager sessionManager;
-
     private final LayoutParams itemTextLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     private LayoutParams dividerLayoutParams;
 
@@ -55,9 +48,7 @@ public class AppSettingsFragment extends UndersideTabFragment {
         this.itemContainer = (LinearLayout) view.findViewById(R.id.fragment_app_settings_container);
         addItem(R.string.label_account, true, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account, null));
         addItem(R.string.label_devices, true, ignored -> showFragment(DeviceListFragment.class, R.string.label_devices, null));
-        addItem(R.string.label_notifications, true, ignored -> showFragment(NotificationsSettingsFragment.class, R.string.label_notifications, null));
         addItem(R.string.label_units_and_time, true, ignored -> showFragment(UnitSettingsFragments.class, R.string.label_units_and_time, null));
-        addItem(R.string.action_log_out, false, this::logOut);
 
         TextView footer = (TextView) view.findViewById(R.id.footer_help);
         Styles.initializeSupportFooter(getActivity(), footer);
@@ -85,9 +76,6 @@ public class AppSettingsFragment extends UndersideTabFragment {
         }
     }
 
-
-    //region Actions
-
     private void showFragment(@NonNull Class<? extends Fragment> fragmentClass,
                               @StringRes int titleRes,
                               @Nullable Bundle fragmentArguments) {
@@ -96,24 +84,4 @@ public class AppSettingsFragment extends UndersideTabFragment {
         intent.putExtras(intentArguments);
         startActivity(intent);
     }
-
-    public void logOut(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_SIGN_OUT, null);
-
-        SenseAlertDialog builder = new SenseAlertDialog(getActivity());
-        builder.setTitle(R.string.dialog_title_log_out);
-        builder.setMessage(R.string.dialog_message_log_out);
-        builder.setNegativeButton(android.R.string.cancel, null);
-        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-            if (BuildConfig.DEBUG) {
-                WelcomeDialog.clearShownStates(getActivity());
-            }
-
-            sessionManager.logOut();
-            Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_OUT, null);
-        });
-        builder.show();
-    }
-
-    //endregion
 }

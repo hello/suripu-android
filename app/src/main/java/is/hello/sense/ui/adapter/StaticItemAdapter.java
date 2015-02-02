@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,14 +29,26 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
 
     //region Adding Items
 
+    private @NonNull String getStringSafe(@StringRes int stringRes) {
+        if (stringRes == 0) {
+            return "";
+        } else {
+            return resources.getString(stringRes);
+        }
+    }
+
     public Item addSectionTitle(@NonNull String title) {
         Item item = new Item(title, null);
         add(item);
         return item;
     }
 
+    public Item addSectionDivider() {
+        return addSectionTitle("");
+    }
+
     public Item addSectionTitle(@StringRes int titleRes) {
-        return addSectionTitle(resources.getString(titleRes));
+        return addSectionTitle(getStringSafe(titleRes));
     }
 
     public TextItem addTextItem(@NonNull String title, @Nullable String value, @Nullable Runnable action) {
@@ -45,7 +58,7 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     }
 
     public TextItem addTextItem(@StringRes int titleRes, @StringRes int valueRes, @Nullable Runnable action) {
-        return addTextItem(resources.getString(titleRes), resources.getString(valueRes), action);
+        return addTextItem(getStringSafe(titleRes), getStringSafe(valueRes), action);
     }
 
     public TextItem addTextItem(@NonNull String title, @Nullable String value) {
@@ -55,7 +68,7 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     }
 
     public TextItem addTextItem(@StringRes int titleRes, @StringRes int valueRes) {
-        return addTextItem(resources.getString(titleRes), resources.getString(valueRes));
+        return addTextItem(getStringSafe(titleRes), getStringSafe(valueRes));
     }
 
     public CheckItem addCheckItem(@NonNull String title, boolean checked, @Nullable Runnable action) {
@@ -65,7 +78,17 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     }
 
     public CheckItem addCheckItem(@StringRes int titleRes, boolean checked, @Nullable Runnable action) {
-        return addCheckItem(resources.getString(titleRes), checked, action);
+        return addCheckItem(getStringSafe(titleRes), checked, action);
+    }
+
+    public Item addFooterItem(@NonNull String title) {
+        Item item = new Item(ItemType.SECTION_FOOTER, title, null);
+        add(item);
+        return item;
+    }
+
+    public Item addFooterItem(@StringRes int titleRes) {
+        return addFooterItem(getStringSafe(titleRes));
     }
 
     //endregion
@@ -98,7 +121,14 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
                 }
 
                 SectionItemViewHolder holder = (SectionItemViewHolder) view.getTag();
-                holder.title.setText(item.getTitle());
+                String itemTitle = item.getTitle();
+                if (TextUtils.isEmpty(itemTitle)) {
+                    holder.title.setText(null);
+                    holder.title.setVisibility(View.GONE);
+                } else {
+                    holder.title.setText(itemTitle);
+                    holder.title.setVisibility(View.VISIBLE);
+                }
                 if (position == 0) {
                     holder.divider.setVisibility(View.GONE);
                 } else {
@@ -132,6 +162,18 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
                 CheckItemViewHolder holder = (CheckItemViewHolder) view.getTag();
                 holder.title.setText(checkItem.getTitle());
                 holder.check.setChecked(checkItem.isChecked());
+
+                break;
+            }
+
+            case SECTION_FOOTER: {
+                if (view == null) {
+                    view = layoutInflater.inflate(R.layout.item_section_footer, parent, false);
+                    view.setTag(new SectionFooterViewHolder(view));
+                }
+
+                SectionFooterViewHolder holder = (SectionFooterViewHolder) view.getTag();
+                holder.text.setText(item.getTitle());
 
                 break;
             }
@@ -171,6 +213,14 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
         CheckItemViewHolder(@NonNull View view) {
             this.title = (TextView) view.findViewById(R.id.item_static_check_title);
             this.check = (CheckBox) view.findViewById(R.id.item_static_check_box);
+        }
+    }
+
+    static class SectionFooterViewHolder {
+        final TextView text;
+
+        SectionFooterViewHolder(@NonNull View view) {
+            this.text = (TextView) view.findViewById(R.id.item_section_footer);
         }
     }
 
@@ -252,5 +302,6 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
         SECTION_TITLE,
         TEXT_ITEM,
         CHECK_ITEM,
+        SECTION_FOOTER,
     }
 }

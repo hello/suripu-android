@@ -10,11 +10,13 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
 public class AccountPresenter extends ValuePresenter<Account> {
     @Inject ApiService apiService;
+    @Inject ApiSessionManager sessionManager;
 
     public final PresenterSubject<Account> account = this.subject;
 
@@ -59,5 +61,9 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     public Observable<AccountPreference> updatePreference(@NonNull AccountPreference update) {
         return apiService.updateAccountPreference(update);
+    }
+
+    public void logOut() {
+        sessionManager.logOut();
     }
 }
