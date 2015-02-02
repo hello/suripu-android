@@ -95,8 +95,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         this.bluetoothAdapter = bluetoothManager.getAdapter();
 
-        showSenseColorsInfo();
-        if(0==0)return;
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {
                 showSelectWifiNetwork(false);
@@ -491,7 +489,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             case ANIMATION_ROOM_CHECK: {
                 return (holder, onCompletion) -> {
                     int slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_xlarge);
-                    
+
                     animate(holder.contents)
                             .setOnAnimationWillStart(() -> holder.contents.setBackgroundResource(R.color.background_onboarding))
                             .slideYAndFade(0f, -slideAmount, 1f, 0f)
