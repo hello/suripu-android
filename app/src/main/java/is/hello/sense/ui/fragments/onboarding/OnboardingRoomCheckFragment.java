@@ -43,7 +43,7 @@ import static android.widget.LinearLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class OnboardingRoomCheckFragment extends InjectionFragment {
-    private static final long CONDITION_VISIBLE_MS = 2000;
+    private static final long CONDITION_VISIBLE_MS = 5000;
     private static final long END_CONTAINER_DELAY_MS = 50;
 
     @Inject RoomConditionsPresenter roomConditionsPresenter;
