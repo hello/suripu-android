@@ -1,8 +1,10 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Fragment;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -169,6 +171,13 @@ public final class OnboardingSimpleStepViewBuilder {
 
     public OnboardingSimpleStepViewBuilder setDiagramImage(@DrawableRes @ColorRes int resId) {
         diagramImage.setImageResource(resId);
+        return this;
+    }
+
+    public OnboardingSimpleStepViewBuilder setDiagramInset(@DimenRes int startInsetRes, @DimenRes int endInsetRes) {
+        Resources resources = diagramImage.getResources();
+        diagramImage.setPaddingRelative(resources.getDimensionPixelSize(startInsetRes), 0,
+                                        resources.getDimensionPixelSize(endInsetRes), 0);
         return this;
     }
 
