@@ -32,8 +32,8 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
     private static final String ARG_EXIT_ANIMATION_NAME = OnboardingSimpleStepFragment.class.getName() + ".ARG_EXIT_ANIMATION_NAME";
     private static final String ARG_NEXT_WANTS_BACK_STACK = OnboardingSimpleStepFragment.class.getName() + ".ARG_NEXT_WANTS_BACK_STACK";
 
-    private ViewGroup container;
     private UserSupport.OnboardingStep helpOnboardingStep;
+    private OnboardingSimpleStepViewBuilder simpleStepHolder;
     private @Nullable ExitAnimationProvider exitAnimationProvider;
 
     @Override
@@ -57,29 +57,27 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        OnboardingSimpleStepViewBuilder builder = new OnboardingSimpleStepViewBuilder(this, inflater, container);
+        this.simpleStepHolder = new OnboardingSimpleStepViewBuilder(this, inflater, container);
 
-        builder.setHeadingText(getArguments().getString(ARG_HEADING));
-        builder.setSubheadingText(getArguments().getString(ARG_SUBHEADING));
+        simpleStepHolder.setHeadingText(getArguments().getString(ARG_HEADING));
+        simpleStepHolder.setSubheadingText(getArguments().getString(ARG_SUBHEADING));
         if (getArguments().containsKey(ARG_DIAGRAM_RES)) {
-            builder.setDiagramImage(getArguments().getInt(ARG_DIAGRAM_RES));
+            simpleStepHolder.setDiagramImage(getArguments().getInt(ARG_DIAGRAM_RES));
         }
 
-        builder.setPrimaryOnClickListener(this::next);
-        builder.setWantsSecondaryButton(false);
+        simpleStepHolder.setPrimaryOnClickListener(this::next);
+        simpleStepHolder.setWantsSecondaryButton(false);
 
         if (getArguments().getBoolean(ARG_HIDE_TOOLBAR, false)) {
-            builder.hideToolbar();
+            simpleStepHolder.hideToolbar();
         } else {
-            builder.setToolbarWantsBackButton(getArguments().getBoolean(ARG_WANTS_BACK, false));
+            simpleStepHolder.setToolbarWantsBackButton(getArguments().getBoolean(ARG_WANTS_BACK, false));
             if (getArguments().containsKey(ARG_HELP_STEP)) {
-                builder.setToolbarOnHelpClickListener(this::help);
+                simpleStepHolder.setToolbarOnHelpClickListener(this::help);
             }
         }
 
-        this.container = builder.create();
-
-        return this.container;
+        return simpleStepHolder.create();
     }
 
 
@@ -101,7 +99,7 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
 
     public void next(@NonNull View sender) {
         if (exitAnimationProvider != null) {
-            exitAnimationProvider.executeAnimation(container, this::showNextFragment);
+            exitAnimationProvider.executeAnimation(simpleStepHolder, this::showNextFragment);
         } else {
             showNextFragment();
         }
@@ -239,11 +237,11 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
          * The provider must run the provided onComplete
          * Runnable after all animation is completed.
          *
-         * @param container     The container to perform the animation on.
+         * @param holder        The simple step holder whose contents must be animated.
          * @param onComplete    The completion handler provided by the static step fragment.
          *
          * @see is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepViewBuilder
          */
-        void executeAnimation(@NonNull ViewGroup container, @NonNull Runnable onComplete);
+        void executeAnimation(@NonNull OnboardingSimpleStepViewBuilder holder, @NonNull Runnable onComplete);
     }
 }

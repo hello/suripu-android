@@ -95,6 +95,8 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         this.bluetoothAdapter = bluetoothManager.getAdapter();
 
+        showSenseColorsInfo();
+        if(0==0)return;
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {
                 showSelectWifiNetwork(false);
@@ -487,9 +489,16 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public @Nullable OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
         switch (name) {
             case ANIMATION_ROOM_CHECK: {
-                return (container, onCompletion) -> {
-                    animate(container)
-                            .slideYAndFade(0f, getResources().getDimensionPixelSize(R.dimen.gap_outer), 1f, 0f)
+                return (holder, onCompletion) -> {
+                    int slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_xlarge);
+                    
+                    animate(holder.contents)
+                            .setOnAnimationWillStart(() -> holder.contents.setBackgroundResource(R.color.background_onboarding))
+                            .slideYAndFade(0f, -slideAmount, 1f, 0f)
+                            .start();
+
+                    animate(holder.primaryButton)
+                            .slideYAndFade(0f, slideAmount, 1f, 0f)
                             .addOnAnimationCompleted(finished -> onCompletion.run())
                             .start();
                 };

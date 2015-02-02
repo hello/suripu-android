@@ -20,16 +20,16 @@ import is.hello.sense.ui.widget.util.Views;
 import rx.functions.Action1;
 
 public final class OnboardingSimpleStepViewBuilder {
-    public final ViewGroup stepView;
+    private final ViewGroup stepView;
 
     public final OnboardingToolbar toolbar;
 
     public final Button primaryButton;
     public final Button secondaryButton;
 
+    public final ViewGroup contents;
     public final TextView headingText;
     public final TextView subheadingText;
-
     public final ImageView diagramImage;
 
 
@@ -43,9 +43,9 @@ public final class OnboardingSimpleStepViewBuilder {
         this.primaryButton = (Button) stepView.findViewById(R.id.fragment_onboarding_simple_step_primary);
         this.secondaryButton = (Button) stepView.findViewById(R.id.fragment_onboarding_simple_step_secondary);
 
+        this.contents = (ViewGroup) stepView.findViewById(R.id.fragment_onboarding_simple_step_contents);
         this.headingText = (TextView) stepView.findViewById(R.id.fragment_onboarding_simple_step_heading);
         this.subheadingText = (TextView) stepView.findViewById(R.id.fragment_onboarding_simple_step_subheading);
-
         this.diagramImage = (ImageView) stepView.findViewById(R.id.fragment_onboarding_simple_step_diagram);
     }
 
