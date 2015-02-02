@@ -1,7 +1,6 @@
 package is.hello.sense.api.model;
 
 import android.content.Context;
-import android.graphics.LightingColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;

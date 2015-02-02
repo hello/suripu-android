@@ -112,10 +112,6 @@ public class TrendGraph extends ApiResponse {
         private DataLabel dataLabel;
 
 
-        public DateTime getDateTime() {
-            return dateTime;
-        }
-
         public float getYValue() {
             return yValue;
         }

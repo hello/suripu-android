@@ -22,7 +22,6 @@ import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.adapter.InsightsAdapter;
-import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.widget.util.ListViews;

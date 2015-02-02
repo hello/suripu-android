@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.adapter.SmartAlarmSoundAdapter;

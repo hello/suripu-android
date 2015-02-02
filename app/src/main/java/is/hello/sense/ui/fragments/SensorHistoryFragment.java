@@ -316,12 +316,12 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         public String getSectionHeader(int section) {
             SensorGraphSample value = getSection(section).getRepresentativeValue();
             if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.Mode.WEEK) {
-                return dateFormatter.formatDateTime(value.getTime(), "E").substring(0, 1);
+                return dateFormatter.formatDateTime(value.getShiftedTime(), "E").substring(0, 1);
             } else {
                 if (use24Time)
-                    return dateFormatter.formatDateTime(value.getTime(), "H");
+                    return dateFormatter.formatDateTime(value.getShiftedTime(), "H");
                 else
-                    return dateFormatter.formatDateTime(value.getTime(), "h a");
+                    return dateFormatter.formatDateTime(value.getShiftedTime(), "h a");
             }
         }
 
@@ -363,9 +363,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             }
 
             if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.Mode.WEEK) {
-                messageText.setText(dateFormatter.formatAsDayAndTime(instant.getTime(), use24Time));
+                messageText.setText(dateFormatter.formatAsDayAndTime(instant.getShiftedTime(), use24Time));
             } else {
-                messageText.setText(dateFormatter.formatAsTime(instant.getTime(), use24Time));
+                messageText.setText(dateFormatter.formatAsTime(instant.getShiftedTime(), use24Time));
             }
         }
 

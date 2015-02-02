@@ -19,12 +19,10 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
-import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.fragments.UndersideTabFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 import static android.widget.LinearLayout.LayoutParams;

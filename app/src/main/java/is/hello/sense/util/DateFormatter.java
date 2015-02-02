@@ -48,19 +48,20 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 
     //region Primitive Formatters
 
-    public @NonNull DateTimeZone getTargetTimeZone() {
+    public @NonNull DateTimeZone getSenseTimeZone() {
         String pairedDeviceTimeZone = preferences.getString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, null);
-        if (TextUtils.isEmpty(pairedDeviceTimeZone))
+        if (TextUtils.isEmpty(pairedDeviceTimeZone)) {
             return DateTimeZone.getDefault();
-        else
+        } else {
             return DateTimeZone.forID(pairedDeviceTimeZone);
+        }
     }
 
     /**
      * Formats a given DateTime instance according to a given pattern, applying the formatter's target time zone.
      */
     public @NonNull String formatDateTime(@NonNull DateTime dateTime, @NonNull String pattern) {
-        return dateTime.withZone(getTargetTimeZone()).toString(pattern);
+        return dateTime.toString(pattern);
     }
 
     //endregion
@@ -123,20 +124,22 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 
     public @NonNull String formatAsTime(@Nullable DateTime time, boolean use24Time) {
         if (time != null) {
-            if (use24Time)
-                return formatDateTime(time, context.getString(R.string.format_time_24_hr));
-            else
-                return formatDateTime(time, context.getString(R.string.format_time_12_hr));
+            if (use24Time) {
+                return time.toString(context.getString(R.string.format_time_24_hr));
+            } else {
+                return time.toString(context.getString(R.string.format_time_12_hr));
+            }
         }
         return context.getString(R.string.format_date_placeholder);
     }
 
     public @NonNull String formatAsDayAndTime(@Nullable DateTime time, boolean use24Time) {
         if (time != null) {
-            if (use24Time)
-                return formatDateTime(time, context.getString(R.string.format_day_and_time_24_hr));
-            else
-                return formatDateTime(time, context.getString(R.string.format_day_and_time_12_hr));
+            if (use24Time) {
+                return time.toString(context.getString(R.string.format_day_and_time_24_hr));
+            } else {
+                return time.toString(context.getString(R.string.format_day_and_time_12_hr));
+            }
         }
         return context.getString(R.string.format_date_placeholder);
     }

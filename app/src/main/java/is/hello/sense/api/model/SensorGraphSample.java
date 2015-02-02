@@ -30,10 +30,6 @@ public class SensorGraphSample extends ApiResponse {
         return Math.max(0, value);
     }
 
-    public DateTime getTime() {
-        return time;
-    }
-
     public DateTimeZone getTimeZone() {
         return DateTimeZone.forOffsetMillis(offset);
     }

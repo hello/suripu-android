@@ -16,7 +16,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
 import java.util.EnumSet;
-import java.util.Set;
 
 import is.hello.sense.R;
 

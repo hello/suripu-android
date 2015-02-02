@@ -22,7 +22,6 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -81,7 +80,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         TextView title = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_title);
         String eventName = getString(timelineSegment.getEventType().nameString);
         boolean use24Time = preferences.getBoolean(PreferencesPresenter.USE_24_TIME, false);
-        String formattedTime = dateFormatter.formatAsTime(timelineSegment.getTimestamp(), use24Time);
+        String formattedTime = dateFormatter.formatAsTime(timelineSegment.getShiftedTimestamp(), use24Time);
         title.setText(getString(R.string.title_timeline_event_fmt, eventName, formattedTime));
 
         TextView message = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_message);

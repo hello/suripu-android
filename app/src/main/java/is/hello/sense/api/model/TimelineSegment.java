@@ -6,14 +6,12 @@ import android.support.annotation.StringRes;
 import android.text.TextUtils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
 
 import java.util.List;
 
@@ -56,10 +54,6 @@ public class TimelineSegment extends ApiResponse {
         return id;
     }
 
-    public DateTime getTimestamp() {
-        return timestamp;
-    }
-
     public long getDuration() {
         return duration;
     }
@@ -86,7 +80,7 @@ public class TimelineSegment extends ApiResponse {
 
     public DateTime getShiftedTimestamp() {
         if (shiftedTimestamp == null) {
-            this.shiftedTimestamp = getTimestamp().withZone(getTimeZone());
+            this.shiftedTimestamp = timestamp.withZone(getTimeZone());
         }
 
         return shiftedTimestamp;

@@ -11,7 +11,6 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 
 import java.util.HashSet;
 import java.util.List;
@@ -19,8 +18,8 @@ import java.util.Set;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.TimelineSegmentView;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
 
 import static is.hello.sense.api.model.TimelineSegment.EventType;
@@ -142,7 +141,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         Set<Integer> hoursRepresented = new HashSet<>();
         for (int i = 1; i < segments.size(); i++) {
             TimelineSegment segment = segments.get(i);
-            int hour = segment.getTimestamp().getHourOfDay();
+            int hour = segment.getShiftedTimestamp().getHourOfDay();
             if (hoursRepresented.contains(hour)) {
                 continue;
             }
