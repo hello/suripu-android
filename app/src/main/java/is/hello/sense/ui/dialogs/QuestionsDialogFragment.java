@@ -41,7 +41,6 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
     public static final String TAG = QuestionsDialogFragment.class.getSimpleName();
 
     private static final long DELAY_INCREMENT = 20;
-    private static final long DISMISS_DELAY = 1000;
 
     @Inject QuestionsPresenter questionsPresenter;
 
@@ -51,7 +50,6 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
     private Button skipButton;
     private Button nextButton;
 
-    private final Handler dismissHandler = new Handler(Looper.getMainLooper());
     private final List<Question.Choice> selectedAnswers = new ArrayList<>();
 
     private boolean hasClearedAllViews = false;
@@ -210,21 +208,6 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         }
     }
 
-    public void displayThankYou() {
-        titleText.setText(R.string.title_thank_you);
-        superContainer.addView(titleText);
-
-        titleText.setAlpha(0f);
-        animate(titleText)
-                .alpha(1f)
-                .addOnAnimationCompleted(finished -> {
-                    if (finished) {
-                        dismissHandler.postDelayed(this::dismiss, DISMISS_DELAY);
-                    }
-                })
-                .start();
-    }
-
     public void clearQuestions(boolean animate, @Nullable Runnable onCompletion) {
         showSkipButton(animate);
 
@@ -264,7 +247,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
 
     public void bindQuestion(@Nullable Question question) {
         if (question == null) {
-            animateOutAllViews(this::displayThankYou);
+            animateOutAllViews(this::dismiss);
         } else {
             titleText.setText(question.getText());
 
