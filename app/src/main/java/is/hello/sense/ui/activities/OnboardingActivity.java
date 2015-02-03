@@ -435,22 +435,10 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void show2ndPillIntroduction() {
-        if (devicesInfo != null) {
-            if (devicesInfo.getNumberPairedAccounts() > 1) {
-                showDone();
-            } else {
-                pushFragment(new OnboardingSetup2ndPillFragment(), null, false);
-            }
+        if (devicesInfo != null && devicesInfo.getNumberPairedAccounts() > 1) {
+            showDone();
         } else {
-            LoadingDialogFragment.show(getFragmentManager());
-            bindAndSubscribe(apiService.devicesInfo(),
-                             devicesInfo -> {
-                                 this.devicesInfo = devicesInfo;
-                                 show2ndPillIntroduction();
-                             }, e -> {
-                                 Logger.error(getClass().getSimpleName(), "Could not retrieve devices info", e);
-                                 pushFragment(new OnboardingSetup2ndPillFragment(), null, false);
-                             });
+            pushFragment(new OnboardingSetup2ndPillFragment(), null, false);
         }
     }
 
