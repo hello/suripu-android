@@ -85,8 +85,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private View timelineEventsHeader;
 
-    private boolean showTimelineWelcomeOnLayersUp = false;
-
 
     public static TimelineFragment newInstance(@NonNull DateTime date) {
         TimelineFragment fragment = new TimelineFragment();
@@ -253,8 +251,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 timelineEventsHeader.setVisibility(View.VISIBLE);
 
                 HomeActivity activity = (HomeActivity) getActivity();
-                if (activity.getSlidingLayersView().isOpen()) {
-                    this.showTimelineWelcomeOnLayersUp = true;
+                if (activity.getWillShowUnderside()) {
+                    WelcomeDialog.markShown(activity, R.xml.welcome_dialog_timeline);
                 } else {
                     WelcomeDialog.showIfNeeded(activity, R.xml.welcome_dialog_timeline);
                 }
@@ -334,11 +332,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             animate(smartAlarmButton)
                     .y(contentHeight - buttonHeight)
                     .start();
-        }
-
-        if (showTimelineWelcomeOnLayersUp) {
-            WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_timeline);
-            this.showTimelineWelcomeOnLayersUp = false;
         }
     }
 

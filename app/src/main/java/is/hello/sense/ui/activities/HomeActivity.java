@@ -100,7 +100,7 @@ public class HomeActivity
             this.lastUpdated = savedInstanceState.getLong("lastUpdated");
             presenterContainer.onRestoreState(savedInstanceState);
         } else {
-            this.showUnderside = getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false);
+            this.showUnderside = getWillShowUnderside();
             if (NotificationRegistration.shouldRegister(this)) {
                 new NotificationRegistration(this).register();
             }
@@ -248,6 +248,10 @@ public class HomeActivity
         }
     }
 
+
+    public boolean getWillShowUnderside() {
+        return getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false);
+    }
 
     public boolean isCurrentFragmentLastNight() {
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
