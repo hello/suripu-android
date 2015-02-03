@@ -33,6 +33,7 @@
         style="@style/AppTheme.Button.Borderless.Onboarding"/>
 
     <ScrollView
+        android:id="@+id/fragment_onboarding_simple_step_contents"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/fragment_onboarding_simple_step_secondary"

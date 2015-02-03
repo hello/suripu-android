@@ -10,6 +10,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
+import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
 import is.hello.sense.api.model.RoomSensorHistory;
@@ -159,6 +160,9 @@ public interface ApiService {
 
     @GET("/devices")
     Observable<ArrayList<Device>> registeredDevices();
+
+    @GET("/devices/info")
+    Observable<DevicesInfo> devicesInfo();
 
     @DELETE("/devices/pill/{id}")
     Observable<VoidResponse> unregisterPill(@Path("id") @NonNull String pillId);
