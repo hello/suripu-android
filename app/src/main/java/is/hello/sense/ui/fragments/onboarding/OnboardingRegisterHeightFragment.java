@@ -48,11 +48,6 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
 
         scale.setOnValueChangedListener(this);
 
-        if (account.getHeight() != null) {
-            int height = account.getHeight();
-            scale.setValueAsync(height, true);
-        }
-
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
         Views.setSafeOnClickListener(nextButton, ignored -> next());
 
@@ -69,6 +64,15 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (account.getHeight() != null && scale.getValue() == scale.getMinValue()) {
+            int height = account.getHeight();
+            scale.setValue(height, true);
+        }
+    }
 
     @Override
     public void onValueChanged(int centimeters) {

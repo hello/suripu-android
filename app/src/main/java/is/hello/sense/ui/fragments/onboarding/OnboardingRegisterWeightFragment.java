@@ -51,7 +51,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
 
         if (account.getWeight() != null) {
             int weight = Math.round(account.getWeight() / 1000f);
-            scaleView.setValueAsync(weight, true);
+            scaleView.setValue(weight, true);
         }
 
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
