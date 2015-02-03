@@ -2,8 +2,10 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,6 +25,8 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
     private static final String ARG_HEADING = OnboardingSimpleStepFragment.class.getName() + "ARG_HEADING";
     private static final String ARG_SUBHEADING = OnboardingSimpleStepFragment.class.getName() + "ARG_SUBHEADING";
     private static final String ARG_DIAGRAM_RES = OnboardingSimpleStepFragment.class.getName() + "ARG_DIAGRAM_RES";
+    private static final String ARG_DIAGRAM_INSET_START = OnboardingSimpleStepFragment.class.getName() + "ARG_DIAGRAM_INSET_START";
+    private static final String ARG_DIAGRAM_INSET_END = OnboardingSimpleStepFragment.class.getName() + "ARG_DIAGRAM_INSET_END";
     private static final String ARG_BUTTON_TEXT = OnboardingSimpleStepFragment.class.getName() + "ARG_BUTTON_TEXT";
     private static final String ARG_HIDE_TOOLBAR = OnboardingSimpleStepFragment.class.getName() + "ARG_HIDE_TOOLBAR";
     private static final String ARG_WANTS_BACK = OnboardingSimpleStepFragment.class.getName() + ".ARG_WANTS_BACK";
@@ -32,8 +36,8 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
     private static final String ARG_EXIT_ANIMATION_NAME = OnboardingSimpleStepFragment.class.getName() + ".ARG_EXIT_ANIMATION_NAME";
     private static final String ARG_NEXT_WANTS_BACK_STACK = OnboardingSimpleStepFragment.class.getName() + ".ARG_NEXT_WANTS_BACK_STACK";
 
-    private ViewGroup container;
     private UserSupport.OnboardingStep helpOnboardingStep;
+    private OnboardingSimpleStepViewBuilder simpleStepHolder;
     private @Nullable ExitAnimationProvider exitAnimationProvider;
 
     @Override
@@ -57,29 +61,29 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        OnboardingSimpleStepViewBuilder builder = new OnboardingSimpleStepViewBuilder(this, inflater, container);
+        this.simpleStepHolder = new OnboardingSimpleStepViewBuilder(this, inflater, container);
 
-        builder.setHeadingText(getArguments().getString(ARG_HEADING));
-        builder.setSubheadingText(getArguments().getString(ARG_SUBHEADING));
+        simpleStepHolder.setHeadingText(getArguments().getString(ARG_HEADING));
+        simpleStepHolder.setSubheadingText(getArguments().getString(ARG_SUBHEADING));
         if (getArguments().containsKey(ARG_DIAGRAM_RES)) {
-            builder.setDiagramImage(getArguments().getInt(ARG_DIAGRAM_RES));
+            simpleStepHolder.setDiagramImage(getArguments().getInt(ARG_DIAGRAM_RES));
+            simpleStepHolder.setDiagramInset(getArguments().getInt(ARG_DIAGRAM_INSET_START, 0),
+                                             getArguments().getInt(ARG_DIAGRAM_INSET_END, 0));
         }
 
-        builder.setPrimaryOnClickListener(this::next);
-        builder.setWantsSecondaryButton(false);
+        simpleStepHolder.setPrimaryOnClickListener(this::next);
+        simpleStepHolder.setWantsSecondaryButton(false);
 
         if (getArguments().getBoolean(ARG_HIDE_TOOLBAR, false)) {
-            builder.hideToolbar();
+            simpleStepHolder.hideToolbar();
         } else {
-            builder.setToolbarWantsBackButton(getArguments().getBoolean(ARG_WANTS_BACK, false));
+            simpleStepHolder.setToolbarWantsBackButton(getArguments().getBoolean(ARG_WANTS_BACK, false));
             if (getArguments().containsKey(ARG_HELP_STEP)) {
-                builder.setToolbarOnHelpClickListener(this::help);
+                simpleStepHolder.setToolbarOnHelpClickListener(this::help);
             }
         }
 
-        this.container = builder.create();
-
-        return this.container;
+        return simpleStepHolder.create();
     }
 
 
@@ -101,7 +105,7 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
 
     public void next(@NonNull View sender) {
         if (exitAnimationProvider != null) {
-            exitAnimationProvider.executeAnimation(container, this::showNextFragment);
+            exitAnimationProvider.executeAnimation(simpleStepHolder, this::showNextFragment);
         } else {
             showNextFragment();
         }
@@ -154,6 +158,13 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
 
         public Builder setDiagramImage(@DrawableRes @ColorRes int resId) {
             arguments.putInt(ARG_DIAGRAM_RES, resId);
+            return this;
+        }
+
+        public Builder setDiagramInset(@DimenRes int startInsetRes, @DimenRes int endInsetRes) {
+            Resources resources = context.getResources();
+            arguments.putInt(ARG_DIAGRAM_INSET_START, resources.getDimensionPixelSize(startInsetRes));
+            arguments.putInt(ARG_DIAGRAM_INSET_END, resources.getDimensionPixelSize(endInsetRes));
             return this;
         }
 
@@ -239,11 +250,11 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
          * The provider must run the provided onComplete
          * Runnable after all animation is completed.
          *
-         * @param container     The container to perform the animation on.
+         * @param holder        The simple step holder whose contents must be animated.
          * @param onComplete    The completion handler provided by the static step fragment.
          *
          * @see is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepViewBuilder
          */
-        void executeAnimation(@NonNull ViewGroup container, @NonNull Runnable onComplete);
+        void executeAnimation(@NonNull OnboardingSimpleStepViewBuilder holder, @NonNull Runnable onComplete);
     }
 }

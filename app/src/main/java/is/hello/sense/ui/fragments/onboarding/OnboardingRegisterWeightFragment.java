@@ -21,14 +21,20 @@ import is.hello.sense.util.Logger;
 public class OnboardingRegisterWeightFragment extends AccountEditingFragment implements ScaleView.OnValueChangedListener {
     private Account account;
 
-    private ScaleView scaleView;
+    private ScaleView scale;
     private TextView scaleReading;
     private TextView secondaryReading;
+
+    private boolean hasAnimated = false;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            this.hasAnimated = savedInstanceState.getBoolean("hasAnimated", false);
+        }
 
         this.account = getContainer().getAccount();
 
@@ -43,16 +49,14 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_register_weight, container, false);
 
-        this.scaleView = (ScaleView) view.findViewById(R.id.fragment_onboarding_register_weight_scale);
+        this.scale = (ScaleView) view.findViewById(R.id.fragment_onboarding_register_weight_scale);
         this.scaleReading = (TextView) view.findViewById(R.id.fragment_onboarding_register_weight_scale_reading);
         this.secondaryReading = (TextView) view.findViewById(R.id.fragment_onboarding_register_weight_scale_reading_secondary);
 
-        scaleView.setOnValueChangedListener(this);
-
+        scale.setOnValueChangedListener(this);
         if (account.getWeight() != null) {
             int weight = Math.round(account.getWeight() / 1000f);
-            scaleView.setValueAsync(weight);
-            onValueChanged(weight);
+            scale.setValue(weight, true);
         }
 
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
@@ -72,6 +76,28 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        if (!hasAnimated && account.getWeight() != null) {
+            scale.setValue(scale.getMinValue(), true);
+            scale.postDelayed(() -> {
+                int weight = Math.round(account.getWeight() / 1000f);
+                scale.animateToValue(weight);
+            }, 250);
+            this.hasAnimated = true;
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("hasAnimated", true);
+    }
+
+
+    @Override
     public void onValueChanged(int kilograms) {
         int pounds = UnitOperations.kilogramsToPounds(kilograms);
         scaleReading.setText(getString(R.string.weight_pounds_fmt, pounds));
@@ -81,7 +107,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
 
     public void next() {
         try {
-            int kilograms = scaleView.getValue();
+            int kilograms = scale.getValue();
             int grams = kilograms * 1000;
             account.setWeight(grams);
             getContainer().onAccountUpdated(this);

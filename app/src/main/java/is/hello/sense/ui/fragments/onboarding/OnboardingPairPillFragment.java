@@ -109,7 +109,9 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
         confirmation.setTitle(R.string.alert_title_skip_pair_pill);
         confirmation.setMessage(R.string.alert_message_skip_pair_pill);
-        confirmation.setPositiveButton(R.string.action_skip, (dialog, which) -> finishedPairing(false));
+        confirmation.setPositiveButton(R.string.action_skip, (dialog, which) -> {
+            completeHardwareActivity(() -> finishedPairing(false));
+        });
         confirmation.setNegativeButton(android.R.string.cancel, null);
         confirmation.setDestructive(true);
         confirmation.show();

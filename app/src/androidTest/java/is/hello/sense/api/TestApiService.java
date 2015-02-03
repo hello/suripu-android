@@ -18,6 +18,7 @@ import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
@@ -174,6 +175,11 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ArrayList<Device>> registeredDevices() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<DevicesInfo> devicesInfo() {
         return unimplemented();
     }
 

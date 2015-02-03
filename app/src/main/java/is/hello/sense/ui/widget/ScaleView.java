@@ -4,17 +4,19 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.HorizontalScrollView;
-import android.widget.ScrollView;
 
 import is.hello.sense.R;
 
@@ -28,20 +30,19 @@ public class ScaleView extends FrameLayout {
     private static final float TICK_NORMAL_SCALE = 0.5f;
     private static final float TICK_EMPHASIS_SCALE = 0.25f;
 
+    private static final float ANIMATION_MS_PER_PX = 100f;
+
     //endregion
 
-
-    //region Contents
 
     private final Paint linePaint = new Paint();
     private float diamondHalf;
     private int segmentSize;
     private int scaleInset;
 
-    private FrameLayout tickFillHost;
-    private TickView tickView;
-
-    //endregion
+    private final RecyclerView recyclerView;
+    private final LinearLayoutManager layoutManager;
+    private final TickAdapter adapter;
 
 
     //region Properties
@@ -67,65 +68,60 @@ public class ScaleView extends FrameLayout {
     public ScaleView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        int orientation = VERTICAL;
+        this.orientation = VERTICAL;
         int initialValue = 0;
         if (attrs != null) {
-            TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.ScaleView, defStyleAttr, 0);
-
-            orientation = styles.getInteger(R.styleable.ScaleView_scaleOrientation, VERTICAL);
-            this.minValue = styles.getInteger(R.styleable.ScaleView_scaleMinValue, 0);
-            this.maxValue = styles.getInteger(R.styleable.ScaleView_scaleMaxValue, 100);
-            initialValue = styles.getInteger(R.styleable.ScaleView_scaleValue, 0);
-
-            styles.recycle();
+            initialValue = takeStateFromAttributes(attrs, defStyleAttr);
         }
 
-        initialize(orientation, initialValue);
-    }
-
-    protected void initialize(int orientation, int initialValue) {
+        this.recyclerView = new RecyclerView(getContext());
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setOverScrollMode(OVER_SCROLL_NEVER);
+        recyclerView.setHorizontalScrollBarEnabled(false);
+        recyclerView.setVerticalScrollBarEnabled(false);
+        recyclerView.setClipToPadding(false);
         if (orientation == VERTICAL) {
-            this.tickFillHost = new ScrollView(getContext()) {
-                @Override
-                protected void onScrollChanged(int l, int t, int oldL, int oldT) {
-                    super.onScrollChanged(l, t, oldL, oldT);
-                    ScaleView.this.onFillHostScrolled();
-                }
-            };
-            tickFillHost.setVerticalScrollBarEnabled(false);
-            tickFillHost.setVerticalFadingEdgeEnabled(true);
+            this.layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
         } else if (orientation == HORIZONTAL) {
-            this.tickFillHost = new HorizontalScrollView(getContext()) {
-                @Override
-                protected void onScrollChanged(int l, int t, int oldL, int oldT) {
-                    super.onScrollChanged(l, t, oldL, oldT);
-                    ScaleView.this.onFillHostScrolled();
-                }
-            };
-            tickFillHost.setHorizontalScrollBarEnabled(false);
-            tickFillHost.setHorizontalFadingEdgeEnabled(true);
+            this.layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalStateException();
         }
-        this.orientation = orientation;
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                notifyValueChangedListener();
+            }
+        });
+
+        this.adapter = new TickAdapter();
+        recyclerView.setAdapter(adapter);
+        addView(recyclerView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+
+        setValue(initialValue, false);
+        syncAdapter();
+
 
         Resources resources = getResources();
-
         linePaint.setColor(resources.getColor(R.color.light_accent));
         this.diamondHalf = resources.getDimensionPixelSize(R.dimen.scale_view_diamond) / 2f;
         this.segmentSize = resources.getDimensionPixelSize(R.dimen.scale_view_segment);
 
-        this.tickView = new TickView(getContext());
-        tickFillHost.addView(tickView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        tickFillHost.setFadingEdgeLength(resources.getDimensionPixelSize(R.dimen.shadow_size));
-        tickFillHost.setOverScrollMode(ScrollView.OVER_SCROLL_NEVER);
-        tickFillHost.setBackgroundColor(Color.WHITE);
-        addView(tickFillHost, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-
         setWillNotDraw(false);
-        updateFillArea();
-        setValueAsync(initialValue);
+    }
+
+    private int takeStateFromAttributes(@NonNull AttributeSet attrs, int defStyleAttr) {
+        TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.ScaleView, defStyleAttr, 0);
+
+        this.orientation = styles.getInteger(R.styleable.ScaleView_scaleOrientation, VERTICAL);
+        this.minValue = styles.getInteger(R.styleable.ScaleView_scaleMinValue, 0);
+        this.maxValue = styles.getInteger(R.styleable.ScaleView_scaleMaxValue, 100);
+        int initialValue = styles.getInteger(R.styleable.ScaleView_scaleValue, 0);
+
+        styles.recycle();
+
+        return initialValue;
     }
 
     @Override
@@ -135,7 +131,7 @@ public class ScaleView extends FrameLayout {
 
             setMinValue(savedState.getInt("minValue"));
             setMaxValue(savedState.getInt("maxValue"));
-            setValueAsync(savedState.getInt("value"));
+            setValue(savedState.getInt("value"), true);
 
             state = savedState.getParcelable("savedState");
         }
@@ -152,6 +148,7 @@ public class ScaleView extends FrameLayout {
         return savedState;
     }
 
+
     //endregion
 
 
@@ -163,10 +160,11 @@ public class ScaleView extends FrameLayout {
 
         if (orientation == VERTICAL) {
             this.scaleInset = h / 2;
+            recyclerView.setPadding(0, scaleInset, 0, scaleInset);
         } else {
             this.scaleInset = w / 2;
+            recyclerView.setPadding(scaleInset, 0, scaleInset, 0);
         }
-        updateFillArea();
     }
 
     @Override
@@ -188,137 +186,168 @@ public class ScaleView extends FrameLayout {
     //endregion
 
 
-    //region Values
+    //region Internal
 
-    protected void updateFillArea() {
-        int area = (scaleInset * 2) + (maxValue - minValue) * segmentSize;
-        if (orientation == VERTICAL) {
-            tickView.setMinimumHeight(area);
-        } else {
-            tickView.setMinimumWidth(area);
-        }
+    protected void syncAdapter() {
+        adapter.setItemCount(maxValue - minValue);
     }
 
-    protected int normalizeValue(int value) {
-        if (value < minValue) {
-            return minValue;
-        } else if (value > maxValue) {
-            return maxValue;
-        } else {
-            return value;
-        }
-    }
-
-    protected int getScaleHeight() {
-        return (tickView.getMeasuredHeight() - (scaleInset * 2));
-    }
-
-    public void setMinValue(int minValue) {
-        if (minValue == maxValue) {
-            throw new IllegalArgumentException("minValue cannot equal maxValue");
-        }
-
-        this.minValue = minValue;
-        updateFillArea();
-    }
-
-    public void setMaxValue(int maxValue) {
-        if (minValue == maxValue) {
-            throw new IllegalArgumentException("minValue cannot equal maxValue");
-        }
-
-        this.maxValue = maxValue;
-        updateFillArea();
-    }
-
-    public void setValueAsync(int value) {
-        post(() -> {
-            int offset = (segmentSize * (normalizeValue(value) - minValue));
-            if (orientation == VERTICAL) {
-                tickFillHost.scrollTo(0, (getScaleHeight() - offset));
-            } else {
-                tickFillHost.scrollTo(offset, 0);
-            }
-            updateFillArea();
-        });
-    }
-
-    public int getValue() {
-        int offset = (orientation == VERTICAL) ? (getScaleHeight() - tickFillHost.getScrollY()) : tickFillHost.getScrollX();
-        return minValue + (offset / segmentSize);
-    }
-
-    public void setOnValueChangedListener(@Nullable OnValueChangedListener onValueChangedListener) {
-        this.onValueChangedListener = onValueChangedListener;
-    }
-
-    protected void onFillHostScrolled() {
+    protected void notifyValueChangedListener() {
         if (onValueChangedListener != null) {
             onValueChangedListener.onValueChanged(getValue());
+        }
+    }
+
+    protected View findCenterTick() {
+        if (orientation == VERTICAL) {
+            return recyclerView.findChildViewUnder(0, scaleInset);
+        } else {
+            return recyclerView.findChildViewUnder(scaleInset, 0);
         }
     }
 
     //endregion
 
 
-    private class TickView extends View {
-        private final Paint linePaint = new Paint();
-        private final float lineHeightHalf;
-        private final int normalColor;
-        private final int emphasizedColor;
+    //region Properties
 
-        private TickView(@NonNull Context context) {
-            super(context);
+    public void setMinValue(int minValue) {
+        this.minValue = minValue;
+        syncAdapter();
+    }
 
-            Resources resources = context.getResources();
-            this.lineHeightHalf = resources.getDimensionPixelSize(R.dimen.scale_view_tick) / 2f;
-            this.normalColor = resources.getColor(R.color.view_scale_tick_normal);
-            this.emphasizedColor = resources.getColor(R.color.view_scale_tick_emphasized);
+    public int getMinValue() {
+        return minValue;
+    }
+
+    public void setMaxValue(int maxValue) {
+        this.maxValue = maxValue;
+        syncAdapter();
+    }
+
+    public void setValue(int value, boolean notifyListener) {
+        recyclerView.scrollToPosition(value - minValue);
+        if (notifyListener) {
+            recyclerView.post(this::notifyValueChangedListener);
         }
+    }
 
-        protected float getScaleForTick(int tick) {
-            if ((tick % EMPHASIS_STEP) == 0) {
-                return TICK_EMPHASIS_SCALE;
-            } else {
-                return TICK_NORMAL_SCALE;
+    public void animateToValue(int newValue) {
+        LinearSmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
+            final float timePerPx = ANIMATION_MS_PER_PX / getResources().getDisplayMetrics().densityDpi;
+
+            @Override
+            public PointF computeScrollVectorForPosition(int targetPosition) {
+                return layoutManager.computeScrollVectorForPosition(targetPosition);
             }
+
+            @Override
+            protected int calculateTimeForScrolling(int dx) {
+                return (int) Math.ceil(Math.abs(dx) * timePerPx);
+            }
+        };
+        int newPosition = Math.max(minValue, (newValue - minValue - 1));
+        smoothScroller.setTargetPosition(newPosition);
+        layoutManager.startSmoothScroll(smoothScroller);
+    }
+
+    public int getValue() {
+        View tick = findCenterTick();
+        if (tick == null) {
+            return minValue;
+        } else {
+            return minValue + recyclerView.getChildPosition(tick);
         }
+    }
 
-        protected int getColorForTick(int tick) {
-            if ((tick % EMPHASIS_STEP) == 0) {
-                return emphasizedColor;
-            } else {
-                return normalColor;
-            }
+    public void setOnValueChangedListener(@Nullable OnValueChangedListener onValueChangedListener) {
+        this.onValueChangedListener = onValueChangedListener;
+    }
+
+    //endregion
+
+
+    private class TickAdapter extends RecyclerView.Adapter<TickAdapter.TickViewHolder> {
+        private int itemCount = 0;
+
+        public void setItemCount(int itemCount) {
+            this.itemCount = itemCount;
+            notifyDataSetChanged();
         }
 
         @Override
-        protected void onDraw(Canvas canvas) {
-            int width = canvas.getWidth(),
-                height = canvas.getHeight();
+        public int getItemCount() {
+            return itemCount;
+        }
 
+        @Override
+        public TickAdapter.TickViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new TickViewHolder(new Tick(getContext()));
+        }
+
+        @Override
+        public void onBindViewHolder(TickAdapter.TickViewHolder holder, int position) {
+            holder.tick.setEmphasized((position % EMPHASIS_STEP) == 0);
             if (orientation == VERTICAL) {
-                int ticks = (height - scaleInset * 2) / segmentSize;
-                for (int tick = 0; tick < ticks; tick++) {
-                    float tickScale = getScaleForTick(tick);
-                    float tickStart = width * tickScale;
-                    float tickY = scaleInset + (tick * segmentSize);
-                    linePaint.setColor(getColorForTick(tick));
-                    canvas.drawRect(tickStart, tickY - lineHeightHalf, width, tickY + lineHeightHalf, linePaint);
-                }
+                holder.tick.setMinimumHeight(segmentSize);
             } else {
-                int ticks = (width - scaleInset * 2) / segmentSize;
-                for (int tick = 0; tick < ticks; tick++) {
-                    float tickScale = getScaleForTick(tick);
-                    float tickStart = height * tickScale;
-                    float tickX = scaleInset + (tick * segmentSize);
-                    linePaint.setColor(getColorForTick(tick));
-                    canvas.drawRect(tickX - lineHeightHalf, tickStart, tickX + lineHeightHalf, height, linePaint);
-                }
+                holder.tick.setMinimumWidth(segmentSize);
+            }
+        }
+
+        class TickViewHolder extends RecyclerView.ViewHolder {
+            final Tick tick;
+
+            TickViewHolder(@NonNull Tick itemView) {
+                super(itemView);
+
+                this.tick = itemView;
             }
         }
     }
 
+    private class Tick extends View {
+        private final Paint linePaint = new Paint();
+        private final int lineSize;
+        private final int normalColor;
+        private final int emphasizedColor;
+
+        private float extentScale;
+
+        private Tick(@NonNull Context context) {
+            super(context);
+
+            Resources resources = context.getResources();
+            this.lineSize = resources.getDimensionPixelSize(R.dimen.scale_view_tick);
+            this.normalColor = resources.getColor(R.color.view_scale_tick_normal);
+            this.emphasizedColor = resources.getColor(R.color.view_scale_tick_emphasized);
+        }
+
+        void setEmphasized(boolean emphasized) {
+            if (emphasized) {
+                linePaint.setColor(emphasizedColor);
+                this.extentScale = TICK_EMPHASIS_SCALE;
+            } else {
+                linePaint.setColor(normalColor);
+                this.extentScale = TICK_NORMAL_SCALE;
+            }
+            invalidate();
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            float maxX = canvas.getWidth(),
+                  maxY = canvas.getHeight();
+
+            if (orientation == VERTICAL) {
+                float minX = maxX * extentScale;
+                canvas.drawRect(minX, 0, maxX, lineSize, linePaint);
+            } else {
+                float minY = maxY * extentScale;
+                canvas.drawRect(0, minY, lineSize, maxY, linePaint);
+            }
+        }
+    }
 
     public interface OnValueChangedListener {
         void onValueChanged(int newValue);

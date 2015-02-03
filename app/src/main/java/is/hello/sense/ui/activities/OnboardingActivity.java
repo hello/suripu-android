@@ -24,6 +24,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -76,6 +77,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     private BluetoothAdapter bluetoothAdapter;
 
     private Account account;
+    private @Nullable DevicesInfo devicesInfo;
 
     private @Nullable SensorManager sensorManager;
     private @Nullable ShakeDetector shakeDetector;
@@ -364,10 +366,18 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SENSE);
 
         if (showIntroduction) {
+            bindAndSubscribe(apiService.devicesInfo(),
+                             devicesInfo -> {
+                                 Logger.info(getClass().getSimpleName(), "Loaded devices info");
+                                 this.devicesInfo = devicesInfo;
+                             }, e -> {
+                                 Logger.error(getClass().getSimpleName(), "Failed to silently load devices info, will retry later", e);
+                             });
+
             OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
             builder.setHeadingText(R.string.onboarding_title_sleep_pill_intro);
             builder.setSubheadingText(R.string.onboarding_message_sleep_pill_intro);
-            builder.setDiagramImage(R.drawable.onboarding_sleep_pill_intro);
+            builder.setDiagramImage(R.drawable.onboarding_clip_pill);
             builder.setHideToolbar(true);
             builder.setNextFragmentClass(OnboardingPairPillFragment.class);
             pushFragment(builder.toFragment(), null, false);
@@ -425,7 +435,11 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void show2ndPillIntroduction() {
-        pushFragment(new OnboardingSetup2ndPillFragment(), null, false);
+        if (devicesInfo != null && devicesInfo.getNumberPairedAccounts() > 1) {
+            showDone();
+        } else {
+            pushFragment(new OnboardingSetup2ndPillFragment(), null, false);
+        }
     }
 
     public void show2ndPillPairing() {
@@ -461,9 +475,16 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public @Nullable OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
         switch (name) {
             case ANIMATION_ROOM_CHECK: {
-                return (container, onCompletion) -> {
-                    animate(container)
-                            .slideYAndFade(0f, getResources().getDimensionPixelSize(R.dimen.gap_outer), 1f, 0f)
+                return (holder, onCompletion) -> {
+                    int slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_xlarge);
+
+                    animate(holder.contents)
+                            .setOnAnimationWillStart(() -> holder.contents.setBackgroundResource(R.color.background_onboarding))
+                            .slideYAndFade(0f, -slideAmount, 1f, 0f)
+                            .start();
+
+                    animate(holder.primaryButton)
+                            .slideYAndFade(0f, slideAmount, 1f, 0f)
                             .addOnAnimationCompleted(finished -> onCompletion.run())
                             .start();
                 };
