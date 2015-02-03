@@ -333,6 +333,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         builder.setPositiveButton(R.string.action_log_out, (dialog, which) -> {
             accountPresenter.logOut();
             Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_OUT, null);
+            getActivity().finish();
         });
         builder.setDestructive(true);
         builder.show();
