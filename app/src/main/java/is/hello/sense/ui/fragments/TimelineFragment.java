@@ -528,7 +528,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             this.timeToSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_time);
 
             this.sleepScorePie = new SleepScoreDrawable(getResources());
-            sleepScorePie.setValue(100);
             score.setBackground(sleepScorePie);
         }
 
@@ -549,6 +548,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         void bindTimeline(@NonNull Timeline timeline) {
             int sleepScore = timeline.getScore();
             score.setText(Integer.toString(sleepScore));
+
+            int color = Styles.getSleepScoreColor(getActivity(), sleepScore);
+            sleepScorePie.setTrackColor(color);
+            score.setTextColor(color);
+            totalSleep.setTextColor(color);
+            timesAwake.setTextColor(color);
+            soundSleep.setTextColor(color);
+            timeToSleep.setTextColor(color);
 
             Timeline.Statistics statistics = timeline.getStatistics();
             if (statistics != null) {
