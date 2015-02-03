@@ -75,7 +75,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(richMessage -> {
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-                        builder.setSmallIcon(R.drawable.ic_launcher);
+                        builder.setSmallIcon(R.drawable.ic_stat_notify_msg);
                         builder.setColor(context.getResources().getColor(R.color.light_accent));
                         builder.setContentTitle(context.getString(R.string.app_name));
                         builder.setContentText(richMessage);
