@@ -220,7 +220,7 @@
     <style name="AppTheme.Button.ModeSelector">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:textColor">@color/text_color_selector_toggle_button</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
+        <item name="android:textAppearance">@style/AppTheme.Text.Body.Medium</item>
         <item name="android:padding">@dimen/gap_medium</item>
     </style>
 

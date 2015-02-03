@@ -20,7 +20,7 @@ public class UsCustomaryUnitSystem extends UnitSystem {
 
     @Override
     public CharSequence formatTemperature(long temperature) {
-        return Styles.assembleReadingAndUnit(UnitOperations.celsiusToFahrenheit(temperature), "º");
+        return Styles.assembleReadingAndUnit(UnitOperations.celsiusToFahrenheit(temperature), "°");
     }
 
     @Override

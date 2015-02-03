@@ -249,19 +249,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                     .start();
         }
 
-        @Override
-        public void update(@NonNull Update update) {
-            super.update(update);
-            graphView.setNumberOfLines(getSectionHeaderFooterCount());
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-
-            graphView.setNumberOfLines(0);
-        }
-
 
         //region Styling
 
@@ -299,29 +286,21 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         @Override
         public int getSectionHeaderTextColor(int section) {
-            if (section == getSectionHeaderFooterCount() - 1) {
-                return Color.BLACK;
-            } else {
-                return Color.GRAY;
-            }
-        }
-
-        @Override
-        public int getSectionFooterTextColor(int section) {
-            return getSectionHeaderTextColor(section);
+            return Color.TRANSPARENT;
         }
 
         @NonNull
         @Override
         public String getSectionHeader(int section) {
-            SensorGraphSample value = getSection(section).getRepresentativeValue();
-            if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.Mode.WEEK) {
-                return dateFormatter.formatDateTime(value.getShiftedTime(), "E").substring(0, 1);
+            return "";
+        }
+
+        @Override
+        public int getSectionFooterTextColor(int section) {
+            if (section == getSectionHeaderFooterCount() - 1) {
+                return Color.BLACK;
             } else {
-                if (use24Time)
-                    return dateFormatter.formatDateTime(value.getShiftedTime(), "H");
-                else
-                    return dateFormatter.formatDateTime(value.getShiftedTime(), "h a");
+                return Color.GRAY;
             }
         }
 

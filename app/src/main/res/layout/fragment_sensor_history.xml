@@ -16,9 +16,7 @@
             android:id="@+id/fragment_sensor_history_reading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_medium"
-            android:layout_marginLeft="@dimen/gap_outer"
-            android:layout_marginRight="@dimen/gap_outer"
+            android:layout_margin="@dimen/gap_outer"
             android:gravity="center"
             android:textAppearance="@style/AppTheme.Text.BigScore"
             android:text="@string/missing_data_placeholder"/>
@@ -27,13 +25,28 @@
             android:id="@+id/fragment_sensor_history_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_xsmall"
-            android:layout_marginBottom="@dimen/gap_medium"
+            android:layout_marginBottom="@dimen/gap_outer"
             android:layout_marginLeft="@dimen/gap_outer"
             android:layout_marginRight="@dimen/gap_outer"
             android:textAppearance="@style/AppTheme.Text.Body"
             android:lineSpacingMultiplier="@dimen/line_multiple_body"
             android:text="@string/dialog_loading_message"/>
+
+        <TextView
+            android:id="@+id/fragment_sensor_history_insight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/gap_outer"
+            android:layout_marginRight="@dimen/gap_outer"
+            android:textAppearance="@style/AppTheme.Text.Body"
+            android:text="@string/mock_event_message"
+            android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:minHeight="@dimen/gap_xlarge"/>
 
         <is.hello.sense.ui.widget.SelectorLinearLayout
             android:id="@+id/fragment_sensor_history_mode"
@@ -71,14 +84,12 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="@dimen/history_graph_height">
 
             <is.hello.sense.ui.widget.graphing.GraphView
                 android:id="@+id/fragment_sensor_history_graph"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:minHeight="@dimen/series_graph_min_height"
                 app:senseGridDrawable="@drawable/graph_grid_fill_top_down" />
 
             <is.hello.sense.ui.widget.TintedProgressBar
@@ -89,19 +100,6 @@
                 style="@android:style/Widget.Holo.Light.ProgressBar"/>
 
         </FrameLayout>
-
-        <View style="@style/Divider.Horizontal" />
-
-        <TextView
-            android:id="@+id/fragment_sensor_history_insight"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/gap_outer"
-            android:layout_marginRight="@dimen/gap_outer"
-            android:layout_marginTop="@dimen/gap_medium"
-            android:layout_marginBottom="@dimen/gap_medium"
-            android:textAppearance="@style/AppTheme.Text.Body"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
     </LinearLayout>
 

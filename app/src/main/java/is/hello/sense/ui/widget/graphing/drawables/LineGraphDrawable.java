@@ -47,7 +47,7 @@ public class LineGraphDrawable extends GraphDrawable {
         int sectionCount = adapterCache.getNumberSections();
         float halfOfTopLine = topLineHeight / 2f;
 
-        int minY = Math.round(halfOfTopLine) + topInset;
+        int minY = (int) Math.ceil(halfOfTopLine) + topInset;
         int width = canvas.getWidth();
         int height = canvas.getHeight() - minY - bottomInset;
 

@@ -90,6 +90,7 @@
     <dimen name="graph_point_size">5dp</dimen>
 
     <dimen name="condition_graph_height">30dp</dimen>
+    <dimen name="history_graph_height">175dp</dimen>
 
     <dimen name="series_graph_min_height">200dp</dimen>
     <dimen name="series_graph_line_size">1dp</dimen>

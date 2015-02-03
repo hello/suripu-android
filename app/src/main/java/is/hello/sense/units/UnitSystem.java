@@ -66,7 +66,7 @@ public class UnitSystem implements Serializable {
     }
 
     public CharSequence formatTemperature(long temperature) {
-        return Styles.assembleReadingAndUnit(temperature, "º");
+        return Styles.assembleReadingAndUnit(temperature, "°");
     }
 
     public CharSequence formatHumidity(long humidity) {

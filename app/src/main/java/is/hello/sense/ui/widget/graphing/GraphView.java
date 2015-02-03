@@ -186,6 +186,10 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
                 if (wantsHeaders) {
                     height -= headerHeight;
                     minY += headerHeight;
+                } else {
+                    int topSpacing = (int) Math.ceil(markerPointHalf);
+                    height -= topSpacing;
+                    minY += topSpacing;
                 }
 
                 if (wantsFooters) {
@@ -224,8 +228,8 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
             }
         }
 
-        GraphAdapterCache adapterCache = getAdapterCache();
         if (isHighlighted()) {
+            GraphAdapterCache adapterCache = getAdapterCache();
             float sectionWidth = adapterCache.calculateSectionWidth(width);
             float segmentWidth = adapterCache.calculateSegmentWidth(width, highlightedSection);
             float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, highlightedSection, highlightedSegment);
