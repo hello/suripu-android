@@ -25,10 +25,16 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
     private TextView scaleReading;
     private TextView secondaryReading;
 
+    private boolean hasAnimated = false;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            this.hasAnimated = savedInstanceState.getBoolean("hasAnimated", false);
+        }
 
         this.account = getContainer().getAccount();
 
@@ -47,6 +53,9 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
         this.secondaryReading = (TextView) view.findViewById(R.id.fragment_onboarding_register_height_scale_reading_secondary);
 
         scale.setOnValueChangedListener(this);
+        if (account.getHeight() != null) {
+            scale.setValue(account.getHeight(), true);
+        }
 
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
         Views.setSafeOnClickListener(nextButton, ignored -> next());
@@ -68,11 +77,20 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
     public void onResume() {
         super.onResume();
 
-        if (account.getHeight() != null && scale.getValue() == scale.getMinValue()) {
-            int height = account.getHeight();
-            scale.setValue(height, true);
+        if (!hasAnimated && account.getHeight() != null) {
+            scale.setValue(scale.getMinValue(), true);
+            scale.postDelayed(() -> scale.animateToValue(account.getHeight()), 250);
+            this.hasAnimated = true;
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("hasAnimated", true);
+    }
+
 
     @Override
     public void onValueChanged(int centimeters) {

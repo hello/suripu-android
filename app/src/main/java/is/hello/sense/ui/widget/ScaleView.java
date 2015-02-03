@@ -5,11 +5,13 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
@@ -28,6 +30,8 @@ public class ScaleView extends FrameLayout {
     private static final float TICK_NORMAL_SCALE = 0.5f;
     private static final float TICK_EMPHASIS_SCALE = 0.25f;
 
+    private static final float ANIMATION_MS_PER_PX = 100f;
+
     //endregion
 
 
@@ -37,6 +41,7 @@ public class ScaleView extends FrameLayout {
     private int scaleInset;
 
     private final RecyclerView recyclerView;
+    private final LinearLayoutManager layoutManager;
     private final TickAdapter adapter;
 
 
@@ -76,12 +81,13 @@ public class ScaleView extends FrameLayout {
         recyclerView.setVerticalScrollBarEnabled(false);
         recyclerView.setClipToPadding(false);
         if (orientation == VERTICAL) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true));
+            this.layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
         } else if (orientation == HORIZONTAL) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+            this.layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         } else {
             throw new IllegalStateException();
         }
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -224,6 +230,25 @@ public class ScaleView extends FrameLayout {
         if (notifyListener) {
             recyclerView.post(this::notifyValueChangedListener);
         }
+    }
+
+    public void animateToValue(int newValue) {
+        LinearSmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
+            final float timePerPx = ANIMATION_MS_PER_PX / getResources().getDisplayMetrics().densityDpi;
+
+            @Override
+            public PointF computeScrollVectorForPosition(int targetPosition) {
+                return layoutManager.computeScrollVectorForPosition(targetPosition);
+            }
+
+            @Override
+            protected int calculateTimeForScrolling(int dx) {
+                return (int) Math.ceil(Math.abs(dx) * timePerPx);
+            }
+        };
+        int newPosition = Math.max(minValue, (newValue - minValue - 1));
+        smoothScroller.setTargetPosition(newPosition);
+        layoutManager.startSmoothScroll(smoothScroller);
     }
 
     public int getValue() {
