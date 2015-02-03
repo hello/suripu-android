@@ -56,10 +56,7 @@ public class InsightsAdapter extends ArrayAdapter<Insight> {
         Insight insight = getItem(position);
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.title.setText(insight.getTitle());
-        holder.body.setText(insight.getMessage());
-        markdown.render(insight.getMessage())
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(holder.body::setText, Functions.LOG_ERROR);
+        markdown.renderInto(holder.body, insight.getMessage());
 
         return view;
     }

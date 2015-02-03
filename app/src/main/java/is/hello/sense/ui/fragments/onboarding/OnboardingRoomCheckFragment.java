@@ -234,10 +234,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 if (TextUtils.isEmpty(message)) {
                     itemMessage.setText(R.string.missing_data_placeholder);
                 } else {
-                    itemMessage.setText(message);
-                    bindAndSubscribe(markdown.renderWithEmphasisColor(sensorConditionColor, message),
-                                     itemMessage::setText,
-                                     Functions.LOG_ERROR);
+                    markdown.renderEmphasisInto(itemMessage, sensorConditionColor, message);
                 }
 
                 itemValue.setTextColor(sensorConditionColor);

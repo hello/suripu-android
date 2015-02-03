@@ -95,10 +95,7 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
 
     public void bindInsightInfo(@NonNull InsightInfo insightInfo) {
         title.setText(insightInfo.getTitle());
-        message.setText(insightInfo.getText());
-        markdown.render(insightInfo.getText())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(message::setText, Functions.LOG_ERROR);
+        markdown.renderInto(message, insightInfo.getText());
 
         illustration.setImageDrawable(null);
         String imageUrl = insightInfo.getImageUrl();

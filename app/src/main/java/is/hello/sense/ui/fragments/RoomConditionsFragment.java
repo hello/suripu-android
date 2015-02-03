@@ -203,11 +203,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
                     holder.reading.setText(R.string.missing_data_placeholder);
                     holder.reading.setTextColor(resources.getColor(R.color.sensor_unknown));
                 }
-
-                String message = sensorEntry.sensorState.getMessage();
-                holder.message.setText(message);
-                markdown.render(message)
-                        .subscribe(holder.message::setText, Functions.LOG_ERROR);
+                markdown.renderInto(holder.message, sensorEntry.sensorState.getMessage());
 
                 holder.lineGraphDrawable.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
                 holder.lineGraphDrawable.setAdapter(sensorEntry.graphAdapter);

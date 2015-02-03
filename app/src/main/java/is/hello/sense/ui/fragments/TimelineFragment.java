@@ -470,8 +470,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                     text.setCompoundDrawablesRelativeWithIntrinsicBounds(insight.getIcon(context), null, null, null);
                     text.setText(insight.getMessage());
                     text.setOnClickListener(onClick);
-                    markdown.render(insight.getMessage())
-                            .subscribe(text::setText, Functions.LOG_ERROR);
+                    markdown.renderInto(text, insight.getMessage());
                     container.addView(text);
                 }
             } else {

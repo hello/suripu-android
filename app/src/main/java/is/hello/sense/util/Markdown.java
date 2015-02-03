@@ -12,6 +12,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.MetricAffectingSpan;
 import android.text.style.StyleSpan;
 import android.text.style.TextAppearanceSpan;
+import android.widget.TextView;
 
 import org.markdownj.MarkdownProcessor;
 
@@ -64,6 +65,16 @@ import rx.schedulers.Schedulers;
                          .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public void renderInto(@NonNull TextView textView, @Nullable String markdown) {
+        textView.setText("");
+        render(markdown)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(textView::setText, e -> {
+                    Logger.error(getClass().getSimpleName(), "Could not render markdown", e);
+                    textView.setText(markdown);
+                });
+    }
+
     public @NonNull Observable<CharSequence> renderWithEmphasisColor(int color, @Nullable String markdown) {
         return render(markdown).map(maybeSpanned -> {
             if (maybeSpanned instanceof Spanned) {
@@ -101,5 +112,15 @@ import rx.schedulers.Schedulers;
                 return maybeSpanned;
             }
         });
+    }
+
+    public void renderEmphasisInto(@NonNull TextView textView, int color, @Nullable String markdown) {
+        textView.setText("");
+        renderWithEmphasisColor(color, markdown)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(textView::setText, e -> {
+                    Logger.error(getClass().getSimpleName(), "Could not render markdown", e);
+                    textView.setText(markdown);
+                });
     }
 }
