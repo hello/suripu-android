@@ -24,6 +24,7 @@ import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TrendsPresenter;
+import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.remote.LastNightWidgetProvider;
 import is.hello.sense.remote.RoomConditionsWidgetProvider;
@@ -58,16 +59,18 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.fragments.settings.ChangeEmailFragment;
 import is.hello.sense.ui.fragments.settings.ChangePasswordFragment;
+import is.hello.sense.ui.fragments.settings.NotificationsSettingsFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
-import is.hello.sense.ui.fragments.settings.UnitSettingsFragments;
+import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
 import is.hello.sense.ui.widget.TimestampTextView;
 
 @Module(
     includes = {ApiModule.class, BluetoothModule.class, DebugModule.class},
     injects = {
         SenseApplication.class,
+        NotificationReceiver.class,
 
         DebugActivity.class,
         PreferencesPresenter.class,
@@ -127,8 +130,9 @@ import is.hello.sense.ui.widget.TimestampTextView;
         AccountSettingsFragment.class,
         ChangePasswordFragment.class,
         ChangeEmailFragment.class,
-        UnitSettingsFragments.class,
+        UnitSettingsFragment.class,
         AccountPresenter.class,
+        NotificationsSettingsFragment.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
