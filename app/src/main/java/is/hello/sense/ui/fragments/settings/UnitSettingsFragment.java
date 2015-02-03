@@ -26,7 +26,7 @@ import is.hello.sense.units.systems.UsCustomaryUnitSystem;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 
-public class UnitSettingsFragments extends InjectionFragment implements AdapterView.OnItemClickListener {
+public class UnitSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     @Inject PreferencesPresenter preferencesPresenter;
 
     private StaticItemAdapter.TextItem unitSystemItem;
