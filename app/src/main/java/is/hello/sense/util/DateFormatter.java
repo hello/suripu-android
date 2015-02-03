@@ -13,8 +13,6 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
-import java.util.TimeZone;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -35,12 +33,12 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
     //region Last Night
 
     public static boolean isLastNight(@NonNull DateTime instant) {
-        Interval interval = new Interval(Days.ONE, DateTime.now().withTimeAtStartOfDay());
+        Interval interval = new Interval(Days.ONE, DateTime.now(DateTimeZone.getDefault()).withTimeAtStartOfDay());
         return interval.contains(instant);
     }
 
     public static @NonNull DateTime lastNight() {
-        return DateTime.now().minusDays(1);
+        return DateTime.now(DateTimeZone.getDefault()).minusDays(1);
     }
 
     //endregion
