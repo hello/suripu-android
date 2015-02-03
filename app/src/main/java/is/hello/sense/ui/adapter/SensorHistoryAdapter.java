@@ -1,6 +1,7 @@
 package is.hello.sense.ui.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.joda.time.DateTime;
 
@@ -114,10 +115,10 @@ public class SensorHistoryAdapter implements GraphAdapter {
             return new Update(Collections.emptyList(), 0f, 0f);
         }
 
-        public static Observable<Update> forHistorySeries(@NonNull List<SensorGraphSample> history,
+        public static Observable<Update> forHistorySeries(@Nullable List<SensorGraphSample> history,
                                                           @NonNull SensorHistoryPresenter.Mode mode) {
             Observable<Update> operation = Observable.create(s -> {
-                if (history.isEmpty()) {
+                if (history == null || history.isEmpty()) {
                     s.onNext(Update.empty());
                     s.onCompleted();
                 } else {
@@ -181,10 +182,6 @@ public class SensorHistoryAdapter implements GraphAdapter {
 
         public long getAverage() {
             return average;
-        }
-
-        public SensorGraphSample getRepresentativeValue() {
-            return instants.get(0);
         }
     }
 }
