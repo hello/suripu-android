@@ -123,6 +123,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
 
         this.headerView = (ViewGroup) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
+        Animations.Properties.DEFAULT.apply(headerView.getLayoutTransition(), false);
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
@@ -552,25 +553,37 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             int color = Styles.getSleepScoreColor(getActivity(), sleepScore);
             sleepScorePie.setTrackColor(color);
             score.setTextColor(color);
-            totalSleep.setTextColor(color);
-            timesAwake.setTextColor(color);
-            soundSleep.setTextColor(color);
-            timeToSleep.setTextColor(color);
 
             Timeline.Statistics statistics = timeline.getStatistics();
             if (statistics != null) {
+                totalSleep.setTextColor(color);
                 totalSleep.setText(formatTime(statistics.getTotalSleep()));
+
+                timesAwake.setTextColor(color);
                 if (statistics.getTimesAwake() != null) {
                     timesAwake.setText(statistics.getTimesAwake().toString());
                 } else {
                     timesAwake.setText(R.string.missing_data_placeholder);
                 }
+
+                soundSleep.setTextColor(color);
                 soundSleep.setText(formatTime(statistics.getSoundSleep()));
+
                 timeToSleep.setText(formatTime(statistics.getTimeToSleep()));
+                timeToSleep.setTextColor(color);
             } else {
+                int noDataColor = getResources().getColor(R.color.sleep_score_empty);
+
+                totalSleep.setTextColor(noDataColor);
                 totalSleep.setText(R.string.missing_data_placeholder);
+
+                timesAwake.setTextColor(noDataColor);
                 timesAwake.setText(R.string.missing_data_placeholder);
+
+                soundSleep.setTextColor(noDataColor);
                 soundSleep.setText(R.string.missing_data_placeholder);
+
+                timeToSleep.setTextColor(noDataColor);
                 timeToSleep.setText(R.string.missing_data_placeholder);
             }
         }
