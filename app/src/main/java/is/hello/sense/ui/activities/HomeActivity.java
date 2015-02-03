@@ -38,8 +38,8 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
+import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
-import is.hello.sense.notifications.NotificationTarget;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
@@ -108,7 +108,7 @@ public class HomeActivity
             }
 
             if (getIntent().hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
-                dispatchNotification(getIntent().getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
+                dispatchNotification(getIntent().getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD), false);
             }
         }
 
@@ -154,7 +154,7 @@ public class HomeActivity
         super.onNewIntent(intent);
 
         if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
-            dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
+            dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD), isResumed);
         }
     }
 
@@ -251,11 +251,56 @@ public class HomeActivity
 
     //region Notifications
 
-    private void dispatchNotification(@NonNull Bundle notification) {
-        Logger.info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
+    private void dispatchNotification(@NonNull Bundle notification, boolean animate) {
+        coordinator.postOnResume(() -> {
+            Logger.info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
 
-        NotificationTarget target = NotificationTarget.fromNotification(notification);
-        
+            Notification target = Notification.fromBundle(notification);
+            switch (target) {
+                case TIMELINE: {
+                    if (slidingLayersView.isOpen()) {
+                        slidingLayersView.close();
+                    }
+
+                    DateTime date = Notification.getDate(notification);
+                    TimelineFragment fragment = TimelineFragment.newInstance(date);
+                    viewPager.setCurrentFragment(fragment);
+
+                    break;
+                }
+
+                case SENSOR: {
+                    showUndersideWithItem(UndersideFragment.ITEM_ROOM_CONDITIONS, animate);
+
+                    Intent sensorHistory = new Intent(this, SensorHistoryActivity.class);
+                    String sensorName = Notification.getSensorName(notification);
+                    sensorHistory.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensorName);
+                    startActivity(sensorHistory);
+
+                    break;
+                }
+
+                case TRENDS: {
+                    showUndersideWithItem(UndersideFragment.ITEM_TRENDS, animate);
+                    break;
+                }
+
+                case ALARM: {
+                    showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, animate);
+                    break;
+                }
+
+                case SETTINGS: {
+                    showUndersideWithItem(UndersideFragment.ITEM_APP_SETTINGS, animate);
+                    break;
+                }
+
+                case INSIGHTS: {
+                    showUndersideWithItem(UndersideFragment.ITEM_INSIGHTS, animate);
+                    break;
+                }
+            }
+        });
     }
 
     //endregion
@@ -465,6 +510,20 @@ public class HomeActivity
         }
 
         viewPager.getCurrentFragment().onUserDidPushUpTopView();
+    }
+
+    public void showUndersideWithItem(int item, boolean animate) {
+        if (slidingLayersView.isOpen()) {
+            UndersideFragment underside = (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
+            underside.setCurrentItem(item, animate);
+        } else {
+            UndersideFragment.saveCurrentItem(this, item);
+            if (animate) {
+                slidingLayersView.open();
+            } else {
+                slidingLayersView.openWithoutAnimation();
+            }
+        }
     }
 
     //endregion
