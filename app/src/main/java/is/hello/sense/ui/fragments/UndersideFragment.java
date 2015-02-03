@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -34,7 +35,13 @@ import is.hello.sense.util.Constants;
 import static is.hello.sense.ui.adapter.StaticFragmentAdapter.Item;
 
 public class UndersideFragment extends Fragment implements ViewPager.OnPageChangeListener, SelectorLinearLayout.OnSelectionChangedListener {
-    private static final int DEFAULT_START_ITEM = 0;
+    public static final int ITEM_ROOM_CONDITIONS = 0;
+    public static final int ITEM_TRENDS = 1;
+    public static final int ITEM_INSIGHTS = 2;
+    public static final int ITEM_SMART_ALARM_LIST = 3;
+    public static final int ITEM_APP_SETTINGS = 4;
+
+    private static final int DEFAULT_START_ITEM = ITEM_ROOM_CONDITIONS;
 
     private SharedPreferences preferences;
 
@@ -60,11 +67,24 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     };
 
 
+    private static SharedPreferences getPreferences(@NonNull Context context) {
+        return context.getSharedPreferences(Constants.INTERNAL_PREFS, 0);
+    }
+
+    public static void saveCurrentItem(@NonNull Context context, int currentItem) {
+        SharedPreferences preferences = getPreferences(context);
+        preferences.edit()
+                   .putInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, currentItem)
+                   .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
+                   .apply();
+    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.preferences = getActivity().getSharedPreferences(Constants.INTERNAL_PREFS, 0);
+        this.preferences = getPreferences(getActivity());
 
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.TopView.EVENT_TOP_VIEW, null);

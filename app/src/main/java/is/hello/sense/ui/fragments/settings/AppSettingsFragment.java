@@ -48,7 +48,8 @@ public class AppSettingsFragment extends UndersideTabFragment {
         this.itemContainer = (LinearLayout) view.findViewById(R.id.fragment_app_settings_container);
         addItem(R.string.label_account, true, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account, null));
         addItem(R.string.label_devices, true, ignored -> showFragment(DeviceListFragment.class, R.string.label_devices, null));
-        addItem(R.string.label_units_and_time, true, ignored -> showFragment(UnitSettingsFragments.class, R.string.label_units_and_time, null));
+        addItem(R.string.label_notifications, true, ignored -> showFragment(NotificationsSettingsFragment.class, R.string.label_notifications, null));
+        addItem(R.string.label_units_and_time, true, ignored -> showFragment(UnitSettingsFragment.class, R.string.label_units_and_time, null));
 
         TextView footer = (TextView) view.findViewById(R.id.footer_help);
         Styles.initializeSupportFooter(getActivity(), footer);
