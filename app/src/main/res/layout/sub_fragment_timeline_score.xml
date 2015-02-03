@@ -6,8 +6,8 @@
 
     <LinearLayout
         android:id="@+id/fragment_timeline_sleep_score_chart"
-        android:layout_width="@dimen/grand_sleep_summary_height"
-        android:layout_height="@dimen/grand_sleep_summary_width"
+        android:layout_width="@dimen/grand_sleep_summary_width"
+        android:layout_height="@dimen/grand_sleep_summary_height"
         android:layout_marginTop="@dimen/gap_small"
         android:layout_gravity="center"
         android:gravity="center"

@@ -79,6 +79,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private ViewGroup headerView;
     private TextView dateText;
     private HeaderViewMode headerMode;
+    private SelectorLinearLayout headerModeSelector;
 
     private ScoreViewMode timelineScore;
     private BeforeSleepHeaderMode beforeSleep;
@@ -127,13 +128,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
         dateText.setOnClickListener(ignored -> ((HomeActivity) getActivity()).showTimelineNavigator(getDate()));
 
-        SelectorLinearLayout headerModeSelector = (SelectorLinearLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
+        this.headerModeSelector = (SelectorLinearLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
         headerModeSelector.setBackground(new TimelineTabsDrawable(getResources()));
         headerModeSelector.setOnSelectionChangedListener(this);
         IconAndTextDrawable.replaceBuiltInDrawing(headerModeSelector.getToggleButtons());
         headerModeSelector.setSelectedIndex(0);
 
         this.timelineScore = new ScoreViewMode(inflater, headerView);
+        timelineScore.scoreText.setOnClickListener(this::showBreakdown);
         this.beforeSleep = new BeforeSleepHeaderMode(inflater, headerView);
 
         setHeaderMode(timelineScore);
@@ -236,6 +238,16 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             default:
                 break;
         }
+    }
+
+    public void showBreakdown(@NonNull View sender) {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        BreakdownHeaderMode breakdown = new BreakdownHeaderMode(inflater, headerView);
+        bindAndSubscribe(timelinePresenter.mainTimeline.take(1),
+                         breakdown::bindTimeline,
+                         breakdown::timelineUnavailable);
+        setHeaderMode(breakdown);
+        headerModeSelector.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
     }
 
     //endregion
@@ -485,6 +497,76 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 text.setText(R.string.missing_data_placeholder);
             }
             container.addView(text);
+        }
+    }
+
+    class BreakdownHeaderMode extends HeaderViewMode {
+        final TextView score;
+        final TextView totalSleep;
+        final TextView timesAwake;
+        final TextView soundSleep;
+        final TextView timeToSleep;
+
+        final SleepScoreDrawable sleepScorePie;
+
+        BreakdownHeaderMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
+            super(R.layout.sub_fragment_timeline_breakdown, inflater, container);
+
+            this.score = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_score);
+            this.totalSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_total);
+            this.timesAwake = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_awake);
+            this.soundSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_sound);
+            this.timeToSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_time);
+
+            this.sleepScorePie = new SleepScoreDrawable(getResources());
+            score.setBackground(sleepScorePie);
+        }
+
+        @NonNull String formatTime(@Nullable Integer time) {
+            if (time == null) {
+                return getString(R.string.missing_data_placeholder);
+            } else {
+                int hours = time / 60;
+                int seconds = time % 60;
+                if (seconds > 0) {
+                    return hours + "." + seconds + "h";
+                } else {
+                    return hours + "h";
+                }
+            }
+        }
+
+        void bindTimeline(@NonNull Timeline timeline) {
+            int sleepScore = timeline.getScore();
+            sleepScorePie.setValue(sleepScore);
+            score.setText(Integer.toString(sleepScore));
+
+            Timeline.Statistics statistics = timeline.getStatistics();
+            if (statistics != null) {
+                totalSleep.setText(formatTime(statistics.getTotalSleep()));
+                if (statistics.getTimesAwake() != null) {
+                    timesAwake.setText(statistics.getTimesAwake().toString());
+                } else {
+                    timesAwake.setText(R.string.missing_data_placeholder);
+                }
+                soundSleep.setText(formatTime(statistics.getSoundSleep()));
+                timeToSleep.setText(formatTime(statistics.getTimeToSleep()));
+            } else {
+                totalSleep.setText(R.string.missing_data_placeholder);
+                timesAwake.setText(R.string.missing_data_placeholder);
+                soundSleep.setText(R.string.missing_data_placeholder);
+                timeToSleep.setText(R.string.missing_data_placeholder);
+            }
+        }
+
+        void timelineUnavailable(Throwable e) {
+            sleepScorePie.setValue(0);
+            score.setText(R.string.missing_data_placeholder);
+
+            totalSleep.setText(R.string.missing_data_placeholder);
+            timesAwake.setText(R.string.missing_data_placeholder);
+            soundSleep.setText(R.string.missing_data_placeholder);
+            timeToSleep.setText(R.string.missing_data_placeholder);
         }
     }
 

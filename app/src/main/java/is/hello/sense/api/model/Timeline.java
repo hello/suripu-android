@@ -1,5 +1,7 @@
 package is.hello.sense.api.model;
 
+import android.support.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -85,19 +87,19 @@ public class Timeline extends ApiResponse {
         private Integer timeToSleep;
 
 
-        public Integer getTotalSleep() {
+        public @Nullable Integer getTotalSleep() {
             return totalSleep;
         }
 
-        public Integer getSoundSleep() {
+        public @Nullable Integer getSoundSleep() {
             return soundSleep;
         }
 
-        public Integer getTimesAwake() {
+        public @Nullable Integer getTimesAwake() {
             return timesAwake;
         }
 
-        public Integer getTimeToSleep() {
+        public @Nullable Integer getTimeToSleep() {
             return timeToSleep;
         }
 
