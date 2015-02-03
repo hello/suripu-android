@@ -38,7 +38,7 @@ public abstract class HardwareFragment extends InjectionFragment {
             if (success) {
                 LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
                     this.loadingDialogFragment = null;
-                    onCompletion.run();
+                    coordinator.postOnResume(onCompletion);
                 });
             } else {
                 LoadingDialogFragment.close(getFragmentManager());

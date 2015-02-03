@@ -91,16 +91,18 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         LoadingDialogFragment.show(getFragmentManager(), null, true);
         getFragmentManager().executePendingTransactions();
         LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-            if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false)) {
-                hardwarePresenter.clearPeripheral();
-                getOnboardingActivity().finish();
-            } else {
-                if (success) {
-                    getOnboardingActivity().showPillInstructions();
+            coordinator.postOnResume(() -> {
+                if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false)) {
+                    hardwarePresenter.clearPeripheral();
+                    getOnboardingActivity().finish();
                 } else {
-                    getOnboardingActivity().showSenseColorsInfo();
+                    if (success) {
+                        getOnboardingActivity().showPillInstructions();
+                    } else {
+                        getOnboardingActivity().showSenseColorsInfo();
+                    }
                 }
-            }
+            });
         });
     }
 

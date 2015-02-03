@@ -197,8 +197,9 @@ public class OnboardingRegisterFragment extends InjectionFragment {
             preferencesPresenter.pullAccountPreferences().subscribe();
             Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
-            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
-                    () -> getOnboardingActivity().showBirthday(createdAccount));
+            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
+                coordinator.postOnResume(() -> getOnboardingActivity().showBirthday(createdAccount));
+            });
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getFragmentManager(), error);
