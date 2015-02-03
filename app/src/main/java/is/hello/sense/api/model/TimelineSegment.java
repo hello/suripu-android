@@ -70,6 +70,14 @@ public class TimelineSegment extends ApiResponse {
         return sleepDepth;
     }
 
+    public boolean hasEventInfo() {
+        return (eventType != null && eventType != EventType.SLEEPING);
+    }
+
+    public boolean isBeforeSleep() {
+        return (eventType == null);
+    }
+
     public EventType getEventType() {
         return eventType;
     }
@@ -154,15 +162,17 @@ public class TimelineSegment extends ApiResponse {
         WAKE_UP(R.string.event_type_wake_up),
         OUT_OF_BED(R.string.event_type_out_of_bed),
         IN_BED(R.string.event_type_in_bed),
+        SLEEPING(R.string.event_type_sleeping),
         UNKNOWN(R.string.event_type_unknown);
 
         @JsonCreator
         @SuppressWarnings("UnusedDeclaration")
         public static @Nullable EventType fromString(@NonNull String value) {
-            if (TextUtils.isEmpty(value))
+            if (TextUtils.isEmpty(value)) {
                 return null;
-            else
+            } else {
                 return Enums.fromString(value, values(), UNKNOWN);
+            }
         }
 
         public final @StringRes int nameString;

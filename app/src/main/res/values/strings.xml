@@ -65,6 +65,7 @@
     <string name="event_type_partner_moved">Partner Moved</string>
     <string name="event_type_out_of_bed">Out of Bed</string>
     <string name="event_type_in_bed">In Bed</string>
+    <string name="event_type_sleeping">Sleeping</string>
     <string name="event_type_unknown">Other</string>
 
     <string name="gender_male">Male</string>

@@ -294,7 +294,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         TimelineSegment segment = (TimelineSegment) adapterView.getItemAtPosition(position);
-        if (segment.getEventType() != null) {
+        if (segment.hasEventInfo()) {
             Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
 
             TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment);

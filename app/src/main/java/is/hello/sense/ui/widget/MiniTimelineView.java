@@ -54,7 +54,7 @@ public class MiniTimelineView extends View {
                 float segmentWidth = width * (sleepDepth / 100f);
                 float segmentMidX = segmentWidth / 2f;
 
-                int dimmedColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
+                int dimmedColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth, segment.isBeforeSleep()));
                 fillPaint.setColor(dimmedColor);
 
                 canvas.drawRect(midX - segmentMidX, y, midX + segmentMidX, y + segmentHeight, fillPaint);

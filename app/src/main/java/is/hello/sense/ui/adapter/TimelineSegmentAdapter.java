@@ -66,7 +66,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
      * Calculates the height required to display the item at a given position.
      */
     private int calculateItemHeight(int position, @NonNull TimelineSegment segment) {
-        if (segment.getEventType() != null) {
+        if (segment.hasEventInfo()) {
             int itemHeight = this.itemEventImageHeight + this.baseItemHeight;
             return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
         } else if (positionsWithTime.contains(position)) {
@@ -210,7 +210,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
         public void displaySegment(int position, @NonNull TimelineSegment segment) {
             int sleepDepth = segment.getSleepDepth() < 0 ? 0 : segment.getSleepDepth();
-            itemView.setSleepDepth(sleepDepth);
+            itemView.setSleepDepth(sleepDepth, segment.isBeforeSleep());
             itemView.setEventResource(Styles.getTimelineSegmentIconRes(segment));
 
             DateTime segmentTimestamp = segment.getShiftedTimestamp();
@@ -221,8 +221,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
                 itemView.setLeftTime(null);
             }
 
-            EventType eventType = segment.getEventType();
-            if (eventType != null) {
+            if (segment.hasEventInfo()) {
                 itemView.setRightTime(dateFormatter.formatAsTimelineStamp(segmentTimestamp, use24Time));
             } else {
                 itemView.setRightTime(null);

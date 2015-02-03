@@ -204,11 +204,12 @@ public final class TimelineSegmentView extends View {
         }
     }
 
-    public void setSleepDepth(int sleepDepth) {
+    public void setSleepDepth(int sleepDepth, boolean dimmed) {
         this.sleepDepth = sleepDepth;
 
         Resources resources = getResources();
-        fillPaint.setColor(resources.getColor(Styles.getSleepDepthColorRes(sleepDepth)));
+        int colorRes = Styles.getSleepDepthColorRes(sleepDepth, dimmed);
+        fillPaint.setColor(resources.getColor(colorRes));
 
         invalidate();
     }

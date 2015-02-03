@@ -33,24 +33,38 @@ public final class Styles {
     public static final int TIMELINE_HOURS_ON_SCREEN = 10;
 
 
-    public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth) {
-        if (sleepDepth == 0)
-            return R.color.sleep_awake;
-        else if (sleepDepth == 100)
-            return R.color.sleep_deep;
-        else if (sleepDepth < 60)
-            return R.color.sleep_light;
-        else
-            return R.color.sleep_intermediate;
+    public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth, boolean dimmed) {
+        if (dimmed) {
+            if (sleepDepth == 0) {
+                return R.color.sleep_awake_dimmed;
+            } else if (sleepDepth == 100) {
+                return R.color.sleep_deep_dimmed;
+            } else if (sleepDepth < 60) {
+                return R.color.sleep_light_dimmed;
+            } else {
+                return R.color.sleep_intermediate_dimmed;
+            }
+        } else {
+            if (sleepDepth == 0) {
+                return R.color.sleep_awake;
+            } else if (sleepDepth == 100) {
+                return R.color.sleep_deep;
+            } else if (sleepDepth < 60) {
+                return R.color.sleep_light;
+            } else {
+                return R.color.sleep_intermediate;
+            }
+        }
     }
 
     public static @ColorRes @DrawableRes int getSleepScoreColorRes(int sleepScore) {
-        if (sleepScore < 45)
+        if (sleepScore < 45) {
             return R.color.sensor_warning;
-        else if (sleepScore < 80)
+        } else if (sleepScore < 80) {
             return R.color.sensor_alert;
-        else
+        } else {
             return R.color.sensor_ideal;
+        }
     }
 
     public static int getSleepScoreColor(@NonNull Context context, int sleepScore) {
@@ -59,7 +73,7 @@ public final class Styles {
 
 
     public static @DrawableRes int getTimelineSegmentIconRes(@NonNull TimelineSegment segment) {
-        if (segment.getEventType() == null) {
+        if (!segment.hasEventInfo()) {
             return 0;
         }
 
