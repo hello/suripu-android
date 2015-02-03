@@ -16,9 +16,12 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.util.Logger;
 
 public class NotificationReceiver extends BroadcastReceiver {
-    public static final String EXTRA_TYPE = "type";
+    public static final String EXTRA_TARGET = "target";
+    public static final String EXTRA_FROM = "from";
     public static final String EXTRA_MESSAGE = "message";
-    public static final String EXTRA_QUESTION_ID = "question_id";
+    public static final String EXTRA_DETAILS = "details";
+    public static final String EXTRA_COLLAPSE_KEY = "collapse_key";
+
 
     private int notificationId = 0;
 
@@ -57,20 +60,17 @@ public class NotificationReceiver extends BroadcastReceiver {
         Logger.info(NotificationReceiver.class.getSimpleName(), "Received message: " + intent.getExtras());
         String message = intent.getStringExtra(EXTRA_MESSAGE);
         if (!TextUtils.isEmpty(message)) {
-            NotificationType type = NotificationType.fromString(intent.getStringExtra(EXTRA_TYPE));
-
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             Notification.Builder builder = new Notification.Builder(context);
             builder.setSmallIcon(R.drawable.ic_launcher);
-            builder.setContentTitle(context.getString(type.titleRes));
+            builder.setContentTitle(context.getString(R.string.app_name));
             builder.setStyle(new Notification.BigTextStyle().bigText(message));
             builder.setContentText(message);
 
             Intent activityIntent = new Intent(context, HomeActivity.class);
             activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            activityIntent.putExtras(intent.getExtras());
-            activityIntent.putExtra(HomeActivity.EXTRA_IS_NOTIFICATION, true);
-            builder.setContentIntent(PendingIntent.getActivity(context, 0, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+            activityIntent.putExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD, intent.getExtras());
+            builder.setContentIntent(PendingIntent.getActivity(context, 0, activityIntent, PendingIntent.FLAG_ONE_SHOT));
             builder.setAutoCancel(true);
 
             notificationManager.notify(notificationId++, builder.build());

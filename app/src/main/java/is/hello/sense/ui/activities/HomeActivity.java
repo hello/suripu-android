@@ -39,6 +39,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.NotificationRegistration;
+import is.hello.sense.notifications.NotificationTarget;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
@@ -63,7 +64,7 @@ public class HomeActivity
         extends InjectionActivity
         implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener
 {
-    public static final String EXTRA_IS_NOTIFICATION = HomeActivity.class.getName() + ".EXTRA_IS_NOTIFICATION";
+    public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
     private final PresenterContainer presenterContainer = new PresenterContainer();
@@ -101,8 +102,13 @@ public class HomeActivity
             presenterContainer.onRestoreState(savedInstanceState);
         } else {
             this.showUnderside = getWillShowUnderside();
+
             if (NotificationRegistration.shouldRegister(this)) {
                 new NotificationRegistration(this).register();
+            }
+
+            if (getIntent().hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
+                dispatchNotification(getIntent().getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
             }
         }
 
@@ -140,6 +146,15 @@ public class HomeActivity
         //noinspection PointlessBooleanExpression,ConstantConditions
         if (!BuildConfig.DEBUG && BuildConfig.DEBUG_SCREEN_ENABLED) {
             UpdateManager.register(this, getString(R.string.build_hockey_id));
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
+            dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
         }
     }
 
@@ -229,6 +244,18 @@ public class HomeActivity
         if (isFinishing()) {
             presenterContainer.onContainerDestroyed();
         }
+    }
+
+    //endregion
+
+
+    //region Notifications
+
+    private void dispatchNotification(@NonNull Bundle notification) {
+        Logger.info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
+
+        NotificationTarget target = NotificationTarget.fromNotification(notification);
+        
     }
 
     //endregion
