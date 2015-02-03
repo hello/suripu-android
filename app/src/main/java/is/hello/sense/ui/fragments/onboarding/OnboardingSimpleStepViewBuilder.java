@@ -176,8 +176,9 @@ public final class OnboardingSimpleStepViewBuilder {
 
     public OnboardingSimpleStepViewBuilder setDiagramInset(@DimenRes int startInsetRes, @DimenRes int endInsetRes) {
         Resources resources = diagramImage.getResources();
-        diagramImage.setPaddingRelative(resources.getDimensionPixelSize(startInsetRes), 0,
-                                        resources.getDimensionPixelSize(endInsetRes), 0);
+        int start = startInsetRes != 0 ? resources.getDimensionPixelSize(startInsetRes) : 0;
+        int end = endInsetRes != 0 ? resources.getDimensionPixelSize(endInsetRes) : 0;
+        diagramImage.setPaddingRelative(start, 0, end, 0);
         return this;
     }
 

@@ -25,8 +25,8 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
     private static final String ARG_HEADING = OnboardingSimpleStepFragment.class.getName() + "ARG_HEADING";
     private static final String ARG_SUBHEADING = OnboardingSimpleStepFragment.class.getName() + "ARG_SUBHEADING";
     private static final String ARG_DIAGRAM_RES = OnboardingSimpleStepFragment.class.getName() + "ARG_DIAGRAM_RES";
-    private static final String ARG_DIAGRAM_INSET_START = OnboardingSimpleStepFragment.class.getName() + "ARG_DIAGRAM_INSET_START";
-    private static final String ARG_DIAGRAM_INSET_END = OnboardingSimpleStepFragment.class.getName() + "ARG_DIAGRAM_INSET_END";
+    private static final String ARG_DIAGRAM_INSET_START_RES = OnboardingSimpleStepFragment.class.getName() + "ARG_DIAGRAM_INSET_START_RES";
+    private static final String ARG_DIAGRAM_INSET_END_RES = OnboardingSimpleStepFragment.class.getName() + "ARG_DIAGRAM_INSET_END_RES";
     private static final String ARG_BUTTON_TEXT = OnboardingSimpleStepFragment.class.getName() + "ARG_BUTTON_TEXT";
     private static final String ARG_HIDE_TOOLBAR = OnboardingSimpleStepFragment.class.getName() + "ARG_HIDE_TOOLBAR";
     private static final String ARG_WANTS_BACK = OnboardingSimpleStepFragment.class.getName() + ".ARG_WANTS_BACK";
@@ -67,8 +67,8 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
         simpleStepHolder.setSubheadingText(getArguments().getString(ARG_SUBHEADING));
         if (getArguments().containsKey(ARG_DIAGRAM_RES)) {
             simpleStepHolder.setDiagramImage(getArguments().getInt(ARG_DIAGRAM_RES));
-            simpleStepHolder.setDiagramInset(getArguments().getInt(ARG_DIAGRAM_INSET_START, 0),
-                                             getArguments().getInt(ARG_DIAGRAM_INSET_END, 0));
+            simpleStepHolder.setDiagramInset(getArguments().getInt(ARG_DIAGRAM_INSET_START_RES, 0),
+                                             getArguments().getInt(ARG_DIAGRAM_INSET_END_RES, 0));
         }
 
         simpleStepHolder.setPrimaryOnClickListener(this::next);
@@ -163,8 +163,8 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
 
         public Builder setDiagramInset(@DimenRes int startInsetRes, @DimenRes int endInsetRes) {
             Resources resources = context.getResources();
-            arguments.putInt(ARG_DIAGRAM_INSET_START, resources.getDimensionPixelSize(startInsetRes));
-            arguments.putInt(ARG_DIAGRAM_INSET_END, resources.getDimensionPixelSize(endInsetRes));
+            arguments.putInt(ARG_DIAGRAM_INSET_START_RES, resources.getDimensionPixelSize(startInsetRes));
+            arguments.putInt(ARG_DIAGRAM_INSET_END_RES, resources.getDimensionPixelSize(endInsetRes));
             return this;
         }
 
