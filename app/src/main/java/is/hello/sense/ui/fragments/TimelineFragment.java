@@ -135,7 +135,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         headerModeSelector.setSelectedIndex(0);
 
         this.timelineScore = new ScoreViewMode(inflater, headerView);
-        timelineScore.scoreText.setOnClickListener(this::showBreakdown);
         this.beforeSleep = new BeforeSleepHeaderMode(inflater, headerView);
 
         setHeaderMode(timelineScore);
@@ -255,11 +254,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     public void bindTimeline(@Nullable Timeline timeline) {
         if (timeline != null) {
-            timelineScore.showSleepScore(timeline.getScore());
+            boolean hasSegments = !Lists.isEmpty(timeline.getSegments());
+            timelineScore.showSleepScore(hasSegments ? timeline.getScore() : -1);
 
-            if (timeline.getSegments().isEmpty()) {
-                timelineEventsHeader.setVisibility(View.INVISIBLE);
-            } else {
+            if (hasSegments) {
                 timelineEventsHeader.setVisibility(View.VISIBLE);
 
                 HomeActivity activity = (HomeActivity) getActivity();
@@ -268,6 +266,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 } else {
                     WelcomeDialog.showIfNeeded(activity, R.xml.welcome_dialog_timeline);
                 }
+            } else {
+                timelineEventsHeader.setVisibility(View.INVISIBLE);
             }
         } else {
             timelineScore.showSleepScore(-1);
@@ -385,6 +385,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     class ScoreViewMode extends HeaderViewMode {
+        final LinearLayout sleepScoreContainer;
         final SleepScoreDrawable scoreGraph;
         final TextView scoreText;
         final TextView messageText;
@@ -392,7 +393,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         ScoreViewMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
             super(R.layout.sub_fragment_timeline_score, inflater, container);
 
-            LinearLayout sleepScoreContainer = (LinearLayout) view.findViewById(R.id.fragment_timeline_sleep_score_chart);
+            this.sleepScoreContainer = (LinearLayout) view.findViewById(R.id.fragment_timeline_sleep_score_chart);
+            Views.setSafeOnClickListener(sleepScoreContainer, TimelineFragment.this::showBreakdown);
+            sleepScoreContainer.setClickable(false);
+
             this.scoreText = (TextView) sleepScoreContainer.findViewById(R.id.fragment_timeline_sleep_score);
             this.messageText = (TextView) view.findViewById(R.id.fragment_timeline_message);
             Views.makeTextViewLinksClickable(messageText);
@@ -404,10 +408,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         void showSleepScore(int sleepScore) {
             if (sleepScore < 0) {
+                sleepScoreContainer.setClickable(false);
                 scoreGraph.setFillColor(getResources().getColor(R.color.sleep_score_empty));
                 scoreText.setText(R.string.missing_data_placeholder);
                 scoreGraph.setValue(0);
             } else {
+                sleepScoreContainer.setClickable(true);
+
                 if (sleepScore != scoreGraph.getValue()) {
                     ValueAnimator updateAnimation = ValueAnimator.ofInt(scoreGraph.getValue(), sleepScore);
                     Animations.Properties.createWithDelay(250).apply(updateAnimation);
@@ -432,6 +439,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         void presentError(Throwable e) {
+            sleepScoreContainer.setClickable(false);
+
             scoreGraph.setTrackColor(getResources().getColor(R.color.border));
             scoreGraph.setValue(0);
 
@@ -519,6 +528,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             this.timeToSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_time);
 
             this.sleepScorePie = new SleepScoreDrawable(getResources());
+            sleepScorePie.setValue(100);
             score.setBackground(sleepScorePie);
         }
 
@@ -538,7 +548,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         void bindTimeline(@NonNull Timeline timeline) {
             int sleepScore = timeline.getScore();
-            sleepScorePie.setValue(sleepScore);
             score.setText(Integer.toString(sleepScore));
 
             Timeline.Statistics statistics = timeline.getStatistics();
