@@ -29,6 +29,9 @@ public class Timeline extends ApiResponse {
     @JsonDeserialize(contentAs = PreSleepInsight.class)
     private List<PreSleepInsight> preSleepInsights;
 
+    @JsonProperty("statistics")
+    private Statistics statistics;
+
 
     public int getScore() {
         return score;
@@ -50,14 +53,63 @@ public class Timeline extends ApiResponse {
         return preSleepInsights;
     }
 
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
+
     @Override
     public String toString() {
         return "Timeline{" +
                 "score=" + score +
                 ", message='" + message + '\'' +
-                ", date='" + date + '\'' +
+                ", date=" + date +
                 ", segments=" + segments +
-                ", insights=" + preSleepInsights +
+                ", preSleepInsights=" + preSleepInsights +
+                ", statistics=" + statistics +
                 '}';
+    }
+
+
+    public static class Statistics extends ApiResponse {
+        @JsonProperty("total_sleep")
+        private Integer totalSleep;
+
+        @JsonProperty("sound_sleep")
+        private Integer soundSleep;
+
+        @JsonProperty("times_awake")
+        private Integer timesAwake;
+
+        @JsonProperty("time_to_sleep")
+        private Integer timeToSleep;
+
+
+        public Integer getTotalSleep() {
+            return totalSleep;
+        }
+
+        public Integer getSoundSleep() {
+            return soundSleep;
+        }
+
+        public Integer getTimesAwake() {
+            return timesAwake;
+        }
+
+        public Integer getTimeToSleep() {
+            return timeToSleep;
+        }
+
+
+        @Override
+        public String toString() {
+            return "Statistics{" +
+                    "totalSleep=" + totalSleep +
+                    ", soundSleep=" + soundSleep +
+                    ", timesAwake=" + timesAwake +
+                    ", timeToSleep=" + timeToSleep +
+                    '}';
+        }
     }
 }
