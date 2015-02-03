@@ -1,14 +1,13 @@
 package is.hello.sense.notifications;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -75,12 +74,12 @@ public class NotificationReceiver extends BroadcastReceiver {
             markdown.render(message)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(richMessage -> {
-                        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                        Notification.Builder builder = new Notification.Builder(context);
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
                         builder.setSmallIcon(R.drawable.ic_launcher);
+                        builder.setColor(context.getResources().getColor(R.color.light_accent));
                         builder.setContentTitle(context.getString(R.string.app_name));
                         builder.setContentText(richMessage);
-                        builder.setStyle(new Notification.BigTextStyle().bigText(richMessage));
+                        builder.setStyle(new NotificationCompat.BigTextStyle().bigText(richMessage));
                         if (!intent.getBooleanExtra(EXTRA_SILENT_MODE, false)) {
                             builder.setDefaults(Notification.DEFAULT_ALL);
                         }
@@ -91,7 +90,8 @@ public class NotificationReceiver extends BroadcastReceiver {
                         builder.setContentIntent(PendingIntent.getActivity(context, 0, activityIntent, PendingIntent.FLAG_ONE_SHOT));
                         builder.setAutoCancel(true);
 
-                        notificationManager.notify(notificationId++, builder.build());
+                        NotificationManagerCompat manager = NotificationManagerCompat.from(context);
+                        manager.notify(notificationId++, builder.build());
                     });
         }
     }
