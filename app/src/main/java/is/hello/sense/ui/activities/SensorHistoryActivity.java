@@ -32,6 +32,9 @@ public class SensorHistoryActivity extends SenseActivity {
                 titleRes = R.string.condition_light;
                 break;
 
+            case ApiService.SENSOR_NAME_SOUND:
+                titleRes = R.string.condition_sound;
+
             default:
                 break;
         }
