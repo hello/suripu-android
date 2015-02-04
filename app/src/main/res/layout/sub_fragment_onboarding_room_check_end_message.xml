@@ -31,7 +31,7 @@
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/onboarding_room_check_info_success"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+        android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"/>
 
     <Button
         android:id="@+id/sub_fragment_room_check_end_continue"
