@@ -379,6 +379,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             builder.setSubheadingText(R.string.onboarding_message_sleep_pill_intro);
             builder.setDiagramImage(R.drawable.onboarding_clip_pill);
             builder.setHideToolbar(true);
+            builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO);
             builder.setNextFragmentClass(OnboardingPairPillFragment.class);
             pushFragment(builder.toFragment(), null, false);
         } else {

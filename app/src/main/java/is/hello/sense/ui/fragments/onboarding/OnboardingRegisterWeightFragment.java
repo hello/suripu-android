@@ -65,7 +65,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
         Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
         if (getWantsSkipButton()) {
             Views.setSafeOnClickListener(skipButton, ignored -> {
-                Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, null);
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "weight"));
                 getContainer().onAccountUpdated(this);
             });
         } else {
