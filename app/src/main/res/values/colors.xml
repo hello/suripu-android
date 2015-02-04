@@ -65,17 +65,17 @@
     <color name="sleep_deep">#ff7fceff</color>
 
     <color name="sleep_awake_dimmed">#ffffff</color>
-    <color name="sleep_light_dimmed">#ffeaeaea</color>
-    <color name="sleep_intermediate_dimmed">#ffdbdbdb</color>
-    <color name="sleep_deep_dimmed">#ffcccccc</color>
+    <color name="sleep_light_dimmed">#fff7f7f7</color>
+    <color name="sleep_intermediate_dimmed">#ffebebeb</color>
+    <color name="sleep_deep_dimmed">#ffe5e5e5</color>
 
-    <color name="graph_fill_color">#28000000</color>
-    <color name="graph_fill_gradient_top">#23000000</color>
-    <color name="graph_fill_gradient_bottom">#0A000000</color>
+    <color name="graph_fill_color">#70000000</color>
+    <color name="graph_fill_gradient_top">#35000000</color>
+    <color name="graph_fill_gradient_bottom">#20000000</color>
 
-    <color name="graph_fill_accent_color">#28009CFF</color>
-    <color name="graph_fill_accent_gradient_top">#23009CFF</color>
-    <color name="graph_fill_accent_gradient_bottom">#0A009CFF</color>
+    <color name="graph_fill_accent_color">#70009CFF</color>
+    <color name="graph_fill_accent_gradient_top">#35009CFF</color>
+    <color name="graph_fill_accent_gradient_bottom">#20009CFF</color>
 
     <color name="view_scale_tick_normal">#dfdfdf</color>
     <color name="view_scale_tick_emphasized">#c1c1c1</color>
