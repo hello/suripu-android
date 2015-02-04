@@ -135,7 +135,7 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
         Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
 
         Insight insight = (Insight) adapterView.getItemAtPosition(position);
-        InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight.getCategory());
+        InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight);
         dialogFragment.show(getFragmentManager(), InsightInfoDialogFragment.TAG);
     }
 

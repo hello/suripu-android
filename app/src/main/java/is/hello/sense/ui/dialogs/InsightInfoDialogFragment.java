@@ -17,9 +17,9 @@ import android.widget.TextView;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
@@ -27,27 +27,35 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.ImageLoader;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
-import rx.android.schedulers.AndroidSchedulers;
 
 public class InsightInfoDialogFragment extends InjectionDialogFragment {
     public static final String TAG = InsightInfoDialogFragment.class.getSimpleName();
 
     private static final String ARG_INSIGHT_CATEGORY = InsightInfoDialogFragment.class.getName() + ".ARG_INSIGHT_CATEGORY";
+    private static final String ARG_INSIGHT_TITLE = InsightInfoDialogFragment.class.getName() + ".ARG_INSIGHT_TITLE";
+    private static final String ARG_INSIGHT_MESSAGE = InsightInfoDialogFragment.class.getName() + ".ARG_INSIGHT_MESSAGE";
 
     @Inject InsightInfoPresenter presenter;
     @Inject Markdown markdown;
 
+    private boolean hasCategory;
+
     private LinearLayout contentContainer;
     private ProgressBar loadingIndicator;
-    private ImageView illustration;
-    private TextView title;
-    private TextView message;
+    private ImageView illustrationImage;
+    private TextView titleText;
+    private TextView messageText;
 
-    public static InsightInfoDialogFragment newInstance(@NonNull InsightCategory category) {
+    public static InsightInfoDialogFragment newInstance(@NonNull Insight insight) {
         InsightInfoDialogFragment dialogFragment = new InsightInfoDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_INSIGHT_CATEGORY, category.toString());
+        if (insight.getCategory() != InsightCategory.GENERIC) {
+            arguments.putString(ARG_INSIGHT_CATEGORY, insight.getCategory().toString());
+        } else {
+            arguments.putString(ARG_INSIGHT_TITLE, insight.getTitle());
+            arguments.putString(ARG_INSIGHT_MESSAGE, insight.getMessage());
+        }
         dialogFragment.setArguments(arguments);
 
         return dialogFragment;
@@ -57,9 +65,12 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        InsightCategory category = InsightCategory.fromString(getArguments().getString(ARG_INSIGHT_CATEGORY));
-        presenter.setInsightCategory(category);
-        addPresenter(presenter);
+        this.hasCategory = getArguments().containsKey(ARG_INSIGHT_CATEGORY);
+        if (hasCategory) {
+            InsightCategory category = InsightCategory.fromString(getArguments().getString(ARG_INSIGHT_CATEGORY));
+            presenter.setInsightCategory(category);
+            addPresenter(presenter);
+        }
     }
 
     @Override
@@ -70,9 +81,9 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
         this.contentContainer = (LinearLayout) dialog.findViewById(R.id.fragment_dialog_insight_info_content);
         this.loadingIndicator = (ProgressBar) contentContainer.findViewById(R.id.fragment_dialog_insight_info_loading);
 
-        this.illustration = (ImageView) contentContainer.findViewById(R.id.fragment_dialog_insight_info_illustration);
-        this.title = (TextView) contentContainer.findViewById(R.id.fragment_dialog_insight_info_title);
-        this.message = (TextView) contentContainer.findViewById(R.id.fragment_dialog_insight_info_message);
+        this.illustrationImage = (ImageView) contentContainer.findViewById(R.id.fragment_dialog_insight_info_illustration);
+        this.titleText = (TextView) contentContainer.findViewById(R.id.fragment_dialog_insight_info_title);
+        this.messageText = (TextView) contentContainer.findViewById(R.id.fragment_dialog_insight_info_message);
 
         ImageButton shareButton = (ImageButton) dialog.findViewById(R.id.fragment_dialog_insight_info_share);
         Views.setSafeOnClickListener(shareButton, this::share);
@@ -80,7 +91,17 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
         Button doneButton = (Button) dialog.findViewById(R.id.fragment_dialog_insight_info_done);
         Views.setSafeOnClickListener(doneButton, this::done);
 
-        bindAndSubscribe(presenter.insightInfo, this::bindInsightInfo, this::insightInfoUnavailable);
+        if (hasCategory) {
+            bindAndSubscribe(presenter.insightInfo, this::bindInsightInfo, this::insightInfoUnavailable);
+        } else {
+            String title = getArguments().getString(ARG_INSIGHT_TITLE);
+            String message = getArguments().getString(ARG_INSIGHT_MESSAGE);
+
+            titleText.setText(title);
+            markdown.renderInto(messageText, message);
+
+            showContent();
+        }
 
         return dialog;
     }
@@ -88,21 +109,21 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
 
     public void showContent() {
         loadingIndicator.setVisibility(View.GONE);
-        illustration.setVisibility(View.VISIBLE);
-        title.setVisibility(View.VISIBLE);
-        message.setVisibility(View.VISIBLE);
+        illustrationImage.setVisibility(View.VISIBLE);
+        titleText.setVisibility(View.VISIBLE);
+        messageText.setVisibility(View.VISIBLE);
     }
 
     public void bindInsightInfo(@NonNull InsightInfo insightInfo) {
-        title.setText(insightInfo.getTitle());
-        markdown.renderInto(message, insightInfo.getText());
+        titleText.setText(insightInfo.getTitle());
+        markdown.renderInto(messageText, insightInfo.getText());
 
-        illustration.setImageDrawable(null);
+        illustrationImage.setImageDrawable(null);
         String imageUrl = insightInfo.getImageUrl();
         if (!TextUtils.isEmpty(imageUrl)) {
             bindAndSubscribe(ImageLoader.withUrl(imageUrl),
                              image -> {
-                                 illustration.setImageBitmap(image);
+                                 illustrationImage.setImageBitmap(image);
                                  contentContainer.setGravity(Gravity.TOP);
                                  showContent();
                              },
@@ -116,9 +137,9 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
     }
 
     public void insightInfoUnavailable(Throwable e) {
-        illustration.setImageDrawable(null);
-        title.setText(R.string.dialog_error_title);
-        message.setText(e.getMessage());
+        illustrationImage.setImageDrawable(null);
+        titleText.setText(R.string.dialog_error_title);
+        messageText.setText(e.getMessage());
 
         showContent();
     }
@@ -129,7 +150,7 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, title.getText() + "\n\n" + message.getText());
+        shareIntent.putExtra(Intent.EXTRA_TEXT, titleText.getText() + "\n\n" + messageText.getText());
         startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
     }
 
