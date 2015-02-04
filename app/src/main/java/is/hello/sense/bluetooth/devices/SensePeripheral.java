@@ -14,6 +14,7 @@ import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.BluetoothEarlyDisconnectError;
 import is.hello.sense.bluetooth.errors.BluetoothError;
+import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralBusyError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
@@ -39,7 +40,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     private static final long STACK_OPERATION_TIMEOUT_S = 30;
     private static final long SIMPLE_COMMAND_TIMEOUT_S = 45;
-    private static final long ANIMATION_TIMEOUT_S = 20;
+    private static final long ANIMATION_TIMEOUT_S = 45;
     private static final long PAIR_PILL_TIMEOUT_S = 90; // Per Pang
     private static final long SET_WIFI_TIMEOUT_S = 90;
     private static final long WIFI_SCAN_TIMEOUT_S = 30;
@@ -196,7 +197,11 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                     s.onNext(response);
                     s.onCompleted();
                 } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
-                    s.onError(new SensePeripheralError(response.getError()));
+                    if (response.getError() == SenseCommandProtos.ErrorType.TIME_OUT) {
+                        s.onError(new OperationTimeoutError(OperationTimeoutError.Operation.COMMAND_RESPONSE));
+                    } else {
+                        s.onError(new SensePeripheralError(response.getError()));
+                    }
                 } else {
                     s.onError(new BluetoothError());
                 }
@@ -453,7 +458,19 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 timeout.unschedule();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
-                unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(response.getError())), onError);
+                unsubscribe.subscribe(ignored -> {
+                    if (response.getError() == SenseCommandProtos.ErrorType.TIME_OUT) {
+                        onError.call(new OperationTimeoutError(OperationTimeoutError.Operation.COMMAND_RESPONSE));
+                    } else {
+                        onError.call(new SensePeripheralError(response.getError()));
+                    }
+                }, e -> {
+                    if (response.getError() == SenseCommandProtos.ErrorType.TIME_OUT) {
+                        onError.call(new OperationTimeoutError(OperationTimeoutError.Operation.COMMAND_RESPONSE, e));
+                    } else {
+                        onError.call(new SensePeripheralError(response.getError(), e));
+                    }
+                });
 
                 dataHandler.clearListeners();
             } else {

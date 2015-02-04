@@ -232,6 +232,7 @@ so you can sleep better.</string>
     <string name="error_title_sleep_pill_scan_timeout">Pill Pairing Failed</string>
     <string name="error_message_sleep_pill_scan_timeout">Sense couldn\'t register your Sleep Pill. Please try pairing again. Try moving your Sleep Pill closer to Sense, and shaking it harder.</string>
     <string name="error_sense_not_found">We could not connect to your Sense. Please make sure your Sense is plugged in, and nearby.</string>
+    <string name="error_peripheral_connection_lost">The connection to your Sense was lost.</string>
     <string name="onboarding_register_info_explanation">This is used to provide you with more personalized sleep insights.</string>
     <string name="error_bluetooth_disabled">Please enable Bluetooth to continue.</string>
     <string name="error_bluetooth_gatt_failure_fmt">An internal Bluetooth error has occurred (%1$s)</string>
@@ -406,4 +407,5 @@ so you can sleep better.</string>
     <string name="onboarding_room_check_info_failure">Could not complete room check. Go ahead and setup your first smart alarm.</string>
     <string name="onboarding_room_check_title_failure">There was a problem</string>
     <string name="error_network_unavailable">Check your connection and try again.</string>
+    <string name="action_reconnect">Reconnect</string>
 </resources>
