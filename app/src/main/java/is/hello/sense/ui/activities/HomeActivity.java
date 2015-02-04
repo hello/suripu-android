@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -150,6 +151,9 @@ public class HomeActivity
         slidingLayersView.setOnInteractionListener(this);
         slidingLayersView.setInteractionAnimator(UNDERSIDE_ANIMATOR);
         slidingLayersView.setGestureInterceptingChild(viewPager);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            slidingLayersView.setBackgroundColor(getResources().getColor(R.color.status_bar));
+        }
 
 
         //noinspection PointlessBooleanExpression,ConstantConditions
@@ -487,43 +491,34 @@ public class HomeActivity
     //region Sliding Layers
 
     private final InteractionAnimator UNDERSIDE_ANIMATOR = new InteractionAnimator() {
-        float MIN_SCALE = 0.8f;
-        float MAX_SCALE = 1.0f;
+        float MIN_VALUE = 0.95f;
+        float MAX_VALUE = 1.0f;
 
         @Override
         public void prepare() {
             if (slidingLayersView.isOpen()) {
-                undersideContainer.setScaleX(MAX_SCALE);
-                undersideContainer.setScaleY(MAX_SCALE);
+                undersideContainer.setScaleX(MAX_VALUE);
+                undersideContainer.setScaleY(MAX_VALUE);
             } else {
-                undersideContainer.setScaleX(MIN_SCALE);
-                undersideContainer.setScaleY(MIN_SCALE);
+                undersideContainer.setScaleX(MIN_VALUE);
+                undersideContainer.setScaleY(MIN_VALUE);
             }
         }
 
         @Override
         public void frame(float frameValue) {
-            float scale = Animations.interpolateFrame(frameValue, MIN_SCALE, MAX_SCALE);
-            undersideContainer.setScaleX(scale);
-            undersideContainer.setScaleY(scale);
+            float value = Animations.interpolateFrame(frameValue, MIN_VALUE, MAX_VALUE);
+            undersideContainer.setScaleX(value);
+            undersideContainer.setScaleY(value);
         }
 
         @Override
         public void finish(float finalFrameValue, long duration, @NonNull Interpolator interpolator) {
-            float finalScale = Animations.interpolateFrame(finalFrameValue, MIN_SCALE, MAX_SCALE);
+            float finalValue = Animations.interpolateFrame(finalFrameValue, MIN_VALUE, MAX_VALUE);
             animate(undersideContainer)
                     .setDuration(duration)
                     .setInterpolator(interpolator)
-                    .scale(finalScale)
-                    .addOnAnimationCompleted(finished -> {
-                        if (slidingLayersView.isOpen()) {
-                            undersideContainer.setScaleX(MIN_SCALE);
-                            undersideContainer.setScaleY(MIN_SCALE);
-                        } else {
-                            undersideContainer.setScaleX(MAX_SCALE);
-                            undersideContainer.setScaleY(MAX_SCALE);
-                        }
-                    })
+                    .scale(finalValue)
                     .start();
         }
 
@@ -531,8 +526,8 @@ public class HomeActivity
         public void cancel() {
             PropertyAnimatorProxy.stop();
 
-            undersideContainer.setScaleX(MAX_SCALE);
-            undersideContainer.setScaleY(MAX_SCALE);
+            undersideContainer.setScaleX(MAX_VALUE);
+            undersideContainer.setScaleY(MAX_VALUE);
         }
     };
 
