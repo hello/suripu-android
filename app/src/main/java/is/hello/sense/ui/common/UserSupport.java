@@ -24,12 +24,12 @@ public class UserSupport {
     }
 
     public static void showForOnboardingStep(@NonNull Context from, @NonNull OnboardingStep onboardingStep) {
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP, onboardingStep.toString()));
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP, onboardingStep.toProperty()));
         from.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SUPPORT_URL)));
     }
 
     public static void showForDeviceIssue(@NonNull Context from, @NonNull DeviceIssue issue) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE, issue.toString()));
+        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE, issue.toProperty()));
         from.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SUPPORT_URL)));
     }
 
@@ -38,7 +38,11 @@ public class UserSupport {
         UNSTABLE_BLUETOOTH,
         SENSE_MISSING,
         SLEEP_PILL_MISSING,
-        REPLACE_BATTERY,
+        REPLACE_BATTERY;
+
+        public String toProperty() {
+            return toString().toLowerCase();
+        }
     }
 
     public static enum OnboardingStep {
@@ -51,6 +55,9 @@ public class UserSupport {
         PILL_PLACEMENT,
         UNSUPPORTED_DEVICE;
 
+        public String toProperty() {
+            return toString().toLowerCase();
+        }
 
         public static OnboardingStep fromString(@Nullable String string) {
             return Enums.fromString(string, values(), INFO);
