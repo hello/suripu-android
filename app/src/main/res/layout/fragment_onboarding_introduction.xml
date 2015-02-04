@@ -65,7 +65,7 @@
 
                 <Button
                     android:id="@+id/fragment_onboarding_intro_register"
-                    android:layout_marginBottom="@dimen/gap_large"
+                    android:layout_marginBottom="@dimen/gap_medium"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/action_register"
