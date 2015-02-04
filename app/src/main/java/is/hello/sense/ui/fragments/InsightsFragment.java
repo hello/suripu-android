@@ -107,15 +107,8 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        onRefresh();
-    }
-
-    @Override
     public void onSwipeInteractionDidFinish() {
-
+        onRefresh();
     }
 
     @Override

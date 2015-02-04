@@ -191,6 +191,11 @@ public class HomeActivity
                              this::devicesUnavailable);
         }
 
+        UndersideFragment underside = getUndersideFragment();
+        if (underside != null) {
+            underside.notifyPageSelected(false);
+        }
+
         checkInForUpdates();
     }
 
@@ -519,6 +524,15 @@ public class HomeActivity
                     .setDuration(duration)
                     .setInterpolator(interpolator)
                     .scale(finalValue)
+                    .addOnAnimationCompleted(finished -> {
+                        if (!finished)
+                            return;
+
+                        if (slidingLayersView.isOpen()) {
+                            UndersideFragment underside = getUndersideFragment();
+                            underside.notifyPageSelected(false);
+                        }
+                    })
                     .start();
         }
 
@@ -533,6 +547,10 @@ public class HomeActivity
 
     public SlidingLayersView getSlidingLayersView() {
         return slidingLayersView;
+    }
+
+    private UndersideFragment getUndersideFragment() {
+        return (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
     }
 
     @Override
@@ -555,7 +573,7 @@ public class HomeActivity
     public void onUserDidPushUpTopView() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_CLOSED, null);
 
-        Fragment underside = getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
+        UndersideFragment underside = getUndersideFragment();
         if (underside != null) {
             getFragmentManager()
                     .beginTransaction()
@@ -568,8 +586,8 @@ public class HomeActivity
 
     public void showUndersideWithItem(int item, boolean animate) {
         if (slidingLayersView.isOpen()) {
-            UndersideFragment underside = (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
-            underside.setCurrentItem(item, animate);
+            UndersideFragment underside = getUndersideFragment();
+            underside.setCurrentItem(item, UndersideFragment.OPTION_ANIMATE | UndersideFragment.OPTION_NOTIFY);
         } else {
             UndersideFragment.saveCurrentItem(this, item);
             if (animate) {
