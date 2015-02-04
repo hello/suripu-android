@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginLeft="@dimen/gap_outer"
+    android:layout_marginRight="@dimen/gap_outer">
+
+    <TextView
+        android:id="@+id/sub_fragment_timeline_breakdown_score"
+        android:layout_width="@dimen/little_sleep_summary_width"
+        android:layout_height="@dimen/little_sleep_summary_height"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_gravity="center"
+        android:textAppearance="@style/AppTheme.Text.TinyScore"
+        android:gravity="center"
+        android:text="@string/missing_data_placeholder"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/sub_fragment_timeline_breakdown_total_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_outer"
+                android:layout_marginEnd="@dimen/gap_outer"
+                android:textAppearance="@style/AppTheme.Text.SectionHeading"
+                android:gravity="end"
+                android:text="@string/timeline_breakdown_label_total_sleep"/>
+
+            <TextView
+                android:id="@+id/sub_fragment_timeline_breakdown_total"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_tiny"
+                android:layout_marginEnd="@dimen/gap_outer"
+                android:textAppearance="@style/AppTheme.Text.TinyScore"
+                android:gravity="end"
+                android:text="@string/missing_data_placeholder"/>
+
+            <TextView
+                android:id="@+id/sub_fragment_timeline_breakdown_awake_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_outer"
+                android:layout_marginEnd="@dimen/gap_outer"
+                android:textAppearance="@style/AppTheme.Text.SectionHeading"
+                android:gravity="end"
+                android:text="@string/timeline_breakdown_label_times_awake"/>
+
+            <TextView
+                android:id="@+id/sub_fragment_timeline_breakdown_awake"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_tiny"
+                android:layout_marginBottom="@dimen/gap_tiny"
+                android:layout_marginEnd="@dimen/gap_outer"
+                android:textAppearance="@style/AppTheme.Text.TinyScore"
+                android:gravity="end"
+                android:text="@string/missing_data_placeholder"/>
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/sub_fragment_timeline_breakdown_divider"
+            android:layout_width="@dimen/divider_size"
+            android:layout_height="match_parent"
+            android:background="@drawable/gradient_timeline_breakdown_divider"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/sub_fragment_timeline_breakdown_sound_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_outer"
+                android:layout_marginStart="@dimen/gap_outer"
+                android:textAppearance="@style/AppTheme.Text.SectionHeading"
+                android:gravity="start"
+                android:text="@string/timeline_breakdown_label_sound_sleep"/>
+
+            <TextView
+                android:id="@+id/sub_fragment_timeline_breakdown_sound"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_tiny"
+                android:layout_marginStart="@dimen/gap_outer"
+                android:textAppearance="@style/AppTheme.Text.TinyScore"
+                android:gravity="start"
+                android:text="@string/missing_data_placeholder"/>
+
+            <TextView
+                android:id="@+id/sub_fragment_timeline_breakdown_time_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_outer"
+                android:layout_marginStart="@dimen/gap_outer"
+                android:textAppearance="@style/AppTheme.Text.SectionHeading"
+                android:gravity="start"
+                android:text="@string/timeline_breakdown_label_time_to_sleep"/>
+
+            <TextView
+                android:id="@+id/sub_fragment_timeline_breakdown_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_tiny"
+                android:layout_marginBottom="@dimen/gap_small"
+                android:layout_marginStart="@dimen/gap_outer"
+                android:textAppearance="@style/AppTheme.Text.TinyScore"
+                android:gravity="start"
+                android:text="@string/missing_data_placeholder"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

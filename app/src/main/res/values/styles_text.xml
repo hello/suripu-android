@@ -120,6 +120,10 @@
         <item name="android:textSize">@dimen/text_size_small_score</item>
     </style>
 
+    <style name="AppTheme.Text.TinyScore" parent="AppTheme.Text.BigScore">
+        <item name="android:textSize">@dimen/text_size_tiny_score</item>
+    </style>
+
     <style name="AppTheme.Text.Condition">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">@dimen/text_size_subheading</item>
