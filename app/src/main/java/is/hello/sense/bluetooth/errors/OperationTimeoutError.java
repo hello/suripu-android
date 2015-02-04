@@ -17,5 +17,6 @@ public class OperationTimeoutError extends BluetoothError {
         SUBSCRIBE_NOTIFICATION,
         UNSUBSCRIBE_NOTIFICATION,
         WRITE_COMMAND,
+        COMMAND_RESPONSE,
     }
 }

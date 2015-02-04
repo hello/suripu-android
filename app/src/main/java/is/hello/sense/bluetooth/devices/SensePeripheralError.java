@@ -8,10 +8,14 @@ import is.hello.sense.bluetooth.errors.BluetoothError;
 public class SensePeripheralError extends BluetoothError {
     public final SenseCommandProtos.ErrorType errorType;
 
-    public SensePeripheralError(@Nullable SenseCommandProtos.ErrorType errorType) {
-        super(errorType != null ? errorType.toString() : "Unknown Sense error");
+    public SensePeripheralError(@Nullable SenseCommandProtos.ErrorType errorType, @Nullable Throwable cause) {
+        super(errorType != null ? errorType.toString() : "Unknown Sense error", cause);
 
         this.errorType = errorType != null ? errorType : SenseCommandProtos.ErrorType.INTERNAL_OPERATION_FAILED;
+    }
+
+    public SensePeripheralError(@Nullable SenseCommandProtos.ErrorType errorType) {
+        this(errorType, null);
     }
 
     public static boolean errorTypeEquals(@Nullable Throwable error, SenseCommandProtos.ErrorType errorType) {
