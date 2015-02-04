@@ -10,6 +10,14 @@ public class ApiException extends Exception {
     private final ErrorResponse errorResponse;
     private final RetrofitError networkStackError;
 
+    public static boolean isNetworkError(@Nullable Throwable e) {
+        if (e != null && e instanceof ApiException) {
+            return ((ApiException) e).isNetworkError();
+        } else {
+            return false;
+        }
+    }
+
     public static boolean statusEquals(@Nullable Throwable e, int status) {
         if (e == null) {
             return false;
@@ -57,6 +65,10 @@ public class ApiException extends Exception {
         } else {
             return null;
         }
+    }
+
+    public boolean isNetworkError() {
+        return (networkStackError.getKind() == RetrofitError.Kind.NETWORK);
     }
 
 

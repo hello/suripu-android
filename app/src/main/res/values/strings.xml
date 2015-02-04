@@ -402,4 +402,5 @@ so you can sleep better.</string>
     <string name="notification_setting_sleep_score">Daily Sleep Score</string>
     <string name="onboarding_room_check_info_failure">Could not complete room check. Go ahead and setup your first smart alarm.</string>
     <string name="onboarding_room_check_title_failure">There was a problem</string>
+    <string name="error_network_unavailable">Check your connection and try again.</string>
 </resources>

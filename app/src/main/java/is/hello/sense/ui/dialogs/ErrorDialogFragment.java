@@ -30,6 +30,7 @@ import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
+import retrofit.RetrofitError;
 
 public class ErrorDialogFragment extends DialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();
@@ -138,18 +139,24 @@ public class ErrorDialogFragment extends DialogFragment {
 
             if (e instanceof ApiException) {
                 ApiException error = (ApiException) e;
-                arguments.putBoolean(ARG_HAS_REQUEST_INFO, true);
                 if (error.getStatus() != null) {
-                    arguments.putInt(ARG_RESPONSE_STATUS, error.getStatus());
-                }
-                arguments.putString(ARG_RESPONSE_REASON, error.getReason());
+                    arguments.putBoolean(ARG_HAS_REQUEST_INFO, true);
 
-                ErrorResponse errorResponse = error.getErrorResponse();
-                if (errorResponse != null) {
-                    RegistrationError registrationError = RegistrationError.fromString(errorResponse.getMessage());
-                    if (registrationError != RegistrationError.UNKNOWN) {
-                        arguments.putInt(ARG_MESSAGE_RES, registrationError.messageRes);
-                        arguments.remove(ARG_MESSAGE);
+                    arguments.putInt(ARG_RESPONSE_STATUS, error.getStatus());
+                    arguments.putString(ARG_RESPONSE_REASON, error.getReason());
+                }
+
+                if (error.isNetworkError()) {
+                    arguments.putInt(ARG_MESSAGE_RES, R.string.error_network_unavailable);
+                    arguments.remove(ARG_MESSAGE);
+                } else {
+                    ErrorResponse errorResponse = error.getErrorResponse();
+                    if (errorResponse != null) {
+                        RegistrationError registrationError = RegistrationError.fromString(errorResponse.getMessage());
+                        if (registrationError != RegistrationError.UNKNOWN) {
+                            arguments.putInt(ARG_MESSAGE_RES, registrationError.messageRes);
+                            arguments.remove(ARG_MESSAGE);
+                        }
                     }
                 }
             }
