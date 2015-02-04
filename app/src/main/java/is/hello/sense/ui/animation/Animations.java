@@ -20,6 +20,10 @@ public class Animations {
         return Math.max(Animations.DURATION_MINIMUM, Math.min(Animations.DURATION_MAXIMUM, rawDuration));
     }
 
+    public static float interpolateFrame(float frameValue, float min, float max) {
+        return min + (max - min) * frameValue;
+    }
+
     public static final class Properties {
         public long duration = DURATION_DEFAULT;
         public Interpolator interpolator = INTERPOLATOR_DEFAULT;

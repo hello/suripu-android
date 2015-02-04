@@ -13,7 +13,9 @@ import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +42,9 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
+import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.InteractionAnimator;
+import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
@@ -75,6 +80,7 @@ public class HomeActivity
     private long lastUpdated = Long.MAX_VALUE;
 
     private RelativeLayout rootContainer;
+    private FrameLayout undersideContainer;
     private SlidingLayersView slidingLayersView;
     private FragmentPageView<TimelineFragment> viewPager;
 
@@ -138,8 +144,11 @@ public class HomeActivity
         }
 
 
+        this.undersideContainer = (FrameLayout) findViewById(R.id.activity_home_underside_container);
+
         this.slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
         slidingLayersView.setOnInteractionListener(this);
+        slidingLayersView.setInteractionAnimator(UNDERSIDE_ANIMATOR);
         slidingLayersView.setGestureInterceptingChild(viewPager);
 
 
@@ -476,6 +485,56 @@ public class HomeActivity
 
 
     //region Sliding Layers
+
+    private final InteractionAnimator UNDERSIDE_ANIMATOR = new InteractionAnimator() {
+        float MIN_SCALE = 0.8f;
+        float MAX_SCALE = 1.0f;
+
+        @Override
+        public void prepare() {
+            if (slidingLayersView.isOpen()) {
+                undersideContainer.setScaleX(MAX_SCALE);
+                undersideContainer.setScaleY(MAX_SCALE);
+            } else {
+                undersideContainer.setScaleX(MIN_SCALE);
+                undersideContainer.setScaleY(MIN_SCALE);
+            }
+        }
+
+        @Override
+        public void frame(float frameValue) {
+            float scale = Animations.interpolateFrame(frameValue, MIN_SCALE, MAX_SCALE);
+            undersideContainer.setScaleX(scale);
+            undersideContainer.setScaleY(scale);
+        }
+
+        @Override
+        public void finish(float finalFrameValue, long duration, @NonNull Interpolator interpolator) {
+            float finalScale = Animations.interpolateFrame(finalFrameValue, MIN_SCALE, MAX_SCALE);
+            animate(undersideContainer)
+                    .setDuration(duration)
+                    .setInterpolator(interpolator)
+                    .scale(finalScale)
+                    .addOnAnimationCompleted(finished -> {
+                        if (slidingLayersView.isOpen()) {
+                            undersideContainer.setScaleX(MIN_SCALE);
+                            undersideContainer.setScaleY(MIN_SCALE);
+                        } else {
+                            undersideContainer.setScaleX(MAX_SCALE);
+                            undersideContainer.setScaleY(MAX_SCALE);
+                        }
+                    })
+                    .start();
+        }
+
+        @Override
+        public void cancel() {
+            PropertyAnimatorProxy.stop();
+
+            undersideContainer.setScaleX(MAX_SCALE);
+            undersideContainer.setScaleY(MAX_SCALE);
+        }
+    };
 
     public SlidingLayersView getSlidingLayersView() {
         return slidingLayersView;

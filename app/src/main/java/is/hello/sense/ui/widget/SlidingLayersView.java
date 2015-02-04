@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -354,7 +355,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                     float newY = Math.max(-shadowHeight, topViewY + deltaY);
 
                     if (interactionAnimator != null) {
-                        float amount = topViewOpenHeight / totalMovementHeight;
+                        float amount = newY / totalMovementHeight;
                         interactionAnimator.frame(amount);
                     }
 
