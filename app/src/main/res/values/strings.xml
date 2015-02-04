@@ -28,6 +28,7 @@
     <string name="device_state_unknown">Unknown</string>
 
     <string name="dialog_error_title">Error</string>
+    <string name="dialog_error_title_fatal">Fatal Error</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
     <string name="dialog_error_extended_message_format">%1$s\n\n%2$s (Status: %3$d)</string>
     <string name="dialog_loading_message">Loading…</string>
@@ -147,7 +148,7 @@ so you can sleep better.</string>
     <string name="error_network_failure">The operation could not be completed due to connectivity issues. Please try again.</string>
     <string name="error_network_failure_pair_pill">Your Sleep Pill could not be Paired due to connectivity issues. Please try again.</string>
     <string name="error_pill_already_paired">Your Sleep Pill is already paired to this account.</string>
-    <string name="error_addendum_unstable_stack">\n\nIf this problem persists, please visit our support site.</string>
+    <string name="error_addendum_unstable_stack">\n\nPlease turn airplane mode on for a few seconds, then turn it off and try again. If this problem persists, please visit our support site.</string>
     <string name="title_device_signal_strength">Signal Strength</string>
     <string name="label_firmware_version">Firmware</string>
     <string name="signal_strong">Strong</string>

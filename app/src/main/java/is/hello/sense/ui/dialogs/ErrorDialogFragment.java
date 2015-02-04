@@ -40,6 +40,7 @@ public class ErrorDialogFragment extends DialogFragment {
     private static final String ARG_RESPONSE_STATUS = ErrorDialogFragment.class.getName() + ".ARG_RESPONSE_STATUS";
     private static final String ARG_RESPONSE_REASON = ErrorDialogFragment.class.getName() + ".ARG_RESPONSE_REASON";
     private static final String ARG_SHOW_BLE_SUPPORT = ErrorDialogFragment.class.getName() + ".ARG_SHOW_BLE_SUPPORT";
+    private static final String ARG_IS_FATAL = ErrorDialogFragment.class.getName() + ".ARG_IS_FATAL";
 
     private static final int RESPONSE_STATUS_UNKNOWN = -1;
 
@@ -66,7 +67,7 @@ public class ErrorDialogFragment extends DialogFragment {
             if (failureReason == PeripheralBondAlterationError.REASON_REMOTE_DEVICE_DOWN) {
                 message = context.getString(R.string.error_bluetooth_out_of_range);
             } else {
-                message = context.getString(R.string.error_bluetooth_bonding_change_fmt, e.toString());
+                message = context.getString(R.string.error_bluetooth_bonding_change_fmt, PeripheralBondAlterationError.getReasonString(failureReason));
             }
         } else if (e instanceof PeripheralConnectionError) {
             message = context.getString(R.string.error_bluetooth_no_connection);
@@ -122,6 +123,7 @@ public class ErrorDialogFragment extends DialogFragment {
 
         ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(message);
         dialogFragment.setShowBluetoothSupport(isFatal);
+        dialogFragment.setFatal(isFatal);
         dialogFragment.show(fm, TAG);
     }
 
@@ -191,7 +193,11 @@ public class ErrorDialogFragment extends DialogFragment {
     public @NonNull Dialog onCreateDialog(Bundle savedInstanceState) {
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
 
-        dialog.setTitle(R.string.dialog_error_title);
+        if (isFatal()) {
+            dialog.setTitle(R.string.dialog_error_title_fatal);
+        } else {
+            dialog.setTitle(R.string.dialog_error_title);
+        }
         String message = getMessage();
         if (!TextUtils.isEmpty(message)) {
             if (hasRequestInfo()) {
@@ -228,8 +234,17 @@ public class ErrorDialogFragment extends DialogFragment {
         getArguments().putBoolean(ARG_SHOW_BLE_SUPPORT, showBluetoothSupport);
     }
 
+
     private boolean getShowBluetoothSupport() {
         return getArguments().getBoolean(ARG_SHOW_BLE_SUPPORT, false);
+    }
+
+    private void setFatal(boolean isFatal) {
+        getArguments().putBoolean(ARG_IS_FATAL, isFatal);
+    }
+
+    private boolean isFatal() {
+        return getArguments().getBoolean(ARG_IS_FATAL, false);
     }
 
     private String getMessage() {
