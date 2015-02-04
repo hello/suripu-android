@@ -142,8 +142,7 @@ so you can sleep better.</string>
     <string name="info_sense_colors">You’ll want to check that everything’s set for a good nights sleep. Simply wave your hand over Sense, and instantly you’ll know about the conditions in your room. Go ahead, give it a try now.</string>
     <string name="onboarding_done_message_1">You’re all set up.\nWell done.</string>
     <string name="onboarding_done_message_2">Now, get some sleep.\nSee you in the morning.</string>
-    <string name="error_bad_wifi_credentials">The wifi network credentials you entered are incorrect.</string>
-    <string name="error_wifi_out_of_range">The wifi network you selected could not be found by Sense.</string>
+    <string name="error_wifi_connection_failed">Sense could not connect to the wifi network. Make sure you‘re within range, double check your password, and try again.</string>
     <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the wifi network you selected.</string>
     <string name="error_network_failure">The operation could not be completed due to connectivity issues. Please try again.</string>
     <string name="error_network_failure_pair_pill">Your Sleep Pill could not be Paired due to connectivity issues. Please try again.</string>

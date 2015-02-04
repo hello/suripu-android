@@ -30,7 +30,6 @@ import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
-import retrofit.RetrofitError;
 
 public class ErrorDialogFragment extends DialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();
@@ -100,11 +99,8 @@ public class ErrorDialogFragment extends DialogFragment {
                     break;
 
                 case WLAN_CONNECTION_ERROR:
-                    message = context.getString(R.string.error_bad_wifi_credentials);
-                    break;
-
                 case NO_ENDPOINT_IN_RANGE:
-                    message = context.getString(R.string.error_wifi_out_of_range);
+                    message = context.getString(R.string.error_wifi_connection_failed);
                     break;
 
                 case FAIL_TO_OBTAIN_IP:
