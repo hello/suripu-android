@@ -27,15 +27,14 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorState;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
+import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import rx.Scheduler;
 
@@ -43,7 +42,8 @@ import static android.widget.LinearLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class OnboardingRoomCheckFragment extends InjectionFragment {
-    private static final long CONDITION_VISIBLE_MS = 5000;
+    private static final long CONDITION_VISIBLE_MS = 4000;
+    private static final long COUNT_UP_DURATION_MS = 750;
     private static final long END_CONTAINER_DELAY_MS = 50;
 
     @Inject RoomConditionsPresenter roomConditionsPresenter;
@@ -82,6 +82,8 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     private View bottomDivider;
 
     private LinearLayout endContainer;
+    private TextView endTitle;
+    private TextView endMessage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,6 +116,8 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         this.bottomDivider = createDivider();
 
         this.endContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, container, false);
+        this.endTitle = (TextView) endContainer.findViewById(R.id.sub_fragment_room_check_end_title);
+        this.endMessage = (TextView) endContainer.findViewById(R.id.sub_fragment_room_check_end_message);
         Button continueButton = (Button) endContainer.findViewById(R.id.sub_fragment_room_check_end_continue);
         Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
 
@@ -246,7 +250,9 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 if (condition.getValue() == null || condition.getValue() == 0f) {
                     deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
                 } else {
-                    this.currentValueAnimator = Animations.Properties.DEFAULT.apply(ValueAnimator.ofInt(0, condition.getValue().intValue()));
+                    this.currentValueAnimator = ValueAnimator.ofInt(0, condition.getValue().intValue());
+                    currentValueAnimator.setInterpolator(Animations.INTERPOLATOR_DEFAULT);
+                    currentValueAnimator.setDuration(COUNT_UP_DURATION_MS);
                     currentValueAnimator.addUpdateListener(a -> {
                         int value = (int) a.getAnimatedValue();
                         if (formatter != null) {
@@ -366,7 +372,11 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     }
 
     public void conditionsUnavailable(Throwable e) {
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        Logger.error(getClass().getSimpleName(), "Could not load conditions", e);
+
+        endTitle.setText(R.string.onboarding_room_check_title_failure);
+        endMessage.setText(R.string.onboarding_room_check_info_failure);
+
         showComplete(true);
     }
 

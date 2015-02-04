@@ -399,4 +399,6 @@ so you can sleep better.</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>
     <string name="notification_setting_alert_conditions">Alert Conditions</string>
     <string name="notification_setting_sleep_score">Daily Sleep Score</string>
+    <string name="onboarding_room_check_info_failure">Could not complete room check. Go ahead and setup your first smart alarm.</string>
+    <string name="onboarding_room_check_title_failure">There was a problem</string>
 </resources>
