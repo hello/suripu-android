@@ -2,11 +2,14 @@ package is.hello.sense.ui.fragments.settings;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
@@ -20,6 +23,7 @@ import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -37,6 +41,18 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     private BluetoothAdapter bluetoothAdapter;
     private boolean didEnableBluetooth = false;
+
+    private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            hideBlockingActivity(false, () -> {
+                showTroubleshootingAlert(R.string.error_peripheral_connection_lost,
+                        R.string.action_reconnect,
+                        SenseDetailsFragment.this::connectToPeripheral);
+                showRestrictedSenseActions();
+            });
+        }
+    };
 
 
     //region Lifecycle
@@ -67,6 +83,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        IntentFilter fatalErrors = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
+        LocalBroadcastManager.getInstance(getActivity())
+                             .registerReceiver(PERIPHERAL_CLEARED, fatalErrors);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         bindAndSubscribe(this.hardwarePresenter.bluetoothEnabled, this::onBluetoothStateChanged, Functions.LOG_ERROR);
@@ -79,6 +98,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void onDestroyView() {
         super.onDestroyView();
 
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(PERIPHERAL_CLEARED);
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 

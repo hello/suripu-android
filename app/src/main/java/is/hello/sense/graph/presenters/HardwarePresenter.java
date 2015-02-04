@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
 import java.util.Collections;
@@ -20,6 +21,7 @@ import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.BluetoothError;
+import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
@@ -33,6 +35,8 @@ import rx.subjects.ReplaySubject;
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 @Singleton public class HardwarePresenter extends Presenter {
+    public static final String ACTION_CONNECTION_LOST = HardwarePresenter.class.getName() + ".ACTION_CONNECTION_LOST";
+
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
     private final BluetoothStack bluetoothStack;
@@ -55,6 +59,9 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         this.respondToError = e -> {
             if (bluetoothStack.errorRequiresReconnect(e)) {
                 clearPeripheral();
+                LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
+            } else if (e != null && e instanceof PeripheralConnectionError) {
+                LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
             }
         };
 
@@ -275,7 +282,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
             return noDeviceError();
         }
 
-        return peripheral.runLedAnimation(animationType);
+        return peripheral.runLedAnimation(animationType)
+                         .doOnError(this.respondToError);
     }
 
     public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks() {
@@ -284,15 +292,15 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         }
 
         return peripheral.scanForWifiNetworks()
-                     .subscribeOn(AndroidSchedulers.mainThread())
-                     .doOnError(this.respondToError)
-                     .map(networks -> {
-                         if (!networks.isEmpty()) {
-                             Collections.sort(networks, (l, r) -> Functions.compareInts(r.getRssi(), l.getRssi()));
-                         }
+                         .subscribeOn(AndroidSchedulers.mainThread())
+                         .doOnError(this.respondToError)
+                         .map(networks -> {
+                             if (!networks.isEmpty()) {
+                                 Collections.sort(networks, (l, r) -> Functions.compareInts(r.getRssi(), l.getRssi()));
+                             }
 
-                         return networks;
-                     });
+                             return networks;
+                         });
     }
 
     public Observable<SensePeripheral.SenseWifiNetwork> currentWifiNetwork() {
@@ -302,7 +310,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
             return noDeviceError();
         }
 
-        return peripheral.getWifiNetwork();
+        return peripheral.getWifiNetwork()
+                         .doOnError(this.respondToError);
     }
 
     public Observable<Void> sendWifiCredentials(@NonNull String bssid,
@@ -353,7 +362,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
             return noDeviceError();
         }
 
-        return peripheral.pushData();
+        return peripheral.pushData()
+                         .doOnError(this.respondToError);
     }
 
     public Observable<Void> putIntoPairingMode() {
