@@ -107,6 +107,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         debugActionItems.addTextItem("View Log", null, this::viewLog);
         debugActionItems.addTextItem("Clear Log", null, this::clearLog);
         debugActionItems.addTextItem("Share Log", null, this::sendLog);
+        debugActionItems.addTextItem("Show Room Check", null, this::showRoomCheck);
         debugActionItems.addTextItem("Forget welcome dialogs", null, this::clearHandholdingSettings);
         debugActionItems.addTextItem("Clear Http Cache", null, this::clearHttpCache);
         debugActionItems.addTextItem("Clear OAuth Session", null, this::clearOAuthSession);
@@ -130,6 +131,12 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         });
         builder.setCancelable(true);
         builder.create().show();
+    }
+
+    public void showRoomCheck() {
+        Intent onboarding = new Intent(this, OnboardingActivity.class);
+        onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_PILL);
+        startActivity(onboarding);
     }
 
     public void viewLog() {
