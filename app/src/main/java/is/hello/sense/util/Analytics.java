@@ -78,7 +78,8 @@ public class Analytics {
         /**
          * Whenever user taps on a "skip" button within the onboarding flow
          */
-        String EVENT_SKIP = "Skip";
+        String EVENT_SKIP = "Onboarding Skip";
+        String PROP_SKIP_SCREEN = "Screen";
 
         /**
          * Whenever user taps a "back" button within the onboarding flow.
@@ -164,6 +165,11 @@ public class Analytics {
          * When the user lands on the "Enter Wifi Password" screen
          */
         String EVENT_WIFI_PASSWORD = "Onboarding WiFi Password";
+
+        /**
+         * When the user lands on the "Sleep Pill" intro screen.
+         */
+        String EVENT_PILL_INTRO = "Onboarding Sleep Pill";
 
         /**
          * When user lands on the "Pairing your Sleep Pill" screen

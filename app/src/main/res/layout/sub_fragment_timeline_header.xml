@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:minHeight="@dimen/timeline_header_min_height"
-    android:background="@drawable/background_timeline_header">
+    android:background="@drawable/background_timeline_header"
+    android:animateLayoutChanges="true">
 
     <RelativeLayout
         android:layout_width="match_parent"

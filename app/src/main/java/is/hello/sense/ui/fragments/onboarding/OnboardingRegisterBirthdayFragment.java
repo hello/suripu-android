@@ -226,7 +226,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     }
 
     public void skip(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, null);
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "birthday"));
         getContainer().onAccountUpdated(this);
     }
 
