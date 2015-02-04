@@ -94,6 +94,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             infoLabel.setVisibility(View.VISIBLE);
             listView.setVisibility(View.VISIBLE);
             rescanButton.setVisibility(View.VISIBLE);
+            rescanButton.setEnabled(true);
         }
     }
 
@@ -167,6 +168,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         infoLabel.setVisibility(View.VISIBLE);
         listView.setVisibility(View.VISIBLE);
         rescanButton.setVisibility(View.VISIBLE);
+        rescanButton.setEnabled(true);
 
         ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
     }
