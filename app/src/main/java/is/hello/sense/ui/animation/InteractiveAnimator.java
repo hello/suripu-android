@@ -3,7 +3,10 @@ package is.hello.sense.ui.animation;
 import android.support.annotation.NonNull;
 import android.view.animation.Interpolator;
 
-public interface InteractionAnimator {
+/**
+ * An animation that starts as interactive, and completes as non-interactive.
+ */
+public interface InteractiveAnimator {
     /**
      * Perform any preparations necessary for the animator to do its work.
      */

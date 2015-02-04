@@ -44,7 +44,7 @@ import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.ui.animation.Animations;
-import is.hello.sense.ui.animation.InteractionAnimator;
+import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -149,7 +149,7 @@ public class HomeActivity
 
         this.slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
         slidingLayersView.setOnInteractionListener(this);
-        slidingLayersView.setInteractionAnimator(UNDERSIDE_ANIMATOR);
+        slidingLayersView.setInteractiveAnimator(new UndersideAnimator());
         slidingLayersView.setGestureInterceptingChild(viewPager);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             slidingLayersView.setBackgroundColor(getResources().getColor(R.color.status_bar));
@@ -495,12 +495,65 @@ public class HomeActivity
 
     //region Sliding Layers
 
-    private final InteractionAnimator UNDERSIDE_ANIMATOR = new InteractionAnimator() {
-        float MIN_SCALE = 0.95f;
-        float MAX_SCALE = 1.0f;
+    public SlidingLayersView getSlidingLayersView() {
+        return slidingLayersView;
+    }
 
-        float MIN_ALPHA = 0.7f;
-        float MAX_ALPHA = 1.0f;
+    private UndersideFragment getUndersideFragment() {
+        return (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
+    }
+
+    @Override
+    public void onUserWillPullDownTopView() {
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_OPENED, null);
+
+        if (getFragmentManager().findFragmentById(R.id.activity_home_underside_container) == null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.activity_home_underside_container, new UndersideFragment())
+                    .commit();
+        }
+
+        viewPager.getCurrentFragment().onUserWillPullDownTopView();
+
+        this.isFirstActivityRun = false;
+    }
+
+    @Override
+    public void onUserDidPushUpTopView() {
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_CLOSED, null);
+
+        UndersideFragment underside = getUndersideFragment();
+        if (underside != null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .remove(underside)
+                    .commit();
+        }
+
+        viewPager.getCurrentFragment().onUserDidPushUpTopView();
+    }
+
+    public void showUndersideWithItem(int item, boolean animate) {
+        if (slidingLayersView.isOpen()) {
+            UndersideFragment underside = getUndersideFragment();
+            underside.setCurrentItem(item, UndersideFragment.OPTION_ANIMATE | UndersideFragment.OPTION_NOTIFY);
+        } else {
+            UndersideFragment.saveCurrentItem(this, item);
+            if (animate) {
+                slidingLayersView.open();
+            } else {
+                slidingLayersView.openWithoutAnimation();
+            }
+        }
+    }
+
+    private class UndersideAnimator implements InteractiveAnimator {
+        private final float MIN_SCALE = 0.95f;
+        private final float MAX_SCALE = 1.0f;
+
+        private final float MIN_ALPHA = 0.7f;
+        private final float MAX_ALPHA = 1.0f;
 
         @Override
         public void prepare() {
@@ -553,59 +606,6 @@ public class HomeActivity
             undersideContainer.setScaleX(MAX_SCALE);
             undersideContainer.setScaleY(MAX_SCALE);
             undersideContainer.setAlpha(MAX_ALPHA);
-        }
-    };
-
-    public SlidingLayersView getSlidingLayersView() {
-        return slidingLayersView;
-    }
-
-    private UndersideFragment getUndersideFragment() {
-        return (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
-    }
-
-    @Override
-    public void onUserWillPullDownTopView() {
-        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_OPENED, null);
-
-        if (getFragmentManager().findFragmentById(R.id.activity_home_underside_container) == null) {
-            getFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.activity_home_underside_container, new UndersideFragment())
-                    .commit();
-        }
-
-        viewPager.getCurrentFragment().onUserWillPullDownTopView();
-
-        this.isFirstActivityRun = false;
-    }
-
-    @Override
-    public void onUserDidPushUpTopView() {
-        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_CLOSED, null);
-
-        UndersideFragment underside = getUndersideFragment();
-        if (underside != null) {
-            getFragmentManager()
-                    .beginTransaction()
-                    .remove(underside)
-                    .commit();
-        }
-
-        viewPager.getCurrentFragment().onUserDidPushUpTopView();
-    }
-
-    public void showUndersideWithItem(int item, boolean animate) {
-        if (slidingLayersView.isOpen()) {
-            UndersideFragment underside = getUndersideFragment();
-            underside.setCurrentItem(item, UndersideFragment.OPTION_ANIMATE | UndersideFragment.OPTION_NOTIFY);
-        } else {
-            UndersideFragment.saveCurrentItem(this, item);
-            if (animate) {
-                slidingLayersView.open();
-            } else {
-                slidingLayersView.openWithoutAnimation();
-            }
         }
     }
 

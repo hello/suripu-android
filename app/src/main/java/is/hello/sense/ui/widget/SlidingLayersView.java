@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -18,7 +17,7 @@ import android.widget.ListView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animations;
-import is.hello.sense.ui.animation.InteractionAnimator;
+import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
 import is.hello.sense.ui.widget.util.ListViews;
@@ -43,7 +42,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     private boolean isOpen = false;
     private @Nullable OnInteractionListener onInteractionListener;
     private @Nullable GestureInterceptingView gestureInterceptingChild;
-    private @Nullable InteractionAnimator interactionAnimator;
+    private @Nullable
+    InteractiveAnimator interactiveAnimator;
     private int shadowHeight;
 
 
@@ -140,8 +140,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
             onInteractionListener.onUserWillPullDownTopView();
         }
 
-        if (interactionAnimator != null) {
-            interactionAnimator.prepare();
+        if (interactiveAnimator != null) {
+            interactiveAnimator.prepare();
         }
 
         animateOpen(Animations.DURATION_DEFAULT);
@@ -176,8 +176,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         this.gestureInterceptingChild = gestureInterceptingChild;
     }
 
-    public void setInteractionAnimator(@Nullable InteractionAnimator interactionAnimator) {
-        this.interactionAnimator = interactionAnimator;
+    public void setInteractiveAnimator(@Nullable InteractiveAnimator interactiveAnimator) {
+        this.interactiveAnimator = interactiveAnimator;
     }
 
     @Override
@@ -287,8 +287,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     private void stopAnimations() {
         this.isAnimating = false;
         PropertyAnimatorProxy.stop(topView);
-        if (interactionAnimator != null) {
-            interactionAnimator.cancel();
+        if (interactiveAnimator != null) {
+            interactiveAnimator.cancel();
         }
     }
 
@@ -306,8 +306,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 })
                 .start();
 
-        if (interactionAnimator != null) {
-            interactionAnimator.finish(1f, duration, Animations.INTERPOLATOR_DEFAULT);
+        if (interactiveAnimator != null) {
+            interactiveAnimator.finish(1f, duration, Animations.INTERPOLATOR_DEFAULT);
         }
     }
 
@@ -329,8 +329,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 })
                 .start();
 
-        if (interactionAnimator != null) {
-            interactionAnimator.finish(0f, duration, Animations.INTERPOLATOR_DEFAULT);
+        if (interactiveAnimator != null) {
+            interactiveAnimator.finish(0f, duration, Animations.INTERPOLATOR_DEFAULT);
         }
     }
 
@@ -354,9 +354,9 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                     float deltaY = y - lastEventY;
                     float newY = Math.max(-shadowHeight, topViewY + deltaY);
 
-                    if (interactionAnimator != null) {
+                    if (interactiveAnimator != null) {
                         float amount = newY / totalMovementHeight;
-                        interactionAnimator.frame(amount);
+                        interactiveAnimator.frame(amount);
                     }
 
                     topView.setY(topViewY);
@@ -439,8 +439,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                         onInteractionListener.onUserWillPullDownTopView();
                     }
 
-                    if (interactionAnimator != null) {
-                        interactionAnimator.prepare();
+                    if (interactiveAnimator != null) {
+                        interactiveAnimator.prepare();
                     }
 
                     return true;
