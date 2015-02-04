@@ -496,34 +496,44 @@ public class HomeActivity
     //region Sliding Layers
 
     private final InteractionAnimator UNDERSIDE_ANIMATOR = new InteractionAnimator() {
-        float MIN_VALUE = 0.95f;
-        float MAX_VALUE = 1.0f;
+        float MIN_SCALE = 0.95f;
+        float MAX_SCALE = 1.0f;
+
+        float MIN_ALPHA = 0.7f;
+        float MAX_ALPHA = 1.0f;
 
         @Override
         public void prepare() {
             if (slidingLayersView.isOpen()) {
-                undersideContainer.setScaleX(MAX_VALUE);
-                undersideContainer.setScaleY(MAX_VALUE);
+                undersideContainer.setScaleX(MAX_SCALE);
+                undersideContainer.setScaleY(MAX_SCALE);
+                undersideContainer.setAlpha(MAX_ALPHA);
             } else {
-                undersideContainer.setScaleX(MIN_VALUE);
-                undersideContainer.setScaleY(MIN_VALUE);
+                undersideContainer.setScaleX(MIN_SCALE);
+                undersideContainer.setScaleY(MIN_SCALE);
+                undersideContainer.setAlpha(MIN_ALPHA);
             }
         }
 
         @Override
         public void frame(float frameValue) {
-            float value = Animations.interpolateFrame(frameValue, MIN_VALUE, MAX_VALUE);
-            undersideContainer.setScaleX(value);
-            undersideContainer.setScaleY(value);
+            float scale = Animations.interpolateFrame(frameValue, MIN_SCALE, MAX_SCALE);
+            undersideContainer.setScaleX(scale);
+            undersideContainer.setScaleY(scale);
+
+            float alpha = Animations.interpolateFrame(frameValue, MIN_ALPHA, MAX_ALPHA);
+            undersideContainer.setAlpha(alpha);
         }
 
         @Override
         public void finish(float finalFrameValue, long duration, @NonNull Interpolator interpolator) {
-            float finalValue = Animations.interpolateFrame(finalFrameValue, MIN_VALUE, MAX_VALUE);
+            float finalScale = Animations.interpolateFrame(finalFrameValue, MIN_SCALE, MAX_SCALE);
+            float finalAlpha = Animations.interpolateFrame(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
             animate(undersideContainer)
                     .setDuration(duration)
                     .setInterpolator(interpolator)
-                    .scale(finalValue)
+                    .scale(finalScale)
+                    .alpha(finalAlpha)
                     .addOnAnimationCompleted(finished -> {
                         if (!finished)
                             return;
@@ -540,8 +550,9 @@ public class HomeActivity
         public void cancel() {
             PropertyAnimatorProxy.stop();
 
-            undersideContainer.setScaleX(MAX_VALUE);
-            undersideContainer.setScaleY(MAX_VALUE);
+            undersideContainer.setScaleX(MAX_SCALE);
+            undersideContainer.setScaleY(MAX_SCALE);
+            undersideContainer.setAlpha(MAX_ALPHA);
         }
     };
 
