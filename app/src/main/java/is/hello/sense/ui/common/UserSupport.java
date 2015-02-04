@@ -52,6 +52,7 @@ public class UserSupport {
         SETUP_SENSE,
         WIFI_SCAN,
         SIGN_INTO_WIFI,
+        PILL_PAIRING,
         PILL_PLACEMENT,
         UNSUPPORTED_DEVICE;
 
