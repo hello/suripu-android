@@ -240,6 +240,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
     }
 
+    public void hideBreakdown(@NonNull View sender) {
+        setHeaderMode(timelineScore);
+        headerModeSelector.setSelectedIndex(0);
+    }
+
     public void showBreakdown(@NonNull View sender) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         BreakdownHeaderMode breakdown = new BreakdownHeaderMode(inflater, headerView);
@@ -530,6 +535,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
             this.sleepScorePie = new SleepScoreDrawable(getResources());
             score.setBackground(sleepScorePie);
+            Views.setSafeOnClickListener(score, TimelineFragment.this::hideBreakdown);
         }
 
         @NonNull String formatTime(@Nullable Integer time) {
