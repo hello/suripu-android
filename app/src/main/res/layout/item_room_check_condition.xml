@@ -10,7 +10,7 @@
         android:id="@+id/item_room_check_condition_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_large"
+        android:layout_marginTop="@dimen/gap_small"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
         android:layout_marginBottom="@dimen/gap_large"
@@ -22,7 +22,6 @@
         android:id="@+id/item_room_check_condition_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
         android:layout_marginBottom="@dimen/gap_large"

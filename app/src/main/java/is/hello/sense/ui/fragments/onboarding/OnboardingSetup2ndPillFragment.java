@@ -28,6 +28,7 @@ public class OnboardingSetup2ndPillFragment extends Fragment {
                 .setHeadingText(R.string.title_onboarding_setup_2nd_pill)
                 .setSubheadingText(R.string.info_onboarding_setup_2nd_pill)
                 .setDiagramImage(R.drawable.onboarding_partner_clip)
+                .setDiagramInset(R.dimen.gap_xlarge, R.dimen.gap_xlarge)
                 .setSecondaryButtonText(R.string.action_setup_another_pill)
                 .setSecondaryOnClickListener(ignored -> ((OnboardingActivity) getActivity()).show2ndPillPairing())
                 .setPrimaryButtonText(R.string.action_no_thanks)

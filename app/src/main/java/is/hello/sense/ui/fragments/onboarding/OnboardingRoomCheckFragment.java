@@ -42,8 +42,8 @@ import static android.widget.LinearLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class OnboardingRoomCheckFragment extends InjectionFragment {
-    private static final long CONDITION_VISIBLE_MS = 4000;
-    private static final long COUNT_UP_DURATION_MS = 750;
+    private static final long CONDITION_VISIBLE_MS = 2500;
+    private static final long COUNT_UP_DURATION_MS = 850;
     private static final long END_CONTAINER_DELAY_MS = 50;
 
     @Inject RoomConditionsPresenter roomConditionsPresenter;
@@ -105,7 +105,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_room_check, container, false);
 
         this.conditionsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_container);
-        Animations.Properties.DEFAULT.apply(conditionsContainer.getLayoutTransition(), false);
+        conditionsContainer.getLayoutTransition().setDuration(400);
 
         this.itemContainer = (LinearLayout) inflater.inflate(R.layout.item_room_check_condition, container, false);
         this.itemTitle = (TextView) itemContainer.findViewById(R.id.item_room_check_condition_title);
