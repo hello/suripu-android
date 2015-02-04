@@ -399,7 +399,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
         introBuilder.setHeadingText(R.string.onboarding_title_room_check);
         introBuilder.setSubheadingText(R.string.onboarding_info_room_check);
-        introBuilder.setDiagramImage(R.drawable.onboarding_room_check);
+        introBuilder.setDiagramImage(R.drawable.onboarding_sense_intro);
         introBuilder.setHideToolbar(true);
         introBuilder.setExitAnimationName(ANIMATION_ROOM_CHECK);
         introBuilder.setNextWantsBackStackEntry(false);
