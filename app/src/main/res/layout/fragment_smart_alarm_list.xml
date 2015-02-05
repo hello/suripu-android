@@ -21,6 +21,7 @@
         style="@style/AppTheme.Card">
 
         <TextView
+            android:id="@+id/fragment_smart_alarm_empty_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/gap_outer"
@@ -28,11 +29,21 @@
             android:text="@string/title_smart_alarms"/>
 
         <TextView
+            android:id="@+id/fragment_smart_alarm_empty_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/AppTheme.Text.Body"
             android:lineSpacingMultiplier="@dimen/line_multiple_body"
             android:text="@string/message_smart_alarm_placeholder"/>
+
+        <Button
+            android:id="@+id/fragment_smart_alarm_empty_retry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_outer"
+            android:text="@string/action_retry"
+            style="@style/AppTheme.Button.Rounded"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
