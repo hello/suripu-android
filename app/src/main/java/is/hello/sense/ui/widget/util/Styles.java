@@ -134,6 +134,10 @@ public final class Styles {
                 return R.drawable.timeline_wakeup;
             }
 
+            case ALARM: {
+                return R.drawable.timeline_alarm;
+            }
+
             default:
             case UNKNOWN: {
                 return R.drawable.timeline_unknown;

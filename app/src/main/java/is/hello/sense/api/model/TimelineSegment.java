@@ -149,20 +149,21 @@ public class TimelineSegment extends ApiResponse {
 
     public static enum EventType {
         MOTION(R.string.event_type_motion),
+        SLEEPING(R.string.event_type_sleeping),
+        SLEEP_MOTION(R.string.event_type_sleep_motion),
+        PARTNER_MOTION(R.string.event_type_partner_moved),
         NOISE(R.string.event_type_noise),
         SNORING(R.string.event_type_snoring),
         SLEEP_TALK(R.string.event_type_sleep_talk),
         LIGHT(R.string.event_type_light),
         LIGHTS_OUT(R.string.event_type_lights_out),
-        SLEEP_MOTION(R.string.event_type_sleep_motion),
-        SLEEP(R.string.event_type_sleep),
         SUNSET(R.string.event_type_sunset),
         SUNRISE(R.string.event_type_sunrise),
-        PARTNER_MOTION(R.string.event_type_partner_moved),
-        WAKE_UP(R.string.event_type_wake_up),
-        OUT_OF_BED(R.string.event_type_out_of_bed),
         IN_BED(R.string.event_type_in_bed),
-        SLEEPING(R.string.event_type_sleeping),
+        SLEEP(R.string.event_type_sleep),
+        OUT_OF_BED(R.string.event_type_out_of_bed),
+        WAKE_UP(R.string.event_type_wake_up),
+        ALARM(R.string.event_type_alarm),
         UNKNOWN(R.string.event_type_unknown);
 
         @JsonCreator
