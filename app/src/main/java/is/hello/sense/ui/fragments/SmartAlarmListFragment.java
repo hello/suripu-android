@@ -11,9 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -43,8 +45,11 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     @Inject PreferencesPresenter preferences;
 
     private ProgressBar activityIndicator;
-    private View emptyView;
     private View emptyPrompt;
+    private View emptyView;
+    private TextView emptyTitle;
+    private TextView emptyMessage;
+    private Button emptyRetry;
 
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
     private SmartAlarmAdapter adapter;
@@ -69,8 +74,15 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
 
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_smart_alarm_list_activity);
 
-        this.emptyView = view.findViewById(android.R.id.empty);
         this.emptyPrompt = view.findViewById(R.id.fragment_smart_alarm_list_first_prompt);
+        this.emptyView = view.findViewById(android.R.id.empty);
+        this.emptyTitle = (TextView) emptyView.findViewById(R.id.fragment_smart_alarm_empty_title);
+        this.emptyMessage = (TextView) emptyView.findViewById(R.id.fragment_smart_alarm_empty_message);
+        this.emptyRetry = (Button) emptyView.findViewById(R.id.fragment_smart_alarm_empty_retry);
+        Views.setSafeOnClickListener(emptyRetry, ignored -> {
+            startLoading();
+            smartAlarmPresenter.update();
+        });
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         this.adapter = new SmartAlarmAdapter(getActivity(), this);
@@ -143,16 +155,22 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
         adapter.clear();
         adapter.addAll(alarms);
 
+        emptyTitle.setText(R.string.title_smart_alarms);
+        emptyMessage.setText(R.string.message_smart_alarm_placeholder);
+        emptyRetry.setVisibility(View.GONE);
+
         finishLoading();
     }
 
     public void alarmsUnavailable(Throwable e) {
+        Logger.error(getClass().getSimpleName(), "Could not load smart alarms.", e);
+        adapter.clear();
+
+        emptyTitle.setText(R.string.dialog_error_title);
+        emptyMessage.setText(e.getMessage());
+        emptyRetry.setVisibility(View.VISIBLE);
+
         finishLoading();
-        if (BuildConfig.DEBUG) {
-            presentError(e);
-        } else {
-            Logger.error(getClass().getSimpleName(), "Could not load smart alarms.", e);
-        }
     }
 
     public void presentError(Throwable e) {

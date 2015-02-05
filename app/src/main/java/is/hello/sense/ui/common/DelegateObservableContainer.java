@@ -4,7 +4,9 @@ import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 
+import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.UnsafeOperatorObserveOn;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
@@ -52,8 +54,13 @@ public final class DelegateObservableContainer<Target> implements ObservableCont
 
     @Override
     public @NonNull <T> Observable<T> bind(@NonNull Observable<T> toBind) {
-        return toBind.observeOn(scheduler)
-                .lift(new OperatorConditionalBinding<>(bindTarget, bindPredicate));
+        Observable<T> bound;
+        if (toBind instanceof PresenterSubject) {
+            bound = toBind.lift(new UnsafeOperatorObserveOn<>(scheduler));
+        } else {
+            bound = toBind.observeOn(scheduler);
+        }
+        return bound.lift(new OperatorConditionalBinding<>(bindTarget, bindPredicate));
     }
 
     @Override
