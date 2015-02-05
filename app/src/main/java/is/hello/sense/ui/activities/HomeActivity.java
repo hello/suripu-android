@@ -36,6 +36,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
@@ -140,7 +141,7 @@ public class HomeActivity
         viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
         if (viewPager.getCurrentFragment() == null) {
-            TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight());
+            TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
             viewPager.setCurrentFragment(fragment);
         }
 
@@ -226,7 +227,7 @@ public class HomeActivity
 
         if ((System.currentTimeMillis() - lastUpdated) > Constants.STALE_INTERVAL_MS && !isCurrentFragmentLastNight()) {
             Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
-            TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight());
+            TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
             viewPager.setCurrentFragment(fragment);
 
 
@@ -281,7 +282,7 @@ public class HomeActivity
                     }
 
                     DateTime date = Notification.getDate(notification);
-                    TimelineFragment fragment = TimelineFragment.newInstance(date);
+                    TimelineFragment fragment = TimelineFragment.newInstance(date, null);
                     viewPager.setCurrentFragment(fragment);
 
                     break;
@@ -370,7 +371,7 @@ public class HomeActivity
 
     @Override
     public TimelineFragment getFragmentBeforeFragment(@NonNull TimelineFragment fragment) {
-        return TimelineFragment.newInstance(fragment.getDate().minusDays(1));
+        return TimelineFragment.newInstance(fragment.getDate().minusDays(1), null);
     }
 
 
@@ -382,7 +383,7 @@ public class HomeActivity
 
     @Override
     public TimelineFragment getFragmentAfterFragment(@NonNull TimelineFragment fragment) {
-        return TimelineFragment.newInstance(fragment.getDate().plusDays(1));
+        return TimelineFragment.newInstance(fragment.getDate().plusDays(1), null);
     }
 
 
@@ -614,12 +615,12 @@ public class HomeActivity
 
     //region Timeline Navigation
 
-    public void showTimelineNavigator(@NonNull DateTime startDate) {
+    public void showTimelineNavigator(@NonNull DateTime startDate, @Nullable Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
 
         ViewGroup undersideContainer = (ViewGroup) findViewById(R.id.activity_home_content_container);
 
-        TimelineNavigatorFragment navigatorFragment = TimelineNavigatorFragment.newInstance(startDate);
+        TimelineNavigatorFragment navigatorFragment = TimelineNavigatorFragment.newInstance(startDate, timeline);
         navigatorFragment.show(getFragmentManager(), 0, TimelineNavigatorFragment.TAG);
 
         FragmentManager fragmentManager = getFragmentManager();
@@ -655,11 +656,11 @@ public class HomeActivity
     }
 
     @Override
-    public void onTimelineDateSelected(@NonNull DateTime date) {
+    public void onTimelineSelected(@NonNull DateTime date, @Nullable Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_OUT, null);
 
         if (!date.equals(viewPager.getCurrentFragment().getDate())) {
-            viewPager.setCurrentFragment(TimelineFragment.newInstance(date));
+            viewPager.setCurrentFragment(TimelineFragment.newInstance(date, timeline));
         }
         getFragmentManager().popBackStack();
     }
