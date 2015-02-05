@@ -82,7 +82,6 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
     @Override
     public void onConnected(Bundle bundle) {
         coordinator.postOnResume(() -> {
-            LoadingDialogFragment.close(getFragmentManager());
             Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             if (lastLocation != null) {
                 account.setLocation(lastLocation.getLatitude(), lastLocation.getLongitude());

@@ -311,7 +311,8 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         } else if (updatedBy instanceof OnboardingRegisterWeightFragment) {
             pushFragment(new OnboardingRegisterLocationFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterLocationFragment) {
-            LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
+            // The OnboardingRegisterLocationFragment shows the
+            // loading dialog, we close it when we wrap up here.
             bindAndSubscribe(apiService.updateAccount(account), ignored -> {
                 Analytics.trackUserSignUp(account.getAccountId(), account.getName(), DateTime.now());
 
