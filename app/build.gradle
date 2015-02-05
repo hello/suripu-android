@@ -54,10 +54,14 @@ android {
     buildTypes {
         def TYPE_INT = "int"
         def TYPE_BOOLEAN = "boolean"
+        def TYPE_STRING = "String"
 
         def MIN_LOGGING_LEVEL = "MIN_LOGGING_LEVEL"
         def DEBUG_SCREEN_ENABLED = "DEBUG_SCREEN_ENABLED"
         def CLEAR_LOG_ON_START = "CLEAR_LOG_ON_START"
+        def CLIENT_ID = "CLIENT_ID"
+        def CLIENT_SECRET = "CLIENT_SECRET"
+        def BASE_URL = "BASE_URL"
 
         def TRUE = "true"
         def FALSE = "false"
@@ -66,6 +70,9 @@ android {
             buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.VERBOSE"
             buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, TRUE
             buildConfigField TYPE_BOOLEAN, CLEAR_LOG_ON_START, FALSE
+            buildConfigField TYPE_STRING, CLIENT_ID, '"' + "android_dev" + '"'
+            buildConfigField TYPE_STRING, CLIENT_SECRET, '"' + "99999secret" + '"'
+            buildConfigField TYPE_STRING, BASE_URL, '"' + "https://dev-api.hello.is/v1" + '"'
 
             signingConfig signingConfigs.debug
 
@@ -77,6 +84,9 @@ android {
             buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.VERBOSE"
             buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, TRUE
             buildConfigField TYPE_BOOLEAN, CLEAR_LOG_ON_START, FALSE
+            buildConfigField TYPE_STRING, CLIENT_ID, '"' + "8d3c1664-05ae-47e4-bcdb-477489590aa4" + '"'
+            buildConfigField TYPE_STRING, CLIENT_SECRET, '"' + "4f771f6f-5c10-4104-bbc6-3333f5b11bf9" + '"'
+            buildConfigField TYPE_STRING, BASE_URL, '"' + "https://api.hello.is/v1" + '"'
 
             signingConfig signingConfigs.release
 
@@ -87,6 +97,9 @@ android {
             buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.ERROR"
             buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, FALSE
             buildConfigField TYPE_BOOLEAN, CLEAR_LOG_ON_START, TRUE
+            buildConfigField TYPE_STRING, CLIENT_ID, '"' + "8d3c1664-05ae-47e4-bcdb-477489590aa4" + '"'
+            buildConfigField TYPE_STRING, CLIENT_SECRET, '"' + "4f771f6f-5c10-4104-bbc6-3333f5b11bf9" + '"'
+            buildConfigField TYPE_STRING, BASE_URL, '"' + "https://api.hello.is/v1" + '"'
 
             signingConfig signingConfigs.release
 

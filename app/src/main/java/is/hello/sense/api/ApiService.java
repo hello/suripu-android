@@ -170,6 +170,9 @@ public interface ApiService {
     @DELETE("/devices/sense/{id}")
     Observable<VoidResponse> unregisterSense(@Path("id") @NonNull String senseId);
 
+    @DELETE("/devices/sense/{id}/all")
+    Observable<VoidResponse> removeSenseAssociations(@Path("id") @NonNull String senseId);
+
     //endregion
 
 

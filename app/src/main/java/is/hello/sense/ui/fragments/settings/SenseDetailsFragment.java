@@ -303,7 +303,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private void resetAllDevices() {
         showBlockingActivity(R.string.dialog_loading_message);
         showHardwareActivity(() -> {
-            bindAndSubscribe(devicesPresenter.unregisterAllDevices(),
+            bindAndSubscribe(devicesPresenter.removeSenseAssociations(device),
                              ignored -> completeFactoryReset(),
                              this::presentError);
         }, this::presentError);

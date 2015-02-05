@@ -1,10 +1,8 @@
 package is.hello.sense.ui.activities;
 
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -13,7 +11,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -26,7 +23,6 @@ import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.functional.Functions;
@@ -44,7 +40,6 @@ import is.hello.sense.util.SessionLogger;
 public class DebugActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject ApiSessionManager sessionManager;
     @Inject Cache httpCache;
-    @Inject ApiEnvironment currentEnvironment;
     @Inject BluetoothStack bluetoothStack;
 
     private StaticItemAdapter debugActionItems;
@@ -90,8 +85,8 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         buildInfoItems.addTextItem("BLE Stack Traits", TextUtils.join(", ", bluetoothStack.getTraits()));
         buildInfoItems.addTextItem("Access Token", sessionManager.getAccessToken());
         buildInfoItems.addTextItem("GCM ID", getSharedPreferences(Constants.NOTIFICATION_PREFS, 0).getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, "<none>"));
-        buildInfoItems.addTextItem("Host", currentEnvironment.baseUrl);
-        buildInfoItems.addTextItem("Client ID", currentEnvironment.clientId);
+        buildInfoItems.addTextItem("Host", BuildConfig.BASE_URL);
+        buildInfoItems.addTextItem("Client ID", BuildConfig.CLIENT_ID);
     }
 
     private void populateDebugActionItems() {
@@ -103,7 +98,6 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
                 dialog.show(getFragmentManager(), MessageDialogFragment.TAG);
             }
         });
-        debugActionItems.addTextItem("Set Environment", currentEnvironment.toString(), this::changeEnvironment);
         debugActionItems.addTextItem("View Log", null, this::viewLog);
         debugActionItems.addTextItem("Clear Log", null, this::clearLog);
         debugActionItems.addTextItem("Share Log", null, this::sendLog);
@@ -113,25 +107,6 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         debugActionItems.addTextItem("Clear OAuth Session", null, this::clearOAuthSession);
     }
 
-
-    public void changeEnvironment() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        ArrayAdapter<ApiEnvironment> adapter = new ArrayAdapter<>(this, R.layout.item_simple_text, ApiEnvironment.values());
-        builder.setAdapter(adapter, (dialog, which) -> {
-            ApiEnvironment newEnvironment = adapter.getItem(which);
-            if (newEnvironment == currentEnvironment)
-                return;
-
-            SharedPreferences internalPreferences = getSharedPreferences(Constants.INTERNAL_PREFS, 0);
-            internalPreferences.edit()
-                    .putString(Constants.INTERNAL_PREF_API_ENV_NAME, newEnvironment.toString())
-                    .apply();
-
-            sessionManager.logOut();
-        });
-        builder.setCancelable(true);
-        builder.create().show();
-    }
 
     public void showRoomCheck() {
         Intent onboarding = new Intent(this, OnboardingActivity.class);

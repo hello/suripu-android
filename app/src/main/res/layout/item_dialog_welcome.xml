@@ -20,7 +20,6 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_above="@id/fragment_dialog_welcome_item_next"
-        android:scrollbars="none"
         style="@style/AppTheme.FadingScrollView">
 
         <LinearLayout
@@ -53,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/gap_outer"
                 android:textAppearance="@style/AppTheme.Text.Body"
-                android:lineSpacingMultiplier="@dimen/line_multiple_body"
+                android:lineSpacingMultiplier="@dimen/line_multiple_body_small"
                 android:text="@string/app_name"/>
 
         </LinearLayout>

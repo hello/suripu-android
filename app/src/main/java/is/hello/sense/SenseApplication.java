@@ -3,13 +3,11 @@ package is.hello.sense;
 import android.app.Application;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.support.v4.content.LocalBroadcastManager;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import dagger.ObjectGraph;
-import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.BluetoothModule;
@@ -58,16 +56,9 @@ public class SenseApplication extends Application {
         instance = this;
     }
 
-
-    public ApiEnvironment getApiEnvironment() {
-        SharedPreferences internalPreferences = getSharedPreferences(Constants.INTERNAL_PREFS, 0);
-        String envName = internalPreferences.getString(Constants.INTERNAL_PREF_API_ENV_NAME, getString(R.string.build_default_api_env));
-        return ApiEnvironment.fromString(envName);
-    }
-
     public void buildGraph() {
         this.graph = ObjectGraph.create(
-                new ApiModule(this, getApiEnvironment()),
+                new ApiModule(this),
                 new SenseAppModule(this),
                 new BluetoothModule()
         );

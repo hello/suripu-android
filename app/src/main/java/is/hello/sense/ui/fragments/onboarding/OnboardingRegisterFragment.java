@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
@@ -55,7 +54,6 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
     @Inject ApiService apiService;
     @Inject ApiSessionManager sessionManager;
-    @Inject ApiEnvironment environment;
     @Inject PreferencesPresenter preferencesPresenter;
 
     @Override
@@ -191,7 +189,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     }
 
     public void login(@NonNull Account createdAccount) {
-        OAuthCredentials credentials = new OAuthCredentials(environment, emailText.getText().toString(), passwordText.getText().toString());
+        OAuthCredentials credentials = new OAuthCredentials(emailText.getText().toString(), passwordText.getText().toString());
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             sessionManager.setSession(session);
             preferencesPresenter.pullAccountPreferences().subscribe();

@@ -186,7 +186,6 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
                         status1.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold);
                         status1.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.wifi_network, 0, 0, 0);
                     }
-                    status1.setTextColor(resources.getColor(R.color.text_dark));
 
                     status2Label.setText(R.string.label_firmware_version);
                     status2.setText(device.getFirmwareVersion());
@@ -204,8 +203,11 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
                         state = Device.State.UNKNOWN;
                     }
                     status1.setText(state.nameRes);
-                    status1.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold);
-                    status1.setTextColor(resources.getColor(state.colorRes));
+                    if (state == Device.State.UNKNOWN) {
+                        status1.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold_Italic);
+                    } else {
+                        status1.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold);
+                    }
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
 
                     status2Label.setText(R.string.label_color);
