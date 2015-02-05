@@ -21,7 +21,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorGraphSample;
@@ -124,12 +123,11 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     public void conditionsUnavailable(@NonNull Throwable e) {
         Logger.error(RoomConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
 
-        String errorMessage = BuildConfig.DEBUG ? e.getMessage() : getString(R.string.error_could_not_load_conditions);
         for (int i = 0, count = adapter.getCount(); i < count; i++) {
             SensorEntry sensorInfo = adapter.getItem(i);
             sensorInfo.formatter = null;
             sensorInfo.sensorState = null;
-            sensorInfo.errorMessage = errorMessage;
+            sensorInfo.errorMessage = getString(R.string.error_cannot_retrieve_condition, sensorInfo.sensorName);
         }
 
         adapter.notifyDataSetChanged();
@@ -204,7 +202,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
                 holder.reading.setText(R.string.missing_data_placeholder);
                 holder.reading.setTextColor(resources.getColor(R.color.sensor_unknown));
                 if (TextUtils.isEmpty(sensorEntry.errorMessage)) {
-                    holder.message.setText(R.string.missing_data_placeholder);
+                    holder.message.setText(null);
                 } else {
                     holder.message.setText(sensorEntry.errorMessage);
                 }
