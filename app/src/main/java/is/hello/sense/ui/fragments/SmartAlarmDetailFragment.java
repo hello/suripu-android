@@ -307,6 +307,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         } else if (ApiException.statusEquals(e, 400)) {
             ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_clock_drift));
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        } else if (ApiException.statusEquals(e, 412)) {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_requires_device));
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
             ErrorDialogFragment.presentError(getFragmentManager(), e);
         }

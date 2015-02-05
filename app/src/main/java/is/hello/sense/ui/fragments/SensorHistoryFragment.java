@@ -29,6 +29,7 @@ import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
+import is.hello.sense.ui.widget.BlockableScrollView;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
@@ -50,6 +51,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
 
+    private BlockableScrollView scrollView;
     private TextView readingText;
     private TextView messageText;
     private SelectorLinearLayout historyModeSelector;
@@ -81,6 +83,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sensor_history, container, false);
+
+        this.scrollView = (BlockableScrollView) view.findViewById(R.id.fragment_sensor_history_scroll_view);
 
         this.readingText = (TextView) view.findViewById(R.id.fragment_sensor_history_reading);
         this.messageText = (TextView) view.findViewById(R.id.fragment_sensor_history_message);
@@ -325,6 +329,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
             messageText.setGravity(Gravity.CENTER);
             messageText.setTextColor(getResources().getColor(R.color.text_dim));
+
+            scrollView.setScrollingEnabled(false);
         }
 
         @Override
@@ -354,6 +360,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
                 messageText.setGravity(Gravity.START);
                 messageText.setTextColor(getResources().getColor(R.color.text_dark));
+
+                scrollView.setScrollingEnabled(true);
             });
         }
 

@@ -2,6 +2,7 @@ package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.TextUtils;
 
 import retrofit.RetrofitError;
@@ -11,11 +12,9 @@ public class ApiException extends Exception {
     private final RetrofitError networkStackError;
 
     public static boolean isNetworkError(@Nullable Throwable e) {
-        if (e != null && e instanceof ApiException) {
-            return ((ApiException) e).isNetworkError();
-        } else {
-            return false;
-        }
+        return (e != null &&
+                e instanceof ApiException &&
+                ((ApiException) e).isNetworkError());
     }
 
     public static boolean statusEquals(@Nullable Throwable e, int status) {
@@ -47,10 +46,6 @@ public class ApiException extends Exception {
         return networkStackError;
     }
 
-
-    public String getUrl() {
-        return networkStackError.getUrl();
-    }
 
     public @Nullable Integer getStatus() {
         if (networkStackError.getResponse() != null)

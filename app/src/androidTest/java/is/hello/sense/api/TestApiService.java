@@ -194,6 +194,11 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
+    public Observable<VoidResponse> removeSenseAssociations(@Path("id") @NonNull String senseId) {
+        return safeJust(new VoidResponse());
+    }
+
+    @Override
     public Observable<ArrayList<Alarm>> smartAlarms() {
         return loadResponse("smart_alarms", new TypeReference<ArrayList<Alarm>>() {});
     }
