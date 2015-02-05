@@ -16,6 +16,7 @@ import org.joda.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
@@ -23,6 +24,9 @@ import is.hello.sense.functional.Lists;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Alarm extends ApiResponse {
+    @JsonProperty("id")
+    private String id;
+
     @JsonProperty("year")
     private int year;
 
@@ -121,6 +125,7 @@ public class Alarm extends ApiResponse {
 
 
     public Alarm() {
+        this.id = UUID.randomUUID().toString();
         this.hourOfDay = 7;
         this.minuteOfHour = 30;
         this.isRepeated = true;
@@ -130,6 +135,10 @@ public class Alarm extends ApiResponse {
         this.daysOfWeek = new HashSet<>();
     }
 
+
+    public String getId() {
+        return id;
+    }
 
     @JsonIgnore
     public LocalTime getTime() {
@@ -250,8 +259,9 @@ public class Alarm extends ApiResponse {
 
     @Override
     public String toString() {
-        return "SmartAlarm{" +
-                "year=" + year +
+        return "Alarm{" +
+                "id='" + id + '\'' +
+                ", year=" + year +
                 ", month=" + month +
                 ", dayOfMonth=" + dayOfMonth +
                 ", hourOfDay=" + hourOfDay +
@@ -261,6 +271,7 @@ public class Alarm extends ApiResponse {
                 ", isEditable=" + isEditable +
                 ", daysOfWeek=" + daysOfWeek +
                 ", sound=" + sound +
+                ", isSmart=" + isSmart +
                 '}';
     }
 
