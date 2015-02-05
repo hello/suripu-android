@@ -423,7 +423,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                     Animations.Properties.createWithDelay(250).apply(updateAnimation);
 
                     ArgbEvaluator colorEvaluator = new ArgbEvaluator();
-                    int startColor = scoreText.getCurrentTextColor();
+                    int startColor = Styles.getSleepScoreColor(getActivity(), scoreGraph.getValue());
                     int endColor = Styles.getSleepScoreColor(getActivity(), sleepScore);
                     updateAnimation.addUpdateListener(a -> {
                         Integer score = (Integer) a.getAnimatedValue();
