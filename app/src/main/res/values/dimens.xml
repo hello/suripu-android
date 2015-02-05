@@ -31,7 +31,7 @@
 
     <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
-    <item name="line_multiple_body" format="float" type="dimen">1.5</item>
+    <item name="line_multiple_body" format="float" type="dimen">1.3</item>
     <item name="line_multiple_body_medium" format="float" type="dimen">1.4</item>
     <item name="line_multiple_body_small" format="float" type="dimen">1.2</item>
 
@@ -63,7 +63,7 @@
     <dimen name="little_sleep_summary_width">70dp</dimen>
     <dimen name="little_sleep_summary_height">70dp</dimen>
 
-    <dimen name="item_room_sensor_condition_min_height">100dp</dimen>
+    <dimen name="item_room_sensor_condition_min_height">80dp</dimen>
     <dimen name="item_room_sensor_condition_reading_min_width">100dp</dimen>
 
     <dimen name="view_mini_timeline_stripe_width">@dimen/divider_size</dimen>

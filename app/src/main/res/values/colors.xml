@@ -10,9 +10,9 @@
     <color name="light_accent_extra_dimmed">#ebf9ff</color>
     <color name="light_accent_darkened">#0c67c0</color>
     <color name="destructive_accent">#ff0000</color>
-    <color name="status_bar">#919191</color>
+    <color name="status_bar">#b5b5b5</color>
 
-    <color name="background">#f8f8f8</color>
+    <color name="background">#F2F2F2</color>
     <color name="background_light">@color/white</color>
     <color name="background_light_overlay">#99ffffff</color>
     <color name="background_dark_overlay">#80000000</color>

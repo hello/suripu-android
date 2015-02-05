@@ -550,10 +550,10 @@ public class HomeActivity
     }
 
     private class UndersideAnimator implements InteractiveAnimator {
-        private final float MIN_SCALE = 0.95f;
+        private final float MIN_SCALE = 0.85f;
         private final float MAX_SCALE = 1.0f;
 
-        private final float MIN_ALPHA = 0.7f;
+        private final float MIN_ALPHA = 0.5f;
         private final float MAX_ALPHA = 1.0f;
 
         @Override
