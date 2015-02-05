@@ -15,6 +15,7 @@ import org.joda.time.DateTime;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Timeline;
 import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.ui.adapter.TimelineNavigatorAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -26,6 +27,7 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
     public static final String TAG = TimelineNavigatorFragment.class.getSimpleName();
 
     private static final String ARG_START_DATE = TimelineNavigatorFragment.class.getName() + ".ARG_START_DATE";
+    private static final String ARG_FIRST_TIMELINE = TimelineNavigatorFragment.class.getName() + ".ARG_FIRST_TIMELINE";
 
     @Inject TimelineNavigatorPresenter presenter;
 
@@ -34,11 +36,12 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
     private TimelineNavigatorLayoutManager layoutManager;
     private DateTime startDate;
 
-    public static TimelineNavigatorFragment newInstance(@NonNull DateTime startTime) {
+    public static TimelineNavigatorFragment newInstance(@NonNull DateTime startTime, @Nullable Timeline firstTimeline) {
         TimelineNavigatorFragment fragment = new TimelineNavigatorFragment();
 
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_START_DATE, startTime);
+        arguments.putSerializable(ARG_FIRST_TIMELINE, firstTimeline);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -50,8 +53,13 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
         super.onCreate(savedInstanceState);
 
         this.startDate = (DateTime) getArguments().getSerializable(ARG_START_DATE);
-
         presenter.setFirstDate(DateFormatter.lastNight());
+
+        if (getArguments().containsKey(ARG_FIRST_TIMELINE)) {
+            Timeline firstTimeline = (Timeline) getArguments().getSerializable(ARG_FIRST_TIMELINE);
+            presenter.cacheSingleTimeline(startDate, firstTimeline);
+        }
+
         addPresenter(presenter);
 
         setRetainInstance(true);
@@ -106,7 +114,8 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
             }
         } else {
             DateTime newDate = presenter.getDateTimeAt(position);
-            ((OnTimelineDateSelectedListener) getActivity()).onTimelineDateSelected(newDate);
+            Timeline timeline = presenter.retrieveCachedTimeline(newDate);
+            ((OnTimelineDateSelectedListener) getActivity()).onTimelineSelected(newDate, timeline);
         }
     }
 
@@ -187,6 +196,6 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
 
 
     public interface OnTimelineDateSelectedListener {
-        void onTimelineDateSelected(@NonNull DateTime date);
+        void onTimelineSelected(@NonNull DateTime date, @Nullable Timeline timeline);
     }
 }

@@ -1,5 +1,8 @@
 package is.hello.sense.graph.presenters;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -64,8 +67,12 @@ public class TimelinePresenter extends Presenter {
         return date;
     }
 
-    public void setDate(DateTime date) {
+    public void setDateWithTimeline(@NonNull DateTime date, @Nullable Timeline timeline) {
         this.date = date;
-        update();
+        if (timeline != null) {
+            this.timeline.onNext(Lists.newArrayList(timeline));
+        } else {
+            update();
+        }
     }
 }

@@ -1,7 +1,6 @@
 package is.hello.sense.graph.presenters;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.LruCache;
@@ -62,7 +61,7 @@ public class TimelineNavigatorPresenter extends Presenter {
     }
 
     public @NonNull DateTime getDateTimeAt(int position) {
-        return firstDate.plusDays(-position);
+        return firstDate.plusDays(-position).withTimeAtStartOfDay();
     }
 
     public int getDateTimePosition(@NonNull DateTime dateTime) {
@@ -95,9 +94,21 @@ public class TimelineNavigatorPresenter extends Presenter {
         posted.remove(tag);
     }
 
+    public void cacheSingleTimeline(@NonNull DateTime date, @Nullable Timeline timeline) {
+        if (timeline != null) {
+            cachedTimelines.put(date, timeline);
+        } else {
+            cachedTimelines.remove(date);
+        }
+    }
+
+    public @Nullable Timeline retrieveCachedTimeline(@NonNull DateTime date) {
+        return cachedTimelines.get(date);
+    }
+
 
     public Observable<Timeline> timelineForDate(@NonNull DateTime date) {
-        Timeline cachedTimeline = cachedTimelines.get(date);
+        Timeline cachedTimeline = retrieveCachedTimeline(date);
         if (cachedTimeline != null) {
             return Observable.just(cachedTimeline);
         } else if (suspended) {
@@ -105,7 +116,7 @@ public class TimelineNavigatorPresenter extends Presenter {
         } else {
             return apiService.timelineForDate(date.year().getAsString(), date.monthOfYear().getAsString(), date.dayOfMonth().getAsString())
                              .flatMap(ts -> ts.isEmpty() ? Observable.error(new IllegalArgumentException()) : Observable.just(ts.get(0)))
-                             .doOnNext(timeline -> cachedTimelines.put(date, timeline));
+                             .doOnNext(timeline -> cacheSingleTimeline(date, timeline));
         }
     }
 
