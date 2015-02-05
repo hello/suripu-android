@@ -33,6 +33,15 @@
             android:gravity="center"
             android:background="@color/background_onboarding">
 
+            <TextView
+                android:id="@+id/fragment_onboarding_register_heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/gap_medium"
+                android:textAppearance="@style/AppTheme.Text.Heading"
+                android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+                android:text="@string/title_sign_in"/>
+
             <EditText
                 android:id="@+id/fragment_onboarding_email"
                 android:layout_width="match_parent"
