@@ -4,13 +4,18 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.File;
+
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Enums;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.SessionLogger;
 
 public class UserSupport {
     public static final String ORDER_URL = "https://order.hello.is";
@@ -40,7 +45,18 @@ public class UserSupport {
     public static void showEmail(@NonNull Context from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
         try {
-            from.startActivity(new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", SUPPORT_EMAIL, null)));
+            Intent email = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", SUPPORT_EMAIL, null));
+            email.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(SessionLogger.getLogFilePath(from))));
+            email.putExtra(Intent.EXTRA_SUBJECT, from.getString(R.string.support_email_subject));
+            email.putExtra(Intent.EXTRA_TEXT, from.getString(
+                    R.string.support_email_body,
+                    from.getString(R.string.app_name),
+                    BuildConfig.VERSION_NAME,
+                    Build.VERSION.RELEASE,
+                    Build.MODEL
+            ));
+            email.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            from.startActivity(email);
         } catch (ActivityNotFoundException e) {
             SenseAlertDialog alertDialog = new SenseAlertDialog(from);
             alertDialog.setTitle(R.string.dialog_error_title);

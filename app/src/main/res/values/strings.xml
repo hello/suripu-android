@@ -411,4 +411,12 @@ so you can sleep better.</string>
     <string name="action_reconnect">Reconnect</string>
     <string name="error_no_web_browser">Could not find a web browser.</string>
     <string name="error_no_email_client">Could not find an email app.</string>
+    <string name="support_email_subject">Sense Support</string>
+    <!--
+        %1$s = app name
+        %2$s = app version
+        %3$s = os version
+        %4$s = device model
+      -->
+    <string name="support_email_body">\n---\n\n%1$s %2$s on Android %3$s (%4$s)</string>
 </resources>
