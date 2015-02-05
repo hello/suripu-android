@@ -23,8 +23,6 @@ import rx.android.schedulers.AndroidSchedulers;
 public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavigatorAdapter.ItemViewHolder> implements View.OnClickListener {
     public static final int TOTAL_DAYS = 366;
 
-    private static final int ERROR_MARKER = -1;
-
     private final Context context;
     private final LayoutInflater inflater;
     private final TimelineNavigatorPresenter presenter;

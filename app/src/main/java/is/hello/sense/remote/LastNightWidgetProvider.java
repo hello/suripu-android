@@ -51,7 +51,7 @@ public class LastNightWidgetProvider extends AppWidgetProvider {
         @Inject TimelinePresenter presenter;
 
         public LastNightService() {
-            presenter.setDate(DateFormatter.lastNight());
+            presenter.setDateWithTimeline(DateFormatter.lastNight(), null);
             addPresenter(presenter);
         }
 

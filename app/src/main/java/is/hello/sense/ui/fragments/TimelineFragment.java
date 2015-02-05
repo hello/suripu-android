@@ -63,6 +63,7 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
 
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
+    private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
 
     @Inject DateFormatter dateFormatter;
     @Inject TimelinePresenter timelinePresenter;
@@ -87,12 +88,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private View timelineEventsHeader;
 
 
-    public static TimelineFragment newInstance(@NonNull DateTime date) {
+    public static TimelineFragment newInstance(@NonNull DateTime date, @Nullable Timeline cachedTimeline) {
         TimelineFragment fragment = new TimelineFragment();
 
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_DATE, date.withTimeAtStartOfDay());
+        arguments.putSerializable(ARG_CACHED_TIMELINE, cachedTimeline);
         fragment.setArguments(arguments);
+
         return fragment;
     }
 
@@ -100,7 +103,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        timelinePresenter.setDate(getDate());
+        timelinePresenter.setDateWithTimeline(getDate(), getCachedTimeline());
         addPresenter(timelinePresenter);
 
         this.segmentAdapter = new TimelineSegmentAdapter(getActivity(), dateFormatter);
@@ -127,7 +130,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
-        dateText.setOnClickListener(ignored -> ((HomeActivity) getActivity()).showTimelineNavigator(getDate()));
+        dateText.setOnClickListener(ignored -> {
+            Timeline timeline = (Timeline) dateText.getTag();
+            ((HomeActivity) getActivity()).showTimelineNavigator(getDate(), timeline);
+        });
 
         this.headerModeSelector = (SelectorLinearLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
         headerModeSelector.setBackground(new TimelineTabsDrawable(getResources()));
@@ -281,16 +287,22 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         beforeSleep.bindTimeline(timeline);
+        dateText.setTag(timeline);
     }
 
     public void timelineUnavailable(@Nullable Throwable e) {
         timelineScore.presentError(e);
         beforeSleep.presentError(e);
+        dateText.setTag(null);
     }
 
 
-    public DateTime getDate() {
+    public @NonNull DateTime getDate() {
         return (DateTime) getArguments().getSerializable(ARG_DATE);
+    }
+
+    public @Nullable Timeline getCachedTimeline() {
+        return (Timeline) getArguments().getSerializable(ARG_CACHED_TIMELINE);
     }
 
 
