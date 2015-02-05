@@ -66,7 +66,6 @@ import rx.schedulers.Schedulers;
     }
 
     public void renderInto(@NonNull TextView textView, @Nullable String markdown) {
-        textView.setText("");
         render(markdown)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(textView::setText, e -> {
@@ -115,7 +114,6 @@ import rx.schedulers.Schedulers;
     }
 
     public void renderEmphasisInto(@NonNull TextView textView, int color, @Nullable String markdown) {
-        textView.setText("");
         renderWithEmphasisColor(color, markdown)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(textView::setText, e -> {
