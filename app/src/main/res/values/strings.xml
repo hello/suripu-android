@@ -395,7 +395,8 @@ so you can sleep better.</string>
     <string name="onboarding_title_unsupported_device">Unsupported Device</string>
     <string name="onboarding_message_unsupported_device">Your device is known to have issues setting up Sense for the first time. If you have a different phone or tablet available, it is recommended that you use it to perform the next steps.</string>
     <string name="action_continue_anyway">Continue Anyway</string>
-    <string name="trends_message_not_enough_data">Not enough data yet, check back later.</string>
+    <string name="message_not_enough_data">Not enough data yet, check back later.</string>
+    <string name="sensor_history_message_error">Could not load graph.</string>
     <string name="trends_message_error">Trends could not be loaded.</string>
     <string name="onboarding_title_sleep_pill_intro">Sleep Pill</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>

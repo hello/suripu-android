@@ -84,7 +84,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         trendsAdapter.bindTrends(trends);
 
         if (Lists.isEmpty(trends)) {
-            noDataPlaceholder.setText(R.string.trends_message_not_enough_data);
+            noDataPlaceholder.setText(R.string.message_not_enough_data);
             noDataPlaceholder.setVisibility(View.VISIBLE);
         } else {
             noDataPlaceholder.setVisibility(View.GONE);

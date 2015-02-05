@@ -100,6 +100,17 @@
                 android:layout_gravity="center"
                 style="@android:style/Widget.Holo.Light.ProgressBar"/>
 
+            <TextView
+                android:id="@+id/fragment_sensor_history_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
+                android:lineSpacingMultiplier="@dimen/line_multiple_body"
+                android:gravity="center"
+                android:text="@string/message_not_enough_data"
+                android:visibility="gone"/>
+
         </FrameLayout>
 
     </LinearLayout>

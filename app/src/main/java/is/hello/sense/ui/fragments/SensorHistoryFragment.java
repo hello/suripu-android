@@ -27,7 +27,6 @@ import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.BlockableScrollView;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
@@ -55,10 +54,11 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     private TextView readingText;
     private TextView messageText;
     private SelectorLinearLayout historyModeSelector;
-    private ProgressBar loadingIndicator;
     private TextView insightText;
     private String sensor;
 
+    private ProgressBar loadingIndicator;
+    private TextView graphPlaceholder;
     private GraphView graphView;
     private SensorDataSource sensorDataSource = new SensorDataSource();
 
@@ -88,9 +88,11 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         this.readingText = (TextView) view.findViewById(R.id.fragment_sensor_history_reading);
         this.messageText = (TextView) view.findViewById(R.id.fragment_sensor_history_message);
-        this.graphView = (GraphView) view.findViewById(R.id.fragment_sensor_history_graph);
-        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_sensor_history_loading);
         this.insightText = (TextView) view.findViewById(R.id.fragment_sensor_history_insight);
+
+        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_sensor_history_loading);
+        this.graphPlaceholder = (TextView) view.findViewById(R.id.fragment_sensor_history_placeholder);
+        this.graphView = (GraphView) view.findViewById(R.id.fragment_sensor_history_graph);
 
         graphView.setGraphDrawable(new LineGraphDrawable(getResources()));
         graphView.setAdapter(sensorDataSource);
@@ -164,8 +166,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void bindConditions(@Nullable RoomConditionsPresenter.Result result) {
         if (result == null) {
             readingText.setText(R.string.missing_data_placeholder);
-            messageText.setText(R.string.missing_data_placeholder);
-            insightText.setText(R.string.missing_data_placeholder);
+            messageText.setText(null);
+            insightText.setText(null);
         } else {
             SensorState condition = result.conditions.getSensorStateWithName(sensor);
             if (condition != null) {
@@ -187,8 +189,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 graphView.setTintColor(sensorColor);
             } else {
                 readingText.setText(R.string.missing_data_placeholder);
-                messageText.setText(R.string.missing_data_placeholder);
-                insightText.setText(R.string.missing_data_placeholder);
+                messageText.setText(null);
+                insightText.setText(null);
             }
         }
     }
@@ -197,7 +199,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         Logger.error(SensorHistoryFragment.class.getSimpleName(), "Could not load conditions", e);
         readingText.setText(R.string.missing_data_placeholder);
         messageText.setText(e.getMessage());
-        insightText.setText(R.string.missing_data_placeholder);
+        insightText.setText(null);
     }
 
 
@@ -209,6 +211,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 .fadeIn()
                 .scale(1f)
                 .start();
+
+        graphPlaceholder.setVisibility(View.GONE);
         sensorDataSource.clear();
 
         SensorHistoryPresenter.Mode newMode = (SensorHistoryPresenter.Mode) historyModeSelector.getButtonTag(newSelectionIndex);
@@ -224,11 +228,14 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             List<SensorGraphSample> history = historyAndUnits.data;
             if (history.isEmpty()) {
                 clear();
+                graphPlaceholder.setText(R.string.message_not_enough_data);
+                graphPlaceholder.setVisibility(View.VISIBLE);
+                loadingIndicator.setVisibility(View.GONE);
                 return;
             }
 
             Observable<Update> update = Update.forHistorySeries(history, sensorHistoryPresenter.getMode());
-            bindAndSubscribe(update, this::update, Functions.LOG_ERROR);
+            bindAndSubscribe(update, this::update, this::historyUnavailable);
 
             this.unitSystem = historyAndUnits.unitSystem;
 
@@ -239,13 +246,12 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         }
 
         public void historyUnavailable(Throwable e) {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
-            clear();
+            Logger.error(getClass().getSimpleName(), "Could not render graph", e);
 
-            animate(loadingIndicator)
-                    .fadeOut(View.GONE)
-                    .scale(0f)
-                    .start();
+            clear();
+            graphPlaceholder.setText(R.string.sensor_history_message_error);
+            graphPlaceholder.setVisibility(View.VISIBLE);
+            loadingIndicator.setVisibility(View.GONE);
         }
 
 
