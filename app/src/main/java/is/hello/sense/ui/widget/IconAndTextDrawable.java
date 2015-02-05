@@ -46,7 +46,7 @@ public class IconAndTextDrawable extends Drawable {
         textPaint.setSubpixelText(true);
 
         setTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_body_small));
-        setTypeface(Typeface.create("sans-serif", 0));
+        setTypeface(Typeface.create("sans-serif-medium", 0));
         setColorFilter(normalColor, PorterDuff.Mode.SRC_ATOP);
     }
 

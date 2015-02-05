@@ -20,7 +20,6 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_above="@id/fragment_dialog_welcome_item_next"
-        android:scrollbars="none"
         style="@style/AppTheme.FadingScrollView">
 
         <LinearLayout

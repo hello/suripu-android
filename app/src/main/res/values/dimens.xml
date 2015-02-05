@@ -57,7 +57,6 @@
 
     <dimen name="sliding_layers_open_height">@dimen/action_bar_height</dimen>
 
-
     <dimen name="grand_sleep_summary_width">175dp</dimen>
     <dimen name="grand_sleep_summary_height">175dp</dimen>
 
@@ -122,6 +121,10 @@
 
     <dimen name="action_bar_height">60dp</dimen>
     <dimen name="action_bar_title_text_size">20dp</dimen>
+
+    <!-- Dialogs -->
+
+    <dimen name="dialog_max_width">335dp</dimen>
 
     <!-- Widget -->
 
