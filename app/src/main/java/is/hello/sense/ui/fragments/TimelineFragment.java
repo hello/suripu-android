@@ -28,7 +28,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.PreSleepInsight;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
@@ -37,7 +36,6 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
-import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -168,9 +166,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.smartAlarmButton = (ImageButton) view.findViewById(R.id.fragment_timeline_smart_alarm);
         Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
-            Intent intent = new Intent(getActivity(), SmartAlarmDetailActivity.class);
-            intent.putExtras(SmartAlarmDetailActivity.getArguments(new Alarm(), SmartAlarmDetailActivity.INDEX_NEW));
-            startActivity(intent);
+            HomeActivity homeActivity = (HomeActivity) getActivity();
+            homeActivity.showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, true);
         });
 
         listView.setAdapter(segmentAdapter);
