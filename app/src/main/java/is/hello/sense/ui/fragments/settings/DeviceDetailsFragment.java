@@ -19,7 +19,6 @@ import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.ui.widget.util.Views;
 
 public abstract class DeviceDetailsFragment extends HardwareFragment {
     public static final int RESULT_REPLACED_DEVICE = 0x66;
@@ -71,7 +70,7 @@ public abstract class DeviceDetailsFragment extends HardwareFragment {
         this.actionsContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_actions);
 
         TextView footer = (TextView) view.findViewById(R.id.footer_help);
-        Views.makeTextViewLinksClickable(footer);
+        Styles.initializeSupportFooter(getActivity(), footer);
 
         return view;
     }
