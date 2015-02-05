@@ -21,7 +21,6 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
@@ -120,8 +119,8 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
 
             startLoading();
             bindAndSubscribe(smartAlarmPresenter.deleteSmartAlarm(position),
-                             ignored -> activityIndicator.setVisibility(View.GONE),
-                             this::presentError);
+                    ignored -> activityIndicator.setVisibility(View.GONE),
+                    this::presentError);
         }
     }
 
@@ -223,14 +222,14 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
 
         activityIndicator.setVisibility(View.VISIBLE);
         bindAndSubscribe(smartAlarmPresenter.saveSmartAlarm(position, smartAlarm),
-                         ignored -> activityIndicator.setVisibility(View.GONE),
-                         e -> {
-                             // Revert on error
-                             smartAlarm.setEnabled(!enabled);
-                             adapter.notifyDataSetChanged();
+                ignored -> activityIndicator.setVisibility(View.GONE),
+                e -> {
+                    // Revert on error
+                    smartAlarm.setEnabled(!enabled);
+                    adapter.notifyDataSetChanged();
 
-                             presentError(e);
-                         });
+                    presentError(e);
+                });
     }
 
     public void newAlarm(@NonNull View sender) {
