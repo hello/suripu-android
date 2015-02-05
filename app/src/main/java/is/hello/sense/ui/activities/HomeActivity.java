@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,7 +14,9 @@ import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +43,9 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
+import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.InteractiveAnimator;
+import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
@@ -75,6 +81,7 @@ public class HomeActivity
     private long lastUpdated = Long.MAX_VALUE;
 
     private RelativeLayout rootContainer;
+    private FrameLayout undersideContainer;
     private SlidingLayersView slidingLayersView;
     private FragmentPageView<TimelineFragment> viewPager;
 
@@ -138,9 +145,15 @@ public class HomeActivity
         }
 
 
+        this.undersideContainer = (FrameLayout) findViewById(R.id.activity_home_underside_container);
+
         this.slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
         slidingLayersView.setOnInteractionListener(this);
+        slidingLayersView.setInteractiveAnimator(new UndersideAnimator());
         slidingLayersView.setGestureInterceptingChild(viewPager);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            slidingLayersView.setBackgroundColor(getResources().getColor(R.color.status_bar));
+        }
 
 
         //noinspection PointlessBooleanExpression,ConstantConditions
@@ -176,6 +189,11 @@ public class HomeActivity
             bindAndSubscribe(devicesPresenter.devices.take(1),
                              this::bindDevices,
                              this::devicesUnavailable);
+        }
+
+        UndersideFragment underside = getUndersideFragment();
+        if (underside != null) {
+            underside.notifyPageSelected(false);
         }
 
         checkInForUpdates();
@@ -481,6 +499,10 @@ public class HomeActivity
         return slidingLayersView;
     }
 
+    private UndersideFragment getUndersideFragment() {
+        return (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
+    }
+
     @Override
     public void onUserWillPullDownTopView() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_OPENED, null);
@@ -501,7 +523,7 @@ public class HomeActivity
     public void onUserDidPushUpTopView() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_CLOSED, null);
 
-        Fragment underside = getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
+        UndersideFragment underside = getUndersideFragment();
         if (underside != null) {
             getFragmentManager()
                     .beginTransaction()
@@ -514,8 +536,8 @@ public class HomeActivity
 
     public void showUndersideWithItem(int item, boolean animate) {
         if (slidingLayersView.isOpen()) {
-            UndersideFragment underside = (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
-            underside.setCurrentItem(item, animate);
+            UndersideFragment underside = getUndersideFragment();
+            underside.setCurrentItem(item, UndersideFragment.OPTION_ANIMATE | UndersideFragment.OPTION_NOTIFY);
         } else {
             UndersideFragment.saveCurrentItem(this, item);
             if (animate) {
@@ -523,6 +545,67 @@ public class HomeActivity
             } else {
                 slidingLayersView.openWithoutAnimation();
             }
+        }
+    }
+
+    private class UndersideAnimator implements InteractiveAnimator {
+        private final float MIN_SCALE = 0.95f;
+        private final float MAX_SCALE = 1.0f;
+
+        private final float MIN_ALPHA = 0.7f;
+        private final float MAX_ALPHA = 1.0f;
+
+        @Override
+        public void prepare() {
+            if (slidingLayersView.isOpen()) {
+                undersideContainer.setScaleX(MAX_SCALE);
+                undersideContainer.setScaleY(MAX_SCALE);
+                undersideContainer.setAlpha(MAX_ALPHA);
+            } else {
+                undersideContainer.setScaleX(MIN_SCALE);
+                undersideContainer.setScaleY(MIN_SCALE);
+                undersideContainer.setAlpha(MIN_ALPHA);
+            }
+        }
+
+        @Override
+        public void frame(float frameValue) {
+            float scale = Animations.interpolateFrame(frameValue, MIN_SCALE, MAX_SCALE);
+            undersideContainer.setScaleX(scale);
+            undersideContainer.setScaleY(scale);
+
+            float alpha = Animations.interpolateFrame(frameValue, MIN_ALPHA, MAX_ALPHA);
+            undersideContainer.setAlpha(alpha);
+        }
+
+        @Override
+        public void finish(float finalFrameValue, long duration, @NonNull Interpolator interpolator) {
+            float finalScale = Animations.interpolateFrame(finalFrameValue, MIN_SCALE, MAX_SCALE);
+            float finalAlpha = Animations.interpolateFrame(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
+            animate(undersideContainer)
+                    .setDuration(duration)
+                    .setInterpolator(interpolator)
+                    .scale(finalScale)
+                    .alpha(finalAlpha)
+                    .addOnAnimationCompleted(finished -> {
+                        if (!finished)
+                            return;
+
+                        if (slidingLayersView.isOpen()) {
+                            UndersideFragment underside = getUndersideFragment();
+                            underside.notifyPageSelected(false);
+                        }
+                    })
+                    .start();
+        }
+
+        @Override
+        public void cancel() {
+            PropertyAnimatorProxy.stop();
+
+            undersideContainer.setScaleX(MAX_SCALE);
+            undersideContainer.setScaleY(MAX_SCALE);
+            undersideContainer.setAlpha(MAX_ALPHA);
         }
     }
 

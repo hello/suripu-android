@@ -9,17 +9,19 @@
         android:id="@+id/activity_home_sliding_layers"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background">
+        android:background="@color/black">
 
         <FrameLayout
             android:id="@+id/activity_home_underside_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="@color/background" />
 
         <FrameLayout
             android:id="@+id/activity_home_content_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/background">
 
             <is.hello.sense.ui.widget.FragmentPageView
                 android:id="@+id/activity_home_view_pager"

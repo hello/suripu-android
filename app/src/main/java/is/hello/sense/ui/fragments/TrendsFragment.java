@@ -35,7 +35,6 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        trendsPresenter.update();
         addPresenter(trendsPresenter);
 
         if (savedInstanceState == null) {
@@ -75,6 +74,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
 
     @Override
     public void onSwipeInteractionDidFinish() {
+        trendsPresenter.update();
         WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_trends);
     }
 

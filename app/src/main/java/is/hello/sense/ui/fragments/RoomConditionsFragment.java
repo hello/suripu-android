@@ -26,7 +26,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
@@ -89,14 +88,8 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        presenter.update();
-    }
-
-    @Override
     public void onSwipeInteractionDidFinish() {
+        presenter.update();
         WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_current_conditions);
     }
 

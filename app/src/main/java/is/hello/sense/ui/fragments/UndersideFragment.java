@@ -43,6 +43,10 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
     private static final int DEFAULT_START_ITEM = ITEM_ROOM_CONDITIONS;
 
+    public static final int OPTION_NONE = 0;
+    public static final int OPTION_ANIMATE = (1 << 1);
+    public static final int OPTION_NOTIFY = (1 << 2);
+
     private SharedPreferences preferences;
 
     private SelectorLinearLayout tabs;
@@ -111,9 +115,9 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         long itemLastUpdated = preferences.getLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, 0);
         if ((System.currentTimeMillis() - itemLastUpdated) <= Constants.STALE_INTERVAL_MS) {
             int currentItem = preferences.getInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 0);
-            setCurrentItem(currentItem, false);
+            setCurrentItem(currentItem, OPTION_NONE);
         } else {
-            setCurrentItem(DEFAULT_START_ITEM, false);
+            setCurrentItem(DEFAULT_START_ITEM, OPTION_NONE);
         }
 
         pager.setOnPageChangeListener(this);
@@ -155,12 +159,12 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     }
 
     public void jumpToStart() {
-        setCurrentItem(0, true);
+        setCurrentItem(0, OPTION_NOTIFY | OPTION_ANIMATE);
     }
 
 
-    public void notifyPageSelected() {
-        pager.postDelayed(() -> {
+    public void notifyPageSelected(boolean withDelay) {
+        Runnable notify = () -> {
             // This depends on semi-undefined behavior. It may break in a future update
             // of the Android support library, but won't break if the host OS changes.
             long itemId = adapter.getItemId(pager.getCurrentItem());
@@ -169,12 +173,22 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
             if (fragment != null) {
                 fragment.pageSelected();
             }
-        }, 500);
+        };
+
+        if (withDelay) {
+            pager.postDelayed(notify, 500);
+        } else {
+            pager.post(notify);
+        }
     }
 
-    public void setCurrentItem(int currentItem, boolean animate) {
+    public void setCurrentItem(int currentItem, int options) {
+        boolean animate = ((options & OPTION_ANIMATE) == OPTION_ANIMATE);
         pager.setCurrentItem(currentItem, animate);
-        notifyPageSelected();
+
+        if ((options & OPTION_NOTIFY) == OPTION_NOTIFY) {
+            notifyPageSelected(true);
+        }
     }
 
     public void saveCurrentItem(int currentItem) {
@@ -195,7 +209,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     public void onPageSelected(int position) {
         tabs.setSelectedIndex(position);
         saveCurrentItem(position);
-        notifyPageSelected();
+        notifyPageSelected(true);
     }
 
     @Override
@@ -205,7 +219,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        setCurrentItem(newSelectionIndex, true);
+        setCurrentItem(newSelectionIndex, OPTION_NOTIFY | OPTION_ANIMATE);
     }
 
 

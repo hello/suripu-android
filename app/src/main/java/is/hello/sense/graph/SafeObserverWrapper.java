@@ -32,6 +32,7 @@ public final class SafeObserverWrapper<T> extends Subscriber<T> {
         }
 
         target.onCompleted();
+        unsubscribe();
     }
 
     @Override
@@ -42,6 +43,7 @@ public final class SafeObserverWrapper<T> extends Subscriber<T> {
         }
 
         target.onError(e);
+        unsubscribe();
     }
 
     @Override
