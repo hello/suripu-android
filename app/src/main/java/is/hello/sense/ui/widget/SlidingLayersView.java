@@ -353,7 +353,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
                     float y = Views.getNormalizedY(event);
                     float deltaY = y - lastEventY;
-                    float newY = Math.min(totalMovementHeight, topViewY + deltaY);
+                    float newY = Math.max(0f, Math.min(totalMovementHeight, topViewY + deltaY));
 
                     if (interactiveAnimator != null) {
                         float amount = newY / totalMovementHeight;
