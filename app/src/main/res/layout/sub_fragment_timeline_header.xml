@@ -72,7 +72,6 @@
             android:text="@string/label_sleep_summary"
             android:textOn="@string/label_sleep_summary"
             android:textOff="@string/label_sleep_summary"
-            android:drawableStart="@drawable/timeline_mode_score"
             style="@style/AppTheme.Button.ModeSelector.Timeline"/>
 
         <View
@@ -87,7 +86,6 @@
             android:text="@string/label_before_sleep"
             android:textOn="@string/label_before_sleep"
             android:textOff="@string/label_before_sleep"
-            android:drawableStart="@drawable/timeline_mode_before_sleep"
             style="@style/AppTheme.Button.ModeSelector.Timeline"/>
 
     </is.hello.sense.ui.widget.SelectorLinearLayout>

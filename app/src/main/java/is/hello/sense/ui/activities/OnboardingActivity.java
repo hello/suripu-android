@@ -25,6 +25,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.DevicesInfo;
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -72,6 +73,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
 
     @Inject ApiService apiService;
+    @Inject ApiSessionManager apiSessionManager;
     @Inject HardwarePresenter hardwarePresenter;
     @Inject PreferencesPresenter preferences;
     private BluetoothAdapter bluetoothAdapter;
@@ -217,7 +219,8 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         ArrayAdapter<String> options = new ArrayAdapter<>(this, R.layout.item_simple_text, new String[] {
                 "Debug",
-                "Skip"
+                "Skip Onboarding",
+                "Restart Onboarding",
         });
         builder.setAdapter(options, (dialog, which) -> {
             switch (which) {
@@ -229,6 +232,16 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
                 case 1: {
                     showHomeActivity();
+                    break;
+                }
+
+                case 2: {
+                    apiSessionManager.logOut();
+                    getSharedPreferences(Constants.INTERNAL_PREFS, 0)
+                            .edit()
+                            .clear()
+                            .apply();
+                    recreate();
                     break;
                 }
 

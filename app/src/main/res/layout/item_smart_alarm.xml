@@ -3,7 +3,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/gap_outer"
     android:descendantFocusability="blocksDescendants">
 
     <ToggleButton
@@ -12,6 +11,7 @@
         android:layout_height="@dimen/switch_height"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/gap_outer"
         android:textOn=""
         android:textOff=""
         android:background="@drawable/switch_selector"/>
@@ -20,6 +20,8 @@
         android:id="@+id/item_smart_alarm_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_outer"
+        android:layout_marginStart="@dimen/gap_outer"
         android:layout_marginEnd="@dimen/gap_tiny"
         android:layout_alignParentStart="true"
         android:textAppearance="@style/AppTheme.Text.SmartAlarm.Time"
@@ -38,9 +40,16 @@
         android:id="@+id/item_smart_alarm_repeat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/gap_outer"
         android:layout_marginTop="@dimen/gap_xsmall"
+        android:layout_marginBottom="@dimen/gap_outer"
         android:layout_below="@id/item_smart_alarm_time"
         android:layout_toStartOf="@id/item_smart_alarm_enabled"
         android:textAppearance="@style/AppTheme.Text.SmartAlarm.Repeat"/>
+
+    <!-- ListView doesn't honor footerDividersEnabled after KitKat -->
+    <View
+        android:layout_below="@id/item_smart_alarm_repeat"
+        style="@style/Divider.Horizontal" />
 
 </RelativeLayout>

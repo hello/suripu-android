@@ -36,7 +36,6 @@ public class LineGraphDrawable extends GraphDrawable {
         Styles.applyGraphLineParameters(linePaint);
         //noinspection SuspiciousNameCombination
         linePaint.setStrokeWidth(topLineHeight);
-
         linePaint.setColor(resources.getColor(R.color.graph_fill_color));
         this.fillDrawable = Styles.createGraphFillDrawable(resources);
     }
