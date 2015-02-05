@@ -17,6 +17,7 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.VideoPlayerActivity;
 import is.hello.sense.ui.widget.PanImageView;
 import is.hello.sense.ui.widget.util.Views;
@@ -133,8 +134,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
 
     public void buySense(@NonNull View sender) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_SENSE, null);
-
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://hello.is")));
+        UserSupport.openUrl(getActivity(), UserSupport.ORDER_URL);
     }
 
     public void showRegister(@NonNull View sender) {

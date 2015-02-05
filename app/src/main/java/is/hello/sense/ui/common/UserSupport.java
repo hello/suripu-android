@@ -1,36 +1,61 @@
 package is.hello.sense.ui.common;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import is.hello.sense.R;
 import is.hello.sense.api.model.Enums;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 
 public class UserSupport {
-    private static final String SUPPORT_URL = "https://support.hello.is";
-    private static final String SUPPORT_EMAIL = "help@sayhello.com";
+    public static final String ORDER_URL = "https://order.hello.is";
+
+    public static final String SUPPORT_URL = "https://support.hello.is";
+    public static final String SUPPORT_EMAIL = "help@sayhello.com";
+
+    public static void openUrl(@NonNull Context from, @NonNull String url) {
+        try {
+            from.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        } catch (ActivityNotFoundException e) {
+            SenseAlertDialog alertDialog = new SenseAlertDialog(from);
+            alertDialog.setTitle(R.string.dialog_error_title);
+            alertDialog.setMessage(R.string.error_no_web_browser);
+            alertDialog.setPositiveButton(android.R.string.ok, null);
+            alertDialog.show();
+        }
+    }
 
     public static void showSupport(@NonNull Context from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_HELP, null);
-        from.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SUPPORT_URL)));
+        openUrl(from, SUPPORT_URL);
     }
 
     public static void showEmail(@NonNull Context from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
-        from.startActivity(new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", SUPPORT_EMAIL, null)));
+        try {
+            from.startActivity(new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", SUPPORT_EMAIL, null)));
+        } catch (ActivityNotFoundException e) {
+            SenseAlertDialog alertDialog = new SenseAlertDialog(from);
+            alertDialog.setTitle(R.string.dialog_error_title);
+            alertDialog.setMessage(R.string.error_no_email_client);
+            alertDialog.setPositiveButton(android.R.string.ok, null);
+            alertDialog.show();
+        }
     }
 
     public static void showForOnboardingStep(@NonNull Context from, @NonNull OnboardingStep onboardingStep) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP, onboardingStep.toProperty()));
-        from.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SUPPORT_URL)));
+        openUrl(from, SUPPORT_URL);
     }
 
     public static void showForDeviceIssue(@NonNull Context from, @NonNull DeviceIssue issue) {
         Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE, issue.toProperty()));
-        from.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SUPPORT_URL)));
+        openUrl(from, SUPPORT_URL);
     }
 
 
