@@ -22,6 +22,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
@@ -107,5 +108,6 @@ public class OnboardingSignInFragment extends InjectionFragment {
     }
 
     public void forgotPassword(@NonNull View sender) {
+        UserSupport.openUrl(getActivity(), UserSupport.FORGOT_PASSWORD_URL);
     }
 }
