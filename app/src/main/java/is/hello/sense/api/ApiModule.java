@@ -36,7 +36,6 @@ import retrofit.client.OkClient;
 @SuppressWarnings("UnusedDeclaration")
 public class ApiModule {
     private final Context applicationContext;
-    private final ApiEnvironment environment;
 
     public static ObjectMapper createConfiguredObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
@@ -47,10 +46,8 @@ public class ApiModule {
         return mapper;
     }
 
-    public ApiModule(@NonNull Context applicationContext,
-                     @NonNull ApiEnvironment environment) {
+    public ApiModule(@NonNull Context applicationContext) {
         this.applicationContext = applicationContext.getApplicationContext();
-        this.environment = environment;
     }
 
     @Provides @ApiAppContext Context providesApiApplicationContext() {
@@ -90,7 +87,7 @@ public class ApiModule {
         RestAdapter.Builder builder = new RestAdapter.Builder();
         builder.setClient(new OkClient(httpClient));
         builder.setConverter(new ApiJacksonConverter(mapper));
-        builder.setEndpoint(environment.baseUrl);
+        builder.setEndpoint(BuildConfig.BASE_URL);
         if (BuildConfig.DEBUG) {
             builder.setLogLevel(RestAdapter.LogLevel.FULL);
         } else {
@@ -121,9 +118,5 @@ public class ApiModule {
 
     @Singleton @Provides ApiService provideApiService(@NonNull RestAdapter adapter) {
         return adapter.create(ApiService.class);
-    }
-
-    @Provides ApiEnvironment provideEnvironment() {
-        return environment;
     }
 }

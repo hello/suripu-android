@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="build_default_api_env">STAGING</string>
-    <string name="build_gcm_id">88512303154</string>
-    <string name="build_gcm_enabled">true</string>
     <string name="build_hockey_id">805427569ce2035dcda0b99e4d984256</string>
     <string name="build_analytics_api_key">43c61cc553f0ccf2b3e1f73bc30bbfb4</string>
 </resources>

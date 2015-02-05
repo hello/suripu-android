@@ -8,23 +8,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import is.hello.sense.api.ApiEnvironment;
+import is.hello.sense.BuildConfig;
 import retrofit.mime.TypedOutput;
 
 public class OAuthCredentials implements TypedOutput {
-    public final ApiEnvironment environment;
     public final String username;
     public final String password;
     private final ByteArrayOutputStream outputStream;
 
-    public OAuthCredentials(@NonNull ApiEnvironment environment, @NonNull String username, @NonNull String password) {
+    public OAuthCredentials(@NonNull String username, @NonNull String password) {
         if (TextUtils.isEmpty(username))
             throw new IllegalArgumentException("username cannot be omitted");
 
         if (TextUtils.isEmpty(password))
             throw new IllegalArgumentException("password cannot be omitted");
 
-        this.environment = environment;
         this.username = username;
         this.password = password;
         this.outputStream = new ByteArrayOutputStream();
@@ -47,8 +45,8 @@ public class OAuthCredentials implements TypedOutput {
 
     private void generate() {
         addField("grant_type", "password");
-        addField("client_id", environment.clientId);
-        addField("client_secret", environment.clientSecret);
+        addField("client_id", BuildConfig.CLIENT_ID);
+        addField("client_secret", BuildConfig.CLIENT_SECRET);
         addField("username", username);
         addField("password", password);
     }

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="build_default_api_env">STAGING</string>
     <string name="build_analytics_api_key">d62a169fe4856dea26f3a322750613a8</string>
 </resources>

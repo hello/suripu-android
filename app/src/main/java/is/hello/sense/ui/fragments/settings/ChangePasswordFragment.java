@@ -13,7 +13,6 @@ import android.widget.EditText;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.ApiEnvironment;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -121,9 +120,8 @@ public class ChangePasswordFragment extends InjectionFragment {
     }
 
     public void recreateSession() {
-        ApiEnvironment apiEnvironment = ApiEnvironment.fromString(getString(R.string.build_default_api_env));
         String password = newPassword.getText().toString();
-        Observable<OAuthSession> authorize = apiService.authorize(new OAuthCredentials(apiEnvironment, email, password));
+        Observable<OAuthSession> authorize = apiService.authorize(new OAuthCredentials(email, password));
         bindAndSubscribe(authorize,
                          session -> {
                              apiSessionManager.setSession(session);

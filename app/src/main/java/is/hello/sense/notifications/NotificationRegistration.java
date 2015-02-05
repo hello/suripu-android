@@ -13,7 +13,6 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import javax.inject.Inject;
 
-import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.PushRegistration;
@@ -49,8 +48,7 @@ public final class NotificationRegistration {
     public static boolean shouldRegister(@NonNull Context context) {
         SharedPreferences preferences = getNotificationPreferences(context);
         int versionCode = getPackageVersionCode(context);
-        return (Boolean.parseBoolean(context.getString(R.string.build_gcm_enabled)) &&
-                preferences.getInt(Constants.NOTIFICATION_PREF_APP_VERSION, -1) != versionCode ||
+        return (preferences.getInt(Constants.NOTIFICATION_PREF_APP_VERSION, -1) != versionCode ||
                 preferences.getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, null) == null);
     }
 
@@ -107,12 +105,10 @@ public final class NotificationRegistration {
     private Observable<String> registerWithGCM() {
         return Observable.create((Observable.OnSubscribe<String>) subscriber -> {
             GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(activity);
-            String senderId = activity.getString(R.string.build_gcm_id);
-
             Logger.info(NotificationRegistration.class.getSimpleName(), "Registering for notifications.");
 
             try {
-                String registrationId = gcm.register(senderId);
+                String registrationId = gcm.register("88512303154", "222711285636");
                 saveRegistrationId(registrationId);
                 Logger.info(NotificationRegistration.class.getSimpleName(), "Registered with GCM: " + registrationId);
 

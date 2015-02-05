@@ -4,24 +4,20 @@ import junit.framework.TestCase;
 
 import java.io.ByteArrayOutputStream;
 
-import is.hello.sense.api.ApiEnvironment;
-
 import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static is.hello.sense.AssertExtensions.assertThrows;
 
 public class OAuthCredentialsTests extends TestCase {
-    private final ApiEnvironment API_ENVIRONMENT = ApiEnvironment.STAGING;
-
     @SuppressWarnings("ConstantConditions")
     public void testConstraints() {
-        assertThrows(() -> new OAuthCredentials(API_ENVIRONMENT, "", "password"));
-        assertThrows(() -> new OAuthCredentials(API_ENVIRONMENT, "username", ""));
-        assertThrows(() -> new OAuthCredentials(API_ENVIRONMENT, null, "password"));
-        assertThrows(() -> new OAuthCredentials(API_ENVIRONMENT, "username", null));
+        assertThrows(() -> new OAuthCredentials("", "password"));
+        assertThrows(() -> new OAuthCredentials("username", ""));
+        assertThrows(() -> new OAuthCredentials(null, "password"));
+        assertThrows(() -> new OAuthCredentials("username", null));
     }
 
     public void testOutput() {
-        OAuthCredentials credentials = new OAuthCredentials(API_ENVIRONMENT, "test123", "321tset");
+        OAuthCredentials credentials = new OAuthCredentials("test123", "321tset");
         assertNull(credentials.fileName());
         assertEquals("application/x-www-form-urlencoded", credentials.mimeType());
         assertEquals(101, credentials.length());
