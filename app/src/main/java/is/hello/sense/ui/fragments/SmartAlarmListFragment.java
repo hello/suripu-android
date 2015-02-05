@@ -166,7 +166,15 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
         adapter.clear();
 
         emptyTitle.setText(R.string.dialog_error_title);
-        emptyMessage.setText(e.getMessage());
+        if (ApiException.isNetworkError(e)) {
+            emptyMessage.setText(R.string.error_network_unavailable);
+        } else if (ApiException.statusEquals(e, 400)) {
+            emptyMessage.setText(R.string.error_smart_alarm_clock_drift);
+        } else if (ApiException.statusEquals(e, 412)) {
+            emptyMessage.setText(R.string.error_smart_alarm_requires_device);
+        } else {
+            emptyMessage.setText(e.getMessage());
+        }
         emptyRetry.setVisibility(View.VISIBLE);
 
         finishLoading();
