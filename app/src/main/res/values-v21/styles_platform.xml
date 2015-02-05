@@ -22,11 +22,13 @@
         <item name="android:colorPrimary">@color/light_accent</item>
         <item name="android:colorPrimaryDark">@color/light_accent_darkened</item>
         <item name="android:colorAccent">@color/light_accent</item>
+        <item name="android:statusBarColor">@color/status_bar</item>
     </style>
     <style name="Platform.Dialog.MinWidth" parent="android:Theme.Material.Light.Dialog.MinWidth">
         <item name="android:colorPrimary">@color/light_accent</item>
         <item name="android:colorPrimaryDark">@color/light_accent_darkened</item>
         <item name="android:colorAccent">@color/light_accent</item>
+        <item name="android:statusBarColor">@color/status_bar</item>
     </style>
     <style name="Platform.Spinner" parent="android:style/Widget.Holo.Light.Spinner">
         <item name="android:elevation">0dp</item>
