@@ -23,7 +23,7 @@ public class UserSupport {
     public static final String FORGOT_PASSWORD_URL = "https://hello.is/forgot";
 
     public static final String SUPPORT_URL = "https://support.hello.is";
-    public static final String SUPPORT_EMAIL = "help@sayhello.com";
+    public static final String SUPPORT_EMAIL = "support@hello.is";
 
     public static void openUrl(@NonNull Context from, @NonNull String url) {
         try {
