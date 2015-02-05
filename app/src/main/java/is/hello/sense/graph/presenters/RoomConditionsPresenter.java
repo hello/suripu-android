@@ -17,7 +17,7 @@ import is.hello.sense.units.UnitSystem;
 import rx.Observable;
 
 @Singleton public class RoomConditionsPresenter extends ValuePresenter<RoomConditionsPresenter.Result> {
-    public static final int HISTORY_HOURS = 3;
+    public static final int HISTORY_HOURS = 2;
 
     @Inject ApiService apiService;
     @Inject UnitFormatter unitFormatter;
