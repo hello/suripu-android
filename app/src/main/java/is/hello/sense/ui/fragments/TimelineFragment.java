@@ -44,7 +44,7 @@ import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
-import is.hello.sense.ui.widget.TimelineTabsDrawable;
+import is.hello.sense.ui.widget.TimelineHeaderDrawable;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -125,6 +125,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         this.headerView = (ViewGroup) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
         Animations.Properties.DEFAULT.apply(headerView.getLayoutTransition(), false);
 
+        TimelineHeaderDrawable tabsDrawable = new TimelineHeaderDrawable(getResources());
+        headerView.setBackground(tabsDrawable);
+
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
         dateText.setOnClickListener(ignored -> {
@@ -133,7 +136,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         });
 
         this.headerModeSelector = (SelectorLinearLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
-        headerModeSelector.setBackground(new TimelineTabsDrawable(getResources()));
+        headerModeSelector.setSelectionAwareDrawable(tabsDrawable);
         headerModeSelector.setOnSelectionChangedListener(this);
         headerModeSelector.setSelectedIndex(0);
 
@@ -148,7 +151,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         this.timelineEventsHeader = new View(getActivity());
         timelineEventsHeader.setBackgroundResource(R.drawable.background_timeline_top);
         timelineEventsHeader.setVisibility(View.INVISIBLE);
-        timelineEventsHeader.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.gap_outer));
+        timelineEventsHeader.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.timeline_header_gradient_height));
         ListViews.addHeaderView(listView, timelineEventsHeader, null, false);
 
 

@@ -47,11 +47,15 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
         super.setBackground(background);
 
         if (background instanceof SelectionAwareDrawable) {
-            this.selectionAwareBackground = (SelectionAwareDrawable) background;
-            synchronizeButtonStates();
+            setSelectionAwareDrawable((SelectionAwareDrawable) background);
         } else {
             this.selectionAwareBackground = null;
         }
+    }
+
+    public void setSelectionAwareDrawable(@Nullable SelectionAwareDrawable drawable) {
+        this.selectionAwareBackground = drawable;
+        synchronizeButtonStates();
     }
 
     @Override

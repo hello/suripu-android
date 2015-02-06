@@ -7,14 +7,16 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
 
-public class TimelineTabsDrawable extends SelectorLinearLayout.SelectionAwareDrawable {
+public class TimelineHeaderDrawable extends SelectorLinearLayout.SelectionAwareDrawable {
     //region Drawing Constants
 
-    private final int topInset;
+    private final int barHeight;
+    private final int gradientHeight;
     private final int triangleHeight;
     private final int triangleWidth;
     private final int stroke;
@@ -30,14 +32,17 @@ public class TimelineTabsDrawable extends SelectorLinearLayout.SelectionAwareDra
     private final Path strokePath = new Path();
     private final Paint strokePaint = new Paint();
 
+    private final GradientDrawable topGradient;
+
     //endregion
 
 
-    public TimelineTabsDrawable(@NonNull Resources resources) {
-        this.topInset = resources.getDimensionPixelSize(R.dimen.timeline_tabs_top_inset);
-        this.triangleHeight = resources.getDimensionPixelSize(R.dimen.timeline_tabs_triangle_height);
-        this.triangleWidth = resources.getDimensionPixelSize(R.dimen.timeline_tabs_triangle_width);
-        this.stroke = resources.getDimensionPixelSize(R.dimen.timeline_tabs_stroke_width);
+    public TimelineHeaderDrawable(@NonNull Resources resources) {
+        this.barHeight = resources.getDimensionPixelSize(R.dimen.timeline_header_tab_height);
+        this.gradientHeight = resources.getDimensionPixelSize(R.dimen.timeline_header_gradient_height);
+        this.triangleHeight = resources.getDimensionPixelSize(R.dimen.timeline_header_triangle_height);
+        this.triangleWidth = resources.getDimensionPixelSize(R.dimen.timeline_header_triangle_width);
+        this.stroke = resources.getDimensionPixelSize(R.dimen.timeline_header_stroke_width);
 
         fillPaint.setAntiAlias(true);
         fillPaint.setColor(Color.WHITE);
@@ -45,7 +50,12 @@ public class TimelineTabsDrawable extends SelectorLinearLayout.SelectionAwareDra
         strokePaint.setAntiAlias(true);
         strokePaint.setStrokeWidth(stroke);
         strokePaint.setStyle(Paint.Style.STROKE);
-        strokePaint.setColor(resources.getColor(R.color.border));
+        strokePaint.setColor(resources.getColor(R.color.timeline_tabs_border));
+
+        this.topGradient = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
+            resources.getColor(R.color.timeline_tabs_gradient_start),
+            resources.getColor(R.color.timeline_tabs_gradient_end),
+        });
     }
 
 
@@ -55,7 +65,7 @@ public class TimelineTabsDrawable extends SelectorLinearLayout.SelectionAwareDra
         int height = canvas.getHeight();
         int minX = 0,
             maxX = minX + width;
-        int minY = topInset,
+        int minY = height - barHeight,
             maxY = minY + height;
 
         fillPath.reset();
@@ -80,6 +90,9 @@ public class TimelineTabsDrawable extends SelectorLinearLayout.SelectionAwareDra
         fillPath.lineTo(maxX, maxY);
         fillPath.lineTo(minX, maxY);
         fillPath.lineTo(minX, minY);
+
+        topGradient.setBounds(minX, minY - gradientHeight, maxX, minY + triangleHeight);
+        topGradient.draw(canvas);
 
         canvas.drawPath(fillPath, fillPaint);
         canvas.drawPath(strokePath, strokePaint);
