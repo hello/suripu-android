@@ -282,7 +282,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
             if (alarm.getDaysOfWeek().isEmpty()) {
-                alarm.fireOnceTomorrow();
+                alarm.fireOnce();
             }
 
             Observable<VoidResponse> saveOperation;

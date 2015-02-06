@@ -152,11 +152,18 @@ public class Alarm extends ApiResponse {
     }
 
     @JsonIgnore
-    public void fireOnceTomorrow() {
-        DateTime tomorrow = DateTime.now().withTimeAtStartOfDay().plusDays(1);
-        this.year = tomorrow.getYear();
-        this.month = tomorrow.getMonthOfYear();
-        this.dayOfMonth = tomorrow.getDayOfMonth();
+    public void fireOnce() {
+        DateTime today = DateTime.now(DateTimeZone.getDefault());
+        if (getTime().isBefore(today.toLocalTime())) {
+            DateTime tomorrow = today.plusDays(1);
+            this.year = tomorrow.getYear();
+            this.month = tomorrow.getMonthOfYear();
+            this.dayOfMonth = tomorrow.getDayOfMonth();
+        } else {
+            this.year = today.getYear();
+            this.month = today.getMonthOfYear();
+            this.dayOfMonth = today.getDayOfMonth();
+        }
 
         setRepeated(false);
         getDaysOfWeek().clear();
@@ -229,7 +236,16 @@ public class Alarm extends ApiResponse {
 
     public @NonNull String getDaysOfWeekSummary(@NonNull Context context) {
         if (Lists.isEmpty(daysOfWeek)) {
-            return context.getString(R.string.alarm_non_repeating);
+            if (isSmart()) {
+                return context.getString(R.string.alarm_never);
+            } else {
+                DateTime today = DateTime.now(DateTimeZone.getDefault());
+                if (year == today.getYear() && month == today.getMonthOfYear() && dayOfMonth == today.getDayOfMonth()) {
+                    return context.getString(R.string.alarm_today);
+                } else {
+                    return context.getString(R.string.alarm_tomorrow);
+                }
+            }
         }
 
         List<Integer> orderedDays = Lists.sorted(daysOfWeek, (leftDay, rightDay) -> {

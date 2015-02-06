@@ -176,7 +176,9 @@ so you can sleep better.</string>
     <string name="alarm_day_separator">", "</string>
     <string name="smart_alarm_days_repeat_prefix">"Smart Alarm  ―  "</string>
     <string name="alarm_days_repeat_prefix">"Alarm  ―  "</string>
-    <string name="alarm_non_repeating">Tomorrow</string>
+    <string name="alarm_tomorrow">Tomorrow</string>
+    <string name="alarm_never">Never</string>
+    <string name="alarm_today">Today</string>
     <string name="never">Never</string>
     <string name="label_time_zone">Time Zone</string>
     <string name="title_sound">Sound</string>
