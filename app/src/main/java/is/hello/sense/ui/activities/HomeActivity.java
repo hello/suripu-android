@@ -328,12 +328,7 @@ public class HomeActivity
     @Override
     public void onBackPressed() {
         if(slidingLayersView.isOpen()) {
-            UndersideFragment undersideFragment = (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
-            if (undersideFragment != null && !undersideFragment.isAtStart()) {
-                undersideFragment.jumpToStart();
-            } else {
-                slidingLayersView.close();
-            }
+            slidingLayersView.close();
         } else {
             super.onBackPressed();
         }
