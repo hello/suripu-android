@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget.graphing.drawables;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -150,7 +151,8 @@ public class LineGraphDrawable extends GraphDrawable {
 
         private final float edgeInset;
 
-        private final Paint paint = new Paint();
+        private final Paint markerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
         private final RectF markerRect = new RectF();
         private final Rect textBounds = new Rect();
         private final Paint.FontMetrics fontMetrics = new Paint.FontMetrics();
@@ -160,10 +162,10 @@ public class LineGraphDrawable extends GraphDrawable {
 
             this.edgeInset = resources.getDimensionPixelSize(R.dimen.gap_tiny);
 
-            paint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_graph_footer));
-            paint.setAntiAlias(true);
-            paint.setSubpixelText(true);
-            paint.getFontMetrics(fontMetrics);
+            int shadowRadius = resources.getDimensionPixelSize(R.dimen.series_graph_shadow_radius);
+            textPaint.setShadowLayer(shadowRadius, 0f, 0f, Color.WHITE);
+            textPaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_graph_footer));
+            textPaint.getFontMetrics(fontMetrics);
         }
 
         private void draw(@NonNull Canvas canvas, int minY, int width, int height) {
@@ -174,21 +176,20 @@ public class LineGraphDrawable extends GraphDrawable {
                 float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, marker.section, marker.segment);
                 float segmentY = minY + adapterCache.calculateSegmentY(height, marker.section, marker.segment);
 
-                paint.setColor(marker.color);
+                markerPaint.setColor(marker.color);
 
                 markerRect.set(segmentX - pointSizeHalf, segmentY - pointSizeHalf,
-                               segmentX + pointSizeHalf, segmentY + pointSizeHalf);
-                canvas.drawOval(markerRect, paint);
-                canvas.drawRect(segmentX, minY, segmentX + 1, height, paint);
+                        segmentX + pointSizeHalf, segmentY + pointSizeHalf);
+                canvas.drawOval(markerRect, markerPaint);
 
                 if (!TextUtils.isEmpty(marker.value)) {
-                    paint.getTextBounds(marker.value, 0, marker.value.length(), textBounds);
+                    textPaint.getTextBounds(marker.value, 0, marker.value.length(), textBounds);
 
                     float textX = segmentX - textBounds.centerX();
                     float textY = segmentY - textBounds.height();
                     if (textX < 0f) {
                         textX = edgeInset + pointSizeHalf;
-                        textY = segmentY - textBounds.centerY();
+                        textY = segmentY + textBounds.centerY();
                     } else if (textX > width) {
                         textX = width - edgeInset - textBounds.width();
                     }
@@ -198,7 +199,8 @@ public class LineGraphDrawable extends GraphDrawable {
                         textY = segmentY + textBounds.height() + pointSizeHalf + fontSpacing;
                     }
 
-                    canvas.drawText(marker.value, textX, textY, paint);
+                    textPaint.setColor(marker.color);
+                    canvas.drawText(marker.value, textX, textY, textPaint);
                 }
             }
         }
