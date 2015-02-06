@@ -60,7 +60,8 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        newAccount.setHeight(UnitOperations.inchesToCentimeters(70));
+        newAccount.setHeight(UnitOperations.inchesToCentimeters(65));
+        newAccount.setWeight(UnitOperations.poundsToGrams(120));
         newAccount.setTimeZoneOffset(DateTimeZone.getDefault().getOffset(DateTimeUtils.currentTimeMillis()));
 
         setRetainInstance(true);
