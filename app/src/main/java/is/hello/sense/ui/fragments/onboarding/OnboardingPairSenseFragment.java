@@ -159,7 +159,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     public void next(@NonNull View sender) {
-        showBlockingActivity(R.string.title_pairing);
+        showBlockingActivity(R.string.title_scanning_for_sense);
 
         Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
         bindAndSubscribe(device, this::tryToPairWith, this::pairingFailed);
