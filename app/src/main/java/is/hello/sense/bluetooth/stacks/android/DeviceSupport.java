@@ -18,7 +18,7 @@ final class DeviceSupport {
             case "Nexus 9" /* Nexus 9 */:
             case "HTC One_M8" /* HTC One M8 */:
             case "D6708" /* Sony Z3V */: {
-
+                return BluetoothStack.SupportLevel.SUPPORTED;
             }
 
             case "Nexus 4" /* Nexus 4 */: {
