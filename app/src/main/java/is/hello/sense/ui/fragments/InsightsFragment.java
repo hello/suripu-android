@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -41,6 +40,7 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
 
     private ViewGroup questionContainer;
     private TextView questionAnswerTitle;
+    private ListView listView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,14 +64,12 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
-        Styles.addCardSpacingHeaderAndFooter(listView);
+        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER);
 
 
         this.questionContainer = (ViewGroup) inflater.inflate(R.layout.sub_fragment_new_question, listView, false);
-        questionContainer.setVisibility(View.GONE);
-
         this.questionAnswerTitle = (TextView) questionContainer.findViewById(R.id.sub_fragment_new_question_title);
 
         Button skipQuestion = (Button) questionContainer.findViewById(R.id.sub_fragment_new_question_skip);
@@ -79,10 +77,6 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
 
         Button answerQuestion = (Button) questionContainer.findViewById(R.id.sub_fragment_new_question_answer);
         Views.setSafeOnClickListener(answerQuestion, ignored -> answerQuestion());
-
-        FrameLayout layoutFix = new FrameLayout(getActivity());
-        layoutFix.addView(questionContainer);
-        ListViews.addHeaderView(listView, layoutFix, null, false);
 
 
         this.insightsAdapter = new InsightsAdapter(getActivity(), markdown, () -> swipeRefreshLayout.setRefreshing(false));
@@ -146,11 +140,13 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
 
     public void showNewQuestion(@NonNull Question question) {
         questionAnswerTitle.setText(question.getText());
-        questionContainer.setVisibility(View.VISIBLE);
+        if (questionContainer.getParent() == null) {
+            ListViews.addHeaderView(listView, questionContainer, null, false);
+        }
     }
 
     public void hideNewQuestion() {
-        questionContainer.setVisibility(View.GONE);
+        listView.removeHeaderView(questionContainer);
     }
 
     public boolean isAnswerQuestionOpen() {

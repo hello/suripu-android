@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
@@ -24,6 +25,9 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.common.UserSupport;
@@ -31,6 +35,21 @@ import is.hello.sense.util.SuperscriptSpanAdjuster;
 
 public final class Styles {
     public static final int TIMELINE_HOURS_ON_SCREEN = 10;
+
+    public static final int CARD_SPACING_HEADER = (1 << 1);
+    public static final int CARD_SPACING_FOOTER = (1 << 2);
+    public static final int CARD_SPACING_HEADER_AND_FOOTER = CARD_SPACING_HEADER | CARD_SPACING_FOOTER;
+
+    @IntDef(
+            value = {
+                    CARD_SPACING_HEADER,
+                    CARD_SPACING_FOOTER,
+                    CARD_SPACING_HEADER_AND_FOOTER
+            },
+            flag = true
+    )
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CardSpacing {}
 
 
     public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth, boolean dimmed) {
@@ -197,18 +216,22 @@ public final class Styles {
         paint.setStrokeCap(Paint.Cap.ROUND);
     }
 
-    public static void addCardSpacingHeaderAndFooter(@NonNull ListView listView) {
+    public static void addCardSpacing(@NonNull ListView listView, @CardSpacing int spacing) {
         Context context = listView.getContext();
         Resources resources = listView.getResources();
 
         int spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_small);
-        View topSpacing = new View(context);
-        topSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
-        ListViews.addHeaderView(listView, topSpacing, null, false);
+        if ((spacing & CARD_SPACING_HEADER) == CARD_SPACING_HEADER) {
+            View topSpacing = new View(context);
+            topSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
+            ListViews.addHeaderView(listView, topSpacing, null, false);
+        }
 
-        View bottomSpacing = new View(context);
-        bottomSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
-        ListViews.addFooterView(listView, bottomSpacing, null, false);
+        if ((spacing & CARD_SPACING_FOOTER) == CARD_SPACING_FOOTER) {
+            View bottomSpacing = new View(context);
+            bottomSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
+            ListViews.addFooterView(listView, bottomSpacing, null, false);
+        }
     }
 
     public static void initializeSupportFooter(@NonNull Activity activity, @NonNull TextView footer) {
