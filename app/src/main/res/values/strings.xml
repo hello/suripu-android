@@ -422,4 +422,5 @@ so you can sleep better.</string>
         %4$s = device model
       -->
     <string name="support_email_body">\n---\n\n%1$s %2$s on Android %3$s (%4$s)</string>
+    <string name="error_alarm_too_soon">Too Soon! The alarm you set is only a couple minutes away. If you want to test the Alarm, please set an alarm for a bit later.</string>
 </resources>
