@@ -46,7 +46,7 @@ public final class TimelineSegmentView extends View {
     private final Paint stripePaint = new Paint();
 
     private final Rect timeTextRect = new Rect();
-    private final Paint timePaint = new Paint();
+    private final Paint timePaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
     private final Paint timeStrokePaint = new Paint();
     private final Path timeStrokePath = new Path();
 
@@ -78,11 +78,8 @@ public final class TimelineSegmentView extends View {
 
         Resources resources = getResources();
 
-        stripePaint.setAntiAlias(true);
         stripePaint.setColor(resources.getColor(R.color.timeline_segment_stripe));
 
-        timePaint.setAntiAlias(true);
-        timePaint.setSubpixelText(true);
         timePaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_timeline_time));
 
         float strokeGap = resources.getDimension(R.dimen.view_timeline_segment_stroke_gap);
@@ -210,6 +207,11 @@ public final class TimelineSegmentView extends View {
         Resources resources = getResources();
         int colorRes = Styles.getSleepDepthColorRes(sleepDepth, dimmed);
         fillPaint.setColor(resources.getColor(colorRes));
+        if (dimmed) {
+            stripePaint.setColor(resources.getColor(R.color.timeline_segment_stripe_dimmed));
+        } else {
+            stripePaint.setColor(resources.getColor(R.color.timeline_segment_stripe));
+        }
 
         invalidate();
     }
