@@ -10,7 +10,7 @@ public class MetricUnitSystemTests extends TestCase {
     }
 
     public void testFormatTemperature() throws Exception {
-        assertEquals("20º", unitSystem.formatTemperature(20).toString());
+        assertEquals("20°", unitSystem.formatTemperature(20).toString());
     }
 
     public void testFormatHeight() throws Exception {

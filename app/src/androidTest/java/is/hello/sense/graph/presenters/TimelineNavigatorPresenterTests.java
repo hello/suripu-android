@@ -9,6 +9,8 @@ import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.LambdaVar;
 import is.hello.sense.util.Sync;
 
+import static is.hello.sense.util.ModelHelper.manipulate;
+
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 public class TimelineNavigatorPresenterTests extends InjectionTestCase {
     private final DateTime startTime = DateTime.now();
@@ -23,7 +25,7 @@ public class TimelineNavigatorPresenterTests extends InjectionTestCase {
     }
 
     public void testGetDateTimeAt() throws Exception {
-        assertEquals(startTime.plusDays(-5), presenter.getDateTimeAt(5));
+        assertEquals(startTime.plusDays(-5).withTimeAtStartOfDay(), presenter.getDateTimeAt(5));
     }
 
     public void testLowMemoryResponse() throws Exception {
@@ -64,6 +66,19 @@ public class TimelineNavigatorPresenterTests extends InjectionTestCase {
 
         presenter.resume();
         assertFalse(called.get());
+    }
+
+    public void testCacheInjection() throws Exception {
+        Timeline timeline = manipulate(new Timeline())
+                .set("date", DateTime.now())
+                .set("message", "This is a test")
+                .unwrap();
+
+        presenter.cacheSingleTimeline(timeline.getDate(), timeline);
+
+        Timeline presenterTimeline = Sync.last(presenter.timelineForDate(timeline.getDate()));
+        assertNotNull(presenterTimeline);
+        assertSame(timeline, presenterTimeline);
     }
 
     public void testTimelineForDate() throws Exception {
