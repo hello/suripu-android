@@ -4,6 +4,10 @@ require 'json'
 require 'colorize'
 require 'optparse'
 
+def last_command_failed?
+  $?.to_i != 0
+end
+
 if ENV["HELLO_DEPLOY_HOCKEY_TOKEN"].nil?
   puts "! You must provide 'HELLO_DEPLOY_HOCKEY_TOKEN' in your ENV".red.bold
   puts "-> Generate an API token at https://rink.hockeyapp.net/manage/auth_tokens".green
@@ -13,8 +17,9 @@ end
 options = OpenStruct.new
 options.clean = false
 options.tests = false
+options.tag = nil
 OptionParser.new do |opts|
-  opts.banner = "Usage: #{File.basename $0} [options]".green
+  opts.banner = "Usage: #{File.basename $0} [options] flavors...".green
 
   opts.on("-t", "--[no-]tests", "Run test suite before uploading") do |t|
     options.tests = t
@@ -24,6 +29,10 @@ OptionParser.new do |opts|
     options.clean = k
   end
   
+  opts.on("-sTAG", "--save-tag=TAG", "Tag the current branch contents") do |t|
+    options.tag = t
+  end
+  
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
     exit
@@ -31,9 +40,13 @@ OptionParser.new do |opts|
 
 end.parse!
 
-def last_command_failed?
-  $?.to_i != 0
-end
+flavor_names = ARGV
+flavor_names << "beta" if flavor_names.empty?
+
+flavors_path = File::join(File::dirname($0), "res", "deploy_conf.json")
+flavors = JSON::parse(File::read(flavors_path))
+
+#region Cleaning
 
 if options.clean
   puts "-> Cleaning".blue
@@ -42,29 +55,96 @@ if options.clean
   puts "-- Clean Completed".green
 end
 
+#endregion
+
+
+#region Tests
+
 if options.test
-  puts "-> Building & Running Tests".blue
+  puts "-> Building and running tests".blue
   system "./gradlew connectedCheck"
   abort "-- Tests Failed".red if last_command_failed?
   puts "-- Tests Passed".green
 end
 
-puts "-> Assembling Beta Build".blue
-system "./gradlew assembleBeta"
-abort "-- Build Failed".red if last_command_failed?
-puts "-- Build Completed".green
+#endregion
 
-puts "-> Uploading to HockeyApp".blue
-raw_response = `curl -X POST \
-  -F "status=1" \
-  -F "notify=0" \
-  -F "ipa=@app/build/outputs/apk/app-beta.apk" \
-  -H "X-HockeyAppToken: 515446b7e7c640fe96f42bda64d55eb2" \
-  https://rink.hockeyapp.net/api/2/apps/805427569ce2035dcda0b99e4d984256/app_versions/upload`
-abort "-- Upload Failed".red if last_command_failed?
-puts "-- Upload Completed".green
 
-response = JSON::parse(raw_response)
-config_url = response["config_url"]
-puts "-> Opening <#{config_url}>".blue
-system "open '#{config_url}'"
+#region Building
+
+flavor_names.each do |flavor_name|
+  flavor = flavors[flavor_name]
+
+  if flavor.nil?
+    synonym = flavors["synonyms"][flavor_name]
+    flavor = flavors[synonym]
+    if flavor.nil?
+      puts "Unknown build flavor `#{flavor_name}'".red.bold
+      exit
+    else
+      flavor_name = synonym
+    end
+  end
+
+
+  #region Assembling
+
+  puts "-> Assembling `#{flavor_name}' build".blue
+
+  assemble_command = flavor["assemble_command"]
+  system "./gradlew #{assemble_command}"
+  abort "-- Build Failed".red if last_command_failed?
+  puts "-- Build Completed".green
+
+  #endregion
+
+
+  #region Uploading
+
+  puts "-> Uploading to HockeyApp".blue
+
+  apk_name = flavor["apk_name"]
+  app_id = flavor["hockey_app_id"]
+  hockey_token = ENV["HELLO_DEPLOY_HOCKEY_TOKEN"]
+  file_name = "app/build/outputs/apk/#{apk_name}.apk"
+
+  raw_response = `curl -X POST \
+    -F "status=1" \
+    -F "notify=0" \
+    -F "ipa=@#{file_name}" \
+    -H "X-HockeyAppToken: #{hockey_token}" \
+    https://rink.hockeyapp.net/api/2/apps/#{app_id}/app_versions/upload`
+  abort "-- Upload failed".red if last_command_failed?
+  puts "-- Upload completed".green
+
+  response = JSON::parse(raw_response)
+  config_url = response["config_url"]
+  puts "-> Opening <#{config_url}>".blue
+  system "open '#{config_url}'"
+
+  #endregion
+
+
+  #region Revealing
+
+  if flavor["reveal"]
+    puts "-> Revealing `#{file_name}'".blue
+    system "open --reveal '#{file_name}'"
+  end
+
+  #endregion
+end
+
+#endregion
+
+#region Tagging
+
+unless options.tag.nil?
+  puts "-> Creating git tag `#{options.tag}'".blue
+  system "git tag '#{options.tag}'"
+  system "git push origin --tags"
+  abort "-- Creating git tag failed".red if last_command_failed?
+  puts "-- Created git tag".green
+end
+
+#endregion
