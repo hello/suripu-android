@@ -2,7 +2,6 @@ package is.hello.sense.ui.widget.graphing.drawables;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -180,6 +179,7 @@ public class LineGraphDrawable extends GraphDrawable {
                 markerRect.set(segmentX - pointSizeHalf, segmentY - pointSizeHalf,
                                segmentX + pointSizeHalf, segmentY + pointSizeHalf);
                 canvas.drawOval(markerRect, paint);
+                canvas.drawRect(segmentX, minY, segmentX + 1, height, paint);
 
                 if (!TextUtils.isEmpty(marker.value)) {
                     paint.getTextBounds(marker.value, 0, marker.value.length(), textBounds);

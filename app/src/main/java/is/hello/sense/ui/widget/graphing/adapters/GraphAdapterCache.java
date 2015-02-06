@@ -49,11 +49,11 @@ public class GraphAdapterCache {
         return (magnitude - peakMagnitude) / (baseMagnitude - peakMagnitude);
     }
 
-    public float calculateSectionWidth(float hostWidth) {
+    public float calculateSectionWidth(int hostWidth) {
         return hostWidth / getNumberSections();
     }
 
-    public float calculateSegmentWidth(float hostWidth, int section) {
+    public float calculateSegmentWidth(int hostWidth, int section) {
         return calculateSectionWidth(hostWidth) / getSectionCount(section);
     }
 
@@ -67,12 +67,12 @@ public class GraphAdapterCache {
         return Math.round(hostHeight * percentage);
     }
 
-    public int findSectionAtX(float hostWidth, float x) {
+    public int findSectionAtX(int hostWidth, float x) {
         int limit = getNumberSections();
         return (int) Math.min(limit - 1, Math.floor(x / calculateSectionWidth(hostWidth)));
     }
 
-    public int findSegmentAtX(float hostWidth, int section, float x) {
+    public int findSegmentAtX(int hostWidth, int section, float x) {
         int limit = getSectionCount(section);
         float sectionMinX = calculateSectionWidth(hostWidth) * section;
         float segmentWidth = calculateSegmentWidth(hostWidth, section);
