@@ -50,6 +50,7 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
@@ -162,14 +163,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         });
 
         this.shareButton = (ImageButton) headerView.findViewById(R.id.fragment_timeline_header_share);
-        Views.setSafeOnClickListener(shareButton, ignored -> {
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
-
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, "http://hello.is");
-            startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
-        });
+        shareButton.setVisibility(View.INVISIBLE);
+        Views.setSafeOnClickListener(shareButton, this::share);
 
         this.smartAlarmButton = (ImageButton) view.findViewById(R.id.fragment_timeline_smart_alarm);
         Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
@@ -259,6 +254,27 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         headerModeSelector.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
     }
 
+    public void share(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
+        sender.setEnabled(false);
+        bindAndSubscribe(timelinePresenter.mainTimeline,
+                         timeline -> {
+                             sender.setEnabled(true);
+
+                             Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                             shareIntent.setType("text/plain");
+
+                             String score = Integer.toString(timeline.getScore());
+                             shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_contents_fmt, score));
+
+                             startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
+                         },
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
+                             sender.setEnabled(true);
+                         });
+    }
+
     //endregion
 
 
@@ -269,6 +285,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
             if (hasSegments) {
                 timelineEventsHeader.setVisibility(View.VISIBLE);
+                shareButton.setVisibility(View.VISIBLE);
 
                 HomeActivity activity = (HomeActivity) getActivity();
                 if (activity.getWillShowUnderside()) {
@@ -278,10 +295,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 }
             } else {
                 timelineEventsHeader.setVisibility(View.INVISIBLE);
+                shareButton.setVisibility(View.INVISIBLE);
             }
         } else {
             timelineScore.showSleepScore(-1);
             timelineEventsHeader.setVisibility(View.INVISIBLE);
+            shareButton.setVisibility(View.INVISIBLE);
         }
 
         beforeSleep.bindTimeline(timeline);
@@ -291,6 +310,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void timelineUnavailable(@Nullable Throwable e) {
         timelineScore.presentError(e);
         beforeSleep.presentError(e);
+        shareButton.setVisibility(View.INVISIBLE);
         dateText.setTag(null);
     }
 
@@ -315,7 +335,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onUserDidPushUpTopView() {
         menuButton.setImageResource(R.drawable.icon_menu_closed);
         dateText.setTextColor(getResources().getColor(R.color.text_dark));
-        shareButton.setVisibility(View.VISIBLE);
+        if (segmentAdapter.getCount() > 0) {
+            shareButton.setVisibility(View.VISIBLE);
+        }
     }
 
 
