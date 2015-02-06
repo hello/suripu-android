@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget.graphing.drawables;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -25,6 +26,7 @@ public class LineGraphDrawable extends GraphDrawable {
     private final float topLineHeight;
     private final Drawable fillDrawable;
 
+    private final float pointSizeHalf;
     private @Nullable MarkerState markers;
 
 
@@ -32,6 +34,7 @@ public class LineGraphDrawable extends GraphDrawable {
         this.resources = resources;
 
         this.topLineHeight = resources.getDimensionPixelSize(R.dimen.series_graph_line_size);
+        this.pointSizeHalf = resources.getDimensionPixelSize(R.dimen.graph_point_size) / 2f;
 
         Styles.applyGraphLineParameters(linePaint);
         //noinspection SuspiciousNameCombination
@@ -51,8 +54,8 @@ public class LineGraphDrawable extends GraphDrawable {
         int height = canvas.getHeight() - minY - bottomInset;
 
         if (markers != null) {
-            minY += halfOfTopLine;
-            height -= halfOfTopLine;
+            minY += pointSizeHalf;
+            height -= pointSizeHalf;
         }
 
         if (sectionCount > 0) {
@@ -146,7 +149,6 @@ public class LineGraphDrawable extends GraphDrawable {
     private final class MarkerState {
         private final Marker[] points;
 
-        private final float pointSizeHalf;
         private final float edgeInset;
 
         private final Paint paint = new Paint();
@@ -157,12 +159,12 @@ public class LineGraphDrawable extends GraphDrawable {
         private MarkerState(@NonNull Resources resources, @NonNull Marker[] points) {
             this.points = points;
 
-            this.pointSizeHalf = resources.getDimensionPixelSize(R.dimen.graph_point_size) / 2f;
             this.edgeInset = resources.getDimensionPixelSize(R.dimen.gap_tiny);
 
             paint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_graph_footer));
             paint.setAntiAlias(true);
             paint.setSubpixelText(true);
+            paint.getFontMetrics(fontMetrics);
         }
 
         private void draw(@NonNull Canvas canvas, int minY, int width, int height) {
@@ -175,8 +177,8 @@ public class LineGraphDrawable extends GraphDrawable {
 
                 paint.setColor(marker.color);
 
-                markerRect.set(segmentX - pointSizeHalf, minY + (segmentY - pointSizeHalf),
-                               segmentX + pointSizeHalf, minY + (segmentY + pointSizeHalf));
+                markerRect.set(segmentX - pointSizeHalf, segmentY - pointSizeHalf,
+                               segmentX + pointSizeHalf, segmentY + pointSizeHalf);
                 canvas.drawOval(markerRect, paint);
 
                 if (!TextUtils.isEmpty(marker.value)) {
@@ -192,7 +194,6 @@ public class LineGraphDrawable extends GraphDrawable {
                     }
 
                     if (textY < minY) {
-                        paint.getFontMetrics(fontMetrics);
                         float fontSpacing = fontMetrics.leading + fontMetrics.bottom + fontMetrics.descent;
                         textY = segmentY + textBounds.height() + pointSizeHalf + fontSpacing;
                     }
