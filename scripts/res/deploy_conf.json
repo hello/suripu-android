@@ -8,21 +8,18 @@
         "apk_name": "app-debug",
         "assemble_command": "assembleDebug",
         "hockey_app_id": "7403b3eb474522963df93184fae37404",
-        "reveal": false,
-		"tag_required": false
+        "reveal": false
     },
     "beta": {
         "apk_name": "app-beta",
         "assemble_command": "assembleBeta",
         "hockey_app_id": "805427569ce2035dcda0b99e4d984256",
-        "reveal": false,
-		"tag_required": false
+        "reveal": false
     },
     "store": {
         "apk_name": "app-store",
         "assemble_command": "assembleStore",
         "hockey_app_id": "8e00a608839500c49187c67bb20d5826",
-        "reveal": true,
-		"tag_required": true
+        "reveal": true
     }
 }
