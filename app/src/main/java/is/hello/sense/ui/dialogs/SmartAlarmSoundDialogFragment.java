@@ -62,8 +62,6 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
             adapter.setSelectedSoundId(selectedSound.id);
         }
 
-        //TODO: Remove this before shipping.
-        dialog.setMessage("Pre-production Senses will not play the specific ringtone you select.");
         dialog.setOnSelectionListener(this);
         dialog.setAdapter(adapter);
         dialog.setDoneButtonEnabled(selectedSound != null);
