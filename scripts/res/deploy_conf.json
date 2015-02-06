@@ -1,9 +1,4 @@
 {
-	"synonyms": {
-		"debug": "alpha",
-		"release": "store",
-		"rc": "store"
-	},
     "alpha": {
         "apk_name": "app-debug",
         "assemble_command": "assembleDebug",
@@ -21,5 +16,10 @@
         "assemble_command": "assembleStore",
         "hockey_app_id": "8e00a608839500c49187c67bb20d5826",
         "reveal": true
+    },
+    "synonyms": {
+        "debug": "alpha",
+        "rc": "store",
+        "release": "store"
     }
 }
