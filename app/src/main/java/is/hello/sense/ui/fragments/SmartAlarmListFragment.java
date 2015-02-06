@@ -223,7 +223,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
         Alarm smartAlarm = currentAlarms.get(position);
         smartAlarm.setEnabled(enabled);
         if (enabled && smartAlarm.getDaysOfWeek().isEmpty()) {
-            smartAlarm.fireOnceTomorrow();
+            smartAlarm.fireOnce();
         }
 
         Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_ON_OFF, null);

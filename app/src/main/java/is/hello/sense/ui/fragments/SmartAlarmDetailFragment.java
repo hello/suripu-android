@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 
 import javax.inject.Inject;
@@ -40,6 +41,8 @@ import rx.Observable;
 
 
 public class SmartAlarmDetailFragment extends InjectionFragment {
+    private static final int FUTURE_CUT_OFF = 5;
+
     private static final int TIME_REQUEST_CODE = 0x747;
     private static final int[] DAY_TAGS = {
             DateTimeConstants.SUNDAY,
@@ -261,13 +264,25 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         bindAndSubscribe(smartAlarmPresenter.deleteSmartAlarm(index), ignored -> finish(), this::presentError);
     }
 
+    public boolean isTooSoon(@NonNull Alarm alarm) {
+        LocalTime now = LocalTime.now(DateTimeZone.getDefault());
+        int minuteCutOff = now.getMinuteOfHour() + FUTURE_CUT_OFF;
+        LocalTime alarmTime = alarm.getTime();
+        return (alarmTime.getHourOfDay() == now.getHourOfDay() &&
+                alarmTime.getMinuteOfHour() > now.getMinuteOfHour() &&
+                alarmTime.getMinuteOfHour() <= minuteCutOff);
+    }
+
     public void saveAlarm() {
         if (alarm.getSound() == null) {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_no_smart_alarm_sound));
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(R.string.error_no_smart_alarm_sound);
+            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        } else if (isTooSoon(alarm)) {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(R.string.error_alarm_too_soon);
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
             if (alarm.getDaysOfWeek().isEmpty()) {
-                alarm.fireOnceTomorrow();
+                alarm.fireOnce();
             }
 
             Observable<VoidResponse> saveOperation;
