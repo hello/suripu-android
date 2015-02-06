@@ -4,6 +4,10 @@ require 'json'
 require 'colorize'
 require 'optparse'
 
+def last_command_failed?
+  $?.to_i != 0
+end
+
 if ENV["HELLO_DEPLOY_HOCKEY_TOKEN"].nil?
   puts "! You must provide 'HELLO_DEPLOY_HOCKEY_TOKEN' in your ENV".red.bold
   puts "-> Generate an API token at https://rink.hockeyapp.net/manage/auth_tokens".green
@@ -13,10 +17,9 @@ end
 options = OpenStruct.new
 options.clean = false
 options.tests = false
-options.flavor = "beta"
 options.tag = nil
 OptionParser.new do |opts|
-  opts.banner = "Usage: #{File.basename $0} [options]".green
+  opts.banner = "Usage: #{File.basename $0} [options] flavors...".green
 
   opts.on("-t", "--[no-]tests", "Run test suite before uploading") do |t|
     options.tests = t
@@ -24,10 +27,6 @@ OptionParser.new do |opts|
   
   opts.on("-k", "--[no-]clean", "Clean the project before building") do |k|
     options.clean = k
-  end
-  
-  opts.on("-fFLAVOR", "--flavor=FLAVOR", "The build flavor") do |f|
-    options.flavor = f
   end
   
   opts.on("-sTAG", "--save-tag=TAG", "Tag the current branch contents") do |t|
@@ -41,32 +40,13 @@ OptionParser.new do |opts|
 
 end.parse!
 
+flavor_names = ARGV
+flavor_names << "beta" if flavor_names.empty?
+
 flavors_path = File::join(File::dirname($0), "res", "deploy_conf.json")
 flavors = JSON::parse(File::read(flavors_path))
-flavor = flavors[options.flavor]
 
-if flavor.nil?
-  synonym = flavors["synonyms"][options.flavor]
-  flavor = flavors[synonym]
-  if flavor.nil?
-    puts "Unknown build flavor `#{options.flavor}'".red.bold
-    exit
-  else
-    options.flavor = synonym
-  end
-end
-
-if flavor["tag_required"] && options.tag.nil?
-  puts "Build flavor `#{options.flavor}' requires a tag to deploy".red.bold
-  exit
-end
-
-def last_command_failed?
-  $?.to_i != 0
-end
-
-
-##region Cleaning
+#region Cleaning
 
 if options.clean
   puts "-> Cleaning".blue
@@ -90,43 +70,72 @@ end
 #endregion
 
 
-#region Assembling
+#region Building
 
-puts "-> Assembling `#{options.flavor}' build".blue
+flavor_names.each do |flavor_name|
+  flavor = flavors[flavor_name]
 
-assemble_command = flavor["assemble_command"]
-system "./gradlew #{assemble_command}"
-abort "-- Build Failed".red if last_command_failed?
-puts "-- Build Completed".green
+  if flavor.nil?
+    synonym = flavors["synonyms"][flavor_name]
+    flavor = flavors[synonym]
+    if flavor.nil?
+      puts "Unknown build flavor `#{flavor_name}'".red.bold
+      exit
+    else
+      flavor_name = synonym
+    end
+  end
+
+
+  #region Assembling
+
+  puts "-> Assembling `#{flavor_name}' build".blue
+
+  assemble_command = flavor["assemble_command"]
+  system "./gradlew #{assemble_command}"
+  abort "-- Build Failed".red if last_command_failed?
+  puts "-- Build Completed".green
+
+  #endregion
+
+
+  #region Uploading
+
+  puts "-> Uploading to HockeyApp".blue
+
+  apk_name = flavor["apk_name"]
+  app_id = flavor["hockey_app_id"]
+  hockey_token = ENV["HELLO_DEPLOY_HOCKEY_TOKEN"]
+  file_name = "app/build/outputs/apk/#{apk_name}.apk"
+
+  raw_response = `curl -X POST \
+    -F "status=1" \
+    -F "notify=0" \
+    -F "ipa=@#{file_name}" \
+    -H "X-HockeyAppToken: #{hockey_token}" \
+    https://rink.hockeyapp.net/api/2/apps/#{app_id}/app_versions/upload`
+  abort "-- Upload failed".red if last_command_failed?
+  puts "-- Upload completed".green
+
+  response = JSON::parse(raw_response)
+  config_url = response["config_url"]
+  puts "-> Opening <#{config_url}>".blue
+  system "open '#{config_url}'"
+
+  #endregion
+
+
+  #region Revealing
+
+  if flavor["reveal"]
+    puts "-> Revealing `#{file_name}'".blue
+    system "open --reveal '#{file_name}'"
+  end
+
+  #endregion
+end
 
 #endregion
-
-
-#region Uploading
-
-puts "-> Uploading to HockeyApp".blue
-
-apk_name = flavor["apk_name"]
-app_id = flavor["hockey_app_id"]
-hockey_token = ENV["HELLO_DEPLOY_HOCKEY_TOKEN"]
-file_name = "app/build/outputs/apk/#{apk_name}.apk"
-
-raw_response = `curl -X POST \
-  -F "status=1" \
-  -F "notify=0" \
-  -F "ipa=@#{file_name}" \
-  -H "X-HockeyAppToken: #{hockey_token}" \
-  https://rink.hockeyapp.net/api/2/apps/#{app_id}/app_versions/upload`
-abort "-- Upload failed".red if last_command_failed?
-puts "-- Upload completed".green
-
-response = JSON::parse(raw_response)
-config_url = response["config_url"]
-puts "-> Opening <#{config_url}>".blue
-system "open '#{config_url}'"
-
-#endregion
-
 
 #region Tagging
 
@@ -136,16 +145,6 @@ unless options.tag.nil?
   system "git push origin --tags"
   abort "-- Creating git tag failed".red if last_command_failed?
   puts "-- Created git tag".green
-end
-
-#endregion
-
-
-#region Revealing
-
-if flavor["reveal"]
-  puts "-> Revealing `#{file_name}'".blue
-  system "open --reveal '#{file_name}'"
 end
 
 #endregion
