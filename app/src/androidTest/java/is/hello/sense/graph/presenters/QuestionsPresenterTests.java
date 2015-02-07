@@ -1,7 +1,6 @@
 package is.hello.sense.graph.presenters;
 
 import android.content.Intent;
-import android.test.FlakyTest;
 
 import javax.inject.Inject;
 
@@ -40,7 +39,7 @@ public class QuestionsPresenterTests extends InjectionTestCase {
     }
 
     public void testCurrentQuestion() throws Exception {
-        Sync.next(presenter.questions);
+        Sync.wrap(presenter.currentQuestion).await();
 
         Sync.wrap(presenter.currentQuestion)
             .assertNotNull();
@@ -51,6 +50,9 @@ public class QuestionsPresenterTests extends InjectionTestCase {
     }
 
     public void testLogOutSideEffects() throws Exception {
+        Sync.wrap(presenter.questions).await();
+        Sync.wrap(presenter.currentQuestion).await();
+        
         presenter.onUserLoggedOut(new Intent(ApiSessionManager.ACTION_LOGGED_OUT));
         Sync.wrap(presenter.currentQuestion)
             .assertNull();

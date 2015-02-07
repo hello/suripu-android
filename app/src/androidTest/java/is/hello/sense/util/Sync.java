@@ -109,6 +109,13 @@ public final class Sync<T> implements Iterable<T> {
         return observable.last();
     }
 
+    /**
+     * Blocks until the observable completes, ignoring the emitted value.
+     */
+    public void await() {
+        last();
+    }
+
     //endregion
 
 
