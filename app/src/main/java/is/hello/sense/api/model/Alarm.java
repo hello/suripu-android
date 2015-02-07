@@ -24,6 +24,9 @@ import is.hello.sense.functional.Lists;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Alarm extends ApiResponse {
+    public static final int FUTURE_CUT_OFF_MINUTES = 5;
+
+
     @JsonProperty("id")
     private String id;
 
@@ -119,6 +122,15 @@ public class Alarm extends ApiResponse {
         }
 
         return true;
+    }
+
+    public boolean isTooSoon() {
+        LocalTime now = LocalTime.now(DateTimeZone.getDefault());
+        int minuteCutOff = now.getMinuteOfHour() + FUTURE_CUT_OFF_MINUTES;
+        LocalTime alarmTime = getTime();
+        return (alarmTime.getHourOfDay() == now.getHourOfDay() &&
+                alarmTime.getMinuteOfHour() >= now.getMinuteOfHour() &&
+                alarmTime.getMinuteOfHour() <= minuteCutOff);
     }
 
     //endregion

@@ -1,6 +1,8 @@
 package is.hello.sense.graph.presenters;
 
 import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
 
@@ -57,5 +59,26 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
 
         Sync.wrap(presenter.save(badAlarms))
             .assertThrows(SmartAlarmPresenter.DayOverlapError.class);
+    }
+
+    public void testIsTooSoon() throws Exception {
+        Alarm alarm = new Alarm();
+
+        LocalTime now = LocalTime.now(DateTimeZone.getDefault());
+        LocalTime tooSoon = now.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES / 2);
+        LocalTime pastCutOff = now.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
+        LocalTime beforeCutOff = now.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
+
+        alarm.setTime(now);
+        assertTrue(alarm.isTooSoon());
+
+        alarm.setTime(tooSoon);
+        assertTrue(alarm.isTooSoon());
+
+        alarm.setTime(pastCutOff);
+        assertFalse(alarm.isTooSoon());
+
+        alarm.setTime(beforeCutOff);
+        assertFalse(alarm.isTooSoon());
     }
 }

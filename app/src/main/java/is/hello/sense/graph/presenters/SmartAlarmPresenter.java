@@ -17,6 +17,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.ReplaySubject;
 
 @Singleton public class SmartAlarmPresenter extends ValuePresenter<ArrayList<Alarm>> {
+
     private final ApiService apiService;
     private ArrayList<Alarm.Sound> availableAlarmSounds;
     private ReplaySubject<ArrayList<Alarm.Sound>> pendingAlarmSounds;
@@ -51,7 +52,6 @@ import rx.subjects.ReplaySubject;
     public boolean validateAlarms(@NonNull List<Alarm> alarms) {
         return Alarm.validateAlarms(alarms);
     }
-
 
     public Observable<VoidResponse> addSmartAlarm(@NonNull Alarm alarm) {
         return alarms.take(1).flatMap(alarms -> {

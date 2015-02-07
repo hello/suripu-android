@@ -52,7 +52,7 @@ public class QuestionsPresenterTests extends InjectionTestCase {
     public void testLogOutSideEffects() throws Exception {
         Sync.wrap(presenter.questions).await();
         Sync.wrap(presenter.currentQuestion).await();
-        
+
         presenter.onUserLoggedOut(new Intent(ApiSessionManager.ACTION_LOGGED_OUT));
         Sync.wrap(presenter.currentQuestion)
             .assertNull();
