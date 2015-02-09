@@ -140,6 +140,7 @@ public class HomeActivity
         viewPager.setFragmentManager(getFragmentManager());
         viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
+        viewPager.setResumeCoordinator(coordinator);
         if (viewPager.getCurrentFragment() == null) {
             TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
             viewPager.setCurrentFragment(fragment);

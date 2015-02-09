@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -20,6 +21,7 @@ import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.ResumeScheduler;
 
 public final class FragmentPageView<TFragment extends Fragment> extends FrameLayout implements GestureInterceptingView {
     //region Property Fields
@@ -27,6 +29,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private Adapter<TFragment> adapter;
     private OnTransitionObserver<TFragment> onTransitionObserver;
     private FragmentManager fragmentManager;
+    private @Nullable ResumeScheduler.Coordinator resumeCoordinator;
     private Animations.Properties animationProperties = Animations.Properties.create(p -> {
         p.interpolator = new DecelerateInterpolator();
         return null;
@@ -136,8 +139,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     //region Properties
 
     protected void assertFragmentManager() {
-        if (fragmentManager == null)
+        if (fragmentManager == null) {
             throw new IllegalStateException(getClass().getSimpleName() + " requires a fragment manager to operate.");
+        }
     }
 
     public Adapter<TFragment> getAdapter() {
@@ -162,6 +166,14 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
     public void setFragmentManager(FragmentManager fragmentManager) {
         this.fragmentManager = fragmentManager;
+    }
+
+    public @Nullable ResumeScheduler.Coordinator getResumeCoordinator() {
+        return resumeCoordinator;
+    }
+
+    public void setResumeCoordinator(@Nullable ResumeScheduler.Coordinator resumeCoordinator) {
+        this.resumeCoordinator = resumeCoordinator;
     }
 
     public TFragment getCurrentFragment() {
@@ -291,9 +303,19 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private void removeOffScreenFragment() {
         TFragment offScreen = getOffScreenFragment();
         if (offScreen != null) {
-            getFragmentManager().beginTransaction()
-                    .remove(offScreen)
-                    .commit();
+            if (getResumeCoordinator() != null) {
+                getResumeCoordinator().postOnResume(() -> {
+                    getFragmentManager()
+                            .beginTransaction()
+                            .remove(offScreen)
+                            .commit();
+                });
+            } else {
+                getFragmentManager()
+                        .beginTransaction()
+                        .remove(offScreen)
+                        .commit();
+            }
         }
 
         getOffScreenView().setVisibility(INVISIBLE);
@@ -342,14 +364,16 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
             exchangeOnAndOffScreen();
 
-            if (getOnTransitionObserver() != null)
+            if (getOnTransitionObserver() != null) {
                 getOnTransitionObserver().onDidTransitionToFragment(this, getCurrentFragment());
+            }
 
             this.isAnimating = false;
         });
 
-        if (getOnTransitionObserver() != null)
+        if (getOnTransitionObserver() != null) {
             getOnTransitionObserver().onWillTransitionToFragment(this, getOffScreenFragment());
+        }
 
         onScreenViewAnimator.start();
         offScreenViewAnimator.start();
