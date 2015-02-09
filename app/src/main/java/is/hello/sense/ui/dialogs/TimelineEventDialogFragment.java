@@ -39,6 +39,9 @@ import static android.view.ViewGroup.MarginLayoutParams;
 public final class TimelineEventDialogFragment extends InjectionDialogFragment implements SeekBar.OnSeekBarChangeListener, SoundPlayer.OnEventListener {
     public static final String TAG = TimelineEventDialogFragment.class.getSimpleName();
 
+    public static final int RESULT_CHANGED_TIME = 0x99;
+    public static final String RESULT_NEW_TIME = TimelineEventDialogFragment.class.getSimpleName() + ".RESULT_NEW_TIME";
+
     private static final String ARG_SEGMENT = TimelineEventDialogFragment.class.getSimpleName() + ".ARG_SEGMENT";
     private static final int REQUEST_CODE_ADJUST_TIME = 0x12;
 
@@ -252,13 +255,19 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
 
     //region Adjust Time
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_ADJUST_TIME && resultCode == Activity.RESULT_OK) {
+            if (getTargetFragment() != null) {
+                int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 12);
+                int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 0);
 
+                Intent response = new Intent();
+                response.putExtra(RESULT_NEW_TIME, new LocalTime(hour, minute));
+                getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_CHANGED_TIME, response);
+            }
         }
     }
 

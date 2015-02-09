@@ -63,6 +63,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
 
+    private static final int EVENT_DIALOG_REQUEST_CODE = 0x33;
+
     @Inject DateFormatter dateFormatter;
     @Inject TimelinePresenter timelinePresenter;
     @Inject PreferencesPresenter preferences;
@@ -209,6 +211,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         // This is the best place to fire animations.
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == EVENT_DIALOG_REQUEST_CODE &&
+                resultCode == TimelineEventDialogFragment.RESULT_CHANGED_TIME) {
+
+        }
+    }
 
     //region Headers
 
@@ -349,6 +360,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
 
             TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment);
+            dialogFragment.setTargetFragment(this, EVENT_DIALOG_REQUEST_CODE);
             dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
         }
 
