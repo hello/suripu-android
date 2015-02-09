@@ -32,13 +32,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/gap_small"
-            android:src="@drawable/room_check_particulates"
-            android:contentDescription="@string/condition_particulates"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/gap_small"
             android:src="@drawable/room_check_sound"
             android:contentDescription="@string/condition_sound"/>
 

@@ -32,6 +32,7 @@ public class RoomSensorHistory extends ApiResponse {
         return light;
     }
 
+    @Deprecated
     public ArrayList<SensorGraphSample> getParticulates() {
         return particulates;
     }
@@ -46,7 +47,7 @@ public class RoomSensorHistory extends ApiResponse {
 
     public List<ArrayList<SensorGraphSample>> toList() {
         // Always change order of RoomConditions and RoomConditionsFragment too.
-        return Lists.newArrayList(temperature, humidity, particulates, light, sound);
+        return Lists.newArrayList(temperature, humidity, light, sound);
     }
 
     @Override

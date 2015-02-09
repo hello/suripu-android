@@ -68,7 +68,6 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
         this.adapter = new Adapter(getActivity(), new SensorEntry[] {
                 new SensorEntry(ApiService.SENSOR_NAME_TEMPERATURE),
                 new SensorEntry(ApiService.SENSOR_NAME_HUMIDITY),
-                new SensorEntry(ApiService.SENSOR_NAME_PARTICULATES),
                 new SensorEntry(ApiService.SENSOR_NAME_LIGHT),
                 new SensorEntry(ApiService.SENSOR_NAME_SOUND),
         });

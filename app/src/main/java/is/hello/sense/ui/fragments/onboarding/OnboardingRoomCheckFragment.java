@@ -51,17 +51,16 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
     private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
 
+    // Be sure to update fragment layout too.
     private final int[] CONDITION_TITLES = {
             R.string.room_condition_checking_temperature,
             R.string.room_condition_checking_humidity,
-            R.string.room_condition_checking_particulates,
             R.string.room_condition_checking_sound,
             R.string.room_condition_checking_light,
     };
     private final int[] ACTIVE_STATE_IMAGES = {
             R.drawable.room_check_temperature_blue,
             R.drawable.room_check_humidity_blue,
-            R.drawable.room_check_particulates_blue,
             R.drawable.room_check_sound_blue,
             R.drawable.room_check_light_blue,
     };
@@ -364,9 +363,6 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
         this.conditions.add(roomConditions.getHumidity());
         this.conditionFormatters.add(unitSystem::formatHumidity);
-
-        this.conditions.add(roomConditions.getParticulates());
-        this.conditionFormatters.add(unitSystem::formatParticulates);
 
         this.conditions.add(roomConditions.getSound());
         this.conditionFormatters.add(unitSystem::formatDecibels);

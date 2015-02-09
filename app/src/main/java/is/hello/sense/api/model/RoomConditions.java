@@ -35,6 +35,7 @@ public class RoomConditions extends ApiResponse {
         return humidity;
     }
 
+    @Deprecated
     public SensorState getParticulates() {
         return particulates;
     }
@@ -49,7 +50,7 @@ public class RoomConditions extends ApiResponse {
 
     public List<SensorState> toList() {
         // Always change order of RoomSensorHistory and RoomConditionsFragment too.
-        return Lists.newArrayList(temperature, humidity, particulates, light, sound);
+        return Lists.newArrayList(temperature, humidity, light, sound);
     }
 
     public @Nullable SensorState getSensorStateWithName(@NonNull String name) {
