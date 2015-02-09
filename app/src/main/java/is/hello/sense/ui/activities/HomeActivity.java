@@ -522,10 +522,12 @@ public class HomeActivity
 
         UndersideFragment underside = getUndersideFragment();
         if (underside != null) {
-            getFragmentManager()
-                    .beginTransaction()
-                    .remove(underside)
-                    .commit();
+            coordinator.postOnResume(() -> {
+                getFragmentManager()
+                        .beginTransaction()
+                        .remove(underside)
+                        .commit();
+            });
         }
 
         viewPager.getCurrentFragment().onUserDidPushUpTopView();
