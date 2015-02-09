@@ -129,34 +129,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void onResume() {
         super.onResume();
 
-        int welcomeDialogRes;
-        switch (sensor) {
-            case ApiService.SENSOR_NAME_TEMPERATURE: {
-                welcomeDialogRes = R.xml.welcome_dialog_sensor_temperature;
-                break;
-            }
-            case ApiService.SENSOR_NAME_HUMIDITY: {
-                welcomeDialogRes = R.xml.welcome_dialog_sensor_humidity;
-                break;
-            }
-            case ApiService.SENSOR_NAME_PARTICULATES: {
-                welcomeDialogRes = R.xml.welcome_dialog_sensor_particulates;
-                break;
-            }
-            case ApiService.SENSOR_NAME_SOUND: {
-                welcomeDialogRes = R.xml.welcome_dialog_sensor_sound;
-                break;
-            }
-            case ApiService.SENSOR_NAME_LIGHT: {
-                welcomeDialogRes = R.xml.welcome_dialog_sensor_light;
-                break;
-            }
-            default: {
-                welcomeDialogRes = WelcomeDialogParser.MISSING_RES;
-                break;
-            }
-        }
-        WelcomeDialog.showIfNeeded(getActivity(), welcomeDialogRes);
+        ((SensorHistoryActivity) getActivity()).showWelcomeDialog(false);
     }
 
     public SensorHistoryActivity getSensorHistoryActivity() {

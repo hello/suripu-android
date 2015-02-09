@@ -1,9 +1,13 @@
 package is.hello.sense.ui.activities;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.ui.dialogs.WelcomeDialog;
+import is.hello.sense.util.WelcomeDialogParser;
 
 public class SensorHistoryActivity extends SenseActivity {
     public static final String EXTRA_SENSOR = SensorHistoryActivity.class.getName() + ".EXTRA_SENSOR";
@@ -43,8 +47,59 @@ public class SensorHistoryActivity extends SenseActivity {
         getActionBar().setTitle(titleRes);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.sensor_history, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.sensor_history_help) {
+            showWelcomeDialog(true);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     public String getSensor() {
         return getIntent().getStringExtra(EXTRA_SENSOR);
+    }
+
+    public void showWelcomeDialog(boolean overrideCheck) {
+        int welcomeDialogRes;
+        switch (getSensor()) {
+            case ApiService.SENSOR_NAME_TEMPERATURE: {
+                welcomeDialogRes = R.xml.welcome_dialog_sensor_temperature;
+                break;
+            }
+            case ApiService.SENSOR_NAME_HUMIDITY: {
+                welcomeDialogRes = R.xml.welcome_dialog_sensor_humidity;
+                break;
+            }
+            case ApiService.SENSOR_NAME_PARTICULATES: {
+                welcomeDialogRes = R.xml.welcome_dialog_sensor_particulates;
+                break;
+            }
+            case ApiService.SENSOR_NAME_SOUND: {
+                welcomeDialogRes = R.xml.welcome_dialog_sensor_sound;
+                break;
+            }
+            case ApiService.SENSOR_NAME_LIGHT: {
+                welcomeDialogRes = R.xml.welcome_dialog_sensor_light;
+                break;
+            }
+            default: {
+                welcomeDialogRes = WelcomeDialogParser.MISSING_RES;
+                break;
+            }
+        }
+
+        if (overrideCheck) {
+            WelcomeDialog.show(this, welcomeDialogRes);
+        } else {
+            WelcomeDialog.showIfNeeded(this, welcomeDialogRes);
+        }
     }
 }

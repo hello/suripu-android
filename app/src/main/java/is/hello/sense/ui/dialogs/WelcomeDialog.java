@@ -80,11 +80,7 @@ public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageCha
                    .apply();
     }
 
-    public static boolean showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes) {
-        if (!shouldShow(activity, welcomeRes)) {
-            return false;
-        }
-
+    public static boolean show(@NonNull Activity activity, @XmlRes int welcomeRes) {
         try {
             WelcomeDialogParser parser = new WelcomeDialogParser(activity.getResources(), welcomeRes);
             WelcomeDialog.Item[] items = parser.parse();
@@ -99,6 +95,14 @@ public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageCha
         }
 
         return true;
+    }
+
+    public static boolean showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes) {
+        if (!shouldShow(activity, welcomeRes)) {
+            return false;
+        }
+
+        return show(activity, welcomeRes);
     }
 
     public static WelcomeDialog newInstance(@NonNull Item[] items) {
