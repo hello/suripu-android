@@ -230,11 +230,17 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             UnitFormatter.Formatter formatter = conditionFormatters.get(position);
 
             showConditionsAt(position + 1, () -> {
-                int sensorConditionColor = getResources().getColor(condition.getCondition().colorRes);
+                int conditionColorRes = R.color.sensor_unknown;
+                String message = null;
+                if (condition != null) {
+                    conditionColorRes = condition.getCondition().colorRes;
+                    message = condition.getMessage();
+                }
+
+                int sensorConditionColor = getResources().getColor(conditionColorRes);
 
                 itemTitle.setText(CONDITION_TITLES[position]);
 
-                String message = condition.getMessage();
                 if (TextUtils.isEmpty(message)) {
                     itemMessage.setText(R.string.missing_data_placeholder);
                 } else {
@@ -247,7 +253,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 ImageView conditionImage = (ImageView) conditionsContainer.getChildAt(position);
                 conditionImage.setImageResource(ACTIVE_STATE_IMAGES[position]);
             }, () -> {
-                if (condition.getValue() == null || condition.getValue() == 0f) {
+                if (condition == null || condition.getValue() == null || condition.getValue() == 0f) {
                     deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
                 } else {
                     this.currentValueAnimator = ValueAnimator.ofInt(0, condition.getValue().intValue());
