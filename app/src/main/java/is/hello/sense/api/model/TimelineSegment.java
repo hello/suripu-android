@@ -82,6 +82,13 @@ public class TimelineSegment extends ApiResponse {
         return eventType;
     }
 
+    public boolean isTimeAdjustable() {
+        return (eventType == EventType.IN_BED ||
+                eventType == EventType.SLEEP ||
+                eventType == EventType.WAKE_UP ||
+                eventType == EventType.OUT_OF_BED);
+    }
+
     public DateTimeZone getTimeZone() {
         return DateTimeZone.forOffsetMillis(offset);
     }
