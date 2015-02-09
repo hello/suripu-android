@@ -260,14 +260,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         bindAndSubscribe(timelinePresenter.mainTimeline,
                          timeline -> {
                              sender.setEnabled(true);
+                             if (timeline != null) {
+                                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                 shareIntent.setType("text/plain");
 
-                             Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                             shareIntent.setType("text/plain");
+                                 String score = Integer.toString(timeline.getScore());
+                                 shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_contents_fmt, score));
 
-                             String score = Integer.toString(timeline.getScore());
-                             shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_contents_fmt, score));
-
-                             startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
+                                 startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
+                             }
                          },
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
