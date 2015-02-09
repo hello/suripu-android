@@ -6,6 +6,9 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+
+import org.joda.time.DateTimeZone;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -146,6 +149,15 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     public String getString(String key, String defaultValue) {
         return sharedPreferences.getString(key, defaultValue);
+    }
+
+    public @NonNull DateTimeZone getSenseTimeZone() {
+        String pairedDeviceTimeZone = getString(PAIRED_DEVICE_TIME_ZONE, null);
+        if (TextUtils.isEmpty(pairedDeviceTimeZone)) {
+            return DateTimeZone.getDefault();
+        } else {
+            return DateTimeZone.forID(pairedDeviceTimeZone);
+        }
     }
 
     //endregion

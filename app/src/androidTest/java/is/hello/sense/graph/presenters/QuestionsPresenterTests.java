@@ -1,6 +1,7 @@
 package is.hello.sense.graph.presenters;
 
 import android.content.Intent;
+import android.test.FlakyTest;
 
 import javax.inject.Inject;
 
@@ -38,6 +39,7 @@ public class QuestionsPresenterTests extends InjectionTestCase {
             .assertNotNull();
     }
 
+    @FlakyTest
     public void testCurrentQuestion() throws Exception {
         Sync.wrap(presenter.currentQuestion).await();
 

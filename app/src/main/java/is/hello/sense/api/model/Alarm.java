@@ -21,6 +21,7 @@ import java.util.UUID;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.util.DateFormatter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Alarm extends ApiResponse {
@@ -165,7 +166,7 @@ public class Alarm extends ApiResponse {
 
     @JsonIgnore
     public void fireOnce() {
-        DateTime today = DateTime.now(DateTimeZone.getDefault());
+        DateTime today = DateFormatter.now();
         if (getTime().isBefore(today.toLocalTime())) {
             DateTime tomorrow = today.plusDays(1);
             this.year = tomorrow.getYear();
@@ -251,7 +252,7 @@ public class Alarm extends ApiResponse {
             if (isSmart()) {
                 return context.getString(R.string.alarm_never);
             } else {
-                DateTime today = DateTime.now(DateTimeZone.getDefault());
+                DateTime today = DateFormatter.now();
                 if (year == today.getYear() && month == today.getMonthOfYear() && dayOfMonth == today.getDayOfMonth()) {
                     return context.getString(R.string.alarm_today);
                 } else {

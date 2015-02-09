@@ -44,6 +44,7 @@
     <string name="format_date_last_night">Last Night</string>
     <string name="format_timeline_time_12_hr">h:mm</string>
     <string name="format_timeline_time_24_hr">H:mm</string>
+    <string name="format_date_weekday">EEEE</string>
 
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>

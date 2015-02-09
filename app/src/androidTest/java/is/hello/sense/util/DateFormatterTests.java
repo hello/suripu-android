@@ -3,59 +3,83 @@ package is.hello.sense.util;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 
-import javax.inject.Inject;
-
-import is.hello.sense.R;
 import is.hello.sense.graph.InjectionTestCase;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
 
 public class DateFormatterTests extends InjectionTestCase {
-    private static final LocalDateTime TEST_LOCAL_DATETIME = new LocalDateTime(2014, 10, 1, 10, 30, 0);
-    private static final LocalDate TEST_LOCAL_DATE = new LocalDate(2014, 10, 1);
-    private static final DateTime TEST_DATETIME = new DateTime(2014, 10, 1, 10, 30, 0, DateTimeZone.getDefault());
-    private static final LocalTime TEST_LOCAL_TIME = new LocalTime(10, 30, 0);
     private DateFormatter formatter;
-
-    @Inject PreferencesPresenter preferences;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
         if (formatter == null) {
-            this.formatter = new DateFormatter(getInstrumentation().getTargetContext(), preferences);
+            this.formatter = new DateFormatter(getInstrumentation().getTargetContext());
         }
     }
 
-    public void testTimelineDate() {
-        assertNotNull(formatter.formatAsTimelineDate(null));
-        String lastNightText = getInstrumentation().getTargetContext().getString(R.string.format_date_last_night);
-        assertEquals(lastNightText, formatter.formatAsTimelineDate(DateFormatter.lastNight()));
-        assertFalse(lastNightText.equals(formatter.formatAsTimelineDate(DateFormatter.lastNight().minusDays(1))));
+    public void testNow() {
+        assertEquals(DateTimeZone.getDefault(), DateFormatter.now().getZone());
+    }
+
+    public void testLastNight() {
+        assertEquals(DateTimeZone.getDefault(), DateFormatter.lastNight().getZone());
+    }
+
+    public void testIsLastNight() {
+        assertTrue(DateFormatter.isLastNight(DateFormatter.lastNight()));
+        assertFalse(DateFormatter.isLastNight(DateFormatter.now()));
+    }
+
+    public void testIsInLastWeek() {
+        DateTime now = DateFormatter.now();
+        assertFalse(DateFormatter.isInLastWeek(now.plusDays(1)));
+        assertFalse(DateFormatter.isInLastWeek(now));
+        assertTrue(DateFormatter.isInLastWeek(now.minusDays(1)));
+        assertTrue(DateFormatter.isInLastWeek(now.minusDays(2)));
+        assertTrue(DateFormatter.isInLastWeek(now.minusDays(3)));
+        assertTrue(DateFormatter.isInLastWeek(now.minusDays(4)));
+        assertTrue(DateFormatter.isInLastWeek(now.minusDays(5)));
+        assertTrue(DateFormatter.isInLastWeek(now.minusDays(6)));
+        assertTrue(DateFormatter.isInLastWeek(now.minusDays(7)));
+        assertFalse(DateFormatter.isInLastWeek(now.minusDays(8)));
+    }
+
+    public void testFormatAsTimelineDate() {
+        assertEquals("Last Night", formatter.formatAsTimelineDate(DateFormatter.lastNight()));
+
+        DateTime nightBefore = DateFormatter.lastNight().minusDays(1);
+        assertEquals(nightBefore.toString("EEEE"), formatter.formatAsTimelineDate(nightBefore));
+
+        DateTime weekBefore = DateFormatter.lastNight().minusDays(8);
+        assertEquals(weekBefore.toString("MMMM d"), formatter.formatAsTimelineDate(weekBefore));
+
+        assertEquals("--", formatter.formatAsTimelineDate(null));
     }
 
     public void testFormatAsBirthDate() {
-        assertNotNull(formatter.formatAsBirthDate(null));
-        assertEquals("10/01/14", formatter.formatAsBirthDate(TEST_LOCAL_DATE));
+        assertEquals("02/03/01", formatter.formatAsBirthDate(new LocalDate(2001, 2, 3)));
+        assertEquals("--", formatter.formatAsBirthDate(null));
     }
 
-    public void testFormatAsDate() {
-        assertNotNull(formatter.formatAsDate(null));
-        assertEquals("October 1", formatter.formatAsDate(TEST_DATETIME));
+    public void testFormatAsTimelineStamp() {
+        assertEquals("2:30", formatter.formatAsTimelineStamp(new DateTime(2001, 2, 3, 14, 30), false));
+        assertEquals("14:30", formatter.formatAsTimelineStamp(new DateTime(2001, 2, 3, 14, 30), true));
+        assertEquals("--", formatter.formatAsTimelineStamp(null, false));
+        assertEquals("--", formatter.formatAsTimelineStamp(null, true));
     }
 
     public void testFormatAsTime() {
-        assertNotNull(formatter.formatAsTime((LocalTime) null, false));
-        assertNotNull(formatter.formatAsTime((LocalDateTime) null, false));
-        assertNotNull(formatter.formatAsTime((DateTime) null, false));
-        assertEquals("10:30 AM", formatter.formatAsTime(TEST_LOCAL_DATETIME, false));
-        assertEquals("10:30", formatter.formatAsTime(TEST_LOCAL_DATETIME, true));
-        assertEquals("10:30 AM", formatter.formatAsTime(TEST_LOCAL_TIME, false));
-        assertEquals("10:30", formatter.formatAsTime(TEST_LOCAL_TIME, true));
-        assertEquals("10:30 AM", formatter.formatAsTime(TEST_DATETIME, false));
-        assertEquals("10:30", formatter.formatAsTime(TEST_DATETIME, true));
+        assertEquals("2:30 PM", formatter.formatAsTime(new DateTime(2001, 2, 3, 14, 30), false));
+        assertEquals("14:30", formatter.formatAsTime(new DateTime(2001, 2, 3, 14, 30), true));
+        assertEquals("--", formatter.formatAsTime((DateTime) null, false));
+        assertEquals("--", formatter.formatAsTime((DateTime) null, true));
+    }
+
+    public void testFormatAsDayAndTime() {
+        assertEquals("Saturday – 2:30 PM", formatter.formatAsDayAndTime(new DateTime(2001, 2, 3, 14, 30), false));
+        assertEquals("Saturday – 14:30", formatter.formatAsDayAndTime(new DateTime(2001, 2, 3, 14, 30), true));
+        assertEquals("--", formatter.formatAsDayAndTime(null, false));
+        assertEquals("--", formatter.formatAsDayAndTime(null, true));
     }
 }

@@ -64,7 +64,6 @@ import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
-import is.hello.sense.ui.widget.TimestampTextView;
 
 @Module(
     includes = {ApiModule.class, BluetoothModule.class, DebugModule.class},
@@ -74,7 +73,6 @@ import is.hello.sense.ui.widget.TimestampTextView;
 
         DebugActivity.class,
         PreferencesPresenter.class,
-        TimestampTextView.class,
         NotificationRegistration.class,
         RoomConditionsWidgetProvider.UpdateService.class,
         LastNightWidgetProvider.LastNightService.class,
