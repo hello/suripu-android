@@ -88,6 +88,7 @@
     <dimen name="timeline_header_triangle_height">8dp</dimen>
 
     <dimen name="gap_smart_alarm_list_bottom">96dp</dimen>
+    <dimen name="smart_alarm_details_row_height">72dp</dimen>
 
     <!-- Graphs -->
 
