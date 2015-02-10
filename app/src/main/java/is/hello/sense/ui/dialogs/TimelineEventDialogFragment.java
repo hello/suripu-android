@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
 import javax.inject.Inject;
@@ -33,6 +34,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SoundPlayer;
+import rx.functions.Action1;
 
 import static android.view.ViewGroup.MarginLayoutParams;
 
@@ -51,6 +53,8 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     private ImageView soundPlayButton;
     private SeekBar soundSeekBar;
     private ValueAnimator soundPlayPulseAnimator;
+    private TextView title;
+    private TextView message;
 
 
     public static TimelineEventDialogFragment newInstance(@NonNull TimelineSegment segment) {
@@ -85,15 +89,8 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         ImageButton closeButton = (ImageButton) dialog.findViewById(R.id.dialog_fragment_timeline_event_close);
         Views.setSafeOnClickListener(closeButton, ignored -> dismiss());
 
-        TextView title = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_title);
-        String eventName = getString(timelineSegment.getEventType().nameString);
-        boolean use24Time = preferences.getBoolean(PreferencesPresenter.USE_24_TIME, false);
-        String formattedTime = dateFormatter.formatAsTime(timelineSegment.getShiftedTimestamp(), use24Time);
-        title.setText(getString(R.string.title_timeline_event_fmt, eventName, formattedTime));
-
-        TextView message = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_message);
-        markdown.render(timelineSegment.getMessage())
-                .subscribe(message::setText, e -> message.setText(R.string.missing_data_placeholder));
+        this.title = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_title);
+        this.message = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_message);
 
         if (timelineSegment.isTimeAdjustable()) {
             Button adjustTime = (Button) dialog.findViewById(R.id.dialog_fragment_timeline_event_adjust_time);
@@ -124,6 +121,8 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
             container.addView(soundControls);
         }
 
+        bindTimelineSegment();
+
         return dialog;
     }
 
@@ -136,6 +135,27 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
             soundPlayer.recycle();
         }
     }
+
+
+    //region Binding
+
+    private void bindTimelineSegment() {
+        String eventName = getString(timelineSegment.getEventType().nameString);
+        boolean use24Time = preferences.getBoolean(PreferencesPresenter.USE_24_TIME, false);
+        String formattedTime = dateFormatter.formatAsTime(timelineSegment.getShiftedTimestamp(), use24Time);
+
+        title.setText(getString(R.string.title_timeline_event_fmt, eventName, formattedTime));
+        markdown.renderInto(message, timelineSegment.getMessage());
+    }
+
+    private void setTimelineSegment(@NonNull TimelineSegment newSegment) {
+        this.timelineSegment = newSegment;
+        getArguments().putSerializable(ARG_SEGMENT, newSegment);
+
+        bindTimelineSegment();
+    }
+
+    //endregion
 
 
     //region Sound Playback
@@ -259,9 +279,15 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         if (requestCode == REQUEST_CODE_ADJUST_TIME && resultCode == Activity.RESULT_OK) {
             int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 12);
             int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 0);
-
+            DateTime newTimestamp = timelineSegment.getShiftedTimestamp()
+                                                   .withHourOfDay(hour)
+                                                   .withMinuteOfHour(minute);
             AdjustTimeFragment adjustTimeFragment = (AdjustTimeFragment) getTargetFragment();
-            adjustTimeFragment.onAdjustSegmentTime(timelineSegment, hour, minute);
+            adjustTimeFragment.onAdjustSegmentTime(timelineSegment, newTimestamp, success -> {
+                if (success) {
+                    setTimelineSegment(timelineSegment.withTimestamp(newTimestamp));
+                }
+            });
         }
     }
 
@@ -277,6 +303,8 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
 
 
     public interface AdjustTimeFragment {
-        void onAdjustSegmentTime(@NonNull TimelineSegment segment, int newHour, int newMinute);
+        void onAdjustSegmentTime(@NonNull TimelineSegment segment,
+                                 @NonNull DateTime newTimestamp,
+                                 @NonNull Action1<Boolean> continuation);
     }
 }

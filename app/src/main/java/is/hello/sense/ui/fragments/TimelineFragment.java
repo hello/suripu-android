@@ -59,6 +59,7 @@ import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment
 {
@@ -363,20 +364,20 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     @Override
-    public void onAdjustSegmentTime(@NonNull TimelineSegment segment, int newHour, int newMinute) {
+    public void onAdjustSegmentTime(@NonNull TimelineSegment segment,
+                                    @NonNull DateTime newTimestamp,
+                                    @NonNull Action1<Boolean> continuation) {
         LoadingDialogFragment.show(getFragmentManager());
 
-        DateTime date = getDate();
-        Feedback correction = new Feedback();
-        correction.setEventType(segment.getEventType());
-        correction.setDay(date.toLocalDate());
-        correction.setTimestamp(date.withHourOfDay(newHour).withMinuteOfHour(newMinute));
+        Feedback correction = new Feedback(segment.getEventType(), newTimestamp);
         bindAndSubscribe(timelinePresenter.submitCorrection(correction),
                          ignored -> {
                              LoadingDialogFragment.close(getFragmentManager());
+                             continuation.call(true);
                          }, e -> {
                              LoadingDialogFragment.close(getFragmentManager());
                              ErrorDialogFragment.presentError(getFragmentManager(), e);
+                             continuation.call(false);
                          });
     }
 

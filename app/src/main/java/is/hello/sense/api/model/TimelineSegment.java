@@ -17,7 +17,7 @@ import java.util.List;
 
 import is.hello.sense.R;
 
-public class TimelineSegment extends ApiResponse {
+public class TimelineSegment extends ApiResponse implements Cloneable {
     @JsonProperty("id")
     private String id;
 
@@ -49,6 +49,16 @@ public class TimelineSegment extends ApiResponse {
     @JsonIgnore
     private @Nullable DateTime shiftedTimestamp;
 
+
+    @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")
+    @Override
+    public TimelineSegment clone() {
+        try {
+            return (TimelineSegment) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public String getId() {
         return id;
@@ -99,6 +109,13 @@ public class TimelineSegment extends ApiResponse {
         }
 
         return shiftedTimestamp;
+    }
+
+    public TimelineSegment withTimestamp(@NonNull DateTime newTimestamp) {
+        TimelineSegment copy = clone();
+        copy.timestamp = newTimestamp.withZone(DateTimeZone.UTC);
+        copy.shiftedTimestamp = newTimestamp.withZone(getTimeZone());
+        return copy;
     }
 
     public SoundInfo getSound() {
