@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,6 +66,7 @@ import is.hello.sense.util.RateLimitingShakeListener;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public class HomeActivity
@@ -85,6 +87,7 @@ public class HomeActivity
     private FrameLayout undersideContainer;
     private SlidingLayersView slidingLayersView;
     private FragmentPageView<TimelineFragment> viewPager;
+    private ImageButton smartAlarmButton;
 
     private @Nullable View deviceAlert;
 
@@ -134,6 +137,11 @@ public class HomeActivity
 
         this.rootContainer = (RelativeLayout) findViewById(R.id.activity_home_container);
 
+
+        this.smartAlarmButton = (ImageButton) findViewById(R.id.fragment_timeline_smart_alarm);
+        Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
+            showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, true);
+        });
 
         // noinspection unchecked
         this.viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
@@ -385,7 +393,12 @@ public class HomeActivity
 
     @Override
     public void onWillTransitionToFragment(@NonNull FragmentPageView<TimelineFragment> view, @NonNull TimelineFragment fragment) {
+        TimelineFragment currentFragment = view.getCurrentFragment();
+        if (currentFragment != null) {
+            currentFragment.setModifyAlarmButton(false);
+        }
 
+        pullSmartAlarmOnScreen();
     }
 
     @Override
@@ -393,7 +406,47 @@ public class HomeActivity
         this.lastUpdated = System.currentTimeMillis();
 
         fragment.onTransitionCompleted();
+        fragment.setModifyAlarmButton(true);
+
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_DATE_CHANGED, null);
+    }
+
+    @Override
+    public void onDidSnapBackToFragment(@NonNull FragmentPageView<TimelineFragment> view, @NonNull TimelineFragment fragment) {
+        fragment.setModifyAlarmButton(true);
+    }
+
+    //endregion
+
+
+    //region Smart Alarm Button
+
+    public void pushSmartAlarmOffScreen() {
+        if (smartAlarmButton.getVisibility() == View.VISIBLE && !isAnimating(smartAlarmButton)) {
+            int contentHeight = rootContainer.getMeasuredHeight();
+
+            animate(smartAlarmButton)
+                    .y(contentHeight)
+                    .addOnAnimationCompleted(finished -> {
+                        if (finished) {
+                            smartAlarmButton.setVisibility(View.INVISIBLE);
+                        }
+                    })
+                    .start();
+        }
+    }
+
+    public void pullSmartAlarmOnScreen() {
+        if (smartAlarmButton.getVisibility() == View.INVISIBLE && !isAnimating(smartAlarmButton)) {
+            int contentHeight = rootContainer.getMeasuredHeight();
+            int buttonHeight = smartAlarmButton.getMeasuredHeight();
+
+            smartAlarmButton.setVisibility(View.VISIBLE);
+
+            animate(smartAlarmButton)
+                    .y(contentHeight - buttonHeight)
+                    .start();
+        }
     }
 
     //endregion

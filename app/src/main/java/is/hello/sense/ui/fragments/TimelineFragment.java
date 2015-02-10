@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -56,9 +57,6 @@ import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
-
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
@@ -68,12 +66,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Inject PreferencesPresenter preferences;
     @Inject Markdown markdown;
 
-    private ListView listView;
     private TimelineSegmentAdapter segmentAdapter;
 
     private ImageButton menuButton;
     private ImageButton shareButton;
-    private ImageButton smartAlarmButton;
 
     private ViewGroup headerView;
     private TextView dateText;
@@ -85,6 +81,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private View timelineEventsHeader;
 
+    private HomeActivity homeActivity;
+    private boolean modifyAlarmButton = false;
+
 
     public static TimelineFragment newInstance(@NonNull DateTime date, @Nullable Timeline cachedTimeline) {
         TimelineFragment fragment = new TimelineFragment();
@@ -95,6 +94,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         fragment.setArguments(arguments);
 
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        homeActivity = (HomeActivity) activity;
     }
 
     @Override
@@ -118,7 +124,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
-        this.listView = (ListView) view.findViewById(android.R.id.list);
+        ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
         listView.setOnItemClickListener(this);
 
@@ -165,12 +171,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         this.shareButton = (ImageButton) headerView.findViewById(R.id.fragment_timeline_header_share);
         shareButton.setVisibility(View.INVISIBLE);
         Views.setSafeOnClickListener(shareButton, this::share);
-
-        this.smartAlarmButton = (ImageButton) view.findViewById(R.id.fragment_timeline_smart_alarm);
-        Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
-            HomeActivity homeActivity = (HomeActivity) getActivity();
-            homeActivity.showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, true);
-        });
 
         listView.setAdapter(segmentAdapter);
         ListViews.setTouchAndScrollListener(listView, new TimelineScrollListener());
@@ -356,37 +356,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
 
-    //region Smart Alarm Button
+    //region Alarm Button
 
-    private void pushSmartAlarmOffScreen() {
-        if (smartAlarmButton.getVisibility() == View.VISIBLE && !isAnimating(smartAlarmButton)) {
-            int contentHeight = listView.getMeasuredHeight();
-
-            animate(smartAlarmButton)
-                    .y(contentHeight)
-                    .addOnAnimationCompleted(finished -> {
-                        if (finished) {
-                            smartAlarmButton.setVisibility(View.INVISIBLE);
-                        }
-                    })
-                    .start();
-        }
+    public void setModifyAlarmButton(boolean modifyAlarmButton) {
+        this.modifyAlarmButton = modifyAlarmButton;
     }
-
-    private void pullSmartAlarmOnScreen() {
-        if (smartAlarmButton.getVisibility() == View.INVISIBLE) {
-            int contentHeight = listView.getMeasuredHeight();
-            int buttonHeight = smartAlarmButton.getMeasuredHeight();
-
-            smartAlarmButton.setVisibility(View.VISIBLE);
-
-            animate(smartAlarmButton)
-                    .y(contentHeight - buttonHeight)
-                    .start();
-        }
-    }
-
-    //endregion
 
     private class TimelineScrollListener extends ListViews.TouchAndScrollListener {
         @Override
@@ -395,10 +369,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         @Override
         public void onScroll(AbsListView listView, int firstVisiblePosition, int visibleItemCount, int totalItemCount) {
+            if (!modifyAlarmButton) {
+                return;
+            }
+
             if (firstVisiblePosition == 0 && ListViews.getEstimatedScrollY(listView) == 0) {
-                pullSmartAlarmOnScreen();
+                homeActivity.pullSmartAlarmOnScreen();
             } else {
-                pushSmartAlarmOffScreen();
+                homeActivity.pushSmartAlarmOffScreen();
             }
         }
 
@@ -411,6 +389,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
     }
 
+    //endregion
 
 
     //region Header Modes
