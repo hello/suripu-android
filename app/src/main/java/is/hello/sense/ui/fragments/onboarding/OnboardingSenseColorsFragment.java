@@ -56,18 +56,8 @@ public class OnboardingSenseColorsFragment extends SenseFragment implements View
         );
         viewPager.setAdapter(adapter);
 
-        this.finalItem = adapter.getCount() - 1;
 
-        this.bottomContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sense_colors_bottom);
-        Views.observeNextLayout(bottomContainer).subscribe(ignored -> {
-            this.nextButtonMaxY = bottomContainer.getMeasuredHeight();
-            this.nextButtonMinY = nextButton.getY();
-            if (viewPager.getCurrentItem() == finalItem) {
-                nextButton.setY(nextButtonMinY);
-            } else {
-                nextButton.setY(nextButtonMaxY);
-            }
-        });
+        this.finalItem = adapter.getCount() - 1;
 
         PageDots pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_sense_colors_dots);
         pageDots.setOnPageChangeListener(this);
@@ -75,6 +65,14 @@ public class OnboardingSenseColorsFragment extends SenseFragment implements View
 
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_sense_colors_continue);
         Views.setSafeOnClickListener(nextButton, this::next);
+
+        this.bottomContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sense_colors_bottom);
+        Views.observeNextLayout(nextButton).subscribe(ignored -> {
+            this.nextButtonMaxY = bottomContainer.getMeasuredHeight();
+            this.nextButtonMinY = (bottomContainer.getMeasuredHeight() / 2) - (nextButton.getMeasuredHeight() / 2);
+            nextButton.setY(nextButtonMaxY);
+        });
+
 
         return view;
     }
@@ -95,8 +93,8 @@ public class OnboardingSenseColorsFragment extends SenseFragment implements View
 
     @Override
     public void onPageSelected(int position) {
-        if (position == finalItem && !bottomContainer.isDirty()) {
-            nextButton.setY(nextButtonMinY);
+        if (position == finalItem) {
+            bottomContainer.post(() -> nextButton.setY(nextButtonMinY));
         }
     }
 
