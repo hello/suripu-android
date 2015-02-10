@@ -5,7 +5,6 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.widget.PageDots;
@@ -103,7 +103,7 @@ public class OnboardingSenseColorsFragment extends SenseFragment implements View
     }
 
 
-    private class ColorsAdapter extends PagerAdapter {
+    private class ColorsAdapter extends ViewPagerAdapter<ColorsAdapter.ViewHolder> {
         private final LayoutInflater inflater;
         private final SenseColor[] senseColors;
 
@@ -117,40 +117,30 @@ public class OnboardingSenseColorsFragment extends SenseFragment implements View
             return senseColors.length;
         }
 
-        public SenseColor getColor(int position) {
+        public SenseColor getItem(int position) {
             return senseColors[position];
         }
 
         @Override
-        public boolean isViewFromObject(View view, Object object) {
-            ViewHolder holder = (ViewHolder) object;
-            return (holder.itemView == view);
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public ViewHolder createViewHolder(ViewGroup container, int position) {
             View view = inflater.inflate(R.layout.item_onboarding_sense_color, container, false);
-            ViewHolder holder = new ViewHolder(view);
-            holder.bindSenseColor(getColor(position));
-            container.addView(view);
-            return holder;
+            return new ViewHolder(view);
         }
 
         @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            ViewHolder holder = (ViewHolder) object;
-            container.removeView(holder.itemView);
+        public void bindViewHolder(ViewHolder holder, int position) {
+            SenseColor color = getItem(position);
+            holder.bindSenseColor(color);
         }
 
 
-        private class ViewHolder {
-            private final View itemView;
+        class ViewHolder extends ViewPagerAdapter.ViewHolder {
             private final TextView headingText;
             private final TextView subheadingText;
             private final ImageView diagramImage;
 
             private ViewHolder(@NonNull View itemView) {
-                this.itemView = itemView;
+                super(itemView);
 
                 this.headingText = (TextView) itemView.findViewById(R.id.item_onboarding_sense_color_heading);
                 this.subheadingText = (TextView) itemView.findViewById(R.id.item_onboarding_sense_color_subheading);

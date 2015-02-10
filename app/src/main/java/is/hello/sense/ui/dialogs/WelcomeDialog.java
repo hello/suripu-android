@@ -12,7 +12,6 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.XmlRes;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +25,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
@@ -165,7 +165,7 @@ public class WelcomeDialog extends DialogFragment {
     }
 
 
-    public class ItemAdapter extends PagerAdapter {
+    public class ItemAdapter extends ViewPagerAdapter<ItemAdapter.ViewHolder> {
         private final LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         @Override
@@ -174,35 +174,25 @@ public class WelcomeDialog extends DialogFragment {
         }
 
         @Override
-        public boolean isViewFromObject(View view, Object object) {
-            ViewHolder holder = (ViewHolder) object;
-            return (holder.itemView == view);
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public ViewHolder createViewHolder(ViewGroup container, int position) {
             View itemView = inflater.inflate(R.layout.item_dialog_welcome, container, false);
-            ViewHolder holder = new ViewHolder(itemView, (position == getCount() - 1));
-            holder.bindItem(items[position]);
-            container.addView(itemView);
-            return holder;
+            return new ViewHolder(itemView, (position == getCount() - 1));
         }
 
         @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            ViewHolder holder = (ViewHolder) object;
-            container.removeView(holder.itemView);
+        public void bindViewHolder(ViewHolder holder, int position) {
+            Item item = items[position];
+            holder.bindItem(item);
         }
 
 
-        private class ViewHolder {
-            final View itemView;
+        class ViewHolder extends ViewPagerAdapter.ViewHolder {
             final ImageView diagramImage;
             final TextView titleText;
             final TextView messageText;
 
             private ViewHolder(@NonNull View itemView, boolean lastItem) {
-                this.itemView = itemView;
+                super(itemView);
 
                 this.diagramImage = (ImageView) itemView.findViewById(R.id.fragment_dialog_welcome_item_diagram);
                 this.titleText = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_title);
