@@ -133,6 +133,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         View smartToggleContainer = view.findViewById(R.id.fragment_smart_alarm_detail_smart_container);
         smartToggleContainer.setOnClickListener(ignored -> smartToggle.toggle());
 
+        View smartHelp = view.findViewById(R.id.fragment_smart_alarm_detail_smart_help);
+        Views.setSafeOnClickListener(smartHelp, this::showSmartAlarmIntro);
+
 
         this.soundButton = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_sound);
         if (alarm.getSound() != null && !TextUtils.isEmpty(alarm.getSound().name)) {
@@ -254,6 +257,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         SmartAlarmSoundDialogFragment dialogFragment = SmartAlarmSoundDialogFragment.newInstance(alarm.getSound());
         dialogFragment.setTargetFragment(this, SOUND_REQUEST_CODE);
         dialogFragment.show(getFragmentManager(), SmartAlarmSoundDialogFragment.TAG);
+    }
+
+    public void showSmartAlarmIntro(@NonNull View sender) {
+        WelcomeDialog.show(getActivity(), R.xml.welcome_dialog_smart_alarm);
     }
 
 

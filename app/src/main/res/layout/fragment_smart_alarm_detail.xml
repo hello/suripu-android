@@ -93,9 +93,10 @@
         <LinearLayout
             android:id="@+id/fragment_smart_alarm_detail_enabled_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/gap_outer"
+            android:layout_height="@dimen/smart_alarm_details_row_height"
             android:gravity="center_vertical"
+            android:paddingLeft="@dimen/gap_outer"
+            android:paddingRight="@dimen/gap_outer"
             android:orientation="horizontal"
             android:background="@drawable/selectable_dark_bounded">
 
@@ -122,19 +123,32 @@
         <LinearLayout
             android:id="@+id/fragment_smart_alarm_detail_smart_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/gap_outer"
+            android:layout_height="@dimen/smart_alarm_details_row_height"
             android:gravity="center_vertical"
+            android:paddingLeft="@dimen/gap_outer"
+            android:paddingRight="@dimen/gap_outer"
             android:orientation="horizontal"
             android:background="@drawable/selectable_dark_bounded">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="@dimen/gap_small"
                 android:text="@string/title_smart_alarm"
                 android:textAppearance="@style/AppTheme.Text.Body"/>
+
+            <ImageButton
+                android:id="@+id/fragment_smart_alarm_detail_smart_help"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/action_info"
+                android:contentDescription="@string/action_help"
+                android:background="@color/transparent"
+                style="@style/AppTheme.Button.Borderless"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
 
             <ToggleButton
                 android:id="@+id/fragment_smart_alarm_detail_smart"
@@ -151,9 +165,10 @@
         <LinearLayout
             android:id="@+id/fragment_smart_alarm_detail_sound_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/gap_outer"
+            android:layout_height="@dimen/smart_alarm_details_row_height"
             android:gravity="center_vertical"
+            android:paddingLeft="@dimen/gap_outer"
+            android:paddingRight="@dimen/gap_outer"
             android:orientation="horizontal"
             android:background="@drawable/selectable_dark_bounded">
 
@@ -179,9 +194,10 @@
         <LinearLayout
             android:id="@+id/fragment_smart_alarm_detail_delete_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/gap_outer"
+            android:layout_height="@dimen/smart_alarm_details_row_height"
             android:gravity="center_vertical"
+            android:paddingLeft="@dimen/gap_outer"
+            android:paddingRight="@dimen/gap_outer"
             android:orientation="horizontal"
             android:background="@drawable/selectable_dark_bounded">
 

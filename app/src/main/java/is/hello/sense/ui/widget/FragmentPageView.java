@@ -399,6 +399,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             getOnScreenView().setX(0f);
             getOffScreenView().setVisibility(INVISIBLE);
 
+            if (getOnTransitionObserver() != null) {
+                getOnTransitionObserver().onDidSnapBackToFragment(this, getCurrentFragment());
+            }
+
             this.isAnimating = false;
         });
 
@@ -561,6 +565,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     public interface OnTransitionObserver<TFragment extends Fragment> {
         void onWillTransitionToFragment(@NonNull FragmentPageView<TFragment> view, @NonNull TFragment fragment);
         void onDidTransitionToFragment(@NonNull FragmentPageView<TFragment> view, @NonNull TFragment fragment);
+        void onDidSnapBackToFragment(@NonNull FragmentPageView<TFragment> view, @NonNull TFragment fragment);
     }
 
     private static enum Position {

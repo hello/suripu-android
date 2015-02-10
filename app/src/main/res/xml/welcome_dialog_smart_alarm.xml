@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog>
+<item
+    diagram="@drawable/welcome_dialog_smart_alarm"
+    title="@string/welcome_dialog_smart_alarm_title"
+    message="@string/welcome_dialog_smart_alarm"/>
+</dialog>
