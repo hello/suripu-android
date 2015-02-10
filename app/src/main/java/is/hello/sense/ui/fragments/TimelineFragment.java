@@ -29,6 +29,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Feedback;
 import is.hello.sense.api.model.PreSleepInsight;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
@@ -40,6 +41,8 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
@@ -57,11 +60,10 @@ import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener {
+public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment
+{
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
-
-    private static final int EVENT_DIALOG_REQUEST_CODE = 0x33;
 
     @Inject DateFormatter dateFormatter;
     @Inject TimelinePresenter timelinePresenter;
@@ -211,15 +213,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         // This is the best place to fire animations.
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == EVENT_DIALOG_REQUEST_CODE &&
-                resultCode == TimelineEventDialogFragment.RESULT_CHANGED_TIME) {
-
-        }
-    }
 
     //region Headers
 
@@ -353,6 +346,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
 
+    //region Event Details
+
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         TimelineSegment segment = (TimelineSegment) adapterView.getItemAtPosition(position);
@@ -360,12 +355,32 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
 
             TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment);
-            dialogFragment.setTargetFragment(this, EVENT_DIALOG_REQUEST_CODE);
+            dialogFragment.setTargetFragment(this, 0x00);
             dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
         }
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
     }
+
+    @Override
+    public void onAdjustSegmentTime(@NonNull TimelineSegment segment, int newHour, int newMinute) {
+        LoadingDialogFragment.show(getFragmentManager());
+
+        DateTime date = getDate();
+        Feedback correction = new Feedback();
+        correction.setEventType(segment.getEventType());
+        correction.setDay(date.toLocalDate());
+        correction.setTimestamp(date.withHourOfDay(newHour).withMinuteOfHour(newMinute));
+        bindAndSubscribe(timelinePresenter.submitCorrection(correction),
+                         ignored -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                         }, e -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             ErrorDialogFragment.presentError(getFragmentManager(), e);
+                         });
+    }
+
+    //endregion
 
 
     //region Alarm Button

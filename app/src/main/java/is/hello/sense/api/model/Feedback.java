@@ -22,17 +22,6 @@ public class Feedback extends ApiResponse {
     private DateTime timestamp;
 
 
-    public Feedback() {
-
-    }
-
-    public Feedback(@NonNull DateTime timestamp, @NonNull TimelineSegment.EventType eventType) {
-        this.day = timestamp.toLocalDate();
-        this.timestamp = timestamp;
-        this.eventType = eventType;
-    }
-
-
     public TimelineSegment.EventType getEventType() {
         return eventType;
     }

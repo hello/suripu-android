@@ -12,7 +12,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.Feedback;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Markdown;
@@ -74,5 +76,10 @@ public class TimelinePresenter extends Presenter {
         } else {
             update();
         }
+    }
+
+    public Observable<VoidResponse> submitCorrection(@NonNull Feedback correction) {
+        return service.submitCorrect(correction)
+                      .doOnCompleted(this::update);
     }
 }
