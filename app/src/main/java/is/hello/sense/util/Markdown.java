@@ -19,12 +19,14 @@ import org.markdownj.MarkdownProcessor;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import is.hello.sense.ui.common.ListTagHandler;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @Singleton public final class Markdown {
     private final MarkdownProcessor processor = new MarkdownProcessor();
+    private final ListTagHandler listTagHandler = new ListTagHandler();
 
     @Inject public Markdown() {
 
@@ -42,7 +44,7 @@ import rx.schedulers.Schedulers;
         if (TextUtils.isEmpty(html))
             return "";
 
-        Spanned renderedHtml = Html.fromHtml(html);
+        Spanned renderedHtml = Html.fromHtml(html, null, listTagHandler);
         return renderedHtml.subSequence(0, TextUtils.getTrimmedLength(renderedHtml));
     }
 
