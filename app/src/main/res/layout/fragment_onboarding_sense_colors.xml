@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -7,13 +8,20 @@
         android:id="@+id/fragment_onboarding_sense_colors_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:padding="@dimen/gap_outer">
+        android:layout_alignParentBottom="true">
+
+        <is.hello.sense.ui.widget.PageDots
+            android:id="@+id/fragment_onboarding_sense_colors_dots"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:dotStyle="blue"/>
 
         <Button
             android:id="@+id/fragment_onboarding_sense_colors_continue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/gap_outer"
             android:text="@string/action_continue"
             style="@style/AppTheme.Button.Rounded"/>
 

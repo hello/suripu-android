@@ -16,23 +16,38 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 
 public class OnboardingSenseColorsFragment extends SenseFragment implements ViewPager.OnPageChangeListener {
-    private ViewPager viewPager;
-    private ColorsAdapter adapter;
+    private ViewGroup bottomContainer;
     private Button nextButton;
+
+    private int finalItem;
+    private float nextButtonMaxY, nextButtonMinY;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_COLORS, null);
+        }
+
+        setRetainInstance(true);
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_sense_colors, container, false);
 
-        this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_sense_colors_pager);
-        viewPager.setOnPageChangeListener(this);
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_sense_colors_pager);
 
-        this.adapter = new ColorsAdapter(
+        ColorsAdapter adapter = new ColorsAdapter(
             new SenseColor(R.string.title_sense_colors_1, R.string.info_sense_colors_1, R.drawable.onboarding_sense_colors_1),
             new SenseColor(R.string.title_sense_colors_2, R.string.info_sense_colors_2, R.drawable.onboarding_sense_colors_2),
             new SenseColor(R.string.title_sense_colors_3, R.string.info_sense_colors_3, R.drawable.onboarding_sense_colors_3),
@@ -41,35 +56,53 @@ public class OnboardingSenseColorsFragment extends SenseFragment implements View
         );
         viewPager.setAdapter(adapter);
 
+        this.finalItem = adapter.getCount() - 1;
+
+        this.bottomContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sense_colors_bottom);
+        Views.observeNextLayout(bottomContainer).subscribe(ignored -> {
+            this.nextButtonMaxY = bottomContainer.getMeasuredHeight();
+            this.nextButtonMinY = nextButton.getY();
+            if (viewPager.getCurrentItem() == finalItem) {
+                nextButton.setY(nextButtonMinY);
+            } else {
+                nextButton.setY(nextButtonMaxY);
+            }
+        });
+
+        PageDots pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_sense_colors_dots);
+        pageDots.setOnPageChangeListener(this);
+        pageDots.attach(viewPager);
+
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_sense_colors_continue);
         Views.setSafeOnClickListener(nextButton, this::next);
 
         return view;
     }
 
+
     public void next(@NonNull View sender) {
         ((OnboardingActivity) getActivity()).showRoomCheckIntro();
     }
 
 
-    //region Images
-
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+        if (position == finalItem - 1) {
+            float newY = Animations.interpolateFrame(positionOffset, nextButtonMaxY, nextButtonMinY);
+            nextButton.setY(newY);
+        }
     }
 
     @Override
     public void onPageSelected(int position) {
-
+        if (position == finalItem && !bottomContainer.isDirty()) {
+            nextButton.setY(nextButtonMinY);
+        }
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
-
     }
-
-    //endregion
 
 
     private class ColorsAdapter extends PagerAdapter {

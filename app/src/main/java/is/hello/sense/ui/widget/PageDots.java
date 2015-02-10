@@ -32,12 +32,27 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
 
     //endregion
 
+
+    //region Constants
+
     private final LayoutParams dotLayout;
+
+    //endregion
+
+    //region Properties
 
     private Drawable selectedDrawable;
     private Drawable unselectedDrawable;
+
     private int count = 0;
     private int selection = 0;
+
+    private @Nullable ViewPager.OnPageChangeListener onPageChangeListener;
+
+    //endregion
+
+
+    //region Lifecycle
 
     public PageDots(@NonNull Context context) {
         this(context, null);
@@ -74,6 +89,8 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
             styles.recycle();
         }
     }
+
+    //endregion
 
 
     //region Internal
@@ -139,6 +156,8 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
             }
 
             case STYLE_BLUE: {
+                setSelectedResource(R.drawable.page_dot_blue_selected);
+                setUnselectedResource(R.drawable.page_dot_blue_unselected);
                 break;
             }
 
@@ -161,6 +180,10 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
         syncSelection();
     }
 
+    public void setOnPageChangeListener(@Nullable ViewPager.OnPageChangeListener onPageChangeListener) {
+        this.onPageChangeListener = onPageChangeListener;
+    }
+
     public void attach(@NonNull ViewPager viewPager) {
         viewPager.setOnPageChangeListener(this);
         PagerAdapter adapter = viewPager.getAdapter();
@@ -176,17 +199,24 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+        if (onPageChangeListener != null) {
+            onPageChangeListener.onPageScrolled(position, positionOffset, positionOffsetPixels);
+        }
     }
 
     @Override
     public void onPageSelected(int position) {
         setSelection(position);
+        if (onPageChangeListener != null) {
+            onPageChangeListener.onPageSelected(position);
+        }
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
-
+        if (onPageChangeListener != null) {
+            onPageChangeListener.onPageScrollStateChanged(state);
+        }
     }
 
     //endregion
