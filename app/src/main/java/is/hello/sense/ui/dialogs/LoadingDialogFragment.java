@@ -1,7 +1,6 @@
 package is.hello.sense.ui.dialogs;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,16 +14,17 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.common.SenseDialogFragment;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class LoadingDialogFragment extends DialogFragment {
+public class LoadingDialogFragment extends SenseDialogFragment {
     public static final String TAG = LoadingDialogFragment.class.getSimpleName();
 
     protected static final long DURATION_DONE_MESSAGE = 2 * 1000;
 
     protected static final String ARG_TITLE = LoadingDialogFragment.class.getName() + ".ARG_TITLE";
-    protected static final String ARG_WANTS_OPAQUE_BACKGROUND = LoadingDialogFragment.class.getName() + "._ARG_WANTS_OPAQUE_BACKGROUND";
+    protected static final String ARG_WANTS_OPAQUE_BACKGROUND = LoadingDialogFragment.class.getName() + ".ARG_WANTS_OPAQUE_BACKGROUND";
 
     private TextView titleText;
     private ProgressBar activityIndicator;
@@ -51,7 +51,7 @@ public class LoadingDialogFragment extends DialogFragment {
     public static void close(@NonNull FragmentManager fm) {
         LoadingDialogFragment dialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
         if (dialog != null) {
-            dialog.dismiss();
+            dialog.dismissSafely();
         }
     }
 
@@ -143,7 +143,7 @@ public class LoadingDialogFragment extends DialogFragment {
 
                                     new Handler().postDelayed(() -> {
                                         onCompletion.run();
-                                        dismiss();
+                                        dismissSafely();
                                     }, DURATION_DONE_MESSAGE);
                                 })
                                 .start();

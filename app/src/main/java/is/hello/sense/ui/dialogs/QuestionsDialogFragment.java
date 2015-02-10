@@ -247,7 +247,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
 
     public void bindQuestion(@Nullable Question question) {
         if (question == null) {
-            animateOutAllViews(this::dismiss);
+            animateOutAllViews(this::dismissSafely);
         } else {
             titleText.setText(question.getText());
 
