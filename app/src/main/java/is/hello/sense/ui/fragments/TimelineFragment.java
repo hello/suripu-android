@@ -171,6 +171,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         Views.setSafeOnClickListener(menuButton, ignored -> {
             HomeActivity activity = (HomeActivity) getActivity();
             activity.getSlidingLayersView().toggle();
+            listView.smoothScrollToPositionFromTop(0, 0);
         });
 
         this.shareButton = (ImageButton) headerView.findViewById(R.id.fragment_timeline_header_share);
