@@ -2,12 +2,15 @@ package is.hello.sense.ui.animation;
 
 import android.animation.Animator;
 import android.animation.TimeInterpolator;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -278,7 +281,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         }).alpha(1f);
     }
 
-    public PropertyAnimatorProxy fadeOut(int targetVisibility) {
+    public PropertyAnimatorProxy fadeOut(@ViewVisibility int targetVisibility) {
         return alpha(0f).addOnAnimationCompleted(finished -> {
             if (finished) {
                 view.setVisibility(targetVisibility);
@@ -304,7 +307,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         }).scale(1f).alpha(1f);
     }
 
-    public PropertyAnimatorProxy zoomOutTo(int targetVisibility, float endScale) {
+    public PropertyAnimatorProxy zoomOutTo(@ViewVisibility int targetVisibility, float endScale) {
         return scale(endScale).alpha(0f).addOnAnimationCompleted(finished -> {
             if (finished) {
                 view.setVisibility(targetVisibility);
@@ -354,4 +357,8 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     public interface OnAnimationCompleted {
         void onAnimationCompleted(boolean finished);
     }
+
+    @IntDef({View.VISIBLE, View.INVISIBLE, View.GONE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ViewVisibility {}
 }

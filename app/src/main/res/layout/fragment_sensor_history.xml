@@ -40,7 +40,6 @@
             android:layout_marginLeft="@dimen/gap_outer"
             android:layout_marginRight="@dimen/gap_outer"
             android:textAppearance="@style/AppTheme.Text.Body"
-            android:text="@string/mock_event_message"
             android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
         <Space

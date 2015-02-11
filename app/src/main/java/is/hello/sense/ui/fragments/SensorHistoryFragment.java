@@ -27,18 +27,17 @@ import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.BlockableScrollView;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
-import is.hello.sense.util.WelcomeDialogParser;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -53,8 +52,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     private BlockableScrollView scrollView;
     private TextView readingText;
     private TextView messageText;
-    private SelectorLinearLayout historyModeSelector;
     private TextView insightText;
+    private SelectorLinearLayout historyModeSelector;
     private String sensor;
 
     private ProgressBar loadingIndicator;
@@ -300,6 +299,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         private CharSequence savedReading;
         private CharSequence savedMessage;
+        private int savedScrollY;
 
         @Override
         public void onGraphHighlightBegin() {
@@ -309,7 +309,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             messageText.setGravity(Gravity.CENTER);
             messageText.setTextColor(getResources().getColor(R.color.text_dim));
 
+            insightText.setVisibility(View.GONE);
+
             scrollView.setScrollingEnabled(false);
+            this.savedScrollY = scrollView.getScrollY();
         }
 
         @Override
@@ -340,7 +343,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 messageText.setGravity(Gravity.START);
                 messageText.setTextColor(getResources().getColor(R.color.text_dark));
 
+                insightText.setVisibility(View.VISIBLE);
+
                 scrollView.setScrollingEnabled(true);
+                scrollView.post(() -> scrollView.smoothScrollTo(0, savedScrollY));
             });
         }
 
