@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -108,6 +109,6 @@ public class OnboardingSignInFragment extends InjectionFragment {
     }
 
     public void forgotPassword(@NonNull View sender) {
-        UserSupport.openUrl(getActivity(), UserSupport.FORGOT_PASSWORD_URL);
+        UserSupport.openUri(getActivity(), Uri.parse(UserSupport.FORGOT_PASSWORD_URL));
     }
 }

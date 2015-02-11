@@ -19,15 +19,12 @@ import is.hello.sense.util.SessionLogger;
 
 public class UserSupport {
     public static final String ORDER_URL = "https://order.hello.is";
-
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is/";
-
-    public static final String SUPPORT_URL = "https://guide.hello.is";
     public static final String SUPPORT_EMAIL = "support@hello.is";
 
-    public static void openUrl(@NonNull Context from, @NonNull String url) {
+    public static void openUri(@NonNull Context from, @NonNull Uri uri) {
         try {
-            from.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            from.startActivity(new Intent(Intent.ACTION_VIEW, uri));
         } catch (ActivityNotFoundException e) {
             SenseAlertDialog alertDialog = new SenseAlertDialog(from);
             alertDialog.setTitle(R.string.dialog_error_title);
@@ -39,7 +36,7 @@ public class UserSupport {
 
     public static void showSupport(@NonNull Context from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_HELP, null);
-        openUrl(from, SUPPORT_URL);
+        openUri(from, Uri.fromParts("https", BuildConfig.SUPPORT_AUTHORITY, null));
     }
 
     public static void showEmail(@NonNull Context from) {
@@ -68,20 +65,38 @@ public class UserSupport {
 
     public static void showForOnboardingStep(@NonNull Context from, @NonNull OnboardingStep onboardingStep) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP, onboardingStep.toProperty()));
-        openUrl(from, SUPPORT_URL);
+        openUri(from, onboardingStep.getUri());
     }
 
     public static void showForDeviceIssue(@NonNull Context from, @NonNull DeviceIssue issue) {
         Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE, issue.toProperty()));
-        openUrl(from, SUPPORT_URL);
+        openUri(from, issue.getUri());
     }
 
 
+    private static Uri buildSupportUrl(@NonNull String slug) {
+        return new Uri.Builder()
+                .scheme("http")
+                .authority(BuildConfig.SUPPORT_AUTHORITY)
+                .appendPath("troubleshoot")
+                .appendPath(slug)
+                .build();
+    }
+
     public static enum DeviceIssue {
-        UNSTABLE_BLUETOOTH,
-        SENSE_MISSING,
-        SLEEP_PILL_MISSING,
-        REPLACE_BATTERY;
+        UNSTABLE_BLUETOOTH(""),
+        SENSE_MISSING("sense-not-seen-in-days"),
+        SLEEP_PILL_MISSING("pill-not-seen-in-days"),
+        REPLACE_BATTERY("battery-change");
+
+        private final String slug;
+        private DeviceIssue(@NonNull String slug) {
+            this.slug = slug;
+        }
+
+        public Uri getUri() {
+            return buildSupportUrl(slug);
+        }
 
         public String toProperty() {
             return toString().toLowerCase();
@@ -89,15 +104,25 @@ public class UserSupport {
     }
 
     public static enum OnboardingStep {
-        INFO,
-        BLUETOOTH,
-        ENHANCED_AUDIO,
-        SETUP_SENSE,
-        WIFI_SCAN,
-        SIGN_INTO_WIFI,
-        PILL_PAIRING,
-        PILL_PLACEMENT,
-        UNSUPPORTED_DEVICE;
+        INFO(""),
+        DEMOGRAPHIC_QUESTIONS("demographic-questions"),
+        BLUETOOTH("pairing-sense"),
+        ENHANCED_AUDIO(""),
+        SETUP_SENSE("pairing-sense-ble"),
+        WIFI_SCAN("connecting-sense-wifi"),
+        SIGN_INTO_WIFI("connecting-sense-wifi"),
+        PILL_PAIRING("pairing-your-sleep-pill"),
+        PILL_PLACEMENT("attaching-sleep-pill"),
+        UNSUPPORTED_DEVICE("");
+
+        private final String slug;
+        private OnboardingStep(@NonNull String slug) {
+            this.slug = slug;
+        }
+
+        public Uri getUri() {
+            return buildSupportUrl(slug);
+        }
 
         public String toProperty() {
             return toString().toLowerCase();

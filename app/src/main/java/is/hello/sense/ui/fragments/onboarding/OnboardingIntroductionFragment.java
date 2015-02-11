@@ -134,7 +134,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
 
     public void buySense(@NonNull View sender) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_SENSE, null);
-        UserSupport.openUrl(getActivity(), UserSupport.ORDER_URL);
+        UserSupport.openUri(getActivity(), Uri.parse(UserSupport.ORDER_URL));
     }
 
     public void showRegister(@NonNull View sender) {
