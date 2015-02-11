@@ -14,11 +14,13 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animations;
@@ -29,6 +31,9 @@ import is.hello.sense.ui.widget.util.Views;
 
 public class GraphView extends View implements GraphAdapter.ChangeObserver {
     private static final int NONE = -1;
+
+    private static final int TOUCH_DELAY_MS = 50;
+    private static final int MSG_TOUCH_DELAY = 0x12;
 
     private @Nullable GraphDrawable graphDrawable;
     private int numberOfLines = 0;
@@ -52,6 +57,9 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
     private int highlightedSection = NONE, highlightedSegment = NONE;
     private boolean ignoreTouchUntilEnd = false;
+    private int touchSlop;
+    private float startEventX = 0f, startEventY = 0f;
+    private boolean trackingTouchEvents = false;
 
     private final Drawable.Callback DRAWABLE_CALLBACK = new Drawable.Callback() {
         @Override
@@ -93,6 +101,8 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         this.markerPointHalf = resources.getDimensionPixelSize(R.dimen.graph_point_size) / 2f;
 
         this.headerFooterPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+
+        this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop();
 
         headerTextPaint.setAntiAlias(true);
         headerTextPaint.setSubpixelText(true);
@@ -420,6 +430,28 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         alphaAnimator.start();
     }
 
+    private boolean shouldBeginTouchInteraction(float eventX, float eventY) {
+        return (Math.abs(eventX - startEventX) > touchSlop &&
+                Math.abs(eventX - startEventX) > Math.abs(eventY - startEventY));
+    }
+
+    private void beginTouchInteraction(float eventX) {
+        GraphAdapterCache adapterCache = getAdapterCache();
+        int width = getDrawingWidth();
+        int section = adapterCache.findSectionAtX(width, eventX);
+        int segment = adapterCache.findSegmentAtX(width, section, eventX);
+
+        setHighlightedValue(section, segment);
+        if (highlightListener != null) {
+            highlightListener.onGraphHighlightBegin();
+            highlightListener.onGraphValueHighlighted(section, segment);
+        }
+
+        animateHighlightAlphaTo(255, null);
+
+        this.trackingTouchEvents = true;
+    }
+
     private void cancelTouchInteraction() {
         if (highlightListener != null) {
             highlightListener.onGraphHighlightEnd();
@@ -430,12 +462,21 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         setHighlightedValue(NONE, NONE);
     }
 
+    private Message obtainBeginTouchInteractionMessage(float eventX) {
+        Message message = Message.obtain(getHandler(), () -> beginTouchInteraction(eventX));
+        message.what = MSG_TOUCH_DELAY;
+        return message;
+    }
+
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
+        getHandler().removeMessages(MSG_TOUCH_DELAY);
+
         if (ignoreTouchUntilEnd) {
             int action = event.getAction();
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 this.ignoreTouchUntilEnd = false;
+                this.trackingTouchEvents = false;
             }
 
             return false;
@@ -447,49 +488,62 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
         GraphAdapterCache adapterCache = getAdapterCache();
         int width = getDrawingWidth();
-        float x = Views.getNormalizedX(event);
-        int section = adapterCache.findSectionAtX(width, x);
-        int segment = adapterCache.findSegmentAtX(width, section, x);
-        setHighlightedValue(section, segment);
+        float eventX = Views.getNormalizedX(event),
+              eventY = Views.getNormalizedY(event);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                if (highlightListener != null) {
-                    highlightListener.onGraphHighlightBegin();
-                    highlightListener.onGraphValueHighlighted(section, segment);
-                }
+                this.startEventX = eventX;
+                this.startEventY = eventY;
 
-                animateHighlightAlphaTo(255, null);
+                this.trackingTouchEvents = false;
 
-                break;
+                Message message = obtainBeginTouchInteractionMessage(eventX);
+                getHandler().sendMessageDelayed(message, TOUCH_DELAY_MS);
+
+                return true;
             }
 
             case MotionEvent.ACTION_MOVE: {
-                if (highlightListener != null) {
-                    highlightListener.onGraphValueHighlighted(section, segment);
+                if (trackingTouchEvents) {
+                    int section = adapterCache.findSectionAtX(width, eventX);
+                    int segment = adapterCache.findSegmentAtX(width, section, eventX);
+
+                    setHighlightedValue(section, segment);
+                    if (highlightListener != null) {
+                        highlightListener.onGraphValueHighlighted(section, segment);
+                    }
+                } else if (shouldBeginTouchInteraction(eventX, eventY)) {
+                    beginTouchInteraction(eventX);
                 }
 
                 break;
             }
 
             case MotionEvent.ACTION_UP: {
-                if (highlightListener != null) {
-                    highlightListener.onGraphHighlightEnd();
+                if (trackingTouchEvents) {
+                    if (highlightListener != null) {
+                        highlightListener.onGraphHighlightEnd();
+                    }
+
+                    animateHighlightAlphaTo(0, () -> setHighlightedValue(NONE, NONE));
                 }
+                this.trackingTouchEvents = false;
 
-                animateHighlightAlphaTo(0, () -> setHighlightedValue(NONE, NONE));
-
-                break;
+                return true;
             }
 
             case MotionEvent.ACTION_CANCEL: {
-                cancelTouchInteraction();
+                if (trackingTouchEvents) {
+                    cancelTouchInteraction();
+                }
+                this.trackingTouchEvents = false;
 
-                break;
+                return true;
             }
         }
 
-        return true;
+        return trackingTouchEvents;
     }
 
     @Override
