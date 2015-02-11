@@ -50,6 +50,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSetup2ndPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
@@ -401,15 +402,26 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         }
     }
 
-    private OnboardingSimpleStepFragment.Builder createSenseColorsBuilder() {
-        OnboardingSimpleStepFragment.Builder senseColorsBuilder = new OnboardingSimpleStepFragment.Builder(this);
-        senseColorsBuilder.setHeadingText(R.string.title_sense_colors);
-        senseColorsBuilder.setSubheadingText(R.string.info_sense_colors);
-        senseColorsBuilder.setDiagramImage(R.drawable.onboarding_sense_colors);
-        senseColorsBuilder.setHideToolbar(true);
-        senseColorsBuilder.setNextWantsBackStackEntry(false);
-        senseColorsBuilder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_COLORS);
+    public void showPillInstructions() {
+        OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
+        builder.setHeadingText(R.string.title_intro_sleep_pill);
+        builder.setSubheadingText(R.string.info_intro_sleep_pill);
+        builder.setDiagramImage(R.drawable.onboarding_clip_pill);
+        builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_PLACEMENT);
+        builder.setHelpStep(UserSupport.OnboardingStep.PILL_PLACEMENT);
 
+        builder.setNextFragmentClass(OnboardingSenseColorsFragment.class);
+
+        pushFragment(builder.toFragment(), null, true);
+    }
+
+    public void showSenseColorsInfo() {
+        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
+
+        pushFragment(new OnboardingSenseColorsFragment(), null, false);
+    }
+
+    public void showRoomCheckIntro() {
         OnboardingSimpleStepFragment.Builder introBuilder = new OnboardingSimpleStepFragment.Builder(this);
         introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
         introBuilder.setHeadingText(R.string.onboarding_title_room_check);
@@ -419,30 +431,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         introBuilder.setExitAnimationName(ANIMATION_ROOM_CHECK);
         introBuilder.setNextWantsBackStackEntry(false);
         introBuilder.setAnalyticsEvent(Analytics.Onboarding.EVENT_ROOM_CHECK);
-        senseColorsBuilder.setNextFragmentArguments(introBuilder.toArguments());
-        senseColorsBuilder.setNextFragmentClass(OnboardingSimpleStepFragment.class);
-
-        return senseColorsBuilder;
-    }
-
-    public void showPillInstructions() {
-        OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
-        builder.setHeadingText(R.string.title_intro_sleep_pill);
-        builder.setSubheadingText(R.string.info_intro_sleep_pill);
-        builder.setDiagramImage(R.drawable.onboarding_clip_pill);
-        builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_PLACEMENT);
-        builder.setHelpStep(UserSupport.OnboardingStep.PILL_PLACEMENT);
-
-        builder.setNextFragmentArguments(createSenseColorsBuilder().toArguments());
-        builder.setNextFragmentClass(OnboardingSimpleStepFragment.class);
-
-        pushFragment(builder.toFragment(), null, true);
-    }
-
-    public void showSenseColorsInfo() {
-        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
-
-        pushFragment(createSenseColorsBuilder().toFragment(), null, false);
+        pushFragment(introBuilder.toFragment(), null, true);
     }
 
     public void showSmartAlarmInfo() {

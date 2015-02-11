@@ -49,7 +49,7 @@
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>
     <string name="condition_humidity">Humidity</string>
-    <string name="condition_particulates">Particulates</string>
+    <string name="condition_particulates">AQI</string>
 
     <string name="missing_data_placeholder">--</string>
 
@@ -141,8 +141,16 @@ so you can sleep better.</string>
     <string name="info_onboarding_sleep_pill_color">Choose an LED color for your Sleep Pill so you know which one is yours.</string>
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
     <string name="info_pair_pill">Shake your Sleep Pill for three seconds to pair it with your Sense. You may need to shake it quickly for it to register.</string>
-    <string name="title_sense_colors">Before you sleep</string>
-    <string name="info_sense_colors">You’ll want to check that everything’s set for a good nights sleep. Simply wave your hand over Sense, and instantly you’ll know about the conditions in your room. Go ahead, give it a try now.</string>
+    <string name="title_sense_colors_1">Sense Colors</string>
+    <string name="info_sense_colors_1">Sense glows to tell you about the conditions in your bedroom – including temperature, humidity, AQI, light, and sound. Sense has three different colors.</string>
+    <string name="title_sense_colors_2">All good.</string>
+    <string name="info_sense_colors_2">Sense glows green when the conditions in your room are just right for a good night‘s sleep.</string>
+    <string name="title_sense_colors_3">Something‘s not right.</string>
+    <string name="info_sense_colors_3">Sense glows yellow when something in your bedroom is not quite right. Check the Sense app for details.</string>
+    <string name="title_sense_colors_4">We‘ve got a problem.</string>
+    <string name="info_sense_colors_4">Sense glows red when the conditions in your bedroom would prevent restful sleep. Check the Sense app for details.</string>
+    <string name="title_sense_colors_5">Just wave.</string>
+    <string name="info_sense_colors_5">Just wave your hand over Sense and instantly you‘ll know about the conditions in your bedroom. Go ahead, give it a try now.</string>
     <string name="onboarding_done_message_1">You’re all set up</string>
     <string name="onboarding_done_message_2">Now, all you need to\ndo is sleep</string>
     <string name="error_wifi_connection_failed">Sense could not connect to the wifi network. Make sure you‘re within range, double check your password, and try again.</string>
@@ -374,7 +382,7 @@ so you can sleep better.</string>
     <string name="welcome_dialog_timeline_before_sleep">The “Before Sleep” tab will summarize the conditions of your bedroom before you went to sleep. Too hot? Noisy? You‘ll see it here.</string>
     <string name="welcome_dialog_timeline_events">Your Sleep Timeline shows you a minute-by-minute record of your night. The blue bars break your sleep out into three categories:\n\nLight, Medium and Deep Sleep.</string>
     <string name="welcome_dialog_current_conditions_title">Current Conditions</string>
-    <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom: Temperature, Humidity, Particulates, Light, and Sound. Tap a card for more details.</string>
+    <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom: Temperature, Humidity, Light, and Sound. Tap a card for more details.</string>
     <string name="welcome_dialog_trends_title">Trends</string>
     <string name="welcome_dialog_trends">To see how your sleep is changing over time, sometimes it’s helpful to take a step back. After a week using Sense, this view will show you historical data on your sleep patterns. If you don\'t see any data yet, check back later.</string>
     <string name="welcome_dialog_alarm_title">Set An Alarm</string>
