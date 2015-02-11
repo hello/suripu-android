@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -56,6 +57,11 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     private TextView title;
     private TextView message;
 
+    private Button adjustTimeButton;
+    private ProgressBar adjustTimeActivity;
+
+    private boolean adjustingTime = false;
+
 
     public static TimelineEventDialogFragment newInstance(@NonNull TimelineSegment segment) {
         TimelineEventDialogFragment dialogFragment = new TimelineEventDialogFragment();
@@ -93,9 +99,17 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         this.message = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_message);
 
         if (timelineSegment.isTimeAdjustable()) {
-            Button adjustTime = (Button) dialog.findViewById(R.id.dialog_fragment_timeline_event_adjust_time);
-            adjustTime.setVisibility(View.VISIBLE);
-            Views.setSafeOnClickListener(adjustTime, this::adjustSegmentTime);
+            ViewGroup adjustContainer = (ViewGroup) dialog.findViewById(R.id.dialog_fragment_timeline_event_adjust_time_container);
+            adjustContainer.setVisibility(View.VISIBLE);
+
+            this.adjustTimeActivity = (ProgressBar) adjustContainer.findViewById(R.id.dialog_fragment_timeline_event_adjust_time_activity);
+            this.adjustTimeButton = (Button) adjustContainer.findViewById(R.id.dialog_fragment_timeline_event_adjust_time_button);
+            Views.setSafeOnClickListener(adjustTimeButton, this::adjustSegmentTime);
+
+            if (adjustingTime) {
+                adjustTimeActivity.setVisibility(View.VISIBLE);
+                adjustTimeButton.setVisibility(View.INVISIBLE);
+            }
 
             MarginLayoutParams layoutParams = (MarginLayoutParams) message.getLayoutParams();
             layoutParams.bottomMargin = 0;
@@ -272,6 +286,10 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
 
     //region Adjust Time
 
+    private AdjustTimeFragment getTimeAdjustFragment() {
+        return (AdjustTimeFragment) getTargetFragment();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -282,11 +300,21 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
             DateTime newTimestamp = timelineSegment.getShiftedTimestamp()
                                                    .withHourOfDay(hour)
                                                    .withMinuteOfHour(minute);
-            AdjustTimeFragment adjustTimeFragment = (AdjustTimeFragment) getTargetFragment();
-            adjustTimeFragment.onAdjustSegmentTime(timelineSegment, newTimestamp, success -> {
-                if (success) {
-                    setTimelineSegment(timelineSegment.withTimestamp(newTimestamp));
-                }
+
+            this.adjustingTime = true;
+            adjustTimeActivity.setVisibility(View.VISIBLE);
+            adjustTimeButton.setVisibility(View.INVISIBLE);
+
+            getTimeAdjustFragment().onAdjustSegmentTime(timelineSegment, newTimestamp, success -> {
+                coordinator.postOnResume(() -> {
+                    this.adjustingTime = false;
+
+                    adjustTimeActivity.setVisibility(View.GONE);
+                    adjustTimeButton.setVisibility(View.VISIBLE);
+                    if (success) {
+                        setTimelineSegment(timelineSegment.withTimestamp(newTimestamp));
+                    }
+                });
             });
         }
     }

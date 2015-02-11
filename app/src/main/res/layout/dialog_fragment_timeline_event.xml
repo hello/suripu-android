@@ -44,13 +44,28 @@
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/missing_data_placeholder"/>
 
-    <Button
-        android:id="@+id/dialog_fragment_timeline_event_adjust_time"
+    <FrameLayout
+        android:id="@+id/dialog_fragment_timeline_event_adjust_time_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/gap_medium"
-        android:text="@string/action_adjust_time"
-        style="@style/AppTheme.Button.Borderless.Accent"
-        android:visibility="gone"/>
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/dialog_fragment_timeline_event_adjust_time_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_adjust_time"
+            style="@style/AppTheme.Button.Borderless.Accent"/>
+
+        <is.hello.sense.ui.widget.TintedProgressBar
+            android:id="@+id/dialog_fragment_timeline_event_adjust_time_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            style="@android:style/Widget.ProgressBar.Small"/>
+
+    </FrameLayout>
 
 </LinearLayout>

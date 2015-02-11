@@ -367,18 +367,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onAdjustSegmentTime(@NonNull TimelineSegment segment,
                                     @NonNull DateTime newTimestamp,
                                     @NonNull Action1<Boolean> continuation) {
-        LoadingDialogFragment.show(getFragmentManager());
-
         Feedback correction = new Feedback();
         correction.setEventType(segment.getEventType());
         correction.setDay(getDate().toLocalDate());
         correction.setTimestamp(newTimestamp);
         bindAndSubscribe(timelinePresenter.submitCorrection(correction),
                          ignored -> {
-                             LoadingDialogFragment.close(getFragmentManager());
                              continuation.call(true);
                          }, e -> {
-                             LoadingDialogFragment.close(getFragmentManager());
                              ErrorDialogFragment.presentError(getFragmentManager(), e);
                              continuation.call(false);
                          });
