@@ -12,14 +12,12 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.XmlRes;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -27,19 +25,17 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.adapter.ViewPagerAdapter;
+import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.WelcomeDialogParser;
 
-import static android.widget.LinearLayout.LayoutParams;
-
-public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageChangeListener {
+public class WelcomeDialog extends DialogFragment {
     public static final String TAG = WelcomeDialog.class.getSimpleName();
 
     private static final String ARG_ITEMS = WelcomeDialog.class.getName() + ".ARG_ITEMS";
-
-    private LinearLayout pageDots;
 
     private Item[] items;
     private ItemAdapter adapter;
@@ -98,11 +94,8 @@ public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageCha
     }
 
     public static boolean showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes) {
-        if (!shouldShow(activity, welcomeRes)) {
-            return false;
-        }
-
-        return show(activity, welcomeRes);
+        return (shouldShow(activity, welcomeRes) &&
+                show(activity, welcomeRes));
     }
 
     public static WelcomeDialog newInstance(@NonNull Item[] items) {
@@ -130,31 +123,20 @@ public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageCha
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(true);
 
-        this.pageDots = (LinearLayout) dialog.findViewById(R.id.dialog_welcome_page_dots);
-        if (items.length > 1) {
-            int dotSize = getResources().getDimensionPixelSize(R.dimen.page_dot_size);
-            int dotMargin = getResources().getDimensionPixelSize(R.dimen.page_dot_margin);
-            LayoutParams dotLayout = new LayoutParams(dotSize, dotSize);
-            dotLayout.setMargins(dotMargin, dotMargin, dotMargin, dotMargin);
-            for (Item ignored : items) {
-                ImageView dot = new ImageView(getActivity());
-                dot.setScaleType(ImageView.ScaleType.CENTER);
-                dot.setImageResource(R.drawable.page_dot_selected);
-                pageDots.addView(dot, dotLayout);
-            }
-            setSelectedPageDot(0);
-        }
-
         this.viewPager = (ViewPager) dialog.findViewById(R.id.dialog_welcome_view_pager);
 
         int pageMargin = getResources().getDimensionPixelSize(R.dimen.gap_outer);
         viewPager.setClipToPadding(false);
         viewPager.setPadding(pageMargin, 0, pageMargin, 0);
         viewPager.setPageMargin(pageMargin);
-        viewPager.setOnPageChangeListener(this);
 
         this.adapter = new ItemAdapter();
         viewPager.setAdapter(adapter);
+
+        if (items.length > 1) {
+            PageDots pageDots = (PageDots) dialog.findViewById(R.id.dialog_welcome_page_dots);
+            pageDots.attach(viewPager);
+        }
 
         int maxWidth = getResources().getDimensionPixelSize(R.dimen.dialog_max_width);
         Views.observeNextLayout(dialog.getWindow().getDecorView())
@@ -174,30 +156,6 @@ public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageCha
     //endregion
 
 
-    public void setSelectedPageDot(int selection) {
-        for (int i = 0, count = pageDots.getChildCount(); i < count; i++) {
-            ImageView dot = (ImageView) pageDots.getChildAt(i);
-            if (i == selection) {
-                dot.setImageResource(R.drawable.page_dot_selected);
-            } else {
-                dot.setImageResource(R.drawable.page_dot_unselected);
-            }
-        }
-    }
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        setSelectedPageDot(position);
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-    }
-
     public void next() {
         if (viewPager.getCurrentItem() < adapter.getCount() - 1) {
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
@@ -207,7 +165,7 @@ public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageCha
     }
 
 
-    public class ItemAdapter extends PagerAdapter {
+    public class ItemAdapter extends ViewPagerAdapter<ItemAdapter.ViewHolder> {
         private final LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         @Override
@@ -216,35 +174,25 @@ public class WelcomeDialog extends DialogFragment implements ViewPager.OnPageCha
         }
 
         @Override
-        public boolean isViewFromObject(View view, Object object) {
-            ViewHolder holder = (ViewHolder) object;
-            return (holder.itemView == view);
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public ViewHolder createViewHolder(ViewGroup container, int position) {
             View itemView = inflater.inflate(R.layout.item_dialog_welcome, container, false);
-            ViewHolder holder = new ViewHolder(itemView, (position == getCount() - 1));
-            holder.bindItem(items[position]);
-            container.addView(itemView);
-            return holder;
+            return new ViewHolder(itemView, (position == getCount() - 1));
         }
 
         @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            ViewHolder holder = (ViewHolder) object;
-            container.removeView(holder.itemView);
+        public void bindViewHolder(ViewHolder holder, int position) {
+            Item item = items[position];
+            holder.bindItem(item);
         }
 
 
-        private class ViewHolder {
-            final View itemView;
+        class ViewHolder extends ViewPagerAdapter.ViewHolder {
             final ImageView diagramImage;
             final TextView titleText;
             final TextView messageText;
 
             private ViewHolder(@NonNull View itemView, boolean lastItem) {
-                this.itemView = itemView;
+                super(itemView);
 
                 this.diagramImage = (ImageView) itemView.findViewById(R.id.fragment_dialog_welcome_item_diagram);
                 this.titleText = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_title);

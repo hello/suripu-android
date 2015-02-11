@@ -21,7 +21,7 @@ public class Animations {
     }
 
     public static float interpolateFrame(float frameValue, float min, float max) {
-        return min + (max - min) * frameValue;
+        return min + frameValue * (max - min);
     }
 
     public static final class Properties {
