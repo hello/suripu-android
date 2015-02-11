@@ -163,11 +163,15 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
 
     class Adapter extends ArrayAdapter<SensorEntry> {
         private final LayoutInflater inflater;
+        private final int graphBottomInset;
 
         Adapter(@NonNull Context context, @NonNull SensorEntry[] conditions) {
             super(context, R.layout.item_room_sensor_condition, conditions);
 
             this.inflater = LayoutInflater.from(context);
+
+            Resources resources = context.getResources();
+            this.graphBottomInset = resources.getDimensionPixelSize(R.dimen.item_room_sensor_condition_graph_inset);
         }
 
 
@@ -223,6 +227,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
                 this.message = (TextView) view.findViewById(R.id.item_sensor_condition_message);
 
                 this.lineGraphDrawable = new LineGraphDrawable(getResources());
+                lineGraphDrawable.setBottomInset(graphBottomInset);
 
                 View graph = view.findViewById(R.id.fragment_room_sensor_condition_graph);
                 graph.setBackground(lineGraphDrawable);
