@@ -369,7 +369,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                                     @NonNull Action1<Boolean> continuation) {
         LoadingDialogFragment.show(getFragmentManager());
 
-        Feedback correction = new Feedback(segment.getEventType(), newTimestamp);
+        Feedback correction = new Feedback();
+        correction.setEventType(segment.getEventType());
+        correction.setDay(getDate().toLocalDate());
+        correction.setTimestamp(newTimestamp);
         bindAndSubscribe(timelinePresenter.submitCorrection(correction),
                          ignored -> {
                              LoadingDialogFragment.close(getFragmentManager());
