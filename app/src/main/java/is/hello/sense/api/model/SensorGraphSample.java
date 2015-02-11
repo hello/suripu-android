@@ -9,7 +9,7 @@ import is.hello.sense.api.ApiService;
 
 public class SensorGraphSample extends ApiResponse {
     @JsonProperty("value")
-    private long value;
+    private float value;
 
     @JsonProperty("datetime")
     private DateTime time;
@@ -22,12 +22,12 @@ public class SensorGraphSample extends ApiResponse {
         return (value == ApiService.PLACEHOLDER_VALUE);
     }
 
-    public long getValue() {
+    public float getValue() {
         return value;
     }
 
-    public long getNormalizedValue() {
-        return Math.max(0, value);
+    public float getNormalizedValue() {
+        return Math.max(0f, value);
     }
 
     public DateTimeZone getTimeZone() {
