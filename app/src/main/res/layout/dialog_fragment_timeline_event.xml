@@ -44,4 +44,13 @@
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/missing_data_placeholder"/>
 
+    <Button
+        android:id="@+id/dialog_fragment_timeline_event_adjust_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/gap_medium"
+        android:text="@string/action_adjust_time"
+        style="@style/AppTheme.Button.Borderless.Accent"
+        android:visibility="gone"/>
+
 </LinearLayout>

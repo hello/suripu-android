@@ -430,4 +430,5 @@ so you can sleep better.</string>
     <string name="error_alarm_too_soon">Too Soon! The alarm you set is only a couple minutes away. If you want to test the Alarm, please set an alarm for a bit later.</string>
     <string name="timeline_share_contents_fmt">Last night my sleep score was %1$s — can you beat it? http://hello.is</string>
     <string name="action_more_info">More info</string>
+    <string name="action_adjust_time">Adjust Time</string>
 </resources>

@@ -11,6 +11,7 @@ import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.DevicesInfo;
+import is.hello.sense.api.model.Feedback;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
 import is.hello.sense.api.model.RoomSensorHistory;
@@ -117,6 +118,9 @@ public interface ApiService {
 
     @GET("/insights/info/{category}")
     Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") InsightCategory category);
+
+    @POST("/feedback/sleep")
+    Observable<VoidResponse> submitCorrect(@NonNull @Body Feedback correction);
 
     //endregion
 

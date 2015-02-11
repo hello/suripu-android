@@ -3,7 +3,9 @@ package is.hello.sense.ui.dialogs;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
@@ -12,10 +14,14 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 
 import javax.inject.Inject;
 
@@ -28,11 +34,15 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SoundPlayer;
+import rx.functions.Action1;
+
+import static android.view.ViewGroup.MarginLayoutParams;
 
 public final class TimelineEventDialogFragment extends InjectionDialogFragment implements SeekBar.OnSeekBarChangeListener, SoundPlayer.OnEventListener {
     public static final String TAG = TimelineEventDialogFragment.class.getSimpleName();
 
     private static final String ARG_SEGMENT = TimelineEventDialogFragment.class.getSimpleName() + ".ARG_SEGMENT";
+    private static final int REQUEST_CODE_ADJUST_TIME = 0x12;
 
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
@@ -43,6 +53,8 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     private ImageView soundPlayButton;
     private SeekBar soundSeekBar;
     private ValueAnimator soundPlayPulseAnimator;
+    private TextView title;
+    private TextView message;
 
 
     public static TimelineEventDialogFragment newInstance(@NonNull TimelineSegment segment) {
@@ -77,15 +89,17 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         ImageButton closeButton = (ImageButton) dialog.findViewById(R.id.dialog_fragment_timeline_event_close);
         Views.setSafeOnClickListener(closeButton, ignored -> dismiss());
 
-        TextView title = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_title);
-        String eventName = getString(timelineSegment.getEventType().nameString);
-        boolean use24Time = preferences.getBoolean(PreferencesPresenter.USE_24_TIME, false);
-        String formattedTime = dateFormatter.formatAsTime(timelineSegment.getShiftedTimestamp(), use24Time);
-        title.setText(getString(R.string.title_timeline_event_fmt, eventName, formattedTime));
+        this.title = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_title);
+        this.message = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_message);
 
-        TextView message = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_message);
-        markdown.render(timelineSegment.getMessage())
-                .subscribe(message::setText, e -> message.setText(R.string.missing_data_placeholder));
+        if (timelineSegment.isTimeAdjustable()) {
+            Button adjustTime = (Button) dialog.findViewById(R.id.dialog_fragment_timeline_event_adjust_time);
+            adjustTime.setVisibility(View.VISIBLE);
+            Views.setSafeOnClickListener(adjustTime, this::adjustSegmentTime);
+
+            MarginLayoutParams layoutParams = (MarginLayoutParams) message.getLayoutParams();
+            layoutParams.bottomMargin = 0;
+        }
 
         if (timelineSegment.getSound() != null) {
             View soundControls = LayoutInflater.from(getActivity()).inflate(R.layout.sub_fragment_timeline_event_sound, container, false);
@@ -107,6 +121,8 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
             container.addView(soundControls);
         }
 
+        bindTimelineSegment();
+
         return dialog;
     }
 
@@ -119,6 +135,27 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
             soundPlayer.recycle();
         }
     }
+
+
+    //region Binding
+
+    private void bindTimelineSegment() {
+        String eventName = getString(timelineSegment.getEventType().nameString);
+        boolean use24Time = preferences.getBoolean(PreferencesPresenter.USE_24_TIME, false);
+        String formattedTime = dateFormatter.formatAsTime(timelineSegment.getShiftedTimestamp(), use24Time);
+
+        title.setText(getString(R.string.title_timeline_event_fmt, eventName, formattedTime));
+        markdown.renderInto(message, timelineSegment.getMessage());
+    }
+
+    private void setTimelineSegment(@NonNull TimelineSegment newSegment) {
+        this.timelineSegment = newSegment;
+        getArguments().putSerializable(ARG_SEGMENT, newSegment);
+
+        bindTimelineSegment();
+    }
+
+    //endregion
 
 
     //region Sound Playback
@@ -231,4 +268,43 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     }
 
     //endregion
+
+
+    //region Adjust Time
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_ADJUST_TIME && resultCode == Activity.RESULT_OK) {
+            int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 12);
+            int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 0);
+            DateTime newTimestamp = timelineSegment.getShiftedTimestamp()
+                                                   .withHourOfDay(hour)
+                                                   .withMinuteOfHour(minute);
+            AdjustTimeFragment adjustTimeFragment = (AdjustTimeFragment) getTargetFragment();
+            adjustTimeFragment.onAdjustSegmentTime(timelineSegment, newTimestamp, success -> {
+                if (success) {
+                    setTimelineSegment(timelineSegment.withTimestamp(newTimestamp));
+                }
+            });
+        }
+    }
+
+    public void adjustSegmentTime(@NonNull View sender) {
+        LocalTime eventTime = timelineSegment.getShiftedTimestamp().toLocalTime();
+        boolean use24Time = preferences.getBoolean(PreferencesPresenter.USE_24_TIME, false);
+        TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(eventTime, use24Time);
+        dialogFragment.setTargetFragment(this, REQUEST_CODE_ADJUST_TIME);
+        dialogFragment.show(getFragmentManager(), TimePickerDialogFragment.TAG);
+    }
+
+    //endregion
+
+
+    public interface AdjustTimeFragment {
+        void onAdjustSegmentTime(@NonNull TimelineSegment segment,
+                                 @NonNull DateTime newTimestamp,
+                                 @NonNull Action1<Boolean> continuation);
+    }
 }
