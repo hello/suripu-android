@@ -46,7 +46,7 @@
             android:layout_marginLeft="@dimen/gap_outer"
             android:layout_marginRight="@dimen/gap_outer"
             android:layout_gravity="center"
-            android:text="@string/action_done"
+            android:text="@string/action_submit"
             android:visibility="invisible"
             style="@style/AppTheme.Button.Rounded" />
 
