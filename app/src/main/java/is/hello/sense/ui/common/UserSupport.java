@@ -87,7 +87,8 @@ public class UserSupport {
         UNSTABLE_BLUETOOTH(""),
         SENSE_MISSING("sense-not-seen-in-days"),
         SLEEP_PILL_MISSING("pill-not-seen-in-days"),
-        REPLACE_BATTERY("battery-change");
+        REPLACE_BATTERY("battery-change"),
+        PAIRING_2ND_PILL("setting-up-second-sleep-pill");
 
         private final String slug;
         private DeviceIssue(@NonNull String slug) {

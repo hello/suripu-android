@@ -255,6 +255,13 @@ public final class Styles {
                         UserSupport.showEmail(activity);
                     }
                 };
+            } else if ("#second-pill".equals(url)) {
+                clickableSpan = new ClickableSpan() {
+                    @Override
+                    public void onClick(View widget) {
+                        UserSupport.showForDeviceIssue(activity, UserSupport.DeviceIssue.PAIRING_2ND_PILL);
+                    }
+                };
             }
 
             int spanStart = contents.getSpanStart(urlSpan);
