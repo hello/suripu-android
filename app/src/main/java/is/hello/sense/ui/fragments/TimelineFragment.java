@@ -42,7 +42,6 @@ import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
@@ -88,6 +87,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private HomeActivity homeActivity;
     private boolean modifyAlarmButton = false;
+    private TimelineHeaderDrawable tabsBackgroundDrawable;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date, @Nullable Timeline cachedTimeline) {
@@ -137,8 +137,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         this.headerView = (ViewGroup) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
         Animations.Properties.DEFAULT.apply(headerView.getLayoutTransition(), false);
 
-        TimelineHeaderDrawable tabsDrawable = new TimelineHeaderDrawable(getResources());
-        headerView.setBackground(tabsDrawable);
+        this.tabsBackgroundDrawable = new TimelineHeaderDrawable(getResources());
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
@@ -148,7 +147,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         });
 
         this.headerModeSelector = (SelectorLinearLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
-        headerModeSelector.setSelectionAwareDrawable(tabsDrawable);
+        headerModeSelector.setVisibility(View.INVISIBLE);
+        headerModeSelector.setSelectionAwareDrawable(tabsBackgroundDrawable);
         headerModeSelector.setOnSelectionChangedListener(this);
         headerModeSelector.setSelectedIndex(0);
 
@@ -293,6 +293,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             if (hasSegments) {
                 timelineEventsHeader.setVisibility(View.VISIBLE);
                 shareButton.setVisibility(View.VISIBLE);
+
+                headerView.setBackground(tabsBackgroundDrawable);
+                headerModeSelector.setVisibility(View.VISIBLE);
 
                 HomeActivity activity = (HomeActivity) getActivity();
                 if (activity.getWillShowUnderside()) {
