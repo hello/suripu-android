@@ -119,7 +119,7 @@ public interface ApiService {
     @GET("/insights/info/{category}")
     Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") InsightCategory category);
 
-    @POST("/feedback")
+    @POST("/feedback/sleep")
     Observable<VoidResponse> submitCorrect(@NonNull @Body Feedback correction);
 
     //endregion
