@@ -206,7 +206,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 return;
             }
 
-            Observable<Update> update = Update.forHistorySeries(history, sensorHistoryPresenter.getMode());
+            Observable<Update> update = Update.forHistorySeries(history, sensorHistoryPresenter.getMode(), false);
             bindAndSubscribe(update, this::update, this::historyUnavailable);
 
             this.unitSystem = historyAndUnits.unitSystem;

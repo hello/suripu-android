@@ -132,7 +132,8 @@ public class SensorHistoryAdapter implements GraphAdapter {
         }
 
         public static Observable<Update> forHistorySeries(@Nullable List<SensorGraphSample> history,
-                                                          @NonNull SensorHistoryPresenter.Mode mode) {
+                                                          @NonNull SensorHistoryPresenter.Mode mode,
+                                                          boolean normalize) {
             Observable<Update> operation = Observable.create(s -> {
                 if (history == null || history.isEmpty()) {
                     s.onNext(Update.empty());
@@ -147,7 +148,7 @@ public class SensorHistoryAdapter implements GraphAdapter {
                             return (shiftedTime.getDayOfMonth() * 100) + (shiftedTime.getHourOfDay() / 6);
                         };
                     }
-                    List<SensorGraphSample> normalizedHistory = normalizeDataSeries(history);
+                    List<SensorGraphSample> normalizedHistory = normalize ? normalizeDataSeries(history) : history;
                     List<List<SensorGraphSample>> segments = segment(segmentKeyProducer, normalizedHistory);
                     List<Section> sections = map(segments, Section::new);
 

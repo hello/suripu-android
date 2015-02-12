@@ -107,7 +107,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
             sensorInfo.errorMessage = null;
 
             ArrayList<SensorGraphSample> sensorDataRun = histories.get(i);
-            Observable<Update> update = Update.forHistorySeries(sensorDataRun, SensorHistoryPresenter.Mode.DAY);
+            Observable<Update> update = Update.forHistorySeries(sensorDataRun, SensorHistoryPresenter.Mode.DAY, true);
             bindAndSubscribe(update,
                              sensorInfo.graphAdapter::update,
                              e -> {
