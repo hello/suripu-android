@@ -387,6 +387,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
             return false;
         });
+
         return true;
     }
 

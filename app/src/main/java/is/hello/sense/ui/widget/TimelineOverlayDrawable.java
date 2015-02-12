@@ -10,7 +10,10 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.text.format.DateUtils;
+
+import net.danlew.android.joda.DateUtils;
+
+import org.joda.time.Duration;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
@@ -34,7 +37,7 @@ public class TimelineOverlayDrawable extends Drawable {
                                    @NonNull Rect maskedArea,
                                    @NonNull TimelineSegment segment) {
         Resources resources = context.getResources();
-        int overlayColor = resources.getColor(R.color.background_light_overlay);
+        int overlayColor = resources.getColor(R.color.background_timeline_overlay);
         overlayPaint.setColor(overlayColor);
 
         int textSize = resources.getDimensionPixelOffset(R.dimen.text_size_body);
@@ -50,7 +53,7 @@ public class TimelineOverlayDrawable extends Drawable {
 
         this.maskedArea = maskedArea;
         this.topText = resources.getString(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
-        this.bottomText = DateUtils.getRelativeTimeSpanString(context, segment.getDuration()).toString();
+        this.bottomText = DateUtils.formatDuration(context, Duration.standardSeconds(segment.getDuration())).toString();
     }
 
     @Override
@@ -78,12 +81,16 @@ public class TimelineOverlayDrawable extends Drawable {
     @Override
     public void setAlpha(int alpha) {
         overlayPaint.setAlpha(alpha);
+        topTextPaint.setAlpha(alpha);
+        bottomTextPaint.setAlpha(alpha);
         invalidateSelf();
     }
 
     @Override
     public void setColorFilter(ColorFilter cf) {
         overlayPaint.setColorFilter(cf);
+        topTextPaint.setColorFilter(cf);
+        bottomTextPaint.setColorFilter(cf);
         invalidateSelf();
     }
 
