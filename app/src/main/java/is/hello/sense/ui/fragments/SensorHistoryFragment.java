@@ -206,7 +206,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 return;
             }
 
-            Observable<Update> update = Update.forHistorySeries(history, sensorHistoryPresenter.getMode());
+            Observable<Update> update = Update.forHistorySeries(history, sensorHistoryPresenter.getMode(), false);
             bindAndSubscribe(update, this::update, this::historyUnavailable);
 
             this.unitSystem = historyAndUnits.unitSystem;
@@ -234,25 +234,25 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             notifyDataChanged();
         }
 
-        private CharSequence formatSensorValue(long value) {
+        private CharSequence formatSensorValue(float value) {
             switch (sensor) {
                 case ApiService.SENSOR_NAME_TEMPERATURE:
-                    return unitSystem.formatTemperature(value);
+                    return unitSystem.formatTemperature(Math.round(value));
 
                 case ApiService.SENSOR_NAME_HUMIDITY:
-                    return unitSystem.formatHumidity(value);
+                    return unitSystem.formatHumidity(Math.round(value));
 
                 case ApiService.SENSOR_NAME_PARTICULATES:
-                    return unitSystem.formatParticulates(value);
+                    return unitSystem.formatParticulates(Math.round(value));
 
                 case ApiService.SENSOR_NAME_SOUND:
-                    return unitSystem.formatDecibels(value);
+                    return unitSystem.formatDecibels(Math.round(value));
 
                 case ApiService.SENSOR_NAME_LIGHT:
-                    return unitSystem.formatLight(value);
+                    return unitSystem.formatLight(Math.round(value));
 
                 default:
-                    return Long.toString(value);
+                    return Long.toString(Math.round(value));
             }
         }
 

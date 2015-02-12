@@ -115,8 +115,25 @@ public class SensorHistoryAdapter implements GraphAdapter {
             return new Update(Collections.emptyList(), 0f, 0f);
         }
 
+        /**
+         * iOS chomps the end of sensor data series if it ends in
+         * a zero / missing value. We do the same for consistency.
+         */
+        public static List<SensorGraphSample> normalizeDataSeries(@NonNull List<SensorGraphSample> history) {
+            if (history.size() > 1) {
+                SensorGraphSample sample = history.get(history.size() - 1);
+                float value = sample.getValue();
+                if (value == 0f || value == ApiService.PLACEHOLDER_VALUE) {
+                    return history.subList(0, history.size() - 1);
+                }
+            }
+
+            return history;
+        }
+
         public static Observable<Update> forHistorySeries(@Nullable List<SensorGraphSample> history,
-                                                          @NonNull SensorHistoryPresenter.Mode mode) {
+                                                          @NonNull SensorHistoryPresenter.Mode mode,
+                                                          boolean normalize) {
             Observable<Update> operation = Observable.create(s -> {
                 if (history == null || history.isEmpty()) {
                     s.onNext(Update.empty());
@@ -131,11 +148,12 @@ public class SensorHistoryAdapter implements GraphAdapter {
                             return (shiftedTime.getDayOfMonth() * 100) + (shiftedTime.getHourOfDay() / 6);
                         };
                     }
-                    List<List<SensorGraphSample>> segments = segment(segmentKeyProducer, history);
+                    List<SensorGraphSample> normalizedHistory = normalize ? normalizeDataSeries(history) : history;
+                    List<List<SensorGraphSample>> segments = segment(segmentKeyProducer, normalizedHistory);
                     List<Section> sections = map(segments, Section::new);
 
                     Comparator<SensorGraphSample> comparator = (l, r) -> Float.compare(l.getNormalizedValue(), r.getNormalizedValue());
-                    Extremes<SensorGraphSample> extremes = Extremes.of(history, comparator);
+                    Extremes<SensorGraphSample> extremes = Extremes.of(normalizedHistory, comparator);
                     float peak = extremes.maxValue.getNormalizedValue();
                     float base = extremes.minValue.getNormalizedValue();
 
