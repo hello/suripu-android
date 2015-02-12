@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -22,8 +21,12 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import net.danlew.android.joda.DateUtils;
 
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +53,6 @@ import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.TimelineHeaderDrawable;
-import is.hello.sense.ui.widget.TimelineOverlayDrawable;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -373,13 +375,22 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         TimelineSegment segment = (TimelineSegment) parent.getItemAtPosition(position);
 
-        Rect maskedArea = new Rect(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
-        TimelineOverlayDrawable overlay = new TimelineOverlayDrawable(getActivity(), maskedArea, segment);
-        parent.getOverlay().add(overlay);
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        TextView contents = (TextView) inflater.inflate(R.layout.tooltip_timeline_overlay, parent, false);
+
+        String sleepDepthSummary = getString(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
+        CharSequence duration = DateUtils.formatDuration(getActivity(), Duration.standardSeconds(segment.getDuration()));
+        contents.setText(getString(R.string.tooltip_timeline_overlay, sleepDepthSummary, duration));
+
+        Toast toast = new Toast(getActivity());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(contents);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, parent.getMeasuredHeight() - view.getTop());
+        toast.show();
 
         parent.setOnTouchListener((ignored, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                parent.getOverlay().remove(overlay);
+                toast.cancel();
                 parent.setOnTouchListener(null);
 
                 return true;

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/gap_small"
+    android:textAppearance="@style/AppTheme.Text.Body.Light.Small"
+    android:textColor="@color/white"
+    android:lineSpacingMultiplier="@dimen/line_multiple_body"
+    android:gravity="center"
+    android:text="@string/tooltip_timeline_overlay"
+    android:background="@color/light_accent"/>

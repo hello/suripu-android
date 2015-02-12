@@ -445,4 +445,5 @@ so you can sleep better.</string>
     <string name="sleep_depth_deep">You were in deep sleep for</string>
     <string name="sleep_depth_light">You were in light sleep for</string>
     <string name="sleep_depth_intermediate">You were in medium sleep for</string>
+    <string name="tooltip_timeline_overlay">%1$s\n%2$s</string>
 </resources>
