@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -12,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -20,8 +20,8 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import net.danlew.android.joda.DateUtils;
 
@@ -53,6 +53,7 @@ import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.TimelineHeaderDrawable;
+import is.hello.sense.ui.widget.TimelineTooltipDrawable;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -377,27 +378,20 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         TextView contents = (TextView) inflater.inflate(R.layout.tooltip_timeline_overlay, parent, false);
+        contents.setBackground(new TimelineTooltipDrawable(getResources()));
 
         String sleepDepthSummary = getString(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
         CharSequence duration = DateUtils.formatDuration(getActivity(), Duration.standardSeconds(segment.getDuration()));
         contents.setText(getString(R.string.tooltip_timeline_overlay, sleepDepthSummary, duration));
 
-        Toast toast = new Toast(getActivity());
-        toast.setDuration(Toast.LENGTH_SHORT);
-        toast.setView(contents);
-        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, parent.getMeasuredHeight() - view.getTop());
-        toast.show();
-
-        parent.setOnTouchListener((ignored, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                toast.cancel();
-                parent.setOnTouchListener(null);
-
-                return true;
-            }
-
-            return false;
-        });
+        PopupWindow popupWindow = new PopupWindow(contents);
+        popupWindow.setAnimationStyle(R.style.WindowAnimations_FadeAndSlide);
+        popupWindow.setTouchable(true);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setBackgroundDrawable(new ColorDrawable());
+        popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        popupWindow.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, parent.getMeasuredHeight() - view.getTop());
+        contents.postDelayed(popupWindow::dismiss, 1500);
 
         return true;
     }

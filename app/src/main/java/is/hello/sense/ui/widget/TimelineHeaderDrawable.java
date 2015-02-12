@@ -40,8 +40,8 @@ public class TimelineHeaderDrawable extends SelectorLinearLayout.SelectionAwareD
     public TimelineHeaderDrawable(@NonNull Resources resources) {
         this.barHeight = resources.getDimensionPixelSize(R.dimen.timeline_header_tab_height);
         this.gradientHeight = resources.getDimensionPixelSize(R.dimen.timeline_header_gradient_height);
-        this.triangleHeight = resources.getDimensionPixelSize(R.dimen.timeline_header_triangle_height);
-        this.triangleWidth = resources.getDimensionPixelSize(R.dimen.timeline_header_triangle_width);
+        this.triangleHeight = resources.getDimensionPixelSize(R.dimen.timeline_triangle_height);
+        this.triangleWidth = resources.getDimensionPixelSize(R.dimen.timeline_triangle_width);
         this.stroke = resources.getDimensionPixelSize(R.dimen.timeline_header_stroke_width);
 
         fillPaint.setAntiAlias(true);

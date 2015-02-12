@@ -3,10 +3,12 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="@dimen/gap_small"
+    android:paddingTop="@dimen/timeline_tooltip_padding"
+    android:paddingBottom="@dimen/timeline_tooltip_padding_bottom"
+    android:paddingLeft="@dimen/timeline_tooltip_padding"
+    android:paddingRight="@dimen/timeline_tooltip_padding"
     android:textAppearance="@style/AppTheme.Text.Body.Light.Small"
     android:textColor="@color/white"
     android:lineSpacingMultiplier="@dimen/line_multiple_body"
     android:gravity="center"
-    android:text="@string/tooltip_timeline_overlay"
-    android:background="@color/light_accent"/>
+    android:text="@string/tooltip_timeline_overlay"/>
