@@ -7,4 +7,5 @@
     android:dividerHeight="0dp"
     android:listSelector="@color/transparent"
     android:scrollbars="none"
+    android:overScrollMode="ifContentScrolls"
     android:background="@color/background_timeline"/>

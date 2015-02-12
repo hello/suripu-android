@@ -441,4 +441,8 @@ so you can sleep better.</string>
     <string name="action_more_info">More info</string>
     <string name="action_adjust_time">Adjust Time</string>
     <string name="action_submit">Submit</string>
+    <string name="sleep_depth_awake">You were awake for</string>
+    <string name="sleep_depth_deep">You were in deep sleep for</string>
+    <string name="sleep_depth_light">You were in light sleep for</string>
+    <string name="sleep_depth_intermediate">You were in medium sleep for</string>
 </resources>

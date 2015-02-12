@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -48,6 +50,7 @@ import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.TimelineHeaderDrawable;
+import is.hello.sense.ui.widget.TimelineOverlayDrawable;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -60,8 +63,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
-public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment
-{
+public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment, AdapterView.OnItemLongClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
 
@@ -130,8 +132,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
         listView.setOnItemClickListener(this);
+        listView.setOnItemLongClickListener(this);
 
 
         this.headerView = (ViewGroup) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
@@ -365,6 +367,27 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        TimelineSegment segment = (TimelineSegment) parent.getItemAtPosition(position);
+
+        Rect maskedArea = new Rect(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
+        TimelineOverlayDrawable overlay = new TimelineOverlayDrawable(getActivity(), maskedArea, segment);
+        parent.getOverlay().add(overlay);
+
+        parent.setOnTouchListener((ignored, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                parent.getOverlay().remove(overlay);
+                parent.setOnTouchListener(null);
+
+                return true;
+            }
+
+            return false;
+        });
+        return true;
     }
 
     @Override
