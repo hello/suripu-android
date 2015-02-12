@@ -65,6 +65,10 @@ public class AppSettingsFragment extends UndersideTabFragment {
 
     }
 
+    @Override
+    public void onUpdate() {
+
+    }
 
     public void addItem(@StringRes int titleRes, boolean wantsDivider, @NonNull View.OnClickListener onClick) {
         TextView itemView = Styles.createItemView(getActivity(), titleRes, R.style.AppTheme_Text_Body_Light, onClick);

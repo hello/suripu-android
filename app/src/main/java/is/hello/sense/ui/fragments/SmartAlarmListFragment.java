@@ -59,8 +59,6 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
 
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.TopView.EVENT_ALARMS, null);
-
-            smartAlarmPresenter.update();
         }
 
         addPresenter(smartAlarmPresenter);
@@ -129,6 +127,10 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
 
     }
 
+    @Override
+    public void onUpdate() {
+        smartAlarmPresenter.update();
+    }
 
     public void startLoading() {
         emptyView.setVisibility(View.GONE);

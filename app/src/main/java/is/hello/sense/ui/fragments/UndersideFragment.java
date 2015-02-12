@@ -146,6 +146,16 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        UndersideTabFragment fragment = getCurrentTabFragment();
+        if (fragment != null) {
+            fragment.onUpdate();
+        }
+    }
+
     private SpannableString createIconSpan(@DrawableRes int iconRes) {
         ImageSpan image = new ImageSpan(getActivity(), iconRes);
         SpannableString span = new SpannableString("X");
@@ -154,24 +164,19 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     }
 
 
-    public boolean isAtStart() {
-        return (pager.getCurrentItem() == 0);
+    public @Nullable UndersideTabFragment getCurrentTabFragment() {
+        // This depends on semi-undefined behavior. It may break in a future update
+        // of the Android support library, but won't break if the host OS changes.
+        long itemId = adapter.getItemId(pager.getCurrentItem());
+        String tag = "android:switcher:" + pager.getId() + ":" + itemId;
+        return (UndersideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
     }
 
-    public void jumpToStart() {
-        setCurrentItem(0, OPTION_NOTIFY | OPTION_ANIMATE);
-    }
-
-
-    public void notifyPageSelected(boolean withDelay) {
+    public void notifyTabSelected(boolean withDelay) {
         Runnable notify = () -> {
-            // This depends on semi-undefined behavior. It may break in a future update
-            // of the Android support library, but won't break if the host OS changes.
-            long itemId = adapter.getItemId(pager.getCurrentItem());
-            String tag = "android:switcher:" + pager.getId() + ":" + itemId;
-            UndersideTabFragment fragment = (UndersideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
+            UndersideTabFragment fragment = getCurrentTabFragment();
             if (fragment != null) {
-                fragment.pageSelected();
+                fragment.tabSelected();
             }
         };
 
@@ -187,7 +192,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         pager.setCurrentItem(currentItem, animate);
 
         if ((options & OPTION_NOTIFY) == OPTION_NOTIFY) {
-            notifyPageSelected(true);
+            notifyTabSelected(true);
         }
     }
 
@@ -209,7 +214,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     public void onPageSelected(int position) {
         tabs.setSelectedIndex(position);
         saveCurrentItem(position);
-        notifyPageSelected(true);
+        notifyTabSelected(true);
     }
 
     @Override

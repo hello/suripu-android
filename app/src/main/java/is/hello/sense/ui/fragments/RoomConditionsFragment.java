@@ -87,10 +87,13 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
 
     @Override
     public void onSwipeInteractionDidFinish() {
-        presenter.update();
         WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_current_conditions);
     }
 
+    @Override
+    public void onUpdate() {
+        presenter.update();
+    }
 
     //region Displaying Data
 

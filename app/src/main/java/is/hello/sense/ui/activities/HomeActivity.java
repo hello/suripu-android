@@ -203,7 +203,7 @@ public class HomeActivity
 
         UndersideFragment underside = getUndersideFragment();
         if (underside != null) {
-            underside.notifyPageSelected(false);
+            underside.notifyTabSelected(false);
         }
 
         checkInForUpdates();
@@ -645,7 +645,7 @@ public class HomeActivity
 
                         if (slidingLayersView.isOpen()) {
                             UndersideFragment underside = getUndersideFragment();
-                            underside.notifyPageSelected(false);
+                            underside.notifyTabSelected(false);
                         }
                     })
                     .start();

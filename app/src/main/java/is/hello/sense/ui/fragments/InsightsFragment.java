@@ -102,6 +102,11 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
 
     @Override
     public void onSwipeInteractionDidFinish() {
+
+    }
+
+    @Override
+    public void onUpdate() {
         onRefresh();
     }
 

@@ -74,10 +74,13 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
 
     @Override
     public void onSwipeInteractionDidFinish() {
-        trendsPresenter.update();
         WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_trends);
     }
 
+    @Override
+    public void onUpdate() {
+        trendsPresenter.update();
+    }
 
     public void bindTrends(@NonNull ArrayList<TrendGraph> trends) {
         swipeRefreshLayout.setRefreshing(false);
