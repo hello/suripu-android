@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -29,6 +30,7 @@ import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
+import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
@@ -41,20 +43,26 @@ import rx.Observable;
 import static is.hello.sense.ui.adapter.SensorHistoryAdapter.Update;
 
 public class RoomConditionsFragment extends UndersideTabFragment implements AdapterView.OnItemClickListener {
+    private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
+
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
 
     private Adapter adapter;
 
+    //region Lifecycle
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        addPresenter(presenter);
-
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.TopView.EVENT_CURRENT_CONDITIONS, null);
         }
+
+        addPresenter(presenter);
+
+        updateTimer.setOnUpdate(presenter::update);
     }
 
     @Nullable
@@ -86,6 +94,20 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        updateTimer.schedule();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        updateTimer.unschedule();
+    }
+
+    @Override
     public void onSwipeInteractionDidFinish() {
         WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_current_conditions);
     }
@@ -94,6 +116,9 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     public void onUpdate() {
         presenter.update();
     }
+
+    //endregion
+
 
     //region Displaying Data
 

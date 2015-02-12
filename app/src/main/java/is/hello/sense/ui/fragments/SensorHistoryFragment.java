@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -27,11 +28,11 @@ import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.widget.BlockableScrollView;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
@@ -48,6 +49,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     @Inject Markdown markdown;
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
+
+    private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
 
     private BlockableScrollView scrollView;
     private TextView readingText;
@@ -74,6 +77,11 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.TopView.EVENT_SENSOR_HISTORY, Analytics.createProperties(Analytics.TopView.PROP_SENSOR_NAME, sensor));
         }
+
+        updateTimer.setOnUpdate(() -> {
+            sensorHistoryPresenter.update();
+            conditionsPresenter.update();
+        });
 
         setRetainInstance(true);
     }
@@ -129,6 +137,14 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         super.onResume();
 
         ((SensorHistoryActivity) getActivity()).showWelcomeDialog(false);
+        updateTimer.schedule();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        updateTimer.unschedule();
     }
 
     public SensorHistoryActivity getSensorHistoryActivity() {
