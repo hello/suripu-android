@@ -399,6 +399,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         parent.setOnTouchListener((ignored, event) -> {
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 contents.postDelayed(popupWindow::dismiss, 1000);
+                parent.setOnTouchListener(null);
             }
             return false;
         });
