@@ -99,6 +99,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private boolean modifyAlarmButton = false;
     private TimelineHeaderDrawable tabsBackgroundDrawable;
 
+    private @Nullable PopupWindow timelinePopup;
+
 
     public static TimelineFragment newInstance(@NonNull DateTime date, @Nullable Timeline cachedTimeline) {
         TimelineFragment fragment = new TimelineFragment();
@@ -212,6 +214,16 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         Observable<CharSequence> renderedMessage = timelinePresenter.renderedTimelineMessage;
         bindAndSubscribe(renderedMessage, timelineScore.messageText::setText, Functions.LOG_ERROR);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (timelinePopup != null) {
+            timelinePopup.dismiss();
+            this.timelinePopup = null;
+        }
     }
 
     @Override
@@ -377,6 +389,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        if (timelinePopup != null) {
+            timelinePopup.dismiss();
+            this.timelinePopup = null;
+        }
+
         TimelineSegment segment = (TimelineSegment) parent.getItemAtPosition(position);
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -388,12 +405,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         String tooltipHtml = getString(R.string.tooltip_timeline_html_fmt, sleepDepthSummary, duration);
         contents.setText(Html.fromHtml(tooltipHtml));
 
-        PopupWindow popupWindow = new PopupWindow(contents);
-        popupWindow.setAnimationStyle(R.style.WindowAnimations_PopSlideAndFade);
-        popupWindow.setTouchable(true);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setBackgroundDrawable(new ColorDrawable()); // Required for touch to dismiss
-        popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        this.timelinePopup = new PopupWindow(contents);
+        timelinePopup.setAnimationStyle(R.style.WindowAnimations_PopSlideAndFade);
+        timelinePopup.setTouchable(true);
+        timelinePopup.setOutsideTouchable(true);
+        timelinePopup.setBackgroundDrawable(new ColorDrawable()); // Required for touch to dismiss
+        timelinePopup.setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         // Lollipop does not correctly inset popup windows for the soft
         // navigation bar on the bottom of the screen, we have to do it
@@ -415,10 +432,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         int parentHeight = parent.getMeasuredHeight();
         int bottomInset = parentHeight - view.getTop() + navigationBarHeight;
-        popupWindow.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, bottomInset);
+        timelinePopup.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, bottomInset);
         parent.setOnTouchListener((ignored, event) -> {
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                contents.postDelayed(popupWindow::dismiss, 1000);
+                contents.postDelayed(timelinePopup::dismiss, 1000);
                 parent.setOnTouchListener(null);
             }
             return false;
