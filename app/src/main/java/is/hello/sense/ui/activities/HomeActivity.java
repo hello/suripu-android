@@ -231,6 +231,10 @@ public class HomeActivity
 
         if (showUnderside) {
             slidingLayersView.openWithoutAnimation();
+            slidingLayersView.post(() -> {
+                UndersideFragment underside = getUndersideFragment();
+                underside.notifyTabSelected(false);
+            });
             this.showUnderside = false;
         }
 
