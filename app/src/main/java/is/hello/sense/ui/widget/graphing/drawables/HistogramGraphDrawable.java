@@ -17,14 +17,15 @@ public class HistogramGraphDrawable extends GraphDrawable {
     private final Path linePath = new Path();
     private final Path fillPath = new Path();
 
-    private final float topLineHeight;
+    private final float topLine;
     private final Drawable fillDrawable;
 
     public HistogramGraphDrawable(@NonNull Resources resources) {
-        this.topLineHeight = resources.getDimensionPixelSize(R.dimen.series_graph_line_size);
+        this.topLine = resources.getDimensionPixelSize(R.dimen.series_graph_line_size);
 
         Styles.applyGraphLineParameters(linePaint);
-        linePaint.setStrokeWidth(topLineHeight);
+        //noinspection SuspiciousNameCombination
+        linePaint.setStrokeWidth(topLine);
 
         linePaint.setColor(resources.getColor(R.color.graph_fill_color));
         this.fillDrawable = Styles.createGraphFillDrawable(resources);
@@ -35,7 +36,7 @@ public class HistogramGraphDrawable extends GraphDrawable {
     public void draw(Canvas canvas) {
         int sectionCount = adapterCache.getNumberSections();
         if (sectionCount > 0) {
-            float halfOfTopLine = topLineHeight / 2f;
+            float halfOfTopLine = topLine / 2f;
 
             int minY = Math.round(halfOfTopLine) + topInset;
             int width = canvas.getWidth();

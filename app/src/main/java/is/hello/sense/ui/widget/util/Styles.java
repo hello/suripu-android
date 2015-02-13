@@ -252,28 +252,41 @@ public final class Styles {
         for (URLSpan urlSpan : spans) {
             String url = urlSpan.getURL();
 
-            ClickableSpan clickableSpan = null;
-            if ("#support".equals(url)) {
-                clickableSpan = new ClickableSpan() {
-                    @Override
-                    public void onClick(View widget) {
-                        UserSupport.showSupport(activity);
-                    }
-                };
-            } else if ("#email".equals(url)) {
-                clickableSpan = new ClickableSpan() {
-                    @Override
-                    public void onClick(View widget) {
-                        UserSupport.showEmail(activity);
-                    }
-                };
-            } else if ("#second-pill".equals(url)) {
-                clickableSpan = new ClickableSpan() {
-                    @Override
-                    public void onClick(View widget) {
-                        UserSupport.showForDeviceIssue(activity, UserSupport.DeviceIssue.PAIRING_2ND_PILL);
-                    }
-                };
+            ClickableSpan clickableSpan;
+            switch (url) {
+                case "#support": {
+                    clickableSpan = new ClickableSpan() {
+                        @Override
+                        public void onClick(View widget) {
+                            UserSupport.showSupport(activity);
+                        }
+                    };
+                    break;
+                }
+
+                case "#email": {
+                    clickableSpan = new ClickableSpan() {
+                        @Override
+                        public void onClick(View widget) {
+                            UserSupport.showEmail(activity);
+                        }
+                    };
+                    break;
+                }
+
+                case "#second-pill": {
+                    clickableSpan = new ClickableSpan() {
+                        @Override
+                        public void onClick(View widget) {
+                            UserSupport.showForDeviceIssue(activity, UserSupport.DeviceIssue.PAIRING_2ND_PILL);
+                        }
+                    };
+                    break;
+                }
+
+                default: {
+                    throw new IllegalArgumentException("Unknown deep link url " + url);
+                }
             }
 
             int spanStart = contents.getSpanStart(urlSpan);

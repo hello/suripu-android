@@ -16,12 +16,12 @@ import java.util.List;
 import is.hello.sense.R;
 
 public class TrendGraph extends ApiResponse {
-    public static String TIME_PERIOD_DAY_OF_WEEK = "DOW";
-    public static String TIME_PERIOD_OVER_TIME_1W = "1W";
-    public static String TIME_PERIOD_OVER_TIME_2W = "2W";
-    public static String TIME_PERIOD_OVER_TIME_1M = "1M";
-    public static String TIME_PERIOD_OVER_TIME_3M = "3M";
-    public static String TIME_PERIOD_OVER_TIME_ALL = "ALL";
+    public static final String TIME_PERIOD_DAY_OF_WEEK = "DOW";
+    public static final String TIME_PERIOD_OVER_TIME_1W = "1W";
+    public static final String TIME_PERIOD_OVER_TIME_2W = "2W";
+    public static final String TIME_PERIOD_OVER_TIME_1M = "1M";
+    public static final String TIME_PERIOD_OVER_TIME_3M = "3M";
+    public static final String TIME_PERIOD_OVER_TIME_ALL = "ALL";
 
 
     @JsonProperty("title")

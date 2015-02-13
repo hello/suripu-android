@@ -30,7 +30,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private OnTransitionObserver<TFragment> onTransitionObserver;
     private FragmentManager fragmentManager;
     private @Nullable ResumeScheduler.Coordinator resumeCoordinator;
-    private Animations.Properties animationProperties = Animations.Properties.create(p -> {
+    private final Animations.Properties animationProperties = Animations.Properties.create(p -> {
         p.interpolator = new DecelerateInterpolator();
         return null;
     });
@@ -142,10 +142,6 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         if (fragmentManager == null) {
             throw new IllegalStateException(getClass().getSimpleName() + " requires a fragment manager to operate.");
         }
-    }
-
-    public Adapter<TFragment> getAdapter() {
-        return adapter;
     }
 
     public void setAdapter(Adapter<TFragment> adapter) {

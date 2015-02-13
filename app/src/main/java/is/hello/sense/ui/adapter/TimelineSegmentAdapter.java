@@ -22,8 +22,6 @@ import is.hello.sense.ui.widget.TimelineSegmentView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
 
-import static is.hello.sense.api.model.TimelineSegment.EventType;
-
 public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     private final DateFormatter dateFormatter;
 
@@ -31,10 +29,11 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     private final int minTimeItemHeight;
     private final int itemEventImageHeight;
 
+    private final Set<Integer> positionsWithTime = new HashSet<>();
+
     private float[] itemHeights;
     private float totalItemHeight;
 
-    private Set<Integer> positionsWithTime = new HashSet<>();
 
     private boolean use24Time;
 

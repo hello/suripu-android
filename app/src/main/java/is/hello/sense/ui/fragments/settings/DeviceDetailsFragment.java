@@ -59,7 +59,7 @@ public abstract class DeviceDetailsFragment extends HardwareFragment {
         View view = inflater.inflate(R.layout.fragment_device_details, container, false);
 
         LinearLayout fragmentContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_container);
-        Animations.Properties.DEFAULT.apply(fragmentContainer.getLayoutTransition(), false);
+        Animations.Properties.DEFAULT.apply(fragmentContainer.getLayoutTransition());
 
         this.alertContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_alert);
         this.alertIcon = (ImageView) alertContainer.findViewById(R.id.fragment_device_details_alert_icon);

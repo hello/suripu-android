@@ -46,10 +46,10 @@ public class AppSettingsFragment extends UndersideTabFragment {
         View view = inflater.inflate(R.layout.fragment_app_settings, container, false);
 
         this.itemContainer = (LinearLayout) view.findViewById(R.id.fragment_app_settings_container);
-        addItem(R.string.label_account, true, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account, null));
-        addItem(R.string.label_devices, true, ignored -> showFragment(DeviceListFragment.class, R.string.label_devices, null));
-        addItem(R.string.label_notifications, true, ignored -> showFragment(NotificationsSettingsFragment.class, R.string.label_notifications, null));
-        addItem(R.string.label_units_and_time, true, ignored -> showFragment(UnitSettingsFragment.class, R.string.label_units_and_time, null));
+        addItem(R.string.label_account, true, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account));
+        addItem(R.string.label_devices, true, ignored -> showFragment(DeviceListFragment.class, R.string.label_devices));
+        addItem(R.string.label_notifications, true, ignored -> showFragment(NotificationsSettingsFragment.class, R.string.label_notifications));
+        addItem(R.string.label_units_and_time, false, ignored -> showFragment(UnitSettingsFragment.class, R.string.label_units_and_time));
 
         TextView footer = (TextView) view.findViewById(R.id.footer_help);
         Styles.initializeSupportFooter(getActivity(), footer);
@@ -81,10 +81,8 @@ public class AppSettingsFragment extends UndersideTabFragment {
         }
     }
 
-    private void showFragment(@NonNull Class<? extends Fragment> fragmentClass,
-                              @StringRes int titleRes,
-                              @Nullable Bundle fragmentArguments) {
-        Bundle intentArguments = FragmentNavigationActivity.getArguments(getString(titleRes), fragmentClass, fragmentArguments);
+    private void showFragment(@NonNull Class<? extends Fragment> fragmentClass, @StringRes int titleRes) {
+        Bundle intentArguments = FragmentNavigationActivity.getArguments(getString(titleRes), fragmentClass, null);
         Intent intent = new Intent(getActivity(), FragmentNavigationActivity.class);
         intent.putExtras(intentArguments);
         startActivity(intent);

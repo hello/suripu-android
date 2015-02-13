@@ -33,7 +33,7 @@ public final class SessionLogger {
     private static boolean initialized = false;
     private static File logFile;
     private static PrintWriter printWriter;
-    private static AtomicInteger messagesWritten = new AtomicInteger();
+    private static final AtomicInteger messagesWritten = new AtomicInteger();
     private static Handler handler;
 
 

@@ -19,11 +19,10 @@ public class SleepScoreDrawable extends Drawable {
     private final Path fillPath = new Path();
     private final RectF arcRect = new RectF();
     private final Paint paint = new Paint();
+    private final float fillStrokeWidth;
 
     private int value = 0;
-
     private int fillColor;
-    private float fillStrokeWidth;
     private int trackColor;
 
 

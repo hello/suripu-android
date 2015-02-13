@@ -117,12 +117,9 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
 
 
     abstract class ViewHolder {
-        final View itemView;
         final TextView title;
 
         ViewHolder(@NonNull View view) {
-            this.itemView = view;
-
             this.title = (TextView) view.findViewById(R.id.item_device_name);
         }
 

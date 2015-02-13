@@ -142,7 +142,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
 
         this.headerView = (ViewGroup) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
-        Animations.Properties.DEFAULT.apply(headerView.getLayoutTransition(), false);
+        Animations.Properties.DEFAULT.apply(headerView.getLayoutTransition());
 
         this.tabsBackgroundDrawable = new TimelineHeaderDrawable(getResources());
 
@@ -218,10 +218,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
     }
 
-    public void onTransitionCompleted() {
-        // This is the best place to fire animations.
-    }
-
 
     //region Headers
 
@@ -258,11 +254,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     public void showBreakdown(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.Timeline.EVENT_SLEEP_SCORE_BREAKDOWN, null);
+
         LayoutInflater inflater = getActivity().getLayoutInflater();
         BreakdownHeaderMode breakdown = new BreakdownHeaderMode(inflater, headerView);
         bindAndSubscribe(timelinePresenter.mainTimeline.take(1),
-                         breakdown::bindTimeline,
-                         breakdown::timelineUnavailable);
+                breakdown::bindTimeline,
+                breakdown::timelineUnavailable);
         setHeaderMode(breakdown);
         headerModeSelector.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
     }

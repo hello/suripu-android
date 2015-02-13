@@ -6,8 +6,8 @@ import android.support.annotation.NonNull;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 
 final class DeviceSupport {
-    static @NonNull BluetoothStack.SupportLevel getSupportLevelForModel(@NonNull String model) {
-        switch (model) {
+    static @NonNull BluetoothStack.SupportLevel getDeviceSupportLevel() {
+        switch (Build.MODEL) {
             case "XT1032" /* Moto G first generation */:
             case "XT1060" /* Moto X first generation */:
             case "GT-I9500" /* Samsung Galaxy S4 (Intl) */:
@@ -33,9 +33,5 @@ final class DeviceSupport {
                 return BluetoothStack.SupportLevel.UNTESTED;
             }
         }
-    }
-
-    static @NonNull BluetoothStack.SupportLevel getDeviceSupportLevel() {
-        return getSupportLevelForModel(Build.MODEL);
     }
 }

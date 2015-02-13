@@ -5,8 +5,6 @@ import android.app.Dialog;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -78,7 +76,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         this.choicesContainer = (ViewGroup) dialog.findViewById(R.id.fragment_questions_choices);
 
         LayoutTransition transition = choicesContainer.getLayoutTransition();
-        Animations.Properties.DEFAULT.apply(transition, false);
+        Animations.Properties.DEFAULT.apply(transition);
         transition.disableTransitionType(LayoutTransition.DISAPPEARING);
         transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 
@@ -100,7 +98,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         this.choicesContainer = (ViewGroup) view.findViewById(R.id.fragment_questions_choices);
 
         LayoutTransition transition = choicesContainer.getLayoutTransition();
-        Animations.Properties.DEFAULT.apply(transition, false);
+        Animations.Properties.DEFAULT.apply(transition);
         transition.disableTransitionType(LayoutTransition.DISAPPEARING);
         transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 

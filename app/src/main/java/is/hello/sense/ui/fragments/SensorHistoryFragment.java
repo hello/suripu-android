@@ -62,7 +62,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     private ProgressBar loadingIndicator;
     private TextView graphPlaceholder;
     private GraphView graphView;
-    private SensorDataSource sensorDataSource = new SensorDataSource();
+    private final SensorDataSource sensorDataSource = new SensorDataSource();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

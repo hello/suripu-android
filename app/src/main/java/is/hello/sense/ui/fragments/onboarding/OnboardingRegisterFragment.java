@@ -73,7 +73,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
         this.registrationErrorText = (TextView) inflater.inflate(R.layout.item_inline_field_error, container, false);
         this.credentialsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_register_credentials);
-        Animations.Properties.DEFAULT.apply(credentialsContainer.getLayoutTransition(), false);
+        Animations.Properties.DEFAULT.apply(credentialsContainer.getLayoutTransition());
 
         this.nameText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_name);
         this.emailText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_email);

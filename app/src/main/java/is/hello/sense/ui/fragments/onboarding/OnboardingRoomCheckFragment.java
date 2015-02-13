@@ -282,7 +282,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 }
             });
         } else {
-            deferWorker.schedule(() -> showComplete(true));
+            deferWorker.schedule(this::showComplete);
         }
     }
 
@@ -306,11 +306,11 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 ImageView image = (ImageView) conditionsContainer.getChildAt(i);
                 image.setImageResource(ACTIVE_STATE_IMAGES[i]);
             }
-            showComplete(true);
+            showComplete();
         }
     }
 
-    public void showComplete(boolean animate) {
+    public void showComplete() {
         this.animationCompleted = true;
 
         conditionsContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
@@ -318,33 +318,29 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         conditionsContainer.removeView(topDivider);
         conditionsContainer.removeView(bottomDivider);
 
-        if (animate) {
-            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, endContainer) {
-                @Override
-                protected void onStart() {
-                    for (View child : Views.children(endContainer)) {
-                        child.setAlpha(0f);
-                    }
+        SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, endContainer) {
+            @Override
+            protected void onStart() {
+                for (View child : Views.children(endContainer)) {
+                    child.setAlpha(0f);
                 }
+            }
 
-                @Override
-                protected void onEnd() {
-                    float slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_outer);
-                    long delay = (END_CONTAINER_DELAY_MS * endContainer.getChildCount());
-                    for (View child : Views.children(endContainer)) {
-                        animate(child)
-                                .setStartDelay(delay)
-                                .slideYAndFade(slideAmount, 0f, 0f, 1f)
-                                .start();
+            @Override
+            protected void onEnd() {
+                float slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+                long delay = (END_CONTAINER_DELAY_MS * endContainer.getChildCount());
+                for (View child : Views.children(endContainer)) {
+                    animate(child)
+                            .setStartDelay(delay)
+                            .slideYAndFade(slideAmount, 0f, 0f, 1f)
+                            .start();
 
-                        delay -= END_CONTAINER_DELAY_MS;
-                    }
+                    delay -= END_CONTAINER_DELAY_MS;
                 }
-            };
-            withTransitionListener(listener).addView(endContainer);
-        } else {
-            conditionsContainer.addView(endContainer);
-        }
+            }
+        };
+        withTransitionListener(listener).addView(endContainer);
     }
 
     //endregion
@@ -379,7 +375,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         endTitle.setText(R.string.onboarding_room_check_title_failure);
         endMessage.setText(R.string.onboarding_room_check_info_failure);
 
-        showComplete(true);
+        showComplete();
     }
 
 

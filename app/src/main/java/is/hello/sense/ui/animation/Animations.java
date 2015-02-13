@@ -29,7 +29,7 @@ public class Animations {
         public Interpolator interpolator = INTERPOLATOR_DEFAULT;
         public long startDelay = 0;
 
-        public static Properties DEFAULT = Properties.create();
+        public static final Properties DEFAULT = Properties.create();
 
         public static @NonNull Properties create() {
             return new Properties();
@@ -62,15 +62,12 @@ public class Animations {
                            .setStartDelay(startDelay);
         }
 
-        public LayoutTransition apply(@NonNull LayoutTransition transition, boolean applyInterpolator) {
+        public LayoutTransition apply(@NonNull LayoutTransition transition) {
             transition.setDuration(duration);
             for (int transitionType = LayoutTransition.CHANGE_APPEARING;
                  transitionType <= LayoutTransition.CHANGING;
                  transitionType++) {
                 transition.setStartDelay(transitionType, startDelay);
-
-                if (applyInterpolator)
-                    transition.setInterpolator(transitionType, interpolator);
             }
             return transition;
         }

@@ -40,12 +40,12 @@ public class ListTagHandler implements Html.TagHandler {
      * Keeps track of lists (ol, ul). On bottom of Stack is the outermost list
      * and on top of Stack is the most nested list
      */
-    Stack<String> lists = new Stack<>();
+    private final Stack<String> lists = new Stack<>();
     /**
      * Tracks indexes of ordered lists so that after a nested list ends
      * we can continue with correct index of outer list
      */
-    Stack<Integer> olNextIndex = new Stack<>();
+    private final Stack<Integer> olNextIndex = new Stack<>();
     /**
      * List indentation in pixels. Nested lists use multiple of this.
      */

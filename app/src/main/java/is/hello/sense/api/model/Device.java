@@ -54,16 +54,11 @@ public class Device extends ApiResponse {
 
     //region Creation
 
-    public Device() {
-    }
-
-    public Device(@NonNull Type type, boolean exists) {
-        this.type = type;
-        this.exists = exists;
-    }
-
     public static Device createPlaceholder(@NonNull Type type) {
-        return new Device(type, false);
+        Device device = new Device();
+        device.type = type;
+        device.exists = false;
+        return device;
     }
 
     //endregion

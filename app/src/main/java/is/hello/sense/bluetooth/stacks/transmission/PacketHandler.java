@@ -15,9 +15,9 @@ import is.hello.sense.util.Logger;
  * This is the actual transmission layer wrap on BLE.
  */
 public abstract class PacketHandler {
-    public static int HEADER_PACKET_PAYLOAD_LEN = 18;
-    public static int PACKET_PAYLOAD_LEN = 19;
-    public static int BLE_PACKET_LEN = 20;
+    public static final int HEADER_PACKET_PAYLOAD_LEN = 18;
+    public static final int PACKET_PAYLOAD_LEN = 19;
+    public static final int BLE_PACKET_LEN = 20;
 
     private final Set<PacketDataHandler> dataHandlers = new HashSet<>();
 

@@ -18,7 +18,6 @@ public class VideoPlayerActivity extends SenseActivity {
     private static final String EXTRA_URI = VideoPlayerActivity.class.getName() + ".EXTRA_URI";
 
     private VideoView videoView;
-    private MediaController mediaController;
 
     public static Bundle getArguments(@NonNull Uri uri) {
         Bundle bundle = new Bundle();
@@ -32,7 +31,7 @@ public class VideoPlayerActivity extends SenseActivity {
         setContentView(R.layout.fragment_video);
 
 
-        this.mediaController = new MediaController(this);
+        MediaController mediaController = new MediaController(this);
         mediaController.setAnchorView(videoView);
 
         this.videoView = (VideoView) findViewById(R.id.fragment_video_view);

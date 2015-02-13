@@ -32,7 +32,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
     final @NonNull BluetoothManager bluetoothManager;
     private final @Nullable BluetoothAdapter adapter;
 
-    final @NonNull ReplaySubject<Boolean> enabled = ReplaySubject.createWithSize(1);
+    private final @NonNull ReplaySubject<Boolean> enabled = ReplaySubject.createWithSize(1);
 
     public AndroidBluetoothStack(@NonNull Context applicationContext, @NonNull Scheduler scheduler) {
         this.applicationContext = applicationContext;

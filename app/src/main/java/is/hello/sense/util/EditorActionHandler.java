@@ -21,20 +21,14 @@ public class EditorActionHandler implements TextView.OnEditorActionListener {
         this(EditorInfo.IME_ACTION_GO, onAction);
     }
 
-    protected boolean isValid(@Nullable CharSequence value) {
-        return true;
-    }
-
     @Override
     public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
         if (actionId == this.actionId || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-            if (isValid(textView.getText())) {
-                InputMethodManager inputMethodManager = (InputMethodManager) textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(textView.getWindowToken(), 0);
-                textView.clearFocus();
+            InputMethodManager inputMethodManager = (InputMethodManager) textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(textView.getWindowToken(), 0);
+            textView.clearFocus();
 
-                onAction.run();
-            }
+            onAction.run();
 
             return true;
         }

@@ -409,7 +409,6 @@ public class HomeActivity
     public void onDidTransitionToFragment(@NonNull FragmentPageView<TimelineFragment> view, @NonNull TimelineFragment fragment) {
         this.lastUpdated = System.currentTimeMillis();
 
-        fragment.onTransitionCompleted();
         fragment.setModifyAlarmButton(true);
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_DATE_CHANGED, null);

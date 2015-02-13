@@ -36,7 +36,7 @@ public class UserSupport {
 
     public static void showSupport(@NonNull Context from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_HELP, null);
-        openUri(from, Uri.fromParts("https", BuildConfig.SUPPORT_AUTHORITY, null));
+        openUri(from, Uri.fromParts("http", BuildConfig.SUPPORT_AUTHORITY, null));
     }
 
     public static void showEmail(@NonNull Context from) {

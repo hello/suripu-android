@@ -1,7 +1,5 @@
 package is.hello.sense.api.model;
 
-import android.support.annotation.NonNull;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

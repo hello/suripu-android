@@ -36,7 +36,7 @@ import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseComman
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state;
 
 public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
-    private static int COMMAND_VERSION = 0;
+    private static final int COMMAND_VERSION = 0;
 
     private static final long STACK_OPERATION_TIMEOUT_S = 30;
     private static final long SIMPLE_COMMAND_TIMEOUT_S = 45;
