@@ -35,6 +35,9 @@ public class Device extends ApiResponse {
     @JsonProperty("last_updated")
     private DateTime lastUpdated;
 
+    @JsonProperty("color")
+    private Color color;
+
     @JsonIgnore
     private boolean exists = true;
 
@@ -92,6 +95,10 @@ public class Device extends ApiResponse {
         }
     }
 
+    public Color getColor() {
+        return color;
+    }
+
     @JsonIgnore
     public boolean exists() {
         return exists;
@@ -111,6 +118,8 @@ public class Device extends ApiResponse {
                 ", state=" + state +
                 ", firmwareVersion='" + firmwareVersion + '\'' +
                 ", lastUpdated=" + lastUpdated +
+                ", color=" + color +
+                ", exists=" + exists +
                 '}';
     }
 
@@ -151,6 +160,25 @@ public class Device extends ApiResponse {
 
         @JsonCreator
         public static State fromString(@NonNull String string) {
+            return Enums.fromString(string, values(), UNKNOWN);
+        }
+    }
+
+    public static enum Color {
+        BLACK(R.string.device_color_black),
+        WHITE(R.string.device_color_white),
+        BLUE(R.string.device_color_blue),
+        RED(R.string.device_color_red),
+        UNKNOWN(R.string.missing_data_placeholder);
+
+        public final @StringRes int nameRes;
+
+        private Color(int nameRes) {
+            this.nameRes = nameRes;
+        }
+
+        @JsonCreator
+        public static Color fromString(@NonNull String string) {
             return Enums.fromString(string, values(), UNKNOWN);
         }
     }

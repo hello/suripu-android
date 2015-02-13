@@ -208,7 +208,12 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
 
                     status2Label.setText(R.string.label_color);
-                    status2.setText(R.string.missing_data_placeholder);
+
+                    Device.Color color = device.getColor();
+                    if (color == null) {
+                        color = Device.Color.UNKNOWN;
+                    }
+                    status2.setText(color.nameRes);
 
                     break;
                 }
