@@ -5,13 +5,16 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.format.DateFormat;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -391,8 +394,27 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         popupWindow.setOutsideTouchable(true);
         popupWindow.setBackgroundDrawable(new ColorDrawable()); // Required for touch to dismiss
         popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        // Lollipop does not correctly inset popup windows for the soft
+        // navigation bar on the bottom of the screen, we have to do it
+        // ourselves. So stupid.
+        int navigationBarHeight = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Display display = getActivity().getWindowManager().getDefaultDisplay();
+
+            Point realSize = new Point();
+            display.getRealSize(realSize);
+
+            Point visibleArea = new Point();
+            display.getSize(visibleArea);
+
+            // Status bar is counted as part of the display's height,
+            // so the delta just gives us the navigation bar height.
+            navigationBarHeight = realSize.y - visibleArea.y;
+        }
+
         int parentHeight = parent.getMeasuredHeight();
-        int bottomInset = parentHeight - view.getTop();
+        int bottomInset = parentHeight - view.getTop() + navigationBarHeight;
         popupWindow.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, bottomInset);
         parent.setOnTouchListener((ignored, event) -> {
             if (event.getAction() == MotionEvent.ACTION_UP) {
