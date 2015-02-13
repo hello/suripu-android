@@ -359,7 +359,7 @@ so you can sleep better.</string>
     <string name="welcome_dialog_timeline_intro">Sense collects an immense amount of data about your sleep, your behavior, and the environment in your bedroom.\n\nWe take all this data and present it in a detailed but simple way — this quick walkthrough will show you how to read your first night of sleep data.</string>
     <string name="welcome_dialog_timeline_score">Your Sleep Score takes all the data Sense collects about your sleep, and expresses it as one simple, rich measure of your sleep quality — out of 100.</string>
     <string name="welcome_dialog_timeline_before_sleep">The “Before Sleep” tab will summarize the conditions of your bedroom before you went to sleep. Too hot? Noisy? You‘ll see it here.</string>
-    <string name="welcome_dialog_timeline_events">Your Sleep Timeline shows you a minute-by-minute record of your night. The blue bars break your sleep out into three categories:\n\nLight, Medium and Sound Sleep.</string>
+    <string name="welcome_dialog_timeline_events">Your Sleep Timeline shows you a minute-by-minute record of your night. The blue bars break your sleep out into three categories:\n\nLight, Medium and Deep Sleep.</string>
     <string name="welcome_dialog_current_conditions_title">Current Conditions</string>
     <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom: Temperature, Humidity, Light, and Sound. Tap a card for more details.</string>
     <string name="welcome_dialog_trends_title">Trends</string>
@@ -396,7 +396,7 @@ so you can sleep better.</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>
     <string name="timeline_breakdown_label_total_sleep">Total sleep</string>
     <string name="timeline_breakdown_label_times_awake">Times Awake</string>
-    <string name="timeline_breakdown_label_sound_sleep">Sound Sleep</string>
+    <string name="timeline_breakdown_label_sound_sleep">Deep Sleep</string>
     <string name="timeline_breakdown_label_time_to_sleep">Time to sleep</string>
     <string name="notification_setting_alert_conditions">Alert Conditions</string>
     <string name="notification_setting_sleep_score">Daily Sleep Score</string>
@@ -420,7 +420,7 @@ so you can sleep better.</string>
     <string name="action_adjust_time">Adjust Time</string>
     <string name="action_submit">Submit</string>
     <string name="sleep_depth_awake">awake</string>
-    <string name="sleep_depth_deep">in sound sleep</string>
+    <string name="sleep_depth_deep">in deep sleep</string>
     <string name="sleep_depth_light">in light sleep</string>
     <string name="sleep_depth_intermediate">in medium sleep</string>
     <string name="tooltip_timeline_html_fmt"><![CDATA[You were <b>%1$s</b> for<br>\n%2$s]]></string>
