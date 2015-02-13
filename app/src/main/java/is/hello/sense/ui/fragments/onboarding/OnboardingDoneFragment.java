@@ -42,7 +42,6 @@ public class OnboardingDoneFragment extends Fragment {
         }
     };
 
-    private ImageView glyph;
     private TextView message;
 
     @Override
@@ -59,7 +58,6 @@ public class OnboardingDoneFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_done, container, false);
 
-        this.glyph = (ImageView) view.findViewById(R.id.fragment_onboarding_done_glyph);
         this.message = (TextView) view.findViewById(R.id.fragment_onboarding_done_message);
 
         return view;
@@ -68,9 +66,6 @@ public class OnboardingDoneFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        glyph.setVisibility(View.VISIBLE);
-        glyph.setAlpha(1f);
 
         message.setVisibility(View.VISIBLE);
         message.setAlpha(1f);
@@ -85,20 +80,16 @@ public class OnboardingDoneFragment extends Fragment {
         stepHandler.removeMessages(SHOW_SECOND_MESSAGE);
         stepHandler.removeMessages(SHOW_COMPLETE_MESSAGE);
 
-        stop(message, glyph);
+        stop(message);
     }
 
     public void showSecondMessage() {
-        animate(glyph)
-                .fadeOut(View.INVISIBLE)
-                .addOnAnimationCompleted(finished -> glyph.setImageResource(R.drawable.onboarding_done_moon))
-                .andThen()
-                .fadeIn()
-                .start();
-
         animate(message)
                 .fadeOut(View.INVISIBLE)
-                .addOnAnimationCompleted(finished -> message.setText(R.string.onboarding_done_message_2))
+                .addOnAnimationCompleted(finished -> {
+                    message.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.onboarding_done_moon, 0, 0);
+                    message.setText(R.string.onboarding_done_message_2);
+                })
                 .andThen()
                 .fadeIn()
                 .addOnAnimationCompleted(finished -> {

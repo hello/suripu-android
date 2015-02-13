@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/action_scan"
-        android:title="Scan"
+        android:title="@string/debug_action_scan"
         android:showAsAction="ifRoom" />
 
 </menu>

@@ -424,4 +424,5 @@ so you can sleep better.</string>
     <string name="sleep_depth_light">in light sleep</string>
     <string name="sleep_depth_intermediate">in medium sleep</string>
     <string name="tooltip_timeline_html_fmt"><![CDATA[You were <b>%1$s</b> for<br>\n%2$s]]></string>
+    <string name="debug_action_scan">Scan</string>
 </resources>
