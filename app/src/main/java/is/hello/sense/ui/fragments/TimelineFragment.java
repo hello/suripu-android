@@ -10,9 +10,11 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -382,7 +384,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         String sleepDepthSummary = getString(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
         CharSequence duration = DateUtils.formatDuration(getActivity(), Duration.standardSeconds(segment.getDuration()));
-        contents.setText(getString(R.string.tooltip_timeline_overlay, sleepDepthSummary, duration));
+        String tooltipHtml = getString(R.string.tooltip_timeline_html_fmt, sleepDepthSummary, duration);
+        contents.setText(Html.fromHtml(tooltipHtml));
 
         PopupWindow popupWindow = new PopupWindow(contents);
         popupWindow.setAnimationStyle(R.style.WindowAnimations_FadeAndSlide);
@@ -390,8 +393,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         popupWindow.setOutsideTouchable(true);
         popupWindow.setBackgroundDrawable(new ColorDrawable());
         popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        popupWindow.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, parent.getMeasuredHeight() - view.getTop());
-        contents.postDelayed(popupWindow::dismiss, 1500);
+        int parentHeight = parent.getMeasuredHeight();
+        int bottomInset = parentHeight - view.getTop();
+        popupWindow.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, bottomInset);
+        parent.setOnTouchListener((ignored, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                contents.postDelayed(popupWindow::dismiss, 1000);
+            }
+            return false;
+        });
 
         return true;
     }

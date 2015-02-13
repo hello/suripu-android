@@ -89,7 +89,7 @@
     <!-- The 2:1 relationship should be maintained here-->
     <dimen name="timeline_triangle_height">8dp</dimen>
 
-    <dimen name="timeline_tooltip_padding_bottom">18dp</dimen>
+    <dimen name="timeline_tooltip_padding_bottom">13dp</dimen>
     <dimen name="timeline_tooltip_padding">10dp</dimen>
 
     <dimen name="gap_smart_alarm_list_bottom">96dp</dimen>
