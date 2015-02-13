@@ -388,10 +388,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         contents.setText(Html.fromHtml(tooltipHtml));
 
         PopupWindow popupWindow = new PopupWindow(contents);
-        popupWindow.setAnimationStyle(R.style.WindowAnimations_FadeAndSlide);
+        popupWindow.setAnimationStyle(R.style.WindowAnimations_PopSlideAndFade);
         popupWindow.setTouchable(true);
         popupWindow.setOutsideTouchable(true);
-        popupWindow.setBackgroundDrawable(new ColorDrawable());
+        popupWindow.setBackgroundDrawable(new ColorDrawable()); // Required for touch to dismiss
         popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         int parentHeight = parent.getMeasuredHeight();
         int bottomInset = parentHeight - view.getTop();
