@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/timeline_tooltip_padding"
+    android:paddingBottom="@dimen/timeline_tooltip_padding_bottom"
+    android:paddingLeft="@dimen/timeline_tooltip_padding"
+    android:paddingRight="@dimen/timeline_tooltip_padding"
+    android:textAppearance="@style/AppTheme.Text.Body.Light"
+    android:lineSpacingMultiplier="@dimen/line_multiple_body"
+    android:textColor="@color/white"
+    android:gravity="center"
+    android:text="@string/tooltip_timeline_html_fmt"/>

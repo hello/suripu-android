@@ -5,13 +5,16 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -19,9 +22,13 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import net.danlew.android.joda.DateUtils;
+
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +55,7 @@ import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.TimelineHeaderDrawable;
+import is.hello.sense.ui.widget.TimelineTooltipDrawable;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -60,8 +68,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
-public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment
-{
+public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment, AdapterView.OnItemLongClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
 
@@ -130,8 +137,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
         listView.setOnItemClickListener(this);
+        listView.setOnItemLongClickListener(this);
 
 
         this.headerView = (ViewGroup) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
@@ -365,6 +372,39 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        TimelineSegment segment = (TimelineSegment) parent.getItemAtPosition(position);
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        TextView contents = (TextView) inflater.inflate(R.layout.tooltip_timeline_overlay, parent, false);
+        contents.setBackground(new TimelineTooltipDrawable(getResources()));
+
+        String sleepDepthSummary = getString(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
+        CharSequence duration = DateUtils.formatDuration(getActivity(), Duration.standardSeconds(segment.getDuration()));
+        String tooltipHtml = getString(R.string.tooltip_timeline_html_fmt, sleepDepthSummary, duration);
+        contents.setText(Html.fromHtml(tooltipHtml));
+
+        PopupWindow popupWindow = new PopupWindow(contents);
+        popupWindow.setAnimationStyle(R.style.WindowAnimations_PopSlideAndFade);
+        popupWindow.setTouchable(true);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setBackgroundDrawable(new ColorDrawable()); // Required for touch to dismiss
+        popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        int parentHeight = parent.getMeasuredHeight();
+        int bottomInset = parentHeight - view.getTop();
+        popupWindow.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, bottomInset);
+        parent.setOnTouchListener((ignored, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                contents.postDelayed(popupWindow::dismiss, 1000);
+                parent.setOnTouchListener(null);
+            }
+            return false;
+        });
+
+        return true;
     }
 
     @Override
