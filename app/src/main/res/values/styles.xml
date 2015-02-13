@@ -144,6 +144,11 @@
         <item name="android:windowHideAnimation">@anim/fade_out</item>
     </style>
 
+    <style name="WindowAnimations.PopSlideAndFade">
+        <item name="android:windowEnterAnimation">@anim/fade_and_pop_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_and_slide_out</item>
+    </style>
+
     <!-- Buttons -->
 
     <style name="AppTheme.Button" parent="Platform.Button">

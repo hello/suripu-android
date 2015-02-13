@@ -84,9 +84,13 @@
     <dimen name="timeline_header_tab_height">50dp</dimen>
     <dimen name="timeline_header_gradient_height">30dp</dimen>
     <dimen name="timeline_header_stroke_width">1px</dimen>
-    <dimen name="timeline_header_triangle_width">16dp</dimen>
+
+    <dimen name="timeline_triangle_width">16dp</dimen>
     <!-- The 2:1 relationship should be maintained here-->
-    <dimen name="timeline_header_triangle_height">8dp</dimen>
+    <dimen name="timeline_triangle_height">8dp</dimen>
+
+    <dimen name="timeline_tooltip_padding_bottom">13dp</dimen>
+    <dimen name="timeline_tooltip_padding">10dp</dimen>
 
     <dimen name="gap_smart_alarm_list_bottom">96dp</dimen>
     <dimen name="smart_alarm_details_row_height">72dp</dimen>
