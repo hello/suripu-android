@@ -13,8 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/gap_medium"
         android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading"
-        android:text="@string/mock_time"/>
+        android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
 
     <is.hello.sense.ui.widget.graphing.GraphView
         android:id="@+id/item_trend_graph"

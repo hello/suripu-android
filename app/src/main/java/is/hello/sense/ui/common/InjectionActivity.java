@@ -11,7 +11,7 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public class InjectionActivity extends SenseActivity implements ObservableContainer {
+public abstract class InjectionActivity extends SenseActivity implements ObservableContainer {
     protected boolean isResumed = false;
     protected final ResumeScheduler.Coordinator coordinator = new ResumeScheduler.Coordinator(() -> isResumed);
     protected final ResumeScheduler observeScheduler = new ResumeScheduler(coordinator);

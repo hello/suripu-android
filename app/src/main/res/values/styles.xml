@@ -39,7 +39,9 @@
         <item name="android:background">@color/background</item>
     </style>
 
-    <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar" />
+    <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar">
+        <item name="android:windowBackground">@color/background_onboarding</item>
+    </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="android:windowActionBar">false</item>

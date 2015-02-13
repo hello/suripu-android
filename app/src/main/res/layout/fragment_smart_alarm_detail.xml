@@ -18,7 +18,6 @@
             android:gravity="center"
             android:padding="@dimen/gap_large"
             android:textAppearance="@style/AppTheme.Text.SmartAlarm.Time.Big"
-            android:text="@string/mock_time"
             android:background="?android:attr/selectableItemBackground"/>
 
         <LinearLayout

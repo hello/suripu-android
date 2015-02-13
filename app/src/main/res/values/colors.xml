@@ -77,10 +77,6 @@
     <color name="graph_fill_gradient_top">#35000000</color>
     <color name="graph_fill_gradient_bottom">#20000000</color>
 
-    <color name="graph_fill_accent_color">#70009CFF</color>
-    <color name="graph_fill_accent_gradient_top">#35009CFF</color>
-    <color name="graph_fill_accent_gradient_bottom">#20009CFF</color>
-
     <color name="view_scale_tick_normal">#dfdfdf</color>
     <color name="view_scale_tick_emphasized">#c1c1c1</color>
 </resources>

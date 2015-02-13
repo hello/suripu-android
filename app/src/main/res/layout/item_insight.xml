@@ -16,8 +16,7 @@
         android:layout_marginBottom="@dimen/gap_medium"
         android:layout_marginEnd="@dimen/gap_medium"
         android:layout_marginStart="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading"
-        android:text="@string/mock_time"/>
+        android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
 
     <TextView
         android:id="@+id/item_insight_title"
@@ -41,7 +40,6 @@
         android:layout_marginRight="@dimen/gap_medium"
         android:layout_marginBottom="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Body"
-        android:text="@string/mock_event_message"
         android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
     <TextView

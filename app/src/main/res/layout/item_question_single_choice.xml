@@ -3,5 +3,4 @@
 <Button xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="@string/mock_question_title"
     style="@style/AppTheme.Button.Borderless.Question.Choice" />

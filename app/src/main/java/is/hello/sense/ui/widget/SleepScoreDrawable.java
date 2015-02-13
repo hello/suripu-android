@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -28,7 +29,7 @@ public class SleepScoreDrawable extends Drawable {
 
     public SleepScoreDrawable(@NonNull Resources resources) {
         this.fillStrokeWidth = resources.getDimensionPixelSize(R.dimen.pie_graph_stroke_width);
-        this.fillColor = resources.getColor(R.color.graph_fill_accent_color);
+        this.fillColor = Color.TRANSPARENT;
         this.trackColor = resources.getColor(R.color.border);
 
         paint.setAntiAlias(true);

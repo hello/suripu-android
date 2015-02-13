@@ -4,7 +4,7 @@ import android.app.Activity;
 
 import is.hello.sense.util.Analytics;
 
-public class SenseActivity extends Activity {
+public abstract class SenseActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
