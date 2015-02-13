@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import net.danlew.android.joda.DateUtils;
+
 import java.util.List;
 
 import is.hello.sense.R;
@@ -57,6 +59,9 @@ public class InsightsAdapter extends ArrayAdapter<Insight> {
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.title.setText(insight.getTitle());
         markdown.renderInto(holder.body, insight.getMessage());
+
+        CharSequence insightDate = DateUtils.getRelativeTimeSpanString(getContext(), insight.getCreated());
+        holder.date.setText(insightDate);
 
         return view;
     }
