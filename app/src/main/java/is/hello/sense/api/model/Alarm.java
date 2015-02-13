@@ -250,14 +250,9 @@ public class Alarm extends ApiResponse {
     public @NonNull String getDaysOfWeekSummary(@NonNull Context context) {
         if (Lists.isEmpty(daysOfWeek)) {
             if (isSmart()) {
-                return context.getString(R.string.alarm_never);
+                return context.getString(R.string.smart_alarm_never);
             } else {
-                DateTime today = DateFormatter.now();
-                if (year == today.getYear() && month == today.getMonthOfYear() && dayOfMonth == today.getDayOfMonth()) {
-                    return context.getString(R.string.alarm_today);
-                } else {
-                    return context.getString(R.string.alarm_tomorrow);
-                }
+                return context.getString(R.string.alarm_never);
             }
         }
 
