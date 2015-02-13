@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="timeline_tooltip_padding">18dp</dimen>
+    <dimen name="timeline_tooltip_padding_bottom">20dp</dimen>
 </resources>
