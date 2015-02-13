@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 
 import java.util.List;
 
@@ -116,6 +117,10 @@ public class TimelineSegment extends ApiResponse implements Cloneable {
         copy.timestamp = newTimestamp.withZone(DateTimeZone.UTC);
         copy.shiftedTimestamp = newTimestamp.withZone(getTimeZone());
         return copy;
+    }
+
+    public LocalTime getUnshiftedTime() {
+        return timestamp.toLocalTime();
     }
 
     public SoundInfo getSound() {

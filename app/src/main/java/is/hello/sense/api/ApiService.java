@@ -40,6 +40,7 @@ import rx.Observable;
 
 public interface ApiService {
     String DATE_FORMAT = "yyyy-MM-dd";
+    String TIME_FORMAT = "HH:mm";
 
     String UNIT_TEMPERATURE_CELSIUS = "c";
     String UNIT_TEMPERATURE_US_CUSTOMARY = "f";

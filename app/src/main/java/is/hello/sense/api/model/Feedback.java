@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 import is.hello.sense.api.ApiService;
 
@@ -12,17 +13,17 @@ public class Feedback extends ApiResponse {
     @JsonProperty("event_type")
     private TimelineSegment.EventType eventType;
 
-    @JsonProperty("day")
+    @JsonProperty("date_of_night")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.DATE_FORMAT)
-    private LocalDate day;
+    private LocalDate night;
 
-    @JsonProperty("ts")
-    private DateTime timestamp;
+    @JsonProperty("old_time_of_event")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.TIME_FORMAT)
+    private LocalTime oldTime;
 
-
-    public Feedback() {
-
-    }
+    @JsonProperty("new_time_of_event")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.TIME_FORMAT)
+    private LocalTime newTime;
 
 
     public TimelineSegment.EventType getEventType() {
@@ -33,29 +34,39 @@ public class Feedback extends ApiResponse {
         this.eventType = eventType;
     }
 
-    public LocalDate getDay() {
-        return day;
+    public LocalDate getNight() {
+        return night;
     }
 
-    public void setDay(LocalDate day) {
-        this.day = day;
+    public void setNight(LocalDate night) {
+        this.night = night;
     }
 
-    public DateTime getTimestamp() {
-        return timestamp;
+
+    public LocalTime getOldTime() {
+        return oldTime;
     }
 
-    public void setTimestamp(DateTime timestamp) {
-        this.timestamp = timestamp;
+    public void setOldTime(LocalTime oldTime) {
+        this.oldTime = oldTime;
+    }
+
+    public LocalTime getNewTime() {
+        return newTime;
+    }
+
+    public void setNewTime(LocalTime newTime) {
+        this.newTime = newTime;
     }
 
 
     @Override
     public String toString() {
         return "Feedback{" +
-                "eventType=" + eventType +
-                ", day=" + day +
-                ", timestamp=" + timestamp +
+                "oldTime=" + oldTime +
+                ", newTime=" + newTime +
+                ", eventType=" + eventType +
+                ", night=" + night +
                 '}';
     }
 }

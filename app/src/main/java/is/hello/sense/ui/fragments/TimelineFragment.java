@@ -32,6 +32,7 @@ import net.danlew.android.joda.DateUtils;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.LocalTime;
 
 import java.util.Collections;
 import java.util.List;
@@ -446,19 +447,20 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     @Override
     public void onAdjustSegmentTime(@NonNull TimelineSegment segment,
-                                    @NonNull DateTime newTimestamp,
+                                    @NonNull LocalTime newUnshiftedTime,
                                     @NonNull Action1<Boolean> continuation) {
         Feedback correction = new Feedback();
         correction.setEventType(segment.getEventType());
-        correction.setDay(getDate().toLocalDate());
-        correction.setTimestamp(newTimestamp);
+        correction.setNight(getDate().toLocalDate());
+        correction.setOldTime(segment.getUnshiftedTime());
+        correction.setNewTime(newUnshiftedTime);
         bindAndSubscribe(timelinePresenter.submitCorrection(correction),
-                         ignored -> {
-                             continuation.call(true);
-                         }, e -> {
-                             ErrorDialogFragment.presentError(getFragmentManager(), e);
-                             continuation.call(false);
-                         });
+                ignored -> {
+                    continuation.call(true);
+                }, e -> {
+                    ErrorDialogFragment.presentError(getFragmentManager(), e);
+                    continuation.call(false);
+                });
     }
 
     //endregion

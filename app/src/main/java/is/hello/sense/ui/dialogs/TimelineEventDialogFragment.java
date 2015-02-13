@@ -22,6 +22,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
 import javax.inject.Inject;
@@ -297,22 +299,23 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         if (requestCode == REQUEST_CODE_ADJUST_TIME && resultCode == Activity.RESULT_OK) {
             int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 12);
             int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 0);
-            DateTime newTimestamp = timelineSegment.getShiftedTimestamp()
-                                                   .withHourOfDay(hour)
-                                                   .withMinuteOfHour(minute);
+            DateTime newLocalTimestamp = timelineSegment.getShiftedTimestamp()
+                                                        .withHourOfDay(hour)
+                                                        .withMinuteOfHour(minute);
+            LocalTime newTime = newLocalTimestamp.withZone(DateTimeZone.UTC).toLocalTime();
 
             this.adjustingTime = true;
             adjustTimeActivity.setVisibility(View.VISIBLE);
             adjustTimeButton.setVisibility(View.INVISIBLE);
 
-            getTimeAdjustFragment().onAdjustSegmentTime(timelineSegment, newTimestamp, success -> {
+            getTimeAdjustFragment().onAdjustSegmentTime(timelineSegment, newTime, success -> {
                 coordinator.postOnResume(() -> {
                     this.adjustingTime = false;
 
                     adjustTimeActivity.setVisibility(View.GONE);
                     adjustTimeButton.setVisibility(View.VISIBLE);
                     if (success) {
-                        setTimelineSegment(timelineSegment.withTimestamp(newTimestamp));
+                        setTimelineSegment(timelineSegment.withTimestamp(newLocalTimestamp));
                     }
                 });
             });
@@ -332,7 +335,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
 
     public interface AdjustTimeFragment {
         void onAdjustSegmentTime(@NonNull TimelineSegment segment,
-                                 @NonNull DateTime newTimestamp,
+                                 @NonNull LocalTime newUnshiftedTime,
                                  @NonNull Action1<Boolean> continuation);
     }
 }
