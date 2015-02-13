@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
     @Inject TrendsPresenter trendsPresenter;
 
     private TrendsAdapter trendsAdapter;
+    private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView noDataPlaceholder;
 
@@ -59,6 +61,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
 
         Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER);
 
+        this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
         this.noDataPlaceholder = (TextView) view.findViewById(R.id.fragment_trends_placeholder);
 
         return view;
@@ -86,6 +89,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         swipeRefreshLayout.setRefreshing(false);
         trendsAdapter.bindTrends(trends);
 
+        initialActivityIndicator.setVisibility(View.GONE);
         if (Lists.isEmpty(trends)) {
             noDataPlaceholder.setText(R.string.message_not_enough_data);
             noDataPlaceholder.setVisibility(View.VISIBLE);
@@ -98,6 +102,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         swipeRefreshLayout.setRefreshing(false);
         trendsAdapter.clear();
 
+        initialActivityIndicator.setVisibility(View.GONE);
         noDataPlaceholder.setText(R.string.trends_message_error);
         noDataPlaceholder.setVisibility(View.VISIBLE);
     }
