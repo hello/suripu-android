@@ -120,12 +120,20 @@ public class SensorHistoryAdapter implements GraphAdapter {
          * a zero / missing value. We do the same for consistency.
          */
         public static List<SensorGraphSample> normalizeDataSeries(@NonNull List<SensorGraphSample> history) {
-            if (history.size() > 1) {
-                SensorGraphSample sample = history.get(history.size() - 1);
-                float value = sample.getValue();
-                if (value == 0f || value == ApiService.PLACEHOLDER_VALUE) {
-                    return history.subList(0, history.size() - 1);
+            if (history.size() > 3) {
+                SensorGraphSample firstSample = history.get(0);
+                int start = 0;
+                if (firstSample.getValue() == 0f || firstSample.getValue() == ApiService.PLACEHOLDER_VALUE) {
+                    start++;
                 }
+
+                SensorGraphSample lastSample = history.get(history.size() - 1);
+                int end = history.size();
+                if (lastSample.getValue() == 0f || lastSample.getValue() == ApiService.PLACEHOLDER_VALUE) {
+                    end--;
+                }
+
+                return history.subList(start, end);
             }
 
             return history;
