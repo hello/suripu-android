@@ -114,8 +114,12 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         this.peripheral = peripheral;
     }
 
-    public @Nullable SensePeripheral getPeripheral() {
-        return peripheral;
+    public boolean hasPeripheral() {
+        return (peripheral != null);
+    }
+
+    public boolean isConnected() {
+        return (peripheral != null && peripheral.isConnected());
     }
 
     public BluetoothStack.SupportLevel getDeviceSupportLevel() {
@@ -246,11 +250,15 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return this.pendingDiscovery;
     }
 
-    public Observable<HelloPeripheral.ConnectStatus> connectToPeripheral(@NonNull SensePeripheral peripheral) {
+    public Observable<HelloPeripheral.ConnectStatus> connectToPeripheral() {
         logEvent("connectToPeripheral(" + peripheral + ")");
 
         if (connectingToPeripheral != null) {
             return connectingToPeripheral;
+        }
+
+        if (peripheral == null) {
+            return noDeviceError();
         }
 
         if (peripheral.isConnected() && peripheral.getBondStatus() != Peripheral.BOND_BONDED) {
@@ -262,7 +270,6 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         Observable<SensePeripheral.ConnectStatus> connecting = peripheral.connect().doOnCompleted(() -> {
             logEvent("pairedWithPeripheral(" + peripheral + ")");
             setLastPeripheralAddress(peripheral.getAddress());
-            this.peripheral = peripheral;
 
             this.connectingToPeripheral = null;
         }).doOnError(e -> {

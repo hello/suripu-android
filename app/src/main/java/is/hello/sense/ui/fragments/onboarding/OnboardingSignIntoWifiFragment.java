@@ -181,10 +181,10 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
 
         showBlockingActivity(R.string.title_connecting_network);
 
-        if (hardwarePresenter.getPeripheral() == null) {
+        if (!hardwarePresenter.hasPeripheral()) {
             Action1<Throwable> onError = this::presentError;
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
-                             peripheral -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral), status -> {
+                             ignored -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
                                  if (status != HelloPeripheral.ConnectStatus.CONNECTED)
                                      return;
 

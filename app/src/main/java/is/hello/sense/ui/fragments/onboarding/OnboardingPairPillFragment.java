@@ -135,15 +135,15 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     public void pairPill() {
         beginPairing();
 
-        if (hardwarePresenter.getPeripheral() == null) {
+        if (!hardwarePresenter.hasPeripheral()) {
             showBlockingActivity(R.string.title_scanning_for_sense);
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(), ignored -> pairPill(), this::presentError);
             return;
         }
 
-        if (!hardwarePresenter.getPeripheral().isConnected()) {
+        if (!hardwarePresenter.isConnected()) {
             showBlockingActivity(R.string.title_scanning_for_sense);
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(hardwarePresenter.getPeripheral()), status -> {
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                     hideBlockingActivity(true, this::pairPill);
                 } else {

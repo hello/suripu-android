@@ -170,16 +170,16 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
             dialog.setTitle(R.string.debug_title_confirm_sense_pair);
             dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
-            dialog.setPositiveButton(android.R.string.ok, (sender, which) -> pairWith(device));
+            dialog.setPositiveButton(android.R.string.ok, (sender, which) -> completePeripheralPair());
             dialog.setNegativeButton(android.R.string.cancel, (sender, which) -> LoadingDialogFragment.close(getFragmentManager()));
             dialog.show();
         } else {
-            pairWith(device);
+            completePeripheralPair();
         }
     }
 
-    public void pairWith(@NonNull SensePeripheral device) {
-        bindAndSubscribe(hardwarePresenter.connectToPeripheral(device), status -> {
+    public void completePeripheralPair() {
+        bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
             if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                 checkConnectivityAndContinue();
             } else {

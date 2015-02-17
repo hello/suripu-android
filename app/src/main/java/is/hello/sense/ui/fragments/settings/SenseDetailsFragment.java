@@ -121,7 +121,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == WIFI_REQUEST_CODE) {
-            if (hardwarePresenter.getPeripheral() != null && hardwarePresenter.getPeripheral().isConnected()) {
+            if (hardwarePresenter.isConnected()) {
                 hideAlert();
                 checkConnectivityState();
             }
@@ -207,11 +207,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                          });
     }
 
-    public void bindPeripheral(@NonNull SensePeripheral peripheral) {
-        if (peripheral.isConnected()) {
+    public void bindPeripheral(@NonNull SensePeripheral ignored) {
+        if (hardwarePresenter.isConnected()) {
             checkConnectivityState();
         } else {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral),
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
                              status -> {
                                  if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                                      checkConnectivityState();
@@ -258,7 +258,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     //region Sense Actions
 
     public void changeWifiNetwork() {
-        if (hardwarePresenter.getPeripheral() == null) {
+        if (!hardwarePresenter.hasPeripheral()) {
             return;
         }
 
@@ -270,7 +270,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     public void putIntoPairingMode() {
-        if (hardwarePresenter.getPeripheral() == null) {
+        if (!hardwarePresenter.hasPeripheral()) {
             return;
         }
 
@@ -285,7 +285,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     public void factoryReset() {
-        if (hardwarePresenter.getPeripheral() == null) {
+        if (!hardwarePresenter.hasPeripheral()) {
             return;
         }
 
