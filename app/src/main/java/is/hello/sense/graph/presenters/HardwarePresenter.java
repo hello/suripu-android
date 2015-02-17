@@ -293,6 +293,12 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                          .doOnError(this.respondToError);
     }
 
+    private void sortWifiNetworks(@NonNull List<SenseCommandProtos.wifi_endpoint> networks) {
+        if (!networks.isEmpty()) {
+            Collections.sort(networks, (l, r) -> Functions.compareInts(r.getRssi(), l.getRssi()));
+        }
+    }
+
     public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks() {
         if (peripheral == null) {
             return noDeviceError();
@@ -302,9 +308,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                          .subscribeOn(AndroidSchedulers.mainThread())
                          .doOnError(this.respondToError)
                          .map(networks -> {
-                             if (!networks.isEmpty()) {
-                                 Collections.sort(networks, (l, r) -> Functions.compareInts(r.getRssi(), l.getRssi()));
-                             }
+                             sortWifiNetworks(networks);
 
                              return networks;
                          });
@@ -425,6 +429,10 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
         static @Nullable SensePeripheral getPeripheral(@NonNull HardwarePresenter presenter) {
             return presenter.peripheral;
+        }
+
+        static void sortWifiNetworks(@NonNull HardwarePresenter presenter, @NonNull List<SenseCommandProtos.wifi_endpoint> endpoints) {
+            presenter.sortWifiNetworks(endpoints);
         }
     }
 }

@@ -20,7 +20,7 @@ public class TestPeripheralBehavior {
     AdvertisingData advertisingData = AdvertisingData.parse(new byte[0]);
 
     @Peripheral.ConnectivityStatus int connectionStatus = Peripheral.STATUS_DISCONNECTED;
-    int bondStatus = Peripheral.BOND_NONE;
+    @Peripheral.BondStatus int bondStatus = Peripheral.BOND_NONE;
     Either<Collection<PeripheralService>, Throwable> servicesResponse;
     Either<Peripheral, Throwable> connectResponse;
     Either<Peripheral, Throwable> disconnectResponse;
