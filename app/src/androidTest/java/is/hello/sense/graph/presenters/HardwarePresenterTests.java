@@ -6,13 +6,13 @@ import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
+import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.TestPeripheral;
 import is.hello.sense.bluetooth.stacks.TestPeripheralBehavior;
 import is.hello.sense.functional.Either;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 
-import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static is.hello.sense.AssertExtensions.assertThrows;
 
 public class HardwarePresenterTests extends InjectionTestCase {
@@ -46,7 +46,9 @@ public class HardwarePresenterTests extends InjectionTestCase {
         OperationTimeoutError error = new OperationTimeoutError(OperationTimeoutError.Operation.SUBSCRIBE_NOTIFICATION);
         peripheralBehavior.setSubscriptionResponse(Either.right(error));
 
-        assertThrows(() -> Sync.last(presenter.currentWifiNetwork()));
+        assertThrows(() -> {
+            Sync.last(presenter.currentWifiNetwork());
+        });
         assertNull(HardwarePresenter.Tests.getPeripheral(presenter));
 
 
@@ -55,7 +57,9 @@ public class HardwarePresenterTests extends InjectionTestCase {
 
         peripheralBehavior.setSubscriptionResponse(Either.right(new BluetoothError()));
 
-        assertThrows(() -> Sync.last(presenter.currentWifiNetwork()));
+        assertThrows(() -> {
+            Sync.last(presenter.currentWifiNetwork());
+        });
         assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
     }
 
@@ -69,7 +73,20 @@ public class HardwarePresenterTests extends InjectionTestCase {
     }
 
     public void testConnectivityGetters() throws Exception {
-        fail();
+        HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
+        peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
+
+        assertTrue(presenter.hasPeripheral());
+        assertTrue(presenter.isConnected());
+
+        peripheralBehavior.setConnectionStatus(Peripheral.STATUS_DISCONNECTED);
+
+        assertFalse(presenter.isConnected());
+
+        HardwarePresenter.Tests.setPeripheral(presenter, null);
+
+        assertFalse(presenter.hasPeripheral());
+        assertFalse(presenter.isConnected());
     }
 
     public void testNoDeviceErrors() throws Exception {

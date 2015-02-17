@@ -2,9 +2,12 @@ package is.hello.sense.bluetooth.stacks;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothProfile;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +46,10 @@ public interface Peripheral {
      */
     public static final int BOND_BONDED = BluetoothDevice.BOND_BONDED;
 
+    @IntDef({BOND_NONE, BOND_BONDING, BOND_BONDED})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface BondStatus {}
+
     //endregion
 
 
@@ -67,6 +74,10 @@ public interface Peripheral {
      * Indicates the Peripheral is in the process of disconnecting.
      */
     public static final int STATUS_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING;
+
+    @IntDef({STATUS_DISCONNECTED, STATUS_DISCONNECTING, STATUS_CONNECTED, STATUS_CONNECTING})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ConnectivityStatus {}
 
     //endregion
 
@@ -143,7 +154,7 @@ public interface Peripheral {
      * @see Peripheral#STATUS_CONNECTED
      * @see Peripheral#STATUS_DISCONNECTING
      */
-    int getConnectionStatus();
+    @ConnectivityStatus int getConnectionStatus();
 
     //endregion
 
@@ -171,7 +182,7 @@ public interface Peripheral {
      * @see Peripheral#BOND_BONDING
      * @see Peripheral#BOND_BONDED
      */
-    int getBondStatus();
+    @BondStatus int getBondStatus();
 
     //endregion
 
