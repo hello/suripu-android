@@ -114,10 +114,10 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         rescanButton.setEnabled(false);
         networkAdapter.clear();
 
-        if (hardwarePresenter.getPeripheral() == null) {
+        if (!hardwarePresenter.hasPeripheral()) {
             Action1<Throwable> onError = this::peripheralRediscoveryFailed;
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
-                             peripheral -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(peripheral), status -> {
+                             ignored -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
                                  if (status != HelloPeripheral.ConnectStatus.CONNECTED) {
                                      return;
                                  }

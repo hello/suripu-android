@@ -62,7 +62,7 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     protected void hideHardwareActivity(@NonNull Runnable onCompletion,
                                         @Nullable Action1<Throwable> onError) {
-        if (hardwarePresenter.getPeripheral() != null && hardwarePresenter.getPeripheral().isConnected()) {
+        if (hardwarePresenter.hasPeripheral() && hardwarePresenter.isConnected()) {
             bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.TRIPPY),
                              ignored -> onCompletion.run(),
                              e -> {

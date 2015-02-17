@@ -42,13 +42,13 @@ public class Onboarding2ndPillInfoFragment extends HardwareFragment {
 
 
     public void putSenseIntoPairingMode() {
-        if (hardwarePresenter.getPeripheral() == null) {
+        if (!hardwarePresenter.hasPeripheral()) {
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(), ignored -> putSenseIntoPairingMode(), Functions.LOG_ERROR);
             return;
         }
 
-        if (!hardwarePresenter.getPeripheral().isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(hardwarePresenter.getPeripheral()), ignored -> putSenseIntoPairingMode(), Functions.LOG_ERROR);
+        if (!hardwarePresenter.isConnected()) {
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), ignored -> putSenseIntoPairingMode(), Functions.LOG_ERROR);
             return;
         }
 
