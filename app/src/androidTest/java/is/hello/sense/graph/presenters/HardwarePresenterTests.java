@@ -3,15 +3,16 @@ package is.hello.sense.graph.presenters;
 import javax.inject.Inject;
 
 import is.hello.sense.bluetooth.devices.SensePeripheral;
+import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.TestPeripheral;
 import is.hello.sense.bluetooth.stacks.TestPeripheralBehavior;
 import is.hello.sense.functional.Either;
 import is.hello.sense.graph.InjectionTestCase;
-import is.hello.sense.util.ModelHelper;
 import is.hello.sense.util.Sync;
 
+import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static is.hello.sense.AssertExtensions.assertThrows;
 
 public class HardwarePresenterTests extends InjectionTestCase {
@@ -19,7 +20,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
     private SensePeripheral peripheral;
 
     @Inject BluetoothStack stack;
-    @Inject HardwarePresenter hardwarePresenter;
+    @Inject HardwarePresenter presenter;
 
     @Override
     protected void setUp() throws Exception {
@@ -34,23 +35,37 @@ public class HardwarePresenterTests extends InjectionTestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        hardwarePresenter.setPeripheral(null);
+        HardwarePresenter.Tests.setPeripheral(presenter, null);
         peripheralBehavior.reset();
     }
 
     public void testErrorsResetPeripheral() throws Exception {
-        hardwarePresenter.setPeripheral(peripheral);
-        assertNotNull(HardwarePresenter.Tests.getPeripheral(hardwarePresenter));
+        HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
+        assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
 
         OperationTimeoutError error = new OperationTimeoutError(OperationTimeoutError.Operation.SUBSCRIBE_NOTIFICATION);
         peripheralBehavior.setSubscriptionResponse(Either.right(error));
 
-        assertThrows(() -> Sync.last(hardwarePresenter.currentWifiNetwork()));
-        assertNull(HardwarePresenter.Tests.getPeripheral(hardwarePresenter));
+        assertThrows(() -> Sync.last(presenter.currentWifiNetwork()));
+        assertNull(HardwarePresenter.Tests.getPeripheral(presenter));
+
+
+        HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
+        assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
+
+        peripheralBehavior.setSubscriptionResponse(Either.right(new BluetoothError()));
+
+        assertThrows(() -> Sync.last(presenter.currentWifiNetwork()));
+        assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
     }
 
     public void testClearsPeripheralOnBluetoothDisable() throws Exception {
-        fail();
+        HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
+        presenter.onBluetoothEnabledChanged(true);
+        assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
+
+        presenter.onBluetoothEnabledChanged(false);
+        assertNull(HardwarePresenter.Tests.getPeripheral(presenter));
     }
 
     public void testConnectivityGetters() throws Exception {

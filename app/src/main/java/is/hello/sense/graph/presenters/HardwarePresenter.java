@@ -419,6 +419,10 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
     static final class Tests {
+        static void setPeripheral(@NonNull HardwarePresenter presenter, @Nullable SensePeripheral peripheral) {
+            presenter.peripheral = peripheral;
+        }
+
         static @Nullable SensePeripheral getPeripheral(@NonNull HardwarePresenter presenter) {
             return presenter.peripheral;
         }
