@@ -417,4 +417,10 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
             super("HardwarePresenter peripheral method called without paired peripheral.", new NullPointerException());
         }
     }
+
+    static final class Tests {
+        static @Nullable SensePeripheral getPeripheral(@NonNull HardwarePresenter presenter) {
+            return presenter.peripheral;
+        }
+    }
 }

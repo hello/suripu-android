@@ -61,6 +61,12 @@ public final class ModelHelper<T extends ApiResponse> {
         field.setDouble(object, value);
         return this;
     }
+
+    public <U> U get(@NonNull String fieldName, @NonNull Class<U> clazz) throws NoSuchFieldException, IllegalAccessException {
+        Field field = objectClass.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return clazz.cast(field.get(object));
+    }
     
     
     public @NonNull T unwrap() {
