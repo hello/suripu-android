@@ -17,6 +17,7 @@ import static is.hello.sense.AssertExtensions.assertThrows;
 
 public class HardwarePresenterTests extends InjectionTestCase {
     private final TestPeripheralBehavior peripheralBehavior = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
+    private TestPeripheral testPeripheral;
     private SensePeripheral peripheral;
 
     @Inject BluetoothStack stack;
@@ -26,8 +27,9 @@ public class HardwarePresenterTests extends InjectionTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        if (peripheral == null) {
-            this.peripheral = new SensePeripheral(new TestPeripheral(stack, peripheralBehavior));
+        if (testPeripheral == null) {
+            this.testPeripheral = new TestPeripheral(stack, peripheralBehavior);
+            this.peripheral = new SensePeripheral(testPeripheral);
         }
     }
 
@@ -98,6 +100,18 @@ public class HardwarePresenterTests extends InjectionTestCase {
     }
 
     public void testClearPeripheral() throws Exception {
-        fail();
+        HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
+        peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
+        peripheralBehavior.setDisconnectResponse(Either.left(testPeripheral));
+
+        assertTrue(presenter.hasPeripheral());
+        assertTrue(presenter.isConnected());
+
+        presenter.clearPeripheral();
+
+        assertFalse(presenter.hasPeripheral());
+        assertFalse(presenter.isConnected());
+
+        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
     }
 }
