@@ -94,6 +94,8 @@ public class HomeActivity
     private boolean isFirstActivityRun;
     private boolean showUnderside;
 
+    private @Nullable FragmentManager.OnBackStackChangedListener navigatorStackListener;
+
     private @Nullable SensorManager sensorManager;
     private @Nullable ShakeDetector shakeDetector;
 
@@ -165,6 +167,12 @@ public class HomeActivity
             slidingLayersView.setBackgroundColor(getResources().getColor(R.color.status_bar));
         }
 
+
+        Fragment navigatorFragment = getFragmentManager().findFragmentByTag(TimelineNavigatorFragment.TAG);
+        if (navigatorFragment != null) {
+            getFragmentManager().popBackStack(TimelineNavigatorFragment.TAG,
+                                              FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
 
         //noinspection PointlessBooleanExpression,ConstantConditions
         if (!BuildConfig.DEBUG && BuildConfig.DEBUG_SCREEN_ENABLED) {
@@ -272,6 +280,10 @@ public class HomeActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        if (navigatorStackListener != null) {
+            getFragmentManager().removeOnBackStackChangedListener(navigatorStackListener);
+        }
 
         if (isFinishing()) {
             presenterContainer.onContainerDestroyed();
@@ -402,7 +414,7 @@ public class HomeActivity
             currentFragment.setModifyAlarmButton(false);
         }
 
-        pullSmartAlarmOnScreen();
+        showAlarmShortcut();
     }
 
     @Override
@@ -424,7 +436,7 @@ public class HomeActivity
 
     //region Smart Alarm Button
 
-    public void pushSmartAlarmOffScreen() {
+    public void hideAlarmShortcut() {
         if (smartAlarmButton.getVisibility() == View.VISIBLE && !isAnimating(smartAlarmButton)) {
             int contentHeight = rootContainer.getMeasuredHeight();
 
@@ -439,7 +451,7 @@ public class HomeActivity
         }
     }
 
-    public void pullSmartAlarmOnScreen() {
+    public void showAlarmShortcut() {
         if (smartAlarmButton.getVisibility() == View.INVISIBLE && !isAnimating(smartAlarmButton)) {
             int contentHeight = rootContainer.getMeasuredHeight();
             int buttonHeight = smartAlarmButton.getMeasuredHeight();
@@ -684,26 +696,28 @@ public class HomeActivity
         if (view == null) {
             throw new IllegalStateException();
         }
-        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                if (!navigatorFragment.isAdded() && !isDestroyed()) {
-                    animate(viewPager)
-                            .zoomInFrom(0.7f)
-                            .addOnAnimationCompleted(finished -> {
-                                if (finished) {
-                                    undersideContainer.removeView(view);
-                                }
-                            })
-                            .start();
 
-                    fragmentManager.removeOnBackStackChangedListener(this);
-                }
+        this.navigatorStackListener = () -> {
+            if (!navigatorFragment.isAdded() && !isDestroyed()) {
+                showAlarmShortcut();
+                animate(viewPager)
+                        .zoomInFrom(0.7f)
+                        .addOnAnimationCompleted(finished -> {
+                            if (finished) {
+                                undersideContainer.removeView(view);
+                            }
+                        })
+                        .start();
+
+                fragmentManager.removeOnBackStackChangedListener(navigatorStackListener);
+                this.navigatorStackListener = null;
             }
-        });
+        };
+        fragmentManager.addOnBackStackChangedListener(navigatorStackListener);
 
         undersideContainer.addView(view, 0);
 
+        hideAlarmShortcut();
         animate(viewPager)
                 .zoomOutTo(View.GONE, 0.7f)
                 .start();
@@ -713,8 +727,11 @@ public class HomeActivity
     public void onTimelineSelected(@NonNull DateTime date, @Nullable Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_OUT, null);
 
-        if (!date.equals(viewPager.getCurrentFragment().getDate())) {
+        TimelineFragment currentFragment = viewPager.getCurrentFragment();
+        if (!date.equals(currentFragment.getDate())) {
             viewPager.setCurrentFragment(TimelineFragment.newInstance(date, timeline));
+        } else {
+            currentFragment.scrollToTop();
         }
         getFragmentManager().popBackStack();
     }

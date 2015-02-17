@@ -81,6 +81,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Inject PreferencesPresenter preferences;
     @Inject Markdown markdown;
 
+    private ListView listView;
     private TimelineSegmentAdapter segmentAdapter;
 
     private ImageButton menuButton;
@@ -142,7 +143,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
 
@@ -184,7 +185,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         Views.setSafeOnClickListener(menuButton, ignored -> {
             HomeActivity activity = (HomeActivity) getActivity();
             activity.getSlidingLayersView().toggle();
-            listView.smoothScrollToPositionFromTop(0, 0);
+            scrollToTop();
         });
 
         this.shareButton = (ImageButton) headerView.findViewById(R.id.fragment_timeline_header_share);
@@ -371,6 +372,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
     }
 
+    public void scrollToTop() {
+        listView.smoothScrollToPositionFromTop(0, 0);
+    }
+
 
     //region Event Details
 
@@ -484,9 +489,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             }
 
             if (firstVisiblePosition == 0 && ListViews.getEstimatedScrollY(listView) == 0) {
-                homeActivity.pullSmartAlarmOnScreen();
+                homeActivity.showAlarmShortcut();
             } else {
-                homeActivity.pushSmartAlarmOffScreen();
+                homeActivity.hideAlarmShortcut();
             }
         }
 
