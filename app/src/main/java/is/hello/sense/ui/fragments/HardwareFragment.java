@@ -54,8 +54,7 @@ public abstract class HardwareFragment extends InjectionFragment {
         bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.BUSY),
                          ignored -> onCompletion.run(),
                          e -> {
-                             Logger.error(getClass().getSimpleName(), "Error occurred when showing hardware activity, clearing peripheral.", e);
-                             hardwarePresenter.clearPeripheral();
+                             Logger.error(getClass().getSimpleName(), "Error occurred when showing hardware activity.", e);
                              onError.call(e);
                          });
     }
@@ -66,8 +65,7 @@ public abstract class HardwareFragment extends InjectionFragment {
             bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.TRIPPY),
                              ignored -> onCompletion.run(),
                              e -> {
-                                 Logger.error(getClass().getSimpleName(), "Error occurred when hiding hardware activity, clearing peripheral.", e);
-                                 hardwarePresenter.clearPeripheral();
+                                 Logger.error(getClass().getSimpleName(), "Error occurred when hiding hardware activity.", e);
                                  if (onError != null) {
                                      onError.call(e);
                                  } else {
@@ -84,8 +82,7 @@ public abstract class HardwareFragment extends InjectionFragment {
         bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.STOP),
                          ignored -> onCompletion.run(),
                          e -> {
-                             Logger.error(getClass().getSimpleName(), "Error occurred when completing hardware activity, clearing peripheral.", e);
-                             hardwarePresenter.clearPeripheral();
+                             Logger.error(getClass().getSimpleName(), "Error occurred when completing hardware activity", e);
                              if (onError != null) {
                                  onError.call(e);
                              } else {
