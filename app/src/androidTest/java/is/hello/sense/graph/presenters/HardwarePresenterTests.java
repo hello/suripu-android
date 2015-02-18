@@ -1,5 +1,7 @@
 package is.hello.sense.graph.presenters;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -15,6 +17,7 @@ import is.hello.sense.functional.Either;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
+import rx.Observable;
 
 import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static is.hello.sense.AssertExtensions.assertThrows;
@@ -98,7 +101,18 @@ public class HardwarePresenterTests extends InjectionTestCase {
     }
 
     public void testNoDeviceErrors() throws Exception {
-        fail();
+        HardwarePresenter.Tests.setPeripheral(presenter, null);
+
+        assertThrowsNoDeviceError(presenter.connectToPeripheral());
+        assertThrowsNoDeviceError(presenter.runLedAnimation(SensePeripheral.LedAnimation.STOP));
+        assertThrowsNoDeviceError(presenter.scanForWifiNetworks());
+        assertThrowsNoDeviceError(presenter.currentWifiNetwork());
+        assertThrowsNoDeviceError(presenter.sendWifiCredentials("1234", "1234", sec_type.SL_SCAN_SEC_TYPE_OPEN, ""));
+        assertThrowsNoDeviceError(presenter.linkAccount());
+        assertThrowsNoDeviceError(presenter.linkPill());
+        assertThrowsNoDeviceError(presenter.pushData());
+        assertThrowsNoDeviceError(presenter.putIntoPairingMode());
+        assertThrowsNoDeviceError(presenter.factoryReset());
     }
 
     public void testWifiSignalStrengthSort() throws Exception {
@@ -130,5 +144,18 @@ public class HardwarePresenterTests extends InjectionTestCase {
         assertFalse(presenter.isConnected());
 
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
+    }
+
+
+    private static <T> void assertThrowsNoDeviceError(@NonNull Observable<T> observable) {
+        try {
+            Sync.last(observable);
+        } catch (HardwarePresenter.NoConnectedPeripheralException ignored) {
+            return;
+        } catch (Exception e) {
+            fail("Unexpected exception '" + e + "' thrown");
+        }
+
+        fail("Did not throw no device error");
     }
 }
