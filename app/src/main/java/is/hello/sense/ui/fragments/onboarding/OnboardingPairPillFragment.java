@@ -121,7 +121,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         confirmation.setTitle(R.string.alert_title_skip_pair_pill);
         confirmation.setMessage(R.string.alert_message_skip_pair_pill);
         confirmation.setPositiveButton(R.string.action_skip, (dialog, which) -> {
-            completeHardwareActivity(() -> finishedPairing(false));
+            completeHardwareActivity(() -> finishedPairing(false), null);
         });
         confirmation.setNegativeButton(android.R.string.cancel, null);
         confirmation.setDestructive(true);
@@ -145,7 +145,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             showBlockingActivity(R.string.title_scanning_for_sense);
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
-                    hideBlockingActivity(true, this::pairPill);
+                    pairPill();
                 } else {
                     showBlockingActivity(status.messageRes);
                 }
@@ -153,10 +153,13 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             return;
         }
 
+        showBlockingActivity(R.string.title_waiting_for_sense);
         showHardwareActivity(() -> {
-            bindAndSubscribe(hardwarePresenter.linkPill(),
-                             ignored -> completeHardwareActivity(() -> finishedPairing(true)),
-                             this::presentError);
+            hideBlockingActivity(false, () -> {
+                bindAndSubscribe(hardwarePresenter.linkPill(),
+                                 ignored -> completeHardwareActivity(() -> finishedPairing(true), null),
+                                 this::presentError);
+            });
         }, this::presentError);
     }
 

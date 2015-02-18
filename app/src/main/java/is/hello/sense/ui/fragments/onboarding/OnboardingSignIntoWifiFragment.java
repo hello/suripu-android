@@ -262,7 +262,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
 
     private void finished() {
         if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false)) {
-            completeHardwareActivity(() -> getOnboardingActivity().showPairPill(true));
+            completeHardwareActivity(() -> getOnboardingActivity().showPairPill(true), null);
         } else {
             hideAllActivityForSuccess(() -> getOnboardingActivity().showPairPill(true),
                                       this::presentError);

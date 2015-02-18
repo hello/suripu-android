@@ -79,10 +79,19 @@ public abstract class HardwareFragment extends InjectionFragment {
         }
     }
 
-    protected void completeHardwareActivity(@NonNull Runnable onCompletion) {
+    protected void completeHardwareActivity(@NonNull Runnable onCompletion,
+                                            @Nullable Action1<Throwable> onError) {
         bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.STOP),
                          ignored -> onCompletion.run(),
-                         error -> onCompletion.run());
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Error occurred when completing hardware activity, clearing peripheral.", e);
+                             hardwarePresenter.clearPeripheral();
+                             if (onError != null) {
+                                 onError.call(e);
+                             } else {
+                                 onCompletion.run();
+                             }
+                         });
     }
 
 
