@@ -228,7 +228,7 @@ public class AndroidPeripheral implements Peripheral {
                 }
             });
 
-            if (getBondStatus() == BluetoothDevice.BOND_BONDED) {
+            if (getBondStatus() == BOND_BONDED) {
                 removeBond().subscribe(ignored -> {}, s::onError);
             } else {
                 gatt.disconnect();
@@ -237,8 +237,9 @@ public class AndroidPeripheral implements Peripheral {
     }
 
     @Override
-    public int getConnectionStatus() {
-        return stack.bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
+    public @ConnectivityStatus int getConnectionStatus() {
+        @ConnectivityStatus int status = stack.bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
+        return status;
     }
 
     //endregion
@@ -424,8 +425,9 @@ public class AndroidPeripheral implements Peripheral {
     }
 
     @Override
-    public int getBondStatus() {
-        return bluetoothDevice.getBondState();
+    public @BondStatus int getBondStatus() {
+        @BondStatus int bondStatus = bluetoothDevice.getBondState();
+        return bondStatus;
     }
 
     //endregion

@@ -71,7 +71,7 @@ public class TestPeripheral implements Peripheral {
     }
 
     @Override
-    public int getConnectionStatus() {
+    public @ConnectivityStatus int getConnectionStatus() {
         return behavior.connectionStatus;
     }
 
@@ -90,7 +90,7 @@ public class TestPeripheral implements Peripheral {
     }
 
     @Override
-    public int getBondStatus() {
+    public @BondStatus int getBondStatus() {
         return behavior.bondStatus;
     }
 

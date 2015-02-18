@@ -7,7 +7,10 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.errors.BluetoothPowerChangeError;
+import is.hello.sense.bluetooth.errors.OperationTimeoutError;
+import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import rx.Observable;
 import rx.Scheduler;
@@ -61,7 +64,9 @@ public class TestBluetoothStack implements BluetoothStack {
 
     @Override
     public boolean errorRequiresReconnect(@Nullable Throwable e) {
-        return false;
+        return (e != null && (e instanceof OperationTimeoutError ||
+                e instanceof BluetoothGattError ||
+                e instanceof PeripheralBondAlterationError));
     }
 
     @Override
