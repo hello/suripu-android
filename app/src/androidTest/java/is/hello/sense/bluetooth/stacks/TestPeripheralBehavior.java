@@ -19,8 +19,8 @@ public class TestPeripheralBehavior {
 
     AdvertisingData advertisingData = AdvertisingData.parse(new byte[0]);
 
-    int connectionStatus = Peripheral.STATUS_DISCONNECTED;
-    int bondStatus = Peripheral.BOND_NONE;
+    @Peripheral.ConnectivityStatus int connectionStatus = Peripheral.STATUS_DISCONNECTED;
+    @Peripheral.BondStatus int bondStatus = Peripheral.BOND_NONE;
     Either<Collection<PeripheralService>, Throwable> servicesResponse;
     Either<Peripheral, Throwable> connectResponse;
     Either<Peripheral, Throwable> disconnectResponse;
@@ -47,7 +47,7 @@ public class TestPeripheralBehavior {
         return this;
     }
 
-    public TestPeripheralBehavior setConnectionStatus(int connectionStatus) {
+    public TestPeripheralBehavior setConnectionStatus(@Peripheral.ConnectivityStatus int connectionStatus) {
         this.connectionStatus = connectionStatus;
         return this;
     }

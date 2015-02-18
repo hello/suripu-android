@@ -19,6 +19,7 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.DevicesInfo;
+import is.hello.sense.api.model.Feedback;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
@@ -132,6 +133,11 @@ public final class TestApiService implements ApiService {
                                                       @NonNull @Path("month") String month,
                                                       @NonNull @Path("day") String day) {
         return loadResponse("timeline", new TypeReference<ArrayList<Timeline>>() {});
+    }
+
+    @Override
+    public Observable<VoidResponse> submitCorrect(@NonNull @Body Feedback correction) {
+        return safeJust(new VoidResponse());
     }
 
     @Override
