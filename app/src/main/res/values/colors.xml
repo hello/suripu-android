@@ -53,11 +53,6 @@
     <color name="background_button_white_pressed">#28d5d5d5</color>
     <color name="background_button_dark_pressed">#335785f5</color>
 
-    <color name="sleep_score_empty">#e1e1e1</color>
-    <color name="sleep_score_good">#5dcc51</color>
-    <color name="sleep_score_average">#f1e57f</color>
-    <color name="sleep_score_bad">#cc5651</color>
-
     <color name="sensor_alert">#FF974C</color>
     <color name="sensor_warning">#FFCC00</color>
     <color name="sensor_ideal">#1ED7AA</color>

@@ -6,7 +6,7 @@ buildscript {
         maven { url 'http://download.crashlytics.com/maven' }
     }
     dependencies {
-        classpath 'me.tatarka:gradle-retrolambda:2.4.1'
+        classpath 'me.tatarka:gradle-retrolambda:2.5.0'
         //noinspection GradleDynamicVersion
         classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
     }
@@ -19,7 +19,7 @@ repositories {
     maven { url 'http://download.crashlytics.com/maven' }
 }
 
-apply plugin: 'retrolambda'
+apply plugin: 'me.tatarka.retrolambda'
 
 def generateVersionCode() {
     def now = new Date()

@@ -542,7 +542,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         void showSleepScore(int sleepScore) {
             if (sleepScore < 0) {
                 sleepScoreContainer.setClickable(false);
-                scoreGraph.setFillColor(getResources().getColor(R.color.sleep_score_empty));
+                scoreGraph.setFillColor(getResources().getColor(R.color.sensor_unknown));
                 scoreText.setText(R.string.missing_data_placeholder);
                 scoreGraph.setValue(0);
             } else {
@@ -705,7 +705,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 timeToSleep.setText(formatTime(statistics.getTimeToSleep()));
                 timeToSleep.setTextColor(color);
             } else {
-                int noDataColor = getResources().getColor(R.color.sleep_score_empty);
+                int noDataColor = getResources().getColor(R.color.sensor_unknown);
 
                 totalSleep.setTextColor(noDataColor);
                 totalSleep.setText(R.string.missing_data_placeholder);

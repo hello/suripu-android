@@ -16,7 +16,7 @@
         android:layout_marginEnd="@dimen/gap_large"
         android:layout_gravity="center_vertical"
         android:textAppearance="@style/AppTheme.Text.SmallScore"
-        android:textColor="@color/sleep_score_empty"
+        android:textColor="@color/sensor_unknown"
         android:text="@string/missing_data_placeholder"
         android:fontFamily="sans-serif-thin"/>
 
