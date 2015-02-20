@@ -99,6 +99,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private ScoreViewMode timelineScore;
     private BeforeSleepHeaderMode beforeSleep;
+    private @Nullable BreakdownHeaderMode breakdownHeaderMode;
 
     private View timelineEventsHeader;
 
@@ -107,7 +108,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private TimelineHeaderDrawable tabsBackgroundDrawable;
 
     private @Nullable PopupWindow timelinePopup;
-    private BreakdownHeaderMode breakdownHeaderMode;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date, @Nullable Timeline cachedTimeline) {
@@ -225,6 +225,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.breakdownHeaderMode = null;
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
 
@@ -274,20 +281,27 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onSelectionChanged(int newSelectionIndex) {
         switch (newSelectionIndex) {
             case 0:
-                setHeaderMode(timelineScore, Animations::crossFade);
+                if (breakdownHeaderMode != null) {
+                    setHeaderMode(timelineScore, this::hideBreakdownTransition);
+                } else {
+                    setHeaderMode(timelineScore, Animations::crossFade);
+                    this.breakdownHeaderMode = null;
+                }
                 break;
             case 1:
                 setHeaderMode(beforeSleep, Animations::crossFade);
+                this.breakdownHeaderMode = null;
                 break;
             default:
                 break;
         }
+
     }
 
     public void showBreakdownTransition(@NonNull ViewGroup container,
                                         @Nullable View newView,
                                         @Nullable ViewGroup.LayoutParams layoutParams) {
-        if (newView == null) {
+        if (newView == null || breakdownHeaderMode == null) {
             throw new IllegalArgumentException();
         }
 
@@ -375,7 +389,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void hideBreakdownTransition(@NonNull ViewGroup container,
                                         @Nullable View newView,
                                         @Nullable ViewGroup.LayoutParams layoutParams) {
-        if (newView == null) {
+        if (newView == null || breakdownHeaderMode == null) {
             throw new IllegalArgumentException();
         }
 
