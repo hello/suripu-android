@@ -25,6 +25,7 @@ import is.hello.sense.util.DateFormatter;
 public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     private final DateFormatter dateFormatter;
 
+    private final TimelineSegmentView.Invariants invariants;
     private final int baseItemHeight;
     private final int itemEventImageHeight;
 
@@ -41,13 +42,14 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         this.dateFormatter = dateFormatter;
 
         Resources resources = context.getResources();
-        int minItemHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
 
+        this.invariants = new TimelineSegmentView.Invariants(resources);
+
+        int minItemHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
         windowManager.getDefaultDisplay().getSize(size);
         this.baseItemHeight = Math.max(minItemHeight, size.y / Styles.TIMELINE_HOURS_ON_SCREEN);
-
         this.itemEventImageHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_image_height);
     }
 
@@ -139,7 +141,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     public View getView(int position, View convertView, ViewGroup parent) {
         TimelineSegmentView view = (TimelineSegmentView) convertView;
         if (view == null) {
-            view = new TimelineSegmentView(parent.getContext());
+            view = new TimelineSegmentView(parent.getContext(), invariants);
             view.setTag(new SegmentViewHolder(view));
         }
 
