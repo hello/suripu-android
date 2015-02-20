@@ -107,6 +107,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private TimelineHeaderDrawable tabsBackgroundDrawable;
 
     private @Nullable PopupWindow timelinePopup;
+    private BreakdownHeaderMode breakdownHeaderMode;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date, @Nullable Timeline cachedTimeline) {
@@ -289,9 +290,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         if (newView == null) {
             throw new IllegalArgumentException();
         }
-        BreakdownHeaderMode breakdown = (BreakdownHeaderMode) headerMode;
-        breakdown.leftItems.setAlpha(0f);
-        breakdown.rightItems.setAlpha(0f);
+
+        breakdownHeaderMode.leftItems.setAlpha(0f);
+        breakdownHeaderMode.rightItems.setAlpha(0f);
 
         newView.setAlpha(0f);
         container.addView(newView, 0, layoutParams);
@@ -316,7 +317,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                     bigScore.setPivotX(bigWidth / 2f);
                     bigScore.setPivotY(0.0f);
 
-                    View smallScore = breakdown.score;
+                    View smallScore = breakdownHeaderMode.score;
                     smallScore.setPivotX(smallWidth / 2f);
                     smallScore.setPivotY(0.0f);
 
@@ -358,10 +359,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                             .addOnAnimationCompleted(finished -> {
                                 if (finished) {
                                     float delta = getResources().getDimension(R.dimen.gap_tiny);
-                                    animate(breakdown.leftItems)
+                                    animate(breakdownHeaderMode.leftItems)
                                             .slideXAndFade(delta, 0f, 0f, 1f)
                                             .start();
-                                    animate(breakdown.rightItems)
+                                    animate(breakdownHeaderMode.rightItems)
                                             .slideXAndFade(-delta, 0f, 0f, 1f)
                                             .start();
                                 }
@@ -374,11 +375,68 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void hideBreakdownTransition(@NonNull ViewGroup container,
                                         @Nullable View newView,
                                         @Nullable ViewGroup.LayoutParams layoutParams) {
+        if (newView == null) {
+            throw new IllegalArgumentException();
+        }
 
+        newView.setAlpha(0f);
+        container.addView(newView, 0, layoutParams);
+
+        timelineScore.messageText.setAlpha(0f);
+        timelineScore.scoreTextLabel.setAlpha(0f);
+
+        float bigWidth = getResources().getDimension(R.dimen.grand_sleep_summary_width);
+        float smallWidth = getResources().getDimension(R.dimen.little_sleep_summary_width);
+
+        View bigScore = timelineScore.sleepScoreContainer;
+        bigScore.setPivotX(bigWidth / 2f);
+        bigScore.setPivotY(0.0f);
+
+        View smallScore = breakdownHeaderMode.score;
+        smallScore.setPivotX(smallWidth / 2f);
+        smallScore.setPivotY(0.0f);
+
+        bigScore.setScaleX(smallWidth / bigWidth);
+        bigScore.setScaleY(smallWidth / bigWidth);
+        animate(bigScore)
+                .setDuration(Animations.DURATION_MINIMUM)
+                .scale(1f)
+                .start();
+
+        animate(smallScore)
+                .setDuration(Animations.DURATION_MINIMUM)
+                .scale(bigWidth / smallWidth)
+                .start();
+
+        animate(breakdownHeaderMode.view)
+                .setDuration(Animations.DURATION_MINIMUM)
+                .fadeOut(View.VISIBLE)
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        container.removeView(breakdownHeaderMode.view);
+                        this.breakdownHeaderMode = null;
+                    }
+                })
+                .start();
+
+        animate(newView)
+                .setDuration(Animations.DURATION_MINIMUM)
+                .fadeIn()
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        animate(timelineScore.messageText)
+                                .fadeIn()
+                                .start();
+                        animate(timelineScore.scoreTextLabel)
+                                .fadeIn()
+                                .start();
+                    }
+                })
+                .start();
     }
 
     public void hideBreakdown(@NonNull View sender) {
-        setHeaderMode(timelineScore, Animations::crossFade);
+        setHeaderMode(timelineScore, this::hideBreakdownTransition);
         headerModeSelector.setSelectedIndex(0);
     }
 
@@ -386,11 +444,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         Analytics.trackEvent(Analytics.Timeline.EVENT_SLEEP_SCORE_BREAKDOWN, null);
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        BreakdownHeaderMode breakdown = new BreakdownHeaderMode(inflater, headerViewContainer);
+        this.breakdownHeaderMode = new BreakdownHeaderMode(inflater, headerViewContainer);
         bindAndSubscribe(timelinePresenter.mainTimeline.take(1),
-                         breakdown::bindTimeline,
-                         breakdown::timelineUnavailable);
-        setHeaderMode(breakdown, this::showBreakdownTransition);
+                         breakdownHeaderMode::bindTimeline,
+                         breakdownHeaderMode::timelineUnavailable);
+        setHeaderMode(breakdownHeaderMode, this::showBreakdownTransition);
         headerModeSelector.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
     }
 
@@ -572,12 +630,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         correction.setOldTime(segment.getShiftedTimestamp().toLocalTime());
         correction.setNewTime(newUnshiftedTime);
         bindAndSubscribe(timelinePresenter.submitCorrection(correction),
-                         ignored -> {
-                             continuation.call(true);
-                         }, e -> {
-                             ErrorDialogFragment.presentError(getFragmentManager(), e);
-                             continuation.call(false);
-                         });
+                ignored -> {
+                    continuation.call(true);
+                }, e -> {
+                    ErrorDialogFragment.presentError(getFragmentManager(), e);
+                    continuation.call(false);
+                });
     }
 
     //endregion
