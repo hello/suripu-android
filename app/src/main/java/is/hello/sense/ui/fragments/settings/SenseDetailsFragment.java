@@ -225,7 +225,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         hideAlert();
         hideAllActivityForFailure(() -> {
             if (e instanceof PeripheralNotFoundError) {
-                showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_retry, this::connectToPeripheral);
+                showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE));
             } else {
                 ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
             }

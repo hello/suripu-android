@@ -110,6 +110,7 @@ public class UserSupport {
     public static enum DeviceIssue {
         UNSTABLE_BLUETOOTH(""),
         SENSE_MISSING("sense-not-seen-in-days"),
+        CANNOT_CONNECT_TO_SENSE("cannot-connect-sense-ble"),
         SLEEP_PILL_MISSING("pill-not-seen-in-days"),
         PAIRING_2ND_PILL("setting-up-second-sleep-pill");
 
