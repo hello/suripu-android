@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -91,6 +92,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private ViewGroup headerView;
     private TextView dateText;
+    private FrameLayout headerViewContainer;
     private HeaderViewMode headerMode;
     private SelectorLinearLayout headerModeSelector;
 
@@ -151,8 +153,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
 
         this.headerView = (ViewGroup) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
-        Animations.Properties.DEFAULT.apply(headerView.getLayoutTransition());
-
         this.tabsBackgroundDrawable = new TimelineHeaderDrawable(getResources());
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
@@ -161,6 +161,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             Timeline timeline = (Timeline) dateText.getTag();
             ((HomeActivity) getActivity()).showTimelineNavigator(getDate(), timeline);
         });
+
+        this.headerViewContainer = (FrameLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_container);
 
         this.headerModeSelector = (SelectorLinearLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
         headerModeSelector.setVisibility(View.INVISIBLE);
@@ -247,14 +249,17 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         if (this.headerMode != null) {
-            headerView.removeView(this.headerMode.view);
+            headerViewContainer.removeView(this.headerMode.view);
         }
 
         this.headerMode = headerMode;
+        
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                             ViewGroup.LayoutParams.WRAP_CONTENT);
         if (transition != null) {
-            transition.perform(headerView, headerMode.view, null, 2);
+            transition.perform(headerViewContainer, headerMode.view, layoutParams);
         } else {
-            headerView.addView(headerMode.view, 2); // Between the Spaces
+            headerViewContainer.addView(headerMode.view, layoutParams);
         }
     }
 
@@ -467,12 +472,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         correction.setOldTime(segment.getShiftedTimestamp().toLocalTime());
         correction.setNewTime(newUnshiftedTime);
         bindAndSubscribe(timelinePresenter.submitCorrection(correction),
-                ignored -> {
-                    continuation.call(true);
-                }, e -> {
-                    ErrorDialogFragment.presentError(getFragmentManager(), e);
-                    continuation.call(false);
-                });
+                         ignored -> {
+                             continuation.call(true);
+                         }, e -> {
+                             ErrorDialogFragment.presentError(getFragmentManager(), e);
+                             continuation.call(false);
+                         });
     }
 
     //endregion
