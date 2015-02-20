@@ -286,7 +286,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                     setHeaderMode(timelineScore, this::hideBreakdownTransition);
                 } else {
                     setHeaderMode(timelineScore, Animations::crossFade);
-                    this.breakdownHeaderMode = null;
                 }
                 break;
             case 1:
