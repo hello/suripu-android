@@ -302,7 +302,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
             DateTime newLocalTimestamp = timelineSegment.getShiftedTimestamp()
                                                         .withHourOfDay(hour)
                                                         .withMinuteOfHour(minute);
-            LocalTime newTime = newLocalTimestamp.withZone(DateTimeZone.UTC).toLocalTime();
+            LocalTime newTime = newLocalTimestamp.toLocalTime();
 
             this.adjustingTime = true;
             adjustTimeActivity.setVisibility(View.VISIBLE);
