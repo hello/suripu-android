@@ -42,7 +42,7 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
                 .setPrimaryOnClickListener(this::optIn)
                 .setSecondaryOnClickListener(this::optOut)
                 .setToolbarWantsBackButton(false)
-                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.ENHANCED_AUDIO))
+                .setToolbarOnHelpClickListener(ignored -> UserSupport.showEnhancedAudio(getActivity()))
                 .create();
     }
 

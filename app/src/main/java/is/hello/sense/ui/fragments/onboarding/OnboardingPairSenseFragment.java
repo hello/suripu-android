@@ -62,7 +62,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 .setSecondaryOnClickListener(this::showPairingModeHelp)
                 .setPrimaryOnClickListener(this::next)
                 .setToolbarWantsBackButton(true)
-                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SETUP_SENSE))
+                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_SENSE_BLE))
                 .configure(b -> subscribe(hardwarePresenter.bluetoothEnabled, b.primaryButton::setEnabled, Functions.LOG_ERROR))
                 .create();
     }

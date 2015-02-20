@@ -6,8 +6,8 @@ import android.support.annotation.StringRes;
 import is.hello.sense.R;
 
 public enum Gender {
-    FEMALE(R.string.gender_female),
     MALE(R.string.gender_male),
+    FEMALE(R.string.gender_female),
     OTHER(R.string.gender_other);
 
     public final @StringRes int nameRes;
