@@ -72,6 +72,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
+import static is.hello.sense.ui.animation.Animations.Transition;
+
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment, AdapterView.OnItemLongClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
@@ -169,7 +171,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         this.timelineScore = new ScoreViewMode(inflater, headerView);
         this.beforeSleep = new BeforeSleepHeaderMode(inflater, headerView);
 
-        setHeaderMode(timelineScore);
+        setHeaderMode(timelineScore, null);
 
         ListViews.addHeaderView(listView, headerView, null, false);
 
@@ -238,7 +240,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     //region Headers
 
-    private void setHeaderMode(@NonNull HeaderViewMode headerMode) {
+    private void setHeaderMode(@NonNull HeaderViewMode headerMode,
+                               @Nullable Transition<ViewGroup, ViewGroup.LayoutParams> transition) {
         if (this.headerMode == headerMode) {
             return;
         }
@@ -248,17 +251,21 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         this.headerMode = headerMode;
-        headerView.addView(headerMode.view, 2); // Between the Spaces
+        if (transition != null) {
+            transition.perform(headerView, headerMode.view, null, 2);
+        } else {
+            headerView.addView(headerMode.view, 2); // Between the Spaces
+        }
     }
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
         switch (newSelectionIndex) {
             case 0:
-                setHeaderMode(timelineScore);
+                setHeaderMode(timelineScore, Animations::frameCrossFade);
                 break;
             case 1:
-                setHeaderMode(beforeSleep);
+                setHeaderMode(beforeSleep, Animations::frameCrossFade);
                 break;
             default:
                 break;
@@ -266,7 +273,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     public void hideBreakdown(@NonNull View sender) {
-        setHeaderMode(timelineScore);
+        setHeaderMode(timelineScore, Animations::frameCrossFade);
         headerModeSelector.setSelectedIndex(0);
     }
 
@@ -278,7 +285,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         bindAndSubscribe(timelinePresenter.mainTimeline.take(1),
                 breakdown::bindTimeline,
                 breakdown::timelineUnavailable);
-        setHeaderMode(breakdown);
+        setHeaderMode(breakdown, Animations::frameCrossFade);
         headerModeSelector.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
     }
 
@@ -457,7 +464,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         Feedback correction = new Feedback();
         correction.setEventType(segment.getEventType());
         correction.setNight(getDate().toLocalDate());
-        correction.setOldTime(segment.getUnshiftedTime());
+        correction.setOldTime(segment.getShiftedTimestamp().toLocalTime());
         correction.setNewTime(newUnshiftedTime);
         bindAndSubscribe(timelinePresenter.submitCorrection(correction),
                 ignored -> {
