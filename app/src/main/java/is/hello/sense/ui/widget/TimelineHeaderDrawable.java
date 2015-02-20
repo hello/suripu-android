@@ -66,7 +66,7 @@ public class TimelineHeaderDrawable extends SelectorLinearLayout.SelectionAwareD
         int minX = 0,
             maxX = minX + width;
         int minY = height - barHeight,
-            maxY = minY + height;
+            maxY = minY + barHeight;
 
         fillPath.reset();
         strokePath.reset();

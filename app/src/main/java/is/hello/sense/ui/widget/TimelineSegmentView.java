@@ -74,18 +74,19 @@ public final class TimelineSegmentView extends View {
         float height = canvas.getHeight();
         float minX = invariants.leftInset;
         float minY = 0f,
-              midY = (minY + height) / 2f,
-              midX = minX + (width / 2f),
+              midY = (minY + height) / 2,
+              midX = minX + (width / 2),
               maxY = minY + height;
 
 
         //region Stripe + Background Fills
 
         float percentage = sleepDepth / 100f;
-        float fillWidth = (width - invariants.leftInset - invariants.rightInset) * percentage;
-        fillRect.set(midX - fillWidth / 2f, minY, midX + fillWidth / 2f, maxY);
+        float fillWidth = Math.round((width - invariants.leftInset - invariants.rightInset) * percentage);
+        float halfFillWidth = Math.round(fillWidth / 2f);
+        fillRect.set(midX - halfFillWidth, minY, midX + halfFillWidth, maxY);
         canvas.drawRect(fillRect, fillPaint);
-        canvas.drawRect(midX - invariants.stripeWidth / 2f, minY, midX + invariants.stripeWidth / 2f, maxY, stripePaint);
+        canvas.drawRect(midX - invariants.stripeWidthHalf, minY, midX + invariants.stripeWidthHalf, maxY, stripePaint);
 
         //endregion
 
@@ -96,7 +97,7 @@ public final class TimelineSegmentView extends View {
             timeStrokePaint.setColor(invariants.leftUnderlineColor);
 
             timeStrokePath.reset();
-            timeStrokePath.moveTo(0, midY);
+            timeStrokePath.moveTo(0f, midY);
             timeStrokePath.lineTo(midX, midY);
 
             canvas.drawPath(timeStrokePath, timeStrokePaint);
@@ -127,14 +128,14 @@ public final class TimelineSegmentView extends View {
         //region Event Icon
 
         if (eventDrawable != null) {
-            float drawableWidth = eventDrawable.getIntrinsicWidth();
+            float drawableWidthHalf = eventDrawable.getIntrinsicWidth() / 2f;
             float drawableMinY = minY - invariants.imageShadow;
             float drawableMaxY = drawableMinY + eventDrawable.getIntrinsicHeight();
 
             eventDrawable.setBounds(
-                Math.round(midX - drawableWidth / 2f),
+                Math.round(midX - drawableWidthHalf),
                 Math.round(drawableMinY),
-                Math.round(midX + drawableWidth / 2f),
+                Math.round(midX + drawableWidthHalf),
                 Math.round(drawableMaxY)
             );
             eventDrawable.draw(canvas);
@@ -194,7 +195,7 @@ public final class TimelineSegmentView extends View {
     public static class Invariants {
         public final float leftInset;
         public final float rightInset;
-        public final float stripeWidth;
+        public final float stripeWidthHalf;
 
         public final int textSideInset;
         public final int imageShadow;
@@ -209,7 +210,7 @@ public final class TimelineSegmentView extends View {
         public Invariants(@NonNull Resources resources) {
             this.leftInset = resources.getDimension(R.dimen.view_timeline_segment_left_inset);
             this.rightInset = resources.getDimension(R.dimen.view_timeline_segment_right_inset);
-            this.stripeWidth = resources.getDimension(R.dimen.view_timeline_segment_stripe_width);
+            this.stripeWidthHalf = resources.getDimension(R.dimen.view_timeline_segment_stripe_width) / 2f;
 
             this.textSideInset = resources.getDimensionPixelSize(R.dimen.view_timeline_segment_text_inset);
             this.imageShadow = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_image_shadow);
