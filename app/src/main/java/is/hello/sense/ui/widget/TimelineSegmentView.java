@@ -31,6 +31,9 @@ public final class TimelineSegmentView extends View {
     private final Paint fillPaint = new Paint();
     private final Paint stripePaint = new Paint();
 
+    private final Paint timeStrokePaint = new Paint();
+    private final Path timeStrokePath = new Path();
+
     //endregion
 
 
@@ -54,6 +57,12 @@ public final class TimelineSegmentView extends View {
         super(context);
 
         this.invariants = invariants;
+
+        Resources resources = context.getResources();
+        float strokeGap = resources.getDimension(R.dimen.view_timeline_segment_stroke_gap);
+        timeStrokePaint.setStyle(Paint.Style.STROKE);
+        timeStrokePaint.setStrokeWidth(resources.getDimension(R.dimen.divider_size));
+        timeStrokePaint.setPathEffect(new DashPathEffect(new float[]{strokeGap, strokeGap}, 0));
     }
 
     //endregion
@@ -67,7 +76,6 @@ public final class TimelineSegmentView extends View {
         float minY = 0f,
               midY = (minY + height) / 2f,
               midX = minX + (width / 2f),
-              maxX = minX + width,
               maxY = minY + height;
 
 
@@ -85,13 +93,13 @@ public final class TimelineSegmentView extends View {
         //region Times
 
         if (!TextUtils.isEmpty(leftTime)) {
-            invariants.timeStrokePaint.setColor(invariants.leftUnderlineColor);
+            timeStrokePaint.setColor(invariants.leftUnderlineColor);
 
-            invariants.timeStrokePath.reset();
-            invariants.timeStrokePath.moveTo(0, midY);
-            invariants.timeStrokePath.lineTo(midX, midY);
+            timeStrokePath.reset();
+            timeStrokePath.moveTo(0, midY);
+            timeStrokePath.lineTo(midX, midY);
 
-            canvas.drawPath(invariants.timeStrokePath, invariants.timeStrokePaint);
+            canvas.drawPath(timeStrokePath, timeStrokePaint);
 
             float textX = invariants.textSideInset;
             float textY = midY + invariants.textLineHeight;
@@ -99,13 +107,13 @@ public final class TimelineSegmentView extends View {
         }
 
         if (!TextUtils.isEmpty(rightTime)) {
-            invariants.timeStrokePaint.setColor(invariants.rightUnderlineColor);
+            timeStrokePaint.setColor(invariants.rightUnderlineColor);
 
-            invariants.timeStrokePath.reset();
-            invariants.timeStrokePath.moveTo(canvas.getWidth(), midY);
-            invariants.timeStrokePath.lineTo(midX, midY);
+            timeStrokePath.reset();
+            timeStrokePath.moveTo(canvas.getWidth(), midY);
+            timeStrokePath.lineTo(midX, midY);
 
-            canvas.drawPath(invariants.timeStrokePath, invariants.timeStrokePaint);
+            canvas.drawPath(timeStrokePath, timeStrokePaint);
 
             float textX = canvas.getWidth() - invariants.textSideInset;
             float textY = midY + invariants.textLineHeight;
@@ -194,8 +202,6 @@ public final class TimelineSegmentView extends View {
 
         public final Paint leftTimePaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
         public final Paint rightTimePaint;
-        public final Paint timeStrokePaint = new Paint();
-        public final Path timeStrokePath = new Path();
 
         public final int leftUnderlineColor;
         public final int rightUnderlineColor;
@@ -221,11 +227,6 @@ public final class TimelineSegmentView extends View {
 
             this.leftUnderlineColor = resources.getColor(R.color.timeline_segment_underline_left);
             this.rightUnderlineColor = resources.getColor(R.color.timeline_segment_underline_right);
-
-            float strokeGap = resources.getDimension(R.dimen.view_timeline_segment_stroke_gap);
-            timeStrokePaint.setStyle(Paint.Style.STROKE);
-            timeStrokePaint.setStrokeWidth(resources.getDimension(R.dimen.divider_size));
-            timeStrokePaint.setPathEffect(new DashPathEffect(new float[]{strokeGap, strokeGap}, 0));
         }
     }
 }
