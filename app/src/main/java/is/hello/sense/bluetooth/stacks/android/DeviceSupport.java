@@ -10,6 +10,7 @@ final class DeviceSupport {
         switch (Build.MODEL) {
             case "XT1032" /* Moto G first generation */:
             case "XT1060" /* Moto X first generation */:
+            case "GT-I9300I" /* Samsung Galaxy S3 Neo (Intl) */:
             case "GT-I9500" /* Samsung Galaxy S4 (Intl) */:
             case "SAMSUNG-SGH-I337" /* Samsung Galaxy S4 (AT&T) */:
             case "SM-G900" /* Galaxy S5 */:
