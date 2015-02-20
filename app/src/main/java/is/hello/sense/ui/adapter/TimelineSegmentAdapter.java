@@ -25,15 +25,12 @@ import is.hello.sense.util.DateFormatter;
 public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     private final DateFormatter dateFormatter;
 
+    private final TimelineSegmentView.Invariants invariants;
     private final int baseItemHeight;
-    private final int minTimeItemHeight;
     private final int itemEventImageHeight;
 
-    private final Set<Integer> positionsWithTime = new HashSet<>();
-
+    private final Set<Integer> timePositions = new HashSet<>();
     private float[] itemHeights;
-    private float totalItemHeight;
-
 
     private boolean use24Time;
 
@@ -45,60 +42,62 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         this.dateFormatter = dateFormatter;
 
         Resources resources = context.getResources();
-        int minItemHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
 
+        this.invariants = new TimelineSegmentView.Invariants(resources);
+
+        int minItemHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
         windowManager.getDefaultDisplay().getSize(size);
         this.baseItemHeight = Math.max(minItemHeight, size.y / Styles.TIMELINE_HOURS_ON_SCREEN);
-
-        this.minTimeItemHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height_time);
         this.itemEventImageHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_image_height);
     }
 
     //endregion
 
 
-    //region Item Heights
+    //region Item Info
 
     /**
      * Calculates the height required to display the item at a given position.
      */
-    private int calculateItemHeight(int position, @NonNull TimelineSegment segment) {
+    private int calculateItemHeight(@NonNull TimelineSegment segment) {
         if (segment.hasEventInfo()) {
-            int itemHeight = this.itemEventImageHeight + this.baseItemHeight;
-            return (int) (Math.ceil(segment.getDuration() / 3600f) * itemHeight);
-        } else if (positionsWithTime.contains(position)) {
-            int rawHeight = (int) ((segment.getDuration() / 3600f) * (this.baseItemHeight * 2f));
-            return Math.max(minTimeItemHeight, rawHeight);
+            return (int) (Math.ceil(segment.getDuration() / 3600f) * this.itemEventImageHeight);
         } else {
             return (int) ((segment.getDuration() / 3600f) * this.baseItemHeight);
         }
     }
 
     /**
-     * Calculates the sizing information for a given list of timeline
-     * segments, and caches it into the adapter for later use.
+     * Calculates heights for all items in the adapter, and determines
+     * which items are to be used as representative times.
      */
-    private void calculateItemHeights(@NonNull List<TimelineSegment> segments) {
+    private void buildItemInfoCache(@NonNull List<TimelineSegment> segments) {
         this.itemHeights = new float[segments.size()];
-        this.totalItemHeight = 0;
 
+        Set<Integer> hoursRepresented = new HashSet<>();
         for (int i = 0, size = itemHeights.length; i < size; i++) {
-            int height = calculateItemHeight(i, segments.get(i));
+            int height = calculateItemHeight(segments.get(i));
             this.itemHeights[i] = height;
-            this.totalItemHeight += height;
+
+            TimelineSegment segment = segments.get(i);
+            int hour = segment.getShiftedTimestamp().getHourOfDay();
+            if (hoursRepresented.contains(hour)) {
+                continue;
+            }
+
+            timePositions.add(i);
+            hoursRepresented.add(hour);
         }
     }
 
     /**
-     * Returns the total height of all of the items contained in the adapter.
-     * <p/>
-     *
-     * Returns in Constant time.
+     * Clears all of the cached item information in the adapter.
      */
-    public float getTotalItemHeight() {
-        return totalItemHeight;
+    private void clearItemInfoCache() {
+        this.itemHeights = null;
+        timePositions.clear();
     }
 
     /**
@@ -110,46 +109,6 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         return itemHeights[position];
     }
 
-    /**
-     * Calculates the total height of a series of items contained in the range {start, end} <em>inclusive</em>.
-     *
-     * @param start The index of the first item in the range.
-     * @param end The index of the last item in the range, included in the final sum.
-     * @param endScaleFactor The amount of the last item that is currently visible.
-     */
-    public float getHeightOfItems(int start, int end, float endScaleFactor) {
-        if (start == end) {
-            return itemHeights[start] * endScaleFactor;
-        } else {
-            float sum = 0;
-            for (int i = start; i < end; i++) {
-                sum += itemHeights[i];
-            }
-            sum += (itemHeights[end] * endScaleFactor);
-
-            return sum;
-        }
-    }
-
-    //endregion
-
-
-    //region Representative Time Indexes
-
-    private void calculatePositionsWithTime(@NonNull List<TimelineSegment> segments) {
-        Set<Integer> hoursRepresented = new HashSet<>();
-        for (int i = 1; i < segments.size(); i++) {
-            TimelineSegment segment = segments.get(i);
-            int hour = segment.getShiftedTimestamp().getHourOfDay();
-            if (hoursRepresented.contains(hour)) {
-                continue;
-            }
-
-            positionsWithTime.add(i);
-            hoursRepresented.add(hour);
-        }
-    }
-
     //endregion
 
 
@@ -159,20 +118,17 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         clear();
 
         if (segments != null) {
-            calculatePositionsWithTime(segments);
-            calculateItemHeights(segments);
+            buildItemInfoCache(segments);
             addAll(segments);
         } else {
-            this.itemHeights = null;
-            this.totalItemHeight = 0;
-
-            positionsWithTime.clear();
+            clearItemInfoCache();
         }
     }
 
     @SuppressWarnings("UnusedParameters")
     public void handleError(@NonNull Throwable ignored) {
         clear();
+        clearItemInfoCache();
     }
 
     public void setUse24Time(boolean use24Time) {
@@ -185,7 +141,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     public View getView(int position, View convertView, ViewGroup parent) {
         TimelineSegmentView view = (TimelineSegmentView) convertView;
         if (view == null) {
-            view = new TimelineSegmentView(parent.getContext());
+            view = new TimelineSegmentView(parent.getContext(), invariants);
             view.setTag(new SegmentViewHolder(view));
         }
 
@@ -213,7 +169,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
             itemView.setEventResource(Styles.getTimelineSegmentIconRes(segment));
 
             DateTime segmentTimestamp = segment.getShiftedTimestamp();
-            if (positionsWithTime.contains(position)) {
+            if (timePositions.contains(position)) {
                 DateTime time = segmentTimestamp.withMinuteOfHour(0);
                 itemView.setLeftTime(dateFormatter.formatAsTimelineStamp(time, use24Time));
             } else {
