@@ -48,18 +48,18 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
 
 
     public void optIn(@NonNull View sender) {
-        updateEnhancedAudioEnabled();
+        updateEnhancedAudioEnabled(true);
     }
 
     public void optOut(@NonNull View sender) {
-        updateEnhancedAudioEnabled();
+        updateEnhancedAudioEnabled(false);
     }
 
-    private void updateEnhancedAudioEnabled() {
+    private void updateEnhancedAudioEnabled(boolean enabled) {
         LoadingDialogFragment.show(getFragmentManager());
 
         AccountPreference preferenceUpdate = new AccountPreference(AccountPreference.Key.ENHANCED_AUDIO);
-        preferenceUpdate.setEnabled(false);
+        preferenceUpdate.setEnabled(enabled);
         bindAndSubscribe(apiService.updateAccountPreference(preferenceUpdate),
                          ignored -> {
                              LoadingDialogFragment.close(getFragmentManager());
