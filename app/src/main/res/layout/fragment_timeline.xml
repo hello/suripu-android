@@ -8,4 +8,5 @@
     android:listSelector="@color/transparent"
     android:scrollbars="none"
     android:overScrollMode="ifContentScrolls"
+    android:clipChildren="false"
     android:background="@color/background_timeline"/>
