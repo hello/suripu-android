@@ -5,9 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:minHeight="@dimen/timeline_header_min_height"
-    android:background="@color/background_timeline"
-    android:animateLayoutChanges="true">
+    android:background="@color/background_timeline">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -47,17 +45,11 @@
 
     </RelativeLayout>
 
-    <Space
+    <FrameLayout
+        android:id="@+id/sub_fragment_timeline_header_container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-
-    <!-- Views inserted here -->
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/timeline_header_min_height" />
 
     <is.hello.sense.ui.widget.SelectorLinearLayout
         android:id="@+id/sub_fragment_timeline_header_mode"

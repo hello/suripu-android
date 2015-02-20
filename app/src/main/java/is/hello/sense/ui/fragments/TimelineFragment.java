@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -22,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -73,6 +75,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
 import static is.hello.sense.ui.animation.Animations.Transition;
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment, AdapterView.OnItemLongClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
@@ -91,11 +94,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private ViewGroup headerView;
     private TextView dateText;
+    private FrameLayout headerViewContainer;
     private HeaderViewMode headerMode;
     private SelectorLinearLayout headerModeSelector;
 
     private ScoreViewMode timelineScore;
     private BeforeSleepHeaderMode beforeSleep;
+    private @Nullable BreakdownHeaderMode breakdownHeaderMode;
 
     private View timelineEventsHeader;
 
@@ -151,8 +156,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
 
         this.headerView = (ViewGroup) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
-        Animations.Properties.DEFAULT.apply(headerView.getLayoutTransition());
-
         this.tabsBackgroundDrawable = new TimelineHeaderDrawable(getResources());
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
@@ -162,14 +165,16 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             ((HomeActivity) getActivity()).showTimelineNavigator(getDate(), timeline);
         });
 
+        this.headerViewContainer = (FrameLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_container);
+
         this.headerModeSelector = (SelectorLinearLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
         headerModeSelector.setVisibility(View.INVISIBLE);
         headerModeSelector.setSelectionAwareDrawable(tabsBackgroundDrawable);
         headerModeSelector.setOnSelectionChangedListener(this);
         headerModeSelector.setSelectedIndex(0);
 
-        this.timelineScore = new ScoreViewMode(inflater, headerView);
-        this.beforeSleep = new BeforeSleepHeaderMode(inflater, headerView);
+        this.timelineScore = new ScoreViewMode(inflater, headerViewContainer);
+        this.beforeSleep = new BeforeSleepHeaderMode(inflater, headerViewContainer);
 
         setHeaderMode(timelineScore, null);
 
@@ -221,6 +226,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.breakdownHeaderMode = null;
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
 
@@ -246,15 +258,23 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             return;
         }
 
+        View oldView = null;
         if (this.headerMode != null) {
-            headerView.removeView(this.headerMode.view);
+            oldView = this.headerMode.view;
         }
 
         this.headerMode = headerMode;
+
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                             ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = headerMode.gravity;
         if (transition != null) {
-            transition.perform(headerView, headerMode.view, null, 2);
+            transition.perform(headerViewContainer, headerMode.view, layoutParams);
         } else {
-            headerView.addView(headerMode.view, 2); // Between the Spaces
+            if (oldView != null) {
+                headerViewContainer.removeView(oldView);
+            }
+            headerViewContainer.addView(headerMode.view, layoutParams);
         }
     }
 
@@ -262,18 +282,176 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onSelectionChanged(int newSelectionIndex) {
         switch (newSelectionIndex) {
             case 0:
-                setHeaderMode(timelineScore, Animations::frameCrossFade);
+                if (breakdownHeaderMode != null) {
+                    setHeaderMode(timelineScore, this::hideBreakdownTransition);
+                } else {
+                    setHeaderMode(timelineScore, Animations::crossFade);
+                }
                 break;
             case 1:
-                setHeaderMode(beforeSleep, Animations::frameCrossFade);
+                setHeaderMode(beforeSleep, Animations::crossFade);
+                this.breakdownHeaderMode = null;
                 break;
             default:
                 break;
         }
+
+    }
+
+    public void showBreakdownTransition(@NonNull ViewGroup container,
+                                        @Nullable View newView,
+                                        @Nullable ViewGroup.LayoutParams layoutParams) {
+        if (newView == null || breakdownHeaderMode == null) {
+            throw new IllegalArgumentException();
+        }
+
+        breakdownHeaderMode.leftItems.setAlpha(0f);
+        breakdownHeaderMode.rightItems.setAlpha(0f);
+        newView.setAlpha(0f);
+        container.addView(newView, 0, layoutParams);
+
+        animate(timelineScore.messageText)
+                .setDuration(Animations.DURATION_MINIMUM)
+                .fadeOut(View.VISIBLE)
+                .start();
+
+        animate(timelineScore.scoreTextLabel)
+                .setDuration(Animations.DURATION_MINIMUM)
+                .fadeOut(View.VISIBLE)
+                .addOnAnimationCompleted(firstFinished -> {
+                    if (!firstFinished) {
+                        return;
+                    }
+
+                    Resources resources = getResources();
+                    float bigWidth = resources.getDimension(R.dimen.grand_sleep_summary_width);
+                    float smallWidth = resources.getDimension(R.dimen.little_sleep_summary_width);
+
+                    View bigScore = timelineScore.sleepScoreContainer;
+                    bigScore.setPivotX(bigWidth / 2f);
+                    bigScore.setPivotY(0.0f);
+
+                    View smallScore = breakdownHeaderMode.score;
+                    smallScore.setPivotX(smallWidth / 2f);
+                    smallScore.setPivotY(0.0f);
+
+                    animate(bigScore)
+                            .setDuration(Animations.DURATION_MINIMUM)
+                            .scale(smallWidth / bigWidth)
+                            .addOnAnimationCompleted(finished -> {
+                                if (finished) {
+                                    bigScore.setScaleX(1f);
+                                    bigScore.setScaleY(1f);
+
+                                    timelineScore.messageText.setAlpha(1f);
+                                    timelineScore.scoreTextLabel.setAlpha(1f);
+                                }
+                            })
+                            .start();
+
+                    smallScore.setScaleX(bigWidth / smallWidth);
+                    smallScore.setScaleY(bigWidth / smallWidth);
+                    animate(smallScore)
+                            .setDuration(Animations.DURATION_MINIMUM)
+                            .scale(1f)
+                            .start();
+
+                    animate(timelineScore.view)
+                            .setDuration(Animations.DURATION_MINIMUM)
+                            .fadeOut(View.VISIBLE)
+                            .addOnAnimationCompleted(finished -> {
+                                if (finished) {
+                                    container.removeView(timelineScore.view);
+                                    timelineScore.view.setAlpha(1f);
+                                }
+                            })
+                            .start();
+
+                    animate(newView)
+                            .setDuration(Animations.DURATION_MINIMUM)
+                            .fadeIn()
+                            .addOnAnimationCompleted(finished -> {
+                                if (finished) {
+                                    float delta = resources.getDimension(R.dimen.gap_tiny);
+                                    animate(breakdownHeaderMode.leftItems)
+                                            .slideXAndFade(delta, 0f, 0f, 1f)
+                                            .start();
+                                    animate(breakdownHeaderMode.rightItems)
+                                            .slideXAndFade(-delta, 0f, 0f, 1f)
+                                            .start();
+                                }
+                            })
+                            .start();
+                })
+                .start();
+    }
+
+    public void hideBreakdownTransition(@NonNull ViewGroup container,
+                                        @Nullable View newView,
+                                        @Nullable ViewGroup.LayoutParams layoutParams) {
+        if (newView == null || breakdownHeaderMode == null) {
+            throw new IllegalArgumentException();
+        }
+
+        newView.setAlpha(0f);
+        container.addView(newView, 0, layoutParams);
+
+        timelineScore.messageText.setAlpha(0f);
+        timelineScore.scoreTextLabel.setAlpha(0f);
+
+        Resources resources = getResources();
+        float bigWidth = resources.getDimension(R.dimen.grand_sleep_summary_width);
+        float smallWidth = resources.getDimension(R.dimen.little_sleep_summary_width);
+
+        View bigScore = timelineScore.sleepScoreContainer;
+        bigScore.setPivotX(bigWidth / 2f);
+        bigScore.setPivotY(0.0f);
+
+        View smallScore = breakdownHeaderMode.score;
+        smallScore.setPivotX(smallWidth / 2f);
+        smallScore.setPivotY(0.0f);
+
+        bigScore.setScaleX(smallWidth / bigWidth);
+        bigScore.setScaleY(smallWidth / bigWidth);
+        animate(bigScore)
+                .setDuration(Animations.DURATION_MINIMUM)
+                .scale(1f)
+                .start();
+
+        animate(smallScore)
+                .setDuration(Animations.DURATION_MINIMUM)
+                .scale(bigWidth / smallWidth)
+                .start();
+
+        animate(breakdownHeaderMode.view)
+                .setDuration(Animations.DURATION_MINIMUM)
+                .fadeOut(View.VISIBLE)
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        container.removeView(breakdownHeaderMode.view);
+                        this.breakdownHeaderMode = null;
+                    }
+                })
+                .start();
+
+        animate(newView)
+                .setDuration(Animations.DURATION_MINIMUM)
+                .fadeIn()
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        animate(timelineScore.messageText)
+                                .fadeIn()
+                                .start();
+                        animate(timelineScore.scoreTextLabel)
+                                .fadeIn()
+                                .start();
+                    }
+                })
+                .start();
     }
 
     public void hideBreakdown(@NonNull View sender) {
-        setHeaderMode(timelineScore, Animations::frameCrossFade);
+        setHeaderMode(timelineScore, this::hideBreakdownTransition);
         headerModeSelector.setSelectedIndex(0);
     }
 
@@ -281,11 +459,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         Analytics.trackEvent(Analytics.Timeline.EVENT_SLEEP_SCORE_BREAKDOWN, null);
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        BreakdownHeaderMode breakdown = new BreakdownHeaderMode(inflater, headerView);
+        this.breakdownHeaderMode = new BreakdownHeaderMode(inflater, headerViewContainer);
         bindAndSubscribe(timelinePresenter.mainTimeline.take(1),
-                breakdown::bindTimeline,
-                breakdown::timelineUnavailable);
-        setHeaderMode(breakdown, Animations::frameCrossFade);
+                         breakdownHeaderMode::bindTimeline,
+                         breakdownHeaderMode::timelineUnavailable);
+        setHeaderMode(breakdownHeaderMode, this::showBreakdownTransition);
         headerModeSelector.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
     }
 
@@ -518,25 +696,32 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     class HeaderViewMode {
         final View view;
+        final int gravity;
 
-        HeaderViewMode(@LayoutRes int layoutRes, @NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
+        HeaderViewMode(@LayoutRes int layoutRes,
+                       @NonNull LayoutInflater inflater,
+                       @NonNull ViewGroup container,
+                       int gravity) {
             this.view = inflater.inflate(layoutRes, container, false);
+            this.gravity = gravity;
         }
     }
 
     class ScoreViewMode extends HeaderViewMode {
         final LinearLayout sleepScoreContainer;
         final SleepScoreDrawable scoreGraph;
+        final TextView scoreTextLabel;
         final TextView scoreText;
         final TextView messageText;
 
         ScoreViewMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-            super(R.layout.sub_fragment_timeline_score, inflater, container);
+            super(R.layout.sub_fragment_timeline_score, inflater, container, Gravity.TOP);
 
             this.sleepScoreContainer = (LinearLayout) view.findViewById(R.id.fragment_timeline_sleep_score_chart);
             Views.setSafeOnClickListener(sleepScoreContainer, TimelineFragment.this::showBreakdown);
             sleepScoreContainer.setClickable(false);
 
+            this.scoreTextLabel = (TextView) sleepScoreContainer.findViewById(R.id.fragment_timeline_sleep_score_label);
             this.scoreText = (TextView) sleepScoreContainer.findViewById(R.id.fragment_timeline_sleep_score);
             this.messageText = (TextView) view.findViewById(R.id.fragment_timeline_message);
             Views.makeTextViewLinksClickable(messageText);
@@ -600,7 +785,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         final LayoutInflater inflater;
 
         BeforeSleepHeaderMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-            super(R.layout.sub_fragment_timeline_before_sleep, inflater, container);
+            super(R.layout.sub_fragment_timeline_before_sleep, inflater, container, Gravity.CENTER_VERTICAL);
 
             this.container = (LinearLayout) view.findViewById(R.id.sub_fragment_timeline_before_sleep_container);
             this.inflater = inflater;
@@ -651,19 +836,27 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     class BreakdownHeaderMode extends HeaderViewMode {
         final TextView score;
+
+        final View leftItems;
         final TextView totalSleep;
         final TextView timesAwake;
+
+        final View rightItems;
         final TextView soundSleep;
         final TextView timeToSleep;
 
         final SleepScoreDrawable sleepScorePie;
 
         BreakdownHeaderMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-            super(R.layout.sub_fragment_timeline_breakdown, inflater, container);
+            super(R.layout.sub_fragment_timeline_breakdown, inflater, container, Gravity.TOP);
 
             this.score = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_score);
+
+            this.leftItems = view.findViewById(R.id.sub_fragment_timeline_breakdown_left);
             this.totalSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_total);
             this.timesAwake = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_awake);
+
+            this.rightItems = view.findViewById(R.id.sub_fragment_timeline_breakdown_right);
             this.soundSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_sound);
             this.timeToSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_time);
 
