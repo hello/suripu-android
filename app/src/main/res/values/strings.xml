@@ -288,7 +288,6 @@ so you can sleep better.</string>
     <string name="label_email_address">Email Address</string>
     <string name="title_change_email">Change Email</string>
     <string name="action_change_name">Change Name</string>
-    <string name="error_session_invalidated">Please log in again.</string>
     <string name="error_failed_to_play_alarm_sound">Could not play preview.</string>
     <string name="error_no_smart_alarm_sound">Please select a sound for this Smart Alarm.</string>
     <string name="title_turn_off_bluetooth">Turn Off Bluetooth</string>
