@@ -26,7 +26,6 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -393,7 +392,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
             builder.setHeadingText(R.string.onboarding_title_sleep_pill_intro);
             builder.setSubheadingText(R.string.onboarding_message_sleep_pill_intro);
-            builder.setDiagramImage(R.drawable.onboarding_clip_pill);
+            builder.setDiagramImage(R.drawable.onboarding_sleep_pill);
             builder.setHideToolbar(true);
             builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO);
             builder.setNextFragmentClass(OnboardingPairPillFragment.class);

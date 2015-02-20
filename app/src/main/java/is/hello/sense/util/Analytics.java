@@ -142,11 +142,6 @@ public class Analytics {
         String EVENT_SENSE_SETUP = "Onboarding Sense Setup";
 
         /**
-         * When user encounters an error during Sense Pairing and is asked whether he/she is setting up second pill or first
-         */
-        String EVENT_SECOND_PILL_CHECK = "Onboarding Second Pill Check";
-
-        /**
          * When user lands on the "Pair your Sense" screen
          */
         String EVENT_PAIR_SENSE = "Onboarding Pair Sense";
