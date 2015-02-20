@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -307,7 +308,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         breakdownHeaderMode.leftItems.setAlpha(0f);
         breakdownHeaderMode.rightItems.setAlpha(0f);
-
         newView.setAlpha(0f);
         container.addView(newView, 0, layoutParams);
 
@@ -319,13 +319,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         animate(timelineScore.scoreTextLabel)
                 .setDuration(Animations.DURATION_MINIMUM)
                 .fadeOut(View.VISIBLE)
-                .addOnAnimationCompleted(finished1 -> {
-                    if (!finished1) {
+                .addOnAnimationCompleted(firstFinished -> {
+                    if (!firstFinished) {
                         return;
                     }
 
-                    float bigWidth = getResources().getDimension(R.dimen.grand_sleep_summary_width);
-                    float smallWidth = getResources().getDimension(R.dimen.little_sleep_summary_width);
+                    Resources resources = getResources();
+                    float bigWidth = resources.getDimension(R.dimen.grand_sleep_summary_width);
+                    float smallWidth = resources.getDimension(R.dimen.little_sleep_summary_width);
 
                     View bigScore = timelineScore.sleepScoreContainer;
                     bigScore.setPivotX(bigWidth / 2f);
@@ -372,7 +373,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                             .fadeIn()
                             .addOnAnimationCompleted(finished -> {
                                 if (finished) {
-                                    float delta = getResources().getDimension(R.dimen.gap_tiny);
+                                    float delta = resources.getDimension(R.dimen.gap_tiny);
                                     animate(breakdownHeaderMode.leftItems)
                                             .slideXAndFade(delta, 0f, 0f, 1f)
                                             .start();
@@ -399,8 +400,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         timelineScore.messageText.setAlpha(0f);
         timelineScore.scoreTextLabel.setAlpha(0f);
 
-        float bigWidth = getResources().getDimension(R.dimen.grand_sleep_summary_width);
-        float smallWidth = getResources().getDimension(R.dimen.little_sleep_summary_width);
+        Resources resources = getResources();
+        float bigWidth = resources.getDimension(R.dimen.grand_sleep_summary_width);
+        float smallWidth = resources.getDimension(R.dimen.little_sleep_summary_width);
 
         View bigScore = timelineScore.sleepScoreContainer;
         bigScore.setPivotX(bigWidth / 2f);
@@ -784,7 +786,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         final LayoutInflater inflater;
 
         BeforeSleepHeaderMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-            super(R.layout.sub_fragment_timeline_before_sleep, inflater, container, Gravity.CENTER_HORIZONTAL);
+            super(R.layout.sub_fragment_timeline_before_sleep, inflater, container, Gravity.CENTER_VERTICAL);
 
             this.container = (LinearLayout) view.findViewById(R.id.sub_fragment_timeline_before_sleep_container);
             this.inflater = inflater;

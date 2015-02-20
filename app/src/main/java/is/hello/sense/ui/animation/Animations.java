@@ -107,6 +107,7 @@ public class Animations {
         if (container.getChildCount() > 0) {
             View oldView = container.getChildAt(0);
             animate(oldView)
+                    .setDuration(Animations.DURATION_MINIMUM)
                     .fadeOut(View.VISIBLE)
                     .addOnAnimationCompleted(finished -> {
                         if (finished) {
@@ -121,6 +122,7 @@ public class Animations {
             container.addView(newView, layoutParams);
             newView.setAlpha(0f);
             animate(newView)
+                    .setDuration(Animations.DURATION_MINIMUM)
                     .fadeIn()
                     .start();
         }
