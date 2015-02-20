@@ -101,9 +101,9 @@ public class Animations {
      *
      * @see is.hello.sense.ui.animation.Animations.Transition
      */
-    public static void frameCrossFade(@NonNull ViewGroup container,
-                                      @Nullable View newView,
-                                      @Nullable ViewGroup.LayoutParams layoutParams) {
+    public static void crossFade(@NonNull ViewGroup container,
+                                 @Nullable View newView,
+                                 @Nullable ViewGroup.LayoutParams layoutParams) {
         if (container.getChildCount() > 0) {
             View oldView = container.getChildAt(0);
             animate(oldView)

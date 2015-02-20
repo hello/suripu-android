@@ -74,6 +74,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
 import static is.hello.sense.ui.animation.Animations.Transition;
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment, AdapterView.OnItemLongClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
@@ -170,8 +171,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         headerModeSelector.setOnSelectionChangedListener(this);
         headerModeSelector.setSelectedIndex(0);
 
-        this.timelineScore = new ScoreViewMode(inflater, headerView);
-        this.beforeSleep = new BeforeSleepHeaderMode(inflater, headerView);
+        this.timelineScore = new ScoreViewMode(inflater, headerViewContainer);
+        this.beforeSleep = new BeforeSleepHeaderMode(inflater, headerViewContainer);
 
         setHeaderMode(timelineScore, null);
 
@@ -248,17 +249,22 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             return;
         }
 
+        View oldView = null;
         if (this.headerMode != null) {
-            headerViewContainer.removeView(this.headerMode.view);
+            oldView = this.headerMode.view;
         }
 
         this.headerMode = headerMode;
-        
+
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                                              ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = headerMode.gravity;
         if (transition != null) {
             transition.perform(headerViewContainer, headerMode.view, layoutParams);
         } else {
+            if (oldView != null) {
+                headerViewContainer.removeView(oldView);
+            }
             headerViewContainer.addView(headerMode.view, layoutParams);
         }
     }
@@ -267,18 +273,112 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onSelectionChanged(int newSelectionIndex) {
         switch (newSelectionIndex) {
             case 0:
-                setHeaderMode(timelineScore, Animations::frameCrossFade);
+                setHeaderMode(timelineScore, Animations::crossFade);
                 break;
             case 1:
-                setHeaderMode(beforeSleep, Animations::frameCrossFade);
+                setHeaderMode(beforeSleep, Animations::crossFade);
                 break;
             default:
                 break;
         }
     }
 
+    public void showBreakdownTransition(@NonNull ViewGroup container,
+                                        @Nullable View newView,
+                                        @Nullable ViewGroup.LayoutParams layoutParams) {
+        if (newView == null) {
+            throw new IllegalArgumentException();
+        }
+        BreakdownHeaderMode breakdown = (BreakdownHeaderMode) headerMode;
+        breakdown.leftItems.setAlpha(0f);
+        breakdown.rightItems.setAlpha(0f);
+
+        newView.setAlpha(0f);
+        container.addView(newView, 0, layoutParams);
+
+        animate(timelineScore.messageText)
+                .setDuration(Animations.DURATION_MINIMUM)
+                .fadeOut(View.VISIBLE)
+                .start();
+
+        animate(timelineScore.scoreTextLabel)
+                .setDuration(Animations.DURATION_MINIMUM)
+                .fadeOut(View.VISIBLE)
+                .addOnAnimationCompleted(finished1 -> {
+                    if (!finished1) {
+                        return;
+                    }
+
+                    float bigWidth = getResources().getDimension(R.dimen.grand_sleep_summary_width);
+                    float smallWidth = getResources().getDimension(R.dimen.little_sleep_summary_width);
+
+                    View bigScore = timelineScore.sleepScoreContainer;
+                    bigScore.setPivotX(bigWidth / 2f);
+                    bigScore.setPivotY(0.0f);
+
+                    View smallScore = breakdown.score;
+                    smallScore.setPivotX(smallWidth / 2f);
+                    smallScore.setPivotY(0.0f);
+
+                    animate(bigScore)
+                            .setDuration(Animations.DURATION_MINIMUM)
+                            .scale(smallWidth / bigWidth)
+                            .addOnAnimationCompleted(finished -> {
+                                if (finished) {
+                                    bigScore.setScaleX(1f);
+                                    bigScore.setScaleY(1f);
+
+                                    timelineScore.messageText.setAlpha(1f);
+                                    timelineScore.scoreTextLabel.setAlpha(1f);
+                                }
+                            })
+                            .start();
+
+                    smallScore.setScaleX(bigWidth / smallWidth);
+                    smallScore.setScaleY(bigWidth / smallWidth);
+                    animate(smallScore)
+                            .setDuration(Animations.DURATION_MINIMUM)
+                            .scale(1f)
+                            .start();
+
+                    animate(timelineScore.view)
+                            .setDuration(Animations.DURATION_MINIMUM)
+                            .fadeOut(View.VISIBLE)
+                            .addOnAnimationCompleted(finished -> {
+                                if (finished) {
+                                    container.removeView(timelineScore.view);
+                                    timelineScore.view.setAlpha(1f);
+                                }
+                            })
+                            .start();
+
+                    animate(newView)
+                            .setDuration(Animations.DURATION_MINIMUM)
+                            .fadeIn()
+                            .addOnAnimationCompleted(finished -> {
+                                if (finished) {
+                                    float delta = getResources().getDimension(R.dimen.gap_tiny);
+                                    animate(breakdown.leftItems)
+                                            .slideXAndFade(delta, 0f, 0f, 1f)
+                                            .start();
+                                    animate(breakdown.rightItems)
+                                            .slideXAndFade(-delta, 0f, 0f, 1f)
+                                            .start();
+                                }
+                            })
+                            .start();
+                })
+                .start();
+    }
+
+    public void hideBreakdownTransition(@NonNull ViewGroup container,
+                                        @Nullable View newView,
+                                        @Nullable ViewGroup.LayoutParams layoutParams) {
+
+    }
+
     public void hideBreakdown(@NonNull View sender) {
-        setHeaderMode(timelineScore, Animations::frameCrossFade);
+        setHeaderMode(timelineScore, Animations::crossFade);
         headerModeSelector.setSelectedIndex(0);
     }
 
@@ -286,11 +386,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         Analytics.trackEvent(Analytics.Timeline.EVENT_SLEEP_SCORE_BREAKDOWN, null);
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        BreakdownHeaderMode breakdown = new BreakdownHeaderMode(inflater, headerView);
+        BreakdownHeaderMode breakdown = new BreakdownHeaderMode(inflater, headerViewContainer);
         bindAndSubscribe(timelinePresenter.mainTimeline.take(1),
-                breakdown::bindTimeline,
-                breakdown::timelineUnavailable);
-        setHeaderMode(breakdown, Animations::frameCrossFade);
+                         breakdown::bindTimeline,
+                         breakdown::timelineUnavailable);
+        setHeaderMode(breakdown, this::showBreakdownTransition);
         headerModeSelector.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
     }
 
@@ -523,25 +623,32 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     class HeaderViewMode {
         final View view;
+        final int gravity;
 
-        HeaderViewMode(@LayoutRes int layoutRes, @NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
+        HeaderViewMode(@LayoutRes int layoutRes,
+                       @NonNull LayoutInflater inflater,
+                       @NonNull ViewGroup container,
+                       int gravity) {
             this.view = inflater.inflate(layoutRes, container, false);
+            this.gravity = gravity;
         }
     }
 
     class ScoreViewMode extends HeaderViewMode {
         final LinearLayout sleepScoreContainer;
         final SleepScoreDrawable scoreGraph;
+        final TextView scoreTextLabel;
         final TextView scoreText;
         final TextView messageText;
 
         ScoreViewMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-            super(R.layout.sub_fragment_timeline_score, inflater, container);
+            super(R.layout.sub_fragment_timeline_score, inflater, container, Gravity.TOP);
 
             this.sleepScoreContainer = (LinearLayout) view.findViewById(R.id.fragment_timeline_sleep_score_chart);
             Views.setSafeOnClickListener(sleepScoreContainer, TimelineFragment.this::showBreakdown);
             sleepScoreContainer.setClickable(false);
 
+            this.scoreTextLabel = (TextView) sleepScoreContainer.findViewById(R.id.fragment_timeline_sleep_score_label);
             this.scoreText = (TextView) sleepScoreContainer.findViewById(R.id.fragment_timeline_sleep_score);
             this.messageText = (TextView) view.findViewById(R.id.fragment_timeline_message);
             Views.makeTextViewLinksClickable(messageText);
@@ -605,7 +712,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         final LayoutInflater inflater;
 
         BeforeSleepHeaderMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-            super(R.layout.sub_fragment_timeline_before_sleep, inflater, container);
+            super(R.layout.sub_fragment_timeline_before_sleep, inflater, container, Gravity.CENTER_HORIZONTAL);
 
             this.container = (LinearLayout) view.findViewById(R.id.sub_fragment_timeline_before_sleep_container);
             this.inflater = inflater;
@@ -656,19 +763,27 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     class BreakdownHeaderMode extends HeaderViewMode {
         final TextView score;
+
+        final View leftItems;
         final TextView totalSleep;
         final TextView timesAwake;
+
+        final View rightItems;
         final TextView soundSleep;
         final TextView timeToSleep;
 
         final SleepScoreDrawable sleepScorePie;
 
         BreakdownHeaderMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-            super(R.layout.sub_fragment_timeline_breakdown, inflater, container);
+            super(R.layout.sub_fragment_timeline_breakdown, inflater, container, Gravity.TOP);
 
             this.score = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_score);
+
+            this.leftItems = view.findViewById(R.id.sub_fragment_timeline_breakdown_left);
             this.totalSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_total);
             this.timesAwake = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_awake);
+
+            this.rightItems = view.findViewById(R.id.sub_fragment_timeline_breakdown_right);
             this.soundSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_sound);
             this.timeToSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_time);
 
