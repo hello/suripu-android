@@ -356,7 +356,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                 builder.setDiagramImage(R.drawable.onboarding_sense_intro);
                 builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
-                builder.setHelpStep(UserSupport.OnboardingStep.SETUP_SENSE);
+                builder.setHelpStep(UserSupport.OnboardingStep.PAIRING_SENSE_BLE);
                 pushFragment(builder.toFragment(), null, false);
             }
         } else {

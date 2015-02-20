@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,12 +68,12 @@ public class OnboardingSenseColorsFragment extends SenseFragment implements View
         Views.setSafeOnClickListener(nextButton, this::next);
 
         this.bottomContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sense_colors_bottom);
-        Views.observeNextLayout(nextButton).subscribe(ignored -> {
+        bottomContainer.forceLayout();
+        bottomContainer.post(() -> {
             this.nextButtonMaxY = bottomContainer.getMeasuredHeight();
             this.nextButtonMinY = (bottomContainer.getMeasuredHeight() / 2) - (nextButton.getMeasuredHeight() / 2);
             nextButton.setY(nextButtonMaxY);
         });
-
 
         return view;
     }

@@ -73,6 +73,30 @@ public class UserSupport {
         openUri(from, issue.getUri());
     }
 
+    public static void showEnhancedAudio(@NonNull Context from) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE, "enhanced-audio"));
+
+        Uri issueUri = new Uri.Builder()
+                .scheme("http")
+                .authority(BuildConfig.SUPPORT_AUTHORITY)
+                .appendPath("app")
+                .appendPath("enhanced-audio")
+                .build();
+        openUri(from, issueUri);
+    }
+
+    public static void showReplaceBattery(@NonNull Context from) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE, "enhanced-audio"));
+
+        Uri issueUri = new Uri.Builder()
+                .scheme("http")
+                .authority(BuildConfig.SUPPORT_AUTHORITY)
+                .appendPath("sleep-pill")
+                .appendPath("battery-change")
+                .build();
+        openUri(from, issueUri);
+    }
+
 
     private static Uri buildSupportUrl(@NonNull String slug) {
         return new Uri.Builder()
@@ -87,7 +111,6 @@ public class UserSupport {
         UNSTABLE_BLUETOOTH(""),
         SENSE_MISSING("sense-not-seen-in-days"),
         SLEEP_PILL_MISSING("pill-not-seen-in-days"),
-        REPLACE_BATTERY("battery-change"),
         PAIRING_2ND_PILL("setting-up-second-sleep-pill");
 
         private final String slug;
@@ -107,9 +130,10 @@ public class UserSupport {
     public static enum OnboardingStep {
         INFO(""),
         DEMOGRAPHIC_QUESTIONS("demographic-questions"),
-        BLUETOOTH("pairing-sense"),
-        ENHANCED_AUDIO(""),
-        SETUP_SENSE("pairing-sense-ble"),
+        BLUETOOTH("turning-on-bluetooth"),
+        ENHANCED_AUDIO("enhanced-audio"),
+        SETTING_UP_SENSE("setting-up-sense"),
+        PAIRING_SENSE_BLE("pairing-sense-ble"),
         WIFI_SCAN("connecting-sense-wifi"),
         SIGN_INTO_WIFI("connecting-sense-wifi"),
         PILL_PAIRING("pairing-your-sleep-pill"),

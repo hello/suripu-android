@@ -81,20 +81,20 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:drawableTop="@drawable/onboarding_gender_female"
+                    android:drawableTop="@drawable/onboarding_gender_male"
                     android:drawablePadding="@dimen/gap_large"
-                    android:textOn="@string/gender_female"
-                    android:textOff="@string/gender_female"
+                    android:textOn="@string/gender_male"
+                    android:textOff="@string/gender_male"
                     style="@style/AppTheme.Button.Gender"/>
 
                 <ToggleButton
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:drawableTop="@drawable/onboarding_gender_male"
+                    android:drawableTop="@drawable/onboarding_gender_female"
                     android:drawablePadding="@dimen/gap_large"
-                    android:textOn="@string/gender_male"
-                    android:textOff="@string/gender_male"
+                    android:textOn="@string/gender_female"
+                    android:textOff="@string/gender_female"
                     style="@style/AppTheme.Button.Gender"/>
 
             </is.hello.sense.ui.widget.SelectorLinearLayout>
