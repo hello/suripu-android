@@ -1,7 +1,7 @@
 suripu-android
 ==============
 
-It's Sense.app, for Android.
+It's Sense for Android.
 
 Prerequisites
 =============
@@ -64,3 +64,20 @@ Testing
 =======
 
 The project currently contains unit tests for most parts of the project with major logic. All of the presenters have accompanying synchronous unit tests, and most of the Bluetooth stack's non-radio related functionality is equipped. Any new presenters introduced into the project should have unit tests accompanying them when merged into `master`.
+
+Deploying
+=========
+
+Most non-testing deployment can be done through the included `deploy` ruby script. In order to use this script, you will need to `gem install colorize`, and specify `HELLO_DEPLOY_HOCKEY_TOKEN` in your bash profile. Hockey API tokens can be generated [here](https://rink.hockeyapp.net/manage/auth_tokens). You will need to give Upload and Release permissions to the token for the script to work.
+
+The build script is capable of generating three flavors:
+
+- `debug`: Uses the internal keystore and has unique package id. Includes extended error reporting, a debug interface accessible by shaking your phone, a Bluetooth debugging tool for Sense, and talks to the dev backend instead of production. These builds are generally used to share work in progress features.
+- `beta`: Uses the release keystore and release package id. Includes the debug interface, but otherwise is identical to a release build.
+- `store`: Uses the release keystore and release package id. No debug interfaces are included. This is the debug build. You cannot generate one of these builds without tagging master during the build process.
+
+The following flags are available for the build script:
+
+- `-t / --[no-]tests`: Runs the tests on the project before deploying. Requires a connected device or emulator.
+- `-k / --[no-]clean`: Cleans the project before deploying. Recommended if the dependency graph has changed.
+- `-sTAG / --save-tag=TAG`: Creates a tag on the current branch. Required for new releases.
