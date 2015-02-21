@@ -146,8 +146,8 @@ so you can sleep better.</string>
     <string name="info_sense_colors_5">Just wave your hand over Sense and instantly you‘ll know about the conditions in your bedroom. Go ahead, give it a try now.</string>
     <string name="onboarding_done_message_1">You’re all set up</string>
     <string name="onboarding_done_message_2">Now, all you need to\ndo is sleep</string>
-    <string name="error_wifi_connection_failed">Sense could not connect to the wifi network. Make sure you‘re within range, double check your password, and try again.</string>
-    <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the wifi network you selected.</string>
+    <string name="error_wifi_connection_failed">Sense could not connect to the WiFi network. Make sure you‘re within range, double check your password, and try again.</string>
+    <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the WiFi network you selected.</string>
     <string name="error_network_failure">The operation could not be completed due to connectivity issues. Please try again.</string>
     <string name="error_network_failure_pair_pill">Your Sleep Pill could not be Paired due to connectivity issues. Please try again.</string>
     <string name="error_pill_already_paired">Your Sleep Pill is already paired to this account.</string>
@@ -224,7 +224,7 @@ so you can sleep better.</string>
     <string name="title_checking_connectivity">Checking connectivity</string>
     <string name="error_title_sleep_pill_scan_timeout">Pill Pairing Failed</string>
     <string name="error_message_sleep_pill_scan_timeout">Sense couldn\'t register your Sleep Pill. Please try pairing again. Try moving your Sleep Pill closer to Sense, and shaking it harder.</string>
-    <string name="error_sense_not_found">We could not connect to your Sense. Please make sure your Sense is plugged in, and nearby.</string>
+    <string name="error_sense_not_found">Could not detect a Sense nearby. Make sure Sense is plugged in, nearby, and in pairing mode. Ensure no other devices are connected with Sense over Bluetooth.</string>
     <string name="error_peripheral_connection_lost">The connection to your Sense was lost.</string>
     <string name="onboarding_register_info_explanation">This information is used to provide you with more personalized sleep insights.</string>
     <string name="error_bluetooth_disabled">Please enable Bluetooth to continue.</string>
@@ -233,9 +233,9 @@ so you can sleep better.</string>
     <string name="error_bluetooth_bonding_change_fmt">Could not modify bond with Sense (%1$s)</string>
     <string name="error_bluetooth_out_of_range">Lost connection to your Sense. Please make sure your Sense is plugged in and nearby, and try again.</string>
     <string name="error_bluetooth_no_connection">Operation could not be completed because you are not connected to a Sense.</string>
-    <string name="error_bluetooth_service_discovery_failed">Could not resolve services offered by Sense device.</string>
+    <string name="error_bluetooth_service_discovery_failed">Could not resolve services offered by Sense.</string>
     <string name="error_sense_already_paired">Your Sense is already linked to this account.</string>
-    <string name="error_sense_device_db_full">Your Sense cannot be paired to anymore devices.</string>
+    <string name="error_sense_device_db_full">Your Sense cannot be paired to any more devices.</string>
     <string name="error_mismatching_new_passwords">The passwords you entered do not match.</string>
     <string name="action_exit">Exit</string>
     <string name="dialog_title_smart_alarm_edit_cancel">Do you really want to exit?</string>
@@ -267,12 +267,12 @@ so you can sleep better.</string>
     <string name="room_condition_checking_sound">Checking Sound</string>
     <string name="room_condition_checking_light">Checking Light</string>
     <string name="onboarding_room_check_title_success">Success!</string>
-    <string name="onboarding_room_check_info_success">Everything is working well and looks great. Now let’s set your first Smart Alarm.</string>
+    <string name="onboarding_room_check_info_success">Everything looks great. Now let’s set your first Smart Alarm.</string>
     <string name="onboarding_title_room_check">Room Check</string>
     <string name="onboarding_info_room_check">Sense will now check the conditions in your bedroom.</string>
-    <string name="error_smart_alarm_day_overlap">You cannot set more than one smart alarm per day of the week.</string>
+    <string name="error_smart_alarm_day_overlap">You cannot set more than one Smart Alarm per day of the week.</string>
     <string name="error_smart_alarm_clock_drift">Alarms require your device\'s date and time to be set to the current time. Please correct your device\'s date and time, and try again.</string>
-    <string name="error_smart_alarm_requires_device">Alarms requires you to have a Sense paired with your account.</string>
+    <string name="error_smart_alarm_requires_device">You must have a Sense paired with your account to use Alarms.</string>
     <string name="action_replace_device">Replace</string>
     <string name="dialog_title_replace_sleep_pill">Replace Sleep Pill</string>
     <string name="dialog_message_replace_sleep_pill">Are you sure you want to unpair your Sleep Pill? You will not be able to track your sleep until you pair another Sleep Pill.</string>
@@ -308,7 +308,7 @@ so you can sleep better.</string>
     <string name="action_troubleshoot">Troubleshoot</string>
     <string name="info_connecting_to_sense">Connecting with Sense over Bluetooth…</string>
     <string name="error_no_bluetooth_connectivity">Bluetooth must be turned on to connect to Sense.</string>
-    <string name="error_sense_no_connectivity">Your Sense <b>cannot connect to Wi-Fi</b>. Tap below to edit your Wi-Fi credentials.</string>
+    <string name="error_sense_no_connectivity">Your Sense <b>cannot connect to Wi-Fi</b>. Tap below to troubleshoot.</string>
     <string name="error_sense_missing_fmt">Your Sense was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
     <string name="error_sleep_pill_missing_fmt">Your Sleep Pill was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
     <string name="support_footer">If you’re having trouble, visit <a href="#support">Support</a> or contact us at <a href="#email">support@hello.is</a>.</string>
@@ -316,7 +316,7 @@ so you can sleep better.</string>
     <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
     <string name="label_wifi_network_name">"WiFi network: "</string>
     <string name="onboarding_info_enhanced_audio">With Enhanced Audio enabled, Sense can pick up snoring, sleep taking, and noise disturbances.\n\nWithout Enhanced Audio enabled, Sense only looks at background noise.</string>
-    <string name="onboarding_title_enhanced_audio">Enable enhanced audio</string>
+    <string name="onboarding_title_enhanced_audio">Enable Enhanced Audio</string>
     <string name="action_enable_enhanced_audio">Enable Enhanced Audio</string>
     <string name="title_enabled">Enabled</string>
     <string name="dialog_title_new_version">New version</string>
@@ -400,7 +400,7 @@ so you can sleep better.</string>
     <string name="timeline_breakdown_label_time_to_sleep">Time to sleep</string>
     <string name="notification_setting_alert_conditions">Alert Conditions</string>
     <string name="notification_setting_sleep_score">Daily Sleep Score</string>
-    <string name="onboarding_room_check_info_failure">Could not complete room check. Go ahead and setup your first Smart Alarm.</string>
+    <string name="onboarding_room_check_info_failure">Could not complete room check. Go ahead and set up your first Smart Alarm.</string>
     <string name="onboarding_room_check_title_failure">There was a problem</string>
     <string name="error_network_unavailable">Check your connection and try again.</string>
     <string name="action_reconnect">Reconnect</string>
@@ -428,6 +428,6 @@ so you can sleep better.</string>
     <string name="debug_action_scan">Scan</string>
     <string name="device_color_red">Red</string>
     <string name="device_color_blue">Blue</string>
-    <string name="device_color_black">Black</string>
-    <string name="device_color_white">White</string>
+    <string name="device_color_black">Charcoal</string>
+    <string name="device_color_white">Cotton</string>
 </resources>
