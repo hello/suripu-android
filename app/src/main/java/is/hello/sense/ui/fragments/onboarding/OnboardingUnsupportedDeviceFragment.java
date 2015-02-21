@@ -35,7 +35,7 @@ public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
 
         builder.setPrimaryButtonText(R.string.action_continue_anyway);
         builder.setPrimaryOnClickListener(this::continueAnyway);
-        builder.setToolbarOnHelpClickListener(this::showHelp);
+        builder.setToolbarWantsHelpButton(false);
 
         return builder.create();
     }
@@ -46,9 +46,5 @@ public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
 
     public void continueAnyway(@NonNull View sender) {
         getOnboardingActivity().showSetupSense(true);
-    }
-
-    public void showHelp(@NonNull View sender) {
-        UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UNSUPPORTED_DEVICE);
     }
 }

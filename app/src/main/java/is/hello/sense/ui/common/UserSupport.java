@@ -108,7 +108,7 @@ public class UserSupport {
     }
 
     public static enum DeviceIssue {
-        UNSTABLE_BLUETOOTH(""),
+        UNSTABLE_BLUETOOTH("android-bluetooth-problems"),
         SENSE_MISSING("sense-not-seen-in-days"),
         CANNOT_CONNECT_TO_SENSE("cannot-connect-sense-ble"),
         SLEEP_PILL_MISSING("pill-not-seen-in-days"),
@@ -138,8 +138,7 @@ public class UserSupport {
         WIFI_SCAN("connecting-sense-wifi"),
         SIGN_INTO_WIFI("connecting-sense-wifi"),
         PILL_PAIRING("pairing-your-sleep-pill"),
-        PILL_PLACEMENT("attaching-sleep-pill"),
-        UNSUPPORTED_DEVICE("");
+        PILL_PLACEMENT("attaching-sleep-pill");
 
         private final String slug;
         private OnboardingStep(@NonNull String slug) {
