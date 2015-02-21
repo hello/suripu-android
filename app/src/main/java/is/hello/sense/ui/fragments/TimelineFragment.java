@@ -30,10 +30,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import net.danlew.android.joda.DateUtils;
-
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.joda.time.LocalTime;
 
 import java.util.Collections;
@@ -596,10 +593,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         TextView contents = (TextView) inflater.inflate(R.layout.tooltip_timeline_overlay, parent, false);
         contents.setBackground(new TimelineTooltipDrawable(getResources()));
 
-        String sleepDepthSummary = getString(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
-        CharSequence duration = DateUtils.formatDuration(getActivity(), Duration.standardSeconds(segment.getDuration()));
-        String tooltipHtml = getString(R.string.tooltip_timeline_html_fmt, sleepDepthSummary, duration);
-        contents.setText(Html.fromHtml(tooltipHtml));
+        if (segment.getEventType() == null) {
+            contents.setText(Styles.getWakingDepthStringRes(segment.getSleepDepth()));
+        } else {
+            String sleepDepthSummary = getString(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
+            String tooltipHtml = getString(R.string.tooltip_timeline_html_fmt, sleepDepthSummary);
+            contents.setText(Html.fromHtml(tooltipHtml));
+        }
 
         this.timelinePopup = new PopupWindow(contents);
         timelinePopup.setAnimationStyle(R.style.WindowAnimations_PopSlideAndFade);
@@ -631,7 +631,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         timelinePopup.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, bottomInset);
         parent.setOnTouchListener((ignored, event) -> {
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                contents.postDelayed(timelinePopup::dismiss, 1000);
+                if (timelinePopup != null) {
+                    contents.postDelayed(timelinePopup::dismiss, 1000);
+                }
                 parent.setOnTouchListener(null);
             }
             return false;

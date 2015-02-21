@@ -88,6 +88,18 @@ public final class Styles {
         }
     }
 
+    public static @StringRes int getWakingDepthStringRes(int sleepDepth) {
+        if (sleepDepth == 0) {
+            return R.string.waking_depth_awake;
+        } else if (sleepDepth == 100) {
+            return R.string.waking_depth_deep;
+        } else if (sleepDepth < 60) {
+            return R.string.waking_depth_light;
+        } else {
+            return R.string.waking_depth_intermediate;
+        }
+    }
+
     public static @ColorRes @DrawableRes int getSleepScoreColorRes(int sleepScore) {
         if (sleepScore > 80) {
             return R.color.sensor_ideal;

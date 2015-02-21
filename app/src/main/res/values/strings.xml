@@ -424,7 +424,11 @@ so you can sleep better.</string>
     <string name="sleep_depth_deep">in deep sleep</string>
     <string name="sleep_depth_light">in light sleep</string>
     <string name="sleep_depth_intermediate">in medium sleep</string>
-    <string name="tooltip_timeline_html_fmt"><![CDATA[You were <b>%1$s</b> for<br>\n%2$s]]></string>
+    <string name="waking_depth_awake">There was a lot of motion.</string>
+    <string name="waking_depth_light">There was a lot of motion.</string>
+    <string name="waking_depth_intermediate">There was a moderate amount of motion.</string>
+    <string name="waking_depth_deep">There was a slight amount of motion.</string>
+    <string name="tooltip_timeline_html_fmt"><![CDATA[You were <b>%1$s</b>.]]></string>
     <string name="debug_action_scan">Scan</string>
     <string name="device_color_red">Red</string>
     <string name="device_color_blue">Blue</string>

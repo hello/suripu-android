@@ -129,12 +129,11 @@ public final class TimelineSegmentView extends View {
 
         if (eventDrawable != null) {
             float drawableWidthHalf = eventDrawable.getIntrinsicWidth() / 2f;
-            float drawableMinY = minY - invariants.imageShadow;
-            float drawableMaxY = drawableMinY + eventDrawable.getIntrinsicHeight();
+            float drawableMaxY = minY + eventDrawable.getIntrinsicHeight();
 
             eventDrawable.setBounds(
                 Math.round(midX - drawableWidthHalf),
-                Math.round(drawableMinY),
+                Math.round(minY),
                 Math.round(midX + drawableWidthHalf),
                 Math.round(drawableMaxY)
             );
