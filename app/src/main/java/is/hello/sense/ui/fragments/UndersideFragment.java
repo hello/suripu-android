@@ -41,7 +41,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     public static final int ITEM_SMART_ALARM_LIST = 3;
     public static final int ITEM_APP_SETTINGS = 4;
 
-    private static final int DEFAULT_START_ITEM = ITEM_ROOM_CONDITIONS;
+    private static final int DEFAULT_START_ITEM = ITEM_INSIGHTS;
 
     public static final int OPTION_NONE = 0;
     public static final int OPTION_ANIMATE = (1 << 1);
