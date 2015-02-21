@@ -54,6 +54,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
+import is.hello.sense.ui.widget.BlockableLinearLayout;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
@@ -89,7 +90,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private ImageButton menuButton;
     private ImageButton shareButton;
 
-    private ViewGroup headerView;
+    private BlockableLinearLayout headerView;
     private TextView dateText;
     private FrameLayout headerViewContainer;
     private HeaderViewMode headerMode;
@@ -152,7 +153,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         listView.setOnItemLongClickListener(this);
 
 
-        this.headerView = (ViewGroup) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
+        this.headerView = (BlockableLinearLayout) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
         this.tabsBackgroundDrawable = new TimelineHeaderDrawable(getResources());
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
@@ -266,7 +267,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                                                                              ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = headerMode.gravity;
         if (transition != null) {
-            transition.perform(headerViewContainer, headerMode.view, layoutParams);
+            headerView.setTouchEnabled(false);
+            transition.perform(headerViewContainer, headerMode.view, layoutParams, () -> {
+                headerView.setTouchEnabled(true);
+            });
         } else {
             if (oldView != null) {
                 headerViewContainer.removeView(oldView);
@@ -297,7 +301,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     public void showBreakdownTransition(@NonNull ViewGroup container,
                                         @Nullable View newView,
-                                        @Nullable ViewGroup.LayoutParams layoutParams) {
+                                        @Nullable ViewGroup.LayoutParams layoutParams,
+                                        @Nullable Runnable onCompletion) {
         if (newView == null || breakdownHeaderMode == null) {
             throw new IllegalArgumentException();
         }
@@ -375,6 +380,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                                             .start();
                                     animate(breakdownHeaderMode.rightItems)
                                             .slideXAndFade(-delta, 0f, 0f, 1f)
+                                            .addOnAnimationCompleted(finishedLast -> {
+                                                if (finishedLast && onCompletion != null) {
+                                                    onCompletion.run();
+                                                }
+                                            })
                                             .start();
                                 }
                             })
@@ -385,7 +395,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     public void hideBreakdownTransition(@NonNull ViewGroup container,
                                         @Nullable View newView,
-                                        @Nullable ViewGroup.LayoutParams layoutParams) {
+                                        @Nullable ViewGroup.LayoutParams layoutParams,
+                                        @Nullable Runnable onCompletion) {
         if (newView == null || breakdownHeaderMode == null) {
             throw new IllegalArgumentException();
         }
@@ -441,6 +452,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                                 .start();
                         animate(timelineScore.scoreTextLabel)
                                 .fadeIn()
+                                .addOnAnimationCompleted(finishedLast -> {
+                                    if (finishedLast && onCompletion != null) {
+                                        onCompletion.run();
+                                    }
+                                })
                                 .start();
                     }
                 })
@@ -468,27 +484,27 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
         sender.setEnabled(false);
         bindAndSubscribe(timelinePresenter.mainTimeline,
-                         timeline -> {
-                             sender.setEnabled(true);
-                             if (timeline != null) {
-                                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                 shareIntent.setType("text/plain");
+                timeline -> {
+                    sender.setEnabled(true);
+                    if (timeline != null) {
+                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                        shareIntent.setType("text/plain");
 
-                                 String score = Integer.toString(timeline.getScore());
-                                 if (DateFormatter.isLastNight(timelinePresenter.getDate())) {
-                                     shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_last_night_fmt, score));
-                                 } else {
-                                     String date = dateFormatter.formatAsTimelineDate(timelinePresenter.getDate());
-                                     shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_other_days_fmt, score, date));
-                                 }
+                        String score = Integer.toString(timeline.getScore());
+                        if (DateFormatter.isLastNight(timelinePresenter.getDate())) {
+                            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_last_night_fmt, score));
+                        } else {
+                            String date = dateFormatter.formatAsTimelineDate(timelinePresenter.getDate());
+                            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_other_days_fmt, score, date));
+                        }
 
-                                 startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
-                             }
-                         },
-                         e -> {
-                             Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
-                             sender.setEnabled(true);
-                         });
+                        startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
+                    }
+                },
+                e -> {
+                    Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
+                    sender.setEnabled(true);
+                });
     }
 
     //endregion

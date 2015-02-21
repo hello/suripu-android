@@ -92,7 +92,8 @@ public class Animations {
     public interface Transition<V extends ViewGroup, L extends ViewGroup.LayoutParams> {
         void perform(@NonNull V container,
                      @Nullable View newView,
-                     @Nullable L layoutParams);
+                     @Nullable L layoutParams,
+                     @Nullable Runnable onCompletion);
     }
 
     /**
@@ -103,7 +104,8 @@ public class Animations {
      */
     public static void crossFade(@NonNull ViewGroup container,
                                  @Nullable View newView,
-                                 @Nullable ViewGroup.LayoutParams layoutParams) {
+                                 @Nullable ViewGroup.LayoutParams layoutParams,
+                                 @Nullable Runnable onCompletion) {
         if (container.getChildCount() > 0) {
             View oldView = container.getChildAt(0);
             animate(oldView)
@@ -113,6 +115,10 @@ public class Animations {
                         if (finished) {
                             container.removeView(oldView);
                             oldView.setAlpha(1f);
+
+                            if (onCompletion != null) {
+                                onCompletion.run();
+                            }
                         }
                     })
                     .start();
