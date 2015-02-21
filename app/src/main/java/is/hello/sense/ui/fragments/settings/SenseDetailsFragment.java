@@ -168,7 +168,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         addDeviceAction(R.string.action_select_wifi_network, false, this::changeWifiNetwork);
 
         if (network == null || TextUtils.isEmpty(network.ssid)) {
-            showTroubleshootingAlert(R.string.error_sense_no_connectivity, R.string.action_troubleshoot, this::changeWifiNetwork);
+            showTroubleshootingAlert(R.string.error_sense_no_connectivity, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.SENSE_NO_WIFI));
         } else if (device.isMissing()) {
             String missingMessage = getString(R.string.error_sense_missing_fmt, device.getLastUpdatedDescription(getActivity()));
             showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.SENSE_MISSING));
