@@ -86,7 +86,7 @@
     <string name="action_forgot_password">Forgot Password</string>
 
     <string name="title_register">Introduce yourself</string>
-    <string name="title_sign_in">Welcome back.</string>
+    <string name="title_sign_in">Welcome back</string>
     <string name="title_introduction">Meet Sense</string>
     <string name="label_account">My Account</string>
     <string name="label_units_and_time">Units and Time</string>
@@ -101,7 +101,7 @@
     <string name="title_setup_sense">Setting up Sense</string>
     <string name="info_setup_sense">Make sure Sense is plugged into a wall outlet next to your bed.</string>
     <string name="title_pair_sense">Pairing with Sense</string>
-    <string name="info_pair_sense">Now we’ll pair your phone with Sense. Make sure your Sense is plugged in, nearby, and glowing Purple. Tap Continue when ready.</string>
+    <string name="info_pair_sense">Now we’ll pair your phone with Sense. Make sure Sense is plugged in, nearby, and glowing purple. Tap Continue when ready.</string>
     <string name="title_sense_pairing_mode_help">Pairing Mode</string>
     <string name="info_sense_pairing_mode_help">Before you connect your phone, Sense needs to be put into Pairing Mode.\n\nPlace your hand directly on top of Sense for seven seconds, and then remove it.\n\nSense will glow purple when it is in Pairing Mode.</string>
     <string name="title_pairing">Pairing</string>
@@ -135,13 +135,13 @@ so you can sleep better.</string>
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
     <string name="info_pair_pill">Shake your Sleep Pill for three seconds to pair it with your Sense. You may need to shake it quickly for it to register.</string>
     <string name="title_sense_colors_1">Sense Colors</string>
-    <string name="info_sense_colors_1">Sense glows to tell you about the conditions in your bedroom – including temperature, humidity, AQI, light, and sound. Sense has three different colors.</string>
+    <string name="info_sense_colors_1">Sense glows to tell you about the conditions in your bedroom – including temperature, humidity, light, and sound. Sense has three different colors.</string>
     <string name="title_sense_colors_2">All good.</string>
     <string name="info_sense_colors_2">Sense glows green when the conditions in your room are just right for a good night‘s sleep.</string>
     <string name="title_sense_colors_3">Something‘s not right.</string>
     <string name="info_sense_colors_3">Sense glows yellow when something in your bedroom is not quite right. Check the Sense app for details.</string>
     <string name="title_sense_colors_4">We‘ve got a problem.</string>
-    <string name="info_sense_colors_4">Sense glows red when the conditions in your bedroom would prevent restful sleep. Check the Sense app for details.</string>
+    <string name="info_sense_colors_4">Sense glows orange when the conditions in your bedroom would prevent restful sleep. Check the Sense app for details.</string>
     <string name="title_sense_colors_5">Just wave.</string>
     <string name="info_sense_colors_5">Just wave your hand over Sense and instantly you‘ll know about the conditions in your bedroom. Go ahead, give it a try now.</string>
     <string name="onboarding_done_message_1">You’re all set up</string>
@@ -256,7 +256,7 @@ so you can sleep better.</string>
     <string name="label_confirm_new_password">Confirm New Password</string>
     <string name="action_change_password">Change Password</string>
     <string name="onboarding_title_smart_alarm">Set a Smart Alarm</string>
-    <string name="onboarding_info_smart_alarm">The Sense Smart Alarm knows where you are in your sleep cycle and will wake you up at the perfect time for you - in a 30 minute window before the time you set. Just wave your hand over Sense to turn it off.</string>
+    <string name="onboarding_info_smart_alarm">Sense\'s Smart Alarm knows where you are in your sleep cycle and will wake you up at the right time for you. To dismiss the alarm, just wave your hand over Sense.</string>
     <string name="action_do_later">I\'ll do this later</string>
     <string name="action_set_smart_alarm_now">Set a Smart Alarm now</string>
     <string name="condition_sound">Sound</string>
@@ -311,11 +311,11 @@ so you can sleep better.</string>
     <string name="error_sense_no_connectivity">Your Sense <b>cannot connect to Wi-Fi</b>. Tap below to edit your Wi-Fi credentials.</string>
     <string name="error_sense_missing_fmt">Your Sense was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
     <string name="error_sleep_pill_missing_fmt">Your Sleep Pill was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
-    <string name="support_footer">If you’re having trouble, visit <a href="#support">Support</a> or contact us at <a href="#email">help@sayhello.com</a>.</string>
+    <string name="support_footer">If you’re having trouble, visit <a href="#support">Support</a> or contact us at <a href="#email">support@hello.is</a>.</string>
     <string name="devices_support_footer">Setting up a <a href="#second-pill">second Sleep Pill</a> for your partner?</string>
     <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
     <string name="label_wifi_network_name">"WiFi network: "</string>
-    <string name="onboarding_info_enhanced_audio">This will allow Sense to pick up snoring, sleep talking and other noise disturbances.\n\nWithout enhanced audio enabled, Sense only looks at background noise.</string>
+    <string name="onboarding_info_enhanced_audio">With Enhanced Audio enabled, Sense can pick up snoring, sleep taking, and noise disturbances.\n\nWithout Enhanced Audio enabled, Sense only looks at background noise.</string>
     <string name="onboarding_title_enhanced_audio">Enable enhanced audio</string>
     <string name="action_enable_enhanced_audio">Enable Enhanced Audio</string>
     <string name="title_enabled">Enabled</string>
@@ -323,7 +323,7 @@ so you can sleep better.</string>
     <string name="dialog_message_new_version">A new version of Sense is available.</string>
     <string name="action_update">Update</string>
     <string name="title_smart_alarms">Smart Alarms</string>
-    <string name="message_smart_alarm_placeholder">Sense‘s Smart Alarm will wake you up at just the right moment in your sleep cycle, so you wake feeling rested. Once set, your alarms will appear here</string>
+    <string name="message_smart_alarm_placeholder">Sense‘s Smart Alarm will wake you up at the lightest point in your natural sleep cycle, so you wake feeling rested. Once set, your alarms will appear here</string>
     <string name="prompt_set_your_first_alarm">Set your first Smart Alarm</string>
     <string name="number_1">1</string>
     <string name="number_2">2</string>
@@ -356,28 +356,28 @@ so you can sleep better.</string>
     <string name="alert_message_no_pill">Your account does not have a Sleep Pill paired.  A Sleep Pill is required to track your sleep behavior.</string>
 
     <string name="welcome_dialog_timeline_title_intro">Understanding your sleep</string>
-    <string name="welcome_dialog_timeline_intro">Sense collects an immense amount of data about your sleep, your behavior, and the environment in your bedroom.\n\nWe take all this data and present it in a detailed but simple way — this quick walkthrough will show you how to read your first night of sleep data.</string>
-    <string name="welcome_dialog_timeline_score">Your Sleep Score takes all the data Sense collects about your sleep, and expresses it as one simple, rich measure of your sleep quality — out of 100.</string>
-    <string name="welcome_dialog_timeline_before_sleep">The “Before Sleep” tab will summarize the conditions of your bedroom before you went to sleep. Too hot? Noisy? You‘ll see it here.</string>
-    <string name="welcome_dialog_timeline_events">Your Sleep Timeline shows you a minute-by-minute record of your night. The blue bars break your sleep out into three categories:\n\nLight, Medium and Deep Sleep.</string>
+    <string name="welcome_dialog_timeline_intro">Sense collects a significant amount of data about your sleep and the environment in your bedroom.\n\nWe take all this data and present it in a detailed but simple way — this quick walkthrough will show you how to read your first night of sleep data.</string>
+    <string name="welcome_dialog_timeline_score">Your Sleep Score is calculated based on all the sensor data from your bedroom, as well as how you actually slept. It‘s a simple, unique measure of your sleep quality - out of 100.</string>
+    <string name="welcome_dialog_timeline_before_sleep">The “Before Sleep” tab will summarize the conditions of your bedroom before you went to sleep.</string>
+    <string name="welcome_dialog_timeline_events">Your timeline shows you a minute-by-minute record of your night. The blue bars break your sleep out into three categories: Light, medium and deep sleep.\n\nThe wider the bar, the deeper the sleep.</string>
     <string name="welcome_dialog_current_conditions_title">Current Conditions</string>
     <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom: Temperature, Humidity, Light, and Sound. Tap a card for more details.</string>
     <string name="welcome_dialog_trends_title">Trends</string>
     <string name="welcome_dialog_trends">To see how your sleep is changing over time, sometimes it’s helpful to take a step back. After a week using Sense, this view will show you historical data on your sleep patterns. If you don\'t see any data yet, check back later.</string>
     <string name="welcome_dialog_alarm_title">Set An Alarm</string>
-    <string name="welcome_dialog_alarm">Sense\'s Smart Alarm will wake you up at a natural point in your sleep cycle - in a 30 minute window before the time you set. When it\'s time to wake up, Sense will glow and softly play your selected tone. Just wave your hand over Sense to dismiss.</string>
+    <string name="welcome_dialog_alarm">Sense\'s Smart Alarm will wake you up at the lightest part of your natural sleep cycle - in a 30 minute window before the time you set. When it\'s time to wake up, Sense will glow and play your selected tone. Just wave your hand over Sense to dismiss the alarm.</string>
     <string name="welcome_dialog_sensor_temperature_title">Temperature</string>
     <string name="welcome_dialog_sensor_temperature">A proper temperature in your bedroom is key to a good night’s sleep. Here you’ll see detailed information on the temperature levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_sensor_humidity_title">Humidity</string>
-    <string name="welcome_dialog_sensor_humidity">A bedroom that\'s too humid or too dry can make sleep uncomfortable. Here you’ll see detailed information on the humidity levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
+    <string name="welcome_dialog_sensor_humidity">Humidity is a measure of the amount of moisture in the air. Here you’ll see detailed information on the humidity levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_sensor_particulates_title">Air Quality Index</string>
     <string name="welcome_dialog_sensor_particulates">AQI stands for Air Quality Index, and is measured on a scale from 0–500. The lower the value, the better the air quality. Here you’ll see detailed information on the AQI in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_sensor_light_title">Light</string>
-    <string name="welcome_dialog_sensor_light">Falling asleep is easier when your bedroom is as dark as possible. Here you’ll see detailed information on the light levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
+    <string name="welcome_dialog_sensor_light">Sense measures light in lux (lx), which is the standard unit of illuminance. Here you’ll see detailed information on the light levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_sensor_sound_title">Sound</string>
-    <string name="welcome_dialog_sensor_sound">Background noise or sound disturbances can disrupt your sleep. Here you’ll see detailed information on the sound levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
+    <string name="welcome_dialog_sensor_sound">Sense measures sound in decibels (dB). Here you’ll see detailed information on the sound levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_smart_alarm_title">Smart Alarm</string>
-    <string name="welcome_dialog_smart_alarm">Waking up at the wrong point in your sleep cycle can leave you feeling groggy. Sense‘s Smart Alarm monitors your sleeping patterns, and selects the ideal point to wake you up - in a 30 minute window before the time you set.</string>
+    <string name="welcome_dialog_smart_alarm">Sense\'s Smart Alarm will wake you up at the lightest part of your natural sleep cycle, up to 30 minutes before your requested wake-up time, making sure you wake up refreshed and at the right time for you.</string>
 
     <string name="alert_title_skip_pair_pill">Are you sure?</string>
     <string name="alert_message_skip_pair_pill">Sense is not designed to work without a Sleep Pill. You will not be able to track your sleep, or set Smart Alarms. If you\'re having trouble, you can skip for now, and pair a Sleep Pill later.</string>
