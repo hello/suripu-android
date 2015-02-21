@@ -478,7 +478,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                                  shareIntent.setType("text/plain");
 
                                  String score = Integer.toString(timeline.getScore());
-                                 shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_contents_fmt, score));
+                                 if (DateFormatter.isLastNight(timelinePresenter.getDate())) {
+                                     shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_last_night_fmt, score));
+                                 } else {
+                                     String date = dateFormatter.formatAsTimelineDate(timelinePresenter.getDate());
+                                     shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_other_days_fmt, score, date));
+                                 }
 
                                  startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
                              }

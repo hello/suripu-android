@@ -415,7 +415,8 @@ so you can sleep better.</string>
       -->
     <string name="support_email_body">\n---\n\n%1$s %2$s on Android %3$s (%4$s)</string>
     <string name="error_alarm_too_soon">Too Soon! The alarm you set is only a couple minutes away. If you want to test the Alarm, please set an alarm for a bit later.</string>
-    <string name="timeline_share_contents_fmt">Last night my sleep score was %1$s — can you beat it? http://hello.is</string>
+    <string name="timeline_share_last_night_fmt">Last night #mysleepscore was %1$s — http://hello.is</string>
+    <string name="timeline_share_other_days_fmt">#mysleepscore was %1$s on %2$s — http://hello.is</string>
     <string name="action_more_info">More info</string>
     <string name="action_adjust_time">Adjust Time</string>
     <string name="action_submit">Submit</string>
