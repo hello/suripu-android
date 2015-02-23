@@ -30,6 +30,7 @@ import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Logger;
 import is.hello.sense.util.SafeOnClickListener;
 
 import static android.widget.LinearLayout.LayoutParams;
@@ -209,6 +210,9 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
     public void clearQuestions(boolean animate, @Nullable Runnable onCompletion) {
         showSkipButton(animate);
 
+        nextButton.setEnabled(false);
+        skipButton.setEnabled(false);
+
         if (animate) {
             long delay = 0;
             for (int index = 0, count = choicesContainer.getChildCount(); index < count; index++) {
@@ -233,8 +237,9 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         } else {
             choicesContainer.removeAllViews();
 
-            if (onCompletion != null)
+            if (onCompletion != null) {
                 onCompletion.run();
+            }
         }
     }
 
@@ -247,9 +252,11 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         if (question == null) {
             animateOutAllViews(this::dismissSafely);
         } else {
-            titleText.setText(question.getText());
-
             clearQuestions(false, null);
+
+            titleText.setText(question.getText());
+            skipButton.setEnabled(true);
+            nextButton.setEnabled(true);
 
             switch (question.getType()) {
                 case CHOICE: {
@@ -354,12 +361,14 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
 
         clearQuestions(true, () -> {
             Question question = (Question) sender.getTag(R.id.fragment_questions_tag_question);
-            bindAndSubscribe(questionsPresenter.answerQuestion(question, selectedAnswers),
-                             unused -> {
-                                 selectedAnswers.clear();
-                                 questionsPresenter.nextQuestion();
-                             },
-                             error -> ErrorDialogFragment.presentError(getFragmentManager(), error));
+            List<Question.Choice> choices = new ArrayList<>(selectedAnswers);
+
+            selectedAnswers.clear();
+            questionsPresenter.nextQuestion();
+
+            bindAndSubscribe(questionsPresenter.answerQuestion(question, choices),
+                             unused -> Logger.info(getClass().getSimpleName(), "Answered question"),
+                             e -> Logger.error(getClass().getSimpleName(), "Could not answer question", e));
         });
     }
 
@@ -375,9 +384,12 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         clearQuestions(true, () -> {
             Question question = (Question) sender.getTag(R.id.fragment_questions_tag_question);
             Question.Choice choice = (Question.Choice) sender.getTag(R.id.fragment_questions_tag_choice);
+
+            questionsPresenter.nextQuestion();
+
             bindAndSubscribe(questionsPresenter.answerQuestion(question, Lists.newArrayList(choice)),
-                    unused -> questionsPresenter.nextQuestion(),
-                    error -> ErrorDialogFragment.presentError(getFragmentManager(), error));
+                             unused -> Logger.info(getClass().getSimpleName(), "Answered question"),
+                             e -> Logger.error(getClass().getSimpleName(), "Could not answer question", e));
         });
     }
 
