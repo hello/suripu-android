@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingSetup2ndPillFragment extends Fragment {
@@ -33,7 +34,8 @@ public class OnboardingSetup2ndPillFragment extends Fragment {
                 .setSecondaryOnClickListener(ignored -> ((OnboardingActivity) getActivity()).show2ndPillPairing())
                 .setPrimaryButtonText(R.string.action_no_thanks)
                 .setPrimaryOnClickListener(ignored -> ((OnboardingActivity) getActivity()).showDone())
-                .hideToolbar()
+                .setToolbarWantsBackButton(false)
+                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.ADD_2ND_PILL))
                 .create();
     }
 }

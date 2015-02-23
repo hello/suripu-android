@@ -139,7 +139,8 @@ public class UserSupport {
         WIFI_SCAN("connecting-sense-wifi"),
         SIGN_INTO_WIFI("connecting-sense-wifi"),
         PILL_PAIRING("pairing-your-sleep-pill"),
-        PILL_PLACEMENT("attaching-sleep-pill");
+        PILL_PLACEMENT("attaching-sleep-pill"),
+        ADD_2ND_PILL("setting-up-second-sleep-pill");
 
         private final String slug;
         private OnboardingStep(@NonNull String slug) {
