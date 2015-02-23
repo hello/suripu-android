@@ -25,7 +25,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/gap_outer"
+            android:paddingTop="@dimen/gap_small"
             android:paddingLeft="@dimen/gap_outer"
             android:paddingRight="@dimen/gap_outer"
             android:paddingBottom="@dimen/gap_small"
