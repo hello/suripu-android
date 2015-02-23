@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingSensePairingModeHelpFragment extends SenseFragment {
@@ -29,7 +30,8 @@ public class OnboardingSensePairingModeHelpFragment extends SenseFragment {
                 .setDiagramImage(R.drawable.onboarding_pairing_mode_help)
                 .setPrimaryOnClickListener(ignored -> getFragmentManager().popBackStack())
                 .setWantsSecondaryButton(false)
-                .hideToolbar()
+                .setToolbarWantsBackButton(true)
+                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_MODE))
                 .create();
     }
 }

@@ -135,6 +135,7 @@ public class UserSupport {
         BLUETOOTH("turning-on-bluetooth"),
         ENHANCED_AUDIO("enhanced-audio"),
         SETTING_UP_SENSE("setting-up-sense"),
+        PAIRING_MODE("pairing-mode"),
         PAIRING_SENSE_BLE("pairing-sense-ble"),
         WIFI_SCAN("connecting-sense-wifi"),
         SIGN_INTO_WIFI("connecting-sense-wifi"),
