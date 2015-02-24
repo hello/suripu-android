@@ -101,9 +101,9 @@ public final class Styles {
     }
 
     public static @ColorRes @DrawableRes int getSleepScoreColorRes(int sleepScore) {
-        if (sleepScore > 80) {
+        if (sleepScore >= 80) {
             return R.color.sensor_ideal;
-        } else if (sleepScore > 50) {
+        } else if (sleepScore >= 50) {
             return R.color.sensor_warning;
         } else {
             return R.color.sensor_alert;
