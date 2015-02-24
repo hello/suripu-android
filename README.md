@@ -21,12 +21,13 @@ Once all of the above prerequisites have been fulfilled, it should be possible t
 Branching
 =========
 
-	master
+	develop
 		-> branch timeline-animations
 		-> github pull request
+		-> merge into develop
+	develop
 		-> merge into master
-	master
-		-> tag 1.0.0rc2
+		-> tag `version`
 
 The project currently has a single `master` branch, which should be considered semi-stable. All changes larger than 5 or so lines should ideally be made on branches made off `master`, later reviewed through the github pull request process. Stable builds should be archived using tags. The tag names should be of the form `major.minor.bugfix` and should have a monotonically increasing release candidate suffix. E.g. `1.0.0rc1`.
 
