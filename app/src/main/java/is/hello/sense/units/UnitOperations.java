@@ -5,12 +5,12 @@ public class UnitOperations {
         return Math.round(pounds / 0.0022046f);
     }
 
-    public static int gramsToPounds(int grams) {
-        return Math.round(grams * 0.0022046f);
+    public static int poundsToKilograms(int kilograms) {
+        return Math.round(kilograms / 2.20462f);
     }
 
-    public static int kilogramsToPounds(int kilograms) {
-        return Math.round(kilograms * 2.20462f);
+    public static int gramsToPounds(int grams) {
+        return Math.round(grams * 0.0022046f);
     }
 
     public static int inchesToCentimeters(int inches) {

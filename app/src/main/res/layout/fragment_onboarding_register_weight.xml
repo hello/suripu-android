@@ -49,8 +49,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/scale_view_size"
         app:scaleMinValue="0"
-        app:scaleMaxValue="454"
-        app:scaleValue="54"
+        app:scaleMaxValue="1000"
+        app:scaleValue="130"
         app:scaleOrientation="horizontal"/>
 
     <Space

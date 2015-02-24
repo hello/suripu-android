@@ -55,8 +55,9 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
 
         scale.setOnValueChangedListener(this);
         if (account.getWeight() != null) {
-            int weight = Math.round(account.getWeight() / 1000f);
-            scale.setValue(weight, true);
+            int weightInGrams = Math.round(account.getWeight());
+            int pounds = UnitOperations.gramsToPounds(weightInGrams);
+            scale.setValue(pounds, true);
         }
 
         Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
@@ -82,8 +83,9 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
         if (!hasAnimated && account.getWeight() != null) {
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> {
-                int weight = Math.round(account.getWeight() / 1000f);
-                scale.animateToValue(weight);
+                int weightInGrams = Math.round(account.getWeight());
+                int pounds = UnitOperations.gramsToPounds(weightInGrams);
+                scale.animateToValue(pounds);
             }, 250);
             this.hasAnimated = true;
         }
@@ -98,17 +100,17 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
 
 
     @Override
-    public void onValueChanged(int kilograms) {
-        int pounds = UnitOperations.kilogramsToPounds(kilograms);
+    public void onValueChanged(int pounds) {
         scaleReading.setText(getString(R.string.weight_pounds_fmt, pounds));
+        int kilograms = UnitOperations.poundsToKilograms(pounds);
         secondaryReading.setText(getString(R.string.weight_kg_fmt, kilograms));
     }
 
 
     public void next() {
         try {
-            int kilograms = scale.getValue();
-            int grams = kilograms * 1000;
+            int pounds = scale.getValue();
+            int grams = UnitOperations.poundsToGrams(pounds);
             account.setWeight(grams);
             getContainer().onAccountUpdated(this);
         } catch (NumberFormatException e) {
