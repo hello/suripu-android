@@ -15,6 +15,7 @@
         "apk_name": "app-store",
         "assemble_command": "assembleStore",
         "hockey_app_id": "8e00a608839500c49187c67bb20d5826",
+		"requires_branch": "master",
         "reveal": true
     },
     "synonyms": {

@@ -46,12 +46,16 @@ flavor_names << "beta" if flavor_names.empty?
 flavors_path = File::join(File::dirname($0), "res", "deploy_conf.json")
 flavors = JSON::parse(File::read(flavors_path))
 
+current_branch = `git symbolic-ref --short HEAD`.chomp
+
+puts "## Working on branch '#{current_branch}'".blue.bold
+
 #region Cleaning
 
 if options.clean
   puts "-> Cleaning".blue
   system "./gradlew clean"
-  abort "-- Cleaning Failed".red if last_command_failed?
+  abort "!! Cleaning Failed".red.bold if last_command_failed?
   puts "-- Clean Completed".green
 end
 
@@ -63,7 +67,7 @@ end
 if options.test
   puts "-> Building and running tests".blue
   system "./gradlew connectedCheck"
-  abort "-- Tests Failed".red if last_command_failed?
+  abort "!! Tests Failed".red.bold if last_command_failed?
   puts "-- Tests Passed".green
 end
 
@@ -79,13 +83,18 @@ flavor_names.each do |flavor_name|
     synonym = flavors["synonyms"][flavor_name]
     flavor = flavors[synonym]
     if flavor.nil?
-      puts "Unknown build flavor `#{flavor_name}'".red.bold
-      exit
+      abort "!! Unknown build flavor `#{flavor_name}'".red.bold
     else
       flavor_name = synonym
     end
   end
 
+  unless flavor["requires_branch"].nil?
+    required_branch = flavor["requires_branch"]
+    unless required_branch == current_branch
+      abort "!! Flavor '#{flavor_name}' requires branch '#{required_branch}'".red.bold
+    end
+  end
 
   #region Assembling
 
@@ -93,7 +102,7 @@ flavor_names.each do |flavor_name|
 
   assemble_command = flavor["assemble_command"]
   system "./gradlew #{assemble_command}"
-  abort "-- Build Failed".red if last_command_failed?
+  abort "!! Build Failed".red.bold if last_command_failed?
   puts "-- Build Completed".green
 
   #endregion
@@ -114,7 +123,7 @@ flavor_names.each do |flavor_name|
     -F "ipa=@#{file_name}" \
     -H "X-HockeyAppToken: #{hockey_token}" \
     https://rink.hockeyapp.net/api/2/apps/#{app_id}/app_versions/upload`
-  abort "-- Upload failed".red if last_command_failed?
+  abort "!! Upload failed".red.bold if last_command_failed?
   puts "-- Upload completed".green
 
   response = JSON::parse(raw_response)
@@ -143,7 +152,7 @@ unless options.tag.nil?
   puts "-> Creating git tag `#{options.tag}'".blue
   system "git tag '#{options.tag}'"
   system "git push origin --tags"
-  abort "-- Creating git tag failed".red if last_command_failed?
+  abort "!! Creating git tag failed".red.bold if last_command_failed?
   puts "-- Created git tag".green
 end
 
