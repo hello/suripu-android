@@ -21,6 +21,8 @@ import java.util.Map;
 import is.hello.sense.R;
 
 public class Device extends ApiResponse {
+    public static final int MISSING_THRESHOLD_HRS = 24;
+
     @JsonProperty("type")
     private Type type;
 
@@ -105,10 +107,31 @@ public class Device extends ApiResponse {
         return exists;
     }
 
+    /**
+     * Returns the number of hours since the device was last updated.
+     * <p/>
+     * Returns 0 if the device has not reported being update yet. This state
+     * happens immediately after a device has been paired to an account.
+     */
+    @JsonIgnore
+    public int getHoursSinceLastUpdated() {
+        if (lastUpdated != null) {
+            return Hours.hoursBetween(lastUpdated, DateTime.now()).getHours();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Returns whether or not the device is considered to be missing.
+     * <p/>
+     * Differs from {@link #getHoursSinceLastUpdated()} by considering
+     * a missing last updated value to indicate a device is missing.
+     */
     @JsonIgnore
     public boolean isMissing() {
         return (!exists || (getLastUpdated() == null) ||
-                (Hours.hoursBetween(getLastUpdated(), DateTime.now()).getHours() >= 24));
+                (getHoursSinceLastUpdated() >= MISSING_THRESHOLD_HRS));
     }
 
     @Override

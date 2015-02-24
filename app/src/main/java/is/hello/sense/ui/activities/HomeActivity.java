@@ -471,11 +471,11 @@ public class HomeActivity
         Device pill = devicesMap.get(Device.Type.PILL);
         if (sense == null) {
             showDeviceAlert(R.string.alert_title_no_sense, R.string.alert_message_no_sense, this::showDevices);
-        } else if (sense.isMissing()) {
+        } else if (sense.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
             showDeviceAlert(R.string.alert_title_missing_sense, R.string.alert_message_missing_sense, this::showDevices);
         } else if (pill == null) {
             showDeviceAlert(R.string.alert_title_no_pill, R.string.alert_message_no_pill, this::showDevices);
-        } else if (pill.isMissing()) {
+        } else if (pill.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
             showDeviceAlert(R.string.alert_title_missing_pill, R.string.alert_message_missing_pill, this::showDevices);
         } else {
             hideDeviceAlert();
