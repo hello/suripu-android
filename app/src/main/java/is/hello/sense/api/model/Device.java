@@ -15,7 +15,8 @@ import net.danlew.android.joda.DateUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
-import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import is.hello.sense.R;
 
@@ -44,12 +45,12 @@ public class Device extends ApiResponse {
 
     //region Util
 
-    public static EnumSet<Type> getDeviceTypes(@NonNull Iterable<Device> devices) {
-        EnumSet<Type> types = EnumSet.noneOf(Type.class);
+    public static Map<Type, Device> getDevicesMap(@NonNull Iterable<Device> devices) {
+        Map<Type, Device> map = new HashMap<>();
         for (Device device : devices) {
-            types.add(device.getType());
+            map.put(device.getType(), device);
         }
-        return types;
+        return map;
     }
 
     //endregion

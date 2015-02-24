@@ -26,7 +26,7 @@ import com.squareup.seismic.ShakeDetector;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -466,13 +466,17 @@ public class HomeActivity
     }
 
     public void bindDevices(@NonNull ArrayList<Device> devices) {
-        EnumSet<Device.Type> deviceTypes = Device.getDeviceTypes(devices);
-        boolean hasSense = deviceTypes.contains(Device.Type.SENSE);
-        boolean hasPill = deviceTypes.contains(Device.Type.PILL);
-        if (!hasSense) {
+        Map<Device.Type, Device> devicesMap = Device.getDevicesMap(devices);
+        Device sense = devicesMap.get(Device.Type.SENSE);
+        Device pill = devicesMap.get(Device.Type.PILL);
+        if (sense == null) {
             showDeviceAlert(R.string.alert_title_no_sense, R.string.alert_message_no_sense, this::showDevices);
-        } else if (!hasPill) {
+        } else if (sense.isMissing()) {
+            showDeviceAlert(R.string.alert_title_missing_sense, R.string.alert_message_missing_sense, this::showDevices);
+        } else if (pill == null) {
             showDeviceAlert(R.string.alert_title_no_pill, R.string.alert_message_no_pill, this::showDevices);
+        } else if (pill.isMissing()) {
+            showDeviceAlert(R.string.alert_title_missing_pill, R.string.alert_message_missing_pill, this::showDevices);
         } else {
             hideDeviceAlert();
         }
