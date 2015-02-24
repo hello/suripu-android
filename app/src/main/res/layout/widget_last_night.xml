@@ -2,17 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_last_night"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="@dimen/little_sleep_summary_height"
     android:layout_gravity="center"
     android:orientation="horizontal"
     android:baselineAligned="false"
-    style="@style/AppTheme.Card">
+    android:background="@drawable/background_widget_last_night"
+    android:padding="@dimen/gap_tiny">
 
     <TextView
         android:id="@+id/widget_last_night_score"
         android:layout_width="@dimen/little_sleep_summary_width"
         android:layout_height="@dimen/little_sleep_summary_height"
-        android:layout_marginTop="@dimen/gap_small"
         android:layout_gravity="center"
         android:textAppearance="@style/AppTheme.Text.TinyScore"
         android:gravity="center"
@@ -33,7 +33,8 @@
         android:paddingTop="@dimen/gap_small"
         android:paddingBottom="@dimen/gap_small"
         android:gravity="center_vertical"
-        android:textAppearance="@style/AppTheme.Text.Body"
+        android:textAppearance="@style/AppTheme.Text.Body.Light.MidSized"
+        android:lineSpacingMultiplier="@dimen/line_multiple_body_small"
         android:text="@string/dialog_loading_message"
         android:ellipsize="end"/>
 

@@ -3,8 +3,12 @@ package is.hello.sense.remote.common;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.widget.RemoteViews;
 
 import java.util.ArrayList;
@@ -128,6 +132,23 @@ public abstract class WidgetService extends Service implements ObservableContain
         return subscribe(bind(toSubscribe), onNext, onError);
     }
 
+    //endregion
+
+
+    //region Drawable Pre-rendering
+
+    public @Nullable Bitmap renderDrawable(int width, int height, @Nullable Drawable drawable) {
+        if (drawable == null) {
+            return null;
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, width, height);
+        drawable.draw(canvas);
+
+        return bitmap;
+    }
 
     //endregion
 }

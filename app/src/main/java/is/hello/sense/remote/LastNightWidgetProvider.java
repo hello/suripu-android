@@ -82,9 +82,9 @@ public class LastNightWidgetProvider extends AppWidgetProvider {
                 remoteViews.setTextViewText(R.id.widget_last_night_message, getString(R.string.missing_data_placeholder));
             }
 
-            Intent intent = new Intent(this, HomeActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            PendingIntent onClick = PendingIntent.getActivity(this, 12, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            Intent activityIntent = new Intent(this, HomeActivity.class);
+            activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent onClick = PendingIntent.getActivity(this, 0, activityIntent, 0);
             remoteViews.setOnClickPendingIntent(R.id.widget_last_night, onClick);
 
             publishUpdate(widgetIds, remoteViews);
