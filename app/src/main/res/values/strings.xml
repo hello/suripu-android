@@ -355,6 +355,10 @@ so you can sleep better.</string>
     <string name="alert_message_no_sense">Your account does not have a Sense paired.  Sense is required to track your sleep behavior.</string>
     <string name="alert_title_no_pill">Sleep Pill Not Paired</string>
     <string name="alert_message_no_pill">Your account does not have a Sleep Pill paired.  A Sleep Pill is required to track your sleep behavior.</string>
+    <string name="alert_title_missing_sense">Sense</string>
+    <string name="alert_message_missing_sense">Sense has not reported any data recently. Tap ‘Fix Now’ to troubleshoot.</string>
+    <string name="alert_title_missing_pill">Sleep Pill</string>
+    <string name="alert_message_missing_pill">Sleep Pill has not reported any data recently. Tap ‘Fix Now’ to troubleshoot.</string>
 
     <string name="welcome_dialog_timeline_title_intro">Understanding your sleep</string>
     <string name="welcome_dialog_timeline_intro">Sense collects a significant amount of data about your sleep and the environment in your bedroom.\n\nWe take all this data and present it in a detailed but simple way — this quick walkthrough will show you how to read your first night of sleep data.</string>
