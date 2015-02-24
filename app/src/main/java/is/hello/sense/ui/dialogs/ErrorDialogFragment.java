@@ -107,6 +107,12 @@ public class ErrorDialogFragment extends DialogFragment {
                     message = context.getString(R.string.error_wifi_ip_failure);
                     break;
 
+                case INTERNAL_DATA_ERROR:
+                case DEVICE_NO_MEMORY:
+                case INTERNAL_OPERATION_FAILED:
+                    message = context.getString(R.string.error_generic_sense_failure);
+                    break;
+
                 default:
                     message = errorType.toString();
                     break;
