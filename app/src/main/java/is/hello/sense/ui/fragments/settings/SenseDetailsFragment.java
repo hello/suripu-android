@@ -33,6 +33,8 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
+import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state;
+
 public class SenseDetailsFragment extends DeviceDetailsFragment implements FragmentNavigationActivity.BackInterceptingFragment {
     private static final int WIFI_REQUEST_CODE = 0x94;
 
@@ -167,8 +169,12 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         addDeviceAction(R.string.action_factory_reset, true, this::factoryReset);
         addDeviceAction(R.string.action_select_wifi_network, false, this::changeWifiNetwork);
 
-        if (network == null || TextUtils.isEmpty(network.ssid)) {
-            showTroubleshootingAlert(R.string.error_sense_no_connectivity, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.SENSE_NO_WIFI));
+        if (network == null ||
+            TextUtils.isEmpty(network.ssid) ||
+            wifi_connection_state.IP_RETRIEVED != network.connectionState) {
+            showTroubleshootingAlert(R.string.error_sense_no_connectivity,
+                                     R.string.action_troubleshoot,
+                                     () -> showSupportFor(UserSupport.DeviceIssue.SENSE_NO_WIFI));
         } else if (device.isMissing()) {
             String missingMessage = getString(R.string.error_sense_missing_fmt, device.getLastUpdatedDescription(getActivity()));
             showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.SENSE_MISSING));

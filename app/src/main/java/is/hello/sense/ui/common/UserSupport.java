@@ -111,7 +111,7 @@ public class UserSupport {
         UNSTABLE_BLUETOOTH("android-bluetooth-problems"),
         SENSE_MISSING("sense-not-seen-in-days"),
         CANNOT_CONNECT_TO_SENSE("cannot-connect-sense-ble"),
-        SENSE_NO_WIFI("connecting-sense-wifi"),
+        SENSE_NO_WIFI("sense-cannot-connect-internet"),
         SLEEP_PILL_MISSING("pill-not-seen-in-days"),
         PAIRING_2ND_PILL("setting-up-second-sleep-pill");
 
