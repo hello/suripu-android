@@ -10,15 +10,13 @@
 
     <TextView
         android:id="@+id/widget_last_night_score"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/gap_large"
-        android:layout_marginEnd="@dimen/gap_large"
-        android:layout_gravity="center_vertical"
-        android:textAppearance="@style/AppTheme.Text.SmallScore"
-        android:textColor="@color/sensor_unknown"
-        android:text="@string/missing_data_placeholder"
-        android:fontFamily="sans-serif-thin"/>
+        android:layout_width="@dimen/little_sleep_summary_width"
+        android:layout_height="@dimen/little_sleep_summary_height"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_gravity="center"
+        android:textAppearance="@style/AppTheme.Text.TinyScore"
+        android:gravity="center"
+        android:text="@string/missing_data_placeholder"/>
 
     <FrameLayout
         android:layout_marginTop="@dimen/gap_medium"
