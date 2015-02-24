@@ -8,6 +8,12 @@
     <application>
 
         <activity
+            android:name="net.hockeyapp.android.UpdateActivity" />
+
+        <activity
+            android:name="net.hockeyapp.android.FeedbackActivity" />
+
+        <activity
             android:name="is.hello.sense.debug.PiruPeaActivity"
             android:screenOrientation="portrait"
             android:label="Piru-Pea" />

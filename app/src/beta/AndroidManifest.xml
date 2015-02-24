@@ -7,13 +7,21 @@
 
     <application>
 
+        <activity
+            android:name="net.hockeyapp.android.UpdateActivity" />
+
+        <activity
+            android:name="net.hockeyapp.android.FeedbackActivity" />
+
         <receiver
             android:name="is.hello.sense.notifications.NotificationReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
+
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <category android:name="is.hello.sense" />
             </intent-filter>
+
         </receiver>
 
     </application>

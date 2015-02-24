@@ -23,8 +23,6 @@ import android.widget.TextView;
 
 import com.squareup.seismic.ShakeDetector;
 
-import net.hockeyapp.android.UpdateManager;
-
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -60,6 +58,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.RateLimitingShakeListener;
 import rx.Observable;
@@ -172,11 +171,6 @@ public class HomeActivity
             getFragmentManager().popBackStack(TimelineNavigatorFragment.TAG,
                                               FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
-
-        //noinspection PointlessBooleanExpression,ConstantConditions
-        if (!BuildConfig.DEBUG && BuildConfig.DEBUG_SCREEN_ENABLED) {
-            UpdateManager.register(this, getString(R.string.build_hockey_id));
-        }
     }
 
     @Override
@@ -230,9 +224,7 @@ public class HomeActivity
             shakeDetector.start(sensorManager);
         }
 
-        if (!BuildConfig.DEBUG) {
-            UpdateManager.register(this, getString(R.string.build_hockey_id));
-        }
+        Distribution.checkForUpdates(this);
 
         if (showUnderside) {
             slidingLayersView.openWithoutAnimation();
