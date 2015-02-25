@@ -316,7 +316,7 @@ so you can sleep better.</string>
     <string name="devices_support_footer">Setting up a <a href="#second-pill">second Sleep Pill</a> for your partner?</string>
     <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
     <string name="label_wifi_network_name">"WiFi network: "</string>
-    <string name="onboarding_info_enhanced_audio">With Enhanced Audio enabled, Sense can pick up snoring, sleep taking, and noise disturbances.\n\nWithout Enhanced Audio enabled, Sense only looks at background noise.</string>
+    <string name="onboarding_info_enhanced_audio">With Enhanced Audio enabled, Sense can pick up snoring, sleep talking, and noise disturbances.\n\nWithout Enhanced Audio enabled, Sense only looks at background noise.</string>
     <string name="onboarding_title_enhanced_audio">Enable Enhanced Audio</string>
     <string name="action_enable_enhanced_audio">Enable Enhanced Audio</string>
     <string name="title_enabled">Enabled</string>
