@@ -90,6 +90,12 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
             state = savedState.getParcelable("savedState");
 
             requestLayout();
+
+            post(() -> {
+                if (isOpen && onInteractionListener != null) {
+                    onInteractionListener.onUserWillPullDownTopView();
+                }
+            });
         }
         super.onRestoreInstanceState(state);
     }
