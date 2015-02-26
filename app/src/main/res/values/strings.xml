@@ -419,6 +419,7 @@ so you can sleep better.</string>
         %4$s = device model
       -->
     <string name="support_email_body">\n---\n\n%1$s %2$s on Android %3$s (%4$s)</string>
+    <string name="feedback_email_subject_fmt">Feedback for Sense %1$s</string>
     <string name="error_alarm_too_soon">Too Soon! The alarm you set is only a couple minutes away. If you want to test the Alarm, please set an alarm for a bit later.</string>
     <string name="timeline_share_last_night_fmt">Last night #mysleepscore was %1$s — http://hello.is</string>
     <string name="timeline_share_other_days_fmt">#mysleepscore was %1$s on %2$s — http://hello.is</string>
@@ -439,4 +440,5 @@ so you can sleep better.</string>
     <string name="device_color_blue">Blue</string>
     <string name="device_color_black">Charcoal</string>
     <string name="device_color_white">Cotton</string>
+    <string name="action_feedback">Feedback</string>
 </resources>

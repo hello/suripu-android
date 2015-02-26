@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -21,6 +22,7 @@ public class UserSupport {
     public static final String ORDER_URL = "https://order.hello.is";
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is";
     public static final String SUPPORT_EMAIL = "support@hello.is";
+    public static final String FEEDBACK_EMAIL = "feedback@hello.is";
 
     public static void openUri(@NonNull Context from, @NonNull Uri uri) {
         try {
@@ -34,24 +36,12 @@ public class UserSupport {
         }
     }
 
-    public static void showSupport(@NonNull Context from) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_HELP, null);
-        openUri(from, Uri.fromParts("http", BuildConfig.SUPPORT_AUTHORITY, null));
-    }
-
-    public static void showEmail(@NonNull Context from) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
+    public static void showEmailComposer(@NonNull Context from,
+                                         @NonNull String emailAddress,
+                                         @NonNull Bundle extras) {
         try {
-            Intent email = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", SUPPORT_EMAIL, null));
-            email.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(SessionLogger.getLogFilePath(from))));
-            email.putExtra(Intent.EXTRA_SUBJECT, from.getString(R.string.support_email_subject));
-            email.putExtra(Intent.EXTRA_TEXT, from.getString(
-                    R.string.support_email_body,
-                    from.getString(R.string.app_name),
-                    BuildConfig.VERSION_NAME,
-                    Build.VERSION.RELEASE,
-                    Build.MODEL
-            ));
+            Intent email = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", emailAddress, null));
+            email.putExtras(extras);
             email.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             from.startActivity(email);
         } catch (ActivityNotFoundException e) {
@@ -61,6 +51,35 @@ public class UserSupport {
             alertDialog.setPositiveButton(android.R.string.ok, null);
             alertDialog.show();
         }
+    }
+
+    public static void showSupport(@NonNull Context from) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_HELP, null);
+        openUri(from, Uri.fromParts("http", BuildConfig.SUPPORT_AUTHORITY, null));
+    }
+
+    public static void showEmailSupport(@NonNull Context from) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
+
+        Bundle extras = new Bundle();
+        extras.putParcelable(Intent.EXTRA_STREAM, Uri.fromFile(new File(SessionLogger.getLogFilePath(from))));
+        extras.putString(Intent.EXTRA_SUBJECT, from.getString(R.string.support_email_subject));
+        extras.putString(Intent.EXTRA_TEXT, from.getString(
+                R.string.support_email_body,
+                from.getString(R.string.app_name),
+                BuildConfig.VERSION_NAME,
+                Build.VERSION.RELEASE,
+                Build.MODEL
+        ));
+        showEmailComposer(from, SUPPORT_EMAIL, extras);
+    }
+
+    public static void showEmailFeedback(@NonNull Context from) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_SEND_FEEDBACK, null);
+
+        Bundle extras = new Bundle();
+        extras.putString(Intent.EXTRA_SUBJECT, from.getString(R.string.feedback_email_subject_fmt, BuildConfig.VERSION_NAME));
+        showEmailComposer(from, FEEDBACK_EMAIL, extras);
     }
 
     public static void showForOnboardingStep(@NonNull Context from, @NonNull OnboardingStep onboardingStep) {

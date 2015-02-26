@@ -10,12 +10,65 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/fragment_app_settings_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/gap_outer"
             android:orientation="vertical"
-            style="@style/AppTheme.Card"/>
+            style="@style/AppTheme.Card">
+
+            <TextView
+                android:id="@+id/fragment_app_settings_account"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_account"
+                style="@style/AppTheme.Card.Item"/>
+
+            <View style="@style/Divider.Horizontal"/>
+
+            <TextView
+                android:id="@+id/fragment_app_settings_devices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_devices"
+                style="@style/AppTheme.Card.Item"/>
+
+            <View style="@style/Divider.Horizontal"/>
+
+            <TextView
+                android:id="@+id/fragment_app_settings_notifications"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_notifications"
+                style="@style/AppTheme.Card.Item"/>
+
+            <View style="@style/Divider.Horizontal"/>
+
+            <TextView
+                android:id="@+id/fragment_app_settings_units"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_units_and_time"
+                style="@style/AppTheme.Card.Item"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/gap_outer"
+            android:layout_marginRight="@dimen/gap_outer"
+            android:layout_marginBottom="@dimen/gap_outer"
+            android:orientation="vertical"
+            style="@style/AppTheme.Card">
+
+            <TextView
+                android:id="@+id/fragment_app_settings_feedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/action_feedback"
+                style="@style/AppTheme.Card.Item"/>
+
+        </LinearLayout>
 
         <include layout="@layout/footer_help" />
 

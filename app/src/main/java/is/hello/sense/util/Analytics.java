@@ -277,6 +277,7 @@ public class Analytics {
         String EVENT_SIGN_OUT = "Sign Out";
 
         String EVENT_HELP = "Settings Help";
+        String EVENT_SEND_FEEDBACK = "Send Feedback";
         String EVENT_CONTACT_SUPPORT = "Contact Support";
     }
 

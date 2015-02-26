@@ -296,7 +296,7 @@ public final class Styles {
                     clickableSpan = new ClickableSpan() {
                         @Override
                         public void onClick(View widget) {
-                            UserSupport.showEmail(activity);
+                            UserSupport.showEmailSupport(activity);
                         }
                     };
                     break;

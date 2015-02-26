@@ -379,6 +379,14 @@
         <item name="android:gravity">start|center_vertical</item>
     </style>
 
+    <style name="AppTheme.Card.Item" parent="AppTheme.Text.Body.Light">
+        <item name="android:paddingLeft">@dimen/gap_outer</item>
+        <item name="android:paddingRight">@dimen/gap_outer</item>
+        <item name="android:paddingTop">@dimen/gap_medium</item>
+        <item name="android:paddingBottom">@dimen/gap_medium</item>
+        <item name="android:background">@drawable/selectable_dark_bounded</item>
+    </style>
+
     <style name="AppTheme.FadingScrollView">
         <item name="android:fillViewport">true</item>
         <item name="android:fadingEdge">vertical</item>
