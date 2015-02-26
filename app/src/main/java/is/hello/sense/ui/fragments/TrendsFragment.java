@@ -59,7 +59,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         trendsAdapter.setOnTrendOptionSelected(this);
         listView.setAdapter(trendsAdapter);
 
-        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER);
+        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER, null);
 
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
         this.noDataPlaceholder = (TextView) view.findViewById(R.id.fragment_trends_placeholder);

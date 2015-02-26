@@ -79,7 +79,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
                 new SensorEntry(ApiService.SENSOR_NAME_LIGHT),
                 new SensorEntry(ApiService.SENSOR_NAME_SOUND),
         });
-        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER);
+        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER, null);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
 
