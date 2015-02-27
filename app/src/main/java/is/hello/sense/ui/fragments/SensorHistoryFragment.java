@@ -169,10 +169,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 }
 
                 int sensorColor = getResources().getColor(condition.getCondition().colorRes);
-                readingText.setTextColor(sensorColor);
+                readingText.setTextColor(getResources().getColor(condition.getCondition().colorRes));
 
-                markdown.renderEmphasisInto(messageText, sensorColor, condition.getMessage());
-                markdown.renderEmphasisInto(insightText, sensorColor, condition.getIdealConditions());
+                markdown.renderInto(messageText, condition.getMessage());
+                markdown.renderInto(insightText, condition.getIdealConditions());
 
                 graphView.setTintColor(sensorColor);
             } else {
