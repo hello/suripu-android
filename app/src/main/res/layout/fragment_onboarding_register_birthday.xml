@@ -28,35 +28,11 @@
         android:layout_weight="1"/>
 
     <LinearLayout
+        android:id="@+id/fragment_onboarding_birthday_fields"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/fragment_onboarding_register_birthday_month"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/hint_month"
-            style="@style/AppTheme.Text.Birthday"/>
-
-        <TextView
-            android:id="@+id/fragment_onboarding_register_birthday_day"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/gap_large"
-            android:layout_marginRight="@dimen/gap_large"
-            android:hint="@string/hint_day"
-            style="@style/AppTheme.Text.Birthday"/>
-
-        <TextView
-            android:id="@+id/fragment_onboarding_register_birthday_year"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/hint_year"
-            style="@style/AppTheme.Text.Birthday"/>
-
-    </LinearLayout>
+        android:orientation="horizontal" />
 
     <Space
         android:layout_width="match_parent"

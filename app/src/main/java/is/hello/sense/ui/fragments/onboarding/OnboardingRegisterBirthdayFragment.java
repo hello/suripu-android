@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -23,15 +25,19 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
+    private static final int NUM_FIELDS = 3;
     private static final String LEADING_ZERO = "0";
-    private static final int[] FIELD_LIMITS = { 2, 2, 4 };
-    private static final int[] MIN_INSERT_ZERO_VALUES = { 2, 4, Integer.MAX_VALUE };
+
 
     private Account account;
 
-    private final Validator[] FIELD_VALIDATORS = { this::validateMonth, this::validateDay, this::validateYear };
     private final DateTime today = DateTime.now();
-    private TextView[] fields;
+
+    private final TextView[] fields = new TextView[NUM_FIELDS];
+    private final Validator[] fieldValidators = new Validator[NUM_FIELDS];
+    private final int[] fieldLimits = new int[NUM_FIELDS];
+    private final int[] minInsertZeroValues = new int[NUM_FIELDS];
+
     private int activeField = 0;
     private TextView monthText;
     private TextView dayText;
@@ -53,15 +59,50 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_register_birthday, container, false);
 
-        this.monthText = (TextView) view.findViewById(R.id.fragment_onboarding_register_birthday_month);
-        this.dayText = (TextView) view.findViewById(R.id.fragment_onboarding_register_birthday_day);
-        this.yearText = (TextView) view.findViewById(R.id.fragment_onboarding_register_birthday_year);
-        this.fields = new TextView[] {monthText, dayText, yearText};
-
+        LinearLayout fieldContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_birthday_fields);
         int hintColor = getResources().getColor(R.color.text_dim_placeholder);
-        monthText.setHintTextColor(hintColor);
-        dayText.setHintTextColor(hintColor);
-        yearText.setHintTextColor(hintColor);
+
+        char[] dateFormat = DateFormat.getDateFormatOrder(getActivity());
+        int index = 0;
+        for (char field : dateFormat) {
+            TextView component = (TextView) inflater.inflate(R.layout.item_onboarding_birthday_field, fieldContainer, false);
+            component.setHintTextColor(hintColor);
+
+            if (field == 'd') {
+                component.setHint(R.string.hint_day);
+
+                this.fieldLimits[index] = 2;
+                this.minInsertZeroValues[index] = 4;
+                this.fieldValidators[index] = this::validateDay;
+
+                this.dayText = component;
+            } else if (field == 'M') {
+                component.setHint(R.string.hint_month);
+
+                this.fieldLimits[index] = 2;
+                this.minInsertZeroValues[index] = 2;
+                this.fieldValidators[index] = this::validateMonth;
+
+                this.monthText = component;
+            } else if (field == 'y') {
+                component.setHint(R.string.hint_year);
+
+                this.fieldLimits[index] = 4;
+                this.minInsertZeroValues[index] = Integer.MAX_VALUE;
+                this.fieldValidators[index] = this::validateYear;
+
+                this.yearText = component;
+            } else {
+                continue;
+            }
+
+            fieldContainer.addView(component);
+            fields[index] = component;
+
+            if (++index >= NUM_FIELDS) {
+                break;
+            }
+        }
 
         if (account.getBirthDate() != null) {
             LocalDate birthDate = account.getBirthDate();
@@ -177,7 +218,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     private boolean shouldAddLeadingZero(@NonNull String newText) {
         return (newText.length() < 2 &&
                 !newText.startsWith(LEADING_ZERO) &&
-                parseString(newText) >= MIN_INSERT_ZERO_VALUES[activeField]);
+                parseString(newText) >= minInsertZeroValues[activeField]);
     }
 
 
@@ -203,19 +244,19 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
         TextView field = fields[activeField];
 
         CharSequence text = field.getText();
-        if (text.length() == FIELD_LIMITS[activeField]) {
+        if (text.length() == fieldLimits[activeField]) {
             return;
         }
 
         String newText = text + numberValue;
-        if (FIELD_VALIDATORS[activeField].validate(newText)) {
+        if (fieldValidators[activeField].validate(newText)) {
             if (shouldAddLeadingZero(newText)) {
                 newText = LEADING_ZERO + newText;
             }
 
             field.setText(newText);
 
-            if (newText.length() == FIELD_LIMITS[activeField]) {
+            if (newText.length() == fieldLimits[activeField]) {
                 if (activeField == fields.length - 1) {
                     next();
                 } else {
