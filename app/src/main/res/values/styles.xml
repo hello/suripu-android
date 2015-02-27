@@ -26,6 +26,7 @@
         <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
         <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
         <item name="android:textColorLink">@color/text_link</item>
+        <item name="android:checkboxStyle">@style/Platform.CheckBox</item>
 
         <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
         <item name="android:listDivider">@color/border</item>

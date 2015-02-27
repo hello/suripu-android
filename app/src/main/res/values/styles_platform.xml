@@ -15,4 +15,7 @@
     <style name="Platform.Spinner" parent="android:style/Widget.Holo.Light.Spinner" />
     <style name="Platform.Button" parent="android:Widget.Holo.Light.Button" />
     <style name="Platform.EditText" parent="android:Widget.Holo.Light.EditText" />
+    <style name="Platform.CheckBox" parent="android:Widget.Holo.Light.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/holo_check_selector</item>
+    </style>
 </resources>
