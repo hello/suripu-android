@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import net.danlew.android.joda.DateUtils;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
@@ -80,7 +82,7 @@ import is.hello.sense.R;
 
     public @NonNull String formatAsBirthDate(@Nullable LocalDate date) {
         if (date != null) {
-            return date.toString(context.getString(R.string.format_birth_date));
+            return DateUtils.formatDateTime(context, date, DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE);
         } else {
             return context.getString(R.string.format_date_placeholder);
         }
