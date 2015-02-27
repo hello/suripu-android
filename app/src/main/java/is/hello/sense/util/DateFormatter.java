@@ -3,6 +3,7 @@ package is.hello.sense.util;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.format.DateFormat;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -80,7 +81,7 @@ import is.hello.sense.R;
 
     public @NonNull String formatAsBirthDate(@Nullable LocalDate date) {
         if (date != null) {
-            return date.toString(context.getString(R.string.format_birth_date));
+            return DateFormat.getDateFormat(context).format(date.toDate());
         } else {
             return context.getString(R.string.format_date_placeholder);
         }

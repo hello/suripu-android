@@ -54,7 +54,7 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
         String unitSystem = preferencesPresenter.getString(PreferencesPresenter.UNIT_SYSTEM, UnitSystem.getDefaultUnitSystem(Locale.getDefault()));
         this.unitSystemItem = adapter.addTextItem(getString(R.string.setting_title_units), mapUnitSystemName(unitSystem), this::updateUnitSystem);
 
-        boolean use24Time = preferencesPresenter.getBoolean(PreferencesPresenter.USE_24_TIME, false);
+        boolean use24Time = preferencesPresenter.getUse24Time();
         this.use24TimeItem = adapter.addCheckItem(R.string.setting_title_use_24_time, use24Time, this::updateUse24Time);
 
         listView.setAdapter(adapter);
@@ -72,7 +72,7 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
         bindAndSubscribe(unitSystemName.map(this::mapUnitSystemName),
                          unitSystemItem::setDetail,
                          Functions.LOG_ERROR);
-        bindAndSubscribe(preferencesPresenter.observableBoolean(PreferencesPresenter.USE_24_TIME, false),
+        bindAndSubscribe(preferencesPresenter.observableUse24Time(),
                          use24TimeItem::setChecked,
                          Functions.LOG_ERROR);
     }

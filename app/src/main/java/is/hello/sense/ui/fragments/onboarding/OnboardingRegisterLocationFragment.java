@@ -15,7 +15,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Account;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -27,15 +26,11 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
     private static final int RESOLUTION_REQUEST_CODE = 0x99;
     private final ResumeScheduler.Coordinator coordinator = new ResumeScheduler.Coordinator(this::isResumed);
 
-    private Account account;
-
     private GoogleApiClient googleApiClient;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_LOCATION, null);
@@ -84,7 +79,7 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
         coordinator.postOnResume(() -> {
             Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             if (lastLocation != null) {
-                account.setLocation(lastLocation.getLatitude(), lastLocation.getLongitude());
+                getContainer().getAccount().setLocation(lastLocation.getLatitude(), lastLocation.getLongitude());
             }
             getContainer().onAccountUpdated(this);
         });

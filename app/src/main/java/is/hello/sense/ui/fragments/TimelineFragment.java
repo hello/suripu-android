@@ -14,7 +14,6 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
-import android.text.format.DateFormat;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -136,8 +135,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.segmentAdapter = new TimelineSegmentAdapter(getActivity(), dateFormatter);
 
-        boolean defaultValue = DateFormat.is24HourFormat(getActivity());
-        Observable<Boolean> use24HourTime = preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, defaultValue)
+        Observable<Boolean> use24HourTime = preferences.observableUse24Time()
                                                        .subscribeOn(AndroidSchedulers.mainThread());
         track(use24HourTime.subscribe(segmentAdapter::setUse24Time));
 

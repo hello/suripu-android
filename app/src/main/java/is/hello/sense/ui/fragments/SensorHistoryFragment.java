@@ -120,7 +120,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         bindAndSubscribe(conditionsPresenter.currentConditions, this::bindConditions, this::conditionUnavailable);
         bindAndSubscribe(sensorHistoryPresenter.history, sensorDataSource::bindHistory, sensorDataSource::historyUnavailable);
-        bindAndSubscribe(preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false), sensorDataSource::setUse24Time, Functions.LOG_ERROR);
+        bindAndSubscribe(preferences.observableUse24Time(), sensorDataSource::setUse24Time, Functions.LOG_ERROR);
     }
 
     @Override
@@ -169,10 +169,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 }
 
                 int sensorColor = getResources().getColor(condition.getCondition().colorRes);
-                readingText.setTextColor(sensorColor);
+                readingText.setTextColor(getResources().getColor(condition.getCondition().colorRes));
 
-                markdown.renderEmphasisInto(messageText, sensorColor, condition.getMessage());
-                markdown.renderEmphasisInto(insightText, sensorColor, condition.getIdealConditions());
+                markdown.renderInto(messageText, condition.getMessage());
+                markdown.renderInto(insightText, condition.getIdealConditions());
 
                 graphView.setTintColor(sensorColor);
             } else {

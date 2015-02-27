@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 
 import org.joda.time.DateTimeZone;
 
@@ -43,6 +44,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     public static final String ONBOARDING_COMPLETED = "onboarding_completed";
 
 
+    private final Context context;
     private final SharedPreferences sharedPreferences;
     private final AccountPresenter accountPresenter;
 
@@ -55,6 +57,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     public @Inject PreferencesPresenter(@NonNull Context context,
                                         @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences,
                                         @NonNull AccountPresenter accountPresenter) {
+        this.context = context;
         this.sharedPreferences = sharedPreferences;
         this.accountPresenter = accountPresenter;
 
@@ -112,7 +115,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         logEvent("Pushing account preferences");
 
         AccountPreference use24Time = new AccountPreference(AccountPreference.Key.TIME_TWENTY_FOUR_HOUR);
-        use24Time.setEnabled(getBoolean(USE_24_TIME, false));
+        use24Time.setEnabled(getUse24Time());
 
         AccountPreference useMetric = new AccountPreference(AccountPreference.Key.TEMP_CELCIUS);
         useMetric.setEnabled(MetricUnitSystem.NAME.equals(getString(UNIT_SYSTEM, UsCustomaryUnitSystem.NAME)));
@@ -149,15 +152,6 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     public String getString(String key, String defaultValue) {
         return sharedPreferences.getString(key, defaultValue);
-    }
-
-    public @NonNull DateTimeZone getSenseTimeZone() {
-        String pairedDeviceTimeZone = getString(PAIRED_DEVICE_TIME_ZONE, null);
-        if (TextUtils.isEmpty(pairedDeviceTimeZone)) {
-            return DateTimeZone.getDefault();
-        } else {
-            return DateTimeZone.forID(pairedDeviceTimeZone);
-        }
     }
 
     //endregion
@@ -203,6 +197,28 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     public Observable<Float> observableFloat(@NonNull String key, float defaultValue) {
         return observableValue(key, defaultValue, sharedPreferences::getFloat);
+    }
+
+    //endregion
+
+
+    //region Wrappers
+
+    public @NonNull DateTimeZone getSenseTimeZone() {
+        String pairedDeviceTimeZone = getString(PAIRED_DEVICE_TIME_ZONE, null);
+        if (TextUtils.isEmpty(pairedDeviceTimeZone)) {
+            return DateTimeZone.getDefault();
+        } else {
+            return DateTimeZone.forID(pairedDeviceTimeZone);
+        }
+    }
+
+    public boolean getUse24Time() {
+        return getBoolean(USE_24_TIME, DateFormat.is24HourFormat(context));
+    }
+
+    public Observable<Boolean> observableUse24Time() {
+        return observableBoolean(USE_24_TIME, DateFormat.is24HourFormat(context));
     }
 
     //endregion

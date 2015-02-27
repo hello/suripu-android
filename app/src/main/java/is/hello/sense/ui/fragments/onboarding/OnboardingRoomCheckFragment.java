@@ -236,17 +236,16 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                     message = condition.getMessage();
                 }
 
-                int sensorConditionColor = getResources().getColor(conditionColorRes);
 
                 itemTitle.setText(CONDITION_TITLES[position]);
 
                 if (TextUtils.isEmpty(message)) {
                     itemMessage.setText(R.string.missing_data_placeholder);
                 } else {
-                    markdown.renderEmphasisInto(itemMessage, sensorConditionColor, message);
+                    markdown.renderInto(itemMessage, message);
                 }
 
-                itemValue.setTextColor(sensorConditionColor);
+                itemValue.setTextColor(getResources().getColor(conditionColorRes));
                 itemValue.setText("0");
 
                 ImageView conditionImage = (ImageView) conditionsContainer.getChildAt(position);
