@@ -19,8 +19,6 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class OnboardingRegisterHeightFragment extends AccountEditingFragment implements ScaleView.OnValueChangedListener {
-    private Account account;
-
     private ScaleView scale;
     private TextView scaleReading;
     private TextView secondaryReading;
@@ -35,8 +33,6 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
         if (savedInstanceState != null) {
             this.hasAnimated = savedInstanceState.getBoolean("hasAnimated", false);
         }
-
-        this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_HEIGHT, null);
@@ -53,6 +49,8 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
         this.secondaryReading = (TextView) view.findViewById(R.id.fragment_onboarding_register_height_scale_reading_secondary);
 
         scale.setOnValueChangedListener(this);
+
+        Account account = getContainer().getAccount();
         if (account.getHeight() != null) {
             scale.setValue(account.getHeight(), true);
         }
@@ -77,6 +75,7 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
     public void onResume() {
         super.onResume();
 
+        Account account = getContainer().getAccount();
         if (!hasAnimated && account.getHeight() != null) {
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> scale.animateToValue(account.getHeight()), 250);
@@ -104,7 +103,7 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
 
     public void next() {
         try {
-            account.setHeight(scale.getValue());
+            getContainer().getAccount().setHeight(scale.getValue());
             getContainer().onAccountUpdated(this);
         } catch (NumberFormatException e) {
             Logger.warn(OnboardingRegisterHeightFragment.class.getSimpleName(), "Invalid input fed to height fragment, ignoring.", e);

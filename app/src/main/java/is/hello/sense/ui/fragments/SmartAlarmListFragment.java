@@ -103,7 +103,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Boolean> use24Time = preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false);
+        Observable<Boolean> use24Time = preferences.observableUse24Time();
         bindAndSubscribe(use24Time, adapter::setUse24Time, Functions.LOG_ERROR);
         bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::alarmsUnavailable);
     }

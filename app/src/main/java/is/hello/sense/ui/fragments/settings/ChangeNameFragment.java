@@ -19,16 +19,7 @@ import is.hello.sense.util.EditorActionHandler;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class ChangeNameFragment extends AccountEditingFragment {
-    private Account account;
-
     private TextView nameText;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        this.account = getContainer().getAccount();
-    }
 
     @Nullable
     @Override
@@ -37,7 +28,7 @@ public class ChangeNameFragment extends AccountEditingFragment {
 
         this.nameText = (TextView) view.findViewById(R.id.fragment_change_name_value);
         nameText.setOnEditorActionListener(new EditorActionHandler(() -> submit(nameText)));
-        nameText.setText(account.getName());
+        nameText.setText(getContainer().getAccount().getName());
 
         Button submit = (Button) view.findViewById(R.id.fragment_change_name_submit);
         Views.setSafeOnClickListener(submit, this::submit);
@@ -52,7 +43,7 @@ public class ChangeNameFragment extends AccountEditingFragment {
             return;
         }
 
-        account.setName(nameText.getText().toString());
+        getContainer().getAccount().setName(nameText.getText().toString());
         getContainer().onAccountUpdated(this);
     }
 }

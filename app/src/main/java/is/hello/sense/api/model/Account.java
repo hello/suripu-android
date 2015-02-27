@@ -6,9 +6,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import is.hello.sense.api.ApiService;
+import is.hello.sense.units.UnitOperations;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Account extends ApiResponse implements Cloneable {
@@ -55,6 +58,16 @@ public class Account extends ApiResponse implements Cloneable {
 
     @JsonProperty("long")
     private Double longitude;
+
+
+    public static Account createDefault() {
+        Account newAccount = new Account();
+        newAccount.setHeight(UnitOperations.inchesToCentimeters(64));
+        newAccount.setWeight(UnitOperations.poundsToGrams(150));
+        newAccount.setTimeZoneOffset(DateTimeZone.getDefault().getOffset(DateTimeUtils.currentTimeMillis()));
+        return newAccount;
+    }
+
 
     @JsonIgnore
     public String getId() {

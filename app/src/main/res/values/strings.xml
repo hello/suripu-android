@@ -35,7 +35,6 @@
     <string name="timeline_error_message">Could not load timeline</string>
 
     <string name="format_date">MMMM d</string>
-    <string name="format_birth_date">MM/dd/yy</string>
     <string name="format_time_12_hr">h:mm a</string>
     <string name="format_time_24_hr">H:mm</string>
     <string name="format_day_and_time_12_hr">EEEE – h:mm a</string>

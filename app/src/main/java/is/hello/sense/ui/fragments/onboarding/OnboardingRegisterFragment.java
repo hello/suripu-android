@@ -50,7 +50,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
     private TextView registrationErrorText;
 
-    private final Account newAccount = new Account();
+    private final Account newAccount = Account.createDefault();
 
     @Inject ApiService apiService;
     @Inject ApiSessionManager sessionManager;
@@ -59,10 +59,6 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        newAccount.setHeight(UnitOperations.inchesToCentimeters(64));
-        newAccount.setWeight(UnitOperations.poundsToGrams(150));
-        newAccount.setTimeZoneOffset(DateTimeZone.getDefault().getOffset(DateTimeUtils.currentTimeMillis()));
 
         setRetainInstance(true);
     }
