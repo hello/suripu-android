@@ -167,7 +167,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false),
+        bindAndSubscribe(preferences.observableUse24Time(),
                          newValue -> {
                              this.use24Time = newValue;
                              updateTime();

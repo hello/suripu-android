@@ -120,7 +120,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         bindAndSubscribe(conditionsPresenter.currentConditions, this::bindConditions, this::conditionUnavailable);
         bindAndSubscribe(sensorHistoryPresenter.history, sensorDataSource::bindHistory, sensorDataSource::historyUnavailable);
-        bindAndSubscribe(preferences.observableBoolean(PreferencesPresenter.USE_24_TIME, false), sensorDataSource::setUse24Time, Functions.LOG_ERROR);
+        bindAndSubscribe(preferences.observableUse24Time(), sensorDataSource::setUse24Time, Functions.LOG_ERROR);
     }
 
     @Override

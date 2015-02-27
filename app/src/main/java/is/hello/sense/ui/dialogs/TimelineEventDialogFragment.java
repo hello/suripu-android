@@ -22,8 +22,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
 import javax.inject.Inject;
@@ -157,7 +155,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
 
     private void bindTimelineSegment() {
         String eventName = getString(timelineSegment.getEventType().nameString);
-        boolean use24Time = preferences.getBoolean(PreferencesPresenter.USE_24_TIME, false);
+        boolean use24Time = preferences.getUse24Time();
         String formattedTime = dateFormatter.formatAsTime(timelineSegment.getShiftedTimestamp(), use24Time);
 
         title.setText(getString(R.string.title_timeline_event_fmt, eventName, formattedTime));
@@ -324,7 +322,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
 
     public void adjustSegmentTime(@NonNull View sender) {
         LocalTime eventTime = timelineSegment.getShiftedTimestamp().toLocalTime();
-        boolean use24Time = preferences.getBoolean(PreferencesPresenter.USE_24_TIME, false);
+        boolean use24Time = preferences.getUse24Time();
         TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(eventTime, use24Time);
         dialogFragment.setTargetFragment(this, REQUEST_CODE_ADJUST_TIME);
         dialogFragment.show(getFragmentManager(), TimePickerDialogFragment.TAG);
