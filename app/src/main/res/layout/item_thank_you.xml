@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_thank_you"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    tools:ignore="UseCompoundDrawables">
+
+    <ImageView
+        android:id="@+id/item_thank_you_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:src="@drawable/loading_done"
+        android:contentDescription="@string/title_thank_you"/>
+
+    <TextView
+        android:id="@+id/item_thank_you_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_thank_you"
+        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+        android:textAppearance="@style/AppTheme.Text.Heading"/>
+
+</LinearLayout>
