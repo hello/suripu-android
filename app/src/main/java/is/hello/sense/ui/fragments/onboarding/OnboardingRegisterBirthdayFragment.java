@@ -96,6 +96,12 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
                 continue;
             }
 
+            if (index == NUM_FIELDS / 2) {
+                int margin = getResources().getDimensionPixelSize(R.dimen.gap_large);
+                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) component.getLayoutParams();
+                layoutParams.leftMargin = margin;
+                layoutParams.rightMargin = margin;
+            }
             fieldContainer.addView(component);
             fields[index] = component;
 
@@ -172,15 +178,20 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     private boolean validateYear(@NonNull CharSequence year) {
         try {
             int value = parseString(year);
-            if (value == today.getYear()) {
-                int month = parseString(monthText.getText());
-                int day = parseString(dayText.getText());
-                return (month <= today.getMonthOfYear() && day <= today.getDayOfMonth());
-            } else {
-                return (value > 0 && value < today.getYear());
-            }
+            return (value > 0 && value <= today.getYear());
         } catch (NumberFormatException e) {
             return false;
+        }
+    }
+
+    private boolean validateAll() {
+        int year = parseString(yearText.getText());
+        if (year == today.getYear()) {
+            int month = parseString(monthText.getText());
+            int day = parseString(dayText.getText());
+            return (month <= today.getMonthOfYear() && day <= today.getDayOfMonth());
+        } else {
+            return (year < today.getYear());
         }
     }
 
@@ -257,8 +268,12 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
             field.setText(newText);
 
             if (newText.length() == fieldLimits[activeField]) {
-                if (activeField == fields.length - 1) {
-                    next();
+                if (activeField == NUM_FIELDS - 1) {
+                    if (validateAll()) {
+                        next();
+                    } else {
+                        field.setText(newText.substring(0, newText.length() - 1));
+                    }
                 } else {
                     incrementActiveField();
                 }
