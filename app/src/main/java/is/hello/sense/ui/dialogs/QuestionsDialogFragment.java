@@ -4,6 +4,7 @@ import android.animation.LayoutTransition;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,8 +12,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -40,6 +44,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
     public static final String TAG = QuestionsDialogFragment.class.getSimpleName();
 
     private static final long DELAY_INCREMENT = 20;
+    private static final long THANK_YOU_DURATION_MS = 2 * 1000;
 
     @Inject QuestionsPresenter questionsPresenter;
 
@@ -207,6 +212,35 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         }
     }
 
+    public void showThankYou(@NonNull Runnable onCompletion) {
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        View thankYou = inflater.inflate(R.layout.item_thank_you, superContainer, false);
+        ImageView thankYouImage = (ImageView) thankYou.findViewById(R.id.item_thank_you_image);
+        thankYouImage.setScaleX(0f);
+        thankYouImage.setScaleY(0f);
+        thankYouImage.setAlpha(0f);
+
+        TextView thankYouText = (TextView) thankYou.findViewById(R.id.item_thank_you_text);
+        thankYouText.setAlpha(0f);
+
+        superContainer.addView(thankYou);
+
+        animate(thankYouText)
+                .fadeIn()
+                .start();
+
+        animate(thankYouImage)
+                .scale(1f)
+                .fadeIn()
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        superContainer.postDelayed(() -> coordinator.postOnResume(onCompletion),
+                                THANK_YOU_DURATION_MS);
+                    }
+                })
+                .start();
+    }
+
     public void clearQuestions(boolean animate, @Nullable Runnable onCompletion) {
         showSkipButton(animate);
 
@@ -250,7 +284,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
 
     public void bindQuestion(@Nullable Question question) {
         if (question == null) {
-            animateOutAllViews(this::dismissSafely);
+            animateOutAllViews(() -> showThankYou(this::dismissSafely));
         } else {
             clearQuestions(false, null);
 

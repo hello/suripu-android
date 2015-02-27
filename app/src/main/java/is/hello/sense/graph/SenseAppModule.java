@@ -5,10 +5,16 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiModule;
+import is.hello.sense.api.ApiService;
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
@@ -147,13 +153,14 @@ public class SenseAppModule {
         return PreferenceManager.getDefaultSharedPreferences(applicationContext);
     }
 
-    /*
+    //*
     // FOR TESTING ONLY
-    @Provides @Singleton QuestionsPresenter provideQuestionPresenter(@NonNull ApiService apiService,
+    @Provides @Singleton
+    QuestionsPresenter provideQuestionPresenter(@NonNull ApiService apiService,
                                                                      @NonNull ApiSessionManager apiSessionManager,
                                                                      @NonNull Context context,
                                                                      @NonNull ObjectMapper objectMapper) {
         return new FakeQuestionsPresenter(apiService, apiSessionManager, context, objectMapper);
     }
-    */
+    //*/
 }
