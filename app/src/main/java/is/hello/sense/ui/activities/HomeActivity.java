@@ -565,7 +565,7 @@ public class HomeActivity
     public void onUserWillPullDownTopView() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_OPENED, null);
 
-        if (getFragmentManager().findFragmentById(R.id.activity_home_underside_container) == null) {
+        if (isResumed && getFragmentManager().findFragmentById(R.id.activity_home_underside_container) == null) {
             getFragmentManager()
                     .beginTransaction()
                     .add(R.id.activity_home_underside_container, new UndersideFragment())
