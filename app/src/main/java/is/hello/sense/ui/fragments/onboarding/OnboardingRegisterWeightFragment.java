@@ -19,8 +19,6 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class OnboardingRegisterWeightFragment extends AccountEditingFragment implements ScaleView.OnValueChangedListener {
-    private Account account;
-
     private ScaleView scale;
     private TextView scaleReading;
     private TextView secondaryReading;
@@ -35,8 +33,6 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
         if (savedInstanceState != null) {
             this.hasAnimated = savedInstanceState.getBoolean("hasAnimated", false);
         }
-
-        this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_WEIGHT, null);
@@ -54,6 +50,8 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
         this.secondaryReading = (TextView) view.findViewById(R.id.fragment_onboarding_register_weight_scale_reading_secondary);
 
         scale.setOnValueChangedListener(this);
+
+        Account account = getContainer().getAccount();
         if (account.getWeight() != null) {
             int weightInGrams = Math.round(account.getWeight());
             int pounds = UnitOperations.gramsToPounds(weightInGrams);
@@ -80,6 +78,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
     public void onResume() {
         super.onResume();
 
+        Account account = getContainer().getAccount();
         if (!hasAnimated && account.getWeight() != null) {
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> {
@@ -111,7 +110,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
         try {
             int pounds = scale.getValue();
             int grams = UnitOperations.poundsToGrams(pounds);
-            account.setWeight(grams);
+            getContainer().getAccount().setWeight(grams);
             getContainer().onAccountUpdated(this);
         } catch (NumberFormatException e) {
             Logger.warn(OnboardingRegisterWeightFragment.class.getSimpleName(), "Invalid input fed to weight fragment, ignoring", e);

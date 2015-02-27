@@ -29,8 +29,6 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     private static final String LEADING_ZERO = "0";
 
 
-    private Account account;
-
     private final DateTime today = DateTime.now();
 
     private final TextView[] fields = new TextView[NUM_FIELDS];
@@ -46,8 +44,6 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_BIRTHDAY, null);
@@ -110,6 +106,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
             }
         }
 
+        Account account = getContainer().getAccount();
         if (account.getBirthDate() != null) {
             LocalDate birthDate = account.getBirthDate();
             monthText.setHint(String.format("%02d", birthDate.getMonthOfYear()));
@@ -299,7 +296,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
             date = dateWithoutDay.withDayOfMonth(day);
         }
 
-        account.setBirthDate(date);
+        getContainer().getAccount().setBirthDate(date);
         getContainer().onAccountUpdated(this);
     }
 

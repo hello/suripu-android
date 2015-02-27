@@ -79,7 +79,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     @Inject PreferencesPresenter preferences;
     private BluetoothAdapter bluetoothAdapter;
 
-    private Account account;
+    private @Nullable Account account;
     private @Nullable DevicesInfo devicesInfo;
 
     private @Nullable SensorManager sensorManager;
@@ -89,6 +89,10 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
+
+        if (savedInstanceState != null) {
+            this.account = (Account) savedInstanceState.getSerializable("account");
+        }
 
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             this.sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -111,14 +115,18 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_ACCOUNT:
-                    LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
-                    bindAndSubscribe(apiService.getAccount(), account -> {
-                        LoadingDialogFragment.close(getFragmentManager());
+                    if (account == null) {
+                        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
+                        bindAndSubscribe(apiService.getAccount(), account -> {
+                            LoadingDialogFragment.close(getFragmentManager());
+                            showBirthday(account);
+                        }, e -> {
+                            LoadingDialogFragment.close(getFragmentManager());
+                            ErrorDialogFragment.presentError(getFragmentManager(), e);
+                        });
+                    } else {
                         showBirthday(account);
-                    }, e -> {
-                        LoadingDialogFragment.close(getFragmentManager());
-                        ErrorDialogFragment.presentError(getFragmentManager(), e);
-                    });
+                    }
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_QUESTIONS:
@@ -154,6 +162,12 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable("account", account);
+    }
 
     @Override
     public void pushFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
@@ -311,6 +325,10 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     @NonNull
     @Override
     public Account getAccount() {
+        if (account == null) {
+            this.account = Account.createDefault();
+        }
+
         return account;
     }
 
@@ -327,6 +345,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         } else if (updatedBy instanceof OnboardingRegisterLocationFragment) {
             // The OnboardingRegisterLocationFragment shows the
             // loading dialog, we close it when we wrap up here.
+            Account account = getAccount();
             bindAndSubscribe(apiService.updateAccount(account), ignored -> {
                 Analytics.trackUserSignUp(account.getAccountId(), account.getName(), DateTime.now());
 

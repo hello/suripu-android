@@ -17,13 +17,9 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingRegisterGenderFragment extends AccountEditingFragment implements SelectorLinearLayout.OnSelectionChangedListener {
-    private Account account;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.account = getContainer().getAccount();
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_GENDER, null);
@@ -37,6 +33,8 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
 
         SelectorLinearLayout genderSelector = (SelectorLinearLayout) view.findViewById(R.id.fragment_onboarding_register_gender_mode);
         genderSelector.setOnSelectionChangedListener(this);
+
+        Account account = getContainer().getAccount();
         if (account.getGender() != null) {
             if (account.getGender() == Gender.OTHER) {
                 genderSelector.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
@@ -66,6 +64,6 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        account.setGender(Gender.values()[newSelectionIndex]);
+        getContainer().getAccount().setGender(Gender.values()[newSelectionIndex]);
     }
 }
