@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -44,7 +45,14 @@ public class TutorialDialogFragment extends SenseDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
+        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen) {
+            @Override
+            public boolean dispatchTouchEvent(MotionEvent ev) {
+                super.dispatchTouchEvent(ev);
+                getActivity().dispatchTouchEvent(ev);
+                return false;
+            }
+        };
 
         this.contentLayout = new RelativeLayout(getActivity());
         dialog.setContentView(contentLayout);

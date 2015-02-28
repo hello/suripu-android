@@ -53,6 +53,9 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
+import is.hello.sense.ui.handholding.Interaction;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialDialogFragment;
 import is.hello.sense.ui.widget.BlockableLinearLayout;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
@@ -243,6 +246,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         super.onResume();
 
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
+
+        Tutorial testTutorial = new Tutorial("Foopy moopy goooo", Gravity.BOTTOM, new Interaction(Interaction.Type.TAP, R.id.fragment_timeline_sleep_score_chart));
+        TutorialDialogFragment testDialog = TutorialDialogFragment.newInstance(testTutorial);
+        testDialog.show(getFragmentManager(), TutorialDialogFragment.TAG);
     }
 
 
