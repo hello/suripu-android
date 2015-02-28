@@ -19,6 +19,7 @@ import is.hello.sense.ui.widget.graphing.Extremes;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -109,11 +110,17 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
         if (baseIndex == ApiService.PLACEHOLDER_VALUE || peakIndex == ApiService.PLACEHOLDER_VALUE) {
             return null;
         } else {
-            String base = Integer.toString((int) getBaseMagnitude());
-            String peak = Integer.toString((int) getPeakMagnitude());
+            int base = (int) getBaseMagnitude();
+            int baseColor = resources.getColor(Styles.getSleepScoreColorRes(base));
+            String baseString = Integer.toString(base);
+
+            int peak = (int) getPeakMagnitude();
+            String peakString = Integer.toString(peak);
+            int peakColor = resources.getColor(Styles.getSleepScoreColorRes(peak));
+
             return new LineGraphDrawable.Marker[] {
-                new LineGraphDrawable.Marker(baseIndex, 0, resources.getColor(R.color.sensor_alert), base),
-                new LineGraphDrawable.Marker(peakIndex, 0, resources.getColor(R.color.sensor_ideal), peak),
+                new LineGraphDrawable.Marker(baseIndex, 0, baseColor, baseString),
+                new LineGraphDrawable.Marker(peakIndex, 0, peakColor, peakString),
             };
         }
     }
