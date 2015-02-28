@@ -5,7 +5,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -45,14 +44,7 @@ public class TutorialDialogFragment extends SenseDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen) {
-            @Override
-            public boolean dispatchTouchEvent(MotionEvent ev) {
-                super.dispatchTouchEvent(ev);
-                getActivity().dispatchTouchEvent(ev);
-                return false;
-            }
-        };
+        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
 
         this.contentLayout = new RelativeLayout(getActivity());
         dialog.setContentView(contentLayout);
@@ -81,22 +73,17 @@ public class TutorialDialogFragment extends SenseDialogFragment {
     private void addInteractionIndicator(@NonNull View anchorView) {
         InteractionView interactionView = new InteractionView(getActivity());
 
-        int[] anchorCoordinates = {0, 0};
-        anchorView.getLocationInWindow(anchorCoordinates);
-        Rect windowFrame = new Rect();
-        anchorView.getWindowVisibleDisplayFrame(windowFrame);
-
-        int anchorMidX = anchorCoordinates[0] - windowFrame.left + anchorView.getMeasuredWidth() / 2;
-        int anchorMidY = anchorCoordinates[1] - windowFrame.top + anchorView.getMeasuredHeight() / 2;
-
         int interactionMidX = interactionView.getMinimumWidth() / 2;
         int interactionMidY = interactionView.getMinimumHeight() / 2;
+
+        Rect anchorFrame = new Rect();
+        Views.getFrameInWindow(anchorView, anchorFrame);
 
         LayoutParams layoutParams = new LayoutParams(interactionView.getMinimumWidth(), interactionView.getMinimumHeight());
         layoutParams.addRule(ALIGN_PARENT_TOP);
         layoutParams.addRule(ALIGN_PARENT_LEFT);
-        layoutParams.leftMargin = anchorMidX - interactionMidX;
-        layoutParams.topMargin = anchorMidY - interactionMidY;
+        layoutParams.leftMargin = anchorFrame.centerX() - interactionMidX;
+        layoutParams.topMargin = anchorFrame.centerY() - interactionMidY;
 
         contentLayout.addView(interactionView, layoutParams);
     }
