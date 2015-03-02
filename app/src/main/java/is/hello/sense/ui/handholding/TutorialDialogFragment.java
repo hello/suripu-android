@@ -1,6 +1,8 @@
 package is.hello.sense.ui.handholding;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,10 +16,12 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Constants;
 
 import static android.widget.RelativeLayout.ALIGN_PARENT_LEFT;
 import static android.widget.RelativeLayout.ALIGN_PARENT_TOP;
 import static android.widget.RelativeLayout.LayoutParams;
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class TutorialDialogFragment extends SenseDialogFragment implements EventDelegatingDialog.EventForwarder {
     public static final String TAG = TutorialDialogFragment.class.getSimpleName();
@@ -38,6 +42,18 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
 
 
     //region Lifecycle
+
+    public static boolean shouldShow(@NonNull Context context, @NonNull Tutorial tutorial) {
+        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        return !preferences.getBoolean(tutorial.getShownKey(), false);
+    }
+
+    public static void markShown(@NonNull Context context, @NonNull Tutorial tutorial) {
+        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        preferences.edit()
+                   .putBoolean(tutorial.getShownKey(), true)
+                   .apply();
+    }
 
     public static TutorialDialogFragment newInstance(@NonNull Tutorial tutorial) {
         TutorialDialogFragment dialogFragment = new TutorialDialogFragment();
@@ -111,7 +127,14 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
 
     private void interactionStarted() {
         interactionView.stopAnimation();
-        interactionView.setAlpha(0f);
+
+        animate(interactionView)
+                .fadeOut(View.GONE)
+                .start();
+
+        animate(descriptionText)
+                .fadeOut(View.GONE)
+                .start();
     }
 
     private void interactionCanceled() {
@@ -121,17 +144,19 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
             getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_CANCELED, null);
         }
 
-        dismissSafely();
+        dismiss();
     }
 
     private void interactionCompleted() {
         Log.i(getClass().getSimpleName(), "interactionCompleted()");
 
+        markShown(getActivity(), tutorial);
+
         if (getTargetFragment() != null) {
             getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_COMPLETED, null);
         }
 
-        dismissSafely();
+        dismiss();
     }
 
     @Override

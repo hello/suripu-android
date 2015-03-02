@@ -41,6 +41,11 @@ public enum Tutorial {
     }
 
 
+    public String getShownKey() {
+        return "tutorial_" + toString().toLowerCase() + "_shown";
+    }
+
+
     //region Vending Animations
 
     public static Animator createPulseAnimation(@NonNull View view) {
