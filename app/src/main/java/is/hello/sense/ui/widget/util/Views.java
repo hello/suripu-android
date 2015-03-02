@@ -37,6 +37,23 @@ public final class Views {
     }
 
     /**
+     * Returns whether or not a given motion event is within the bounds of a given view.
+     */
+    public static boolean isMotionEventInside(@NonNull View view, @NonNull MotionEvent event) {
+        int[] coordinates = {0, 0};
+        view.getLocationOnScreen(coordinates);
+
+        int width = view.getMeasuredWidth();
+        int height = view.getMeasuredHeight();
+
+        float x = event.getRawX();
+        float y = event.getRawY();
+
+        return (x >= coordinates[0] && x <= coordinates[0] + width &&
+                y >= coordinates[1] && y <= coordinates[1] + height);
+    }
+
+    /**
      * Gets the frame of a given view within its window.
      * <p/>
      * This method makes several allocations and should
@@ -46,14 +63,14 @@ public final class Views {
      * @param outRect   On return, contains the frame of the view.
      */
     public static void getFrameInWindow(@NonNull View view, @NonNull Rect outRect) {
-        int[] anchorCoordinates = {0, 0};
-        view.getLocationInWindow(anchorCoordinates);
+        int[] coordinates = {0, 0};
+        view.getLocationInWindow(coordinates);
 
         Rect windowFrame = new Rect();
         view.getWindowVisibleDisplayFrame(windowFrame);
 
-        outRect.left = anchorCoordinates[0] - windowFrame.left;
-        outRect.top = anchorCoordinates[1] - windowFrame.top;
+        outRect.left = coordinates[0] - windowFrame.left;
+        outRect.top = coordinates[1] - windowFrame.top;
         outRect.right = outRect.left + view.getMeasuredWidth();
         outRect.bottom = outRect.top + view.getMeasuredHeight();
     }

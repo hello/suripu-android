@@ -247,7 +247,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
 
-        Tutorial testTutorial = new Tutorial("Foopy moopy goooo", Gravity.BOTTOM, new Interaction(Interaction.Type.SLIDE_DOWN, R.id.fragment_timeline_sleep_score_chart));
+        Tutorial testTutorial = new Tutorial("Slide down for maximum fun!", Gravity.BOTTOM, new Interaction(Interaction.Type.SLIDE_DOWN, R.id.fragment_timeline_header_menu));
         TutorialDialogFragment testDialog = TutorialDialogFragment.newInstance(testTutorial);
         testDialog.show(getFragmentManager(), TutorialDialogFragment.TAG);
     }

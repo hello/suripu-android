@@ -14,8 +14,6 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
-import org.joda.time.LocalDate;
-
 import java.io.Serializable;
 
 import is.hello.sense.R;
@@ -30,6 +28,23 @@ public class Interaction implements Serializable {
                        @IdRes int anchorViewRes) {
         this.type = type;
         this.anchorViewRes = anchorViewRes;
+    }
+
+
+    public Orientation getOrientation() {
+        switch (type) {
+            case SLIDE_LEFT:
+            case SLIDE_RIGHT:
+                return Orientation.HORIZONTAL;
+
+            case SLIDE_UP:
+            case SLIDE_DOWN:
+                return Orientation.VERTICAL;
+
+            default:
+            case TAP:
+                throw new IllegalStateException("orientation is not valid for tap interactions");
+        }
     }
 
 
@@ -63,15 +78,15 @@ public class Interaction implements Serializable {
         TimeInterpolator interpolator = new AccelerateDecelerateInterpolator();
 
         float delta = view.getResources().getDimension(deltaRes);
-        ObjectAnimator slide = ObjectAnimator.ofFloat(view, property, delta);
+        ObjectAnimator slide = ObjectAnimator.ofFloat(view, property, 0f, delta);
         slide.setInterpolator(interpolator);
         slide.setDuration(duration);
 
-        ObjectAnimator fadeOut = ObjectAnimator.ofFloat(view, "alpha", 0f);
+        ObjectAnimator fadeOut = ObjectAnimator.ofFloat(view, "alpha", 1f, 0f);
         fadeOut.setInterpolator(interpolator);
         fadeOut.setDuration(duration);
 
-        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(view, "alpha", 1f);
+        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f);
         fadeIn.setInterpolator(new LinearInterpolator());
         fadeIn.setDuration(Animations.DURATION_MAXIMUM);
 

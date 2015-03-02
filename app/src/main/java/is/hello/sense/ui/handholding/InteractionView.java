@@ -12,7 +12,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.widget.util.Views;
 
 public class InteractionView extends View {
     private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
