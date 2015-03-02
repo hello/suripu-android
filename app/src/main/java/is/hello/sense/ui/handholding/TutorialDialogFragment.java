@@ -22,6 +22,9 @@ import static android.widget.RelativeLayout.LayoutParams;
 public class TutorialDialogFragment extends SenseDialogFragment implements EventDelegatingDialog.EventForwarder {
     public static final String TAG = TutorialDialogFragment.class.getSimpleName();
 
+    public static final int RESULT_COMPLETED = 0x55;
+    public static final int RESULT_CANCELED = 0x54;
+
     private static final String ARG_TUTORIAL = TutorialDialogFragment.class.getName() + ".ARG_TUTORIAL";
 
     private Tutorial tutorial;
@@ -62,12 +65,11 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
 
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         this.descriptionText = (TextView) inflater.inflate(R.layout.sub_fragment_tutorial_description, contentLayout, false);
-        descriptionText.setText(tutorial.description);
-        descriptionText.setOnClickListener(ignored -> dismissSafely());
+        descriptionText.setText(tutorial.descriptionRes);
+        descriptionText.setOnClickListener(ignored -> interactionCompleted());
         contentLayout.addView(descriptionText, tutorial.generateDescriptionLayoutParams());
 
-        Interaction interaction = tutorial.interaction;
-        View anchorView = getActivity().findViewById(interaction.anchorViewRes);
+        View anchorView = getActivity().findViewById(tutorial.anchorId);
         if (anchorView != null) {
             if (anchorView.isLayoutRequested()) {
                 Views.observeNextLayout(anchorView)
@@ -102,7 +104,7 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
 
         contentLayout.addView(interactionView, layoutParams);
 
-        interactionView.playInteraction(tutorial.interaction);
+        interactionView.playTutorial(tutorial);
 
         this.anchorView = anchorView;
     }
@@ -113,12 +115,21 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
     }
 
     private void interactionCanceled() {
-        interactionView.setAlpha(1f);
-        interactionView.playInteraction(tutorial.interaction);
+        Log.i(getClass().getSimpleName(), "interactionCanceled()");
+
+        if (getTargetFragment() != null) {
+            getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_CANCELED, null);
+        }
+
+        dismissSafely();
     }
 
     private void interactionCompleted() {
         Log.i(getClass().getSimpleName(), "interactionCompleted()");
+
+        if (getTargetFragment() != null) {
+            getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_COMPLETED, null);
+        }
 
         dismissSafely();
     }
@@ -143,14 +154,14 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                if (tutorial.interaction.type == Interaction.Type.TAP) {
+                if (tutorial.interaction == Interaction.TAP) {
                     if (Views.isMotionEventInside(anchorView, event)) {
                         interactionCompleted();
                     } else {
                         interactionCanceled();
                     }
                 } else {
-                    if (tutorial.interaction.getOrientation() == Interaction.Orientation.VERTICAL) {
+                    if (tutorial.interaction.isVertical) {
                         float deltaY = Math.abs(interactionStartY - event.getRawY());
                         if (deltaY >= getResources().getDimensionPixelSize(R.dimen.interaction_slide_positive)) {
                             interactionCompleted();

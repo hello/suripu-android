@@ -77,8 +77,8 @@ public class InteractionView extends View {
 
     //region Animation
 
-    public void playInteraction(@NonNull Interaction interaction) {
-        startAnimation(interaction.createAnimation(this));
+    public void playTutorial(@NonNull Tutorial tutorial) {
+        startAnimation(tutorial.createAnimation(this));
     }
 
     public void startAnimation(@NonNull Animator animation) {

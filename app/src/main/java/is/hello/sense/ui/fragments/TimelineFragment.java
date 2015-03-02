@@ -53,7 +53,6 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
-import is.hello.sense.ui.handholding.Interaction;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialDialogFragment;
 import is.hello.sense.ui.widget.BlockableLinearLayout;
@@ -246,10 +245,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         super.onResume();
 
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
-
-        Tutorial testTutorial = new Tutorial("Slide down for maximum fun!", Gravity.BOTTOM, new Interaction(Interaction.Type.TAP, R.id.fragment_timeline_sleep_score_chart));
-        TutorialDialogFragment testDialog = TutorialDialogFragment.newInstance(testTutorial);
-        testDialog.show(getFragmentManager(), TutorialDialogFragment.TAG);
     }
 
 
@@ -531,7 +526,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 if (activity.getWillShowUnderside()) {
                     WelcomeDialog.markShown(activity, R.xml.welcome_dialog_timeline);
                 } else {
-                    WelcomeDialog.showIfNeeded(activity, R.xml.welcome_dialog_timeline);
+                    if (WelcomeDialog.shouldShow(activity, R.xml.welcome_dialog_timeline)) {
+                        WelcomeDialog.show(activity, R.xml.welcome_dialog_timeline);
+                    } else {
+                        TutorialDialogFragment testDialog = TutorialDialogFragment.newInstance(Tutorial.SLEEP_SCORE_BREAKDOWN);
+                        testDialog.show(getFragmentManager(), TutorialDialogFragment.TAG);
+                    }
                 }
             } else {
                 timelineEventsHeader.setVisibility(View.INVISIBLE);
