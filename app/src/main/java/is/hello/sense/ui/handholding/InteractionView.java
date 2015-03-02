@@ -36,7 +36,7 @@ public class InteractionView extends View {
         Resources resources = getResources();
 
         fillPaint.setColor(resources.getColor(R.color.light_accent));
-        fillPaint.setAlpha(128);
+        fillPaint.setAlpha(60);
 
         borderPaint.setColor(resources.getColor(R.color.light_accent));
         borderPaint.setStyle(Paint.Style.STROKE);

@@ -12,6 +12,8 @@ import android.support.annotation.NonNull;
 import android.util.Property;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AnticipateOvershootInterpolator;
+import android.view.animation.BounceInterpolator;
 import android.view.animation.LinearInterpolator;
 
 import java.io.Serializable;
@@ -51,15 +53,29 @@ public class Interaction implements Serializable {
     //region Vending Animations
 
     public static Animator createPulseAnimation(@NonNull View view) {
-        ValueAnimator animator = ValueAnimator.ofFloat(1.0f, 0.8f);
-        animator.setDuration(750);
-        animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.setRepeatMode(ValueAnimator.REVERSE);
+        ValueAnimator animator = ValueAnimator.ofFloat(1f, 0.8f, 1f);
+        animator.setStartDelay(350);
+        animator.setDuration(1250);
+        animator.setInterpolator(new AnticipateOvershootInterpolator());
         animator.addUpdateListener(a -> {
             float scale = (float) a.getAnimatedValue();
             view.setScaleX(scale);
             view.setScaleY(scale);
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            boolean canceled = false;
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                this.canceled = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (!canceled) {
+                    animation.start();
+                }
+            }
         });
         return animator;
     }

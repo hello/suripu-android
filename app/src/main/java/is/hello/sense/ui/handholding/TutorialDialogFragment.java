@@ -113,6 +113,7 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
     }
 
     private void interactionCanceled() {
+        interactionView.setAlpha(1f);
         interactionView.playInteraction(tutorial.interaction);
     }
 
