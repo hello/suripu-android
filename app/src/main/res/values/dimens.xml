@@ -98,6 +98,9 @@
 
     <dimen name="view_interaction_area">50dp</dimen>
 
+    <dimen name="interaction_slide_negative">-70dp</dimen>
+    <dimen name="interaction_slide_positive">70dp</dimen>
+
     <!-- Graphs -->
 
     <dimen name="graph_point_size">5dp</dimen>

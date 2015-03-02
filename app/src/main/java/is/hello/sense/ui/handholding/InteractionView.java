@@ -1,5 +1,6 @@
 package is.hello.sense.ui.handholding;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -11,11 +12,16 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Views;
 
 public class InteractionView extends View {
     private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF ovalRect = new RectF();
+
+    private @Nullable Animator currentAnimation;
+
+    //region Lifecycle
 
     public InteractionView(@NonNull Context context) {
         this(context, null);
@@ -43,6 +49,18 @@ public class InteractionView extends View {
     }
 
     @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        stopAnimation();
+    }
+
+    //endregion
+
+
+    //region Drawing
+
+    @Override
     protected void onDraw(Canvas canvas) {
         int width = canvas.getWidth();
         int height = canvas.getHeight();
@@ -54,4 +72,29 @@ public class InteractionView extends View {
         ovalRect.inset(inset, inset);
         canvas.drawOval(ovalRect, borderPaint);
     }
+
+    //endregion
+
+
+    //region Animation
+
+    public void playInteraction(@NonNull Interaction interaction) {
+        startAnimation(interaction.createAnimation(this));
+    }
+
+    public void startAnimation(@NonNull Animator animation) {
+        stopAnimation();
+
+        this.currentAnimation = animation;
+        currentAnimation.start();
+    }
+
+    public void stopAnimation() {
+        if (currentAnimation != null) {
+            currentAnimation.cancel();
+            this.currentAnimation = null;
+        }
+    }
+
+    //endregion
 }

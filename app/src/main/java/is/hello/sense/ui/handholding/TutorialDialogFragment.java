@@ -86,5 +86,7 @@ public class TutorialDialogFragment extends SenseDialogFragment {
         layoutParams.topMargin = anchorFrame.centerY() - interactionMidY;
 
         contentLayout.addView(interactionView, layoutParams);
+
+        interactionView.playInteraction(tutorial.interaction);
     }
 }
