@@ -62,11 +62,15 @@ public class AnimatorContext implements Animator.AnimatorListener {
 
     //region Active Animations
 
-    public void incrementActiveAnimations() {
+    public void beginAnimation() {
         this.activeAnimationCount++;
     }
 
-    public void decrementActiveAnimations() {
+    public void endAnimation() {
+        if (activeAnimationCount == 0) {
+            throw new IllegalStateException("No active animations to end");
+        }
+
         this.activeAnimationCount--;
 
         if (activeAnimationCount == 0) {
@@ -81,18 +85,18 @@ public class AnimatorContext implements Animator.AnimatorListener {
 
     @Override
     public void onAnimationStart(Animator animation) {
-        incrementActiveAnimations();
+        beginAnimation();
     }
 
     @Override
     public void onAnimationEnd(Animator animation) {
-        decrementActiveAnimations();
+        endAnimation();
         animation.removeListener(this);
     }
 
     @Override
     public void onAnimationCancel(Animator animation) {
-        decrementActiveAnimations();
+        endAnimation();
         animation.removeListener(this);
     }
 

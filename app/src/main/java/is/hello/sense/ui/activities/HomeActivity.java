@@ -71,7 +71,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends InjectionActivity
-        implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener
+        implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
 {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
@@ -369,6 +369,7 @@ public class HomeActivity
     }
 
 
+    @Override
     public @NonNull AnimatorContext getAnimatorContext() {
         return animatorContext;
     }
@@ -444,7 +445,7 @@ public class HomeActivity
         if (smartAlarmButton.getVisibility() == View.VISIBLE && !isAnimating(smartAlarmButton)) {
             int contentHeight = rootContainer.getMeasuredHeight();
 
-            animate(smartAlarmButton)
+            animate(smartAlarmButton, animatorContext)
                     .y(contentHeight)
                     .addOnAnimationCompleted(finished -> {
                         if (finished) {
@@ -462,7 +463,7 @@ public class HomeActivity
 
             smartAlarmButton.setVisibility(View.VISIBLE);
 
-            animate(smartAlarmButton)
+            animate(smartAlarmButton, animatorContext)
                     .y(contentHeight - buttonHeight)
                     .start();
         }
@@ -538,7 +539,7 @@ public class HomeActivity
             deviceAlert.setY(alertViewY + alertViewHeight);
             deviceAlert.setVisibility(View.VISIBLE);
 
-            animate(deviceAlert)
+            animate(deviceAlert, animatorContext)
                     .y(alertViewY)
                     .start();
         });
@@ -553,7 +554,7 @@ public class HomeActivity
         coordinator.postOnResume(() -> {
             int alertViewHeight = deviceAlert.getMeasuredHeight();
             int alertViewY = (int) deviceAlert.getY();
-            animate(deviceAlert)
+            animate(deviceAlert, animatorContext)
                     .y(alertViewY + alertViewHeight)
                     .addOnAnimationCompleted(finished -> {
                         rootContainer.removeView(deviceAlert);
@@ -711,7 +712,7 @@ public class HomeActivity
         this.navigatorStackListener = () -> {
             if (!navigatorFragment.isAdded() && !isDestroyed()) {
                 showAlarmShortcut();
-                animate(viewPager)
+                animate(viewPager, animatorContext)
                         .zoomInFrom(0.7f)
                         .addOnAnimationCompleted(finished -> {
                             if (finished) {
@@ -729,7 +730,7 @@ public class HomeActivity
         undersideContainer.addView(view, 0);
 
         hideAlarmShortcut();
-        animate(viewPager)
+        animate(viewPager, animatorContext)
                 .zoomOutTo(View.GONE, 0.7f)
                 .start();
     }

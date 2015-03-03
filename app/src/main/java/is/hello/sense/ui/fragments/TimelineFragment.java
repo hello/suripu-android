@@ -530,8 +530,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                     if (WelcomeDialog.shouldShow(activity, R.xml.welcome_dialog_timeline)) {
                         WelcomeDialog.show(activity, R.xml.welcome_dialog_timeline);
                     } else if (TutorialDialogFragment.shouldShow(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN)) {
-                        TutorialDialogFragment testDialog = TutorialDialogFragment.newInstance(Tutorial.SLEEP_SCORE_BREAKDOWN);
-                        testDialog.show(getFragmentManager(), TutorialDialogFragment.TAG);
+                        getAnimatorContext().runWhenIdle(coordinator.bind(() -> {
+                            TutorialDialogFragment testDialog = TutorialDialogFragment.newInstance(Tutorial.SLEEP_SCORE_BREAKDOWN);
+                            testDialog.show(getFragmentManager(), TutorialDialogFragment.TAG);
+                        }));
                     }
                 }
             } else {

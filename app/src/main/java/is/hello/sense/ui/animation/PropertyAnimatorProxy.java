@@ -179,6 +179,10 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
             }
         }
 
+        if (system != null) {
+            system.beginAnimation();
+        }
+
         ANIMATING_VIEWS.add(view);
     }
 
@@ -224,9 +228,6 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
             return;
 
         this.animationStarted = true;
-        if (system != null) {
-            system.incrementActiveAnimations();
-        }
     }
 
     @Override
@@ -241,7 +242,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         }
 
         if (system != null) {
-            view.post(system::decrementActiveAnimations);
+            view.post(system::endAnimation);
         }
         ANIMATING_VIEWS.remove(view);
     }
@@ -254,7 +255,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         this.animationCanceled = true;
 
         if (system != null) {
-            view.post(system::decrementActiveAnimations);
+            view.post(system::endAnimation);
         }
         ANIMATING_VIEWS.remove(view);
     }

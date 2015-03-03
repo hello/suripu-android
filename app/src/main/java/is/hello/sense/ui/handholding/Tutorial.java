@@ -19,7 +19,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.util.LambdaVar;
 
 public enum Tutorial {
@@ -100,7 +100,7 @@ public enum Tutorial {
 
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f);
         fadeIn.setInterpolator(new LinearInterpolator());
-        fadeIn.setDuration(Animations.DURATION_MAXIMUM);
+        fadeIn.setDuration(Animation.DURATION_SLOW);
 
         AnimatorSet slideAndFadeIn = new AnimatorSet();
         slideAndFadeIn.setStartDelay(150);

@@ -501,7 +501,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     }
 
                     if (animatorContext != null) {
-                        animatorContext.decrementActiveAnimations();
+                        animatorContext.endAnimation();
                     }
 
                     this.isTrackingTouchEvents = false;
@@ -550,7 +550,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     this.isTrackingTouchEvents = true;
 
                     if (animatorContext != null) {
-                        animatorContext.incrementActiveAnimations();
+                        animatorContext.beginAnimation();
                     }
 
                     return true;

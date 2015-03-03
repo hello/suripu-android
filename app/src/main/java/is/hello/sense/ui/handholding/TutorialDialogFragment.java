@@ -44,8 +44,9 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
     //region Lifecycle
 
     public static boolean shouldShow(@NonNull Context context, @NonNull Tutorial tutorial) {
-        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-        return !preferences.getBoolean(tutorial.getShownKey(), false);
+        return true;
+        // SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        // return !preferences.getBoolean(tutorial.getShownKey(), false);
     }
 
     public static void markShown(@NonNull Context context, @NonNull Tutorial tutorial) {

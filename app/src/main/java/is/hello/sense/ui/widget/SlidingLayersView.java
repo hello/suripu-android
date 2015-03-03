@@ -402,7 +402,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 }
 
                 if (animatorContext != null) {
-                    animatorContext.decrementActiveAnimations();
+                    animatorContext.endAnimation();
                 }
 
                 this.velocityTracker = null;
@@ -437,6 +437,10 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 stopAnimations();
 
                 if (isOpen && lastEventY >= topViewY) {
+                    if (animatorContext != null) {
+                        animatorContext.beginAnimation();
+                    }
+
                     this.isTrackingTouchEvents = true;
                     return true;
                 }
@@ -457,7 +461,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                     this.isTrackingTouchEvents = true;
 
                     if (animatorContext != null) {
-                        animatorContext.incrementActiveAnimations();
+                        animatorContext.beginAnimation();
                     }
 
                     if (onInteractionListener != null) {
