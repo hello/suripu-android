@@ -477,10 +477,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     float velocity = Math.abs(rawVelocity);
                     long duration = Animation.calculateDuration(velocity, getMeasuredWidth());
 
-                    if (shouldCompleteTransition(viewX, rawVelocity))
+                    if (shouldCompleteTransition(viewX, rawVelocity)) {
                         completeTransition(currentPosition, duration);
-                    else
+                    } else {
                         snapBack(currentPosition, duration);
+                    }
 
                     boolean shouldInvalidate = false;
                     if (!leftEdgeEffect.isFinished()) {
@@ -495,8 +496,13 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                         shouldInvalidate = true;
                     }
 
-                    if (shouldInvalidate)
+                    if (shouldInvalidate) {
                         invalidate();
+                    }
+
+                    if (animatorContext != null) {
+                        animatorContext.decrementActiveAnimations();
+                    }
 
                     this.isTrackingTouchEvents = false;
 
@@ -542,6 +548,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 if (!isTrackingTouchEvents && Math.abs(deltaX) > touchSlop && Math.abs(deltaX) > Math.abs(deltaY)) {
                     this.velocityTracker = VelocityTracker.obtain();
                     this.isTrackingTouchEvents = true;
+
+                    if (animatorContext != null) {
+                        animatorContext.incrementActiveAnimations();
+                    }
 
                     return true;
                 }

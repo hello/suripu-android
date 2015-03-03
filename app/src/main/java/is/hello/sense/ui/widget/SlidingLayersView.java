@@ -401,6 +401,10 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                     velocityTracker.recycle();
                 }
 
+                if (animatorContext != null) {
+                    animatorContext.decrementActiveAnimations();
+                }
+
                 this.velocityTracker = null;
                 this.isTrackingTouchEvents = false;
 
@@ -451,6 +455,10 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 if (Math.abs(deltaY) >= touchSlop && Math.abs(deltaY) > Math.abs(deltaX) &&
                         (!isOpen && deltaY > 0.0) && isListViewAtTop(listView)) {
                     this.isTrackingTouchEvents = true;
+
+                    if (animatorContext != null) {
+                        animatorContext.incrementActiveAnimations();
+                    }
 
                     if (onInteractionListener != null) {
                         onInteractionListener.onUserWillPullDownTopView();

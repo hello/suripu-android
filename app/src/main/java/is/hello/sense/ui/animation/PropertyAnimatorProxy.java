@@ -19,14 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import is.hello.sense.ui.widget.util.Views;
-
 public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private static final Set<View> ANIMATING_VIEWS = new HashSet<>();
 
     private final View view;
-    private final @Nullable
-    AnimatorContext system;
+    private final @Nullable AnimatorContext system;
 
     private final HashMap<String, Float> properties = new HashMap<>();
     private final List<OnAnimationCompleted> onAnimationCompletedListeners = new ArrayList<>();
@@ -191,10 +188,6 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         } else {
             buildAndStart();
         }
-    }
-
-    public void startAfterLayout() {
-        Views.observeNextLayout(view).subscribe(ignored -> start());
     }
 
     public void cancel() {
