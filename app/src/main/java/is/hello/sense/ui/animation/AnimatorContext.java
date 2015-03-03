@@ -1,6 +1,8 @@
 package is.hello.sense.ui.animation;
 
 import android.animation.Animator;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -11,10 +13,24 @@ import java.util.List;
 import rx.functions.Action1;
 
 public class AnimatorContext implements Animator.AnimatorListener {
+    private static final int MSG_IDLE = 0;
+
     private final String name;
     private final List<Listener> listeners = new ArrayList<>();
 
     private int activeAnimationCount = 0;
+
+    private final Handler idleHandler = new Handler(Looper.getMainLooper(), message -> {
+        if (message.what == MSG_IDLE) {
+            for (Listener listener : listeners) {
+                listener.onContextIdle();
+            }
+
+            return true;
+        }
+
+        return false;
+    });
 
     public AnimatorContext(@NonNull String name) {
         this.name = name;
@@ -51,18 +67,14 @@ public class AnimatorContext implements Animator.AnimatorListener {
         listeners.remove(listener);
     }
 
-    private void onAllAnimationsEnded() {
-        for (Listener listener : listeners) {
-            listener.onContextIdle();
-        }
-    }
-
     //endregion
 
 
     //region Active Animations
 
     public void beginAnimation() {
+        idleHandler.removeMessages(MSG_IDLE);
+
         this.activeAnimationCount++;
     }
 
@@ -74,7 +86,8 @@ public class AnimatorContext implements Animator.AnimatorListener {
         this.activeAnimationCount--;
 
         if (activeAnimationCount == 0) {
-            onAllAnimationsEnded();
+            idleHandler.removeMessages(MSG_IDLE);
+            idleHandler.sendEmptyMessage(MSG_IDLE);
         }
     }
 
