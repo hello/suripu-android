@@ -146,8 +146,11 @@ public class AnimatorContext implements Animator.AnimatorListener {
      *
      * @param properties    An optional animation properties to apply to each animator.
      * @param animations    A callback that describes the animations to run against a given facade.
+     * @param onCompleted   An optional listener to invoke when the longest animation completes.
      */
-    public void transaction(@Nullable AnimatorConfig properties, @NonNull Action1<Facade> animations) {
+    public void transaction(@Nullable AnimatorConfig properties,
+                            @NonNull Action1<Facade> animations,
+                            @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
         List<PropertyAnimatorProxy> animators = new ArrayList<>(2);
 
         Facade facade = view -> {
@@ -160,18 +163,28 @@ public class AnimatorContext implements Animator.AnimatorListener {
         };
         animations.call(facade);
 
+        PropertyAnimatorProxy longestAnimator = null;
         for (PropertyAnimatorProxy animator : animators) {
+            if (longestAnimator == null || animator.getDuration() >= longestAnimator.getDuration()) {
+                longestAnimator = animator;
+            }
+
             animator.start();
+        }
+
+        if (longestAnimator != null && onCompleted != null) {
+            longestAnimator.addOnAnimationCompleted(onCompleted);
         }
     }
 
     /**
      * Short-hand provided for common use-case.
      *
-     * @see #transaction(AnimatorConfig, rx.functions.Action1)
+     * @see #transaction(AnimatorConfig, rx.functions.Action1, is.hello.sense.ui.animation.PropertyAnimatorProxy.OnAnimationCompleted)
      */
-    public void transaction(@NonNull Action1<Facade> animations) {
-        transaction(null, animations);
+    public void transaction(@NonNull Action1<Facade> animations,
+                            @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
+        transaction(null, animations, onCompleted);
     }
 
     //endregion
@@ -195,7 +208,7 @@ public class AnimatorContext implements Animator.AnimatorListener {
     /**
      * Used for transaction callbacks to specify animations against views.
      *
-     * @see #transaction(AnimatorConfig, rx.functions.Action1)
+     * @see #transaction(AnimatorConfig, rx.functions.Action1, is.hello.sense.ui.animation.PropertyAnimatorProxy.OnAnimationCompleted)
      */
     public interface Facade {
         /**
@@ -203,6 +216,8 @@ public class AnimatorContext implements Animator.AnimatorListener {
          * applying any properties provided, and queuing it
          * to be executed with any other animators in the
          * containing transaction.
+         * <p/>
+         * No external references to the returned animator should be made.
          */
         PropertyAnimatorProxy animate(@NonNull View view);
     }

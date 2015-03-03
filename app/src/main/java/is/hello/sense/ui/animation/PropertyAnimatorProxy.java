@@ -75,6 +75,10 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         return this;
     }
 
+    public long getDuration() {
+        return duration;
+    }
+
     public PropertyAnimatorProxy setStartDelay(long startDelay) {
         this.startDelay = startDelay;
         return this;
