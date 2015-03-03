@@ -125,7 +125,7 @@ public class AnimatorContext implements Animator.AnimatorListener {
      * @param properties    An optional animation properties to apply to each animator.
      * @param animations    A callback that describes the animations to run against a given facade.
      */
-    public void transaction(@Nullable Animations.Properties properties, @NonNull Action1<Facade> animations) {
+    public void transaction(@Nullable AnimatorConfig properties, @NonNull Action1<Facade> animations) {
         List<PropertyAnimatorProxy> animators = new ArrayList<>(2);
 
         Facade facade = view -> {
@@ -146,7 +146,7 @@ public class AnimatorContext implements Animator.AnimatorListener {
     /**
      * Short-hand provided for common use-case.
      *
-     * @see #transaction(is.hello.sense.ui.animation.Animations.Properties, rx.functions.Action1)
+     * @see #transaction(AnimatorConfig, rx.functions.Action1)
      */
     public void transaction(@NonNull Action1<Facade> animations) {
         transaction(null, animations);
@@ -173,7 +173,7 @@ public class AnimatorContext implements Animator.AnimatorListener {
     /**
      * Used for transaction callbacks to specify animations against views.
      *
-     * @see #transaction(is.hello.sense.ui.animation.Animations.Properties, rx.functions.Action1)
+     * @see #transaction(AnimatorConfig, rx.functions.Action1)
      */
     public interface Facade {
         /**

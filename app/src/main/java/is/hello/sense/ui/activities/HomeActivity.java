@@ -42,8 +42,8 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -635,11 +635,11 @@ public class HomeActivity
 
         @Override
         public void frame(float frameValue) {
-            float scale = Animations.interpolateFrame(frameValue, MIN_SCALE, MAX_SCALE);
+            float scale = Animation.interpolateFrame(frameValue, MIN_SCALE, MAX_SCALE);
             undersideContainer.setScaleX(scale);
             undersideContainer.setScaleY(scale);
 
-            float alpha = Animations.interpolateFrame(frameValue, MIN_ALPHA, MAX_ALPHA);
+            float alpha = Animation.interpolateFrame(frameValue, MIN_ALPHA, MAX_ALPHA);
             undersideContainer.setAlpha(alpha);
         }
 
@@ -648,8 +648,8 @@ public class HomeActivity
                            long duration,
                            @NonNull Interpolator interpolator,
                            @Nullable AnimatorContext animatorContext) {
-            float finalScale = Animations.interpolateFrame(finalFrameValue, MIN_SCALE, MAX_SCALE);
-            float finalAlpha = Animations.interpolateFrame(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
+            float finalScale = Animation.interpolateFrame(finalFrameValue, MIN_SCALE, MAX_SCALE);
+            float finalAlpha = Animation.interpolateFrame(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
             animate(undersideContainer, animatorContext)
                     .setDuration(duration)
                     .setInterpolator(interpolator)

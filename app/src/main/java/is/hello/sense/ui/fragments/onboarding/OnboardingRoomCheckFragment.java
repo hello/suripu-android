@@ -29,7 +29,7 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
@@ -255,7 +255,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                     deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
                 } else {
                     this.currentValueAnimator = ValueAnimator.ofInt(0, condition.getValue().intValue());
-                    currentValueAnimator.setInterpolator(Animations.INTERPOLATOR_DEFAULT);
+                    currentValueAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
                     currentValueAnimator.setDuration(COUNT_UP_DURATION_MS);
                     currentValueAnimator.addUpdateListener(a -> {
                         int value = (int) a.getAnimatedValue();

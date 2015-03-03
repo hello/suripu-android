@@ -36,9 +36,9 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private boolean animationEnded = false;
     private boolean animationCanceled = false;
 
-    private long duration = Animations.DURATION_DEFAULT;
+    private long duration = Animation.DURATION_NORMAL;
     private long startDelay = 0;
-    private TimeInterpolator interpolator = Animations.INTERPOLATOR_DEFAULT;
+    private TimeInterpolator interpolator = Animation.INTERPOLATOR_DEFAULT;
     private Runnable onAnimationWillStart;
 
 
@@ -308,7 +308,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     }
 
     public PropertyAnimatorProxy simplePop(float amount) {
-        return setDuration(Animations.DURATION_MINIMUM / 2)
+        return setDuration(Animation.DURATION_FAST / 2)
                 .setInterpolator(new AccelerateInterpolator())
                 .scale(amount)
                 .andThen()

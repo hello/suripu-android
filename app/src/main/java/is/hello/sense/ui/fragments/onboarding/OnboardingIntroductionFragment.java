@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
@@ -109,7 +109,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
                 .start();
 
         animate(titleText)
-                .setDuration(Animations.DURATION_DEFAULT / 2)
+                .setDuration(Animation.DURATION_NORMAL / 2)
                 .fadeOut(View.INVISIBLE)
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.welcome);
@@ -120,7 +120,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
                 .fadeIn()
                 .start();
 
-        sceneBackground.animateToPanAmount(1f, Animations.DURATION_DEFAULT, null);
+        sceneBackground.animateToPanAmount(1f, Animation.DURATION_NORMAL, null);
     }
 
     public void playIntroVideo(@NonNull View sender) {
@@ -163,7 +163,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
                 .start();
 
         animate(titleText)
-                .setDuration(Animations.DURATION_DEFAULT/2)
+                .setDuration(Animation.DURATION_NORMAL /2)
                 .fadeOut(View.INVISIBLE)
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.title_introduction);
@@ -172,6 +172,6 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
                 .fadeIn()
                 .start();
 
-        sceneBackground.animateToPanAmount(0f, Animations.DURATION_DEFAULT, null);
+        sceneBackground.animateToPanAmount(0f, Animation.DURATION_NORMAL, null);
     }
 }

@@ -16,8 +16,8 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
@@ -153,7 +153,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
             interactiveAnimator.prepare();
         }
 
-        animateOpen(Animations.DURATION_DEFAULT);
+        animateOpen(Animation.DURATION_NORMAL);
     }
 
     public void close() {
@@ -166,7 +166,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
         stopAnimations();
 
-        animateClosed(Animations.DURATION_DEFAULT);
+        animateClosed(Animation.DURATION_NORMAL);
     }
 
     public void toggle() {
@@ -320,7 +320,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 .start();
 
         if (interactiveAnimator != null) {
-            interactiveAnimator.finish(1f, duration, Animations.INTERPOLATOR_DEFAULT, animatorContext);
+            interactiveAnimator.finish(1f, duration, Animation.INTERPOLATOR_DEFAULT, animatorContext);
         }
     }
 
@@ -343,7 +343,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 .start();
 
         if (interactiveAnimator != null) {
-            interactiveAnimator.finish(0f, duration, Animations.INTERPOLATOR_DEFAULT, animatorContext);
+            interactiveAnimator.finish(0f, duration, Animation.INTERPOLATOR_DEFAULT, animatorContext);
         }
     }
 
@@ -387,11 +387,11 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 float travelX = Math.abs(startEventX - event.getX()),
                       travelY = Math.abs(startEventY - event.getY());
                 if (velocityTracker == null || isOpen && travelX < touchSlop && travelY < touchSlop) {
-                    animateClosed(Animations.DURATION_DEFAULT);
+                    animateClosed(Animation.DURATION_NORMAL);
                 } else {
                     velocityTracker.computeCurrentVelocity(1000);
                     float velocity = Math.abs(velocityTracker.getYVelocity());
-                    long duration = Animations.calculateDuration(velocity, getMeasuredHeight());
+                    long duration = Animation.calculateDuration(velocity, getMeasuredHeight());
                     if (shouldSnapOpen(velocity)) {
                         animateOpen(duration);
                     } else {
