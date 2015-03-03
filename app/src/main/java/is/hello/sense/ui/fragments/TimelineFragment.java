@@ -479,6 +479,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                          breakdownHeaderMode::timelineUnavailable);
         setHeaderMode(breakdownHeaderMode, this::showBreakdownTransition);
         headerModeSelector.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
+
+        TutorialDialogFragment.markShown(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN);
     }
 
     public void share(@NonNull View sender) {
@@ -788,8 +790,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                         scoreText.setText(score.toString());
                         scoreText.setTextColor(color);
                     });
+                    updateAnimation.addListener(getAnimatorContext());
 
-                    updateAnimation.start();
+                    getAnimatorContext().runWhenIdle(updateAnimation::start);
                 }
             }
         }

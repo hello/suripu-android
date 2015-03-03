@@ -50,10 +50,15 @@ public class AnimatorContext implements Animator.AnimatorListener {
             runnable.run();
         } else {
             addListener(new Listener() {
+                boolean consumed = false;
+
                 @Override
                 public void onContextIdle() {
-                    runnable.run();
-                    removeListener(this);
+                    if (!consumed) {
+                        runnable.run();
+                        idleHandler.post(() -> listeners.remove(this));
+                        this.consumed = true;
+                    }
                 }
             });
         }
