@@ -32,9 +32,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private OnTransitionObserver<TFragment> onTransitionObserver;
     private FragmentManager fragmentManager;
     private @Nullable ResumeScheduler.Coordinator resumeCoordinator;
-    private final AnimatorConfig animationConfig = AnimatorConfig.create(c -> {
-        c.interpolator = new DecelerateInterpolator();
-    });
+    private final AnimatorConfig animationConfig = AnimatorConfig.create();
     private @Nullable AnimatorContext animatorContext;
 
     //endregion
@@ -93,6 +91,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         setWillNotDraw(false);
         setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
         setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
+
+        animationConfig.interpolator = new DecelerateInterpolator();
 
         this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop();
         this.leftEdgeEffect = new EdgeEffect(getContext());
