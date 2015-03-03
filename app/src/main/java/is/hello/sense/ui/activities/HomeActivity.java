@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,8 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
-import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -97,6 +99,8 @@ public class HomeActivity
     private @Nullable SensorManager sensorManager;
     private @Nullable ShakeDetector shakeDetector;
 
+    private final AnimatorContext animatorContext = new AnimatorContext(getClass().getSimpleName());
+
     //region Lifecycle
 
     @Override
@@ -143,12 +147,15 @@ public class HomeActivity
             showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, true);
         });
 
+        AnimatorContext animatorContext = getAnimatorContext();
+
         // noinspection unchecked
         this.viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
         viewPager.setFragmentManager(getFragmentManager());
         viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
         viewPager.setResumeCoordinator(coordinator);
+        viewPager.setAnimatorContext(animatorContext);
         if (viewPager.getCurrentFragment() == null) {
             TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
             viewPager.setCurrentFragment(fragment);
@@ -161,6 +168,7 @@ public class HomeActivity
         slidingLayersView.setOnInteractionListener(this);
         slidingLayersView.setInteractiveAnimator(new UndersideAnimator());
         slidingLayersView.setGestureInterceptingChild(viewPager);
+        slidingLayersView.setAnimatorContext(animatorContext);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             slidingLayersView.setBackgroundColor(getResources().getColor(R.color.status_bar));
         }
@@ -206,6 +214,8 @@ public class HomeActivity
         }
 
         checkInForUpdates();
+
+        animatorContext.addListener(() -> Log.i(getClass().getSimpleName(), "All animations ended"));
     }
 
     @Override
@@ -356,6 +366,11 @@ public class HomeActivity
     public boolean isCurrentFragmentLastNight() {
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
+    }
+
+
+    public @NonNull AnimatorContext getAnimatorContext() {
+        return animatorContext;
     }
 
 
@@ -630,19 +645,22 @@ public class HomeActivity
 
         @Override
         public void frame(float frameValue) {
-            float scale = Animations.interpolateFrame(frameValue, MIN_SCALE, MAX_SCALE);
+            float scale = Animation.interpolateFrame(frameValue, MIN_SCALE, MAX_SCALE);
             undersideContainer.setScaleX(scale);
             undersideContainer.setScaleY(scale);
 
-            float alpha = Animations.interpolateFrame(frameValue, MIN_ALPHA, MAX_ALPHA);
+            float alpha = Animation.interpolateFrame(frameValue, MIN_ALPHA, MAX_ALPHA);
             undersideContainer.setAlpha(alpha);
         }
 
         @Override
-        public void finish(float finalFrameValue, long duration, @NonNull Interpolator interpolator) {
-            float finalScale = Animations.interpolateFrame(finalFrameValue, MIN_SCALE, MAX_SCALE);
-            float finalAlpha = Animations.interpolateFrame(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
-            animate(undersideContainer)
+        public void finish(float finalFrameValue,
+                           long duration,
+                           @NonNull Interpolator interpolator,
+                           @Nullable AnimatorContext animatorContext) {
+            float finalScale = Animation.interpolateFrame(finalFrameValue, MIN_SCALE, MAX_SCALE);
+            float finalAlpha = Animation.interpolateFrame(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
+            animate(undersideContainer, animatorContext)
                     .setDuration(duration)
                     .setInterpolator(interpolator)
                     .scale(finalScale)
@@ -661,7 +679,7 @@ public class HomeActivity
 
         @Override
         public void cancel() {
-            PropertyAnimatorProxy.stop();
+            PropertyAnimatorProxy.stop(undersideContainer);
 
             undersideContainer.setScaleX(MAX_SCALE);
             undersideContainer.setScaleY(MAX_SCALE);

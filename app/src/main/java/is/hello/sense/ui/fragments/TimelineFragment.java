@@ -48,7 +48,8 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
-import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
@@ -73,7 +74,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
-import static is.hello.sense.ui.animation.Animations.Transition;
+import static is.hello.sense.ui.animation.Animation.Transition;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment, AdapterView.OnItemLongClickListener {
@@ -286,11 +287,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 if (breakdownHeaderMode != null) {
                     setHeaderMode(timelineScore, this::hideBreakdownTransition);
                 } else {
-                    setHeaderMode(timelineScore, Animations::crossFade);
+                    setHeaderMode(timelineScore, Animation::crossFade);
                 }
                 break;
             case 1:
-                setHeaderMode(beforeSleep, Animations::crossFade);
+                setHeaderMode(beforeSleep, Animation::crossFade);
                 this.breakdownHeaderMode = null;
                 break;
             default:
@@ -313,12 +314,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         container.addView(newView, 0, layoutParams);
 
         animate(timelineScore.messageText)
-                .setDuration(Animations.DURATION_MINIMUM)
+                .setDuration(Animation.DURATION_FAST)
                 .fadeOut(View.VISIBLE)
                 .start();
 
         animate(timelineScore.scoreTextLabel)
-                .setDuration(Animations.DURATION_MINIMUM)
+                .setDuration(Animation.DURATION_FAST)
                 .fadeOut(View.VISIBLE)
                 .addOnAnimationCompleted(firstFinished -> {
                     if (!firstFinished) {
@@ -338,7 +339,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                     smallScore.setPivotY(0.0f);
 
                     animate(bigScore)
-                            .setDuration(Animations.DURATION_MINIMUM)
+                            .setDuration(Animation.DURATION_FAST)
                             .scale(smallWidth / bigWidth)
                             .addOnAnimationCompleted(finished -> {
                                 if (finished) {
@@ -354,12 +355,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                     smallScore.setScaleX(bigWidth / smallWidth);
                     smallScore.setScaleY(bigWidth / smallWidth);
                     animate(smallScore)
-                            .setDuration(Animations.DURATION_MINIMUM)
+                            .setDuration(Animation.DURATION_FAST)
                             .scale(1f)
                             .start();
 
                     animate(timelineScore.view)
-                            .setDuration(Animations.DURATION_MINIMUM)
+                            .setDuration(Animation.DURATION_FAST)
                             .fadeOut(View.VISIBLE)
                             .addOnAnimationCompleted(finished -> {
                                 if (finished) {
@@ -370,7 +371,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                             .start();
 
                     animate(newView)
-                            .setDuration(Animations.DURATION_MINIMUM)
+                            .setDuration(Animation.DURATION_FAST)
                             .fadeIn()
                             .addOnAnimationCompleted(finished -> {
                                 if (finished) {
@@ -422,17 +423,17 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         bigScore.setScaleX(smallWidth / bigWidth);
         bigScore.setScaleY(smallWidth / bigWidth);
         animate(bigScore)
-                .setDuration(Animations.DURATION_MINIMUM)
+                .setDuration(Animation.DURATION_FAST)
                 .scale(1f)
                 .start();
 
         animate(smallScore)
-                .setDuration(Animations.DURATION_MINIMUM)
+                .setDuration(Animation.DURATION_FAST)
                 .scale(bigWidth / smallWidth)
                 .start();
 
         animate(breakdownHeaderMode.view)
-                .setDuration(Animations.DURATION_MINIMUM)
+                .setDuration(Animation.DURATION_FAST)
                 .fadeOut(View.VISIBLE)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
@@ -443,7 +444,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 .start();
 
         animate(newView)
-                .setDuration(Animations.DURATION_MINIMUM)
+                .setDuration(Animation.DURATION_FAST)
                 .fadeIn()
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
@@ -770,7 +771,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
                 if (sleepScore != scoreGraph.getValue()) {
                     ValueAnimator updateAnimation = ValueAnimator.ofInt(scoreGraph.getValue(), sleepScore);
-                    Animations.Properties.createWithDelay(250).apply(updateAnimation);
+                    AnimatorConfig.createWithDelay(250).apply(updateAnimation);
 
                     ArgbEvaluator colorEvaluator = new ArgbEvaluator();
                     int startColor = Styles.getSleepScoreColor(getActivity(), scoreGraph.getValue());

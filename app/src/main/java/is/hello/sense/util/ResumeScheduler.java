@@ -126,5 +126,12 @@ public class ResumeScheduler extends Scheduler {
                 actions.remove(runnable);
             }
         }
+
+        /**
+         * Binds a given runnable to always be run through this coordinator.
+         */
+        public @NonNull Runnable bind(@NonNull Runnable runnable) {
+            return () -> postOnResume(runnable);
+        }
     }
 }
