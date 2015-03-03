@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
@@ -43,8 +44,9 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     private boolean isOpen = false;
     private @Nullable OnInteractionListener onInteractionListener;
     private @Nullable GestureInterceptingView gestureInterceptingChild;
+    private @Nullable InteractiveAnimator interactiveAnimator;
     private @Nullable
-    InteractiveAnimator interactiveAnimator;
+    AnimatorContext animatorContext;
     private int shadowHeight;
 
 
@@ -187,6 +189,10 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         this.interactiveAnimator = interactiveAnimator;
     }
 
+    public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
+        this.animatorContext = animatorContext;
+    }
+
     @Override
     public boolean hasActiveGesture() {
         return isTrackingTouchEvents;
@@ -301,7 +307,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
     private void animateOpen(long duration) {
         this.isAnimating = true;
-        PropertyAnimatorProxy.animate(topView)
+        PropertyAnimatorProxy.animate(topView, animatorContext)
                 .y(getMeasuredHeight() - topViewOpenHeight)
                 .setDuration(duration)
                 .addOnAnimationCompleted(finished -> {
@@ -314,13 +320,13 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 .start();
 
         if (interactiveAnimator != null) {
-            interactiveAnimator.finish(1f, duration, Animations.INTERPOLATOR_DEFAULT);
+            interactiveAnimator.finish(1f, duration, Animations.INTERPOLATOR_DEFAULT, animatorContext);
         }
     }
 
     private void animateClosed(long duration) {
         this.isAnimating = true;
-        PropertyAnimatorProxy.animate(topView)
+        PropertyAnimatorProxy.animate(topView, animatorContext)
                 .y(-shadowHeight)
                 .setDuration(duration)
                 .addOnAnimationCompleted(finished -> {
@@ -337,7 +343,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 .start();
 
         if (interactiveAnimator != null) {
-            interactiveAnimator.finish(0f, duration, Animations.INTERPOLATOR_DEFAULT);
+            interactiveAnimator.finish(0f, duration, Animations.INTERPOLATOR_DEFAULT, animatorContext);
         }
     }
 

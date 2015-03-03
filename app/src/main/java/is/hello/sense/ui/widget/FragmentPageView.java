@@ -17,6 +17,7 @@ import android.widget.EdgeEffect;
 import android.widget.FrameLayout;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
@@ -34,6 +35,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         p.interpolator = new DecelerateInterpolator();
         return null;
     });
+    private @Nullable
+    AnimatorContext animatorContext;
 
     //endregion
 
@@ -204,6 +207,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
     }
 
+    public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
+        this.animatorContext = animatorContext;
+    }
+
     @Override
     public boolean hasActiveGesture() {
         return isTrackingTouchEvents;
@@ -344,8 +351,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     private void completeTransition(Position position, long duration) {
-        PropertyAnimatorProxy onScreenViewAnimator = animationProperties.toPropertyAnimator(getOnScreenView()).setDuration(duration);
-        PropertyAnimatorProxy offScreenViewAnimator = animationProperties.toPropertyAnimator(getOffScreenView()).setDuration(duration);
+        PropertyAnimatorProxy onScreenViewAnimator = animationProperties.toPropertyAnimator(getOnScreenView(), animatorContext).setDuration(duration);
+        PropertyAnimatorProxy offScreenViewAnimator = animationProperties.toPropertyAnimator(getOffScreenView(), animatorContext).setDuration(duration);
 
         offScreenViewAnimator.x(0f);
         onScreenViewAnimator.x(position == Position.BEFORE ? viewWidth : -viewWidth);
@@ -378,8 +385,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     private void snapBack(Position position, long duration) {
-        PropertyAnimatorProxy onScreenViewAnimator = animationProperties.toPropertyAnimator(getOnScreenView()).setDuration(duration);
-        PropertyAnimatorProxy offScreenViewAnimator = animationProperties.toPropertyAnimator(getOffScreenView()).setDuration(duration);
+        PropertyAnimatorProxy onScreenViewAnimator = animationProperties.toPropertyAnimator(getOnScreenView(), animatorContext).setDuration(duration);
+        PropertyAnimatorProxy offScreenViewAnimator = animationProperties.toPropertyAnimator(getOffScreenView(), animatorContext).setDuration(duration);
 
         offScreenViewAnimator.x(position == Position.BEFORE ? -viewWidth : viewWidth);
         onScreenViewAnimator.x(0f);

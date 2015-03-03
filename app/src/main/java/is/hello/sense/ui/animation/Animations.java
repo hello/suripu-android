@@ -78,7 +78,11 @@ public class Animations {
 
 
         public @NonNull PropertyAnimatorProxy toPropertyAnimator(@NonNull View forView) {
-            return apply(new PropertyAnimatorProxy(forView));
+            return apply(new PropertyAnimatorProxy(forView, null));
+        }
+
+        public @NonNull PropertyAnimatorProxy toPropertyAnimator(@NonNull View forView, @Nullable AnimatorContext animatorContext) {
+            return apply(new PropertyAnimatorProxy(forView, animatorContext));
         }
     }
 

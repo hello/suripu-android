@@ -42,6 +42,7 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
+import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.Animations;
 import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
@@ -143,12 +144,15 @@ public class HomeActivity
             showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, true);
         });
 
+        AnimatorContext animatorContext = getAnimatorContext();
+
         // noinspection unchecked
         this.viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
         viewPager.setFragmentManager(getFragmentManager());
         viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
         viewPager.setResumeCoordinator(coordinator);
+        viewPager.setAnimatorContext(animatorContext);
         if (viewPager.getCurrentFragment() == null) {
             TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
             viewPager.setCurrentFragment(fragment);
@@ -161,6 +165,7 @@ public class HomeActivity
         slidingLayersView.setOnInteractionListener(this);
         slidingLayersView.setInteractiveAnimator(new UndersideAnimator());
         slidingLayersView.setGestureInterceptingChild(viewPager);
+        slidingLayersView.setAnimatorContext(animatorContext);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             slidingLayersView.setBackgroundColor(getResources().getColor(R.color.status_bar));
         }
@@ -639,10 +644,13 @@ public class HomeActivity
         }
 
         @Override
-        public void finish(float finalFrameValue, long duration, @NonNull Interpolator interpolator) {
+        public void finish(float finalFrameValue,
+                           long duration,
+                           @NonNull Interpolator interpolator,
+                           @Nullable AnimatorContext animatorContext) {
             float finalScale = Animations.interpolateFrame(finalFrameValue, MIN_SCALE, MAX_SCALE);
             float finalAlpha = Animations.interpolateFrame(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
-            animate(undersideContainer)
+            animate(undersideContainer, animatorContext)
                     .setDuration(duration)
                     .setInterpolator(interpolator)
                     .scale(finalScale)
@@ -661,7 +669,7 @@ public class HomeActivity
 
         @Override
         public void cancel() {
-            PropertyAnimatorProxy.stop();
+            PropertyAnimatorProxy.stop(undersideContainer);
 
             undersideContainer.setScaleX(MAX_SCALE);
             undersideContainer.setScaleY(MAX_SCALE);

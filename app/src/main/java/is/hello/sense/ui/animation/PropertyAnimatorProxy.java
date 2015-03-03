@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.TimeInterpolator;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateInterpolator;
@@ -24,6 +25,9 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private static final Set<View> ANIMATING_VIEWS = new HashSet<>();
 
     private final View view;
+    private final @Nullable
+    AnimatorContext system;
+
     private final HashMap<String, Float> properties = new HashMap<>();
     private final List<OnAnimationCompleted> onAnimationCompletedListeners = new ArrayList<>();
     private PropertyAnimatorProxy previousInChain;
@@ -40,12 +44,17 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
 
     //region Creation
 
-    public PropertyAnimatorProxy(@NonNull View view) {
+    public PropertyAnimatorProxy(@NonNull View view, @Nullable AnimatorContext system) {
         this.view = view;
+        this.system = system;
     }
 
     public static @NonNull PropertyAnimatorProxy animate(@NonNull View forView) {
-        return new PropertyAnimatorProxy(forView);
+        return new PropertyAnimatorProxy(forView, null);
+    }
+
+    public static @NonNull PropertyAnimatorProxy animate(@NonNull View forView, @Nullable AnimatorContext system) {
+        return new PropertyAnimatorProxy(forView, system);
     }
 
     public static void stop(@NonNull View... forViews) {
@@ -222,6 +231,9 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
             return;
 
         this.animationStarted = true;
+        if (system != null) {
+            system.incrementActiveAnimations();
+        }
     }
 
     @Override
@@ -235,6 +247,9 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
             listener.onAnimationCompleted(!animationCanceled);
         }
 
+        if (system != null) {
+            view.post(system::decrementActiveAnimations);
+        }
         ANIMATING_VIEWS.remove(view);
     }
 
@@ -245,6 +260,9 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
 
         this.animationCanceled = true;
 
+        if (system != null) {
+            view.post(system::decrementActiveAnimations);
+        }
         ANIMATING_VIEWS.remove(view);
     }
 
