@@ -17,7 +17,9 @@ import android.widget.EdgeEffect;
 import android.widget.FrameLayout;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.AnimatorConfig;
+import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
 import is.hello.sense.util.Constants;
@@ -30,10 +32,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private OnTransitionObserver<TFragment> onTransitionObserver;
     private FragmentManager fragmentManager;
     private @Nullable ResumeScheduler.Coordinator resumeCoordinator;
-    private final Animations.Properties animationProperties = Animations.Properties.create(p -> {
-        p.interpolator = new DecelerateInterpolator();
-        return null;
-    });
+    private final AnimatorConfig animationConfig = AnimatorConfig.create();
+    private @Nullable AnimatorContext animatorContext;
 
     //endregion
 
@@ -91,6 +91,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         setWillNotDraw(false);
         setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
         setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
+
+        animationConfig.interpolator = new DecelerateInterpolator();
 
         this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop();
         this.leftEdgeEffect = new EdgeEffect(getContext());
@@ -202,6 +204,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     .commit();
         }
 
+    }
+
+    public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
+        this.animatorContext = animatorContext;
     }
 
     @Override
@@ -344,8 +350,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     private void completeTransition(Position position, long duration) {
-        PropertyAnimatorProxy onScreenViewAnimator = animationProperties.toPropertyAnimator(getOnScreenView()).setDuration(duration);
-        PropertyAnimatorProxy offScreenViewAnimator = animationProperties.toPropertyAnimator(getOffScreenView()).setDuration(duration);
+        PropertyAnimatorProxy onScreenViewAnimator = PropertyAnimatorProxy.animate(getOnScreenView(), animatorContext);
+        animationConfig.apply(onScreenViewAnimator).setDuration(duration);
+        PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView(), animatorContext);
+        animationConfig.apply(offScreenViewAnimator).setDuration(duration);
 
         offScreenViewAnimator.x(0f);
         onScreenViewAnimator.x(position == Position.BEFORE ? viewWidth : -viewWidth);
@@ -378,8 +386,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     private void snapBack(Position position, long duration) {
-        PropertyAnimatorProxy onScreenViewAnimator = animationProperties.toPropertyAnimator(getOnScreenView()).setDuration(duration);
-        PropertyAnimatorProxy offScreenViewAnimator = animationProperties.toPropertyAnimator(getOffScreenView()).setDuration(duration);
+        PropertyAnimatorProxy onScreenViewAnimator = PropertyAnimatorProxy.animate(getOnScreenView(), animatorContext);
+        animationConfig.apply(onScreenViewAnimator).setDuration(duration);
+        PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView(), animatorContext);
+        animationConfig.apply(offScreenViewAnimator).setDuration(duration);
 
         offScreenViewAnimator.x(position == Position.BEFORE ? -viewWidth : viewWidth);
         onScreenViewAnimator.x(0f);
@@ -465,12 +475,13 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     velocityTracker.computeCurrentVelocity(1000);
                     float rawVelocity = velocityTracker.getXVelocity();
                     float velocity = Math.abs(rawVelocity);
-                    long duration = Animations.calculateDuration(velocity, getMeasuredWidth());
+                    long duration = Animation.calculateDuration(velocity, getMeasuredWidth());
 
-                    if (shouldCompleteTransition(viewX, rawVelocity))
+                    if (shouldCompleteTransition(viewX, rawVelocity)) {
                         completeTransition(currentPosition, duration);
-                    else
+                    } else {
                         snapBack(currentPosition, duration);
+                    }
 
                     boolean shouldInvalidate = false;
                     if (!leftEdgeEffect.isFinished()) {
@@ -485,8 +496,13 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                         shouldInvalidate = true;
                     }
 
-                    if (shouldInvalidate)
+                    if (shouldInvalidate) {
                         invalidate();
+                    }
+
+                    if (animatorContext != null) {
+                        animatorContext.endAnimation();
+                    }
 
                     this.isTrackingTouchEvents = false;
 
@@ -505,6 +521,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (isAnimating) {
+                    if (animatorContext != null) {
+                        animatorContext.beginAnimation();
+                    }
+
                     PropertyAnimatorProxy.stop(getOnScreenView(), getOffScreenView());
                     this.isTrackingTouchEvents = true;
                 } else {
@@ -532,6 +552,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 if (!isTrackingTouchEvents && Math.abs(deltaX) > touchSlop && Math.abs(deltaX) > Math.abs(deltaY)) {
                     this.velocityTracker = VelocityTracker.obtain();
                     this.isTrackingTouchEvents = true;
+
+                    if (animatorContext != null) {
+                        animatorContext.beginAnimation();
+                    }
 
                     return true;
                 }

@@ -48,11 +48,14 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
-import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialDialogFragment;
 import is.hello.sense.ui.widget.BlockableLinearLayout;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
@@ -71,8 +74,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
-import static is.hello.sense.ui.animation.Animations.Transition;
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.Animation.Transition;
 
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment, AdapterView.OnItemLongClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
@@ -284,11 +286,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 if (breakdownHeaderMode != null) {
                     setHeaderMode(timelineScore, this::hideBreakdownTransition);
                 } else {
-                    setHeaderMode(timelineScore, Animations::crossFade);
+                    setHeaderMode(timelineScore, Animation::crossFade);
                 }
                 break;
             case 1:
-                setHeaderMode(beforeSleep, Animations::crossFade);
+                setHeaderMode(beforeSleep, Animation::crossFade);
                 this.breakdownHeaderMode = null;
                 break;
             default:
@@ -310,85 +312,61 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         newView.setAlpha(0f);
         container.addView(newView, 0, layoutParams);
 
-        animate(timelineScore.messageText)
-                .setDuration(Animations.DURATION_MINIMUM)
-                .fadeOut(View.VISIBLE)
-                .start();
+        AnimatorConfig config = AnimatorConfig.create();
+        config.duration = Animation.DURATION_FAST;
+        getAnimatorContext().transaction(config, f -> {
+            f.animate(timelineScore.messageText).fadeOut(View.VISIBLE);
+            f.animate(timelineScore.scoreTextLabel).fadeOut(View.VISIBLE);
+        }, firstFinished -> {
+            if (!firstFinished) {
+                return;
+            }
 
-        animate(timelineScore.scoreTextLabel)
-                .setDuration(Animations.DURATION_MINIMUM)
-                .fadeOut(View.VISIBLE)
-                .addOnAnimationCompleted(firstFinished -> {
-                    if (!firstFinished) {
-                        return;
+            Resources resources = getResources();
+            float bigWidth = resources.getDimension(R.dimen.grand_sleep_summary_width);
+            float smallWidth = resources.getDimension(R.dimen.little_sleep_summary_width);
+
+            View bigScore = timelineScore.sleepScoreContainer;
+            bigScore.setPivotX(bigWidth / 2f);
+            bigScore.setPivotY(0.0f);
+
+            View smallScore = breakdownHeaderMode.score;
+            smallScore.setPivotX(smallWidth / 2f);
+            smallScore.setPivotY(0.0f);
+
+            smallScore.setScaleX(bigWidth / smallWidth);
+            smallScore.setScaleY(bigWidth / smallWidth);
+
+            getAnimatorContext().transaction(config, f -> {
+                f.animate(bigScore).scale(smallWidth / bigWidth);
+                f.animate(smallScore).scale(1f);
+                f.animate(timelineScore.view).fadeOut(View.VISIBLE);
+                f.animate(newView).fadeIn();
+            }, finished -> {
+                if (!finished) {
+                    return;
+                }
+
+                bigScore.setScaleX(1f);
+                bigScore.setScaleY(1f);
+
+                timelineScore.messageText.setAlpha(1f);
+                timelineScore.scoreTextLabel.setAlpha(1f);
+
+                container.removeView(timelineScore.view);
+                timelineScore.view.setAlpha(1f);
+
+                float delta = resources.getDimension(R.dimen.gap_tiny);
+                getAnimatorContext().transaction(f -> {
+                    f.animate(breakdownHeaderMode.leftItems).slideXAndFade(delta, 0f, 0f, 1f);
+                    f.animate(breakdownHeaderMode.rightItems).slideXAndFade(-delta, 0f, 0f, 1f);
+                }, finishedLast -> {
+                    if (finishedLast && onCompletion != null) {
+                        onCompletion.run();
                     }
-
-                    Resources resources = getResources();
-                    float bigWidth = resources.getDimension(R.dimen.grand_sleep_summary_width);
-                    float smallWidth = resources.getDimension(R.dimen.little_sleep_summary_width);
-
-                    View bigScore = timelineScore.sleepScoreContainer;
-                    bigScore.setPivotX(bigWidth / 2f);
-                    bigScore.setPivotY(0.0f);
-
-                    View smallScore = breakdownHeaderMode.score;
-                    smallScore.setPivotX(smallWidth / 2f);
-                    smallScore.setPivotY(0.0f);
-
-                    animate(bigScore)
-                            .setDuration(Animations.DURATION_MINIMUM)
-                            .scale(smallWidth / bigWidth)
-                            .addOnAnimationCompleted(finished -> {
-                                if (finished) {
-                                    bigScore.setScaleX(1f);
-                                    bigScore.setScaleY(1f);
-
-                                    timelineScore.messageText.setAlpha(1f);
-                                    timelineScore.scoreTextLabel.setAlpha(1f);
-                                }
-                            })
-                            .start();
-
-                    smallScore.setScaleX(bigWidth / smallWidth);
-                    smallScore.setScaleY(bigWidth / smallWidth);
-                    animate(smallScore)
-                            .setDuration(Animations.DURATION_MINIMUM)
-                            .scale(1f)
-                            .start();
-
-                    animate(timelineScore.view)
-                            .setDuration(Animations.DURATION_MINIMUM)
-                            .fadeOut(View.VISIBLE)
-                            .addOnAnimationCompleted(finished -> {
-                                if (finished) {
-                                    container.removeView(timelineScore.view);
-                                    timelineScore.view.setAlpha(1f);
-                                }
-                            })
-                            .start();
-
-                    animate(newView)
-                            .setDuration(Animations.DURATION_MINIMUM)
-                            .fadeIn()
-                            .addOnAnimationCompleted(finished -> {
-                                if (finished) {
-                                    float delta = resources.getDimension(R.dimen.gap_tiny);
-                                    animate(breakdownHeaderMode.leftItems)
-                                            .slideXAndFade(delta, 0f, 0f, 1f)
-                                            .start();
-                                    animate(breakdownHeaderMode.rightItems)
-                                            .slideXAndFade(-delta, 0f, 0f, 1f)
-                                            .addOnAnimationCompleted(finishedLast -> {
-                                                if (finishedLast && onCompletion != null) {
-                                                    onCompletion.run();
-                                                }
-                                            })
-                                            .start();
-                                }
-                            })
-                            .start();
-                })
-                .start();
+                });
+            });
+        });
     }
 
     public void hideBreakdownTransition(@NonNull ViewGroup container,
@@ -419,46 +397,31 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         bigScore.setScaleX(smallWidth / bigWidth);
         bigScore.setScaleY(smallWidth / bigWidth);
-        animate(bigScore)
-                .setDuration(Animations.DURATION_MINIMUM)
-                .scale(1f)
-                .start();
 
-        animate(smallScore)
-                .setDuration(Animations.DURATION_MINIMUM)
-                .scale(bigWidth / smallWidth)
-                .start();
+        AnimatorConfig config = AnimatorConfig.create();
+        config.duration = Animation.DURATION_FAST;
+        getAnimatorContext().transaction(config, f -> {
+            f.animate(bigScore).scale(1f);
+            f.animate(smallScore).scale(bigWidth / smallWidth);
+            f.animate(breakdownHeaderMode.view).fadeOut(View.VISIBLE);
+            f.animate(newView).fadeIn();
+        }, finished -> {
+            if (!finished) {
+                return;
+            }
 
-        animate(breakdownHeaderMode.view)
-                .setDuration(Animations.DURATION_MINIMUM)
-                .fadeOut(View.VISIBLE)
-                .addOnAnimationCompleted(finished -> {
-                    if (finished) {
-                        container.removeView(breakdownHeaderMode.view);
-                        this.breakdownHeaderMode = null;
-                    }
-                })
-                .start();
+            container.removeView(breakdownHeaderMode.view);
+            this.breakdownHeaderMode = null;
 
-        animate(newView)
-                .setDuration(Animations.DURATION_MINIMUM)
-                .fadeIn()
-                .addOnAnimationCompleted(finished -> {
-                    if (finished) {
-                        animate(timelineScore.messageText)
-                                .fadeIn()
-                                .start();
-                        animate(timelineScore.scoreTextLabel)
-                                .fadeIn()
-                                .addOnAnimationCompleted(finishedLast -> {
-                                    if (finishedLast && onCompletion != null) {
-                                        onCompletion.run();
-                                    }
-                                })
-                                .start();
-                    }
-                })
-                .start();
+            getAnimatorContext().transaction(f -> {
+                f.animate(timelineScore.messageText).fadeIn();
+                f.animate(timelineScore.scoreTextLabel).fadeIn();
+            }, finishedLast -> {
+                if (finishedLast && onCompletion != null) {
+                    onCompletion.run();
+                }
+            });
+        });
     }
 
     public void hideBreakdown(@NonNull View sender) {
@@ -475,6 +438,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                          breakdownHeaderMode::bindTimeline,
                          breakdownHeaderMode::timelineUnavailable);
         setHeaderMode(breakdownHeaderMode, this::showBreakdownTransition);
+		
+        TutorialDialogFragment.markShown(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN);
     }
 
     public void share(@NonNull View sender) {
@@ -523,7 +488,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 if (activity.getWillShowUnderside()) {
                     WelcomeDialog.markShown(activity, R.xml.welcome_dialog_timeline);
                 } else {
-                    WelcomeDialog.showIfNeeded(activity, R.xml.welcome_dialog_timeline);
+                    if (WelcomeDialog.shouldShow(activity, R.xml.welcome_dialog_timeline)) {
+                        WelcomeDialog.show(activity, R.xml.welcome_dialog_timeline);
+                    } else if (TutorialDialogFragment.shouldShow(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN)) {
+                        getAnimatorContext().runWhenIdle(coordinator.bind(() -> {
+                            TutorialDialogFragment testDialog = TutorialDialogFragment.newInstance(Tutorial.SLEEP_SCORE_BREAKDOWN);
+                            testDialog.show(getFragmentManager(), TutorialDialogFragment.TAG);
+                        }));
+                    }
                 }
             } else {
                 timelineEventsHeader.setVisibility(View.INVISIBLE);
@@ -762,7 +734,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
                 if (sleepScore != scoreGraph.getValue()) {
                     ValueAnimator updateAnimation = ValueAnimator.ofInt(scoreGraph.getValue(), sleepScore);
-                    Animations.Properties.createWithDelay(250).apply(updateAnimation);
+                    AnimatorConfig.createWithDelay(250).apply(updateAnimation);
 
                     ArgbEvaluator colorEvaluator = new ArgbEvaluator();
                     int startColor = Styles.getSleepScoreColor(getActivity(), scoreGraph.getValue());
@@ -777,8 +749,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                         scoreText.setText(score.toString());
                         scoreText.setTextColor(color);
                     });
+                    updateAnimation.addListener(getAnimatorContext());
 
-                    updateAnimation.start();
+                    getAnimatorContext().runWhenIdle(updateAnimation::start);
                 }
             }
         }

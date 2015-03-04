@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,7 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
-import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
@@ -87,7 +86,7 @@ public class OnboardingSenseColorsFragment extends SenseFragment implements View
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         if (position == finalItem - 1) {
-            float newY = Animations.interpolateFrame(positionOffset, nextButtonMaxY, nextButtonMinY);
+            float newY = Animation.interpolateFrame(positionOffset, nextButtonMaxY, nextButtonMinY);
             nextButton.setY(newY);
         }
     }

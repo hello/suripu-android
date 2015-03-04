@@ -1,5 +1,6 @@
 package is.hello.sense.ui.widget.util;
 
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Layout;
@@ -33,6 +34,45 @@ public final class Views {
      */
     public static float getNormalizedY(@NonNull MotionEvent event) {
         return Math.max(0f, event.getY());
+    }
+
+    /**
+     * Returns whether or not a given motion event is within the bounds of a given view.
+     */
+    public static boolean isMotionEventInside(@NonNull View view, @NonNull MotionEvent event) {
+        int[] coordinates = {0, 0};
+        view.getLocationOnScreen(coordinates);
+
+        int width = view.getMeasuredWidth();
+        int height = view.getMeasuredHeight();
+
+        float x = event.getRawX();
+        float y = event.getRawY();
+
+        return (x >= coordinates[0] && x <= coordinates[0] + width &&
+                y >= coordinates[1] && y <= coordinates[1] + height);
+    }
+
+    /**
+     * Gets the frame of a given view within its window.
+     * <p/>
+     * This method makes several allocations and should
+     * not be used in performance sensitive code.
+     *
+     * @param view      The view to find the frame for.
+     * @param outRect   On return, contains the frame of the view.
+     */
+    public static void getFrameInWindow(@NonNull View view, @NonNull Rect outRect) {
+        int[] coordinates = {0, 0};
+        view.getLocationInWindow(coordinates);
+
+        Rect windowFrame = new Rect();
+        view.getWindowVisibleDisplayFrame(windowFrame);
+
+        outRect.left = coordinates[0] - windowFrame.left;
+        outRect.top = coordinates[1] - windowFrame.top;
+        outRect.right = outRect.left + view.getMeasuredWidth();
+        outRect.bottom = outRect.top + view.getMeasuredHeight();
     }
 
     /**

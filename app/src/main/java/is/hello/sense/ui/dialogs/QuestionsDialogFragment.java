@@ -26,7 +26,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
-import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
@@ -79,7 +80,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         this.choicesContainer = (ViewGroup) dialog.findViewById(R.id.fragment_questions_choices);
 
         LayoutTransition transition = choicesContainer.getLayoutTransition();
-        Animations.Properties.DEFAULT.apply(transition);
+        AnimatorConfig.DEFAULT.apply(transition);
         transition.disableTransitionType(LayoutTransition.DISAPPEARING);
         transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 
@@ -101,7 +102,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         this.choicesContainer = (ViewGroup) view.findViewById(R.id.fragment_questions_choices);
 
         LayoutTransition transition = choicesContainer.getLayoutTransition();
-        Animations.Properties.DEFAULT.apply(transition);
+        AnimatorConfig.DEFAULT.apply(transition);
         transition.disableTransitionType(LayoutTransition.DISAPPEARING);
         transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 
@@ -175,9 +176,9 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
             if (drawable instanceof TransitionDrawable) {
                 TransitionDrawable transitionDrawable = (TransitionDrawable) drawable;
                 if (checked) {
-                    transitionDrawable.startTransition(Animations.DURATION_MINIMUM);
+                    transitionDrawable.startTransition(Animation.DURATION_FAST);
                 } else {
-                    transitionDrawable.reverseTransition(Animations.DURATION_MINIMUM);
+                    transitionDrawable.reverseTransition(Animation.DURATION_FAST);
                 }
             }
         }

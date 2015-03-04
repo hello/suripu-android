@@ -2,9 +2,11 @@ package is.hello.sense.ui.common;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import is.hello.sense.SenseApplication;
 import is.hello.sense.ui.activities.SenseActivity;
+import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.util.ResumeScheduler;
 import rx.Observable;
 import rx.Subscription;

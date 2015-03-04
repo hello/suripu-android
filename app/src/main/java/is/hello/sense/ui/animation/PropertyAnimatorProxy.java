@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.TimeInterpolator;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateInterpolator;
@@ -18,12 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import is.hello.sense.ui.widget.util.Views;
-
 public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private static final Set<View> ANIMATING_VIEWS = new HashSet<>();
 
     private final View view;
+    private final @Nullable AnimatorContext system;
+
     private final HashMap<String, Float> properties = new HashMap<>();
     private final List<OnAnimationCompleted> onAnimationCompletedListeners = new ArrayList<>();
     private PropertyAnimatorProxy previousInChain;
@@ -32,20 +33,25 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private boolean animationEnded = false;
     private boolean animationCanceled = false;
 
-    private long duration = Animations.DURATION_DEFAULT;
+    private long duration = Animation.DURATION_NORMAL;
     private long startDelay = 0;
-    private TimeInterpolator interpolator = Animations.INTERPOLATOR_DEFAULT;
+    private TimeInterpolator interpolator = Animation.INTERPOLATOR_DEFAULT;
     private Runnable onAnimationWillStart;
 
 
     //region Creation
 
-    public PropertyAnimatorProxy(@NonNull View view) {
+    public PropertyAnimatorProxy(@NonNull View view, @Nullable AnimatorContext system) {
         this.view = view;
+        this.system = system;
     }
 
     public static @NonNull PropertyAnimatorProxy animate(@NonNull View forView) {
-        return new PropertyAnimatorProxy(forView);
+        return new PropertyAnimatorProxy(forView, null);
+    }
+
+    public static @NonNull PropertyAnimatorProxy animate(@NonNull View forView, @Nullable AnimatorContext system) {
+        return new PropertyAnimatorProxy(forView, system);
     }
 
     public static void stop(@NonNull View... forViews) {
@@ -67,6 +73,10 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     public PropertyAnimatorProxy setDuration(long duration) {
         this.duration = duration;
         return this;
+    }
+
+    public long getDuration() {
+        return duration;
     }
 
     public PropertyAnimatorProxy setStartDelay(long startDelay) {
@@ -173,6 +183,10 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
             }
         }
 
+        if (system != null) {
+            system.beginAnimation();
+        }
+
         ANIMATING_VIEWS.add(view);
     }
 
@@ -182,10 +196,6 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         } else {
             buildAndStart();
         }
-    }
-
-    public void startAfterLayout() {
-        Views.observeNextLayout(view).subscribe(ignored -> start());
     }
 
     public void cancel() {
@@ -235,6 +245,9 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
             listener.onAnimationCompleted(!animationCanceled);
         }
 
+        if (system != null) {
+            system.endAnimation();
+        }
         ANIMATING_VIEWS.remove(view);
     }
 
@@ -290,7 +303,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     }
 
     public PropertyAnimatorProxy simplePop(float amount) {
-        return setDuration(Animations.DURATION_MINIMUM / 2)
+        return setDuration(Animation.DURATION_FAST / 2)
                 .setInterpolator(new AccelerateInterpolator())
                 .scale(amount)
                 .andThen()
