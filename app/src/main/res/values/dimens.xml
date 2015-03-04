@@ -149,5 +149,7 @@
 
     <dimen name="share_image_width">500dp</dimen>
     <dimen name="share_image_height">500dp</dimen>
+    <dimen name="share_image_footer_height">50dp</dimen>
+    <dimen name="share_image_footer_inset">12dp</dimen>
 
 </resources>

@@ -74,4 +74,7 @@
 
     <color name="view_scale_tick_normal">#dfdfdf</color>
     <color name="view_scale_tick_emphasized">#c1c1c1</color>
+
+    <color name="share_image_shadow">#80009CFF</color>
+    <color name="share_image_tint">#25009CFF</color>
 </resources>
