@@ -114,8 +114,6 @@ public class AnimatorContext implements Animator.AnimatorListener {
 
     @Override
     public void onAnimationCancel(Animator animation) {
-        endAnimation();
-        animation.removeListener(this);
     }
 
     @Override
