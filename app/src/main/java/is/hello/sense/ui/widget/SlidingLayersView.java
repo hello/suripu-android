@@ -16,7 +16,8 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
@@ -43,8 +44,9 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     private boolean isOpen = false;
     private @Nullable OnInteractionListener onInteractionListener;
     private @Nullable GestureInterceptingView gestureInterceptingChild;
+    private @Nullable InteractiveAnimator interactiveAnimator;
     private @Nullable
-    InteractiveAnimator interactiveAnimator;
+    AnimatorContext animatorContext;
     private int shadowHeight;
 
 
@@ -151,7 +153,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
             interactiveAnimator.prepare();
         }
 
-        animateOpen(Animations.DURATION_DEFAULT);
+        animateOpen(Animation.DURATION_NORMAL);
     }
 
     public void close() {
@@ -164,7 +166,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
         stopAnimations();
 
-        animateClosed(Animations.DURATION_DEFAULT);
+        animateClosed(Animation.DURATION_NORMAL);
     }
 
     public void toggle() {
@@ -185,6 +187,10 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
     public void setInteractiveAnimator(@Nullable InteractiveAnimator interactiveAnimator) {
         this.interactiveAnimator = interactiveAnimator;
+    }
+
+    public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
+        this.animatorContext = animatorContext;
     }
 
     @Override
@@ -301,7 +307,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
     private void animateOpen(long duration) {
         this.isAnimating = true;
-        PropertyAnimatorProxy.animate(topView)
+        PropertyAnimatorProxy.animate(topView, animatorContext)
                 .y(getMeasuredHeight() - topViewOpenHeight)
                 .setDuration(duration)
                 .addOnAnimationCompleted(finished -> {
@@ -314,13 +320,13 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 .start();
 
         if (interactiveAnimator != null) {
-            interactiveAnimator.finish(1f, duration, Animations.INTERPOLATOR_DEFAULT);
+            interactiveAnimator.finish(1f, duration, Animation.INTERPOLATOR_DEFAULT, animatorContext);
         }
     }
 
     private void animateClosed(long duration) {
         this.isAnimating = true;
-        PropertyAnimatorProxy.animate(topView)
+        PropertyAnimatorProxy.animate(topView, animatorContext)
                 .y(-shadowHeight)
                 .setDuration(duration)
                 .addOnAnimationCompleted(finished -> {
@@ -337,7 +343,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 .start();
 
         if (interactiveAnimator != null) {
-            interactiveAnimator.finish(0f, duration, Animations.INTERPOLATOR_DEFAULT);
+            interactiveAnimator.finish(0f, duration, Animation.INTERPOLATOR_DEFAULT, animatorContext);
         }
     }
 
@@ -381,11 +387,11 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 float travelX = Math.abs(startEventX - event.getX()),
                       travelY = Math.abs(startEventY - event.getY());
                 if (velocityTracker == null || isOpen && travelX < touchSlop && travelY < touchSlop) {
-                    animateClosed(Animations.DURATION_DEFAULT);
+                    animateClosed(Animation.DURATION_NORMAL);
                 } else {
                     velocityTracker.computeCurrentVelocity(1000);
                     float velocity = Math.abs(velocityTracker.getYVelocity());
-                    long duration = Animations.calculateDuration(velocity, getMeasuredHeight());
+                    long duration = Animation.calculateDuration(velocity, getMeasuredHeight());
                     if (shouldSnapOpen(velocity)) {
                         animateOpen(duration);
                     } else {
@@ -393,6 +399,10 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                     }
 
                     velocityTracker.recycle();
+                }
+
+                if (animatorContext != null) {
+                    animatorContext.endAnimation();
                 }
 
                 this.velocityTracker = null;
@@ -427,6 +437,10 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 stopAnimations();
 
                 if (isOpen && lastEventY >= topViewY) {
+                    if (animatorContext != null) {
+                        animatorContext.beginAnimation();
+                    }
+
                     this.isTrackingTouchEvents = true;
                     return true;
                 }
@@ -445,6 +459,10 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 if (Math.abs(deltaY) >= touchSlop && Math.abs(deltaY) > Math.abs(deltaX) &&
                         (!isOpen && deltaY > 0.0) && isListViewAtTop(listView)) {
                     this.isTrackingTouchEvents = true;
+
+                    if (animatorContext != null) {
+                        animatorContext.beginAnimation();
+                    }
 
                     if (onInteractionListener != null) {
                         onInteractionListener.onUserWillPullDownTopView();

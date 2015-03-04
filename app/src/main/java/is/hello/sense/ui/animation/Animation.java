@@ -1,7 +1,5 @@
 package is.hello.sense.ui.animation;
 
-import android.animation.Animator;
-import android.animation.LayoutTransition;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -9,77 +7,21 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-import rx.functions.Func1;
-
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class Animations {
-    public static final int DURATION_MINIMUM = 150;
-    public static final int DURATION_MAXIMUM = 350;
-    public static final int DURATION_DEFAULT = 250;
+public class Animation {
+    public static final int DURATION_FAST = 150;
+    public static final int DURATION_SLOW = 350;
+    public static final int DURATION_NORMAL = 250;
     public static final Interpolator INTERPOLATOR_DEFAULT = new DecelerateInterpolator();
 
     public static long calculateDuration(float velocity, float totalArea) {
         long rawDuration = (long) (totalArea / velocity) * 1000 / 2;
-        return Math.max(Animations.DURATION_MINIMUM, Math.min(Animations.DURATION_MAXIMUM, rawDuration));
+        return Math.max(Animation.DURATION_FAST, Math.min(Animation.DURATION_SLOW, rawDuration));
     }
 
     public static float interpolateFrame(float frameValue, float min, float max) {
         return min + frameValue * (max - min);
-    }
-
-    public static final class Properties {
-        public long duration = DURATION_DEFAULT;
-        public Interpolator interpolator = INTERPOLATOR_DEFAULT;
-        public long startDelay = 0;
-
-        public static final Properties DEFAULT = Properties.create();
-
-        public static @NonNull Properties create() {
-            return new Properties();
-        }
-
-        public static @NonNull Properties create(@NonNull Func1<Properties, Void> f) {
-            Properties properties = create();
-            f.call(properties);
-            return properties;
-        }
-
-        public static @NonNull Properties createWithDelay(long delay) {
-            Properties properties = create();
-            properties.startDelay = delay;
-            return properties;
-        }
-
-
-        public <T extends Animator> T apply(@NonNull T animator) {
-            animator.setDuration(duration);
-            animator.setInterpolator(interpolator);
-            animator.setStartDelay(startDelay);
-
-            return animator;
-        }
-
-        public PropertyAnimatorProxy apply(@NonNull PropertyAnimatorProxy animator) {
-            return animator.setDuration(duration)
-                           .setInterpolator(interpolator)
-                           .setStartDelay(startDelay);
-        }
-
-        public LayoutTransition apply(@NonNull LayoutTransition transition) {
-            transition.setDuration(duration);
-            for (int transitionType = LayoutTransition.CHANGE_APPEARING;
-                 transitionType <= LayoutTransition.CHANGING;
-                 transitionType++) {
-                transition.setStartDelay(transitionType, startDelay);
-            }
-            return transition;
-        }
-
-
-        public @NonNull PropertyAnimatorProxy toPropertyAnimator(@NonNull View forView) {
-            return apply(new PropertyAnimatorProxy(forView));
-        }
     }
 
     /**
@@ -100,7 +42,7 @@ public class Animations {
      * Performs a simple cross fade from a given view group's
      * first child to an optional given new child.
      *
-     * @see is.hello.sense.ui.animation.Animations.Transition
+     * @see Animation.Transition
      */
     public static void crossFade(@NonNull ViewGroup container,
                                  @Nullable View newView,
@@ -109,7 +51,7 @@ public class Animations {
         if (container.getChildCount() > 0) {
             View oldView = container.getChildAt(0);
             animate(oldView)
-                    .setDuration(Animations.DURATION_MINIMUM)
+                    .setDuration(Animation.DURATION_FAST)
                     .fadeOut(View.VISIBLE)
                     .addOnAnimationCompleted(finished -> {
                         if (finished) {
@@ -128,7 +70,7 @@ public class Animations {
             container.addView(newView, layoutParams);
             newView.setAlpha(0f);
             animate(newView)
-                    .setDuration(Animations.DURATION_MINIMUM)
+                    .setDuration(Animation.DURATION_FAST)
                     .fadeIn()
                     .start();
         }

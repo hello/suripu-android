@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
-import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.util.Styles;
@@ -59,7 +59,7 @@ public abstract class DeviceDetailsFragment extends HardwareFragment {
         View view = inflater.inflate(R.layout.fragment_device_details, container, false);
 
         LinearLayout fragmentContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_container);
-        Animations.Properties.DEFAULT.apply(fragmentContainer.getLayoutTransition());
+        AnimatorConfig.DEFAULT.apply(fragmentContainer.getLayoutTransition());
 
         this.alertContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_alert);
         this.alertIcon = (ImageView) alertContainer.findViewById(R.id.fragment_device_details_alert_icon);

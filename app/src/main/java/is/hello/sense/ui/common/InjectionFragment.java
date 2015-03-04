@@ -1,5 +1,6 @@
 package is.hello.sense.ui.common;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,6 +9,8 @@ import android.support.annotation.Nullable;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
+import is.hello.sense.ui.animation.AnimatorContext;
+import is.hello.sense.util.Logger;
 import is.hello.sense.util.ResumeScheduler;
 import rx.Observable;
 import rx.Subscription;
@@ -23,9 +26,30 @@ public class InjectionFragment extends SenseFragment implements ObservableContai
 
     protected final PresenterContainer presenterContainer = new PresenterContainer();
 
+    protected boolean animatorContextFromActivity = false;
+    protected @Nullable AnimatorContext animatorContext;
+
 
     public InjectionFragment() {
         SenseApplication.getInstance().inject(this);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (animatorContext == null && activity instanceof AnimatorContext.Scene) {
+            this.animatorContext = ((AnimatorContext.Scene) activity).getAnimatorContext();
+            this.animatorContextFromActivity = true;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        this.animatorContext = null;
+        this.animatorContextFromActivity = false;
     }
 
     @Override
@@ -99,5 +123,15 @@ public class InjectionFragment extends SenseFragment implements ObservableContai
 
     public void addPresenter(@NonNull Presenter presenter) {
         presenterContainer.addPresenter(presenter);
+    }
+
+
+    public @NonNull AnimatorContext getAnimatorContext() {
+        if (animatorContext == null) {
+            this.animatorContext = new AnimatorContext(getClass().getSimpleName());
+            Logger.debug(getClass().getSimpleName(), "Creating animator context");
+        }
+
+        return animatorContext;
     }
 }

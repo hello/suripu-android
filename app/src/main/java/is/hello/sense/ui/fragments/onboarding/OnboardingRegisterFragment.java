@@ -12,9 +12,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.joda.time.DateTimeUtils;
-import org.joda.time.DateTimeZone;
-
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -29,13 +26,12 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.animation.Animations;
+import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.EditorActionHandler;
@@ -69,7 +65,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
         this.registrationErrorText = (TextView) inflater.inflate(R.layout.item_inline_field_error, container, false);
         this.credentialsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_register_credentials);
-        Animations.Properties.DEFAULT.apply(credentialsContainer.getLayoutTransition());
+        AnimatorConfig.DEFAULT.apply(credentialsContainer.getLayoutTransition());
 
         this.nameText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_name);
         this.emailText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_email);
