@@ -443,4 +443,6 @@ so you can sleep better.</string>
     <string name="title_thank_you">Thank You</string>
     <string name="title_have_sense_ready">Have Sense ready?</string>
     <string name="info_have_sense_ready">You‘ll need Sense and Sleep Pill handy to continue. If you‘re not ready now, you can always come back later.</string>
+
+    <string name="tutorial_sleep_score_breakdown">Tap your Sleep Score to see a more detailed breakdown.</string>
 </resources>
