@@ -68,7 +68,7 @@
                     android:layout_marginBottom="@dimen/gap_medium"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/action_register"
+                    android:text="@string/action_set_up_sense"
                     style="@style/AppTheme.Button.Rounded.Light"/>
 
                 <Button

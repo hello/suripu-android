@@ -60,6 +60,8 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_ACCOUNT, null);
+
         setRetainInstance(true);
     }
 

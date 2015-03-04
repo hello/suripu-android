@@ -113,8 +113,6 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
                 .fadeOut(View.INVISIBLE)
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.welcome);
-
-                    Analytics.trackEvent(Analytics.Onboarding.EVENT_START, null);
                 })
                 .andThen()
                 .fadeIn()
