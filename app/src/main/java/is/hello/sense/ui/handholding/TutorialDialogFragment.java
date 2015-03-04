@@ -3,7 +3,10 @@ package is.hello.sense.ui.handholding;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -83,6 +86,11 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
         this.descriptionText = (TextView) inflater.inflate(R.layout.sub_fragment_tutorial_description, contentLayout, false);
         descriptionText.setText(tutorial.descriptionRes);
         descriptionText.setOnClickListener(ignored -> interactionCompleted());
+
+        Drawable dismissIcon = descriptionText.getCompoundDrawablesRelative()[2].mutate();
+        dismissIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+        descriptionText.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, dismissIcon, null);
+
         contentLayout.addView(descriptionText, tutorial.generateDescriptionLayoutParams());
 
         View anchorView = getActivity().findViewById(tutorial.anchorId);
