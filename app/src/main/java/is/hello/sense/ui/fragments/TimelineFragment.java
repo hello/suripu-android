@@ -58,6 +58,7 @@ import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialDialogFragment;
 import is.hello.sense.ui.widget.BlockableLinearLayout;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.ShareImage;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.TimelineHeaderDrawable;
@@ -70,6 +71,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SafeOnClickListener;
+import is.hello.sense.util.Share;
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -442,23 +444,29 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void share(@NonNull View sender) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
         sender.setEnabled(false);
-        bindAndSubscribe(timelinePresenter.mainTimeline,
-                timeline -> {
+        Observable<Timeline> latestTimeline = timelinePresenter.mainTimeline.take(1);
+        Observable<ShareImage.Result> forShare = latestTimeline.flatMap(t -> ShareImage.forTimeline(getActivity(), t));
+        bindAndSubscribe(forShare,
+                r -> {
                     sender.setEnabled(true);
-                    if (timeline != null) {
-                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                        shareIntent.setType("text/plain");
 
-                        String score = Integer.toString(timeline.getScore());
-                        if (DateFormatter.isLastNight(timelinePresenter.getDate())) {
-                            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_last_night_fmt, score));
-                        } else {
-                            String date = dateFormatter.formatAsTimelineDate(timelinePresenter.getDate());
-                            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_other_days_fmt, score, date));
-                        }
+                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                    shareIntent.setType("*/*");
 
-                        startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
+                    DateTime date = timelinePresenter.getDate();
+                    String score = Integer.toString(r.timeline.getScore());
+                    String shareCopy;
+                    if (DateFormatter.isLastNight(date)) {
+                        shareCopy = getString(R.string.timeline_share_last_night_fmt, score);
+                    } else {
+                        String dateString = dateFormatter.formatAsTimelineDate(date);
+                        shareCopy = getString(R.string.timeline_share_other_days_fmt, score, dateString);
                     }
+
+                    Share.image(r.bitmap)
+                         .withTitle(getString(R.string.app_name))
+                         .withDescription(shareCopy)
+                         .send(getActivity());
                 },
                 e -> {
                     Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
@@ -637,12 +645,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         correction.setOldTime(segment.getShiftedTimestamp().toLocalTime());
         correction.setNewTime(newTime);
         bindAndSubscribe(timelinePresenter.submitCorrection(correction),
-                         ignored -> {
-                             continuation.call(true);
-                         }, e -> {
-                             ErrorDialogFragment.presentError(getFragmentManager(), e);
-                             continuation.call(false);
-                         });
+                ignored -> {
+                    continuation.call(true);
+                }, e -> {
+                    ErrorDialogFragment.presentError(getFragmentManager(), e);
+                    continuation.call(false);
+                });
     }
 
     //endregion
