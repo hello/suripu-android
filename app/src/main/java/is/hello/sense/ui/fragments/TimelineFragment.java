@@ -71,7 +71,6 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
 import static is.hello.sense.ui.animation.Animation.Transition;
@@ -125,7 +124,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        homeActivity = (HomeActivity) activity;
+        this.homeActivity = (HomeActivity) activity;
     }
 
     @Override
@@ -135,18 +134,17 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         timelinePresenter.setDateWithTimeline(getDate(), getCachedTimeline());
         addPresenter(timelinePresenter);
 
-        this.segmentAdapter = new TimelineSegmentAdapter(getActivity(), dateFormatter);
-
-        Observable<Boolean> use24HourTime = preferences.observableUse24Time()
-                                                       .subscribeOn(AndroidSchedulers.mainThread());
-        track(use24HourTime.subscribe(segmentAdapter::setUse24Time));
-
         setRetainInstance(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
+
+        this.segmentAdapter = new TimelineSegmentAdapter(getActivity(), dateFormatter);
+
+        Observable<Boolean> use24HourTime = preferences.observableUse24Time();
+        track(use24HourTime.subscribe(segmentAdapter::setUse24Time));
 
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
@@ -160,7 +158,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
         dateText.setOnClickListener(ignored -> {
             Timeline timeline = (Timeline) dateText.getTag();
-            ((HomeActivity) getActivity()).showTimelineNavigator(getDate(), timeline);
+            homeActivity.showTimelineNavigator(getDate(), timeline);
         });
 
         this.headerViewContainer = (FrameLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_container);
@@ -188,8 +186,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.menuButton = (ImageButton) headerView.findViewById(R.id.fragment_timeline_header_menu);
         Views.setSafeOnClickListener(menuButton, ignored -> {
-            HomeActivity activity = (HomeActivity) getActivity();
-            activity.getSlidingLayersView().toggle();
+            homeActivity.getSlidingLayersView().toggle();
             scrollToTop();
         });
 
@@ -198,7 +195,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         Views.setSafeOnClickListener(shareButton, this::share);
 
         listView.setAdapter(segmentAdapter);
-        ListViews.setTouchAndScrollListener(listView, new TimelineScrollListener());
+        listView.setOnScrollListener(new TimelineScrollListener());
 
         return view;
     }
@@ -472,6 +469,21 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     //endregion
 
 
+    private void showHandholdingIfAppropriate() {
+        if (homeActivity.getWillShowUnderside()) {
+            WelcomeDialog.markShown(homeActivity, R.xml.welcome_dialog_timeline);
+        } else {
+            if (WelcomeDialog.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
+                WelcomeDialog.show(homeActivity, R.xml.welcome_dialog_timeline);
+            } else if (TutorialDialogFragment.shouldShow(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN)) {
+                getAnimatorContext().runWhenIdle(coordinator.bind(() -> {
+                    TutorialDialogFragment tutorialDialog = TutorialDialogFragment.newInstance(Tutorial.SLEEP_SCORE_BREAKDOWN);
+                    tutorialDialog.show(getFragmentManager(), TutorialDialogFragment.TAG);
+                }));
+            }
+        }
+    }
+
     public void bindTimeline(@Nullable Timeline timeline) {
         if (timeline != null) {
             boolean hasSegments = !Lists.isEmpty(timeline.getSegments());
@@ -484,19 +496,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 headerView.setBackground(tabsBackgroundDrawable);
                 headerModeSelector.setVisibility(View.VISIBLE);
 
-                HomeActivity activity = (HomeActivity) getActivity();
-                if (activity.getWillShowUnderside()) {
-                    WelcomeDialog.markShown(activity, R.xml.welcome_dialog_timeline);
-                } else {
-                    if (WelcomeDialog.shouldShow(activity, R.xml.welcome_dialog_timeline)) {
-                        WelcomeDialog.show(activity, R.xml.welcome_dialog_timeline);
-                    } else if (TutorialDialogFragment.shouldShow(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN)) {
-                        getAnimatorContext().runWhenIdle(coordinator.bind(() -> {
-                            TutorialDialogFragment testDialog = TutorialDialogFragment.newInstance(Tutorial.SLEEP_SCORE_BREAKDOWN);
-                            testDialog.show(getFragmentManager(), TutorialDialogFragment.TAG);
-                        }));
-                    }
-                }
+                showHandholdingIfAppropriate();
             } else {
                 timelineEventsHeader.setVisibility(View.INVISIBLE);
                 shareButton.setVisibility(View.INVISIBLE);
@@ -654,11 +654,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         this.modifyAlarmButton = modifyAlarmButton;
     }
 
-    private class TimelineScrollListener extends ListViews.TouchAndScrollListener {
-        @Override
-        protected void onScrollStateChanged(@NonNull AbsListView absListView, int oldState, int newState) {
-        }
-
+    private class TimelineScrollListener implements AbsListView.OnScrollListener {
         @Override
         public void onScroll(AbsListView listView, int firstVisiblePosition, int visibleItemCount, int totalItemCount) {
             if (!modifyAlarmButton) {
@@ -673,11 +669,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         @Override
-        protected void onTouchDown(@NonNull AbsListView absListView) {
-        }
-
-        @Override
-        protected void onTouchUp(@NonNull AbsListView absListView) {
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
         }
     }
 

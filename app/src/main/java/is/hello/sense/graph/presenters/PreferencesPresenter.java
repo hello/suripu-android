@@ -160,7 +160,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     //region Observable Values
 
     private <T> Observable<T> observableValue(@NonNull String key, @Nullable T defaultValue, Func2<String, T, T> producer) {
-        return Observable.create((Observable.OnSubscribe<T>) s -> {
+        return Observable.create(s -> {
             SharedPreferences.OnSharedPreferenceChangeListener changeListener = (prefs, changedKey) -> {
                 if (changedKey.equals(key)) {
                     s.onNext(producer.call(key, defaultValue));
