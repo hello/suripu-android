@@ -438,8 +438,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                          breakdownHeaderMode::bindTimeline,
                          breakdownHeaderMode::timelineUnavailable);
         setHeaderMode(breakdownHeaderMode, this::showBreakdownTransition);
-        headerModeSelector.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
-
+		
         TutorialDialogFragment.markShown(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN);
     }
 
