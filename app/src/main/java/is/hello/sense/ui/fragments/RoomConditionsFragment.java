@@ -34,7 +34,7 @@ import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
@@ -180,7 +180,8 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
         final SensorHistoryAdapter graphAdapter = new SensorHistoryAdapter();
         final @NonNull String sensorName;
 
-        @Nullable UnitFormatter.Formatter formatter;
+        @Nullable
+        UnitSystem.Formatter formatter;
         @Nullable SensorState sensorState;
         @Nullable String errorMessage;
 

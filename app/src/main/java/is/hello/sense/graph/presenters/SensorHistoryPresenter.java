@@ -13,13 +13,12 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.graph.PresenterSubject;
-import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import rx.Observable;
 
 public class SensorHistoryPresenter extends ValuePresenter<SensorHistoryPresenter.Result> {
     @Inject ApiService apiService;
-    @Inject UnitFormatter unitFormatter;
+    @Inject PreferencesPresenter preferences;
 
     private String sensorName;
     private Mode mode = Mode.DAY;
@@ -62,7 +61,7 @@ public class SensorHistoryPresenter extends ValuePresenter<SensorHistoryPresente
         } else {
             newHistory = apiService.sensorHistoryForWeek(getSensorName(), SensorGraphSample.timeForLatest());
         }
-        return Observable.combineLatest(newHistory, unitFormatter.unitSystem, Result::new);
+        return Observable.combineLatest(newHistory, preferences.observableUnitSystem(), Result::new);
     }
 
 

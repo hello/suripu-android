@@ -201,7 +201,7 @@ public class HomeActivity
                          },
                          Functions.LOG_ERROR);
 
-        if (isFirstActivityRun && !getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false)) {
+        if (isFirstActivityRun && !getWillShowUnderside()) {
             bindAndSubscribe(devicesPresenter.devices.take(1),
                              this::bindDevices,
                              this::devicesUnavailable);

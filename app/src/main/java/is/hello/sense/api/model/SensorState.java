@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
 
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.units.UnitSystem;
 
 public class SensorState extends ApiResponse {
     @JsonProperty("value")
@@ -71,7 +71,7 @@ public class SensorState extends ApiResponse {
         return idealConditions;
     }
 
-    public @Nullable CharSequence getFormattedValue(@Nullable UnitFormatter.Formatter formatter) {
+    public @Nullable CharSequence getFormattedValue(@Nullable UnitSystem.Formatter formatter) {
         if (getValue() == null) {
             return null;
         } else if (formatter != null) {

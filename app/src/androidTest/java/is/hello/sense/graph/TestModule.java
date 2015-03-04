@@ -42,7 +42,6 @@ import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.graph.presenters.TrendsPresenterTests;
-import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.CachedObjectTests;
 import is.hello.sense.util.DateFormatterTests;
 
@@ -75,7 +74,6 @@ import is.hello.sense.util.DateFormatterTests;
         CachedObjectTests.class,
 
         DateFormatterTests.class,
-        UnitFormatterTests.class,
 
         HelloPeripheralTests.class,
         SensePeripheralTests.class,

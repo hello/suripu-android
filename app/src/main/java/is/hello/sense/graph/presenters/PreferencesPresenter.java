@@ -13,6 +13,7 @@ import org.joda.time.DateTimeZone;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -22,6 +23,7 @@ import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
+import is.hello.sense.units.UnitSystem;
 import is.hello.sense.units.systems.MetricUnitSystem;
 import is.hello.sense.units.systems.UsCustomaryUnitSystem;
 import rx.Observable;
@@ -53,6 +55,8 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
      * so we have to keep a strong reference to them somewhere if we want updates.
      */
     private final Set<SharedPreferences.OnSharedPreferenceChangeListener> strongListeners = Collections.synchronizedSet(new HashSet<>());
+
+    private Observable<UnitSystem> cachedUnitSystem;
 
     public @Inject PreferencesPresenter(@NonNull Context context,
                                         @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences,
@@ -221,5 +225,16 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return observableBoolean(USE_24_TIME, DateFormat.is24HourFormat(context));
     }
 
+    public Observable<UnitSystem> observableUnitSystem() {
+        if (cachedUnitSystem == null) {
+            String defaultSystemName = UnitSystem.getLocaleUnitSystemName(Locale.getDefault());
+            Observable<String> systemName = observableString(UNIT_SYSTEM, defaultSystemName);
+            this.cachedUnitSystem = systemName.map(UnitSystem::createUnitSystemWithName);
+        }
+
+        return cachedUnitSystem;
+    }
+
     //endregion
 }
+

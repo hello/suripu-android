@@ -33,7 +33,6 @@ import is.hello.sense.ui.widget.BlockableScrollView;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
-import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -159,7 +158,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         } else {
             SensorState condition = result.conditions.getSensorStateWithName(sensor);
             if (condition != null) {
-                UnitFormatter.Formatter formatter = result.units.getUnitFormatterForSensor(sensor);
+                UnitSystem.Formatter formatter = result.units.getUnitFormatterForSensor(sensor);
 
                 CharSequence formattedValue = condition.getFormattedValue(formatter);
                 if (formattedValue != null) {

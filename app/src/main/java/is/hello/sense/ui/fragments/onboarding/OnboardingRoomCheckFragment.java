@@ -32,7 +32,6 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
@@ -65,7 +64,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             R.drawable.room_check_light_blue,
     };
     private final List<SensorState> conditions = new ArrayList<>();
-    private final List<UnitFormatter.Formatter> conditionFormatters = new ArrayList<>();
+    private final List<UnitSystem.Formatter> conditionFormatters = new ArrayList<>();
 
     private boolean animationCompleted = false;
     private @Nullable ValueAnimator currentValueAnimator = null;
@@ -226,7 +225,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             conditionsContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
 
             SensorState condition = conditions.get(position);
-            UnitFormatter.Formatter formatter = conditionFormatters.get(position);
+            UnitSystem.Formatter formatter = conditionFormatters.get(position);
 
             showConditionsAt(position + 1, () -> {
                 int conditionColorRes = R.color.sensor_unknown;

@@ -26,6 +26,7 @@ import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
@@ -37,7 +38,6 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -52,7 +52,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
-    @Inject UnitFormatter unitFormatter;
+    @Inject PreferencesPresenter preferences;
 
     private ProgressBar loadingIndicator;
 
@@ -130,7 +130,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         super.onViewCreated(view, savedInstanceState);
 
         Observable<Pair<Account, UnitSystem>> forAccount = Observable.combineLatest(accountPresenter.account,
-                                                                                    unitFormatter.unitSystem,
+                                                                                    preferences.observableUnitSystem(),
                                                                                     Pair::new);
         bindAndSubscribe(forAccount, this::bindAccount, this::presentError);
 
