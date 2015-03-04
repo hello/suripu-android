@@ -15,7 +15,7 @@
     <string name="label_dob">Date of Birth</string>
 
     <string name="action_log_in">Log in</string>
-    <string name="action_register">Sign Up</string>
+    <string name="action_set_up_sense">Set up Sense</string>
 
     <string name="device_sense">Sense</string>
     <string name="device_pill">Sleep Pill</string>
@@ -441,4 +441,6 @@ so you can sleep better.</string>
     <string name="device_color_white">Cotton</string>
     <string name="action_feedback">Feedback</string>
     <string name="title_thank_you">Thank You</string>
+    <string name="title_have_sense_ready">Have Sense ready?</string>
+    <string name="info_have_sense_ready">You‘ll need Sense and Sleep Pill handy to continue. If you‘re not ready now, you can always come back later.</string>
 </resources>

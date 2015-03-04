@@ -45,12 +45,6 @@ public class Analytics {
         String PROP_ERROR_CODE = "code";
         String PROP_ERROR_MESSAGE = "message";
 
-
-        /**
-         * When user lands on the Sign in screen
-         */
-        String EVENT_SIGN_IN_START = "Sign In Start";
-
         /**
          * When the user signs in
          */
@@ -87,9 +81,19 @@ public class Analytics {
         String EVENT_BACK = "Back";
 
         /**
-         * After user taps on Sign Up / lands on Sign Up screen
+         * When the user lands on Sign In screen.
+         */
+        String EVENT_SIGN_IN = "Sign In Start";
+
+        /**
+         * When user lands on the Have Sense ready? screen
          */
         String EVENT_START = "Onboarding Start";
+
+        /**
+         * When user lands on the Sign Up screen
+         */
+        String EVENT_ACCOUNT = "Onboarding Account";
 
         /**
          * When user taps "I don't have a Sense" button.

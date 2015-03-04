@@ -43,7 +43,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.Global.EVENT_SIGN_IN_START, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_SIGN_IN, null);
         }
     }
 

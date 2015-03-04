@@ -300,7 +300,14 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void showRegistration() {
-        pushFragment(new OnboardingRegisterFragment(), null, true);
+        OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
+        builder.setHeadingText(R.string.title_have_sense_ready);
+        builder.setSubheadingText(R.string.info_have_sense_ready);
+        builder.setDiagramImage(R.drawable.onboarding_have_sense_ready);
+        builder.setWantsBack(true);
+        builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_START);
+        builder.setNextFragmentClass(OnboardingRegisterFragment.class);
+        pushFragment(builder.toFragment(), null, true);
     }
 
     public void showBirthday(@Nullable Account account) {
