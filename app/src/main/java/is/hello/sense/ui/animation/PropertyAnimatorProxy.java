@@ -246,7 +246,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         }
 
         if (system != null) {
-            view.post(system::endAnimation);
+            system.endAnimation();
         }
         ANIMATING_VIEWS.remove(view);
     }
@@ -258,9 +258,6 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
 
         this.animationCanceled = true;
 
-        if (system != null) {
-            view.post(system::endAnimation);
-        }
         ANIMATING_VIEWS.remove(view);
     }
 

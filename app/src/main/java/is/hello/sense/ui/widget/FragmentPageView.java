@@ -521,6 +521,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (isAnimating) {
+                    if (animatorContext != null) {
+                        animatorContext.beginAnimation();
+                    }
+
                     PropertyAnimatorProxy.stop(getOnScreenView(), getOffScreenView());
                     this.isTrackingTouchEvents = true;
                 } else {
