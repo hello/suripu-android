@@ -333,7 +333,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
 
     public interface AdjustTimeFragment {
         void onAdjustSegmentTime(@NonNull TimelineSegment segment,
-                                 @NonNull LocalTime newUnshiftedTime,
+                                 @NonNull LocalTime newTime,
                                  @NonNull Action1<Boolean> continuation);
     }
 }

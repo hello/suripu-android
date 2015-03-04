@@ -6,8 +6,6 @@ import android.support.annotation.Nullable;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -20,20 +18,13 @@ import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Markdown;
 import rx.Observable;
 
-public class TimelinePresenter extends Presenter {
+public class TimelinePresenter extends ValuePresenter<Timeline> {
     @Inject Markdown markdown;
     @Inject ApiService service;
 
     private DateTime date;
 
-    public final PresenterSubject<ArrayList<Timeline>> timeline = PresenterSubject.create();
-    public final Observable<Timeline> mainTimeline = timeline.map(timelines -> {
-        if (Lists.isEmpty(timelines)) {
-            return null;
-        } else {
-            return timelines.get(0);
-        }
-    });
+    public final PresenterSubject<Timeline> mainTimeline = subject;
     public final Observable<CharSequence> renderedTimelineMessage = mainTimeline.map(timeline -> {
         if (timeline != null) {
             String rawMessage = timeline.getMessage();
@@ -44,24 +35,27 @@ public class TimelinePresenter extends Presenter {
     });
 
     @Override
-    protected void onReloadForgottenData() {
-        update();
-    }
-
-    @Override
-    protected boolean onForgetDataForLowMemory() {
-        timeline.onNext(new ArrayList<>());
+    protected boolean isDataDisposable() {
         return true;
     }
 
-    public void update() {
-        if (getDate() != null) {
-            logEvent("updating timeline for " + date.toString("yyyy-MM-dd"));
-            Observable<ArrayList<Timeline>> update = service.timelineForDate(date.year().getAsString(),
-                                                                             date.monthOfYear().getAsString(),
-                                                                             date.dayOfMonth().getAsString());
-            update.subscribe(timeline);
-        }
+    @Override
+    protected boolean canUpdate() {
+        return (getDate() != null);
+    }
+
+    @Override
+    protected Observable<Timeline> provideUpdateObservable() {
+        Observable<ArrayList<Timeline>> update = service.timelineForDate(date.year().getAsString(),
+                                                                         date.monthOfYear().getAsString(),
+                                                                         date.dayOfMonth().getAsString());
+        return update.map(timelines -> {
+            if (Lists.isEmpty(timelines)) {
+                return null;
+            } else {
+                return timelines.get(0);
+            }
+        });
     }
 
 
@@ -72,7 +66,7 @@ public class TimelinePresenter extends Presenter {
     public void setDateWithTimeline(@NonNull DateTime date, @Nullable Timeline timeline) {
         this.date = date;
         if (timeline != null) {
-            this.timeline.onNext(Lists.newArrayList(timeline));
+            this.mainTimeline.onNext(timeline);
         } else {
             update();
         }

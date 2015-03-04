@@ -413,7 +413,7 @@ public class HomeActivity
     public void onWillTransitionToFragment(@NonNull FragmentPageView<TimelineFragment> view, @NonNull TimelineFragment fragment) {
         TimelineFragment currentFragment = view.getCurrentFragment();
         if (currentFragment != null) {
-            currentFragment.setModifyAlarmButton(false);
+            currentFragment.setControlsAlarmShortcut(false);
         }
 
         showAlarmShortcut();
@@ -423,14 +423,14 @@ public class HomeActivity
     public void onDidTransitionToFragment(@NonNull FragmentPageView<TimelineFragment> view, @NonNull TimelineFragment fragment) {
         this.lastUpdated = System.currentTimeMillis();
 
-        fragment.setModifyAlarmButton(true);
+        fragment.setControlsAlarmShortcut(true);
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_DATE_CHANGED, null);
     }
 
     @Override
     public void onDidSnapBackToFragment(@NonNull FragmentPageView<TimelineFragment> view, @NonNull TimelineFragment fragment) {
-        fragment.setModifyAlarmButton(true);
+        fragment.setControlsAlarmShortcut(true);
     }
 
     //endregion

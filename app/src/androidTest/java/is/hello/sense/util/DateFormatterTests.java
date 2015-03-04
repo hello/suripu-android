@@ -1,13 +1,21 @@
 package is.hello.sense.util;
 
+import android.content.Context;
+import android.text.format.DateFormat;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import is.hello.sense.R;
 import is.hello.sense.graph.InjectionTestCase;
 
 public class DateFormatterTests extends InjectionTestCase {
     private DateFormatter formatter;
+    private String placeholder;
 
     @Override
     protected void setUp() throws Exception {
@@ -15,6 +23,7 @@ public class DateFormatterTests extends InjectionTestCase {
 
         if (formatter == null) {
             this.formatter = new DateFormatter(getInstrumentation().getTargetContext());
+            this.placeholder = getInstrumentation().getTargetContext().getString(R.string.format_date_placeholder);
         }
     }
 
@@ -46,7 +55,8 @@ public class DateFormatterTests extends InjectionTestCase {
     }
 
     public void testFormatAsTimelineDate() {
-        assertEquals("Last Night", formatter.formatAsTimelineDate(DateFormatter.lastNight()));
+        String lastNightString = getInstrumentation().getTargetContext().getString(R.string.format_date_last_night);
+        assertEquals(lastNightString, formatter.formatAsTimelineDate(DateFormatter.lastNight()));
 
         DateTime nightBefore = DateFormatter.lastNight().minusDays(1);
         assertEquals(nightBefore.toString("EEEE"), formatter.formatAsTimelineDate(nightBefore));
@@ -54,32 +64,36 @@ public class DateFormatterTests extends InjectionTestCase {
         DateTime weekBefore = DateFormatter.lastNight().minusDays(8);
         assertEquals(weekBefore.toString("MMMM d"), formatter.formatAsTimelineDate(weekBefore));
 
-        assertEquals("--", formatter.formatAsTimelineDate(null));
+        assertEquals(placeholder, formatter.formatAsTimelineDate(null));
     }
 
     public void testFormatAsBirthDate() {
-        assertEquals("02/03/01", formatter.formatAsBirthDate(new LocalDate(2001, 2, 3)));
-        assertEquals("--", formatter.formatAsBirthDate(null));
+        GregorianCalendar calendar = new GregorianCalendar(2001, 8, 3); // Months are 0-indexed in the Java API
+        Date canonicalDate = new Date(calendar.getTimeInMillis());
+        Context context = getInstrumentation().getTargetContext();
+        String canonicalString = DateFormat.getDateFormat(context).format(canonicalDate);
+        assertEquals(canonicalString, formatter.formatAsBirthDate(new LocalDate(2001, 9, 3)));
+        assertEquals(placeholder, formatter.formatAsBirthDate(null));
     }
 
     public void testFormatAsTimelineStamp() {
         assertEquals("2:30", formatter.formatAsTimelineStamp(new DateTime(2001, 2, 3, 14, 30), false));
         assertEquals("14:30", formatter.formatAsTimelineStamp(new DateTime(2001, 2, 3, 14, 30), true));
-        assertEquals("--", formatter.formatAsTimelineStamp(null, false));
-        assertEquals("--", formatter.formatAsTimelineStamp(null, true));
+        assertEquals(placeholder, formatter.formatAsTimelineStamp(null, false));
+        assertEquals(placeholder, formatter.formatAsTimelineStamp(null, true));
     }
 
     public void testFormatAsTime() {
         assertEquals("2:30 PM", formatter.formatAsTime(new DateTime(2001, 2, 3, 14, 30), false));
         assertEquals("14:30", formatter.formatAsTime(new DateTime(2001, 2, 3, 14, 30), true));
-        assertEquals("--", formatter.formatAsTime((DateTime) null, false));
-        assertEquals("--", formatter.formatAsTime((DateTime) null, true));
+        assertEquals(placeholder, formatter.formatAsTime((DateTime) null, false));
+        assertEquals(placeholder, formatter.formatAsTime((DateTime) null, true));
     }
 
     public void testFormatAsDayAndTime() {
         assertEquals("Saturday – 2:30 PM", formatter.formatAsDayAndTime(new DateTime(2001, 2, 3, 14, 30), false));
         assertEquals("Saturday – 14:30", formatter.formatAsDayAndTime(new DateTime(2001, 2, 3, 14, 30), true));
-        assertEquals("--", formatter.formatAsDayAndTime(null, false));
-        assertEquals("--", formatter.formatAsDayAndTime(null, true));
+        assertEquals(placeholder, formatter.formatAsDayAndTime(null, false));
+        assertEquals(placeholder, formatter.formatAsDayAndTime(null, true));
     }
 }

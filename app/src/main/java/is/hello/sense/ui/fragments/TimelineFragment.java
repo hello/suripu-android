@@ -103,8 +103,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private View timelineEventsHeader;
 
     private HomeActivity homeActivity;
-    private boolean modifyAlarmButton = false;
-    private TimelineHeaderDrawable tabsBackgroundDrawable;
+    private boolean controlsAlarmShortcut = false;
+    private TimelineHeaderDrawable headerTabsBackground;
 
     private @Nullable PopupWindow timelinePopup;
 
@@ -152,7 +152,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
 
         this.headerView = (BlockableLinearLayout) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
-        this.tabsBackgroundDrawable = new TimelineHeaderDrawable(getResources());
+        this.headerTabsBackground = new TimelineHeaderDrawable(getResources());
 
         this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
         dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
@@ -165,7 +165,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.headerModeSelector = (SelectorLinearLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
         headerModeSelector.setVisibility(View.INVISIBLE);
-        headerModeSelector.setSelectionAwareDrawable(tabsBackgroundDrawable);
+        headerModeSelector.setSelectionAwareDrawable(headerTabsBackground);
         headerModeSelector.setOnSelectionChangedListener(this);
         headerModeSelector.setSelectedIndex(0);
 
@@ -493,7 +493,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 timelineEventsHeader.setVisibility(View.VISIBLE);
                 shareButton.setVisibility(View.VISIBLE);
 
-                headerView.setBackground(tabsBackgroundDrawable);
+                headerView.setBackground(headerTabsBackground);
                 headerModeSelector.setVisibility(View.VISIBLE);
 
                 showHandholdingIfAppropriate();
@@ -629,20 +629,20 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     @Override
     public void onAdjustSegmentTime(@NonNull TimelineSegment segment,
-                                    @NonNull LocalTime newUnshiftedTime,
+                                    @NonNull LocalTime newTime,
                                     @NonNull Action1<Boolean> continuation) {
         Feedback correction = new Feedback();
         correction.setEventType(segment.getEventType());
         correction.setNight(getDate().toLocalDate());
         correction.setOldTime(segment.getShiftedTimestamp().toLocalTime());
-        correction.setNewTime(newUnshiftedTime);
+        correction.setNewTime(newTime);
         bindAndSubscribe(timelinePresenter.submitCorrection(correction),
-                ignored -> {
-                    continuation.call(true);
-                }, e -> {
-                    ErrorDialogFragment.presentError(getFragmentManager(), e);
-                    continuation.call(false);
-                });
+                         ignored -> {
+                             continuation.call(true);
+                         }, e -> {
+                             ErrorDialogFragment.presentError(getFragmentManager(), e);
+                             continuation.call(false);
+                         });
     }
 
     //endregion
@@ -650,14 +650,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     //region Alarm Button
 
-    public void setModifyAlarmButton(boolean modifyAlarmButton) {
-        this.modifyAlarmButton = modifyAlarmButton;
+    public void setControlsAlarmShortcut(boolean controlsAlarmShortcut) {
+        this.controlsAlarmShortcut = controlsAlarmShortcut;
     }
 
     private class TimelineScrollListener implements AbsListView.OnScrollListener {
         @Override
         public void onScroll(AbsListView listView, int firstVisiblePosition, int visibleItemCount, int totalItemCount) {
-            if (!modifyAlarmButton) {
+            if (!controlsAlarmShortcut) {
                 return;
             }
 

@@ -19,10 +19,7 @@ public class TimelinePresenterTests extends InjectionTestCase {
     public void testUpdate() throws Exception {
         presenter.setDateWithTimeline(DateTime.now(), null);
 
-        Sync.wrap(presenter.timeline)
-            .assertFalse(Lists::isEmpty);
-
-        Sync.wrap(presenter.mainTimeline.take(1))
+        Sync.wrap(presenter.mainTimeline)
             .assertNotNull();
 
         Sync.wrap(presenter.renderedTimelineMessage.take(1))
@@ -36,34 +33,10 @@ public class TimelinePresenterTests extends InjectionTestCase {
                 .unwrap();
         presenter.setDateWithTimeline(timeline.getDate(), timeline);
 
-        Sync.wrap(presenter.timeline)
-            .assertFalse(Lists::isEmpty);
-
-        Sync.wrap(presenter.mainTimeline.take(1))
+        Sync.wrap(presenter.mainTimeline)
             .assertNotNull();
 
         Sync.wrap(presenter.renderedTimelineMessage.take(1))
             .assertFalse(TextUtils::isEmpty);
-    }
-
-    public void testMemoryPressure() throws Exception {
-        presenter.setDateWithTimeline(DateTime.now(), null);
-
-        Sync.wrap(presenter.timeline)
-            .assertFalse(Lists::isEmpty);
-
-        presenter.onTrimMemory(Presenter.BASE_TRIM_LEVEL);
-
-        Sync.wrap(presenter.timeline)
-            .assertTrue(Lists::isEmpty);
-        Sync.wrap(presenter.mainTimeline.take(1))
-            .assertNull();
-        Sync.wrap(presenter.renderedTimelineMessage.take(1))
-            .assertTrue(TextUtils::isEmpty);
-
-        presenter.onContainerResumed();
-
-        Sync.wrap(presenter.timeline)
-            .assertFalse(Lists::isEmpty);
     }
 }
