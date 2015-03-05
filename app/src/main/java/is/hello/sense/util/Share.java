@@ -17,7 +17,6 @@ import java.io.OutputStream;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 
 public class Share {
@@ -101,8 +100,6 @@ public class Share {
 
         @Override
         public boolean send(@NonNull Activity from) {
-            LoadingDialogFragment.show(from.getFragmentManager());
-
             ContentResolver contentResolver = from.getContentResolver();
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, intent.getStringExtra(Intent.EXTRA_SUBJECT));
@@ -118,17 +115,16 @@ public class Share {
             } catch (IOException e) {
                 Logger.error(Share.class.getSimpleName(), "Could not share bitmap image", e);
 
-                LoadingDialogFragment.close(from.getFragmentManager());
                 ErrorDialogFragment.presentError(from.getFragmentManager(), e);
 
                 return false;
             } finally {
                 Functions.safeClose(imageOut);
+                bitmap.recycle();
             }
 
             intent.putExtra(Intent.EXTRA_STREAM, imageUri);
 
-            LoadingDialogFragment.close(from.getFragmentManager());
             from.startActivity(Intent.createChooser(intent, from.getString(R.string.action_share)));
 
             return true;

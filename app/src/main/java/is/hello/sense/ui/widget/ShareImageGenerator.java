@@ -39,6 +39,7 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
     private final int scoreLabelHeight;
 
     private final int baseSegmentHeight;
+
     private final int footerHeight;
     private final int footerTextHeight;
     private final int footerInset;
