@@ -16,8 +16,12 @@ import java.io.OutputStream;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class Share {
     public static ImageAction image(@NonNull Bitmap bitmap) {
@@ -36,7 +40,7 @@ public class Share {
             intent.setType(mimeType);
         }
 
-        public abstract boolean send(@NonNull Activity from);
+        public abstract void send(@NonNull Activity from);
     }
 
     public static class EmailAction extends Action {
@@ -62,7 +66,7 @@ public class Share {
         }
 
         @Override
-        public boolean send(@NonNull Activity from) {
+        public void send(@NonNull Activity from) {
             try {
                 from.startActivity(intent);
             } catch (ActivityNotFoundException e) {
@@ -71,16 +75,13 @@ public class Share {
                 alertDialog.setMessage(R.string.error_no_email_client);
                 alertDialog.setPositiveButton(android.R.string.ok, null);
                 alertDialog.show();
-
-                return false;
             }
-
-            return true;
         }
     }
 
     public static class ImageAction extends Action {
         private final Bitmap bitmap;
+        private @Nullable SenseDialogFragment loadingDialogFragment;
 
         private ImageAction(@NonNull Bitmap bitmap) {
             super(Intent.ACTION_SEND, "*/*");
@@ -98,8 +99,13 @@ public class Share {
             return this;
         }
 
+        public ImageAction withLoadingDialog(@NonNull SenseDialogFragment loadingDialogFragment) {
+            this.loadingDialogFragment = loadingDialogFragment;
+            return this;
+        }
+
         @Override
-        public boolean send(@NonNull Activity from) {
+        public void send(@NonNull Activity from) {
             ContentResolver contentResolver = from.getContentResolver();
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, intent.getStringExtra(Intent.EXTRA_SUBJECT));
@@ -107,27 +113,39 @@ public class Share {
             values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
             Uri imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
-            OutputStream imageOut = null;
-            try {
-                imageOut = contentResolver.openOutputStream(imageUri);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, imageOut);
-                imageOut.flush();
-            } catch (IOException e) {
-                Logger.error(Share.class.getSimpleName(), "Could not share bitmap image", e);
+            Observable<Void> writeImage = Observable.create(s -> {
+                OutputStream imageOut = null;
+                try {
+                    imageOut = contentResolver.openOutputStream(imageUri);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, imageOut);
+                    imageOut.flush();
+                } catch (IOException e) {
+                    s.onError(e);
+                } finally {
+                    Functions.safeClose(imageOut);
+                    bitmap.recycle();
+                }
 
-                ErrorDialogFragment.presentError(from.getFragmentManager(), e);
+                s.onNext(null);
+                s.onCompleted();
+            });
 
-                return false;
-            } finally {
-                Functions.safeClose(imageOut);
-                bitmap.recycle();
-            }
+            writeImage.subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .subscribe(ignored -> {
+                          intent.putExtra(Intent.EXTRA_STREAM, imageUri);
+                          from.startActivity(Intent.createChooser(intent, from.getString(R.string.action_share)));
 
-            intent.putExtra(Intent.EXTRA_STREAM, imageUri);
-
-            from.startActivity(Intent.createChooser(intent, from.getString(R.string.action_share)));
-
-            return true;
+                          if (loadingDialogFragment != null) {
+                              loadingDialogFragment.dismissSafely();
+                          }
+                      }, e -> {
+                          Logger.error(Share.class.getSimpleName(), "Could not share bitmap image", e);
+                          ErrorDialogFragment.presentError(from.getFragmentManager(), e);
+                          if (loadingDialogFragment != null) {
+                              loadingDialogFragment.dismissSafely();
+                          }
+                      });
         }
     }
 }

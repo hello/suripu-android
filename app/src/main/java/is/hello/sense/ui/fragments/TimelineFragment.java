@@ -51,6 +51,7 @@ import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.handholding.Tutorial;
@@ -443,13 +444,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     public void share(@NonNull View sender) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
-        sender.setEnabled(false);
+
+        LoadingDialogFragment loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager());
         Observable<Timeline> timeline = timelinePresenter.timeline.take(1);
         Observable<ShareImageGenerator.Result> toShare = timeline.flatMap(t -> ShareImageGenerator.forTimeline(getActivity(), t));
         bindAndSubscribe(toShare,
                          r -> {
-                             sender.setEnabled(true);
-
                              DateTime date = timelinePresenter.getDate();
                              String score = Integer.toString(r.timeline.getScore());
                              String shareCopy;
@@ -463,11 +463,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                              Share.image(r.bitmap)
                                   .withTitle(getString(R.string.app_name))
                                   .withDescription(shareCopy)
+                                  .withLoadingDialog(loadingDialogFragment)
                                   .send(getActivity());
                          },
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
-                             sender.setEnabled(true);
+                             loadingDialogFragment.dismiss();
                          });
     }
 
