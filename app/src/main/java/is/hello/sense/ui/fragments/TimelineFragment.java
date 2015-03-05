@@ -58,7 +58,7 @@ import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialDialogFragment;
 import is.hello.sense.ui.widget.BlockableLinearLayout;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
-import is.hello.sense.ui.widget.ShareImage;
+import is.hello.sense.ui.widget.ShareImageGenerator;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.TimelineHeaderDrawable;
@@ -445,7 +445,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
         sender.setEnabled(false);
         Observable<Timeline> latestTimeline = timelinePresenter.mainTimeline.take(1);
-        Observable<ShareImage.Result> forShare = latestTimeline.flatMap(t -> ShareImage.forTimeline(getActivity(), t));
+        Observable<ShareImageGenerator.Result> forShare = latestTimeline.flatMap(t -> ShareImageGenerator.forTimeline(getActivity(), t));
         bindAndSubscribe(forShare,
                 r -> {
                     sender.setEnabled(true);

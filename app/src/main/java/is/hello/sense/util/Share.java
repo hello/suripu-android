@@ -1,6 +1,7 @@
 package is.hello.sense.util;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -15,16 +16,23 @@ import java.io.OutputStream;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 
 public class Share {
-    public static ImageFacade image(@NonNull Bitmap bitmap) {
-        return new ImageFacade(bitmap);
+    public static ImageAction image(@NonNull Bitmap bitmap) {
+        return new ImageAction(bitmap);
     }
 
-    public static abstract class Facade {
+    public static EmailAction email(@NonNull String address) {
+        return new EmailAction(address);
+    }
+
+    public static abstract class Action {
         protected final Intent intent;
 
-        protected Facade(@NonNull String action, @NonNull String mimeType) {
+        protected Action(@NonNull String action, @Nullable String mimeType) {
             this.intent = new Intent(action);
             intent.setType(mimeType);
         }
@@ -32,27 +40,69 @@ public class Share {
         public abstract boolean send(@NonNull Activity from);
     }
 
-    public static class ImageFacade extends Facade {
+    public static class EmailAction extends Action {
+        public EmailAction(@NonNull String emailAddress) {
+            super(Intent.ACTION_SENDTO, null);
+
+            intent.setData(Uri.fromParts("mailto", emailAddress, null));
+        }
+
+        public EmailAction withSubject(@NonNull String subject) {
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            return this;
+        }
+
+        public EmailAction withBody(@NonNull String body) {
+            intent.putExtra(Intent.EXTRA_TEXT, body);
+            return this;
+        }
+
+        public EmailAction withAttachment(@NonNull Uri attachment) {
+            intent.putExtra(Intent.EXTRA_STREAM, attachment);
+            return this;
+        }
+
+        @Override
+        public boolean send(@NonNull Activity from) {
+            try {
+                from.startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                SenseAlertDialog alertDialog = new SenseAlertDialog(from);
+                alertDialog.setTitle(R.string.dialog_error_title);
+                alertDialog.setMessage(R.string.error_no_email_client);
+                alertDialog.setPositiveButton(android.R.string.ok, null);
+                alertDialog.show();
+
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public static class ImageAction extends Action {
         private final Bitmap bitmap;
 
-        private ImageFacade(@NonNull Bitmap bitmap) {
+        private ImageAction(@NonNull Bitmap bitmap) {
             super(Intent.ACTION_SEND, "*/*");
 
             this.bitmap = bitmap;
         }
 
-        public ImageFacade withTitle(@Nullable String title) {
+        public ImageAction withTitle(@Nullable String title) {
             intent.putExtra(Intent.EXTRA_SUBJECT, title);
             return this;
         }
 
-        public ImageFacade withDescription(@Nullable String description) {
+        public ImageAction withDescription(@Nullable String description) {
             intent.putExtra(Intent.EXTRA_TEXT, description);
             return this;
         }
 
         @Override
         public boolean send(@NonNull Activity from) {
+            LoadingDialogFragment.show(from.getFragmentManager());
+
             ContentResolver contentResolver = from.getContentResolver();
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, intent.getStringExtra(Intent.EXTRA_SUBJECT));
@@ -67,6 +117,10 @@ public class Share {
                 imageOut.flush();
             } catch (IOException e) {
                 Logger.error(Share.class.getSimpleName(), "Could not share bitmap image", e);
+
+                LoadingDialogFragment.close(from.getFragmentManager());
+                ErrorDialogFragment.presentError(from.getFragmentManager(), e);
+
                 return false;
             } finally {
                 Functions.safeClose(imageOut);
@@ -74,7 +128,9 @@ public class Share {
 
             intent.putExtra(Intent.EXTRA_STREAM, imageUri);
 
+            LoadingDialogFragment.close(from.getFragmentManager());
             from.startActivity(Intent.createChooser(intent, from.getString(R.string.action_share)));
+
             return true;
         }
     }

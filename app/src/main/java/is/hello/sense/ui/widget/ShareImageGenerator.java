@@ -23,7 +23,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public final class ShareImage implements Observable.OnSubscribe<ShareImage.Result> {
+public final class ShareImageGenerator implements Observable.OnSubscribe<ShareImageGenerator.Result> {
     private final Context context;
     private final Timeline timeline;
     private final Resources resources;
@@ -57,13 +57,13 @@ public final class ShareImage implements Observable.OnSubscribe<ShareImage.Resul
     //region Creation
 
     public static Observable<Result> forTimeline(@NonNull Context context, @NonNull Timeline timeline) {
-        return Observable.create(new ShareImage(context, timeline))
+        return Observable.create(new ShareImageGenerator(context, timeline))
                          .subscribeOn(Schedulers.computation())
                          .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private ShareImage(@NonNull Context context,
-                       @NonNull Timeline timeline) {
+    private ShareImageGenerator(@NonNull Context context,
+                                @NonNull Timeline timeline) {
         this.context = context;
         this.timeline = timeline;
 
