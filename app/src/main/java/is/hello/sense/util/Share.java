@@ -23,44 +23,56 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class Share {
-    public static ImageAction image(@NonNull Bitmap bitmap) {
-        return new ImageAction(bitmap);
+/**
+ * An abstraction over common intents used for sharing
+ * that attempts to remove most of the sharp corners.
+ */
+public abstract class Share {
+    //region Base
+
+    protected final Intent intent;
+
+    protected Share(@NonNull String action) {
+        this.intent = new Intent(action);
     }
 
-    public static EmailAction email(@NonNull String address) {
-        return new EmailAction(address);
+    public abstract void send(@NonNull Activity from);
+
+    //endregion
+
+
+    //region Factories
+
+    public static Image image(@NonNull Bitmap bitmap) {
+        return new Image(bitmap);
     }
 
-    public static abstract class Action {
-        protected final Intent intent;
-
-        protected Action(@NonNull String action, @Nullable String mimeType) {
-            this.intent = new Intent(action);
-            intent.setType(mimeType);
-        }
-
-        public abstract void send(@NonNull Activity from);
+    public static Email email(@NonNull String address) {
+        return new Email(address);
     }
 
-    public static class EmailAction extends Action {
-        public EmailAction(@NonNull String emailAddress) {
-            super(Intent.ACTION_SENDTO, null);
+    //endregion
 
+
+    //region Implementations
+
+    public static class Email extends Share {
+        public Email(@NonNull String emailAddress) {
+            super(Intent.ACTION_SENDTO);
             intent.setData(Uri.fromParts("mailto", emailAddress, null));
         }
 
-        public EmailAction withSubject(@NonNull String subject) {
+        public Email withSubject(@NonNull String subject) {
             intent.putExtra(Intent.EXTRA_SUBJECT, subject);
             return this;
         }
 
-        public EmailAction withBody(@NonNull String body) {
+        public Email withBody(@NonNull String body) {
             intent.putExtra(Intent.EXTRA_TEXT, body);
             return this;
         }
 
-        public EmailAction withAttachment(@NonNull Uri attachment) {
+        public Email withAttachment(@NonNull Uri attachment) {
             intent.putExtra(Intent.EXTRA_STREAM, attachment);
             return this;
         }
@@ -79,27 +91,28 @@ public class Share {
         }
     }
 
-    public static class ImageAction extends Action {
+    public static class Image extends Share {
         private final Bitmap bitmap;
         private @Nullable SenseDialogFragment loadingDialogFragment;
 
-        private ImageAction(@NonNull Bitmap bitmap) {
-            super(Intent.ACTION_SEND, "*/*");
+        private Image(@NonNull Bitmap bitmap) {
+            super(Intent.ACTION_SEND);
+            intent.setType("*/*");
 
             this.bitmap = bitmap;
         }
 
-        public ImageAction withTitle(@Nullable String title) {
+        public Image withTitle(@Nullable String title) {
             intent.putExtra(Intent.EXTRA_SUBJECT, title);
             return this;
         }
 
-        public ImageAction withDescription(@Nullable String description) {
+        public Image withDescription(@Nullable String description) {
             intent.putExtra(Intent.EXTRA_TEXT, description);
             return this;
         }
 
-        public ImageAction withLoadingDialog(@NonNull SenseDialogFragment loadingDialogFragment) {
+        public Image withLoadingDialog(@NonNull SenseDialogFragment loadingDialogFragment) {
             this.loadingDialogFragment = loadingDialogFragment;
             return this;
         }
@@ -148,4 +161,6 @@ public class Share {
                       });
         }
     }
+
+    //endregion
 }
