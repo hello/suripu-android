@@ -138,22 +138,30 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
-    <style name="AppTheme.Dialog.FullScreen.NoAnimation">
-        <item name="android:windowAnimationStyle">@null</item>
+    <style name="AppTheme.Dialog.FullScreen.NoFadeIn">
+        <item name="android:windowAnimationStyle">@style/WindowAnimations.FadeOut</item>
     </style>
 
-    <style name="WindowAnimations" />
+    <style name="WindowAnimations" parent="android:style/Animation" />
+
+    <style name="WindowAnimations.FadeOut">
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
 
     <style name="WindowAnimations.Fade">
         <item name="android:windowEnterAnimation">@anim/fade_in</item>
-        <item name="android:windowShowAnimation">@anim/fade_in</item>
         <item name="android:windowExitAnimation">@anim/fade_out</item>
-        <item name="android:windowHideAnimation">@anim/fade_out</item>
     </style>
 
     <style name="WindowAnimations.PopSlideAndFade">
         <item name="android:windowEnterAnimation">@anim/fade_and_pop_in</item>
         <item name="android:windowExitAnimation">@anim/fade_and_slide_out</item>
+    </style>
+    
+    <style name="WindowAnimations.SlideAndFade">
+        <item name="android:windowEnterAnimation">@anim/fade_and_slide_up</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
     </style>
 
     <!-- Buttons -->

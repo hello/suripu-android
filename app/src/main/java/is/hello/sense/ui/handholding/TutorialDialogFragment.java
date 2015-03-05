@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
@@ -79,7 +80,8 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new EventDelegatingDialog(getActivity(), R.style.AppTheme_Dialog_FullScreen_NoAnimation, this);
+        Dialog dialog = new EventDelegatingDialog(getActivity(), R.style.AppTheme_Dialog_FullScreen, this);
+        dialog.getWindow().setWindowAnimations(R.style.WindowAnimations_SlideAndFade);
 
         this.contentLayout = new RelativeLayout(getActivity());
         dialog.setContentView(contentLayout);
@@ -128,9 +130,18 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
         layoutParams.leftMargin = anchorFrame.centerX() - interactionMidX;
         layoutParams.topMargin = anchorFrame.centerY() - interactionMidY;
 
-        contentLayout.addView(interactionView, layoutParams);
-
-        interactionView.playTutorial(tutorial);
+        contentLayout.postDelayed(() -> {
+            interactionView.setAlpha(0f);
+            contentLayout.addView(interactionView, layoutParams);
+            animate(interactionView)
+                    .fadeIn()
+                    .addOnAnimationCompleted(finished -> {
+                        if (finished) {
+                            interactionView.playTutorial(tutorial);
+                        }
+                    })
+                    .start();
+        }, 150);
 
         this.anchorView = anchorView;
     }
@@ -139,10 +150,12 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
         interactionView.stopAnimation();
 
         animate(interactionView)
+                .setDuration(Animation.DURATION_VERY_FAST)
                 .fadeOut(View.GONE)
                 .start();
 
         animate(descriptionText)
+                .setDuration(Animation.DURATION_VERY_FAST)
                 .fadeOut(View.GONE)
                 .start();
     }
