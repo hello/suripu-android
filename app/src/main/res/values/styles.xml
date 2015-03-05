@@ -138,6 +138,10 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
+    <style name="AppTheme.Dialog.FullScreen.NoAnimation">
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
     <style name="WindowAnimations" />
 
     <style name="WindowAnimations.Fade">

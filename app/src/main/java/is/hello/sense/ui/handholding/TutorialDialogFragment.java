@@ -79,7 +79,7 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new EventDelegatingDialog(getActivity(), R.style.AppTheme_Dialog_FullScreen, this);
+        Dialog dialog = new EventDelegatingDialog(getActivity(), R.style.AppTheme_Dialog_FullScreen_NoAnimation, this);
 
         this.contentLayout = new RelativeLayout(getActivity());
         dialog.setContentView(contentLayout);
