@@ -4,7 +4,6 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -206,7 +205,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Timeline> boundMainTimeline = bind(timelinePresenter.mainTimeline);
+        Observable<Timeline> boundMainTimeline = bind(timelinePresenter.timeline);
         subscribe(boundMainTimeline, this::bindTimeline, this::timelineUnavailable);
 
         Observable<List<TimelineSegment>> segments = boundMainTimeline.map(timeline -> {
@@ -218,8 +217,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         });
         subscribe(segments, segmentAdapter::bindSegments, segmentAdapter::handleError);
 
-        Observable<CharSequence> renderedMessage = timelinePresenter.renderedTimelineMessage;
-        bindAndSubscribe(renderedMessage, timelineScore.messageText::setText, Functions.LOG_ERROR);
+        bindAndSubscribe(timelinePresenter.message,
+                         timelineScore.messageText::setText,
+                         Functions.LOG_ERROR);
     }
 
     @Override
@@ -433,7 +433,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         this.breakdownHeaderMode = new BreakdownHeaderMode(inflater, headerViewContainer);
-        bindAndSubscribe(timelinePresenter.mainTimeline.take(1),
+        bindAndSubscribe(timelinePresenter.timeline.take(1),
                          breakdownHeaderMode::bindTimeline,
                          breakdownHeaderMode::timelineUnavailable);
         setHeaderMode(breakdownHeaderMode, this::showBreakdownTransition);
@@ -444,34 +444,31 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void share(@NonNull View sender) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
         sender.setEnabled(false);
-        Observable<Timeline> latestTimeline = timelinePresenter.mainTimeline.take(1);
-        Observable<ShareImageGenerator.Result> forShare = latestTimeline.flatMap(t -> ShareImageGenerator.forTimeline(getActivity(), t));
-        bindAndSubscribe(forShare,
-                r -> {
-                    sender.setEnabled(true);
+        Observable<Timeline> timeline = timelinePresenter.timeline.take(1);
+        Observable<ShareImageGenerator.Result> toShare = timeline.flatMap(t -> ShareImageGenerator.forTimeline(getActivity(), t));
+        bindAndSubscribe(toShare,
+                         r -> {
+                             sender.setEnabled(true);
 
-                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                    shareIntent.setType("*/*");
+                             DateTime date = timelinePresenter.getDate();
+                             String score = Integer.toString(r.timeline.getScore());
+                             String shareCopy;
+                             if (DateFormatter.isLastNight(date)) {
+                                 shareCopy = getString(R.string.timeline_share_last_night_fmt, score);
+                             } else {
+                                 String dateString = dateFormatter.formatAsTimelineDate(date);
+                                 shareCopy = getString(R.string.timeline_share_other_days_fmt, score, dateString);
+                             }
 
-                    DateTime date = timelinePresenter.getDate();
-                    String score = Integer.toString(r.timeline.getScore());
-                    String shareCopy;
-                    if (DateFormatter.isLastNight(date)) {
-                        shareCopy = getString(R.string.timeline_share_last_night_fmt, score);
-                    } else {
-                        String dateString = dateFormatter.formatAsTimelineDate(date);
-                        shareCopy = getString(R.string.timeline_share_other_days_fmt, score, dateString);
-                    }
-
-                    Share.image(r.bitmap)
-                         .withTitle(getString(R.string.app_name))
-                         .withDescription(shareCopy)
-                         .send(getActivity());
-                },
-                e -> {
-                    Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
-                    sender.setEnabled(true);
-                });
+                             Share.image(r.bitmap)
+                                  .withTitle(getString(R.string.app_name))
+                                  .withDescription(shareCopy)
+                                  .send(getActivity());
+                         },
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
+                             sender.setEnabled(true);
+                         });
     }
 
     //endregion

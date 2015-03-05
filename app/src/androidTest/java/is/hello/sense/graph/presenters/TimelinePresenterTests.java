@@ -7,7 +7,6 @@ import org.joda.time.DateTime;
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.Timeline;
-import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 
@@ -19,10 +18,10 @@ public class TimelinePresenterTests extends InjectionTestCase {
     public void testUpdate() throws Exception {
         presenter.setDateWithTimeline(DateTime.now(), null);
 
-        Sync.wrap(presenter.mainTimeline)
+        Sync.wrap(presenter.timeline)
             .assertNotNull();
 
-        Sync.wrap(presenter.renderedTimelineMessage.take(1))
+        Sync.wrap(presenter.message.take(1))
             .assertFalse(TextUtils::isEmpty);
     }
 
@@ -33,10 +32,10 @@ public class TimelinePresenterTests extends InjectionTestCase {
                 .unwrap();
         presenter.setDateWithTimeline(timeline.getDate(), timeline);
 
-        Sync.wrap(presenter.mainTimeline)
+        Sync.wrap(presenter.timeline)
             .assertNotNull();
 
-        Sync.wrap(presenter.renderedTimelineMessage.take(1))
+        Sync.wrap(presenter.message.take(1))
             .assertFalse(TextUtils::isEmpty);
     }
 }

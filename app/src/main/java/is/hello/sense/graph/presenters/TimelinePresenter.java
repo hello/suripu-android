@@ -24,8 +24,8 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
 
     private DateTime date;
 
-    public final PresenterSubject<Timeline> mainTimeline = subject;
-    public final Observable<CharSequence> renderedTimelineMessage = mainTimeline.map(timeline -> {
+    public final PresenterSubject<Timeline> timeline = subject;
+    public final Observable<CharSequence> message = timeline.map(timeline -> {
         if (timeline != null) {
             String rawMessage = timeline.getMessage();
             return markdown.toSpanned(rawMessage);
@@ -66,7 +66,7 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
     public void setDateWithTimeline(@NonNull DateTime date, @Nullable Timeline timeline) {
         this.date = date;
         if (timeline != null) {
-            this.mainTimeline.onNext(timeline);
+            this.timeline.onNext(timeline);
         } else {
             update();
         }

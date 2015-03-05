@@ -24,6 +24,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public final class ShareImageGenerator implements Observable.OnSubscribe<ShareImageGenerator.Result> {
+    private static final int SEGMENT_MIN_DURATION = 120;
+
     private final Context context;
     private final Timeline timeline;
     private final Resources resources;
@@ -34,7 +36,7 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
     private final int scoreWidth;
     private final int scoreHeight;
     private final int scoreTextHeight;
-    private final int scoreLabelTextHeight;
+    private final int scoreLabelHeight;
 
     private final int baseSegmentHeight;
     private final int footerHeight;
@@ -49,7 +51,7 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
 
     private final Paint fillPaint = new Paint();
     private final Paint shadowedFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint labelTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
+    private final Paint scoreLabelPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
     private final Paint scoreTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
     private final Paint footerTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
     private final RectF ovalRect = new RectF();
@@ -67,28 +69,32 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
         this.context = context;
         this.timeline = timeline;
 
+        // Shared
+
         this.resources = context.getResources();
-        Paint.FontMetricsInt fontMetrics = new Paint.FontMetricsInt();
+
         this.width = resources.getDimensionPixelSize(R.dimen.share_image_width);
         this.height = resources.getDimensionPixelSize(R.dimen.share_image_height);
-
-        this.scoreWidth = resources.getDimensionPixelSize(R.dimen.grand_sleep_summary_width);
-        this.scoreHeight = resources.getDimensionPixelSize(R.dimen.grand_sleep_summary_height);
-
-        this.footerHeight = resources.getDimensionPixelSize(R.dimen.share_image_footer_height);
-        this.footerInset = resources.getDimensionPixelSize(R.dimen.share_image_footer_inset);
 
         shadowedFillPaint.setColor(Color.WHITE);
         shadowedFillPaint.setShadowLayer(20, 0, 0, resources.getColor(R.color.share_image_shadow));
 
-        labelTextPaint.setTextAlign(Paint.Align.CENTER);
-        labelTextPaint.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
-        labelTextPaint.setTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_section_heading));
-        labelTextPaint.setColor(resources.getColor(R.color.text_section_header));
-        labelTextPaint.getFontMetricsInt(fontMetrics);
-        this.scoreLabelTextHeight = fontMetrics.top + fontMetrics.descent;
+        Paint.FontMetricsInt fontMetrics = new Paint.FontMetricsInt();
+
+
+        // Score
+
+        this.scoreWidth = resources.getDimensionPixelSize(R.dimen.grand_sleep_summary_width);
+        this.scoreHeight = resources.getDimensionPixelSize(R.dimen.grand_sleep_summary_height);
 
         this.scoreLabel = resources.getString(R.string.sleep_score).toUpperCase();
+
+        scoreLabelPaint.setTextAlign(Paint.Align.CENTER);
+        scoreLabelPaint.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+        scoreLabelPaint.setTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_section_heading));
+        scoreLabelPaint.setColor(resources.getColor(R.color.text_section_header));
+        scoreLabelPaint.getFontMetricsInt(fontMetrics);
+        this.scoreLabelHeight = fontMetrics.top + fontMetrics.descent;
 
         scoreTextPaint.setTextAlign(Paint.Align.CENTER);
         scoreTextPaint.setTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_big_score));
@@ -96,19 +102,29 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
         scoreTextPaint.getFontMetricsInt(fontMetrics);
         this.scoreTextHeight = fontMetrics.top + fontMetrics.descent;
 
+
+        // Footer
+
+        this.footerHeight = resources.getDimensionPixelSize(R.dimen.share_image_footer_height);
+        this.footerInset = resources.getDimensionPixelSize(R.dimen.share_image_footer_inset);
+
         footerTextPaint.setTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_body));
         footerTextPaint.setColor(resources.getColor(R.color.text_light));
         footerTextPaint.getFontMetricsInt(fontMetrics);
         this.footerTextHeight = fontMetrics.top + fontMetrics.descent;
-
-        int minItemHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
-        this.baseSegmentHeight = Math.max(minItemHeight, height / Styles.TIMELINE_HOURS_ON_SCREEN) * 4;
 
         this.leftFooterText = DateFormat.getLongDateFormat(context)
                                         .format(timeline.getDate().getMillis());
         this.rightFooterText = UserSupport.COMPANY_URL;
 
         this.footerLogo = resources.getDrawable(R.drawable.share_company_logo);
+
+
+        // Segments
+
+        int minItemHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
+        this.baseSegmentHeight = Math.max(minItemHeight, height / Styles.TIMELINE_HOURS_ON_SCREEN) * 4;
+
     }
 
     //endregion
@@ -124,6 +140,10 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
 
         s.onNext(new Result(timeline, image));
         s.onCompleted();
+    }
+
+    private int getSegmentHeight(@NonNull TimelineSegment segment) {
+        return (int) ((segment.getDuration() / 3600f) * baseSegmentHeight);
     }
 
     private void onDraw(@NonNull Canvas canvas) {
@@ -146,12 +166,11 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
         if (!Lists.isEmpty(timeline.getSegments())) {
             int segmentMinY = minY;
             for (TimelineSegment segment : timeline.getSegments()) {
-                if (segment.getDuration() <= 120) {
+                if (segment.getDuration() < SEGMENT_MIN_DURATION) {
                     continue;
                 }
 
-                int itemHeight = (int) ((segment.getDuration() / 3600f) * baseSegmentHeight);
-                int segmentMaxY = segmentMinY + itemHeight;
+                int segmentMaxY = segmentMinY + getSegmentHeight(segment);
 
                 int sleepDepth = segment.getSleepDepth();
                 int colorRes = Styles.getSleepDepthColorRes(sleepDepth, false);
@@ -184,10 +203,10 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
         int score = timeline.getScore();
         String scoreText = Integer.toString(score);
         scoreTextPaint.setColor(Styles.getSleepScoreColor(context, score));
-        float scoreTextY = midY - scoreTextHeight / 2f - scoreLabelTextHeight;
+        float scoreTextY = midY - scoreTextHeight / 2f - scoreLabelHeight;
         canvas.drawText(scoreText, midX, scoreTextY, scoreTextPaint);
 
-        canvas.drawText(scoreLabel, midX, (midY + scoreTextHeight / 2f) + scoreLabelTextHeight, labelTextPaint);
+        canvas.drawText(scoreLabel, midX, (midY + scoreTextHeight / 2f) + scoreLabelHeight, scoreLabelPaint);
 
 
         //region Footer

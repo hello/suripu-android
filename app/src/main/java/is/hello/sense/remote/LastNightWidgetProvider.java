@@ -57,7 +57,7 @@ public class LastNightWidgetProvider extends AppWidgetProvider {
 
         @Override
         protected void startUpdate(int widgetIds[]) {
-            Observable<Pair<Timeline, CharSequence>> update = Observable.combineLatest(presenter.mainTimeline.take(1), presenter.renderedTimelineMessage.take(1), Pair::new);
+            Observable<Pair<Timeline, CharSequence>> update = Observable.combineLatest(presenter.timeline.take(1), presenter.message.take(1), Pair::new);
             bindAndSubscribe(update,
                              r -> bindConditions(widgetIds, r),
                              e -> {
