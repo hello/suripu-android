@@ -1,11 +1,11 @@
 package is.hello.sense.ui.common;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -17,8 +17,10 @@ import is.hello.sense.api.model.Enums;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SessionLogger;
+import is.hello.sense.util.Share;
 
 public class UserSupport {
+    public static final String COMPANY_URL = "https://hello.is";
     public static final String ORDER_URL = "https://order.hello.is";
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is";
     public static final String SUPPORT_EMAIL = "support@hello.is";
@@ -36,50 +38,34 @@ public class UserSupport {
         }
     }
 
-    public static void showEmailComposer(@NonNull Context from,
-                                         @NonNull String emailAddress,
-                                         @NonNull Bundle extras) {
-        try {
-            Intent email = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", emailAddress, null));
-            email.putExtras(extras);
-            email.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            from.startActivity(email);
-        } catch (ActivityNotFoundException e) {
-            SenseAlertDialog alertDialog = new SenseAlertDialog(from);
-            alertDialog.setTitle(R.string.dialog_error_title);
-            alertDialog.setMessage(R.string.error_no_email_client);
-            alertDialog.setPositiveButton(android.R.string.ok, null);
-            alertDialog.show();
-        }
-    }
-
     public static void showSupport(@NonNull Context from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_HELP, null);
+
         openUri(from, Uri.fromParts("http", BuildConfig.SUPPORT_AUTHORITY, null));
     }
 
-    public static void showEmailSupport(@NonNull Context from) {
+    public static void showEmailSupport(@NonNull Activity from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
 
-        Bundle extras = new Bundle();
-        extras.putParcelable(Intent.EXTRA_STREAM, Uri.fromFile(new File(SessionLogger.getLogFilePath(from))));
-        extras.putString(Intent.EXTRA_SUBJECT, from.getString(R.string.support_email_subject));
-        extras.putString(Intent.EXTRA_TEXT, from.getString(
-                R.string.support_email_body,
-                from.getString(R.string.app_name),
-                BuildConfig.VERSION_NAME,
-                Build.VERSION.RELEASE,
-                Build.MODEL
-        ));
-        showEmailComposer(from, SUPPORT_EMAIL, extras);
+        Share.email(SUPPORT_EMAIL)
+             .withSubject(from.getString(R.string.support_email_subject))
+             .withBody(from.getString(
+                     R.string.support_email_body,
+                     from.getString(R.string.app_name),
+                     BuildConfig.VERSION_NAME,
+                     Build.VERSION.RELEASE,
+                     Build.MODEL
+             ))
+             .withAttachment(Uri.fromFile(new File(SessionLogger.getLogFilePath(from))))
+             .send(from);
     }
 
-    public static void showEmailFeedback(@NonNull Context from) {
+    public static void showEmailFeedback(@NonNull Activity from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_SEND_FEEDBACK, null);
 
-        Bundle extras = new Bundle();
-        extras.putString(Intent.EXTRA_SUBJECT, from.getString(R.string.feedback_email_subject_fmt, BuildConfig.VERSION_NAME));
-        showEmailComposer(from, FEEDBACK_EMAIL, extras);
+        Share.email(FEEDBACK_EMAIL)
+             .withSubject(from.getString(R.string.feedback_email_subject_fmt, BuildConfig.VERSION_NAME))
+             .send(from);
     }
 
     public static void showForOnboardingStep(@NonNull Context from, @NonNull OnboardingStep onboardingStep) {
