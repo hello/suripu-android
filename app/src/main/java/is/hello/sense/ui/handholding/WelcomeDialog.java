@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -122,6 +123,11 @@ public class WelcomeDialog extends DialogFragment {
         dialog.setContentView(R.layout.dialog_welcome);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int tintedStatusBar = getResources().getColor(R.color.status_bar_dimmed);
+            dialog.getWindow().setStatusBarColor(tintedStatusBar);
+        }
 
         this.viewPager = (ViewPager) dialog.findViewById(R.id.dialog_welcome_view_pager);
 
