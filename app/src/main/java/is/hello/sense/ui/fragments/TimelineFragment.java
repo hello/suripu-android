@@ -4,7 +4,6 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -52,12 +51,14 @@ import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialDialogFragment;
 import is.hello.sense.ui.widget.BlockableLinearLayout;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.ShareImageGenerator;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.TimelineHeaderDrawable;
@@ -70,6 +71,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SafeOnClickListener;
+import is.hello.sense.util.Share;
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -204,7 +206,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Timeline> boundMainTimeline = bind(timelinePresenter.mainTimeline);
+        Observable<Timeline> boundMainTimeline = bind(timelinePresenter.timeline);
         subscribe(boundMainTimeline, this::bindTimeline, this::timelineUnavailable);
 
         Observable<List<TimelineSegment>> segments = boundMainTimeline.map(timeline -> {
@@ -216,8 +218,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         });
         subscribe(segments, segmentAdapter::bindSegments, segmentAdapter::handleError);
 
-        Observable<CharSequence> renderedMessage = timelinePresenter.renderedTimelineMessage;
-        bindAndSubscribe(renderedMessage, timelineScore.messageText::setText, Functions.LOG_ERROR);
+        bindAndSubscribe(timelinePresenter.message,
+                         timelineScore.messageText::setText,
+                         Functions.LOG_ERROR);
     }
 
     @Override
@@ -431,7 +434,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         this.breakdownHeaderMode = new BreakdownHeaderMode(inflater, headerViewContainer);
-        bindAndSubscribe(timelinePresenter.mainTimeline.take(1),
+        bindAndSubscribe(timelinePresenter.timeline.take(1),
                          breakdownHeaderMode::bindTimeline,
                          breakdownHeaderMode::timelineUnavailable);
         setHeaderMode(breakdownHeaderMode, this::showBreakdownTransition);
@@ -441,29 +444,32 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     public void share(@NonNull View sender) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
-        sender.setEnabled(false);
-        bindAndSubscribe(timelinePresenter.mainTimeline,
-                timeline -> {
-                    sender.setEnabled(true);
-                    if (timeline != null) {
-                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                        shareIntent.setType("text/plain");
 
-                        String score = Integer.toString(timeline.getScore());
-                        if (DateFormatter.isLastNight(timelinePresenter.getDate())) {
-                            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_last_night_fmt, score));
-                        } else {
-                            String date = dateFormatter.formatAsTimelineDate(timelinePresenter.getDate());
-                            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.timeline_share_other_days_fmt, score, date));
-                        }
+        LoadingDialogFragment loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager());
+        Observable<Timeline> timeline = timelinePresenter.timeline.take(1);
+        Observable<ShareImageGenerator.Result> toShare = timeline.flatMap(t -> ShareImageGenerator.forTimeline(getActivity(), t));
+        bindAndSubscribe(toShare,
+                         r -> {
+                             DateTime date = timelinePresenter.getDate();
+                             String score = Integer.toString(r.timeline.getScore());
+                             String shareCopy;
+                             if (DateFormatter.isLastNight(date)) {
+                                 shareCopy = getString(R.string.timeline_share_last_night_fmt, score);
+                             } else {
+                                 String dateString = dateFormatter.formatAsTimelineDate(date);
+                                 shareCopy = getString(R.string.timeline_share_other_days_fmt, score, dateString);
+                             }
 
-                        startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
-                    }
-                },
-                e -> {
-                    Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
-                    sender.setEnabled(true);
-                });
+                             Share.image(r.bitmap)
+                                  .withTitle(getString(R.string.app_name))
+                                  .withDescription(shareCopy)
+                                  .withLoadingDialog(loadingDialogFragment)
+                                  .send(getActivity());
+                         },
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
+                             loadingDialogFragment.dismiss();
+                         });
     }
 
     //endregion
@@ -573,6 +579,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         TimelineSegment segment = (TimelineSegment) parent.getItemAtPosition(position);
+        if (segment == null) {
+            return false;
+        }
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         TextView contents = (TextView) inflater.inflate(R.layout.tooltip_timeline_overlay, parent, false);
@@ -637,12 +646,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         correction.setOldTime(segment.getShiftedTimestamp().toLocalTime());
         correction.setNewTime(newTime);
         bindAndSubscribe(timelinePresenter.submitCorrection(correction),
-                         ignored -> {
-                             continuation.call(true);
-                         }, e -> {
-                             ErrorDialogFragment.presentError(getFragmentManager(), e);
-                             continuation.call(false);
-                         });
+                ignored -> {
+                    continuation.call(true);
+                }, e -> {
+                    ErrorDialogFragment.presentError(getFragmentManager(), e);
+                    continuation.call(false);
+                });
     }
 
     //endregion
