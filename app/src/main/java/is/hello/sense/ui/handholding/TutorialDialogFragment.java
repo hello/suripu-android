@@ -1,5 +1,6 @@
 package is.hello.sense.ui.handholding;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -46,9 +47,10 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
 
     //region Lifecycle
 
-    public static boolean shouldShow(@NonNull Context context, @NonNull Tutorial tutorial) {
+    public static boolean shouldShow(@NonNull Activity context, @NonNull Tutorial tutorial) {
         SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-        return !preferences.getBoolean(tutorial.getShownKey(), false);
+        return (!preferences.getBoolean(tutorial.getShownKey(), false) &&
+                context.getFragmentManager().findFragmentByTag(TAG) == null);
     }
 
     public static void markShown(@NonNull Context context, @NonNull Tutorial tutorial) {
