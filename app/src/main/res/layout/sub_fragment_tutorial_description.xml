@@ -7,7 +7,7 @@
     android:drawablePadding="@dimen/gap_small"
     android:drawableEnd="@drawable/icon_dialog_close"
     android:gravity="center_vertical|start"
-    android:background="@color/light_accent"
+    android:background="@drawable/selector_simple_blue"
     android:textColor="@color/white"
     android:textAppearance="@style/AppTheme.Text.Body.Light"
     android:lineSpacingMultiplier="@dimen/line_multiple_body"

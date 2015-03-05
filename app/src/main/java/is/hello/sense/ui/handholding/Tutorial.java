@@ -23,7 +23,10 @@ import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.util.LambdaVar;
 
 public enum Tutorial {
-    SLEEP_SCORE_BREAKDOWN(R.string.tutorial_sleep_score_breakdown, Gravity.BOTTOM, R.id.fragment_timeline_sleep_score_chart, Interaction.TAP);
+    SLEEP_SCORE_BREAKDOWN(R.string.tutorial_sleep_score_breakdown,
+                          Gravity.BOTTOM,
+                          R.id.fragment_timeline_sleep_score_chart,
+                          Interaction.TAP);
 
     public final @StringRes int descriptionRes;
     public final int descriptionGravity;
