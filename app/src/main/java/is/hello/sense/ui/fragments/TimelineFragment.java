@@ -579,6 +579,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
 
         TimelineSegment segment = (TimelineSegment) parent.getItemAtPosition(position);
+        if (segment == null) {
+            return false;
+        }
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         TextView contents = (TextView) inflater.inflate(R.layout.tooltip_timeline_overlay, parent, false);
