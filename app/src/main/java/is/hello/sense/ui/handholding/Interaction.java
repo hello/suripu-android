@@ -2,10 +2,10 @@ package is.hello.sense.ui.handholding;
 
 public enum Interaction {
     TAP(false),
-    SLIDE_LEFT(false),
-    SLIDE_RIGHT(false),
-    SLIDE_UP(true),
-    SLIDE_DOWN(true);
+    SWIPE_LEFT(false),
+    SWIPE_RIGHT(false),
+    SWIPE_UP(true),
+    SWIPE_DOWN(true);
 
     public final boolean isVertical;
 

@@ -26,7 +26,11 @@ public enum Tutorial {
     SLEEP_SCORE_BREAKDOWN(R.string.tutorial_sleep_score_breakdown,
                           Gravity.BOTTOM,
                           R.id.fragment_timeline_sleep_score_chart,
-                          Interaction.TAP);
+                          Interaction.TAP),
+    SWIPE_TIMELINE(R.string.tutorial_swipe_timeline,
+                   Gravity.BOTTOM,
+                   R.id.activity_home_container,
+                   Interaction.SWIPE_RIGHT);
 
     public final @StringRes int descriptionRes;
     public final int descriptionGravity;
@@ -142,16 +146,16 @@ public enum Tutorial {
             case TAP:
                 return createPulseAnimation(view);
 
-            case SLIDE_LEFT:
+            case SWIPE_LEFT:
                 return createSlideAnimation(view, R.dimen.interaction_slide_negative, interaction.isVertical);
 
-            case SLIDE_RIGHT:
+            case SWIPE_RIGHT:
                 return createSlideAnimation(view, R.dimen.interaction_slide_positive, interaction.isVertical);
 
-            case SLIDE_UP:
+            case SWIPE_UP:
                 return createSlideAnimation(view, R.dimen.interaction_slide_negative, interaction.isVertical);
 
-            case SLIDE_DOWN:
+            case SWIPE_DOWN:
                 return createSlideAnimation(view, R.dimen.interaction_slide_positive, interaction.isVertical);
 
             default:

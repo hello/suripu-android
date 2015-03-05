@@ -6,8 +6,8 @@ import android.view.MenuItem;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
-import is.hello.sense.ui.dialogs.WelcomeDialog;
-import is.hello.sense.util.WelcomeDialogParser;
+import is.hello.sense.ui.handholding.WelcomeDialog;
+import is.hello.sense.ui.handholding.util.WelcomeDialogParser;
 
 public class SensorHistoryActivity extends SenseActivity {
     public static final String EXTRA_SENSOR = SensorHistoryActivity.class.getName() + ".EXTRA_SENSOR";

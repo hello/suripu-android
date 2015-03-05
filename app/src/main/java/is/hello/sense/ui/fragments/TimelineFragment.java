@@ -53,9 +53,9 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
-import is.hello.sense.ui.dialogs.WelcomeDialog;
 import is.hello.sense.ui.handholding.Tutorial;
-import is.hello.sense.ui.handholding.TutorialDialogFragment;
+import is.hello.sense.ui.handholding.TutorialOverlayFragment;
+import is.hello.sense.ui.handholding.WelcomeDialog;
 import is.hello.sense.ui.widget.BlockableLinearLayout;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.ShareImageGenerator;
@@ -439,7 +439,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                          breakdownHeaderMode::timelineUnavailable);
         setHeaderMode(breakdownHeaderMode, this::showBreakdownTransition);
 		
-        TutorialDialogFragment.markShown(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN);
+        TutorialOverlayFragment.markShown(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN);
     }
 
     public void share(@NonNull View sender) {
@@ -479,14 +479,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         if (homeActivity.getWillShowUnderside()) {
             WelcomeDialog.markShown(homeActivity, R.xml.welcome_dialog_timeline);
         } else {
-            if (WelcomeDialog.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
-                WelcomeDialog.show(homeActivity, R.xml.welcome_dialog_timeline);
-            } else if (TutorialDialogFragment.shouldShow(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN)) {
-                getAnimatorContext().runWhenIdle(coordinator.bind(() -> {
-                    TutorialDialogFragment tutorialDialog = TutorialDialogFragment.newInstance(Tutorial.SLEEP_SCORE_BREAKDOWN);
-                    tutorialDialog.show(getFragmentManager(), TutorialDialogFragment.TAG);
-                }));
-            }
+            getAnimatorContext().runWhenIdle(coordinator.bind(() -> {
+                if (WelcomeDialog.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
+                    WelcomeDialog.show(homeActivity, R.xml.welcome_dialog_timeline);
+                } else if (TutorialOverlayFragment.shouldShow(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN)) {
+                    TutorialOverlayFragment.show(getFragmentManager(), Tutorial.SLEEP_SCORE_BREAKDOWN);
+                } else if (TutorialOverlayFragment.shouldShow(getActivity(), Tutorial.SWIPE_TIMELINE)) {
+                    TutorialOverlayFragment.show(getFragmentManager(), Tutorial.SWIPE_TIMELINE);
+                }
+            }));
         }
     }
 

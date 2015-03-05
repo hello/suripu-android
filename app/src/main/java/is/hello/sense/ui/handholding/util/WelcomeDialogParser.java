@@ -1,4 +1,4 @@
-package is.hello.sense.util;
+package is.hello.sense.ui.handholding.util;
 
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import is.hello.sense.ui.dialogs.WelcomeDialog;
+import is.hello.sense.ui.handholding.WelcomeDialog;
 
 public class WelcomeDialogParser {
     //region Constants

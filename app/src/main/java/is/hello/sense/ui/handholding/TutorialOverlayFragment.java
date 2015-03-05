@@ -2,6 +2,7 @@ package is.hello.sense.ui.handholding;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.SenseDialogFragment;
+import is.hello.sense.ui.handholding.util.EventDelegatingDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
 
@@ -29,13 +31,13 @@ import static android.widget.RelativeLayout.ALIGN_PARENT_TOP;
 import static android.widget.RelativeLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class TutorialDialogFragment extends SenseDialogFragment implements EventDelegatingDialog.EventForwarder {
-    public static final String TAG = TutorialDialogFragment.class.getSimpleName();
+public class TutorialOverlayFragment extends SenseDialogFragment implements EventDelegatingDialog.EventForwarder {
+    public static final String TAG = TutorialOverlayFragment.class.getSimpleName();
 
     public static final int RESULT_COMPLETED = 0x55;
     public static final int RESULT_CANCELED = 0x54;
 
-    private static final String ARG_TUTORIAL = TutorialDialogFragment.class.getName() + ".ARG_TUTORIAL";
+    private static final String ARG_TUTORIAL = TutorialOverlayFragment.class.getName() + ".ARG_TUTORIAL";
 
     private Tutorial tutorial;
 
@@ -62,14 +64,19 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
                    .apply();
     }
 
-    public static TutorialDialogFragment newInstance(@NonNull Tutorial tutorial) {
-        TutorialDialogFragment dialogFragment = new TutorialDialogFragment();
+    public static TutorialOverlayFragment newInstance(@NonNull Tutorial tutorial) {
+        TutorialOverlayFragment dialogFragment = new TutorialOverlayFragment();
 
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_TUTORIAL, tutorial);
         dialogFragment.setArguments(arguments);
 
         return dialogFragment;
+    }
+
+    public static void show(@NonNull FragmentManager fragmentManager, @NonNull Tutorial tutorial) {
+        TutorialOverlayFragment dialogFragment = newInstance(tutorial);
+        dialogFragment.show(fragmentManager, TAG);
     }
 
     @Override
