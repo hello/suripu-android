@@ -52,7 +52,7 @@ public enum Tutorial {
         ValueAnimator animator = ValueAnimator.ofFloat(1f, 0.8f, 1f);
         animator.setStartDelay(350);
         animator.setDuration(1250);
-        animator.setInterpolator(new AnticipateOvershootInterpolator());
+        animator.setInterpolator(new AnticipateOvershootInterpolator(3.0f, 1.5f));
         animator.addUpdateListener(a -> {
             float scale = (float) a.getAnimatedValue();
             view.setScaleX(scale);
