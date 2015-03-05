@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -32,6 +33,7 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
 
     private final int width;
     private final int height;
+    private final Rect bounds;
 
     private final int scoreWidth;
     private final int scoreHeight;
@@ -40,7 +42,7 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
 
     private final int baseSegmentHeight;
 
-    private final int footerHeight;
+    private final Rect footerBounds;
     private final int footerTextHeight;
     private final int footerInset;
 
@@ -69,16 +71,7 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
                                 @NonNull Timeline timeline) {
         this.context = context;
         this.timeline = timeline;
-
-        // Shared
-
         this.resources = context.getResources();
-
-        this.width = resources.getDimensionPixelSize(R.dimen.share_image_width);
-        this.height = resources.getDimensionPixelSize(R.dimen.share_image_height);
-
-        shadowedFillPaint.setColor(Color.WHITE);
-        shadowedFillPaint.setShadowLayer(20, 0, 0, resources.getColor(R.color.share_image_shadow));
 
         Paint.FontMetricsInt fontMetrics = new Paint.FontMetricsInt();
 
@@ -106,7 +99,7 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
 
         // Footer
 
-        this.footerHeight = resources.getDimensionPixelSize(R.dimen.share_image_footer_height);
+        int footerHeight = resources.getDimensionPixelSize(R.dimen.share_image_footer_height);
         this.footerInset = resources.getDimensionPixelSize(R.dimen.share_image_footer_inset);
 
         footerTextPaint.setTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_body));
@@ -121,17 +114,28 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
         this.footerLogo = resources.getDrawable(R.drawable.share_company_logo);
 
 
+        // Shared
+
+        this.width = resources.getDimensionPixelSize(R.dimen.share_image_width);
+        this.height = resources.getDimensionPixelSize(R.dimen.share_image_height);
+
+        shadowedFillPaint.setColor(Color.WHITE);
+        shadowedFillPaint.setShadowLayer(20, 0, 0, resources.getColor(R.color.share_image_shadow));
+
+        this.bounds = new Rect(0, 0, width, height - footerHeight);
+        this.footerBounds = new Rect(footerInset, height - footerHeight, width - footerInset, height);
+
+
         // Segments
 
         int minItemHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
-        this.baseSegmentHeight = Math.max(minItemHeight, height / Styles.TIMELINE_HOURS_ON_SCREEN) * 4;
-
+        this.baseSegmentHeight = Math.max(minItemHeight, bounds.height() / Styles.TIMELINE_HOURS_ON_SCREEN) * 4;
     }
 
     //endregion
 
 
-    //region Rendering
+    //region Drawing
 
     @Override
     public void call(Subscriber<? super Result> s) {
@@ -147,25 +151,10 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
         return (int) ((segment.getDuration() / 3600f) * baseSegmentHeight);
     }
 
-    private void onDraw(@NonNull Canvas canvas) {
-        int minX = 0,
-            maxX = width,
-            midX = maxX / 2;
-        int minY = 0,
-            maxY = height - footerHeight,
-            midY = maxY / 2;
 
-
-        // Background
-
-        fillPaint.setColor(Color.WHITE);
-        canvas.drawRect(minX, minY, maxX, maxY, fillPaint);
-
-
-        // Segments
-
+    private void drawSegments(@NonNull Canvas canvas) {
         if (!Lists.isEmpty(timeline.getSegments())) {
-            int segmentMinY = minY;
+            int segmentMinY = bounds.top;
             for (TimelineSegment segment : timeline.getSegments()) {
                 if (segment.getDuration() < SEGMENT_MIN_DURATION) {
                     continue;
@@ -178,61 +167,67 @@ public final class ShareImageGenerator implements Observable.OnSubscribe<ShareIm
                 fillPaint.setColor(resources.getColor(colorRes));
 
                 float percentage = sleepDepth / 100f;
-                float halfWidth = Math.round(maxX * percentage) / 2f;
-                canvas.drawRect(midX - halfWidth, segmentMinY,
-                                midX + halfWidth, segmentMaxY,
+                float halfWidth = Math.round(bounds.right * percentage) / 2f;
+                canvas.drawRect(bounds.centerX() - halfWidth, segmentMinY,
+                                bounds.centerX() + halfWidth, segmentMaxY,
                                 fillPaint);
 
                 segmentMinY = segmentMaxY;
 
-                if (segmentMaxY >= maxY) {
+                if (segmentMaxY >= bounds.bottom) {
                     break;
                 }
             }
         }
 
         fillPaint.setColor(resources.getColor(R.color.share_image_tint));
-        canvas.drawRect(minX, minY, maxX, maxY, fillPaint);
+        canvas.drawRect(bounds, fillPaint);
+    }
 
-
-        // Score
-
-        ovalRect.set(midX - scoreWidth / 2f, midY - scoreHeight / 2f,
-                     midX + scoreWidth / 2f, midY + scoreHeight / 2f);
+    private void drawScore(@NonNull Canvas canvas) {
+        ovalRect.set(bounds.centerX() - scoreWidth / 2f, bounds.centerY() - scoreHeight / 2f,
+                     bounds.centerX() + scoreWidth / 2f, bounds.centerY() + scoreHeight / 2f);
         canvas.drawOval(ovalRect, shadowedFillPaint);
 
         int score = timeline.getScore();
         String scoreText = Integer.toString(score);
         scoreTextPaint.setColor(Styles.getSleepScoreColor(context, score));
-        float scoreTextY = midY - scoreTextHeight / 2f - scoreLabelHeight;
-        canvas.drawText(scoreText, midX, scoreTextY, scoreTextPaint);
+        float scoreTextY = bounds.centerY() - scoreTextHeight / 2f - scoreLabelHeight;
+        canvas.drawText(scoreText, bounds.centerX(), scoreTextY, scoreTextPaint);
 
-        canvas.drawText(scoreLabel, midX, (midY + scoreTextHeight / 2f) + scoreLabelHeight, scoreLabelPaint);
+        canvas.drawText(scoreLabel, bounds.centerX(), (bounds.centerY() + scoreTextHeight / 2f) + scoreLabelHeight, scoreLabelPaint);
+    }
 
+    private void drawFooter(@NonNull Canvas canvas) {
+        fillPaint.setColor(Color.WHITE);
+        canvas.drawRect(0, footerBounds.top, width, footerBounds.bottom, fillPaint);
 
-        //region Footer
-
-        canvas.drawRect(minX, maxY, maxX, maxY + footerHeight, shadowedFillPaint);
-
-        float footerTextY = maxY + ((footerHeight / 2f) - footerTextHeight / 2f);
+        float footerTextY = footerBounds.centerY() - (footerTextHeight / 2f);
 
         footerTextPaint.setTextAlign(Paint.Align.LEFT);
-        canvas.drawText(leftFooterText, minX + footerInset, footerTextY, footerTextPaint);
+        canvas.drawText(leftFooterText, footerBounds.left, footerTextY, footerTextPaint);
 
-        int footerMaxX = maxX - footerInset;
-        int footerMidY = maxY + (footerHeight / 2);
         int logoWidth = footerLogo.getIntrinsicWidth();
         int logoHeight = footerLogo.getIntrinsicHeight();
         footerLogo.setBounds(
-            footerMaxX - logoWidth,
-            footerMidY - logoHeight / 2,
-            footerMaxX,
-            footerMidY + logoHeight / 2
+            footerBounds.right - logoWidth,
+            footerBounds.centerY() - logoHeight / 2,
+            footerBounds.right,
+            footerBounds.centerY() + logoHeight / 2
         );
         footerLogo.draw(canvas);
 
         footerTextPaint.setTextAlign(Paint.Align.RIGHT);
-        canvas.drawText(rightFooterText, footerMaxX - logoWidth - footerInset, footerTextY, footerTextPaint);
+        canvas.drawText(rightFooterText, footerBounds.right - logoWidth - footerInset, footerTextY, footerTextPaint);
+    }
+
+    private void onDraw(@NonNull Canvas canvas) {
+        fillPaint.setColor(Color.WHITE);
+        canvas.drawRect(bounds, fillPaint);
+
+        drawSegments(canvas);
+        drawScore(canvas);
+        drawFooter(canvas);
     }
 
     //endregion
