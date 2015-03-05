@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -81,7 +82,11 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = new EventDelegatingDialog(getActivity(), R.style.AppTheme_Dialog_FullScreen, this);
-        dialog.getWindow().setWindowAnimations(R.style.WindowAnimations_SlideAndFade);
+        if (tutorial.descriptionGravity == Gravity.BOTTOM) {
+            dialog.getWindow().setWindowAnimations(R.style.WindowAnimations_SlideUpAndFade);
+        } else {
+            dialog.getWindow().setWindowAnimations(R.style.WindowAnimations_SlideDownAndFade);
+        }
 
         this.contentLayout = new RelativeLayout(getActivity());
         dialog.setContentView(contentLayout);
