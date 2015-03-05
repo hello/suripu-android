@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mirrors Animation -->
+    <integer name="anim_duration_normal">250</integer>
+    <integer name="anim_duration_slow">350</integer>
+    <integer name="anim_duration_fast">150</integer>
+    <integer name="anim_duration_very_fast">50</integer>
+</resources>

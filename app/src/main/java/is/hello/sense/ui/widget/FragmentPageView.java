@@ -185,8 +185,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         TFragment currentFragment = getCurrentFragment();
         if (newFragment != null) {
             if (getOnTransitionObserver() != null) {
-                getOnTransitionObserver().onWillTransitionToFragment(this, newFragment);
-                post(() -> getOnTransitionObserver().onDidTransitionToFragment(this, newFragment));
+                getOnTransitionObserver().onWillTransitionToFragment(newFragment, false);
+                post(() -> getOnTransitionObserver().onDidTransitionToFragment(newFragment, false));
             }
 
             if (currentFragment != null) {
@@ -369,14 +369,14 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             exchangeOnAndOffScreen();
 
             if (getOnTransitionObserver() != null) {
-                getOnTransitionObserver().onDidTransitionToFragment(this, getCurrentFragment());
+                getOnTransitionObserver().onDidTransitionToFragment(getCurrentFragment(), true);
             }
 
             this.isAnimating = false;
         });
 
         if (getOnTransitionObserver() != null) {
-            getOnTransitionObserver().onWillTransitionToFragment(this, getOffScreenFragment());
+            getOnTransitionObserver().onWillTransitionToFragment(getOffScreenFragment(), true);
         }
 
         onScreenViewAnimator.start();
@@ -406,7 +406,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             getOffScreenView().setVisibility(INVISIBLE);
 
             if (getOnTransitionObserver() != null) {
-                getOnTransitionObserver().onDidSnapBackToFragment(this, getCurrentFragment());
+                getOnTransitionObserver().onDidSnapBackToFragment(getCurrentFragment());
             }
 
             this.isAnimating = false;
@@ -583,9 +583,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     public interface OnTransitionObserver<TFragment extends Fragment> {
-        void onWillTransitionToFragment(@NonNull FragmentPageView<TFragment> view, @NonNull TFragment fragment);
-        void onDidTransitionToFragment(@NonNull FragmentPageView<TFragment> view, @NonNull TFragment fragment);
-        void onDidSnapBackToFragment(@NonNull FragmentPageView<TFragment> view, @NonNull TFragment fragment);
+        void onWillTransitionToFragment(@NonNull TFragment fragment, boolean isInteractive);
+        void onDidTransitionToFragment(@NonNull TFragment fragment, boolean isInteractive);
+        void onDidSnapBackToFragment(@NonNull TFragment fragment);
     }
 
     private static enum Position {

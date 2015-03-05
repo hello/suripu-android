@@ -1,4 +1,4 @@
-package is.hello.sense.ui.dialogs;
+package is.hello.sense.ui.handholding;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -26,11 +26,11 @@ import java.io.IOException;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
+import is.hello.sense.ui.handholding.util.WelcomeDialogParser;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.WelcomeDialogParser;
 
 public class WelcomeDialog extends DialogFragment {
     public static final String TAG = WelcomeDialog.class.getSimpleName();

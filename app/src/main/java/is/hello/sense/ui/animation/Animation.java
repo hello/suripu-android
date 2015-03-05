@@ -10,9 +10,28 @@ import android.view.animation.Interpolator;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class Animation {
+    /**
+     * For animations that will be run in the middle of a user interaction
+     * where just snapping an element off the screen would look bad.
+     */
+    public static final int DURATION_VERY_FAST = 50;
+
+    /**
+     * The fastest speed used for a regular animation.
+     */
     public static final int DURATION_FAST = 150;
+
+    /**
+     * The slowest speed used for a regular animation.
+     */
     public static final int DURATION_SLOW = 350;
+
+    /**
+     * Typical duration for animations in the Sense app. The
+     * original duration constant used by iOS before version 7.
+     */
     public static final int DURATION_NORMAL = 250;
+
     public static final Interpolator INTERPOLATOR_DEFAULT = new DecelerateInterpolator();
 
     public static long calculateDuration(float velocity, float totalArea) {

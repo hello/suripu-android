@@ -53,6 +53,8 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.util.Views;
@@ -410,8 +412,8 @@ public class HomeActivity
 
 
     @Override
-    public void onWillTransitionToFragment(@NonNull FragmentPageView<TimelineFragment> view, @NonNull TimelineFragment fragment) {
-        TimelineFragment currentFragment = view.getCurrentFragment();
+    public void onWillTransitionToFragment(@NonNull TimelineFragment fragment, boolean isInteractive) {
+        TimelineFragment currentFragment = viewPager.getCurrentFragment();
         if (currentFragment != null) {
             currentFragment.setControlsAlarmShortcut(false);
         }
@@ -420,16 +422,19 @@ public class HomeActivity
     }
 
     @Override
-    public void onDidTransitionToFragment(@NonNull FragmentPageView<TimelineFragment> view, @NonNull TimelineFragment fragment) {
+    public void onDidTransitionToFragment(@NonNull TimelineFragment fragment, boolean isInteractive) {
         this.lastUpdated = System.currentTimeMillis();
 
         fragment.setControlsAlarmShortcut(true);
 
+        if (isInteractive) {
+            TutorialOverlayFragment.markShown(this, Tutorial.SWIPE_TIMELINE);
+        }
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_DATE_CHANGED, null);
     }
 
     @Override
-    public void onDidSnapBackToFragment(@NonNull FragmentPageView<TimelineFragment> view, @NonNull TimelineFragment fragment) {
+    public void onDidSnapBackToFragment(@NonNull TimelineFragment fragment) {
         fragment.setControlsAlarmShortcut(true);
     }
 

@@ -1,6 +1,8 @@
 package is.hello.sense.ui.handholding;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -10,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,7 +20,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.SenseDialogFragment;
+import is.hello.sense.ui.handholding.util.EventDelegatingDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
 
@@ -26,13 +31,13 @@ import static android.widget.RelativeLayout.ALIGN_PARENT_TOP;
 import static android.widget.RelativeLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class TutorialDialogFragment extends SenseDialogFragment implements EventDelegatingDialog.EventForwarder {
-    public static final String TAG = TutorialDialogFragment.class.getSimpleName();
+public class TutorialOverlayFragment extends SenseDialogFragment implements EventDelegatingDialog.EventForwarder {
+    public static final String TAG = TutorialOverlayFragment.class.getSimpleName();
 
     public static final int RESULT_COMPLETED = 0x55;
     public static final int RESULT_CANCELED = 0x54;
 
-    private static final String ARG_TUTORIAL = TutorialDialogFragment.class.getName() + ".ARG_TUTORIAL";
+    private static final String ARG_TUTORIAL = TutorialOverlayFragment.class.getName() + ".ARG_TUTORIAL";
 
     private Tutorial tutorial;
 
@@ -46,9 +51,10 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
 
     //region Lifecycle
 
-    public static boolean shouldShow(@NonNull Context context, @NonNull Tutorial tutorial) {
+    public static boolean shouldShow(@NonNull Activity context, @NonNull Tutorial tutorial) {
         SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-        return !preferences.getBoolean(tutorial.getShownKey(), false);
+        return (!preferences.getBoolean(tutorial.getShownKey(), false) &&
+                context.getFragmentManager().findFragmentByTag(TAG) == null);
     }
 
     public static void markShown(@NonNull Context context, @NonNull Tutorial tutorial) {
@@ -58,14 +64,19 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
                    .apply();
     }
 
-    public static TutorialDialogFragment newInstance(@NonNull Tutorial tutorial) {
-        TutorialDialogFragment dialogFragment = new TutorialDialogFragment();
+    public static TutorialOverlayFragment newInstance(@NonNull Tutorial tutorial) {
+        TutorialOverlayFragment dialogFragment = new TutorialOverlayFragment();
 
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_TUTORIAL, tutorial);
         dialogFragment.setArguments(arguments);
 
         return dialogFragment;
+    }
+
+    public static void show(@NonNull FragmentManager fragmentManager, @NonNull Tutorial tutorial) {
+        TutorialOverlayFragment dialogFragment = newInstance(tutorial);
+        dialogFragment.show(fragmentManager, TAG);
     }
 
     @Override
@@ -78,6 +89,11 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = new EventDelegatingDialog(getActivity(), R.style.AppTheme_Dialog_FullScreen, this);
+        if (tutorial.descriptionGravity == Gravity.BOTTOM) {
+            dialog.getWindow().setWindowAnimations(R.style.WindowAnimations_SlideUpAndFade);
+        } else {
+            dialog.getWindow().setWindowAnimations(R.style.WindowAnimations_SlideDownAndFade);
+        }
 
         this.contentLayout = new RelativeLayout(getActivity());
         dialog.setContentView(contentLayout);
@@ -126,9 +142,18 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
         layoutParams.leftMargin = anchorFrame.centerX() - interactionMidX;
         layoutParams.topMargin = anchorFrame.centerY() - interactionMidY;
 
-        contentLayout.addView(interactionView, layoutParams);
-
-        interactionView.playTutorial(tutorial);
+        contentLayout.postDelayed(() -> {
+            interactionView.setAlpha(0f);
+            contentLayout.addView(interactionView, layoutParams);
+            animate(interactionView)
+                    .fadeIn()
+                    .addOnAnimationCompleted(finished -> {
+                        if (finished) {
+                            interactionView.playTutorial(tutorial);
+                        }
+                    })
+                    .start();
+        }, 150);
 
         this.anchorView = anchorView;
     }
@@ -137,10 +162,12 @@ public class TutorialDialogFragment extends SenseDialogFragment implements Event
         interactionView.stopAnimation();
 
         animate(interactionView)
+                .setDuration(Animation.DURATION_VERY_FAST)
                 .fadeOut(View.GONE)
                 .start();
 
         animate(descriptionText)
+                .setDuration(Animation.DURATION_VERY_FAST)
                 .fadeOut(View.GONE)
                 .start();
     }

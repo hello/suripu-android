@@ -96,7 +96,7 @@
     <dimen name="gap_smart_alarm_list_bottom">96dp</dimen>
     <dimen name="smart_alarm_details_row_height">72dp</dimen>
 
-    <dimen name="view_interaction_area">50dp</dimen>
+    <dimen name="view_interaction_area">60dp</dimen>
 
     <dimen name="interaction_slide_negative">-70dp</dimen>
     <dimen name="interaction_slide_positive">70dp</dimen>

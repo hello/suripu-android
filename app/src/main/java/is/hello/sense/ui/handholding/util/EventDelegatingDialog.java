@@ -1,4 +1,4 @@
-package is.hello.sense.ui.handholding;
+package is.hello.sense.ui.handholding.util;
 
 import android.app.Dialog;
 import android.content.Context;
