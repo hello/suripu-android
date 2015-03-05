@@ -19,6 +19,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SessionLogger;
 
 public class UserSupport {
+    public static final String COMPANY_URL = "https://hello.is";
     public static final String ORDER_URL = "https://order.hello.is";
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is";
     public static final String SUPPORT_EMAIL = "support@hello.is";
