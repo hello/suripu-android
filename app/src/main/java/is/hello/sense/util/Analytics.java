@@ -233,6 +233,7 @@ public class Analytics {
         String EVENT_TAP = "Timeline tap";
         String EVENT_BEFORE_SLEEP_EVENT_TAPPED = "Before sleep event tapped";
         String EVENT_TIMELINE_EVENT_TAPPED = "Timeline Event tapped";
+        String EVENT_LONG_PRESS_EVENT = "Long press sleep duration bar";
     }
 
     public interface TopView {

@@ -634,6 +634,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             return false;
         });
 
+        Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
+
         return true;
     }
 
