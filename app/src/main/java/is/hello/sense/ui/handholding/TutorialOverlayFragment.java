@@ -14,9 +14,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -214,6 +216,9 @@ public class TutorialOverlayFragment extends SenseDialogFragment implements Even
         dismiss();
     }
 
+
+    //region Event Forwarding
+
     @Override
     public boolean tryConsumeTouchEvent(@NonNull MotionEvent event) {
         if (Views.isMotionEventInside(descriptionText, event)) {
@@ -267,6 +272,27 @@ public class TutorialOverlayFragment extends SenseDialogFragment implements Even
         }
 
         return true;
+    }
+
+    @Override
+    public boolean tryConsumeTrackballEvent(@NonNull MotionEvent event) {
+        return getActivity().dispatchTrackballEvent(event);
+    }
+
+    @Override
+    public boolean tryConsumeKeyEvent(@NonNull KeyEvent event) {
+        return (event.getKeyCode() != KeyEvent.KEYCODE_BACK &&
+                getActivity().dispatchKeyEvent(event));
+    }
+
+    @Override
+    public boolean tryConsumeKeyShortcutKey(@NonNull KeyEvent event) {
+        return getActivity().dispatchKeyShortcutEvent(event);
+    }
+
+    @Override
+    public boolean tryConsumePopulateAccessibilityEvent(@NonNull AccessibilityEvent event) {
+        return getActivity().dispatchPopulateAccessibilityEvent(event);
     }
 
     //endregion
