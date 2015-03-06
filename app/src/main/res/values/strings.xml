@@ -446,4 +446,8 @@ so you can sleep better.</string>
 
     <string name="tutorial_sleep_score_breakdown">Tap your Sleep Score to see a more detailed breakdown.</string>
     <string name="tutorial_swipe_timeline">Swipe left or right to navigate between days.</string>
+
+    <string name="title_dismiss_all">Dismiss all tutorials</string>
+    <string name="message_dismiss_all">Are you sure you want to dismiss all tutorials?</string>
+    <string name="action_dismiss_all">Dismiss All</string>
 </resources>

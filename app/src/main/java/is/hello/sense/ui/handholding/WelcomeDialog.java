@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import java.io.IOException;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
+import is.hello.sense.ui.handholding.util.DismissTutorialsDialog;
 import is.hello.sense.ui.handholding.util.WelcomeDialogParser;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
@@ -36,6 +38,7 @@ import is.hello.sense.util.Logger;
 public class WelcomeDialog extends DialogFragment {
     public static final String TAG = WelcomeDialog.class.getSimpleName();
 
+    private static final int REQUEST_CODE_DISMISS_ALL = 0x99;
     private static final String ARG_ITEMS = WelcomeDialog.class.getName() + ".ARG_ITEMS";
 
     private Item[] items;
@@ -64,9 +67,9 @@ public class WelcomeDialog extends DialogFragment {
             return false;
         }
 
-        String key = getPreferenceKey(context, welcomeRes);
         SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-        return !preferences.getBoolean(key, false);
+        return (!preferences.getBoolean(Constants.HANDHOLDING_SUPPRESSED, false) &&
+                !preferences.getBoolean(getPreferenceKey(context, welcomeRes), false));
     }
 
     public static void markShown(@NonNull Context context, @XmlRes int welcomeRes) {
@@ -167,6 +170,15 @@ public class WelcomeDialog extends DialogFragment {
         return dialog;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_DISMISS_ALL && resultCode == Activity.RESULT_OK) {
+            dismiss();
+        }
+    }
+
     //endregion
 
 
@@ -219,6 +231,12 @@ public class WelcomeDialog extends DialogFragment {
                     next.setText(R.string.action_next);
                 }
                 Views.setSafeOnClickListener(next, ignored -> next());
+                next.setOnLongClickListener(ignored -> {
+                    DismissTutorialsDialog tutorialsDialog = new DismissTutorialsDialog();
+                    tutorialsDialog.setTargetFragment(WelcomeDialog.this, REQUEST_CODE_DISMISS_ALL);
+                    tutorialsDialog.show(getFragmentManager(), DismissTutorialsDialog.TAG);
+                    return true;
+                });
             }
 
             private void bindItem(@NonNull Item item) {

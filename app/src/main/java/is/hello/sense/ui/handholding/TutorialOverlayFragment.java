@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.SenseDialogFragment;
+import is.hello.sense.ui.handholding.util.DismissTutorialsDialog;
 import is.hello.sense.ui.handholding.util.EventDelegatingDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
@@ -33,6 +35,8 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class TutorialOverlayFragment extends SenseDialogFragment implements EventDelegatingDialog.EventForwarder {
     public static final String TAG = TutorialOverlayFragment.class.getSimpleName();
+
+    private static final int REQUEST_CODE_DISMISS_ALL = 0x99;
 
     public static final int RESULT_COMPLETED = 0x55;
     public static final int RESULT_CANCELED = 0x54;
@@ -53,7 +57,8 @@ public class TutorialOverlayFragment extends SenseDialogFragment implements Even
 
     public static boolean shouldShow(@NonNull Activity context, @NonNull Tutorial tutorial) {
         SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-        return (!preferences.getBoolean(tutorial.getShownKey(), false) &&
+        return (!preferences.getBoolean(Constants.HANDHOLDING_SUPPRESSED, false) &&
+                !preferences.getBoolean(tutorial.getShownKey(), false) &&
                 context.getFragmentManager().findFragmentByTag(TAG) == null);
     }
 
@@ -102,6 +107,12 @@ public class TutorialOverlayFragment extends SenseDialogFragment implements Even
         this.descriptionText = (TextView) inflater.inflate(R.layout.sub_fragment_tutorial_description, contentLayout, false);
         descriptionText.setText(tutorial.descriptionRes);
         descriptionText.setOnClickListener(ignored -> interactionCompleted());
+        descriptionText.setOnLongClickListener(ignored -> {
+            DismissTutorialsDialog tutorialsDialog = new DismissTutorialsDialog();
+            tutorialsDialog.setTargetFragment(this, REQUEST_CODE_DISMISS_ALL);
+            tutorialsDialog.show(getFragmentManager(), DismissTutorialsDialog.TAG);
+            return true;
+        });
 
         Drawable dismissIcon = descriptionText.getCompoundDrawablesRelative()[2].mutate();
         dismissIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
@@ -120,6 +131,15 @@ public class TutorialOverlayFragment extends SenseDialogFragment implements Even
         }
 
         return dialog;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_DISMISS_ALL && resultCode == Activity.RESULT_OK) {
+            dismiss();
+        }
     }
 
     //endregion
