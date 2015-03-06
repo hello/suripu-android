@@ -101,6 +101,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         Views.setSafeOnClickListener(time, this::selectNewTime);
         updateTime();
 
+
         ViewGroup repeatDays = (ViewGroup) view.findViewById(R.id.fragment_smart_alarm_detail_repeat);
         View.OnClickListener dayClickListener = new SafeOnClickListener(this::dayButtonClicked);
         for (int i = 0, count = repeatDays.getChildCount(); i < count; i++) {
@@ -233,7 +234,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void selectNewTime(@NonNull View sender) {
-        TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(alarm.getTime(), use24Time);
+        @TimePickerDialogFragment.Config int config = use24Time ? TimePickerDialogFragment.FLAG_USE_24_TIME : 0;
+        TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(alarm.getTime(), config);
         dialogFragment.setTargetFragment(this, TIME_REQUEST_CODE);
         dialogFragment.show(getFragmentManager(), TimePickerDialogFragment.TAG);
     }

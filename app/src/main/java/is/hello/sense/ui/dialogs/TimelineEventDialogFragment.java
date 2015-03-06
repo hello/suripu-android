@@ -321,9 +321,13 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     }
 
     public void adjustSegmentTime(@NonNull View sender) {
+        @TimePickerDialogFragment.Config int config = TimePickerDialogFragment.FLAG_ALWAYS_USE_SPINNER;
+        if (preferences.getUse24Time()) {
+            config |= TimePickerDialogFragment.FLAG_USE_24_TIME;
+        }
+
         LocalTime eventTime = timelineSegment.getShiftedTimestamp().toLocalTime();
-        boolean use24Time = preferences.getUse24Time();
-        TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(eventTime, use24Time);
+        TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(eventTime, config);
         dialogFragment.setTargetFragment(this, REQUEST_CODE_ADJUST_TIME);
         dialogFragment.show(getFragmentManager(), TimePickerDialogFragment.TAG);
     }
