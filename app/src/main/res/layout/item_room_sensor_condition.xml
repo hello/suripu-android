@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/AppTheme.Card">
+    style="@style/AppTheme.Card.Clickable">
 
     <LinearLayout
         android:layout_width="match_parent"

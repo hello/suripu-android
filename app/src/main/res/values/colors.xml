@@ -22,6 +22,9 @@
     <color name="background_questions">#F7f8f8f8</color>
     <color name="background_onboarding">@color/white</color>
 
+    <color name="background_raised_item_normal">@color/background_light</color>
+    <color name="background_raised_item_clicked">#fafafa</color>
+
     <color name="border">#e5e5e5</color>
     <color name="shadow_end">#18000000</color>
 

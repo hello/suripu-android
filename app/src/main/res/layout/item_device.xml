@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:shrinkColumns="0"
     android:stretchColumns="1"
-    style="@style/AppTheme.Card">
+    style="@style/AppTheme.Card.Clickable">
 
     <TextView
         android:id="@+id/item_device_name"
