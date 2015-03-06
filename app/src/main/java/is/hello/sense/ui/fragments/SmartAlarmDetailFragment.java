@@ -31,7 +31,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
-import is.hello.sense.ui.handholding.WelcomeDialog;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -190,7 +190,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onResume() {
         super.onResume();
 
-        WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm);
+        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm);
     }
 
     @Override
@@ -262,7 +262,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void showSmartAlarmIntro(@NonNull View sender) {
-        WelcomeDialog.show(getActivity(), R.xml.welcome_dialog_smart_alarm);
+        WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_smart_alarm);
     }
 
 

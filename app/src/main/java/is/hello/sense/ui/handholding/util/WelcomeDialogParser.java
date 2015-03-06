@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import is.hello.sense.ui.handholding.WelcomeDialog;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 
 public class WelcomeDialogParser {
     //region Constants
@@ -78,16 +78,16 @@ public class WelcomeDialogParser {
         return resValue;
     }
 
-    private WelcomeDialog.Item parseItem(@NonNull XmlResourceParser document) throws IOException {
+    private WelcomeDialogFragment.Item parseItem(@NonNull XmlResourceParser document) throws IOException {
         int diagramRes = getResourceAttribute(document, ATTR_ITEM_DIAGRAM_RES, false);
         int titleRes = getResourceAttribute(document, ATTR_ITEM_TITLE_RES, false);
         int messageRes = getResourceAttribute(document, ATTR_ITEM_MESSAGE_RES, true);
         boolean scaleDiagram = document.getAttributeBooleanValue(null, ATTR_ITEM_SCALE_DIAGRAM, true);
-        return new WelcomeDialog.Item(diagramRes, titleRes, messageRes, scaleDiagram);
+        return new WelcomeDialogFragment.Item(diagramRes, titleRes, messageRes, scaleDiagram);
     }
 
-    private WelcomeDialog.Item[] parseDialog(@NonNull XmlResourceParser document) throws XmlPullParserException, IOException {
-        List<WelcomeDialog.Item> parsedItems = new ArrayList<>();
+    private WelcomeDialogFragment.Item[] parseDialog(@NonNull XmlResourceParser document) throws XmlPullParserException, IOException {
+        List<WelcomeDialogFragment.Item> parsedItems = new ArrayList<>();
         boolean lookingForItems = false;
         for (int event = document.getEventType(); event != XmlPullParser.END_DOCUMENT; event = document.next()) {
             if (event == XmlPullParser.START_TAG) {
@@ -116,12 +116,12 @@ public class WelcomeDialogParser {
             }
         }
 
-        WelcomeDialog.Item[] items = new WelcomeDialog.Item[parsedItems.size()];
+        WelcomeDialogFragment.Item[] items = new WelcomeDialogFragment.Item[parsedItems.size()];
         parsedItems.toArray(items);
         return items;
     }
 
-    public WelcomeDialog.Item[] parse() throws XmlPullParserException, IOException {
+    public WelcomeDialogFragment.Item[] parse() throws XmlPullParserException, IOException {
         XmlResourceParser document = resources.getXml(xmlRes);
         return parseDialog(document);
     }

@@ -31,7 +31,7 @@ import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
-import is.hello.sense.ui.handholding.WelcomeDialog;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitSystem;
@@ -109,7 +109,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
 
     @Override
     public void onSwipeInteractionDidFinish() {
-        WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_current_conditions);
+        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_current_conditions);
     }
 
     @Override

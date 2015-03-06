@@ -31,7 +31,7 @@ import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
-import is.hello.sense.ui.handholding.WelcomeDialog;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
@@ -138,7 +138,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     }
 
     public void clearHandholdingSettings() {
-        WelcomeDialog.clearShownStates(this);
+        WelcomeDialogFragment.clearShownStates(this);
         Toast.makeText(getApplicationContext(), "Forgot welcome dialogs", Toast.LENGTH_SHORT).show();
     }
 

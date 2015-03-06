@@ -55,7 +55,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayFragment;
-import is.hello.sense.ui.handholding.WelcomeDialog;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.BlockableLinearLayout;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
 import is.hello.sense.ui.widget.ShareImageGenerator;
@@ -477,11 +477,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private void showHandholdingIfAppropriate() {
         if (homeActivity.getWillShowUnderside()) {
-            WelcomeDialog.markShown(homeActivity, R.xml.welcome_dialog_timeline);
+            WelcomeDialogFragment.markShown(homeActivity, R.xml.welcome_dialog_timeline);
         } else {
             getAnimatorContext().runWhenIdle(coordinator.bind(() -> {
-                if (WelcomeDialog.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
-                    WelcomeDialog.show(homeActivity, R.xml.welcome_dialog_timeline);
+                if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
+                    WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
                 } else if (TutorialOverlayFragment.shouldShow(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN)) {
                     TutorialOverlayFragment.show(getFragmentManager(), Tutorial.SLEEP_SCORE_BREAKDOWN);
                 } else if (TutorialOverlayFragment.shouldShow(getActivity(), Tutorial.SWIPE_TIMELINE)) {

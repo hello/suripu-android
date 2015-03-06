@@ -35,11 +35,11 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
-public class WelcomeDialog extends DialogFragment {
-    public static final String TAG = WelcomeDialog.class.getSimpleName();
+public class WelcomeDialogFragment extends DialogFragment {
+    public static final String TAG = WelcomeDialogFragment.class.getSimpleName();
 
     private static final int REQUEST_CODE_DISMISS_ALL = 0x99;
-    private static final String ARG_ITEMS = WelcomeDialog.class.getName() + ".ARG_ITEMS";
+    private static final String ARG_ITEMS = WelcomeDialogFragment.class.getName() + ".ARG_ITEMS";
 
     private Item[] items;
     private ItemAdapter adapter;
@@ -83,10 +83,10 @@ public class WelcomeDialog extends DialogFragment {
     public static boolean show(@NonNull Activity activity, @XmlRes int welcomeRes) {
         try {
             WelcomeDialogParser parser = new WelcomeDialogParser(activity.getResources(), welcomeRes);
-            WelcomeDialog.Item[] items = parser.parse();
+            WelcomeDialogFragment.Item[] items = parser.parse();
 
-            WelcomeDialog welcomeDialog = WelcomeDialog.newInstance(items);
-            welcomeDialog.show(activity.getFragmentManager(), WelcomeDialog.TAG);
+            WelcomeDialogFragment welcomeDialog = WelcomeDialogFragment.newInstance(items);
+            welcomeDialog.show(activity.getFragmentManager(), WelcomeDialogFragment.TAG);
 
             markShown(activity, welcomeRes);
         } catch (XmlPullParserException | IOException e) {
@@ -102,8 +102,8 @@ public class WelcomeDialog extends DialogFragment {
                 show(activity, welcomeRes));
     }
 
-    public static WelcomeDialog newInstance(@NonNull Item[] items) {
-        WelcomeDialog fragment = new WelcomeDialog();
+    public static WelcomeDialogFragment newInstance(@NonNull Item[] items) {
+        WelcomeDialogFragment fragment = new WelcomeDialogFragment();
 
         Bundle arguments = new Bundle();
         arguments.putParcelableArray(ARG_ITEMS, items);
@@ -123,7 +123,7 @@ public class WelcomeDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
-        dialog.setContentView(R.layout.dialog_welcome);
+        dialog.setContentView(R.layout.fragment_dialog_welcome);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(true);
 
@@ -132,7 +132,7 @@ public class WelcomeDialog extends DialogFragment {
             dialog.getWindow().setStatusBarColor(tintedStatusBar);
         }
 
-        this.viewPager = (ViewPager) dialog.findViewById(R.id.dialog_welcome_view_pager);
+        this.viewPager = (ViewPager) dialog.findViewById(R.id.fragment_dialog_welcome_view_pager);
 
         int pageMargin = getResources().getDimensionPixelSize(R.dimen.gap_outer);
         viewPager.setClipToPadding(false);
@@ -143,7 +143,7 @@ public class WelcomeDialog extends DialogFragment {
         viewPager.setAdapter(adapter);
 
         if (items.length > 1) {
-            PageDots pageDots = (PageDots) dialog.findViewById(R.id.dialog_welcome_page_dots);
+            PageDots pageDots = (PageDots) dialog.findViewById(R.id.fragment_dialog_welcome_page_dots);
             pageDots.attach(viewPager);
         }
 
@@ -233,7 +233,7 @@ public class WelcomeDialog extends DialogFragment {
                 Views.setSafeOnClickListener(next, ignored -> next());
                 next.setOnLongClickListener(ignored -> {
                     DismissTutorialsDialog tutorialsDialog = new DismissTutorialsDialog();
-                    tutorialsDialog.setTargetFragment(WelcomeDialog.this, REQUEST_CODE_DISMISS_ALL);
+                    tutorialsDialog.setTargetFragment(WelcomeDialogFragment.this, REQUEST_CODE_DISMISS_ALL);
                     tutorialsDialog.show(getFragmentManager(), DismissTutorialsDialog.TAG);
                     return true;
                 });

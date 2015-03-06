@@ -21,7 +21,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.adapter.TrendsAdapter;
-import is.hello.sense.ui.handholding.WelcomeDialog;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
@@ -77,7 +77,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
 
     @Override
     public void onSwipeInteractionDidFinish() {
-        WelcomeDialog.showIfNeeded(getActivity(), R.xml.welcome_dialog_trends);
+        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_trends);
     }
 
     @Override

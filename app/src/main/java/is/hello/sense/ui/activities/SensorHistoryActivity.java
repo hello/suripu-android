@@ -6,7 +6,7 @@ import android.view.MenuItem;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
-import is.hello.sense.ui.handholding.WelcomeDialog;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.handholding.util.WelcomeDialogParser;
 
 public class SensorHistoryActivity extends SenseActivity {
@@ -97,9 +97,9 @@ public class SensorHistoryActivity extends SenseActivity {
         }
 
         if (overrideCheck) {
-            WelcomeDialog.show(this, welcomeDialogRes);
+            WelcomeDialogFragment.show(this, welcomeDialogRes);
         } else {
-            WelcomeDialog.showIfNeeded(this, welcomeDialogRes);
+            WelcomeDialogFragment.showIfNeeded(this, welcomeDialogRes);
         }
     }
 }
