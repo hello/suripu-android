@@ -257,7 +257,6 @@
         <item name="android:textAppearance">@style/AppTheme.Text.Body.Light.Small</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:background">@color/transparent</item>
         <item name="android:drawablePadding">@dimen/gap_small</item>
     </style>
 
