@@ -56,7 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/action_adjust_time"
-            style="@style/AppTheme.Button.Borderless.Accent"/>
+            style="@style/AppTheme.Button.Borderless.Accent.Bounded"/>
 
         <is.hello.sense.ui.widget.TintedProgressBar
             android:id="@+id/dialog_fragment_timeline_event_adjust_time_activity"
