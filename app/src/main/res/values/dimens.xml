@@ -139,6 +139,7 @@
     <!-- Dialogs -->
 
     <dimen name="dialog_max_width">335dp</dimen>
+    <dimen name="dialog_max_height">500dp</dimen>
 
     <!-- Widget -->
 

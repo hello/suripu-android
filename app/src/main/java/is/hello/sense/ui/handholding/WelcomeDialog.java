@@ -145,10 +145,17 @@ public class WelcomeDialog extends DialogFragment {
         }
 
         int maxWidth = getResources().getDimensionPixelSize(R.dimen.dialog_max_width);
+        int maxHeight = getResources().getDimensionPixelSize(R.dimen.dialog_max_height);
         viewPager.setVisibility(View.INVISIBLE);
         Views.observeNextLayout(dialog.getWindow().getDecorView())
              .subscribe(v -> {
                  int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
+                 int height = viewPager.getMeasuredHeight();
+                 if (height > maxHeight) {
+                     viewPager.getLayoutParams().height = maxHeight;
+                     viewPager.invalidate();
+                 }
+
                  if (width > maxWidth) {
                      int newPageMargin = (viewPager.getMeasuredWidth() - maxWidth) / 2;
                      viewPager.setPadding(newPageMargin, 0, newPageMargin, 0);
