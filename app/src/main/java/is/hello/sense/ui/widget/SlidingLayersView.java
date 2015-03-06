@@ -417,6 +417,10 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
     @Override
     public boolean onInterceptTouchEvent(@NonNull MotionEvent event) {
+        if (!isEnabled()) {
+            return false;
+        }
+
         if (isAnimating) {
             return true;
         }

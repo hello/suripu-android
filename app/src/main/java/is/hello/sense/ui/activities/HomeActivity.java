@@ -719,6 +719,7 @@ public class HomeActivity
                         .addOnAnimationCompleted(finished -> {
                             if (finished) {
                                 undersideContainer.removeView(view);
+                                slidingLayersView.setEnabled(true);
                             }
                         })
                         .start();
@@ -729,6 +730,7 @@ public class HomeActivity
         };
         fragmentManager.addOnBackStackChangedListener(navigatorStackListener);
 
+        slidingLayersView.setEnabled(false);
         undersideContainer.addView(view, 0);
 
         hideAlarmShortcut();
