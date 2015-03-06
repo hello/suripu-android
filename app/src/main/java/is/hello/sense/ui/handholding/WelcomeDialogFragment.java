@@ -152,19 +152,20 @@ public class WelcomeDialogFragment extends DialogFragment {
         viewPager.setVisibility(View.INVISIBLE);
         Views.observeNextLayout(dialog.getWindow().getDecorView())
              .subscribe(v -> {
-                 int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
                  int height = viewPager.getMeasuredHeight();
                  if (height > maxHeight) {
                      viewPager.getLayoutParams().height = maxHeight;
                      viewPager.invalidate();
                  }
 
+                 int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
                  if (width > maxWidth) {
                      int newPageMargin = (viewPager.getMeasuredWidth() - maxWidth) / 2;
                      viewPager.setPadding(newPageMargin, 0, newPageMargin, 0);
                      viewPager.setPageMargin(newPageMargin);
-                     viewPager.post(() -> viewPager.setVisibility(View.VISIBLE));
                  }
+
+                 viewPager.post(() -> viewPager.setVisibility(View.VISIBLE));
              });
 
         return dialog;
