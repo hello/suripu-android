@@ -13,6 +13,8 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import is.hello.sense.BuildConfig;
+
 public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
     public static final String PLATFORM = "android";
@@ -302,8 +304,8 @@ public class Analytics {
 
     //region Lifecycle
 
-    public static void initialize(@NonNull Context context, @NonNull String apiKey) {
-        Analytics.provider = MixpanelAPI.getInstance(context, apiKey);
+    public static void initialize(@NonNull Context context) {
+        Analytics.provider = MixpanelAPI.getInstance(context, BuildConfig.MP_API_KEY);
         Analytics.preferences = context.getSharedPreferences(Constants.INTERNAL_PREFS, 0);
     }
 

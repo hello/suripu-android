@@ -37,7 +37,7 @@ public class SenseApplication extends Application {
         super.onCreate();
 
         JodaTimeAndroid.init(this);
-        Analytics.initialize(this, getString(R.string.build_analytics_api_key));
+        Analytics.initialize(this);
         SessionLogger.init(this);
 
         buildGraph();

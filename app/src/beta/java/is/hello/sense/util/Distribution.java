@@ -5,10 +5,10 @@ import android.support.annotation.NonNull;
 
 import net.hockeyapp.android.UpdateManager;
 
-import is.hello.sense.R;
+import is.hello.sense.BuildConfig;
 
 public class Distribution {
     public static void checkForUpdates(@NonNull Activity activity) {
-        UpdateManager.register(activity, activity.getString(R.string.build_hockey_id));
+        UpdateManager.register(activity, BuildConfig.HOCKEY_API_KEY);
     }
 }
