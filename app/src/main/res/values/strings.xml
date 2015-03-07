@@ -450,4 +450,7 @@ so you can sleep better.</string>
     <string name="title_dismiss_all">Dismiss all tutorials</string>
     <string name="message_dismiss_all">Are you sure you want to dismiss all tutorials?</string>
     <string name="action_dismiss_all">Dismiss All</string>
+    <string name="action_save">Save</string>
+    <string name="action_show_alarms">Alarms</string>
+    <string name="title_alarm">Alarm</string>
 </resources>

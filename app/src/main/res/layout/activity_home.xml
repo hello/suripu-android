@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:src="@drawable/timeline_smart_alarm"
-                android:contentDescription="@string/title_smart_alarm"
+                android:contentDescription="@string/action_show_alarms"
                 style="@style/AppTheme.Button.Borderless"/>
 
         </FrameLayout>

@@ -2,9 +2,7 @@ package is.hello.sense.ui.activities;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import is.hello.sense.R;
@@ -36,17 +34,22 @@ public class SmartAlarmDetailActivity extends SenseActivity {
         this.detailFragment = (SmartAlarmDetailFragment) getFragmentManager().findFragmentById(R.id.activity_smart_alarm_detail_fragment);
 
         //noinspection ConstantConditions
-        getActionBar().setHomeAsUpIndicator(R.drawable.app_style_ab_done);
-        SpannableString titleString = new SpannableString(getString(R.string.action_done));
-        titleString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.light_accent)),
-                                                    0, titleString.length(),
-                                                    Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        getActionBar().setTitle(titleString);
+        getActionBar().setHomeAsUpIndicator(R.drawable.app_style_ab_cancel);
+        getActionBar().setTitle(R.string.title_alarm);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.alarm_detail, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onMenuItemSelected(int featureId, @NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        } else if (item.getItemId() == R.id.item_save) {
             detailFragment.saveAlarm();
             return true;
         }
