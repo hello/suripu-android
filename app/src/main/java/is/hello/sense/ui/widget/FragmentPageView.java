@@ -9,9 +9,15 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.SoundEffectConstants;
 import android.view.VelocityTracker;
+import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityRecord;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EdgeEffect;
 import android.widget.FrameLayout;
@@ -91,6 +97,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         setWillNotDraw(false);
         setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
         setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
+        setFocusable(true);
 
         animationConfig.interpolator = new DecelerateInterpolator();
 
@@ -106,6 +113,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         view2.setId(R.id.fragment_page_view_off_screen);
         view2.setVisibility(INVISIBLE);
         addView(view2);
+
+        setAccessibilityDelegate(new AccessibilityDelegate());
+        if (getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+            setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
+        }
     }
 
     @Override
@@ -569,6 +581,157 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         }
 
         return false;
+    }
+
+    //endregion
+
+
+    //region Scrolling
+
+    @SuppressWarnings("SimplifiableIfStatement")
+    @Override
+    public boolean canScrollHorizontally(int direction) {
+        TFragment currentFragment = getCurrentFragment();
+        if (adapter == null || currentFragment == null) {
+            return false;
+        }
+
+        if (direction > 0) {
+            return adapter.hasFragmentAfterFragment(currentFragment);
+        } else if (direction < 0) {
+            return adapter.hasFragmentBeforeFragment(currentFragment);
+        } else {
+            return false;
+        }
+    }
+
+    public boolean canScroll() {
+        TFragment currentFragment = getCurrentFragment();
+        return (currentFragment != null &&
+                adapter != null &&
+                (adapter.hasFragmentBeforeFragment(currentFragment) ||
+                        adapter.hasFragmentAfterFragment(currentFragment)));
+    }
+
+    public boolean scrollBackward() {
+        TFragment currentFragment = getCurrentFragment();
+        if (currentFragment == null || !adapter.hasFragmentBeforeFragment(currentFragment)) {
+            return false;
+        }
+
+        TFragment newFragment = adapter.getFragmentBeforeFragment(currentFragment);
+        setCurrentFragment(newFragment);
+
+        playSoundEffect(SoundEffectConstants.getContantForFocusDirection(FOCUS_BACKWARD));
+
+        return true;
+    }
+
+    public boolean scrollForward() {
+        TFragment currentFragment = getCurrentFragment();
+        if (currentFragment == null || !adapter.hasFragmentAfterFragment(currentFragment)) {
+            return false;
+        }
+
+        TFragment newFragment = adapter.getFragmentAfterFragment(currentFragment);
+        setCurrentFragment(newFragment);
+
+        playSoundEffect(SoundEffectConstants.getContantForFocusDirection(FOCUS_FORWARD));
+
+        return true;
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
+        if (super.dispatchKeyEvent(event)) {
+            return true;
+        }
+
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            switch (event.getKeyCode()) {
+                case KeyEvent.KEYCODE_DPAD_LEFT: {
+                    return scrollBackward();
+                }
+
+                case KeyEvent.KEYCODE_DPAD_RIGHT: {
+                    return scrollForward();
+                }
+
+                default: {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+
+    //endregion
+
+
+    //region Accessibility
+
+    @Override
+    public boolean dispatchPopulateAccessibilityEvent(AccessibilityEvent event) {
+        if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+            return super.dispatchPopulateAccessibilityEvent(event);
+        }
+
+        return getOnScreenView().dispatchPopulateAccessibilityEvent(event);
+    }
+
+    private class AccessibilityDelegate extends View.AccessibilityDelegate {
+        @Override
+        public void onInitializeAccessibilityEvent(@NonNull View host, @NonNull AccessibilityEvent event) {
+            super.onInitializeAccessibilityEvent(host, event);
+            event.setClassName(FragmentPageView.class.getName());
+            AccessibilityRecord record = AccessibilityRecord.obtain();
+            record.setScrollable(canScroll());
+
+        }
+
+        @Override
+        public void onInitializeAccessibilityNodeInfo(@NonNull View host, @NonNull AccessibilityNodeInfo info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            info.setClassName(FragmentPageView.class.getName());
+            info.setScrollable(canScroll());
+            if (canScrollHorizontally(1)) {
+                //noinspection deprecation
+                info.addAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+            }
+            if (canScrollHorizontally(-1)) {
+                //noinspection deprecation
+                info.addAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+            }
+        }
+
+        @Override
+        public boolean performAccessibilityAction(@NonNull View host, int action, Bundle args) {
+            if (super.performAccessibilityAction(host, action, args)) {
+                return true;
+            }
+
+            switch (action) {
+                case AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD: {
+                    if (canScrollHorizontally(1)) {
+                        scrollForward();
+                        return true;
+                    }
+                }
+
+                case AccessibilityNodeInfo.ACTION_SCROLL_FORWARD: {
+                    if (canScrollHorizontally(-1)) {
+                        scrollBackward();
+                        return true;
+                    }
+                }
+
+                default: {
+                    break;
+                }
+            }
+            return false;
+        }
     }
 
     //endregion
