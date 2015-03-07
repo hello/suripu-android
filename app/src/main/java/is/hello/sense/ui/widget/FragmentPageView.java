@@ -8,6 +8,10 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.AccessibilityDelegateCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
+import android.support.v4.view.accessibility.AccessibilityRecordCompat;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -16,8 +20,6 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
-import android.view.accessibility.AccessibilityRecord;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EdgeEffect;
 import android.widget.FrameLayout;
@@ -114,9 +116,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         view2.setVisibility(INVISIBLE);
         addView(view2);
 
-        setAccessibilityDelegate(new AccessibilityDelegate());
-        if (getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-            setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
+        ViewCompat.setAccessibilityDelegate(this, new AccessibilityDelegate());
+        if (ViewCompat.getImportantForAccessibility(this) == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+            ViewCompat.setImportantForAccessibility(this, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
         }
     }
 
@@ -680,28 +682,25 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         return getOnScreenView().dispatchPopulateAccessibilityEvent(event);
     }
 
-    private class AccessibilityDelegate extends View.AccessibilityDelegate {
+    private class AccessibilityDelegate extends AccessibilityDelegateCompat {
         @Override
         public void onInitializeAccessibilityEvent(@NonNull View host, @NonNull AccessibilityEvent event) {
             super.onInitializeAccessibilityEvent(host, event);
             event.setClassName(FragmentPageView.class.getName());
-            AccessibilityRecord record = AccessibilityRecord.obtain();
+            AccessibilityRecordCompat record = AccessibilityRecordCompat.obtain();
             record.setScrollable(canScroll());
-
         }
 
         @Override
-        public void onInitializeAccessibilityNodeInfo(@NonNull View host, @NonNull AccessibilityNodeInfo info) {
+        public void onInitializeAccessibilityNodeInfo(@NonNull View host, @NonNull AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
             info.setClassName(FragmentPageView.class.getName());
             info.setScrollable(canScroll());
             if (canScrollHorizontally(1)) {
-                //noinspection deprecation
-                info.addAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+                info.addAction(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD);
             }
             if (canScrollHorizontally(-1)) {
-                //noinspection deprecation
-                info.addAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+                info.addAction(AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD);
             }
         }
 
@@ -712,14 +711,14 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             }
 
             switch (action) {
-                case AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD: {
+                case AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD: {
                     if (canScrollHorizontally(1)) {
                         scrollForward();
                         return true;
                     }
                 }
 
-                case AccessibilityNodeInfo.ACTION_SCROLL_FORWARD: {
+                case AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD: {
                     if (canScrollHorizontally(-1)) {
                         scrollBackward();
                         return true;

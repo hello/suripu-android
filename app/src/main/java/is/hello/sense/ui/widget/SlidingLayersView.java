@@ -71,6 +71,10 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     }
 
     protected void initialize() {
+        setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
+        setFocusable(false);
+        setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+
         // ListView eats some vertical motion events, so our touch slop has
         // to be lower than standard in order for the swipe gesture to work.
         this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop() / 2;
