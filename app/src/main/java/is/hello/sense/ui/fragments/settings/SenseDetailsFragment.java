@@ -26,6 +26,7 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -158,6 +159,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         showActions();
 
         addDeviceAction(R.string.action_replace_this_sense, true, this::unregisterDevice);
+        addDeviceAction(R.string.action_change_time_zone, false, this::changeTimeZone);
     }
 
     private void showConnectedSenseActions(@Nullable SensePeripheral.SenseWifiNetwork network) {
@@ -167,7 +169,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         addDeviceAction(R.string.action_replace_this_sense, true, this::unregisterDevice);
         addDeviceAction(R.string.action_enter_pairing_mode, true, this::putIntoPairingMode);
         addDeviceAction(R.string.action_factory_reset, true, this::factoryReset);
-        addDeviceAction(R.string.action_select_wifi_network, false, this::changeWifiNetwork);
+        addDeviceAction(R.string.action_select_wifi_network, true, this::changeWifiNetwork);
+        addDeviceAction(R.string.action_change_time_zone, false, this::changeTimeZone);
 
         if (network == null ||
             TextUtils.isEmpty(network.ssid) ||
@@ -288,6 +291,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                              ignored -> hideAllActivityForSuccess(() -> getFragmentManager().popBackStackImmediate(), this::presentError),
                              this::presentError);
         }, this::presentError);
+    }
+
+    public void changeTimeZone() {
+        DeviceTimeZoneFragment timeZoneFragment = new DeviceTimeZoneFragment();
+        ((FragmentNavigation) getActivity()).pushFragment(timeZoneFragment, getString(R.string.action_change_time_zone), true);
     }
 
     public void factoryReset() {

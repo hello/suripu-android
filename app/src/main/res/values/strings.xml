@@ -453,4 +453,5 @@ so you can sleep better.</string>
     <string name="action_save">Save</string>
     <string name="action_show_alarms">Alarms</string>
     <string name="title_alarm">Alarm</string>
+    <string name="action_change_time_zone">Change Time Zone</string>
 </resources>

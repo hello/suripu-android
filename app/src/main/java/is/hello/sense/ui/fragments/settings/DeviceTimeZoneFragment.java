@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
@@ -18,11 +19,12 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.adapter.TimeZoneAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.widget.util.ListViews;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Logger;
 
 public class DeviceTimeZoneFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
@@ -32,6 +34,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
     private ProgressBar activityIndicator;
 
     private @Nullable Account account;
+    private TextView headerDetail;
 
     //region Lifecycle
 
@@ -39,6 +42,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        accountPresenter.update();
         addPresenter(accountPresenter);
         setRetainInstance(true);
     }
@@ -48,13 +52,24 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list_view_static, container, false);
 
+        this.activityIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
+
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
+        View header = inflater.inflate(R.layout.item_static_text, listView, false);
+
+        TextView headerTitle = (TextView) header.findViewById(R.id.item_static_text_title);
+        headerTitle.setText(R.string.label_time_zone);
+
+        this.headerDetail = (TextView) header.findViewById(R.id.item_static_text_detail);
+        headerDetail.setText(R.string.missing_data_placeholder);
+
+        ListViews.addHeaderView(listView, header, null, false);
+        ListViews.addFooterView(listView, Styles.createHorizontalDivider(getActivity(), ViewGroup.LayoutParams.MATCH_PARENT), null, false);
+
         TimeZoneAdapter adapter = new TimeZoneAdapter(getActivity());
         listView.setAdapter(adapter);
-
-        this.activityIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
 
         return view;
     }
@@ -90,24 +105,32 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         }
 
         String timeZoneId = (String) parent.getItemAtPosition(position);
+        if (timeZoneId == null) {
+            return;
+        }
+
         DateTimeZone timeZone = DateTimeZone.forID(timeZoneId);
         int offset = timeZone.getOffset(DateTimeUtils.currentTimeMillis());
         account.setTimeZoneOffset(offset);
 
         beginActivity();
-
-        bindAndSubscribe(accountPresenter.saveAccount(account),
-                         ignored -> {},
+        bindAndSubscribe(accountPresenter.updateTimeZone(SenseTimeZone.fromDateTimeZone(timeZone)),
+                         ignored -> {
+                             Logger.info(getClass().getSimpleName(), "Updated time zone");
+                             bindAndSubscribe(accountPresenter.saveAccount(account),
+                                              updatedAccount -> {},
+                                              this::presentError);
+                         },
                          this::presentError);
-
-        accountPresenter.updateTimeZone(SenseTimeZone.fromDateTimeZone(timeZone))
-                        .subscribe(ignored -> Logger.info(getClass().getSimpleName(), "Updated time zone"),
-                                   Functions.LOG_ERROR);
     }
 
 
     public void bindAccount(@NonNull Account account) {
         this.account = account;
+
+        DateTimeZone timeZone = DateTimeZone.forOffsetMillis(account.getTimeZoneOffset());
+        headerDetail.setText(timeZone.getName(DateTimeUtils.currentTimeMillis()));
+
         endActivity(true);
     }
 
