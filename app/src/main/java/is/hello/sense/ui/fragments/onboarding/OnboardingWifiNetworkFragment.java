@@ -24,7 +24,6 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
-import rx.functions.Action1;
 
 public class OnboardingWifiNetworkFragment extends HardwareFragment implements AdapterView.OnItemClickListener {
     private WifiNetworkAdapter networkAdapter;
@@ -115,16 +114,21 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         networkAdapter.clear();
 
         if (!hardwarePresenter.hasPeripheral()) {
-            Action1<Throwable> onError = this::peripheralRediscoveryFailed;
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
-                             ignored -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                                 if (status != HelloPeripheral.ConnectStatus.CONNECTED) {
-                                     return;
-                                 }
+                             ignored -> rescan(),
+                             this::peripheralRediscoveryFailed);
+            return;
+        }
 
-                                 rescan();
-                             }, onError),
-                             onError);
+        if (!hardwarePresenter.isConnected()) {
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
+                if (status != HelloPeripheral.ConnectStatus.CONNECTED) {
+                    return;
+                }
+
+                rescan();
+            }, this::peripheralRediscoveryFailed);
+
             return;
         }
 
