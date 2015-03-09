@@ -36,7 +36,6 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
-import rx.functions.Action1;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
@@ -182,15 +181,20 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
         showBlockingActivity(R.string.title_connecting_network);
 
         if (!hardwarePresenter.hasPeripheral()) {
-            Action1<Throwable> onError = this::presentError;
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
-                             ignored -> bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                                 if (status != HelloPeripheral.ConnectStatus.CONNECTED)
-                                     return;
+                             ignored -> sendWifiCredentials(),
+                             this::presentError);
+            return;
+        }
 
-                                 sendWifiCredentials();
-                             }, onError),
-                             onError);
+        if (!hardwarePresenter.isConnected()) {
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
+                if (status != HelloPeripheral.ConnectStatus.CONNECTED)
+                    return;
+
+                sendWifiCredentials();
+            }, this::presentError);
+
             return;
         }
 
