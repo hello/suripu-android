@@ -85,7 +85,7 @@ public class AnimatorContext implements Animator.AnimatorListener {
 
     public void endAnimation() {
         if (activeAnimationCount == 0) {
-            throw new IllegalStateException("No active animations to end");
+            throw new IllegalStateException("No active animations to end in " + toString());
         }
 
         this.activeAnimationCount--;

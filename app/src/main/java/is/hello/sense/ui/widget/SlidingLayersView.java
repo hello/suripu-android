@@ -45,8 +45,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     private @Nullable OnInteractionListener onInteractionListener;
     private @Nullable GestureInterceptingView gestureInterceptingChild;
     private @Nullable InteractiveAnimator interactiveAnimator;
-    private @Nullable
-    AnimatorContext animatorContext;
+    private @Nullable AnimatorContext animatorContext;
     private int shadowHeight;
 
 
@@ -405,7 +404,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                     velocityTracker.recycle();
                 }
 
-                if (animatorContext != null) {
+                if (isTrackingTouchEvents && animatorContext != null) {
                     animatorContext.endAnimation();
                 }
 
