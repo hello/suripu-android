@@ -39,6 +39,11 @@ public class Analytics {
          */
         String GLOBAL_PROP_ACCOUNT_ID = "Account Id";
 
+        /**
+         * The id of the user's Sense.
+         */
+        String GLOBAL_PROP_SENSE_ID = "Sense Id";
+
 
         /**
          * Anytime an error is encountered, even if it came from server.  MAKE SURE you don't log Error in a loop ... I've seen it happen where 10,000 events get logged :)
@@ -372,6 +377,14 @@ public class Analytics {
                     Global.GLOBAL_PROP_NAME, name,
                     Global.GLOBAL_PROP_PLATFORM, PLATFORM
             ));
+        }
+    }
+
+    public static void trackSense(@Nullable String senseId) {
+        Logger.info(LOG_TAG, "Tracking Sense " + senseId);
+
+        if (provider != null) {
+            provider.getPeople().set(Global.GLOBAL_PROP_SENSE_ID, senseId);
         }
     }
 

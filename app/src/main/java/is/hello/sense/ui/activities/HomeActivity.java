@@ -487,6 +487,11 @@ public class HomeActivity
         Map<Device.Type, Device> devicesMap = Device.getDevicesMap(devices);
         Device sense = devicesMap.get(Device.Type.SENSE);
         Device pill = devicesMap.get(Device.Type.PILL);
+
+        if (sense != null) {
+            Analytics.trackSense(sense.getDeviceId());
+        }
+
         if (sense == null) {
             showDeviceAlert(R.string.alert_title_no_sense, R.string.alert_message_no_sense, this::showDevices);
         } else if (sense.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {

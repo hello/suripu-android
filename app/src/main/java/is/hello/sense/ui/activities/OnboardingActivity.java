@@ -411,6 +411,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                              devicesInfo -> {
                                  Logger.info(getClass().getSimpleName(), "Loaded devices info");
                                  this.devicesInfo = devicesInfo;
+                                 Analytics.trackSense(devicesInfo.getSenseId());
                              }, e -> {
                                  Logger.error(getClass().getSimpleName(), "Failed to silently load devices info, will retry later", e);
                              });
