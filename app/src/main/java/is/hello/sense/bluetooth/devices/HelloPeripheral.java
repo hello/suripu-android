@@ -139,10 +139,14 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
                                            @NonNull OperationTimeout timeout) {
         Logger.info(Peripheral.LOG_TAG, "Unsubscribing from " + characteristicIdentifier);
 
-        return peripheral.unsubscribeNotification(getTargetService(),
-                                                  characteristicIdentifier,
-                                                  getDescriptorIdentifier(),
-                                                  timeout);
+        if (isConnected()) {
+            return peripheral.unsubscribeNotification(getTargetService(),
+                                                      characteristicIdentifier,
+                                                      getDescriptorIdentifier(),
+                                                      timeout);
+        } else {
+            return Observable.just(characteristicIdentifier);
+        }
     }
 
     //endregion

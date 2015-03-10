@@ -165,7 +165,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 dataHandler.onError = dataError -> {
                     timeout.unschedule();
 
-                    if (dataError instanceof BluetoothConnectionLostError) {
+                    if (dataError instanceof BluetoothConnectionLostError || !isConnected()) {
                         onError.call(dataError);
                     } else {
                         Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
