@@ -35,6 +35,7 @@ public class SmartAlarmDetailActivity extends SenseActivity {
 
         //noinspection ConstantConditions
         getActionBar().setHomeAsUpIndicator(R.drawable.app_style_ab_cancel);
+        getActionBar().setHomeActionContentDescription(android.R.string.cancel);
         getActionBar().setTitle(R.string.title_alarm);
     }
 
