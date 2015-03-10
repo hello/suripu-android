@@ -193,6 +193,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             if (e instanceof PeripheralNotFoundError) {
                 TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
                 dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
+
+                Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null);
             } else {
                 ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
             }

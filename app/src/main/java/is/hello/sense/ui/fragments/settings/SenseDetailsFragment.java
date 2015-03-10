@@ -235,6 +235,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         hideAllActivityForFailure(() -> {
             if (e instanceof PeripheralNotFoundError) {
                 showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE));
+
+                Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null);
             } else {
                 ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
             }
@@ -258,6 +260,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Could not get connectivity state, ignoring.", e);
                              showConnectedSenseActions(null);
+
+                             Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), "Ignored");
                          });
     }
 

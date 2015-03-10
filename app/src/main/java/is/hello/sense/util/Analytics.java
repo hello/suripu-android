@@ -50,6 +50,8 @@ public class Analytics {
          */
         String EVENT_ERROR = "Error";
         String PROP_ERROR_MESSAGE = "message";
+        String PROP_ERROR_TYPE = "type";
+        String PROP_ERROR_CONTEXT = "context";
 
         /**
          * When the user signs in
@@ -415,8 +417,15 @@ public class Analytics {
         Logger.info(LOG_TAG, event + ": " + properties);
     }
 
-    public static void trackError(@NonNull String message) {
-        trackEvent(Global.EVENT_ERROR, createProperties(Global.PROP_ERROR_MESSAGE, message));
+    public static void trackError(@NonNull String message,
+                                  @Nullable String errorType,
+                                  @Nullable String errorContext) {
+        JSONObject properties = createProperties(
+            Global.PROP_ERROR_MESSAGE, message,
+            Global.PROP_ERROR_TYPE, errorType,
+            Global.PROP_ERROR_CONTEXT, errorContext
+        );
+        trackEvent(Global.EVENT_ERROR, properties);
     }
 
     //endregion

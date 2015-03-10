@@ -36,6 +36,8 @@ import is.hello.sense.util.Analytics;
 public class ErrorDialogFragment extends DialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();
 
+    private static final String ARG_ERROR_TYPE = ErrorDialogFragment.class.getName() + ".ARG_ERROR_TYPE";
+    private static final String ARG_ERROR_CONTEXT = ErrorDialogFragment.class.getName() + ".ARG_ERROR_CONTEXT";
     private static final String ARG_MESSAGE = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE";
     private static final String ARG_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE_RES";
     private static final String ARG_SHOW_BLE_SUPPORT = ErrorDialogFragment.class.getName() + ".ARG_SHOW_BLE_SUPPORT";
@@ -53,6 +55,7 @@ public class ErrorDialogFragment extends DialogFragment {
                                              @NonNull Context context,
                                              @NonNull Throwable e) {
         String message = null;
+        String errorContext = null;
         if (e instanceof BluetoothDisabledError) {
             message = context.getString(R.string.error_bluetooth_disabled);
         } else if (e instanceof BluetoothGattError) {
@@ -66,6 +69,8 @@ public class ErrorDialogFragment extends DialogFragment {
             } else {
                 message = context.getString(R.string.error_bluetooth_bonding_change_fmt, PeripheralBondAlterationError.getReasonString(failureReason));
             }
+
+            errorContext = PeripheralBondAlterationError.getReasonString(failureReason);
         } else if (e instanceof PeripheralConnectionError) {
             message = context.getString(R.string.error_bluetooth_no_connection);
         } else if (e instanceof PeripheralServiceDiscoveryFailedError) {
@@ -116,6 +121,8 @@ public class ErrorDialogFragment extends DialogFragment {
                     message = errorType.toString();
                     break;
             }
+
+            errorContext = errorType.toString();
         }
 
 
@@ -124,6 +131,8 @@ public class ErrorDialogFragment extends DialogFragment {
             dialogFragment.setShowBluetoothSupport(true);
             dialogFragment.setFatalMessage(R.string.error_addendum_unstable_stack);
         }
+        dialogFragment.setErrorType(e.getClass().getCanonicalName());
+        dialogFragment.setErrorContext(errorContext);
         dialogFragment.show(fm, TAG);
     }
 
@@ -154,6 +163,9 @@ public class ErrorDialogFragment extends DialogFragment {
             }
         }
         fragment.setArguments(arguments);
+        if (e != null) {
+            fragment.setErrorType(e.getClass().getCanonicalName());
+        }
 
         return fragment;
     }
@@ -230,7 +242,7 @@ public class ErrorDialogFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
 
-        Analytics.trackError(getMessage());
+        Analytics.trackError(getMessage(), getErrorType(), getErrorContext());
     }
 
     private void setShowBluetoothSupport(boolean showBluetoothSupport) {
@@ -256,5 +268,21 @@ public class ErrorDialogFragment extends DialogFragment {
         } else {
             return getArguments().getString(ARG_MESSAGE);
         }
+    }
+
+    private @Nullable String getErrorContext() {
+        return getArguments().getString(ARG_ERROR_CONTEXT);
+    }
+
+    private void setErrorContext(@Nullable String errorContext) {
+        getArguments().putString(ARG_ERROR_CONTEXT, errorContext);
+    }
+
+    private @Nullable String getErrorType() {
+        return getArguments().getString(ARG_ERROR_TYPE);
+    }
+
+    private void setErrorType(@Nullable String errorType) {
+        getArguments().putString(ARG_ERROR_TYPE, errorType);
     }
 }
