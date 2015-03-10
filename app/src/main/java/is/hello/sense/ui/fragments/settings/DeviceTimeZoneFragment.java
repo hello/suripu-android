@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Instant;
 
 import javax.inject.Inject;
 
@@ -24,7 +25,6 @@ import is.hello.sense.ui.adapter.TimeZoneAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.util.ListViews;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Logger;
 
 public class DeviceTimeZoneFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
@@ -109,7 +109,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         }
 
         DateTimeZone timeZone = DateTimeZone.forID(timeZoneId);
-        int offset = timeZone.getOffset(DateTimeUtils.currentTimeMillis());
+        int offset = timeZone.getOffset(Instant.now());
         account.setTimeZoneOffset(offset);
 
         beginActivity();
