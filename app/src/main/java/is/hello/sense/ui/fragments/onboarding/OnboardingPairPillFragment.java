@@ -176,6 +176,8 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             if (e instanceof OperationTimeoutError || SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
                 MessageDialogFragment messageDialogFragment = MessageDialogFragment.newInstance(getString(R.string.error_title_sleep_pill_scan_timeout), getString(R.string.error_message_sleep_pill_scan_timeout));
                 messageDialogFragment.show(getFragmentManager(), MessageDialogFragment.TAG);
+
+                Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null);
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
                 ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_network_failure_pair_pill));
                 dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);

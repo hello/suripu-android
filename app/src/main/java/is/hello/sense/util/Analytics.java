@@ -39,13 +39,19 @@ public class Analytics {
          */
         String GLOBAL_PROP_ACCOUNT_ID = "Account Id";
 
+        /**
+         * The id of the user's Sense.
+         */
+        String GLOBAL_PROP_SENSE_ID = "Sense Id";
+
 
         /**
          * Anytime an error is encountered, even if it came from server.  MAKE SURE you don't log Error in a loop ... I've seen it happen where 10,000 events get logged :)
          */
         String EVENT_ERROR = "Error";
-        String PROP_ERROR_CODE = "code";
         String PROP_ERROR_MESSAGE = "message";
+        String PROP_ERROR_TYPE = "type";
+        String PROP_ERROR_CONTEXT = "context";
 
         /**
          * When the user signs in
@@ -375,6 +381,14 @@ public class Analytics {
         }
     }
 
+    public static void setSenseId(@Nullable String senseId) {
+        Logger.info(LOG_TAG, "Tracking Sense " + senseId);
+
+        if (provider != null) {
+            provider.getPeople().set(Global.GLOBAL_PROP_SENSE_ID, senseId);
+        }
+    }
+
     //endregion
 
 
@@ -403,8 +417,15 @@ public class Analytics {
         Logger.info(LOG_TAG, event + ": " + properties);
     }
 
-    public static void trackError(@NonNull String message, int code) {
-        trackEvent(Global.EVENT_ERROR, createProperties(Global.PROP_ERROR_MESSAGE, message, Global.PROP_ERROR_CODE, code));
+    public static void trackError(@NonNull String message,
+                                  @Nullable String errorType,
+                                  @Nullable String errorContext) {
+        JSONObject properties = createProperties(
+            Global.PROP_ERROR_MESSAGE, message,
+            Global.PROP_ERROR_TYPE, errorType,
+            Global.PROP_ERROR_CONTEXT, errorContext
+        );
+        trackEvent(Global.EVENT_ERROR, properties);
     }
 
     //endregion

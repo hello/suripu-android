@@ -235,6 +235,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         hideAllActivityForFailure(() -> {
             if (e instanceof PeripheralNotFoundError) {
                 showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE));
+
+                Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null);
             } else {
                 ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
             }
@@ -258,6 +260,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Could not get connectivity state, ignoring.", e);
                              showConnectedSenseActions(null);
+
+                             Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), "Ignored");
                          });
     }
 
@@ -326,7 +330,10 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private void completeFactoryReset() {
         bindAndSubscribe(hardwarePresenter.factoryReset(),
                          device -> {
-                             hideBlockingActivity(true, () -> finishWithResult(RESULT_REPLACED_DEVICE, null));
+                             hideBlockingActivity(true, () -> {
+                                 Analytics.setSenseId("unpaired");
+                                 finishWithResult(RESULT_REPLACED_DEVICE, null);
+                             });
                          },
                          this::presentError);
     }
@@ -341,7 +348,10 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         alertDialog.setNegativeButton(android.R.string.cancel, null);
         alertDialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
-                             ignored -> finishDeviceReplaced(),
+                             ignored -> {
+                                 Analytics.setSenseId("unpaired");
+                                 finishDeviceReplaced();
+                             },
                              this::presentError);
         });
         alertDialog.show();
