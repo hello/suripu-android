@@ -125,6 +125,7 @@
     <dimen name="button_corner_radius">3dp</dimen>
     <dimen name="button_rounded_border_width">1dp</dimen>
     <dimen name="button_bottom_alert">72dp</dimen>
+    <dimen name="button_circular_area">54dp</dimen>
 
     <!-- Switch -->
 

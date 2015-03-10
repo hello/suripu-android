@@ -32,10 +32,11 @@
                 android:id="@+id/fragment_timeline_smart_alarm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/gap_small"
                 android:layout_gravity="bottom|end"
                 android:src="@drawable/timeline_smart_alarm"
                 android:contentDescription="@string/action_show_alarms"
-                style="@style/AppTheme.Button.Borderless"/>
+                style="@style/AppTheme.Button.Circular"/>
 
         </FrameLayout>
 
