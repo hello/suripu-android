@@ -66,7 +66,6 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         headerDetail.setText(R.string.missing_data_placeholder);
 
         ListViews.addHeaderView(listView, header, null, false);
-        ListViews.addFooterView(listView, Styles.createHorizontalDivider(getActivity(), ViewGroup.LayoutParams.MATCH_PARENT), null, false);
 
         TimeZoneAdapter adapter = new TimeZoneAdapter(getActivity());
         listView.setAdapter(adapter);
