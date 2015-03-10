@@ -49,7 +49,6 @@ public class Analytics {
          * Anytime an error is encountered, even if it came from server.  MAKE SURE you don't log Error in a loop ... I've seen it happen where 10,000 events get logged :)
          */
         String EVENT_ERROR = "Error";
-        String PROP_ERROR_CODE = "code";
         String PROP_ERROR_MESSAGE = "message";
 
         /**
@@ -416,8 +415,8 @@ public class Analytics {
         Logger.info(LOG_TAG, event + ": " + properties);
     }
 
-    public static void trackError(@NonNull String message, int code) {
-        trackEvent(Global.EVENT_ERROR, createProperties(Global.PROP_ERROR_MESSAGE, message, Global.PROP_ERROR_CODE, code));
+    public static void trackError(@NonNull String message) {
+        trackEvent(Global.EVENT_ERROR, createProperties(Global.PROP_ERROR_MESSAGE, message));
     }
 
     //endregion

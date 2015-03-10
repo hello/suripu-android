@@ -38,13 +38,8 @@ public class ErrorDialogFragment extends DialogFragment {
 
     private static final String ARG_MESSAGE = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE";
     private static final String ARG_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE_RES";
-    private static final String ARG_HAS_REQUEST_INFO = ErrorDialogFragment.class.getName() + ".ARG_HAS_REQUEST_INFO";
-    private static final String ARG_RESPONSE_STATUS = ErrorDialogFragment.class.getName() + ".ARG_RESPONSE_STATUS";
-    private static final String ARG_RESPONSE_REASON = ErrorDialogFragment.class.getName() + ".ARG_RESPONSE_REASON";
     private static final String ARG_SHOW_BLE_SUPPORT = ErrorDialogFragment.class.getName() + ".ARG_SHOW_BLE_SUPPORT";
     private static final String ARG_FATAL_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_FATAL_MESSAGE_RES";
-
-    private static final int RESPONSE_STATUS_UNKNOWN = -1;
 
 
     //region Creation
@@ -143,13 +138,6 @@ public class ErrorDialogFragment extends DialogFragment {
 
             if (e instanceof ApiException) {
                 ApiException error = (ApiException) e;
-                if (error.getStatus() != null) {
-                    arguments.putBoolean(ARG_HAS_REQUEST_INFO, true);
-
-                    arguments.putInt(ARG_RESPONSE_STATUS, error.getStatus());
-                    arguments.putString(ARG_RESPONSE_REASON, error.getReason());
-                }
-
                 if (error.isNetworkError()) {
                     arguments.putInt(ARG_MESSAGE_RES, R.string.error_network_unavailable);
                     arguments.remove(ARG_MESSAGE);
@@ -213,9 +201,7 @@ public class ErrorDialogFragment extends DialogFragment {
         }
         String message = getMessage();
         if (!TextUtils.isEmpty(message)) {
-            if (hasRequestInfo()) {
-                dialog.setMessage(getString(R.string.dialog_error_extended_message_format, message, getResponseReason(), getResponseStatus()));
-            } else if (isFatal) {
+            if (isFatal) {
                 SpannableStringBuilder messageBuilder = new SpannableStringBuilder(message);
                 messageBuilder.append(getText(getFatalMessage()));
                 dialog.setMessage(messageBuilder);
@@ -244,7 +230,7 @@ public class ErrorDialogFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
 
-        Analytics.trackError(getMessage(), getResponseStatus());
+        Analytics.trackError(getMessage());
     }
 
     private void setShowBluetoothSupport(boolean showBluetoothSupport) {
@@ -270,17 +256,5 @@ public class ErrorDialogFragment extends DialogFragment {
         } else {
             return getArguments().getString(ARG_MESSAGE);
         }
-    }
-
-    private boolean hasRequestInfo() {
-        return getArguments().getBoolean(ARG_HAS_REQUEST_INFO, false);
-    }
-
-    private String getResponseReason() {
-        return getArguments().getString(ARG_RESPONSE_REASON);
-    }
-
-    private int getResponseStatus() {
-        return getArguments().getInt(ARG_RESPONSE_STATUS, RESPONSE_STATUS_UNKNOWN);
     }
 }

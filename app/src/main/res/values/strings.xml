@@ -30,7 +30,6 @@
     <string name="dialog_error_title">Error</string>
     <string name="dialog_error_title_fatal">Fatal Error</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
-    <string name="dialog_error_extended_message_format">%1$s\n\n%2$s (Status: %3$d)</string>
     <string name="dialog_loading_message">Loading…</string>
     <string name="timeline_error_message">Could not load timeline</string>
 
