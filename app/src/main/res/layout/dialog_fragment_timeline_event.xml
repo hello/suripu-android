@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="gone"
-            style="@android:style/Widget.ProgressBar.Small"/>
+            style="@android:style/Widget.Holo.ProgressBar.Small"/>
 
     </FrameLayout>
 
