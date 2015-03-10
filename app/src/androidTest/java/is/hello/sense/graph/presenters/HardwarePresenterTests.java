@@ -66,7 +66,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
         HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
         assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
 
-        peripheralBehavior.setSubscriptionResponse(Either.right(new BluetoothError()));
+        peripheralBehavior.setSubscriptionResponse(Either.right(new BluetoothError("Test")));
 
         assertThrows(() -> {
             Sync.last(presenter.currentWifiNetwork());

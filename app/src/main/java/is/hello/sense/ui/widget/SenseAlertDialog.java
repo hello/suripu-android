@@ -50,6 +50,10 @@ public class SenseAlertDialog extends Dialog {
         titleText.setText(titleId);
     }
 
+    public void setTitleColor(int color) {
+        titleText.setTextColor(color);
+    }
+
     public void setIcon(@Nullable Drawable icon) {
         titleText.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
     }

@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketDataHandler;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
-import is.hello.sense.bluetooth.errors.BluetoothEarlyDisconnectError;
+import is.hello.sense.bluetooth.errors.BluetoothConnectionLostError;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralBusyError;
@@ -165,7 +165,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 dataHandler.onError = dataError -> {
                     timeout.unschedule();
 
-                    if (dataError instanceof BluetoothEarlyDisconnectError) {
+                    if (dataError instanceof BluetoothConnectionLostError) {
                         onError.call(dataError);
                     } else {
                         Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
@@ -203,7 +203,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                         s.onError(new SensePeripheralError(response.getError()));
                     }
                 } else {
-                    s.onError(new BluetoothError());
+                    s.onError(new BluetoothError("Unexpected response " + response.getType()));
                 }
 
                 dataHandler.clearListeners();

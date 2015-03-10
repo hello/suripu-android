@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import is.hello.sense.bluetooth.errors.BluetoothEarlyDisconnectError;
+import is.hello.sense.bluetooth.errors.BluetoothConnectionLostError;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.util.Logger;
 
@@ -38,7 +38,7 @@ public abstract class PacketHandler {
     public final void onTransportDisconnected() {
         Logger.info(Peripheral.LOG_TAG, "onTransportDisconnected()");
 
-        BluetoothEarlyDisconnectError error = new BluetoothEarlyDisconnectError();
+        BluetoothConnectionLostError error = new BluetoothConnectionLostError();
         for (PacketDataHandler<?> handler : dataHandlers) {
             handler.onError(error);
         }

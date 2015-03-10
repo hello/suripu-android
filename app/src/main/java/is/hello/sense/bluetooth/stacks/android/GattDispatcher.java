@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import is.hello.sense.bluetooth.errors.BluetoothEarlyDisconnectError;
+import is.hello.sense.bluetooth.errors.BluetoothConnectionLostError;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
@@ -48,7 +48,7 @@ class GattDispatcher extends BluetoothGattCallback {
 
             timeout.unschedule();
 
-            subscriber.onError(new BluetoothEarlyDisconnectError());
+            subscriber.onError(new BluetoothConnectionLostError());
         });
     }
 

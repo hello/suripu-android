@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 
 import is.hello.sense.R;
@@ -17,6 +18,7 @@ import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.model.RegistrationError;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.sense.bluetooth.errors.BluetoothConnectionLostError;
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
@@ -40,7 +42,7 @@ public class ErrorDialogFragment extends DialogFragment {
     private static final String ARG_RESPONSE_STATUS = ErrorDialogFragment.class.getName() + ".ARG_RESPONSE_STATUS";
     private static final String ARG_RESPONSE_REASON = ErrorDialogFragment.class.getName() + ".ARG_RESPONSE_REASON";
     private static final String ARG_SHOW_BLE_SUPPORT = ErrorDialogFragment.class.getName() + ".ARG_SHOW_BLE_SUPPORT";
-    private static final String ARG_IS_FATAL = ErrorDialogFragment.class.getName() + ".ARG_IS_FATAL";
+    private static final String ARG_FATAL_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_FATAL_MESSAGE_RES";
 
     private static final int RESPONSE_STATUS_UNKNOWN = -1;
 
@@ -79,6 +81,8 @@ public class ErrorDialogFragment extends DialogFragment {
             message = context.getString(R.string.error_bluetooth_power_change);
         } else if (e instanceof PeripheralBusyError) {
             message = context.getString(R.string.error_bluetooth_peripheral_busy);
+        } else if (e instanceof BluetoothConnectionLostError) {
+            message = context.getString(R.string.error_bluetooth_connection_lost);
         } else if (e instanceof SensePeripheralError) {
             SenseCommandProtos.ErrorType errorType = ((SensePeripheralError) e).errorType;
             switch (errorType) {
@@ -119,14 +123,12 @@ public class ErrorDialogFragment extends DialogFragment {
             }
         }
 
-        boolean isFatal = BluetoothError.isFatal(e);
-        if (isFatal) {
-            message += context.getString(R.string.error_addendum_unstable_stack);
-        }
 
         ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(message);
-        dialogFragment.setShowBluetoothSupport(isFatal);
-        dialogFragment.setFatal(isFatal);
+        if (BluetoothError.isFatal(e)) {
+            dialogFragment.setShowBluetoothSupport(true);
+            dialogFragment.setFatalMessage(R.string.error_addendum_unstable_stack);
+        }
         dialogFragment.show(fm, TAG);
     }
 
@@ -202,8 +204,10 @@ public class ErrorDialogFragment extends DialogFragment {
     public @NonNull Dialog onCreateDialog(Bundle savedInstanceState) {
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
 
-        if (isFatal()) {
+        boolean isFatal = getArguments().containsKey(ARG_FATAL_MESSAGE_RES);
+        if (isFatal) {
             dialog.setTitle(R.string.dialog_error_title_fatal);
+            dialog.setTitleColor(getResources().getColor(R.color.destructive_accent));
         } else {
             dialog.setTitle(R.string.dialog_error_title);
         }
@@ -211,6 +215,10 @@ public class ErrorDialogFragment extends DialogFragment {
         if (!TextUtils.isEmpty(message)) {
             if (hasRequestInfo()) {
                 dialog.setMessage(getString(R.string.dialog_error_extended_message_format, message, getResponseReason(), getResponseStatus()));
+            } else if (isFatal) {
+                SpannableStringBuilder messageBuilder = new SpannableStringBuilder(message);
+                messageBuilder.append(getText(getFatalMessage()));
+                dialog.setMessage(messageBuilder);
             } else {
                 dialog.setMessage(message);
             }
@@ -248,12 +256,12 @@ public class ErrorDialogFragment extends DialogFragment {
         return getArguments().getBoolean(ARG_SHOW_BLE_SUPPORT, false);
     }
 
-    private void setFatal(boolean isFatal) {
-        getArguments().putBoolean(ARG_IS_FATAL, isFatal);
+    private void setFatalMessage(@StringRes int messageRes) {
+        getArguments().putInt(ARG_FATAL_MESSAGE_RES, messageRes);
     }
 
-    private boolean isFatal() {
-        return getArguments().getBoolean(ARG_IS_FATAL, false);
+    private @StringRes int getFatalMessage() {
+        return getArguments().getInt(ARG_FATAL_MESSAGE_RES);
     }
 
     private String getMessage() {
