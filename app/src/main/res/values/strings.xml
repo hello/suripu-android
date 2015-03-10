@@ -441,4 +441,5 @@ so you can sleep better.</string>
     <string name="device_color_white">Cotton</string>
     <string name="action_feedback">Feedback</string>
     <string name="title_thank_you">Thank You</string>
+	<string name="error_bluetooth_connection_lost">The connection to Sense was unexpectedly lost.</string>
 </resources>

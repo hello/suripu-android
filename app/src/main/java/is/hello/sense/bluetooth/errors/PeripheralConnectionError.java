@@ -2,6 +2,7 @@ package is.hello.sense.bluetooth.errors;
 
 public class PeripheralConnectionError extends BluetoothError {
     public PeripheralConnectionError() {
+        super("You are not connected");
     }
 
     public PeripheralConnectionError(String detailMessage) {

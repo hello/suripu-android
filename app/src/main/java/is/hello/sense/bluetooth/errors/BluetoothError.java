@@ -17,9 +17,6 @@ public class BluetoothError extends RuntimeException {
                 ((BluetoothError) e).isFatal());
     }
 
-    public BluetoothError() {
-    }
-
     public BluetoothError(String detailMessage) {
         super(detailMessage);
     }
