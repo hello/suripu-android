@@ -58,6 +58,7 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.fragments.settings.ChangeEmailFragment;
 import is.hello.sense.ui.fragments.settings.ChangePasswordFragment;
+import is.hello.sense.ui.fragments.settings.DeviceTimeZoneFragment;
 import is.hello.sense.ui.fragments.settings.NotificationsSettingsFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
@@ -129,6 +130,7 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
         UnitSettingsFragment.class,
         AccountPresenter.class,
         NotificationsSettingsFragment.class,
+        DeviceTimeZoneFragment.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

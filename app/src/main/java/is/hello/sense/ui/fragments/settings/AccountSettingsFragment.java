@@ -13,9 +13,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import org.joda.time.DateTimeUtils;
-import org.joda.time.DateTimeZone;
-
 import java.util.HashMap;
 
 import javax.inject.Inject;
@@ -23,8 +20,6 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.AccountPreference;
-import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
@@ -32,7 +27,6 @@ import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.TimeZoneDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
@@ -41,13 +35,11 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.Logger;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class AccountSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
-    private static final int REQUEST_CODE_TIME_ZONE = 0x19;
     private static final int REQUEST_CODE_PASSWORD = 0x20;
 
     @Inject AccountPresenter accountPresenter;
@@ -63,7 +55,6 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     private StaticItemAdapter.TextItem genderItem;
     private StaticItemAdapter.TextItem heightItem;
     private StaticItemAdapter.TextItem weightItem;
-    private StaticItemAdapter.TextItem timeZoneItem;
 
     private StaticItemAdapter.CheckItem enhancedAudioItem;
 
@@ -111,7 +102,6 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         this.genderItem = adapter.addTextItem(R.string.label_gender, R.string.missing_data_placeholder, this::changeGender);
         this.heightItem = adapter.addTextItem(R.string.label_height, R.string.missing_data_placeholder, this::changeHeight);
         this.weightItem = adapter.addTextItem(R.string.label_weight, R.string.missing_data_placeholder, this::changeWeight);
-        this.timeZoneItem = adapter.addTextItem(R.string.label_time_zone, R.string.missing_data_placeholder, this::changeTimeZone);
 
         adapter.addSectionTitle(R.string.label_options);
         this.enhancedAudioItem = adapter.addCheckItem(R.string.label_enhanced_audio, false, this::changeEnhancedAudio);
@@ -150,17 +140,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CODE_TIME_ZONE && resultCode == Activity.RESULT_OK) {
-            String timeZoneId = data.getStringExtra(TimeZoneDialogFragment.RESULT_TIMEZONE_ID);
-            DateTimeZone timeZone = DateTimeZone.forID(timeZoneId);
-            int offset = timeZone.getOffset(DateTimeUtils.currentTimeMillis());
-            currentAccount.setTimeZoneOffset(offset);
-
-            saveAccount();
-            accountPresenter.updateTimeZone(SenseTimeZone.fromDateTimeZone(timeZone))
-                            .subscribe(ignored -> Logger.info(getClass().getSimpleName(), "Updated time zone"),
-                            Functions.LOG_ERROR);
-        } else if (requestCode == REQUEST_CODE_PASSWORD && resultCode == Activity.RESULT_OK) {
+        if (requestCode == REQUEST_CODE_PASSWORD && resultCode == Activity.RESULT_OK) {
             accountPresenter.update();
         }
     }
@@ -220,7 +200,6 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         genderItem.setDetail(getString(account.getGender().nameRes));
         heightItem.setDetail(unitSystem.formatHeight(account.getHeight()).toString());
         weightItem.setDetail(unitSystem.formatMass(account.getWeight()).toString());
-        timeZoneItem.setDetail(DateTimeZone.forOffsetMillis(account.getTimeZoneOffset()).getName(DateTimeUtils.currentTimeMillis()));
 
         this.currentAccount = account;
     }
@@ -290,12 +269,6 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().pushFragment(fragment, getString(R.string.label_weight), true);
-    }
-
-    public void changeTimeZone() {
-        TimeZoneDialogFragment dialogFragment = new TimeZoneDialogFragment();
-        dialogFragment.setTargetFragment(this, REQUEST_CODE_TIME_ZONE);
-        dialogFragment.show(getFragmentManager(), TimeZoneDialogFragment.TAG);
     }
 
     //endregion
