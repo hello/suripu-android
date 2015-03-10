@@ -203,7 +203,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                         s.onError(new SensePeripheralError(response.getError()));
                     }
                 } else {
-                    s.onError(new BluetoothError());
+                    s.onError(new BluetoothError("Unexpected response " + response.getType()));
                 }
 
                 dataHandler.clearListeners();
