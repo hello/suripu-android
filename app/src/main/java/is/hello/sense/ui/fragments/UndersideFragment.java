@@ -127,11 +127,11 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         for (int i = 0; i < toggleButtons.size(); i++) {
             ToggleButton button = toggleButtons.get(i);
 
-            SpannableString inactiveContent = createIconSpan(ICONS_INACTIVE[i]);
+            SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i), ICONS_INACTIVE[i]);
             button.setText(inactiveContent);
             button.setTextOff(inactiveContent);
 
-            SpannableString activeContent = createIconSpan(ICONS_ACTIVE[i]);
+            SpannableString activeContent = createIconSpan(adapter.getPageTitle(i), ICONS_ACTIVE[i]);
             button.setTextOn(activeContent);
 
             button.setPadding(0, 0, 0, 0);
@@ -156,10 +156,10 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         }
     }
 
-    private SpannableString createIconSpan(@DrawableRes int iconRes) {
+    private SpannableString createIconSpan(@NonNull CharSequence title, @DrawableRes int iconRes) {
         ImageSpan image = new ImageSpan(getActivity(), iconRes);
-        SpannableString span = new SpannableString("X");
-        span.setSpan(image, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        SpannableString span = new SpannableString(title);
+        span.setSpan(image, 0, span.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return span;
     }
 
