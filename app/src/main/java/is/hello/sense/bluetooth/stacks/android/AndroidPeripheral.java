@@ -105,6 +105,7 @@ public class AndroidPeripheral implements Peripheral {
 
             gatt.close();
             if (gatt == this.gatt) {
+                gattDispatcher.dispatchDisconnect();
                 this.gatt = null;
 
                 if (bluetoothStateSubscription != null) {
@@ -207,8 +208,6 @@ public class AndroidPeripheral implements Peripheral {
         Logger.info(LOG_TAG, "Disconnecting " + toString());
 
         return stack.newConfiguredObservable(s -> {
-            gattDispatcher.dispatchDisconnect();
-
             gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     if (gattStatus != BluetoothGatt.GATT_SUCCESS) {

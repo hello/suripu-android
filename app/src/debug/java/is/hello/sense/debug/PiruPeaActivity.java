@@ -2,6 +2,7 @@ package is.hello.sense.debug;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.Menu;
@@ -34,6 +35,7 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public class PiruPeaActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject BluetoothStack stack;
@@ -78,6 +80,12 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         peripheralActions.addTextItem("Trippy LEDs", null, this::trippyLedAnimation);
         peripheralActions.addTextItem("Fade Out LEDs", null, this::stopAnimationWithFade);
         peripheralActions.addTextItem("Turn Off LEDs", null, this::stopAnimationWithoutFade);
+
+        IntentFilter filter = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
+        Observable<Intent> onConnectionLost = fromLocalBroadcast(this, filter);
+        bindAndSubscribe(onConnectionLost,
+                         intent -> disconnect(),
+                         Functions.LOG_ERROR);
     }
 
     @Override
