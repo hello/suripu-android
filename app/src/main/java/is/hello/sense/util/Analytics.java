@@ -381,7 +381,7 @@ public class Analytics {
         }
     }
 
-    public static void trackSense(@Nullable String senseId) {
+    public static void setSenseId(@Nullable String senseId) {
         Logger.info(LOG_TAG, "Tracking Sense " + senseId);
 
         if (provider != null) {

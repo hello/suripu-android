@@ -330,7 +330,10 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private void completeFactoryReset() {
         bindAndSubscribe(hardwarePresenter.factoryReset(),
                          device -> {
-                             hideBlockingActivity(true, () -> finishWithResult(RESULT_REPLACED_DEVICE, null));
+                             hideBlockingActivity(true, () -> {
+                                 Analytics.setSenseId("unpaired");
+                                 finishWithResult(RESULT_REPLACED_DEVICE, null);
+                             });
                          },
                          this::presentError);
     }
@@ -345,7 +348,10 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         alertDialog.setNegativeButton(android.R.string.cancel, null);
         alertDialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
-                             ignored -> finishDeviceReplaced(),
+                             ignored -> {
+                                 Analytics.setSenseId("unpaired");
+                                 finishDeviceReplaced();
+                             },
                              this::presentError);
         });
         alertDialog.show();

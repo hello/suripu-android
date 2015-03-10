@@ -489,7 +489,7 @@ public class HomeActivity
         Device pill = devicesMap.get(Device.Type.PILL);
 
         if (sense != null) {
-            Analytics.trackSense(sense.getDeviceId());
+            Analytics.setSenseId(sense.getDeviceId());
         }
 
         if (sense == null) {
