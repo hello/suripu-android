@@ -18,6 +18,7 @@ import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.model.RegistrationError;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.sense.bluetooth.errors.BluetoothConnectionLostError;
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
@@ -80,6 +81,8 @@ public class ErrorDialogFragment extends DialogFragment {
             message = context.getString(R.string.error_bluetooth_power_change);
         } else if (e instanceof PeripheralBusyError) {
             message = context.getString(R.string.error_bluetooth_peripheral_busy);
+        } else if (e instanceof BluetoothConnectionLostError) {
+            message = context.getString(R.string.error_bluetooth_connection_lost);
         } else if (e instanceof SensePeripheralError) {
             SenseCommandProtos.ErrorType errorType = ((SensePeripheralError) e).errorType;
             switch (errorType) {
