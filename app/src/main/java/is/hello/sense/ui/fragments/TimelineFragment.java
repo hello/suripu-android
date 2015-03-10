@@ -445,13 +445,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void share(@NonNull View sender) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
 
-        LoadingDialogFragment loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager());
-        Observable<Timeline> timeline = timelinePresenter.timeline.take(1);
-        Observable<ShareImageGenerator.Result> toShare = timeline.flatMap(t -> ShareImageGenerator.forTimeline(getActivity(), t));
-        bindAndSubscribe(toShare,
-                         r -> {
+        Observable<Timeline> currentTimeline = timelinePresenter.timeline.take(1);
+        bindAndSubscribe(currentTimeline,
+                         timeline -> {
                              DateTime date = timelinePresenter.getDate();
-                             String score = Integer.toString(r.timeline.getScore());
+                             String score = Integer.toString(timeline.getScore());
                              String shareCopy;
                              if (DateFormatter.isLastNight(date)) {
                                  shareCopy = getString(R.string.timeline_share_last_night_fmt, score);
@@ -460,15 +458,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                                  shareCopy = getString(R.string.timeline_share_other_days_fmt, score, dateString);
                              }
 
-                             Share.image(r.bitmap)
-                                  .withTitle(getString(R.string.app_name))
-                                  .withDescription(shareCopy)
-                                  .withLoadingDialog(loadingDialogFragment)
+                             Share.text(shareCopy)
+                                  .withSubject(getString(R.string.app_name))
                                   .send(getActivity());
                          },
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
-                             loadingDialogFragment.dismiss();
                          });
     }
 

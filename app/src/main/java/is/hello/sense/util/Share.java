@@ -43,6 +43,10 @@ public abstract class Share {
 
     //region Factories
 
+    public static Text text(@NonNull String text) {
+        return new Text(text);
+    }
+
     public static Image image(@NonNull Bitmap bitmap) {
         return new Image(bitmap);
     }
@@ -55,6 +59,25 @@ public abstract class Share {
 
 
     //region Implementations
+
+    public static class Text extends Share {
+        public Text(@NonNull String text) {
+            super(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+
+            intent.putExtra(Intent.EXTRA_TEXT, text);
+        }
+
+        public Text withSubject(@NonNull String subject) {
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            return this;
+        }
+
+        @Override
+        public void send(@NonNull Activity from) {
+            from.startActivity(Intent.createChooser(intent, from.getString(R.string.action_share)));
+        }
+    }
 
     public static class Email extends Share {
         public Email(@NonNull String emailAddress) {
