@@ -52,6 +52,7 @@ public class Analytics {
         String PROP_ERROR_MESSAGE = "message";
         String PROP_ERROR_TYPE = "type";
         String PROP_ERROR_CONTEXT = "context";
+        String PROP_ERROR_OPERATION = "operation";
 
         /**
          * When the user signs in
@@ -172,6 +173,13 @@ public class Analytics {
          * When the user lands on the "Enter Wifi Password" screen
          */
         String EVENT_WIFI_PASSWORD = "Onboarding WiFi Password";
+        String PROP_WIFI_IS_OTHER = "Is Other";
+
+        /**
+         * When the user or the app sends WiFi credentials to Sense.
+         */
+        String EVENT_WIFI_CREDENTIALS_SUBMITTED = "Onboarding WiFi Credentials Submitted";
+        String PROP_WIFI_SECURITY_TYPE = "Security Type";
 
         /**
          * When the user lands on the "Sleep Pill" intro screen.
@@ -419,11 +427,13 @@ public class Analytics {
 
     public static void trackError(@NonNull String message,
                                   @Nullable String errorType,
-                                  @Nullable String errorContext) {
+                                  @Nullable String errorContext,
+                                  @Nullable String errorOperation) {
         JSONObject properties = createProperties(
             Global.PROP_ERROR_MESSAGE, message,
             Global.PROP_ERROR_TYPE, errorType,
-            Global.PROP_ERROR_CONTEXT, errorContext
+            Global.PROP_ERROR_CONTEXT, errorContext,
+            Global.PROP_ERROR_OPERATION, errorOperation
         );
         trackEvent(Global.EVENT_ERROR, properties);
     }

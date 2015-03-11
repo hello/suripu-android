@@ -38,6 +38,7 @@ public class ErrorDialogFragment extends DialogFragment {
 
     private static final String ARG_ERROR_TYPE = ErrorDialogFragment.class.getName() + ".ARG_ERROR_TYPE";
     private static final String ARG_ERROR_CONTEXT = ErrorDialogFragment.class.getName() + ".ARG_ERROR_CONTEXT";
+    private static final String ARG_ERROR_OPERATION = ErrorDialogFragment.class.getName() + ".ARG_ERROR_OPERATION";
     private static final String ARG_MESSAGE = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE";
     private static final String ARG_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE_RES";
     private static final String ARG_SHOW_BLE_SUPPORT = ErrorDialogFragment.class.getName() + ".ARG_SHOW_BLE_SUPPORT";
@@ -46,14 +47,15 @@ public class ErrorDialogFragment extends DialogFragment {
 
     //region Creation
 
-    public static void presentError(@NonNull FragmentManager fm, @Nullable Throwable e) {
+    public static ErrorDialogFragment presentError(@NonNull FragmentManager fm, @Nullable Throwable e) {
         ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(e);
         fragment.show(fm, TAG);
+        return fragment;
     }
 
-    public static void presentBluetoothError(@NonNull FragmentManager fm,
-                                             @NonNull Context context,
-                                             @NonNull Throwable e) {
+    public static ErrorDialogFragment presentBluetoothError(@NonNull FragmentManager fm,
+                                                            @NonNull Context context,
+                                                            @NonNull Throwable e) {
         String message = null;
         String errorContext = null;
         if (e instanceof BluetoothDisabledError) {
@@ -134,6 +136,8 @@ public class ErrorDialogFragment extends DialogFragment {
         dialogFragment.setErrorType(e.getClass().getCanonicalName());
         dialogFragment.setErrorContext(errorContext);
         dialogFragment.show(fm, TAG);
+
+        return dialogFragment;
     }
 
     public static ErrorDialogFragment newInstance(@Nullable Throwable e) {
@@ -242,7 +246,7 @@ public class ErrorDialogFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
 
-        Analytics.trackError(getMessage(), getErrorType(), getErrorContext());
+        Analytics.trackError(getMessage(), getErrorType(), getErrorContext(), getErrorOperation());
     }
 
     private void setShowBluetoothSupport(boolean showBluetoothSupport) {
@@ -284,5 +288,13 @@ public class ErrorDialogFragment extends DialogFragment {
 
     private void setErrorType(@Nullable String errorType) {
         getArguments().putString(ARG_ERROR_TYPE, errorType);
+    }
+
+    public @Nullable String getErrorOperation() {
+        return getArguments().getString(ARG_ERROR_OPERATION);
+    }
+
+    public void setErrorOperation(@Nullable String errorType) {
+        getArguments().putString(ARG_ERROR_OPERATION, errorType);
     }
 }

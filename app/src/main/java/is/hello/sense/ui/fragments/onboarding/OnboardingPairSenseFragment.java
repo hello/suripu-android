@@ -87,14 +87,14 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                     linkAccount();
                 } else {
                     hideAllActivityForSuccess(() -> getOnboardingActivity().showSelectWifiNetwork(true),
-                                              this::pairingFailed);
+                                              e -> presentError(e, "Turning off LEDs"));
                 }
             }, e -> {
                 Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not get Sense's wifi network", e);
                 hideAllActivityForSuccess(() -> getOnboardingActivity().showSelectWifiNetwork(true),
-                                          this::pairingFailed);
+                                          ignored -> presentError(e, "Turning off LEDs"));
             });
-        }, this::pairingFailed);
+        }, e -> presentError(e, "Turning on LEDs"));
     }
 
     private void linkAccount() {
@@ -110,7 +110,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                              },
                              error -> {
                                  Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not link Sense to account", error);
-                                 pairingFailed(error);
+                                 presentError(error, "Linking account");
                              });
         }
     }
@@ -129,7 +129,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
                              pushDeviceData();
                          },
-                         this::pairingFailed);
+                         e -> presentError(e, "Updating time zone"));
     }
 
     private void pushDeviceData() {
@@ -151,7 +151,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             } else {
                 getOnboardingActivity().showPairPill(true);
             }
-        }, this::pairingFailed);
+        }, e -> presentError(e, "Turning off LEDs"));
     }
 
     public void showPairingModeHelp(@NonNull View sender) {
@@ -162,7 +162,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         showBlockingActivity(R.string.title_scanning_for_sense);
 
         Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
-        bindAndSubscribe(device, this::tryToPairWith, this::pairingFailed);
+        bindAndSubscribe(device, this::tryToPairWith, e -> presentError(e, "Discovering Sense"));
     }
 
     public void tryToPairWith(@NonNull SensePeripheral device) {
@@ -185,18 +185,19 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             } else {
                 showBlockingActivity(status.messageRes);
             }
-        }, this::pairingFailed);
+        }, e -> presentError(e, "Connecting to Sense"));
     }
 
-    public void pairingFailed(Throwable e) {
+    public void presentError(Throwable e, @NonNull String operation) {
         hideAllActivityForFailure(() -> {
             if (e instanceof PeripheralNotFoundError) {
                 TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
                 dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
 
-                Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null);
+                Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null, operation);
             } else {
-                ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+                dialogFragment.setErrorOperation(operation);
             }
         });
     }
