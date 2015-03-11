@@ -3,6 +3,8 @@
     android:id="@+id/footer_help"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/gap_outer"
+    android:paddingRight="@dimen/gap_outer"
     android:paddingBottom="@dimen/gap_medium"
     android:gravity="center"
     android:textAppearance="@style/AppTheme.Text.Body.Light.Small"
