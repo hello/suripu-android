@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -112,7 +113,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             dayButton.setTag(day);
         }
 
-        ToggleButton enabledToggle = (ToggleButton) view.findViewById(R.id.fragment_smart_alarm_detail_enabled);
+        CompoundButton enabledToggle = (CompoundButton) view.findViewById(R.id.fragment_smart_alarm_detail_enabled);
         enabledToggle.setChecked(alarm.isEnabled());
         enabledToggle.setOnCheckedChangeListener((button, isEnabled) -> {
             Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_ON_OFF, null);
@@ -124,7 +125,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         enabledToggleContainer.setOnClickListener(ignored -> enabledToggle.toggle());
 
 
-        ToggleButton smartToggle = (ToggleButton) view.findViewById(R.id.fragment_smart_alarm_detail_smart);
+        CompoundButton smartToggle = (CompoundButton) view.findViewById(R.id.fragment_smart_alarm_detail_smart);
         smartToggle.setChecked(alarm.isSmart());
         smartToggle.setOnCheckedChangeListener((button, checked) -> {
             alarm.setSmart(checked);

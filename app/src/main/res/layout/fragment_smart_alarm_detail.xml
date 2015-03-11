@@ -107,13 +107,9 @@
                 android:text="@string/title_enabled"
                 android:textAppearance="@style/AppTheme.Text.Body"/>
 
-            <ToggleButton
+            <include
                 android:id="@+id/fragment_smart_alarm_detail_enabled"
-                android:layout_width="@dimen/switch_width"
-                android:layout_height="@dimen/switch_height"
-                android:textOn=""
-                android:textOff=""
-                android:background="@drawable/switch_selector"/>
+                layout="@layout/widget_switch" />
 
         </LinearLayout>
 
@@ -149,13 +145,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"/>
 
-            <ToggleButton
+            <include
                 android:id="@+id/fragment_smart_alarm_detail_smart"
-                android:layout_width="@dimen/switch_width"
-                android:layout_height="@dimen/switch_height"
-                android:textOn=""
-                android:textOff=""
-                android:background="@drawable/switch_selector"/>
+                layout="@layout/widget_switch" />
 
         </LinearLayout>
 
