@@ -177,15 +177,18 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                 MessageDialogFragment messageDialogFragment = MessageDialogFragment.newInstance(getString(R.string.error_title_sleep_pill_scan_timeout), getString(R.string.error_message_sleep_pill_scan_timeout));
                 messageDialogFragment.show(getFragmentManager(), MessageDialogFragment.TAG);
 
-                Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null);
+                Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null, "Pair Pill");
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
                 ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_network_failure_pair_pill));
+                dialogFragment.setErrorOperation("Pair Pill");
                 dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.DEVICE_ALREADY_PAIRED)) {
                 ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_pill_already_paired));
+                dialogFragment.setErrorOperation("Pair Pill");
                 dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
             } else {
-                ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+                dialogFragment.setErrorOperation("Pair Pill");
             }
         });
     }

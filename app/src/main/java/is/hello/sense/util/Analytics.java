@@ -52,6 +52,7 @@ public class Analytics {
         String PROP_ERROR_MESSAGE = "message";
         String PROP_ERROR_TYPE = "type";
         String PROP_ERROR_CONTEXT = "context";
+        String PROP_ERROR_OPERATION = "operation";
 
         /**
          * When the user signs in
@@ -426,11 +427,13 @@ public class Analytics {
 
     public static void trackError(@NonNull String message,
                                   @Nullable String errorType,
-                                  @Nullable String errorContext) {
+                                  @Nullable String errorContext,
+                                  @Nullable String errorOperation) {
         JSONObject properties = createProperties(
             Global.PROP_ERROR_MESSAGE, message,
             Global.PROP_ERROR_TYPE, errorType,
-            Global.PROP_ERROR_CONTEXT, errorContext
+            Global.PROP_ERROR_CONTEXT, errorContext,
+            Global.PROP_ERROR_OPERATION, errorOperation
         );
         trackEvent(Global.EVENT_ERROR, properties);
     }

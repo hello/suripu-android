@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.SpannableStringBuilder;
@@ -188,7 +189,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
         if (!hardwarePresenter.hasPeripheral()) {
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
                              ignored -> sendWifiCredentials(),
-                             this::presentError);
+                             e -> presentError(e, "Discovery"));
             return;
         }
 
@@ -198,7 +199,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
                     return;
 
                 sendWifiCredentials();
-            }, this::presentError);
+            }, e -> presentError(e, "Connecting to Sense"));
 
             return;
         }
@@ -227,8 +228,8 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
                         .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
                         .apply();
                 sendAccessToken();
-            }, this::presentError);
-        }, this::presentError);
+            }, e -> presentError(e, "Setting WiFi"));
+        }, e -> presentError(e, "Turning on LEDs"));
     }
 
     private void sendAccessToken() {
@@ -242,7 +243,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
                                  this.hasSentAccessToken = true;
                                  setDeviceTimeZone();
                              },
-                             this::presentError);
+                             e -> presentError(e, "Linking account"));
         }
     }
 
@@ -260,7 +261,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
 
                              pushDeviceData();
                          },
-                         this::presentError);
+                         e -> presentError(e, "Updating time zone"));
     }
 
     private void pushDeviceData() {
@@ -279,14 +280,15 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
             completeHardwareActivity(() -> getOnboardingActivity().showPairPill(true), null);
         } else {
             hideAllActivityForSuccess(() -> getOnboardingActivity().showPairPill(true),
-                                      this::presentError);
+                                      e -> presentError(e, "Turning off LEDs"));
         }
     }
 
 
-    public void presentError(Throwable e) {
+    public void presentError(Throwable e, @NonNull String operation) {
         hideAllActivityForFailure(() -> {
-            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            dialogFragment.setErrorOperation(operation);
         });
     }
 

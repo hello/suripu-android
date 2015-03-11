@@ -31,7 +31,7 @@ public final class Functions {
     }
     public static final Action1<Throwable> LOG_ERROR = e -> {
         Logger.error("UnexpectedErrors", "An error occurred.", e);
-        Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), "Ignored");
+        Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), "Ignored", null);
     };
     public static final Func1<Boolean, Boolean> IS_TRUE = is -> is;
     public static final Func1<Boolean, Boolean> IS_FALSE = is -> !is;
