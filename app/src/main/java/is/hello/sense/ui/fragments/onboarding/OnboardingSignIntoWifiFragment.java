@@ -19,6 +19,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -76,7 +78,10 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
             this.hasSentAccessToken = savedInstanceState.getBoolean("hasSentAccessToken", false);
         }
 
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_PASSWORD, null);
+        JSONObject properties = Analytics.createProperties(
+            Analytics.Onboarding.PROP_WIFI_IS_OTHER, (network == null)
+        );
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_PASSWORD, properties);
 
         setRetainInstance(true);
     }
@@ -211,11 +216,16 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
                 securityType = (sec_type) networkSecurity.getSelectedItem();
             }
 
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
+            );
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED, properties);
+
             bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, securityType, password), ignored -> {
                 this.hasConnectedToNetwork = true;
                 preferences.edit()
-                           .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
-                           .apply();
+                        .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
+                        .apply();
                 sendAccessToken();
             }, this::presentError);
         }, this::presentError);

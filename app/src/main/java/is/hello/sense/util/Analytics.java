@@ -172,6 +172,13 @@ public class Analytics {
          * When the user lands on the "Enter Wifi Password" screen
          */
         String EVENT_WIFI_PASSWORD = "Onboarding WiFi Password";
+        String PROP_WIFI_IS_OTHER = "Is Other";
+
+        /**
+         * When the user or the app sends WiFi credentials to Sense.
+         */
+        String EVENT_WIFI_CREDENTIALS_SUBMITTED = "Onboarding WiFi Credentials Submitted";
+        String PROP_WIFI_SECURITY_TYPE = "Security Type";
 
         /**
          * When the user lands on the "Sleep Pill" intro screen.
