@@ -135,7 +135,7 @@ public class AndroidPeripheral implements Peripheral {
                 // The first connection attempt made after the user has power-cycled their
                 // bluetooth radio will result in a 133/gatt stack error. Trying again
                 // seems to work 100% of the time.
-                if (gattStatus == BluetoothGattError.STACK_ERROR && !hasRetried.get()) {
+                if (gattStatus == BluetoothGattError.GATT_STACK_ERROR && !hasRetried.get()) {
                     Logger.warn(LOG_TAG, "First connection attempt failed due to stack error, retrying.");
 
                     hasRetried.set(true);
