@@ -61,9 +61,36 @@ public class ErrorDialogFragment extends DialogFragment {
         if (e instanceof BluetoothDisabledError) {
             message = context.getString(R.string.error_bluetooth_disabled);
         } else if (e instanceof BluetoothGattError) {
-            message = context.getString(R.string.error_bluetooth_gatt_failure_fmt, e.getMessage());
+            int statusCode = ((BluetoothGattError) e).statusCode;
+            switch (statusCode) {
+                case BluetoothGattError.GATT_STACK_ERROR: {
+                    message = context.getString(R.string.error_bluetooth_gatt_stack);
+                    break;
+                }
+
+                case BluetoothGattError.GATT_CONN_TERMINATE_LOCAL_HOST: {
+                    message = context.getString(R.string.error_bluetooth_gatt_connection_lost);
+                    break;
+                }
+
+                case BluetoothGattError.GATT_CONN_TIMEOUT: {
+                    message = context.getString(R.string.error_bluetooth_gatt_connection_timeout);
+                    break;
+                }
+
+                case BluetoothGattError.GATT_CONN_FAIL_ESTABLISH: {
+                    message = context.getString(R.string.error_bluetooth_gatt_connection_failed);
+                    break;
+                }
+
+                default: {
+                    message = context.getString(R.string.error_bluetooth_gatt_failure_fmt, e.getMessage());
+                    break;
+                }
+            }
         } else if (e instanceof OperationTimeoutError) {
             message = context.getString(R.string.error_generic_bluetooth_timeout);
+            errorContext = ((OperationTimeoutError) e).operation.toString();
         } else if (e instanceof PeripheralBondAlterationError) {
             int failureReason = ((PeripheralBondAlterationError) e).reason;
             if (failureReason == PeripheralBondAlterationError.REASON_REMOTE_DEVICE_DOWN) {

@@ -454,4 +454,8 @@ so you can sleep better.</string>
     <string name="title_alarm">Alarm</string>
     <string name="action_change_time_zone">Change Time Zone</string>
     <string name="error_bluetooth_connection_lost">The connection to Sense was unexpectedly lost.</string>
+    <string name="error_bluetooth_gatt_stack">An unknown error occurred with your device\'s Bluetooth, please try again.</string>
+    <string name="error_bluetooth_gatt_connection_lost">The connection to your Sense was lost.</string>
+    <string name="error_bluetooth_gatt_connection_timeout">The connection to your Sense timed out.</string>
+    <string name="error_bluetooth_gatt_connection_failed">A connection could not be established to your Sense.</string>
 </resources>
