@@ -2,6 +2,7 @@ package is.hello.sense.bluetooth.devices;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.google.protobuf.ByteString;
 
@@ -19,13 +20,14 @@ import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralBusyError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
+import is.hello.sense.bluetooth.errors.PeripheralSetWifiError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
-import is.hello.sense.bluetooth.stacks.util.BluetoothUtils;
+import is.hello.sense.bluetooth.stacks.util.Bytes;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.util.Logger;
@@ -297,6 +299,11 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
             return Observable.error(busyError());
         }
 
+        if (securityType != SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN &&
+                TextUtils.isEmpty(password)) {
+            return Observable.error(new PeripheralSetWifiError(PeripheralSetWifiError.Reason.EMPTY_PASSWORD));
+        }
+
         MorpheusCommand.Builder builder = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
                 .setVersion(COMMAND_VERSION)
@@ -304,9 +311,11 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 .setWifiSSID(ssid)
                 .setSecurityType(securityType);
         if (securityType == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
-            byte[] keyBytes = BluetoothUtils.tryConvertStringToBytes(password);
+            byte[] keyBytes = Bytes.tryFromString(password);
             if (keyBytes == null) {
-                return Observable.error(new SensePeripheralError(SenseCommandProtos.ErrorType.WLAN_CONNECTION_ERROR));
+                return Observable.error(new PeripheralSetWifiError(PeripheralSetWifiError.Reason.MALFORMED_BYTES));
+            } else if (Bytes.contains(keyBytes, (byte) 0x0)) {
+                return Observable.error(new PeripheralSetWifiError(PeripheralSetWifiError.Reason.CONTAINS_NUL_BYTE));
             }
             ByteString keyString = ByteString.copyFrom(keyBytes);
             builder.setWifiPasswordBytes(keyString);

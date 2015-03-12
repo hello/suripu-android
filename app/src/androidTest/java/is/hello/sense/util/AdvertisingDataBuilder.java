@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
-import is.hello.sense.bluetooth.stacks.util.BluetoothUtils;
+import is.hello.sense.bluetooth.stacks.util.Bytes;
 
 public class AdvertisingDataBuilder {
     private static final int HEADER_LENGTH = 2;
@@ -16,7 +16,7 @@ public class AdvertisingDataBuilder {
     private int totalSize = 0;
 
     public void add(int type, @NonNull String payload) {
-        byte[] payloadAsBytes = BluetoothUtils.convertStringToBytes(payload);
+        byte[] payloadAsBytes = Bytes.fromString(payload);
         entries.add(Pair.create(type, payloadAsBytes));
         totalSize += HEADER_LENGTH + payloadAsBytes.length;
     }

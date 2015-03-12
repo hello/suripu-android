@@ -114,7 +114,7 @@ public final class AdvertisingData {
             string += "=[";
             for (Iterator<byte[]> entryIterator = entry.getValue().iterator(); entryIterator.hasNext(); ) {
                 byte[] contents = entryIterator.next();
-                string += BluetoothUtils.convertBytesToString(contents);
+                string += Bytes.toString(contents);
                 if (entryIterator.hasNext()) {
                     string += ", ";
                 }

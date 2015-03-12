@@ -4,12 +4,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-public final class BluetoothUtils {
+public final class Bytes {
 
     /**
      * Converts an array of bytes to a string of the format <code>0122FF</code>
      */
-    public static @NonNull String convertBytesToString(@NonNull byte[] bytes) {
+    public static @NonNull String toString(@NonNull byte[] bytes) {
         StringBuilder builder = new StringBuilder(bytes.length * 2);
 
         for (byte b : bytes) {
@@ -24,7 +24,7 @@ public final class BluetoothUtils {
      *
      * @throws java.lang.IllegalArgumentException on invalid input.
      */
-    public static @NonNull byte[] convertStringToBytes(@Nullable String string) {
+    public static @NonNull byte[] fromString(@Nullable String string) {
         if (TextUtils.isEmpty(string)) {
             return new byte[0];
         }
@@ -37,25 +37,26 @@ public final class BluetoothUtils {
         for (int i = 0, length = string.length(); i < length; i += 2) {
             bytes[i / 2] = (byte) Integer.parseInt(string.substring(i, i + 2), 16);
         }
+
         return bytes;
     }
 
     /**
      * Converts a string of the format <code>0122FF</code> to an array of bytes.
      * <p/>
-     * The same as {@see #convertStringToBytes(String)}, but it does not throw exceptions.
+     * The same as {@see #fromString(String)}, but it does not throw exceptions.
      *
      * @return A <code>byte[]</code> array if the string could be converted; null otherwise.
      */
-    public static @Nullable byte[] tryConvertStringToBytes(@Nullable String string) {
+    public static @Nullable byte[] tryFromString(@Nullable String string) {
         try {
-            return convertStringToBytes(string);
+            return fromString(string);
         } catch (IllegalArgumentException e) {
             return null;
         }
     }
 
-    public static boolean bytesStartWith(@NonNull byte[] haystack, @NonNull byte[] needle) {
+    public static boolean startWith(@NonNull byte[] haystack, @NonNull byte[] needle) {
         if (haystack.length < needle.length) {
             return false;
         }
@@ -67,6 +68,16 @@ public final class BluetoothUtils {
         }
 
         return true;
+    }
+
+    public static boolean contains(@NonNull byte[] haystack, byte needle) {
+        for (byte b : haystack) {
+            if (b == needle) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
