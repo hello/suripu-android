@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -138,6 +139,19 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         bindTimelineSegment();
 
         return dialog;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // If the time picker survived a rotation, it's mysteriously
+        // behind the timeline event dialog. Just close it and let
+        // the user re-open it.
+        TimePickerDialogFragment timePicker = (TimePickerDialogFragment) getFragmentManager().findFragmentByTag(TimePickerDialogFragment.TAG);
+        if (timePicker != null) {
+            timePicker.dismiss();
+        }
     }
 
     @Override

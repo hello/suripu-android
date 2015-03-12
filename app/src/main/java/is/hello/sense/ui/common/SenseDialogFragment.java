@@ -1,5 +1,6 @@
 package is.hello.sense.ui.common;
 
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.support.annotation.NonNull;
 
@@ -22,6 +23,17 @@ public class SenseDialogFragment extends DialogFragment implements ObservableCon
         super.onResume();
 
         coordinator.resume();
+    }
+
+    @Override
+    public void onDestroyView() {
+        // Work around bug: http://code.google.com/p/android/issues/detail?id=17423
+        Dialog dialog = getDialog();
+        if (dialog != null && getRetainInstance()) {
+            dialog.setDismissMessage(null);
+        }
+
+        super.onDestroyView();
     }
 
 

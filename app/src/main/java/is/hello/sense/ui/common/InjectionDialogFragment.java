@@ -51,12 +51,6 @@ public class InjectionDialogFragment extends SenseDialogFragment implements Obse
     public void onDestroyView() {
         super.onDestroyView();
 
-        // Work around bug: http://code.google.com/p/android/issues/detail?id=17423
-        Dialog dialog = getDialog();
-        if (dialog != null && getRetainInstance()) {
-            dialog.setDismissMessage(null);
-        }
-
         observableContainer.clearSubscriptions();
     }
 
