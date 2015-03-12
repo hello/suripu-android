@@ -88,18 +88,18 @@ public final class PeripheralCriteria {
     }
 
     public PeripheralCriteria addExactMatchPredicate(int type, @NonNull String toMatch) {
-        return addExactMatchPredicate(type, BluetoothUtils.stringToBytes(toMatch));
+        return addExactMatchPredicate(type, Bytes.fromString(toMatch));
     }
 
     /**
      * Adds a predicate to check that an advertising data record starts with a given byte payload.
      */
     public PeripheralCriteria addStartsWithPredicate(int type, @NonNull byte[] prefix) {
-        return addPredicate(ad -> ad.anyRecordMatches(type, match -> BluetoothUtils.bytesStartsWith(match, prefix)));
+        return addPredicate(ad -> ad.anyRecordMatches(type, match -> Bytes.startWith(match, prefix)));
     }
 
     public PeripheralCriteria addStartsWithPredicate(int type, @NonNull String prefix) {
-        return addStartsWithPredicate(type, BluetoothUtils.stringToBytes(prefix));
+        return addStartsWithPredicate(type, Bytes.fromString(prefix));
     }
 
 

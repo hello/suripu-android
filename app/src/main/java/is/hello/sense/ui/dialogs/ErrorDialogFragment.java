@@ -28,6 +28,7 @@ import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.errors.PeripheralBusyError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
+import is.hello.sense.bluetooth.errors.PeripheralSetWifiError;
 import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -112,6 +113,31 @@ public class ErrorDialogFragment extends DialogFragment {
             message = context.getString(R.string.error_bluetooth_peripheral_busy);
         } else if (e instanceof BluetoothConnectionLostError) {
             message = context.getString(R.string.error_bluetooth_connection_lost);
+        } else if (e instanceof PeripheralSetWifiError) {
+            PeripheralSetWifiError.Reason reason = ((PeripheralSetWifiError) e).reason;
+            switch (reason) {
+                case MALFORMED_BYTES: {
+                    message = context.getString(R.string.error_bluetooth_malformed_wifi_password);
+                    break;
+                }
+
+                case CONTAINS_NUL_BYTE: {
+                    message = context.getString(R.string.error_bluetooth_wep_password_nul);
+                    break;
+                }
+
+                case EMPTY_PASSWORD: {
+                    message = context.getString(R.string.error_bluetooth_empty_wifi_password);
+                    break;
+                }
+
+                default: {
+                    message = reason.toString();
+                    break;
+                }
+            }
+
+            errorContext = reason.toString();
         } else if (e instanceof SensePeripheralError) {
             SenseCommandProtos.ErrorType errorType = ((SensePeripheralError) e).errorType;
             switch (errorType) {

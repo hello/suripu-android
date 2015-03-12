@@ -109,6 +109,7 @@
     <string name="title_choose_wifi_network">Connecting Sense to Wifi</string>
     <string name="info_choose_wifi_network">Please select your WiFi network from the list below:</string>
     <string name="title_sign_into_wifi_selection">Enter password for</string>
+    <string name="title_sign_into_wifi_selection_open">Connect to</string>
     <string name="title_sign_into_wifi_other">Enter WiFi credentials</string>
     <string name="wifi_other_network">Other…</string>
     <string name="label_network_name">Network Name</string>
@@ -458,4 +459,7 @@ so you can sleep better.</string>
     <string name="error_bluetooth_gatt_connection_lost">The connection to your Sense was lost.</string>
     <string name="error_bluetooth_gatt_connection_timeout">The connection to your Sense timed out.</string>
     <string name="error_bluetooth_gatt_connection_failed">A connection could not be established to your Sense.</string>
+    <string name="error_bluetooth_malformed_wifi_password">Password contains invalid characters, or is the wrong length.</string>
+    <string name="error_bluetooth_wep_password_nul">Sense does not support WEP passwords containing “00”.</string>
+    <string name="error_bluetooth_empty_wifi_password">WiFi network passwords cannot be empty.</string>
 </resources>
