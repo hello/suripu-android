@@ -16,7 +16,7 @@ public class AdvertisingDataBuilder {
     private int totalSize = 0;
 
     public void add(int type, @NonNull String payload) {
-        byte[] payloadAsBytes = BluetoothUtils.stringToBytes(payload);
+        byte[] payloadAsBytes = BluetoothUtils.convertStringToBytes(payload);
         entries.add(Pair.create(type, payloadAsBytes));
         totalSize += HEADER_LENGTH + payloadAsBytes.length;
     }

@@ -3,6 +3,8 @@ package is.hello.sense.bluetooth.devices;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.protobuf.ByteString;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +25,7 @@ import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
+import is.hello.sense.bluetooth.stacks.util.BluetoothUtils;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.util.Logger;
@@ -294,14 +297,24 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
             return Observable.error(busyError());
         }
 
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+        MorpheusCommand.Builder builder = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
                 .setVersion(COMMAND_VERSION)
                 .setWifiName(bssid)
                 .setWifiSSID(ssid)
-                .setWifiPassword(password)
-                .setSecurityType(securityType)
-                .build();
+                .setSecurityType(securityType);
+        if (securityType == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
+            byte[] keyBytes = BluetoothUtils.tryConvertStringToBytes(password);
+            if (keyBytes == null) {
+                return Observable.error(new SensePeripheralError(SenseCommandProtos.ErrorType.WLAN_CONNECTION_ERROR));
+            }
+            ByteString keyString = ByteString.copyFrom(keyBytes);
+            builder.setWifiPasswordBytes(keyString);
+        } else {
+            builder.setWifiPassword(password);
+        }
+
+        MorpheusCommand morpheusCommand = builder.build();
         return performSimpleCommand(morpheusCommand, peripheral.createOperationTimeout("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS)).map(Functions.TO_VOID);
     }
 
