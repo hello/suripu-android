@@ -109,6 +109,7 @@
     <string name="title_choose_wifi_network">Connecting Sense to Wifi</string>
     <string name="info_choose_wifi_network">Please select your WiFi network from the list below:</string>
     <string name="title_sign_into_wifi_selection">Enter password for</string>
+    <string name="title_sign_into_wifi_selection_open">Connect to</string>
     <string name="title_sign_into_wifi_other">Enter WiFi credentials</string>
     <string name="wifi_other_network">Other…</string>
     <string name="label_network_name">Network Name</string>

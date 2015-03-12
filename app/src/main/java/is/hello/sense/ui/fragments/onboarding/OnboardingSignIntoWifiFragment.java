@@ -15,6 +15,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,7 +44,7 @@ import is.hello.sense.util.Logger;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
-public class OnboardingSignIntoWifiFragment extends HardwareFragment {
+public class OnboardingSignIntoWifiFragment extends HardwareFragment implements AdapterView.OnItemSelectedListener {
     private static final String ARG_SCAN_RESULT = OnboardingSignIntoWifiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
     private static final int ERROR_REQUEST_CODE = 0x30;
@@ -122,11 +123,16 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
             networkInfo.setVisibility(View.VISIBLE);
             otherContainer.setVisibility(View.GONE);
 
-            title.setText(R.string.title_sign_into_wifi_selection);
+            if (network.getSecurityType() == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
+                title.setText(R.string.title_sign_into_wifi_selection_open);
+            } else {
+                title.setText(R.string.title_sign_into_wifi_selection);
+            }
         } else {
             this.networkSecurity = (Spinner) otherContainer.findViewById(R.id.fragment_onboarding_sign_into_wifi_security);
             networkSecurity.setAdapter(new SecurityTypeAdapter(getActivity()));
             networkSecurity.setSelection(sec_type.SL_SCAN_SEC_TYPE_WPA2_VALUE);
+            networkSecurity.setOnItemSelectedListener(this);
 
             networkName.requestFocus();
 
@@ -170,6 +176,8 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
     }
 
 
+    //region Password Field
+
     private sec_type getSecurityType() {
         if (network != null) {
             return network.getSecurityType();
@@ -181,12 +189,16 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
     private void updatePasswordField() {
         sec_type securityType = getSecurityType();
         if (securityType == sec_type.SL_SCAN_SEC_TYPE_WEP) {
-            networkPassword.setFilters(new InputFilter[] { new HexInputFilter() });
+            networkPassword.setFilters(new InputFilter[]{new HexInputFilter()});
             networkPassword.setVisibility(View.VISIBLE);
+            if (!HexInputFilter.isValidHex(networkPassword.getText())) {
+                networkPassword.setText(null);
+            }
             networkPassword.requestFocus();
         } else if (securityType == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
             networkPassword.setFilters(new InputFilter[0]);
             networkPassword.setVisibility(View.GONE);
+            networkPassword.setText(null);
             networkPassword.clearFocus();
         } else {
             networkPassword.setFilters(new InputFilter[0]);
@@ -194,6 +206,19 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
             networkPassword.requestFocus();
         }
     }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        updatePasswordField();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        updatePasswordField();
+    }
+
+    //endregion
+
 
     private void sendWifiCredentials() {
         String networkName = this.networkName.getText().toString();
@@ -348,11 +373,26 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
     }
 
     private static class HexInputFilter implements InputFilter {
+        private static boolean isHex(char c) {
+            char lowerC = Character.toLowerCase(c);
+            return ((lowerC >= '0' && lowerC <= '9') ||
+                    (lowerC >= 'a' && lowerC <= 'f'));
+        }
+
+        private static boolean isValidHex(@NonNull CharSequence sequence) {
+            for (int i = 0, length = sequence.length(); i < length; i++) {
+                if (!isHex(sequence.charAt(i))) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         @Override
         public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
             for (int i = start; i < end; i++) {
-                char c = Character.toLowerCase(source.charAt(i));
-                if (!(c >= '0' && c <= '9') && !(c >= 'a' && c <= 'f')) {
+                if (!isHex(source.charAt(i))) {
                     return source.subSequence(start, end - 1);
                 }
             }
