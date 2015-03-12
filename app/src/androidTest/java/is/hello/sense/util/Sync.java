@@ -133,7 +133,7 @@ public final class Sync<T> implements Iterable<T> {
             Assert.fail("Observable did not fail as expected");
         } catch (Throwable e) {
             if (!errorClass.isAssignableFrom(e.getClass()) &&
-                    !errorClass.isAssignableFrom(e.getCause().getClass())) {
+                    e.getCause() != null && !errorClass.isAssignableFrom(e.getCause().getClass())) {
                 Assert.fail("Unexpected failure '" + e.getClass() + "'");
             }
         }
