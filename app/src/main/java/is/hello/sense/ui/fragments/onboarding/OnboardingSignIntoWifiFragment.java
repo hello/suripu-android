@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.InputFilter;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -105,12 +106,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
 
         if (network != null) {
             networkName.setText(network.getSsid());
-            if (network.getSecurityType() == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
-                this.networkPassword.setVisibility(View.GONE);
-            } else {
-                this.networkPassword.setVisibility(View.VISIBLE);
-                this.networkPassword.requestFocus();
-            }
+            updatePasswordField();
 
             SpannableStringBuilder networkInfoBuilder = new SpannableStringBuilder();
             networkInfoBuilder.append(getString(R.string.label_wifi_network_name));
@@ -174,6 +170,31 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
     }
 
 
+    private sec_type getSecurityType() {
+        if (network != null) {
+            return network.getSecurityType();
+        } else {
+            return (sec_type) networkSecurity.getSelectedItem();
+        }
+    }
+
+    private void updatePasswordField() {
+        sec_type securityType = getSecurityType();
+        if (securityType == sec_type.SL_SCAN_SEC_TYPE_WEP) {
+            networkPassword.setFilters(new InputFilter[] { new HexInputFilter() });
+            networkPassword.setVisibility(View.VISIBLE);
+            networkPassword.requestFocus();
+        } else if (securityType == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
+            networkPassword.setFilters(new InputFilter[0]);
+            networkPassword.setVisibility(View.GONE);
+            networkPassword.clearFocus();
+        } else {
+            networkPassword.setFilters(new InputFilter[0]);
+            networkPassword.setVisibility(View.VISIBLE);
+            networkPassword.requestFocus();
+        }
+    }
+
     private void sendWifiCredentials() {
         String networkName = this.networkName.getText().toString();
         String password = this.networkPassword.getText().toString();
@@ -210,12 +231,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
                 return;
             }
 
-            sec_type securityType;
-            if (network != null) {
-                securityType = network.getSecurityType();
-            } else {
-                securityType = (sec_type) networkSecurity.getSelectedItem();
-            }
+            sec_type securityType = getSecurityType();
 
             JSONObject properties = Analytics.createProperties(
                 Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
@@ -328,6 +344,20 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment {
             TextView text = (TextView) super.getDropDownView(position, convertView, parent);
             text.setText(getTitle(position));
             return text;
+        }
+    }
+
+    private static class HexInputFilter implements InputFilter {
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            for (int i = start; i < end; i++) {
+                char c = Character.toLowerCase(source.charAt(i));
+                if (!(c >= '0' && c <= '9') && !(c >= 'a' && c <= 'f')) {
+                    return source.subSequence(start, end - 1);
+                }
+            }
+
+            return null;
         }
     }
 }
