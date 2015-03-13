@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.AlarmClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -128,6 +129,10 @@ public class HomeActivity
             }
         }
 
+        if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
+            coordinator.postOnResume(() -> showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false));
+        }
+
         devicesPresenter.update();
 
 
@@ -186,7 +191,9 @@ public class HomeActivity
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
+        if (AlarmClock.ACTION_SHOW_ALARMS.equals(intent.getAction())) {
+            showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false);
+        } else if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD), isResumed);
         }
     }
