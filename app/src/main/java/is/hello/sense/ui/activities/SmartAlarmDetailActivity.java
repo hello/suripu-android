@@ -11,10 +11,8 @@ import android.view.MenuItem;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalTime;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,9 +40,10 @@ public class SmartAlarmDetailActivity extends SenseActivity {
         return arguments;
     }
 
-    
+
     private Alarm alarm;
     private int index;
+    private boolean skipUI = false;
     private SmartAlarmDetailFragment detailFragment;
 
 
@@ -54,15 +53,17 @@ public class SmartAlarmDetailActivity extends SenseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (AlarmClock.ACTION_SET_ALARM.equals(getIntent().getAction())) {
-            processSetAlarmIntent();
-        } else {
-            if (savedInstanceState == null) {
-                this.alarm = (Alarm) getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
+        if (savedInstanceState == null) {
+            if (AlarmClock.ACTION_SET_ALARM.equals(getIntent().getAction())) {
+                processSetAlarmIntent();
             } else {
-                this.alarm = (Alarm) savedInstanceState.getSerializable(SmartAlarmDetailActivity.EXTRA_ALARM);
+                this.alarm = (Alarm) getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
+                this.index = getIntent().getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, SmartAlarmDetailActivity.INDEX_NEW);
             }
-            this.index = getIntent().getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, SmartAlarmDetailActivity.INDEX_NEW);
+        } else {
+            this.alarm = (Alarm) savedInstanceState.getSerializable(SmartAlarmDetailActivity.EXTRA_ALARM);
+            this.index = savedInstanceState.getInt("index", INDEX_NEW);
+            this.skipUI = savedInstanceState.getBoolean("skipUI", false);
         }
 
         if (alarm == null) {
@@ -84,6 +85,8 @@ public class SmartAlarmDetailActivity extends SenseActivity {
         super.onSaveInstanceState(outState);
 
         outState.putSerializable(SmartAlarmDetailActivity.EXTRA_ALARM, alarm);
+        outState.putInt("index", index);
+        outState.putBoolean("skipUI", skipUI);
     }
 
     @Override
@@ -134,7 +137,7 @@ public class SmartAlarmDetailActivity extends SenseActivity {
     }
 
     public boolean skipUI() {
-        return getIntent().getBooleanExtra(AlarmClock.EXTRA_SKIP_UI, false);
+        return skipUI;
     }
 
     //endregion
@@ -148,8 +151,7 @@ public class SmartAlarmDetailActivity extends SenseActivity {
         int minute = intent.getIntExtra(AlarmClock.EXTRA_MINUTES, 30);
         List<Integer> calendarDays;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            //noinspection unchecked
-            calendarDays = (ArrayList<Integer>) intent.getSerializableExtra(AlarmClock.EXTRA_DAYS);
+            calendarDays = intent.getIntegerArrayListExtra(AlarmClock.EXTRA_DAYS);
         } else {
             calendarDays = Collections.emptyList();
         }
@@ -159,14 +161,17 @@ public class SmartAlarmDetailActivity extends SenseActivity {
         if (!Lists.isEmpty(calendarDays)) {
             Set<Integer> days = alarm.getDaysOfWeek();
             for (Integer calendarDay : calendarDays) {
-                days.add(calendarDayToJodaDay(calendarDay));
+                days.add(calendarDayToDateTimeDay(calendarDay));
             }
         }
 
         this.index = SmartAlarmDetailActivity.INDEX_NEW;
+        this.skipUI = (intent.getBooleanExtra(AlarmClock.EXTRA_SKIP_UI, false) &&
+                       intent.hasExtra(AlarmClock.EXTRA_HOUR) &&
+                       intent.hasExtra(AlarmClock.EXTRA_MINUTES));
     }
 
-    private int calendarDayToJodaDay(int calendarDay) {
+    private int calendarDayToDateTimeDay(int calendarDay) {
         switch (calendarDay) {
             case Calendar.SUNDAY: {
                 return DateTimeConstants.SUNDAY;
