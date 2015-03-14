@@ -74,18 +74,12 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            this.alarm = (Alarm) getActivity().getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
-        } else {
-            this.alarm = (Alarm) savedInstanceState.getSerializable(SmartAlarmDetailActivity.EXTRA_ALARM);
+        if (savedInstanceState != null) {
             this.dirty = savedInstanceState.getBoolean("dirty", false);
         }
 
-        if (alarm == null) {
-            this.alarm = new Alarm();
-        }
-
-        this.index = getActivity().getIntent().getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, SmartAlarmDetailActivity.INDEX_NEW);
+        this.alarm = getDetailActivity().getAlarm();
+        this.index = getDetailActivity().getIndex();
 
         smartAlarmPresenter.update();
         addPresenter(smartAlarmPresenter);
@@ -183,6 +177,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                                  Alarm.Sound sound = sounds.get(0);
                                  alarm.setSound(sound);
                                  soundButton.setText(sound.name);
+
+                                 if (getDetailActivity().skipUI()) {
+                                     saveAlarm();
+                                 }
                              }
                          },
                          Functions.LOG_ERROR);
@@ -192,7 +190,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onResume() {
         super.onResume();
 
-        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm);
+        if (getDetailActivity().skipUI()) {
+            LoadingDialogFragment.show(getFragmentManager(), null, false);
+        } else {
+            WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm);
+        }
     }
 
     @Override
@@ -219,7 +221,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable(SmartAlarmDetailActivity.EXTRA_ALARM, alarm);
         outState.putBoolean("dirty", dirty);
     }
 
@@ -228,6 +229,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         super.onDestroy();
 
         smartAlarmPresenter.forgetAvailableAlarmSoundsCache();
+    }
+
+
+    private SmartAlarmDetailActivity getDetailActivity() {
+        return (SmartAlarmDetailActivity) getActivity();
     }
 
     public void updateTime() {
@@ -275,9 +281,13 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     public void saveAlarm() {
         if (alarm.getSound() == null) {
+            LoadingDialogFragment.close(getFragmentManager());
+
             ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(R.string.error_no_smart_alarm_sound);
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else if (alarm.isTooSoon()) {
+            LoadingDialogFragment.close(getFragmentManager());
+
             ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(R.string.error_alarm_too_soon);
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
