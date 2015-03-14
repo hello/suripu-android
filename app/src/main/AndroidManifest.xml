@@ -37,6 +37,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <intent-filter>
+                <action android:name="android.intent.action.SHOW_ALARMS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
         </activity>
 
         <activity
@@ -65,7 +70,14 @@
 
         <activity
             android:name=".ui.activities.SmartAlarmDetailActivity"
-            android:label="@string/action_alarm" />
+            android:label="@string/action_alarm">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SET_ALARM" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
 
         <activity
             android:name=".ui.activities.SessionLogViewerActivity"

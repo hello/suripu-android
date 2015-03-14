@@ -1,7 +1,9 @@
 package is.hello.sense.ui.activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.AlarmClock;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -49,7 +51,13 @@ public class LaunchActivity extends InjectionActivity {
 
 
     private void showHomeActivity() {
-        startActivity(new Intent(this, HomeActivity.class));
+        Intent intent = new Intent(this, HomeActivity.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
+                intent.setAction(AlarmClock.ACTION_SHOW_ALARMS);
+            }
+        }
+        startActivity(intent);
     }
 
     private void showOnboardingActivity() {
