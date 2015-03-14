@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,6 +45,8 @@ public class ErrorDialogFragment extends DialogFragment {
     private static final String ARG_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE_RES";
     private static final String ARG_SHOW_BLE_SUPPORT = ErrorDialogFragment.class.getName() + ".ARG_SHOW_BLE_SUPPORT";
     private static final String ARG_FATAL_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_FATAL_MESSAGE_RES";
+    private static final String ARG_ACTION_INTENT = ErrorDialogFragment.class.getName() + ".ARG_ACTION_INTENT";
+    private static final String ARG_ACTION_TITLE_RES = ErrorDialogFragment.class.getName() + ".ARG_ACTION_TITLE_RES";
 
 
     //region Creation
@@ -286,7 +289,14 @@ public class ErrorDialogFragment extends DialogFragment {
         }
 
         dialog.setPositiveButton(android.R.string.ok, null);
-        if (getShowBluetoothSupport()) {
+
+        if (getArguments().containsKey(ARG_ACTION_INTENT) && getArguments().containsKey(ARG_ACTION_TITLE_RES)) {
+            int titleRes = getArguments().getInt(ARG_ACTION_TITLE_RES);
+            dialog.setNegativeButton(titleRes, (button, which) -> {
+                Intent intent = getArguments().getParcelable(ARG_ACTION_INTENT);
+                startActivity(intent);
+            });
+        } else if (getShowBluetoothSupport()) {
             dialog.setNegativeButton(R.string.action_support, (button, which) -> {
                 UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH);
             });
@@ -349,5 +359,10 @@ public class ErrorDialogFragment extends DialogFragment {
 
     public void setErrorOperation(@Nullable String errorType) {
         getArguments().putString(ARG_ERROR_OPERATION, errorType);
+    }
+
+    public void setAction(@NonNull Intent intent, @StringRes int titleRes) {
+        getArguments().putParcelable(ARG_ACTION_INTENT, intent);
+        getArguments().putInt(ARG_ACTION_TITLE_RES, titleRes);
     }
 }

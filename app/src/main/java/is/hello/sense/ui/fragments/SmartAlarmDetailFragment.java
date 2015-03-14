@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -320,6 +321,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else if (ApiException.statusEquals(e, 400)) {
             ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_clock_drift));
+            dialogFragment.setAction(new Intent(Settings.ACTION_DATE_SETTINGS), R.string.action_settings);
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else if (ApiException.statusEquals(e, 412)) {
             ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_requires_device));
