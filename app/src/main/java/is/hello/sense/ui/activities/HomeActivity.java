@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.squareup.seismic.ShakeDetector;
 
 import org.joda.time.DateTime;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -498,26 +499,51 @@ public class HomeActivity
         }
 
         if (sense == null) {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_PAIRED
+            );
+            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
+
             showDeviceAlert(R.string.alert_title_no_sense,
                             R.string.alert_message_no_sense,
                             R.string.action_fix_now,
                             this::showDevices);
         } else if (sense.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_SEEN
+            );
+            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
+
             showDeviceAlert(R.string.alert_title_missing_sense,
                             R.string.alert_message_missing_sense,
                             R.string.action_fix_now,
                             this::showDevices);
         } else if (pill == null) {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_PAIRED
+            );
+            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
+
             showDeviceAlert(R.string.alert_title_no_pill,
                             R.string.alert_message_no_pill,
                             R.string.action_fix_now,
                             this::showDevices);
         } else if (pill.getState() == Device.State.LOW_BATTERY) {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_LOW_BATTERY
+            );
+            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
+
             showDeviceAlert(R.string.alert_title_low_battery,
                             R.string.alert_message_low_battery,
                             R.string.action_replace,
                             () -> UserSupport.showReplaceBattery(this));
         } else if (pill.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_SEEN
+            );
+            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
+
             showDeviceAlert(R.string.alert_title_missing_pill,
                             R.string.alert_message_missing_pill,
                             R.string.action_fix_now,
@@ -550,11 +576,22 @@ public class HomeActivity
         message.setText(messageRes);
 
         Button later = (Button) deviceAlert.findViewById(R.id.item_bottom_alert_later);
-        Views.setSafeOnClickListener(later, ignored -> hideDeviceAlert());
+        Views.setSafeOnClickListener(later, ignored -> {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_LATER
+            );
+            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
+            hideDeviceAlert();
+        });
 
         Button fixNow = (Button) deviceAlert.findViewById(R.id.item_bottom_alert_fix_now);
         fixNow.setText(actionTitleRes);
         Views.setSafeOnClickListener(fixNow, ignored -> {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_NOW
+            );
+            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
+
             hideDeviceAlert();
             action.run();
         });

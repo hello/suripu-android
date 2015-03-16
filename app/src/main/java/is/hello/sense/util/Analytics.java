@@ -250,6 +250,18 @@ public class Analytics {
         String EVENT_BEFORE_SLEEP_EVENT_TAPPED = "Before sleep event tapped";
         String EVENT_TIMELINE_EVENT_TAPPED = "Timeline Event tapped";
         String EVENT_LONG_PRESS_EVENT = "Long press sleep duration bar";
+
+        String EVENT_SYSTEM_ALERT = "System Alert";
+        String PROP_SYSTEM_ALERT_TYPE = "Type";
+        int SYSTEM_ALERT_TYPE_SENSE_NOT_PAIRED = 2;
+        int SYSTEM_ALERT_TYPE_PILL_NOT_PAIRED = 4;
+        int SYSTEM_ALERT_TYPE_PILL_LOW_BATTERY = 5;
+        int SYSTEM_ALERT_TYPE_SENSE_NOT_SEEN = 6;
+        int SYSTEM_ALERT_TYPE_PILL_NOT_SEEN = 7;
+        String EVENT_SYSTEM_ALERT_ACTION = "System Alert Action";
+        String PROP_EVENT_SYSTEM_ALERT_ACTION = "Action";
+        String PROP_EVENT_SYSTEM_ALERT_ACTION_NOW = "now";
+        String PROP_EVENT_SYSTEM_ALERT_ACTION_LATER = "later";
     }
 
     public interface TopView {
