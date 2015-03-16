@@ -28,6 +28,7 @@
     <dimen name="text_size_big_score">76sp</dimen>
     <dimen name="text_size_smart_alarm_time">32sp</dimen>
     <dimen name="text_size_scale_reading">64sp</dimen>
+    <dimen name="text_size_timeline_date">11sp</dimen>
 
     <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>

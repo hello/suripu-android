@@ -119,10 +119,10 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
 
             date.setText(dateFormatter.formatAsTime(segment.getShiftedTimestamp(), use24Time));
             if (segment.isTimeAdjustable()) {
-                date.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Light_Small_Link);
+                date.setTextAppearance(getContext(), R.style.AppTheme_Text_TimelineDate_Actionable);
                 date.setPaintFlags(date.getPaintFlags() | TextPaint.UNDERLINE_TEXT_FLAG);
             } else {
-                date.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Light_Small_Dimmed);
+                date.setTextAppearance(getContext(), R.style.AppTheme_Text_TimelineDate);
                 date.setPaintFlags(date.getPaintFlags() & ~TextPaint.UNDERLINE_TEXT_FLAG);
             }
 

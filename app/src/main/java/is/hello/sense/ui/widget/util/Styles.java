@@ -233,11 +233,11 @@ public final class Styles {
             }
 
             case SUNSET: {
-                return R.drawable.timeline_sunset_legacy;
+                return R.drawable.timeline_sunset;
             }
 
             case SUNRISE: {
-                return R.drawable.timeline_sunrise_legacy;
+                return R.drawable.timeline_sunrise;
             }
 
             case PARTNER_MOTION: {
@@ -258,7 +258,7 @@ public final class Styles {
 
             default:
             case UNKNOWN: {
-                return R.drawable.timeline_unknown_legacy;
+                return R.drawable.timeline_unknown;
             }
         }
     }
