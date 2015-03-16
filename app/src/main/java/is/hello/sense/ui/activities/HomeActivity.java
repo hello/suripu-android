@@ -455,7 +455,7 @@ public class HomeActivity
             int contentHeight = rootContainer.getMeasuredHeight();
 
             animate(smartAlarmButton, animatorContext)
-                    .y(contentHeight)
+                    .translationY(contentHeight - smartAlarmButton.getTop())
                     .addOnAnimationCompleted(finished -> {
                         if (finished) {
                             smartAlarmButton.setVisibility(View.INVISIBLE);
@@ -467,13 +467,10 @@ public class HomeActivity
 
     public void showAlarmShortcut() {
         if (smartAlarmButton.getVisibility() == View.INVISIBLE && !isAnimating(smartAlarmButton)) {
-            int contentHeight = rootContainer.getMeasuredHeight();
-            int buttonHeight = smartAlarmButton.getMeasuredHeight();
-
             smartAlarmButton.setVisibility(View.VISIBLE);
 
             animate(smartAlarmButton, animatorContext)
-                    .y(contentHeight - buttonHeight)
+                    .translationY(0f)
                     .start();
         }
     }
