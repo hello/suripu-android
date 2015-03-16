@@ -46,19 +46,18 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.ui.adapter.AbstractTimelineAdapter;
 import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.BlockableLinearLayout;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
-import is.hello.sense.ui.widget.ShareImageGenerator;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.TimelineHeaderDrawable;
@@ -87,7 +86,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Inject Markdown markdown;
 
     private ListView listView;
-    private TimelineSegmentAdapter segmentAdapter;
+    private AbstractTimelineAdapter segmentAdapter;
 
     private ImageButton menuButton;
     private ImageButton shareButton;

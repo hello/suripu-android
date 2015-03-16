@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 
 import org.joda.time.DateTime;
 
@@ -22,9 +21,7 @@ import is.hello.sense.ui.widget.TimelineSegmentView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
 
-public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
-    private final DateFormatter dateFormatter;
-
+public class TimelineSegmentAdapter extends AbstractTimelineAdapter {
     private final TimelineSegmentView.Invariants invariants;
     private final int baseItemHeight;
     private final int itemEventImageHeight;
@@ -32,14 +29,10 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
     private final Set<Integer> timePositions = new HashSet<>();
     private float[] itemHeights;
 
-    private boolean use24Time;
-
     //region Lifecycle
 
     public TimelineSegmentAdapter(@NonNull Context context, @NonNull DateFormatter dateFormatter) {
-        super(context, R.layout.item_simple_text);
-
-        this.dateFormatter = dateFormatter;
+        super(context, dateFormatter);
 
         Resources resources = context.getResources();
 
@@ -114,6 +107,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
 
     //region Bindings
 
+    @Override
     public void bindSegments(@Nullable List<TimelineSegment> segments) {
         clear();
 
@@ -125,15 +119,11 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
         }
     }
 
+    @Override
     @SuppressWarnings("UnusedParameters")
     public void handleError(@NonNull Throwable ignored) {
         clear();
         clearItemInfoCache();
-    }
-
-    public void setUse24Time(boolean use24Time) {
-        this.use24Time = use24Time;
-        notifyDataSetChanged();
     }
 
 
