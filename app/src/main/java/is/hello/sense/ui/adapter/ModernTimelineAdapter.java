@@ -113,7 +113,7 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
         }
 
         void bind(int position, @NonNull TimelineSegment segment) {
-            image.setImageResource(Styles.getTimelineSegmentIconRes(segment));
+            image.setImageResource(Styles.getModernTimelineEventIconRes(segment));
             image.setContentDescription(resources.getString(segment.getEventType().nameString));
             text.setText(segment.getMessage());
 

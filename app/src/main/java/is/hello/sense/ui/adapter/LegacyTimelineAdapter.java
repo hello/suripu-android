@@ -81,7 +81,7 @@ public class LegacyTimelineAdapter extends AbstractTimelineAdapter {
         public void displaySegment(int position, @NonNull TimelineSegment segment) {
             int sleepDepth = segment.getSleepDepth() < 0 ? 0 : segment.getSleepDepth();
             itemView.setSleepDepth(sleepDepth, segment.isBeforeSleep());
-            itemView.setEventResource(Styles.getTimelineSegmentIconRes(segment));
+            itemView.setEventResource(Styles.getLegacyTimelineEventIconRes(segment));
 
             DateTime segmentTimestamp = segment.getShiftedTimestamp();
             if (isTimePosition(position)) {

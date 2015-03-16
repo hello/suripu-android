@@ -117,7 +117,80 @@ public final class Styles {
     }
 
 
-    public static @DrawableRes int getTimelineSegmentIconRes(@NonNull TimelineSegment segment) {
+    public static @DrawableRes int getLegacyTimelineEventIconRes(@NonNull TimelineSegment segment) {
+        if (!segment.hasEventInfo()) {
+            return 0;
+        }
+
+        switch (segment.getEventType()) {
+            case MOTION: {
+                return R.drawable.timeline_movement_legacy;
+            }
+
+            case NOISE: {
+                return R.drawable.timeline_sound_legacy;
+            }
+
+            case SNORING: {
+                return R.drawable.timeline_sound_legacy;
+            }
+
+            case SLEEP_TALK: {
+                return R.drawable.timeline_sound_legacy;
+            }
+
+            case LIGHT: {
+                return R.drawable.timeline_light_legacy;
+            }
+
+            case LIGHTS_OUT: {
+                return R.drawable.timeline_lights_out_legacy;
+            }
+
+            case SLEEP_MOTION: {
+                return R.drawable.timeline_movement_legacy;
+            }
+
+            case IN_BED: {
+                return R.drawable.timeline_in_bed_legacy;
+            }
+
+            case SLEEP: {
+                return R.drawable.timeline_asleep_legacy;
+            }
+
+            case SUNSET: {
+                return R.drawable.timeline_sunset_legacy;
+            }
+
+            case SUNRISE: {
+                return R.drawable.timeline_sunrise_legacy;
+            }
+
+            case PARTNER_MOTION: {
+                return R.drawable.timeline_partner_legacy;
+            }
+
+            case OUT_OF_BED: {
+                return R.drawable.timeline_out_of_bed_legacy;
+            }
+
+            case WAKE_UP: {
+                return R.drawable.timeline_wakeup_legacy;
+            }
+
+            case ALARM: {
+                return R.drawable.timeline_alarm_legacy;
+            }
+
+            default:
+            case UNKNOWN: {
+                return R.drawable.timeline_unknown_legacy;
+            }
+        }
+    }
+
+    public static @DrawableRes int getModernTimelineEventIconRes(@NonNull TimelineSegment segment) {
         if (!segment.hasEventInfo()) {
             return 0;
         }
@@ -160,11 +233,11 @@ public final class Styles {
             }
 
             case SUNSET: {
-                return R.drawable.timeline_sunset;
+                return R.drawable.timeline_sunset_legacy;
             }
 
             case SUNRISE: {
-                return R.drawable.timeline_sunrise;
+                return R.drawable.timeline_sunrise_legacy;
             }
 
             case PARTNER_MOTION: {
@@ -185,7 +258,7 @@ public final class Styles {
 
             default:
             case UNKNOWN: {
-                return R.drawable.timeline_unknown;
+                return R.drawable.timeline_unknown_legacy;
             }
         }
     }
