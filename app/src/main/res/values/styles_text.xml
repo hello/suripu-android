@@ -80,6 +80,14 @@
         <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
 
+    <style name="AppTheme.Text.Body.Light.Small.Dimmed">
+        <item name="android:textColor">@color/grey</item>
+    </style>
+
+    <style name="AppTheme.Text.Body.Light.Small.Link">
+        <item name="android:textColor">?android:attr/textColorLink</item>
+    </style>
+
     <style name="AppTheme.Text.Body.Bold">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>

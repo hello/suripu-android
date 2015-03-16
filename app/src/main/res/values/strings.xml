@@ -427,7 +427,6 @@ so you can sleep better.</string>
     <string name="timeline_share_other_days_fmt">#mysleepscore was %1$s on %2$s — http://hello.is</string>
     <string name="action_more_info">More info</string>
     <string name="action_adjust_time">Adjust Time</string>
-    <string name="timeline_event_adjust_time_fmt">Adjust Time – %1$s</string>
     <string name="action_submit">Submit</string>
     <string name="sleep_depth_awake">awake</string>
     <string name="sleep_depth_deep">in deep sleep</string>

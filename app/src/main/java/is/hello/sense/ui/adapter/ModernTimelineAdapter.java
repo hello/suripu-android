@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextPaint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,11 +117,13 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
             image.setContentDescription(resources.getString(segment.getEventType().nameString));
             text.setText(segment.getMessage());
 
-            String timestamp = dateFormatter.formatAsTime(segment.getShiftedTimestamp(), use24Time);
+            date.setText(dateFormatter.formatAsTime(segment.getShiftedTimestamp(), use24Time));
             if (segment.isTimeAdjustable()) {
-                date.setText(resources.getString(R.string.timeline_event_adjust_time_fmt, timestamp));
+                date.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Light_Small_Link);
+                date.setPaintFlags(date.getPaintFlags() | TextPaint.UNDERLINE_TEXT_FLAG);
             } else {
-                date.setText(timestamp);
+                date.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Light_Small_Dimmed);
+                date.setPaintFlags(date.getPaintFlags() & ~TextPaint.UNDERLINE_TEXT_FLAG);
             }
 
             if (position == 0) {
