@@ -83,8 +83,7 @@ import rx.subjects.ReplaySubject;
                              .doOnCompleted(() -> {
                                  logEvent("smart alarms saved");
                                  this.alarms.onNext(updatedAlarms);
-                             })
-                             .doOnError(this.alarms::onError);
+                             });
         } else {
             return Observable.error(new DayOverlapError());
         }
