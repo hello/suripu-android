@@ -21,7 +21,7 @@ public class InjectionFragment extends SenseFragment implements ObservableContai
     protected final ResumeScheduler.Coordinator coordinator = new ResumeScheduler.Coordinator(this::isResumed);
     protected final ResumeScheduler observeScheduler = new ResumeScheduler(coordinator);
 
-    protected static final Func1<Fragment, Boolean> FRAGMENT_VALIDATOR = (fragment) -> fragment.isAdded() && !fragment.getActivity().isFinishing();
+    protected static final Func1<Fragment, Boolean> FRAGMENT_VALIDATOR = f -> f.isAdded() && !f.getActivity().isFinishing();
     protected final DelegateObservableContainer<Fragment> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, FRAGMENT_VALIDATOR);
 
     protected final PresenterContainer presenterContainer = new PresenterContainer();

@@ -18,7 +18,7 @@ public abstract class InjectionActivity extends SenseActivity implements Observa
     protected final ResumeScheduler.Coordinator coordinator = new ResumeScheduler.Coordinator(() -> isResumed);
     protected final ResumeScheduler observeScheduler = new ResumeScheduler(coordinator);
 
-    protected static final Func1<Activity, Boolean> ACTIVITY_VALIDATOR = (activity) -> !activity.isFinishing();
+    protected static final Func1<Activity, Boolean> ACTIVITY_VALIDATOR = a -> !a.isFinishing();
     protected final DelegateObservableContainer<Activity> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, ACTIVITY_VALIDATOR);
 
     public InjectionActivity() {

@@ -2,6 +2,7 @@ package is.hello.sense.ui.animation;
 
 import android.animation.Animator;
 import android.animation.TimeInterpolator;
+import android.app.Activity;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,15 +20,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import is.hello.sense.functional.Function;
+
 public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private static final Set<View> ANIMATING_VIEWS = new HashSet<>();
+    private static final Function<Activity, Boolean> ACTIVITY_FILTER = a -> !a.isFinishing() && !a.isDestroyed();
 
     private final View view;
     private final @Nullable AnimatorContext system;
 
     private final HashMap<String, Float> properties = new HashMap<>();
     private final List<OnAnimationCompleted> onAnimationCompletedListeners = new ArrayList<>();
-    private PropertyAnimatorProxy previousInChain;
+    private @Nullable PropertyAnimatorProxy previousInChain;
 
     private boolean animationStarted = false;
     private boolean animationEnded = false;
@@ -36,7 +40,10 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private long duration = Animation.DURATION_NORMAL;
     private long startDelay = 0;
     private TimeInterpolator interpolator = Animation.INTERPOLATOR_DEFAULT;
-    private Runnable onAnimationWillStart;
+    private @Nullable Runnable onAnimationWillStart;
+
+    private @Nullable Function<Object, Boolean> listenerFilter;
+    private @Nullable Object listenerFilterObject;
 
 
     //region Creation
@@ -134,7 +141,7 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     }
 
     private void buildAndStart() {
-        if (onAnimationWillStart != null) {
+        if (onAnimationWillStart != null && shouldCallListeners()) {
             onAnimationWillStart.run();
         }
 
@@ -211,7 +218,32 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         return view;
     }
 
-    public PropertyAnimatorProxy setOnAnimationWillStart(Runnable onAnimationWillStart) {
+    /**
+     * Specifies a predicate with a target object to apply before invoking user-supplied callbacks.
+     *
+     * @param object    The object to apply to the filter.
+     * @param filter    The filter predicate to apply to the object.;
+     * @param <T>       The type of the object. Type-erased when saved into the animator.
+     */
+    public <T> PropertyAnimatorProxy setListenerFilter(@Nullable T object, @Nullable Function<T, Boolean> filter) {
+        //noinspection unchecked
+        this.listenerFilter = (Function<Object, Boolean>) filter;
+        this.listenerFilterObject = object;
+        return this;
+    }
+
+    /**
+     * Binds the user-supplied listeners of the animator to a given activity.
+     * Ensures that the animator listeners won't be invoked after the activity has been destroyed.
+     * <p/>
+     * Intended for use with listeners that interact with objects that aren't safe after
+     * an activity has saved its instance state (e.g. FragmentManager.)
+     */
+    public PropertyAnimatorProxy bindListeners(@NonNull Activity activity) {
+        return setListenerFilter(activity, ACTIVITY_FILTER);
+    }
+
+    public PropertyAnimatorProxy setOnAnimationWillStart(@Nullable Runnable onAnimationWillStart) {
         this.onAnimationWillStart = onAnimationWillStart;
         return this;
     }
@@ -225,6 +257,10 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
 
 
     //region Listener
+
+    private boolean shouldCallListeners() {
+        return (listenerFilter == null || listenerFilter.apply(listenerFilterObject));
+    }
 
     @Override
     public void onAnimationStart(Animator animator) {
@@ -241,8 +277,10 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
 
         this.animationEnded = true;
 
-        for (OnAnimationCompleted listener : onAnimationCompletedListeners) {
-            listener.onAnimationCompleted(!animationCanceled);
+        if (shouldCallListeners()) {
+            for (OnAnimationCompleted listener : onAnimationCompletedListeners) {
+                listener.onAnimationCompleted(!animationCanceled);
+            }
         }
 
         if (system != null) {

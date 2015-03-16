@@ -680,6 +680,7 @@ public class HomeActivity
                     .setInterpolator(interpolator)
                     .scale(finalScale)
                     .alpha(finalAlpha)
+                    .bindListeners(HomeActivity.this)
                     .addOnAnimationCompleted(finished -> {
                         if (!finished)
                             return;
