@@ -57,6 +57,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     private StaticItemAdapter.TextItem weightItem;
 
     private StaticItemAdapter.CheckItem enhancedAudioItem;
+    private StaticItemAdapter.CheckItem newTimelineItem;
 
     private Account currentAccount;
     private ListView listView;
@@ -104,6 +105,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         this.weightItem = adapter.addTextItem(R.string.label_weight, R.string.missing_data_placeholder, this::changeWeight);
 
         adapter.addSectionTitle(R.string.label_options);
+        this.newTimelineItem = adapter.addCheckItem("New Timeline", preferences.getUseModernTimeline(), this::changeNewTimeline);
         this.enhancedAudioItem = adapter.addCheckItem(R.string.label_enhanced_audio, false, this::changeEnhancedAudio);
         adapter.addFooterItem(R.string.info_enhanced_audio);
 
@@ -289,6 +291,20 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
                              enhancedAudioItem.setChecked(!newSetting);
                              presentError(e);
                          });
+    }
+
+    public void changeNewTimeline() {
+        boolean newValue = !newTimelineItem.isChecked();
+        preferences.edit()
+                   .putBoolean(PreferencesPresenter.USE_MODERN_TIMELINE, newValue)
+                   .apply();
+        newTimelineItem.setChecked(newValue);
+
+        SenseAlertDialog explanation = new SenseAlertDialog(getActivity());
+        explanation.setTitle("Updated");
+        explanation.setMessage("Your new settings will take effect on the next timeline you visit.");
+        explanation.setPositiveButton(android.R.string.ok, null);
+        explanation.show();
     }
 
     //endregion
