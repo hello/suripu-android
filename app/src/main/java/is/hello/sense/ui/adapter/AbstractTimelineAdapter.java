@@ -44,16 +44,6 @@ public abstract class AbstractTimelineAdapter extends ArrayAdapter<TimelineSegme
     private final Set<Integer> timePositions = new HashSet<>();
     private float[] itemHeights;
 
-    /**
-     * The number of event items contained in the adapter.
-     */
-    protected int eventItemCount = 0;
-
-    /**
-     * The number of bar items contained in the adapter.
-     */
-    protected int barItemCount = 0;
-
 
     protected AbstractTimelineAdapter(@NonNull Context context, @NonNull DateFormatter dateFormatter) {
         super(context, R.layout.item_simple_text);
@@ -85,32 +75,29 @@ public abstract class AbstractTimelineAdapter extends ArrayAdapter<TimelineSegme
     }
 
     /**
+     * Override point for subclasses to add custom processing for cache purposes.
+     */
+    protected void processSegment(int position, @NonNull TimelineSegment segment) {
+        int height = calculateItemHeight(segment);
+        this.itemHeights[position] = height;
+    }
+
+    /**
      * Calculates heights for all items in the adapter, and determines
      * which items are to be used as representative times.
      */
     protected void buildItemInfoCache(@NonNull List<TimelineSegment> segments) {
         this.itemHeights = new float[segments.size()];
-        this.eventItemCount = 0;
-        this.barItemCount = 0;
 
         Set<Integer> hoursRepresented = new HashSet<>();
         for (int i = 0, size = itemHeights.length; i < size; i++) {
-            int height = calculateItemHeight(segments.get(i));
-            this.itemHeights[i] = height;
-
             TimelineSegment segment = segments.get(i);
+            processSegment(i, segment);
+
             int hour = segment.getShiftedTimestamp().getHourOfDay();
-            if (hoursRepresented.contains(hour)) {
-                continue;
-            }
-
-            timePositions.add(i);
-            hoursRepresented.add(hour);
-
-            if (segment.hasEventInfo()) {
-                eventItemCount++;
-            } else {
-                barItemCount++;
+            if (!hoursRepresented.contains(hour)) {
+                timePositions.add(i);
+                hoursRepresented.add(hour);
             }
         }
     }
@@ -119,8 +106,6 @@ public abstract class AbstractTimelineAdapter extends ArrayAdapter<TimelineSegme
     public void clear() {
         super.clear();
 
-        this.eventItemCount = 0;
-        this.barItemCount = 0;
         this.itemHeights = null;
         timePositions.clear();
     }

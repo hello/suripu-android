@@ -48,6 +48,7 @@ import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.AbstractTimelineAdapter;
 import is.hello.sense.ui.adapter.LegacyTimelineAdapter;
+import is.hello.sense.ui.adapter.ModernTimelineAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -142,7 +143,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
-        this.segmentAdapter = new LegacyTimelineAdapter(getActivity(), dateFormatter);
+        if (preferences.getUseModernTimeline()) {
+            this.segmentAdapter = new ModernTimelineAdapter(getActivity(), dateFormatter);
+        } else {
+            this.segmentAdapter = new LegacyTimelineAdapter(getActivity(), dateFormatter);
+        }
 
         Observable<Boolean> use24HourTime = preferences.observableUse24Time();
         track(use24HourTime.subscribe(segmentAdapter::setUse24Time));
