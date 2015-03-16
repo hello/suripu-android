@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import is.hello.sense.api.model.TimelineSegment;
+import is.hello.sense.ui.widget.TimelineBarView;
 import is.hello.sense.util.DateFormatter;
 
 public class ModernTimelineAdapter extends AbstractTimelineAdapter {
@@ -71,25 +72,18 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
             holder.bind(segment);
         } else {
             if (view == null) {
-                view = new View(getContext());
-                view.setTag(new BarViewHolder(view));
+                view = new TimelineBarView(getContext());
             }
 
-            BarViewHolder holder = (BarViewHolder) view.getTag();
-            holder.bind(segment);
-            view.setMinimumHeight((int) getItemHeight(position));
+            TimelineBarView barView = (TimelineBarView) view;
+            if (segment.isBeforeSleep()) {
+                barView.setEmpty();
+            } else {
+                barView.setSleepDepth(segment.getSleepDepth());
+            }
+            barView.setMinimumHeight((int) getItemHeight(position));
         }
         return view;
-    }
-
-    class BarViewHolder {
-        BarViewHolder(@NonNull View view) {
-
-        }
-
-        void bind(@NonNull TimelineSegment segment) {
-
-        }
     }
 
     class EventViewHolder {
