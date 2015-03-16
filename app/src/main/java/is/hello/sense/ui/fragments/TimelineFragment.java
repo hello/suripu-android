@@ -563,11 +563,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         TimelineSegment segment = (TimelineSegment) adapterView.getItemAtPosition(position);
         if (segment.hasEventInfo()) {
-            Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
+            if (preferences.getUseModernTimeline()) {
 
-            TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment);
-            dialogFragment.setTargetFragment(this, 0x00);
-            dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
+            } else {
+                Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
+
+                TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment);
+                dialogFragment.setTargetFragment(this, 0x00);
+                dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
+            }
         }
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
