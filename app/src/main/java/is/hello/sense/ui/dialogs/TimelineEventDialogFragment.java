@@ -44,12 +44,14 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     public static final String TAG = TimelineEventDialogFragment.class.getSimpleName();
 
     private static final String ARG_SEGMENT = TimelineEventDialogFragment.class.getSimpleName() + ".ARG_SEGMENT";
+    private static final String ARG_ADJUST_TIME_ONLY = TimelineEventDialogFragment.class.getSimpleName() + ".ARG_ADJUST_TIME_ONLY";
     private static final int REQUEST_CODE_ADJUST_TIME = 0x12;
 
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
     @Inject Markdown markdown;
     private TimelineSegment timelineSegment;
+    private boolean adjustTimeOnly = false;
 
     private SoundPlayer soundPlayer;
     private ImageView soundPlayButton;
@@ -64,11 +66,12 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     private boolean adjustingTime = false;
 
 
-    public static TimelineEventDialogFragment newInstance(@NonNull TimelineSegment segment) {
+    public static TimelineEventDialogFragment newInstance(@NonNull TimelineSegment segment, boolean adjustTimeOnly) {
         TimelineEventDialogFragment dialogFragment = new TimelineEventDialogFragment();
 
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_SEGMENT, segment);
+        arguments.putBoolean(ARG_ADJUST_TIME_ONLY, adjustTimeOnly);
         dialogFragment.setArguments(arguments);
 
         return dialogFragment;
@@ -79,6 +82,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         super.onCreate(savedInstanceState);
 
         this.timelineSegment = (TimelineSegment) getArguments().getSerializable(ARG_SEGMENT);
+        this.adjustTimeOnly = getArguments().getBoolean(ARG_ADJUST_TIME_ONLY, false);
 
         setCancelable(true);
 
@@ -151,6 +155,8 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         TimePickerDialogFragment timePicker = (TimePickerDialogFragment) getFragmentManager().findFragmentByTag(TimePickerDialogFragment.TAG);
         if (timePicker != null) {
             timePicker.dismiss();
+        } else if (adjustTimeOnly) {
+            adjustSegmentTime(adjustTimeButton);
         }
     }
 
@@ -328,6 +334,10 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
                     adjustTimeButton.setVisibility(View.VISIBLE);
                     if (success) {
                         setTimelineSegment(timelineSegment.withTimestamp(newLocalTimestamp));
+                    }
+
+                    if (adjustTimeOnly) {
+                        dismiss();
                     }
                 });
             });
