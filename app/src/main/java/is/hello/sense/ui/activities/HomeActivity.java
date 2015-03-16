@@ -49,6 +49,7 @@ import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
@@ -497,13 +498,30 @@ public class HomeActivity
         }
 
         if (sense == null) {
-            showDeviceAlert(R.string.alert_title_no_sense, R.string.alert_message_no_sense, this::showDevices);
+            showDeviceAlert(R.string.alert_title_no_sense,
+                            R.string.alert_message_no_sense,
+                            R.string.action_fix_now,
+                            this::showDevices);
         } else if (sense.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
-            showDeviceAlert(R.string.alert_title_missing_sense, R.string.alert_message_missing_sense, this::showDevices);
+            showDeviceAlert(R.string.alert_title_missing_sense,
+                            R.string.alert_message_missing_sense,
+                            R.string.action_fix_now,
+                            this::showDevices);
         } else if (pill == null) {
-            showDeviceAlert(R.string.alert_title_no_pill, R.string.alert_message_no_pill, this::showDevices);
+            showDeviceAlert(R.string.alert_title_no_pill,
+                            R.string.alert_message_no_pill,
+                            R.string.action_fix_now,
+                            this::showDevices);
+        } else if (pill.getState() == Device.State.LOW_BATTERY) {
+            showDeviceAlert(R.string.alert_title_low_battery,
+                            R.string.alert_message_low_battery,
+                            R.string.action_replace,
+                            () -> UserSupport.showReplaceBattery(this));
         } else if (pill.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
-            showDeviceAlert(R.string.alert_title_missing_pill, R.string.alert_message_missing_pill, this::showDevices);
+            showDeviceAlert(R.string.alert_title_missing_pill,
+                            R.string.alert_message_missing_pill,
+                            R.string.action_fix_now,
+                            this::showDevices);
         } else {
             hideDeviceAlert();
         }
@@ -516,6 +534,7 @@ public class HomeActivity
 
     public void showDeviceAlert(@StringRes int titleRes,
                                 @StringRes int messageRes,
+                                @StringRes int actionTitleRes,
                                 @NonNull Runnable action) {
         if (deviceAlert != null) {
             return;
@@ -534,6 +553,7 @@ public class HomeActivity
         Views.setSafeOnClickListener(later, ignored -> hideDeviceAlert());
 
         Button fixNow = (Button) deviceAlert.findViewById(R.id.item_bottom_alert_fix_now);
+        fixNow.setText(actionTitleRes);
         Views.setSafeOnClickListener(fixNow, ignored -> {
             hideDeviceAlert();
             action.run();

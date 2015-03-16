@@ -305,6 +305,7 @@ so you can sleep better.</string>
     <string name="action_replace_this_sense">Replace This Sense</string>
     <string name="action_replace_sleep_pill">Replace This Sleep Pill</string>
     <string name="action_replace_battery">Replace Battery</string>
+    <string name="action_replace">Replace</string>
     <string name="action_troubleshoot">Troubleshoot</string>
     <string name="info_connecting_to_sense">Connecting with Sense over Bluetooth…</string>
     <string name="error_no_bluetooth_connectivity">Bluetooth must be turned on to connect to Sense.</string>
@@ -358,6 +359,8 @@ so you can sleep better.</string>
     <string name="alert_message_missing_sense">Sense has not reported any data recently. Tap ‘Fix Now’ to troubleshoot.</string>
     <string name="alert_title_missing_pill">Sleep Pill</string>
     <string name="alert_message_missing_pill">Sleep Pill has not reported any data recently. Tap ‘Fix Now’ to troubleshoot.</string>
+    <string name="alert_title_low_battery">Low Battery</string>
+    <string name="alert_message_low_battery">The battery in your Sleep Pill is getting low. Replace it to continue tracking your sleep.</string>
 
     <string name="welcome_dialog_timeline_title_intro">Understanding your sleep</string>
     <string name="welcome_dialog_timeline_intro">Sense collects a significant amount of data about your sleep and the environment in your bedroom.\n\nWe take all this data and present it in a detailed but simple way — this quick walkthrough will show you how to read your first night of sleep data.</string>

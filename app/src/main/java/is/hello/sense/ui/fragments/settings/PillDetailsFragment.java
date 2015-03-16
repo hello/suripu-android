@@ -43,9 +43,15 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         addDeviceAction(R.string.action_replace_sleep_pill, true, this::unregisterDevice);
         addDeviceAction(R.string.action_replace_battery, true, this::replaceBattery);
 
-        if (device.isMissing()) {
+        if (device.getState() == Device.State.LOW_BATTERY) {
+            showTroubleshootingAlert(R.string.alert_message_low_battery,
+                                     R.string.action_replace_battery,
+                                     this::replaceBattery);
+        } else if (device.isMissing()) {
             String missingMessage = getString(R.string.error_sleep_pill_missing_fmt, device.getLastUpdatedDescription(getActivity()));
-            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.SLEEP_PILL_MISSING));
+            showTroubleshootingAlert(missingMessage,
+                                     R.string.action_troubleshoot,
+                                     () -> showSupportFor(UserSupport.DeviceIssue.SLEEP_PILL_MISSING));
         } else {
             hideAlert();
         }

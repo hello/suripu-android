@@ -64,6 +64,7 @@ public class Device extends ApiResponse {
         Device device = new Device();
         device.type = type;
         device.exists = false;
+        device.state = State.UNKNOWN;
         return device;
     }
 
