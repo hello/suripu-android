@@ -499,7 +499,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 timelineEventsHeader.setVisibility(View.VISIBLE);
                 shareButton.setVisibility(View.VISIBLE);
 
-                headerView.setBackground(headerTabsBackground);
+                if (!preferences.getUseModernTimeline()) {
+                    headerView.setBackground(headerTabsBackground);
+                }
                 headerModeSelector.setVisibility(View.VISIBLE);
 
                 showHandholdingIfAppropriate();

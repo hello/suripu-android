@@ -1,15 +1,21 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.List;
 
+import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.widget.TimelineBarView;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
 
 public class ModernTimelineAdapter extends AbstractTimelineAdapter {
@@ -17,8 +23,14 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
     private static final int TYPE_EVENT = 1;
     private static final int TYPE_COUNT = 2;
 
+    private final LayoutInflater inflater;
+    private final Resources resources;
+
     public ModernTimelineAdapter(@NonNull Context context, @NonNull DateFormatter dateFormatter) {
         super(context, dateFormatter);
+
+        this.inflater = LayoutInflater.from(context);
+        this.resources = context.getResources();
     }
 
 
@@ -64,12 +76,12 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
         View view = convertView;
         if (segment.hasEventInfo()) {
             if (view == null) {
-                view = new View(getContext());
+                view = inflater.inflate(R.layout.item_timeline_event, parent, false);
                 view.setTag(new EventViewHolder(view));
             }
 
             EventViewHolder holder = (EventViewHolder) view.getTag();
-            holder.bind(segment);
+            holder.bind(position, segment);
         } else {
             if (view == null) {
                 view = new TimelineBarView(getContext());
@@ -87,12 +99,37 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
     }
 
     class EventViewHolder {
-        EventViewHolder(@NonNull View view) {
+        final View itemView;
+        final ImageView image;
+        final TextView text;
+        final TextView date;
 
+        EventViewHolder(@NonNull View view) {
+            this.itemView = view;
+            this.image = (ImageView) view.findViewById(R.id.item_timeline_event_image);
+            this.text = (TextView) view.findViewById(R.id.item_timeline_event_text);
+            this.date = (TextView) view.findViewById(R.id.item_timeline_event_date);
         }
 
-        void bind(@NonNull TimelineSegment segment) {
+        void bind(int position, @NonNull TimelineSegment segment) {
+            image.setImageResource(Styles.getTimelineSegmentIconRes(segment));
+            image.setContentDescription(resources.getString(segment.getEventType().nameString));
+            text.setText(segment.getMessage());
 
+            String timestamp = dateFormatter.formatAsTime(segment.getShiftedTimestamp(), use24Time);
+            if (segment.isTimeAdjustable()) {
+                date.setText(resources.getString(R.string.timeline_event_adjust_time_fmt, timestamp));
+            } else {
+                date.setText(timestamp);
+            }
+
+            if (position == 0) {
+                itemView.setBackgroundResource(R.drawable.background_borders_bottom);
+            } else if (position == getCount() - 1) {
+                itemView.setBackgroundResource(R.drawable.background_borders_top);
+            } else {
+                itemView.setBackgroundResource(R.drawable.background_borders_top_bottom);
+            }
         }
     }
 
