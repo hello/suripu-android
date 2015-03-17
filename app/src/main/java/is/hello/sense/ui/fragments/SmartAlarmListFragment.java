@@ -138,12 +138,16 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
         activityIndicator.setVisibility(View.VISIBLE);
     }
 
-    public void finishLoading() {
+    public void finishLoading(boolean success) {
         activityIndicator.setVisibility(View.GONE);
 
         if (adapter.getCount() == 0) {
             emptyView.setVisibility(View.VISIBLE);
-            emptyPrompt.setVisibility(View.VISIBLE);
+            if (success) {
+                emptyPrompt.setVisibility(View.VISIBLE);
+            } else {
+                emptyPrompt.setVisibility(View.GONE);
+            }
         } else {
             emptyView.setVisibility(View.GONE);
             emptyPrompt.setVisibility(View.GONE);
@@ -160,7 +164,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
         emptyMessage.setText(R.string.message_smart_alarm_placeholder);
         emptyRetry.setVisibility(View.GONE);
 
-        finishLoading();
+        finishLoading(true);
     }
 
     public void alarmsUnavailable(Throwable e) {
@@ -179,11 +183,11 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
         }
         emptyRetry.setVisibility(View.VISIBLE);
 
-        finishLoading();
+        finishLoading(false);
     }
 
     public void presentError(Throwable e) {
-        finishLoading();
+        finishLoading(true);
 
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
             ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_day_overlap));
