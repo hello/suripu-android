@@ -11,9 +11,11 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
+
+import java.util.Date;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 
@@ -114,13 +116,14 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
 
         beginActivity();
         bindAndSubscribe(accountPresenter.updateTimeZone(SenseTimeZone.fromDateTimeZone(timeZone)),
-                         ignored -> {
-                             Logger.info(getClass().getSimpleName(), "Updated time zone");
-                             bindAndSubscribe(accountPresenter.saveAccount(account),
-                                              updatedAccount -> {},
-                                              this::presentError);
-                         },
-                         this::presentError);
+                ignored -> {
+                    Logger.info(getClass().getSimpleName(), "Updated time zone");
+                    bindAndSubscribe(accountPresenter.saveAccount(account),
+                            updatedAccount -> {
+                            },
+                            this::presentError);
+                },
+                this::presentError);
     }
 
 
@@ -128,7 +131,10 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         this.account = account;
 
         DateTimeZone timeZone = DateTimeZone.forOffsetMillis(account.getTimeZoneOffset());
-        headerDetail.setText(timeZone.getName(DateTimeUtils.currentTimeMillis()));
+        TimeZone displayTimeZone = timeZone.toTimeZone();
+        boolean inDST = displayTimeZone.inDaylightTime(new Date());
+        String timeZoneName = displayTimeZone.getDisplayName(inDST, TimeZone.LONG);
+        headerDetail.setText(timeZoneName);
 
         endActivity(true);
     }
