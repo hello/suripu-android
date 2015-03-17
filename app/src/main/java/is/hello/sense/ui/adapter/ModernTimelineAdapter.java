@@ -5,17 +5,20 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
-import is.hello.sense.ui.widget.TimelineBarView;
+import is.hello.sense.ui.widget.TimelineBarDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
 
@@ -27,6 +30,9 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
     private final LayoutInflater inflater;
     private final Resources resources;
 
+    private final Set<Integer> repeatedEventPositions = new HashSet<>();
+    private @Nullable TimelineSegment lastEventSegment;
+
     public ModernTimelineAdapter(@NonNull Context context, @NonNull DateFormatter dateFormatter) {
         super(context, dateFormatter);
 
@@ -36,6 +42,28 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
 
 
     //region Binding
+
+    @Override
+    protected void processSegment(int position, @NonNull TimelineSegment segment) {
+        super.processSegment(position, segment);
+
+        if (segment.hasEventInfo()) {
+            if (lastEventSegment != null &&
+                lastEventSegment.getEventType() == segment.getEventType() &&
+                TextUtils.equals(lastEventSegment.getMessage(), segment.getMessage())) {
+                repeatedEventPositions.add(position);
+            }
+
+            this.lastEventSegment = segment;
+        }
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+
+        repeatedEventPositions.clear();
+    }
 
     @Override
     public void bindSegments(@Nullable List<TimelineSegment> segments) {
@@ -85,18 +113,31 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
             holder.bind(position, segment);
         } else {
             if (view == null) {
-                view = new TimelineBarView(getContext());
+                view = new View(getContext());
+                view.setTag(new BarViewHolder(view));
             }
 
-            TimelineBarView barView = (TimelineBarView) view;
-            if (segment.isBeforeSleep()) {
-                barView.setEmpty();
-            } else {
-                barView.setSleepDepth(segment.getSleepDepth());
-            }
-            barView.setMinimumHeight((int) getItemHeight(position));
+            BarViewHolder holder = (BarViewHolder) view.getTag();
+            holder.bind(position, segment);
         }
         return view;
+    }
+
+    class BarViewHolder {
+        final View itemView;
+        final TimelineBarDrawable bar;
+
+        BarViewHolder(@NonNull View itemView) {
+            this.itemView = itemView;
+
+            this.bar = new TimelineBarDrawable(resources);
+            itemView.setBackground(bar);
+        }
+
+        void bind(int position, @NonNull TimelineSegment segment) {
+            bar.bind(segment);
+            itemView.setMinimumHeight((int) getItemHeight(position));
+        }
     }
 
     class EventViewHolder {
@@ -115,7 +156,6 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
         void bind(int position, @NonNull TimelineSegment segment) {
             image.setImageResource(Styles.getModernTimelineEventIconRes(segment));
             image.setContentDescription(resources.getString(segment.getEventType().nameString));
-            text.setText(segment.getMessage());
 
             date.setText(dateFormatter.formatAsTime(segment.getShiftedTimestamp(), use24Time));
             if (segment.isTimeAdjustable()) {
@@ -126,12 +166,21 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
                 date.setPaintFlags(date.getPaintFlags() & ~TextPaint.UNDERLINE_TEXT_FLAG);
             }
 
-            if (position == 0) {
-                itemView.setBackgroundResource(R.drawable.background_borders_bottom);
-            } else if (position == getCount() - 1) {
-                itemView.setBackgroundResource(R.drawable.background_borders_top);
+            if (repeatedEventPositions.contains(position)) {
+                TimelineBarDrawable bar = new TimelineBarDrawable(resources);
+                bar.bind(segment);
+                itemView.setBackground(bar);
+
+                text.setText(null);
             } else {
-                itemView.setBackgroundResource(R.drawable.background_borders_top_bottom);
+                if (position == 0) {
+                    itemView.setBackgroundResource(R.drawable.background_borders_bottom);
+                } else if (position == getCount() - 1) {
+                    itemView.setBackgroundResource(R.drawable.background_borders_top);
+                } else {
+                    itemView.setBackgroundResource(R.drawable.background_borders_top_bottom);
+                }
+                text.setText(segment.getMessage());
             }
         }
     }
