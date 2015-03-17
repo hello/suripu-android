@@ -82,7 +82,7 @@
     <dimen name="timeline_segment_event_image_shadow">3dp</dimen>
 
     <dimen name="timeline_bar_inset">64dp</dimen>
-    <dimen name="timeline_event_item_min_height">64dp</dimen>
+    <dimen name="timeline_event_item_min_height">58dp</dimen>
     <dimen name="timeline_event_item_image_width">64dp</dimen>
 
     <dimen name="timeline_header_min_height">282dp</dimen>
