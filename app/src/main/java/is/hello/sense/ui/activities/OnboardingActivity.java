@@ -192,6 +192,12 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         getFragmentManager().executePendingTransactions();
     }
 
+    @Override
+    public void popFragment(@NonNull Fragment fragment,
+                            boolean immediate) {
+        throw new AbstractMethodError("not implemented by " + getClass().getSimpleName());
+    }
+
     @Nullable
     @Override
     public Fragment getTopFragment() {

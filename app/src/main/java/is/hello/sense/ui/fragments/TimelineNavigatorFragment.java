@@ -79,7 +79,6 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
         recyclerView.setOnScrollListener(timelineScrollListener);
 
         this.layoutManager = new TimelineNavigatorLayoutManager(getActivity());
-        layoutManager.setOnPostLayout(timelineScrollListener::transformChildren);
         recyclerView.setLayoutManager(layoutManager);
 
         TimelineNavigatorAdapter adapter = new TimelineNavigatorAdapter(getActivity(), presenter);
@@ -89,7 +88,25 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
         Button todayButton = (Button) view.findViewById(R.id.fragment_timeline_navigator_today);
         todayButton.setOnClickListener(this::jumpToToday);
 
-        recyclerView.scrollToPosition(presenter.getDateTimePosition(startDate));
+        Runnable transform = timelineScrollListener::transformChildren;
+        int position = presenter.getDateTimePosition(startDate);
+        if (position == 0) {
+            // The second item from the right at the beginning of the
+            // navigator is a special case. Because the item is already
+            // visible without scrolling, the layout manager will try to
+            // take a shortcut and not scroll at all. So we have to give
+            // a specific offset if we want it to be centered. Of course,
+            // we can only get the offset after layout.
+
+            layoutManager.setOnPostLayout(() -> {
+                layoutManager.setOnPostLayout(transform);
+                layoutManager.scrollToPositionWithOffset(position, -layoutManager.getItemWidth());
+                recyclerView.postDelayed(transform, 100); // delay = post-layout
+            });
+        } else {
+            layoutManager.setOnPostLayout(transform);
+            layoutManager.scrollToPosition(position);
+        }
 
         return view;
     }
