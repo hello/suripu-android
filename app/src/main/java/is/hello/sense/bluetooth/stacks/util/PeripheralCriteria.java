@@ -46,6 +46,12 @@ public final class PeripheralCriteria {
     public long duration = DEFAULT_DURATION_MS;
 
     /**
+     * Whether or not to perform a high power scan before performing a low energy scan.
+     * Required for some devices to be able to detect advertising data.
+     */
+    public boolean wantsHighPowerPreScan;
+
+    /**
      * Returns a configured criteria that will search for one instance of a given address.
      */
     public static @NonNull PeripheralCriteria forAddress(@NonNull String address) {
@@ -119,6 +125,21 @@ public final class PeripheralCriteria {
     public PeripheralCriteria setDuration(long duration) {
         this.duration = duration;
         return this;
+    }
+
+    /**
+     * Sets whether or not to perform a high power scan before
+     * performing a lower power discovery.
+     * <p/>
+     * A high power scan is required by some phones to properly
+     * detect BLE advertising data. However, high power scans
+     * are both slow and power intensive, so they should not
+     * be used without the user requesting it.
+     * <p/>
+     * Defaults to <code>false</code>.
+     */
+    public void setWantsHighPowerPreScan(boolean wantsHighPowerPreScan) {
+        this.wantsHighPowerPreScan = wantsHighPowerPreScan;
     }
 
     //endregion

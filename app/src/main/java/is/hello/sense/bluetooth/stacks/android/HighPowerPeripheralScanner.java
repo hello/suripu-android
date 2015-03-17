@@ -29,6 +29,8 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
     private @Nullable final List<BluetoothDevice> devices;
     private @Nullable Subscriber<? super List<BluetoothDevice>> subscriber;
 
+    private boolean registered = false;
+
     //region Lifecycle
 
     HighPowerPeripheralScanner(@NonNull Context context,
@@ -64,7 +66,7 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
         switch (intent.getAction()) {
             case BluetoothDevice.ACTION_FOUND: {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                int rssi = intent.getIntExtra(BluetoothDevice.EXTRA_RSSI, 0);
+                short rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, (short) 0);
                 ParcelUuid uuid = intent.getParcelableExtra(BluetoothDevice.EXTRA_UUID);
                 String name = intent.getStringExtra(BluetoothDevice.EXTRA_NAME);
                 onDeviceFound(device, rssi, uuid, name);
@@ -89,7 +91,7 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
     }
 
     private void onDeviceFound(@NonNull BluetoothDevice device,
-                               int rssi,
+                               short rssi,
                                @Nullable ParcelUuid uuid,
                                @Nullable String name) {
         Logger.info(BluetoothStack.LOG_TAG, "high power scan found {" + device + " rssi: " + rssi + ", uuid: " + uuid + ", name: " + name + "}");
@@ -121,6 +123,7 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
         intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         context.registerReceiver(this, intentFilter);
+        this.registered = true;
 
         if (!adapter.isDiscovering() && !adapter.startDiscovery()) {
             Logger.error(BluetoothStack.LOG_TAG, "Could not start discovery");
@@ -133,6 +136,10 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
     }
 
     void stopDiscovery() {
+        if (!registered) {
+            return;
+        }
+
         Logger.info(BluetoothStack.LOG_TAG, "stop high power scan");
 
         if (adapter.isDiscovering() && !adapter.cancelDiscovery()) {
@@ -145,6 +152,7 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
         }
 
         context.unregisterReceiver(this);
+        this.registered = false;
 
         if (subscriber != null && !subscriber.isUnsubscribed()) {
             if (devices != null) {
