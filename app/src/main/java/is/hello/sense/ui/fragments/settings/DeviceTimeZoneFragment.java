@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -24,9 +25,12 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.adapter.TimeZoneAdapter;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.ListViews;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Logger;
 
 public class DeviceTimeZoneFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
@@ -68,6 +72,10 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         headerDetail.setText(R.string.missing_data_placeholder);
 
         ListViews.addHeaderView(listView, header, null, false);
+
+        View headerDivider = Styles.createHorizontalDivider(getActivity(), ViewGroup.LayoutParams.MATCH_PARENT);
+        headerDivider.setLayoutParams(new AbsListView.LayoutParams(headerDivider.getLayoutParams()));
+        ListViews.addHeaderView(listView, headerDivider, null, false);
 
         TimeZoneAdapter adapter = new TimeZoneAdapter(getActivity());
         listView.setAdapter(adapter);
@@ -114,16 +122,20 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         int offset = timeZone.getOffset(Instant.now());
         account.setTimeZoneOffset(offset);
 
-        beginActivity();
+        LoadingDialogFragment.show(getFragmentManager(), null, true);
         bindAndSubscribe(accountPresenter.updateTimeZone(SenseTimeZone.fromDateTimeZone(timeZone)),
-                ignored -> {
-                    Logger.info(getClass().getSimpleName(), "Updated time zone");
-                    bindAndSubscribe(accountPresenter.saveAccount(account),
-                            updatedAccount -> {
-                            },
-                            this::presentError);
-                },
-                this::presentError);
+                         ignored -> {
+                             Logger.info(getClass().getSimpleName(), "Updated time zone");
+                             bindAndSubscribe(accountPresenter.saveAccount(account),
+                                              updatedAccount -> {
+                                                  LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
+                                                      FragmentNavigation navigation = (FragmentNavigation) getActivity();
+                                                      navigation.popFragment(this, true);
+                                                  });
+                                              },
+                                              this::presentError);
+                         },
+                         this::presentError);
     }
 
 
@@ -141,6 +153,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
 
     public void presentError(Throwable e) {
         endActivity(false);
+        LoadingDialogFragment.close(getFragmentManager());
         ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 }

@@ -118,6 +118,16 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
     }
 
     @Override
+    public void popFragment(@NonNull Fragment fragment, boolean immediate) {
+        String tag = fragment.getClass().getSimpleName();
+        if (immediate) {
+            getFragmentManager().popBackStackImmediate(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } else {
+            getFragmentManager().popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+    }
+
+    @Override
     public void onBackStackChanged() {
         if (getWantsTitleUpdates()) {
             int entryCount = getFragmentManager().getBackStackEntryCount();

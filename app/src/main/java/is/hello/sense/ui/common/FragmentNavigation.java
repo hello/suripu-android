@@ -9,6 +9,9 @@ public interface FragmentNavigation {
                       @Nullable String title,
                       boolean wantsBackStackEntry);
 
+    void popFragment(@NonNull Fragment fragment,
+                     boolean immediate);
+
     @Nullable Fragment getTopFragment();
 
     interface BackInterceptingFragment {
