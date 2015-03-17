@@ -559,40 +559,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     //region Event Details
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        TimelineSegment segment = (TimelineSegment) adapterView.getItemAtPosition(position);
-        if (segment.hasEventInfo()) {
-            Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
-
-            if (preferences.getUseModernTimeline()) {
-                if (segment.isTimeAdjustable()) {
-                    TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment, true);
-                    dialogFragment.setTargetFragment(this, 0x00);
-                    dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
-                }
-            } else {
-                TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment, false);
-                dialogFragment.setTargetFragment(this, 0x00);
-                dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
-            }
-        }
-
-        Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+    private void closePopUp() {
         if (timelinePopup != null) {
             timelinePopup.dismiss();
             this.timelinePopup = null;
         }
+    }
 
-        TimelineSegment segment = (TimelineSegment) parent.getItemAtPosition(position);
-        if (segment == null) {
-            return false;
-        }
-
+    private PopupWindow showPopUp(@NonNull ViewGroup parent, @NonNull View view, @NonNull TimelineSegment segment) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         TextView contents = (TextView) inflater.inflate(R.layout.tooltip_timeline_overlay, parent, false);
         contents.setBackground(new TimelineTooltipDrawable(getResources()));
@@ -633,11 +607,52 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         int parentHeight = parent.getMeasuredHeight();
         int bottomInset = parentHeight - view.getTop() + navigationBarHeight;
         timelinePopup.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, bottomInset);
+
+        return timelinePopup;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        TimelineSegment segment = (TimelineSegment) parent.getItemAtPosition(position);
+        if (preferences.getUseModernTimeline()) {
+            if (segment.isTimeAdjustable()) {
+                Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
+
+                TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment, true);
+                dialogFragment.setTargetFragment(this, 0x00);
+                dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
+            } else {
+                Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
+                
+                PopupWindow popUp = showPopUp(parent, view, segment);
+                parent.postDelayed(popUp::dismiss, 1000);
+            }
+        } else {
+            if (segment.hasEventInfo()) {
+                Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
+
+                TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment, false);
+                dialogFragment.setTargetFragment(this, 0x00);
+                dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
+            }
+        }
+
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        closePopUp();
+
+        TimelineSegment segment = (TimelineSegment) parent.getItemAtPosition(position);
+        if (segment == null) {
+            return false;
+        }
+
+        PopupWindow popUp = showPopUp(parent, view, segment);
         parent.setOnTouchListener((ignored, event) -> {
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                if (timelinePopup != null) {
-                    contents.postDelayed(timelinePopup::dismiss, 1000);
-                }
+                parent.postDelayed(popUp::dismiss, 1000);
                 parent.setOnTouchListener(null);
             }
             return false;
