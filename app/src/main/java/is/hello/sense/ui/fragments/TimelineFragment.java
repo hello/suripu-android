@@ -859,11 +859,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             if (time == null) {
                 return getString(R.string.missing_data_placeholder);
             } else {
-                float hours = time / 60f;
-                if ((time % 60) == 0) {
-                    return String.format("%.0fh", hours);
+                if (time < 60) {
+                    return getString(R.string.duration_minutes_fmt, time);
                 } else {
-                    return String.format("%.1fh", hours);
+                    float hours = time / 60f;
+                    if ((time % 60) == 0) {
+                        return getString(R.string.duration_hours_whole_fmt, hours);
+                    } else {
+                        return getString(R.string.duration_hours_fraction_fmt, hours);
+                    }
                 }
             }
         }
