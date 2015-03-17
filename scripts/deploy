@@ -95,6 +95,12 @@ flavor_names.each do |flavor_name|
       abort "!! Flavor '#{flavor_name}' requires branch '#{required_branch}'".red.bold
     end
   end
+  
+  if flavor["block_main_branches"]
+    if current_branch == "develop" || current_branch == "master"
+      abort "!! Flavor '#{flavor_name}' cannot be deployed from main branch".red.bold
+    end
+  end
 
   #region Assembling
 
