@@ -115,7 +115,7 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
 
     //endregion
 
-    void startDiscovery() {
+    public void startDiscovery() {
         Logger.info(BluetoothStack.LOG_TAG, "start high power scan");
 
         IntentFilter intentFilter = new IntentFilter();
@@ -135,7 +135,7 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
         }
     }
 
-    void stopDiscovery() {
+    public void stopDiscovery() {
         if (!registered) {
             return;
         }

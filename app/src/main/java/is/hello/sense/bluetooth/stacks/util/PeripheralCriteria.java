@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import is.hello.sense.bluetooth.stacks.android.DeviceSupport;
 import rx.functions.Func1;
 
 /**
@@ -18,7 +19,7 @@ public final class PeripheralCriteria {
     /**
      * The default timeout duration.
      */
-    public static final int DEFAULT_DURATION_MS = 10000;
+    public static final int DEFAULT_DURATION_MS = 15000;
 
     /**
      * Device addresses to match against.
@@ -49,7 +50,7 @@ public final class PeripheralCriteria {
      * Whether or not to perform a high power scan before performing a low energy scan.
      * Required for some devices to be able to detect advertising data.
      */
-    public boolean wantsHighPowerPreScan;
+    public boolean wantsHighPowerPreScan = DeviceSupport.getAlwaysNeedsHighPowerPreScan();
 
     /**
      * Returns a configured criteria that will search for one instance of a given address.
