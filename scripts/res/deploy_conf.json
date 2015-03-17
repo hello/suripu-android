@@ -22,7 +22,7 @@
         "apk_name": "app-beta",
         "assemble_command": "assembleBeta",
         "hockey_app_id": "7473e43cfbb717125f660002969bd448",
-		"block_main_branches": "true"
+		"block_main_branches": true
 	},
     "synonyms": {
         "debug": "alpha",
