@@ -2,6 +2,7 @@ package is.hello.sense.ui.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
@@ -63,6 +64,7 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
         super.clear();
 
         repeatedEventPositions.clear();
+        this.lastEventSegment = null;
     }
 
     @Override
@@ -153,6 +155,15 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
             this.date = (TextView) view.findViewById(R.id.item_timeline_event_date);
         }
 
+        TimelineBarDrawable getBarDrawable() {
+            Drawable background = itemView.getBackground();
+            if (background instanceof TimelineBarDrawable) {
+                return (TimelineBarDrawable) background;
+            } else {
+                return new TimelineBarDrawable(resources);
+            }
+        }
+
         void bind(int position, @NonNull TimelineSegment segment) {
             image.setImageResource(Styles.getModernTimelineEventIconRes(segment));
             image.setContentDescription(resources.getString(segment.getEventType().nameString));
@@ -167,9 +178,12 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
             }
 
             if (repeatedEventPositions.contains(position)) {
-                TimelineBarDrawable bar = new TimelineBarDrawable(resources);
-                bar.bind(segment);
-                itemView.setBackground(bar);
+                TimelineBarDrawable barDrawable = getBarDrawable();
+                barDrawable.bind(segment);
+                itemView.setBackground(barDrawable);
+
+                image.setScaleX(0.8f);
+                image.setScaleY(0.8f);
 
                 text.setText(null);
             } else {
@@ -180,6 +194,10 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
                 } else {
                     itemView.setBackgroundResource(R.drawable.background_borders_top_bottom);
                 }
+
+                image.setScaleX(1f);
+                image.setScaleY(1f);
+
                 text.setText(segment.getMessage());
             }
         }
