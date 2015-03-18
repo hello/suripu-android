@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import is.hello.sense.bluetooth.stacks.android.DeviceSupport;
 import rx.functions.Func1;
 
 /**
@@ -44,6 +45,14 @@ public final class PeripheralCriteria {
      * The maximum amount of time that can pass before the scan is ended.
      */
     public long duration = DEFAULT_DURATION_MS;
+
+    /**
+     * Whether or not to perform a high power scan before performing a low energy scan.
+     * Required for some devices to be able to detect advertising data.
+     *
+     * @see is.hello.sense.bluetooth.stacks.android.DeviceSupport#isHighPowerPreScanNeeded()
+     */
+    public boolean wantsHighPowerPreScan = DeviceSupport.isHighPowerPreScanNeeded();
 
     /**
      * Returns a configured criteria that will search for one instance of a given address.
@@ -119,6 +128,21 @@ public final class PeripheralCriteria {
     public PeripheralCriteria setDuration(long duration) {
         this.duration = duration;
         return this;
+    }
+
+    /**
+     * Sets whether or not to perform a high power scan before
+     * performing a lower power discovery.
+     * <p/>
+     * A high power scan is required by some phones to properly
+     * detect BLE advertising data. However, high power scans
+     * are both slow and power intensive, so they should not
+     * be used without the user requesting it.
+     *
+     * @see is.hello.sense.bluetooth.stacks.android.DeviceSupport#isHighPowerPreScanNeeded()
+     */
+    public void setWantsHighPowerPreScan(boolean wantsHighPowerPreScan) {
+        this.wantsHighPowerPreScan = wantsHighPowerPreScan;
     }
 
     //endregion

@@ -205,6 +205,8 @@ so you can sleep better.</string>
     <string name="action_help">Help</string>
     <string name="dialog_title_troubleshoot_sense">Sense Not Found</string>
     <string name="dialog_message_troubleshoot_sense">We could not connect to your Sense. Please make sure your Sense is plugged in, nearby, and in Pairing Mode.</string>
+    <string name="dialog_title_high_power_rescan">Sense Not Found</string>
+    <string name="dialog_message_high_power_rescan">We could not connect to your Sense. A high-power scan can sometimes resolve Sense discovery issues, but will take a bit longer, and may temporarily disrupt other Bluetooth services. Would you like to try a high-power scan?</string>
     <string name="info_onboarding_partner_info">To connect a second Sleep Pill, Sense needs to be put into Pairing Mode.\n\nPlace your hand on top of Sense for seven seconds, and then remove it.\n\nSense will glow purple when it is in Pairing Mode.</string>
     <string name="title_onboarding_partner_info">Add a second Sleep Pill</string>
     <string name="sec_type_wpa2">WPA2</string>

@@ -65,7 +65,7 @@ public class SensePeripheralTests extends InjectionTestCase {
         device.setAdvertisingData(advertisingData);
         stackBehavior.addPeripheralInRange(device);
 
-        Sync.wrap(SensePeripheral.rediscover(stack, TEST_DEVICE_ID))
+        Sync.wrap(SensePeripheral.rediscover(stack, TEST_DEVICE_ID, false))
             .assertTrue(p -> "Sense-Test".equals(p.getName()));
     }
 

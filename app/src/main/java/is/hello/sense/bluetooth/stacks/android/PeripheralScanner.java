@@ -20,6 +20,7 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>>, BluetoothAdapter.LeScanCallback {
     private final @NonNull AndroidBluetoothStack stack;
@@ -28,6 +29,7 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
 
     private @Nullable Subscriber<? super List<Peripheral>> subscriber;
     private @Nullable Subscription timeout;
+    private boolean scanning = false;
 
     PeripheralScanner(@NonNull AndroidBluetoothStack stack, @NonNull PeripheralCriteria peripheralCriteria) {
         this.stack = stack;
@@ -40,7 +42,10 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
         Logger.info(BluetoothStack.LOG_TAG, "Beginning Scan");
 
         this.subscriber = subscriber;
+        Subscription unsubscribe = Subscriptions.create(this::onConcludeScan);
+        subscriber.add(unsubscribe);
 
+        this.scanning = true;
         stack.getAdapter().startLeScan(this);
         this.timeout = stack.scheduler
                                    .createWorker()
@@ -69,6 +74,11 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
     }
 
     public void onConcludeScan() {
+        if (!scanning) {
+            return;
+        }
+
+        this.scanning = false;
         stack.getAdapter().stopLeScan(this);
 
         if (timeout != null) {

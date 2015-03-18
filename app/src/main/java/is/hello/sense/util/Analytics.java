@@ -69,6 +69,12 @@ public class Analytics {
          * When the user opens the app
          */
         String APP_LAUNCHED = "App Launched";
+
+
+        /**
+         * When the user agrees to using high power scans.
+         */
+        String EVENT_TURN_ON_HIGH_POWER = "High power mode enabled";
     }
 
     public interface Onboarding {

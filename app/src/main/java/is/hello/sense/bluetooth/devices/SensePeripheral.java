@@ -60,9 +60,11 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     }
 
     public static Observable<SensePeripheral> rediscover(@NonNull BluetoothStack bluetoothStack,
-                                                         @NonNull String deviceId) {
+                                                         @NonNull String deviceId,
+                                                         boolean includeHighPowerPreScan) {
         PeripheralCriteria criteria = new PeripheralCriteria();
         criteria.setLimit(1);
+        criteria.setWantsHighPowerPreScan(includeHighPowerPreScan);
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
         criteria.addStartsWithPredicate(AdvertisingData.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId);
         return discover(bluetoothStack, criteria).flatMap(ds -> {

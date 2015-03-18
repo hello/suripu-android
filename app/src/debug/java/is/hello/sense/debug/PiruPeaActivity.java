@@ -145,8 +145,20 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         disconnect();
         scannedPeripheralsAdapter.clear();
 
+        SenseAlertDialog includeHighPower = new SenseAlertDialog(this);
+        includeHighPower.setTitle("High Power Pre-scan");
+        includeHighPower.setMessage("Do you want to include a high power pre-scan? This will add 12 seconds scan time, and disrupt all other Bluetooth services on your phone.");
+        includeHighPower.setPositiveButton("No", (dialog, which) -> startScan(false));
+        includeHighPower.setNegativeButton("Include", (dialog, which) -> startScan(true));
+        includeHighPower.show();
+    }
+
+    public void startScan(boolean includeHighPowerPreScan) {
+        PeripheralCriteria criteria = new PeripheralCriteria();
+        criteria.setWantsHighPowerPreScan(includeHighPowerPreScan);
+
         showLoadingIndicator();
-        bindAndSubscribe(SensePeripheral.discover(stack, new PeripheralCriteria()),
+        bindAndSubscribe(SensePeripheral.discover(stack, criteria),
                          peripherals -> {
                              scannedPeripheralsAdapter.addAll(peripherals);
                              hideLoadingIndicator();
