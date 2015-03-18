@@ -1,11 +1,12 @@
 package is.hello.sense.ui.activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Menu;
@@ -14,17 +15,33 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.util.Share;
+
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class HelpActivity extends SenseActivity {
     public static final String EXTRA_URL = HelpActivity.class.getName() + ".EXTRA_URL";
 
+    private static final int MSG_SHOW_PROGRESS = 0;
+    private static final int SHOW_PROGRESS_DELAY_MS = 2500;
+
     private WebView webView;
-    private ProgressBar progress;
+    private View progress;
+
+    private final Handler progressHandler = new Handler(msg -> {
+        if (msg.what == MSG_SHOW_PROGRESS) {
+            animate(progress)
+                    .setDuration(Animation.DURATION_VERY_FAST)
+                    .fadeIn()
+                    .start();
+            progress.setVisibility(View.VISIBLE);
+        }
+        return true;
+    });
 
     //region Creation
 
@@ -34,7 +51,7 @@ public class HelpActivity extends SenseActivity {
         return arguments;
     }
 
-    public static Intent getIntent(@NonNull Activity from, @NonNull Uri uri) {
+    public static Intent getIntent(@NonNull Context from, @NonNull Uri uri) {
         Intent intent = new Intent(from, HelpActivity.class);
         intent.putExtras(getArguments(uri));
         return intent;
@@ -52,7 +69,7 @@ public class HelpActivity extends SenseActivity {
         setContentView(R.layout.activity_help);
 
         this.webView = (WebView) findViewById(R.id.activity_help_web_view);
-        this.progress = (ProgressBar) findViewById(R.id.activity_help_progress);
+        this.progress = findViewById(R.id.activity_help_progress);
 
         webView.setWebViewClient(new Client());
 
@@ -115,6 +132,11 @@ public class HelpActivity extends SenseActivity {
                 return true;
             }
 
+            case R.id.help_refresh: {
+                webView.reload();
+                return true;
+            }
+
             case R.id.help_contact: {
                 UserSupport.showSupport(this);
                 return true;
@@ -122,6 +144,11 @@ public class HelpActivity extends SenseActivity {
 
             case R.id.help_feedback: {
                 UserSupport.showEmailFeedback(this);
+                return true;
+            }
+
+            case android.R.id.home: {
+                super.onBackPressed();
                 return true;
             }
 
@@ -139,23 +166,36 @@ public class HelpActivity extends SenseActivity {
         getActionBar().setSubtitle(title);
     }
 
+    private void scheduleShowProgress() {
+        progressHandler.removeMessages(MSG_SHOW_PROGRESS);
+        progressHandler.sendEmptyMessageDelayed(MSG_SHOW_PROGRESS, SHOW_PROGRESS_DELAY_MS);
+    }
+
+    private void hideProgress() {
+        progressHandler.removeMessages(MSG_SHOW_PROGRESS);
+        animate(progress)
+                .setDuration(Animation.DURATION_VERY_FAST)
+                .fadeOut(View.GONE)
+                .start();
+    }
+
     private class Client extends WebViewClient {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            progress.setVisibility(View.VISIBLE);
-            setPageTitle(null);
+            scheduleShowProgress();
+            setPageTitle(getString(R.string.dialog_loading_message));
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            progress.setVisibility(View.GONE);
+            hideProgress();
             setPageTitle(view.getTitle());
         }
 
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            hideProgress();
             setPageTitle(getString(R.string.dialog_error_title));
-            progress.setVisibility(View.GONE);
         }
     }
 }

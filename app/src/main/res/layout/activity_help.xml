@@ -8,11 +8,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <is.hello.sense.ui.widget.TintedProgressBar
+    <FrameLayout
         android:id="@+id/activity_help_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        style="@android:style/Widget.Holo.Light.ProgressBar"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_light_overlay"
+        android:visibility="gone">
+
+        <is.hello.sense.ui.widget.TintedProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            style="@android:style/Widget.Holo.Light.ProgressBar"/>
+
+    </FrameLayout>
 
 </FrameLayout>
