@@ -94,6 +94,10 @@
             android:parentActivityName=".ui.activities.HomeActivity" />
 
         <activity
+            android:name=".ui.activities.HelpActivity"
+            android:label="@string/action_help"/>
+
+        <activity
             android:name="com.mixpanel.android.surveys.SurveyActivity" />
 
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />

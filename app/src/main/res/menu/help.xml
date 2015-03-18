@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/help_share"
+        android:icon="@drawable/icon_share_enabled"
+        android:title="@string/action_share"
+        android:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/help_contact"
+        android:title="@string/label_email"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/help_feedback"
+        android:title="@string/action_feedback"
+        android:showAsAction="never" />
+
+</menu>
