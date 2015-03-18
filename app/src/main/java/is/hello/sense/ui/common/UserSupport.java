@@ -14,6 +14,7 @@ import java.io.File;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Enums;
+import is.hello.sense.ui.activities.SupportActivity;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SessionLogger;
@@ -41,7 +42,8 @@ public class UserSupport {
     public static void showSupport(@NonNull Context from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_HELP, null);
 
-        openUri(from, Uri.fromParts("http", BuildConfig.SUPPORT_AUTHORITY, null));
+        Uri supportUrl = Uri.fromParts("http", BuildConfig.SUPPORT_AUTHORITY, null);
+        from.startActivity(SupportActivity.getIntent(from, supportUrl));
     }
 
     public static void showEmailSupport(@NonNull Activity from) {
@@ -70,12 +72,12 @@ public class UserSupport {
 
     public static void showForOnboardingStep(@NonNull Context from, @NonNull OnboardingStep onboardingStep) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP, onboardingStep.toProperty()));
-        openUri(from, onboardingStep.getUri());
+        from.startActivity(SupportActivity.getIntent(from, onboardingStep.getUri()));
     }
 
     public static void showForDeviceIssue(@NonNull Context from, @NonNull DeviceIssue issue) {
         Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE, issue.toProperty()));
-        openUri(from, issue.getUri());
+        from.startActivity(SupportActivity.getIntent(from, issue.getUri()));
     }
 
     public static void showEnhancedAudio(@NonNull Context from) {
@@ -87,7 +89,7 @@ public class UserSupport {
                 .appendPath("app")
                 .appendPath("enhanced-audio")
                 .build();
-        openUri(from, issueUri);
+        from.startActivity(SupportActivity.getIntent(from, issueUri));
     }
 
     public static void showReplaceBattery(@NonNull Context from) {
@@ -99,7 +101,7 @@ public class UserSupport {
                 .appendPath("sleep-pill")
                 .appendPath("battery-change")
                 .build();
-        openUri(from, issueUri);
+        from.startActivity(SupportActivity.getIntent(from, issueUri));
     }
 
 
