@@ -136,7 +136,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         if (version == VERSION_UNKNOWN) {
             return VERSION_PVT;
         } else {
-            return VERSION_WEP_FIX;
+            return version;
         }
     }
 
