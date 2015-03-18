@@ -79,7 +79,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     private final PacketDataHandler<MorpheusCommand> dataHandler;
     private final PacketHandler packetHandler;
 
-    private @Version int firmwareVersion = VERSION_UNKNOWN;
+    private @Version int version = VERSION_UNKNOWN;
 
     public static Observable<List<SensePeripheral>> discover(@NonNull BluetoothStack bluetoothStack,
                                                              @NonNull PeripheralCriteria criteria) {
@@ -129,11 +129,11 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     private void setFirmwareVersion(int firmwareVersion) {
         Logger.info(Peripheral.LOG_TAG, "Sense firmware version is " + firmwareVersion);
-        this.firmwareVersion = firmwareVersion;
+        this.version = firmwareVersion;
     }
 
     private int getCommandVersion() {
-        if (firmwareVersion == VERSION_UNKNOWN) {
+        if (version == VERSION_UNKNOWN) {
             return VERSION_PVT;
         } else {
             return VERSION_WEP_FIX;
@@ -144,7 +144,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
      * Returns the client-consumable firmware version of the peripheral, if known.
      */
     public @Version int getFirmwareVersion() {
-        return firmwareVersion;
+        return version;
     }
 
     //endregion
@@ -359,13 +359,14 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
             return Observable.error(new PeripheralSetWifiError(PeripheralSetWifiError.Reason.EMPTY_PASSWORD));
         }
 
+        int version = getCommandVersion();
         MorpheusCommand.Builder builder = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
-                .setVersion(getCommandVersion())
+                .setVersion(version)
                 .setWifiName(bssid)
                 .setWifiSSID(ssid)
                 .setSecurityType(securityType);
-        if (securityType == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
+        if (version == VERSION_PVT && securityType == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
             byte[] keyBytes = Bytes.tryFromString(password);
             if (keyBytes == null) {
                 return Observable.error(new PeripheralSetWifiError(PeripheralSetWifiError.Reason.MALFORMED_BYTES));
