@@ -181,10 +181,12 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
                 ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_network_failure_pair_pill));
                 dialogFragment.setErrorOperation("Pair Pill");
+                dialogFragment.setShowSupportLink(true);
                 dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.DEVICE_ALREADY_PAIRED)) {
                 ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_pill_already_paired));
                 dialogFragment.setErrorOperation("Pair Pill");
+                dialogFragment.setShowSupportLink(true);
                 dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
             } else {
                 ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);

@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.settings;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -30,6 +31,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -38,12 +40,15 @@ import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseComman
 
 public class SenseDetailsFragment extends DeviceDetailsFragment implements FragmentNavigationActivity.BackInterceptingFragment {
     private static final int WIFI_REQUEST_CODE = 0x94;
+    private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
 
     @Inject DevicesPresenter devicesPresenter;
     @Inject PreferencesPresenter preferences;
 
     private BluetoothAdapter bluetoothAdapter;
     private boolean didEnableBluetooth = false;
+
+    private int discoveryMissCount = 0;
 
     private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
         @Override
@@ -128,6 +133,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                 hideAlert();
                 checkConnectivityState();
             }
+        } else if (requestCode == REQUEST_CODE_HIGH_POWER_RETRY && resultCode == Activity.RESULT_OK) {
+            hardwarePresenter.setWantsHighPowerPreScan(true);
+            connectToPeripheral();
         }
     }
 
@@ -234,7 +242,15 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         hideAlert();
         hideAllActivityForFailure(() -> {
             if (e instanceof PeripheralNotFoundError) {
+                hardwarePresenter.trackPeripheralNotFound();
+
                 showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE));
+
+                if (hardwarePresenter.shouldPromptForHighPowerScan()) {
+                    PromptForHighPowerDialogFragment dialogFragment = new PromptForHighPowerDialogFragment();
+                    dialogFragment.setTargetFragment(this, REQUEST_CODE_HIGH_POWER_RETRY);
+                    dialogFragment.show(getFragmentManager(), PromptForHighPowerDialogFragment.TAG);
+                }
 
                 Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null, "Sense Details");
             } else {

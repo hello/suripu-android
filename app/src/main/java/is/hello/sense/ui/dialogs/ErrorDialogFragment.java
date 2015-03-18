@@ -10,8 +10,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.Layout;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.AlignmentSpan;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
@@ -29,10 +32,11 @@ import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.errors.PeripheralBusyError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
-import is.hello.sense.bluetooth.errors.PeripheralSetWifiError;
 import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
+import is.hello.sense.bluetooth.errors.PeripheralSetWifiError;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
 public class ErrorDialogFragment extends DialogFragment {
@@ -43,6 +47,7 @@ public class ErrorDialogFragment extends DialogFragment {
     private static final String ARG_ERROR_OPERATION = ErrorDialogFragment.class.getName() + ".ARG_ERROR_OPERATION";
     private static final String ARG_MESSAGE = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE";
     private static final String ARG_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE_RES";
+    private static final String ARG_SHOW_SUPPORT_LINK = ErrorDialogFragment.class.getName() + ".ARG_SHOW_SUPPORT_LINK";
     private static final String ARG_SHOW_BLE_SUPPORT = ErrorDialogFragment.class.getName() + ".ARG_SHOW_BLE_SUPPORT";
     private static final String ARG_FATAL_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_FATAL_MESSAGE_RES";
     private static final String ARG_ACTION_INTENT = ErrorDialogFragment.class.getName() + ".ARG_ACTION_INTENT";
@@ -191,6 +196,7 @@ public class ErrorDialogFragment extends DialogFragment {
         }
         dialogFragment.setErrorType(e.getClass().getCanonicalName());
         dialogFragment.setErrorContext(errorContext);
+        dialogFragment.setShowSupportLink(true);
         dialogFragment.show(fm, TAG);
 
         return dialogFragment;
@@ -284,6 +290,13 @@ public class ErrorDialogFragment extends DialogFragment {
             dialog.setMessage(R.string.dialog_error_generic_message);
         }
 
+        if (showSupportLink()) {
+            SpannableStringBuilder footer = Styles.resolveSupportLinks(getActivity(), getText(R.string.error_addendum_support));
+            footer.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, footer.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            footer.insert(0, dialog.getMessage());
+            dialog.setMessage(footer);
+        }
+
         if (getTargetFragment() != null) {
             dialog.setNegativeButton(R.string.action_retry, (button, which) -> getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null));
         }
@@ -297,7 +310,7 @@ public class ErrorDialogFragment extends DialogFragment {
                 startActivity(intent);
             });
         } else if (getShowBluetoothSupport()) {
-            dialog.setNegativeButton(R.string.action_support, (button, which) -> {
+            dialog.setNegativeButton(R.string.action_more_info, (button, which) -> {
                 UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH);
             });
         }
@@ -337,6 +350,8 @@ public class ErrorDialogFragment extends DialogFragment {
         }
     }
 
+    //region Error Context
+
     private @Nullable String getErrorContext() {
         return getArguments().getString(ARG_ERROR_CONTEXT);
     }
@@ -361,8 +376,23 @@ public class ErrorDialogFragment extends DialogFragment {
         getArguments().putString(ARG_ERROR_OPERATION, errorType);
     }
 
+    //endregion
+
+
+    //region Actions
+
+    public boolean showSupportLink() {
+        return getArguments().getBoolean(ARG_SHOW_SUPPORT_LINK, false);
+    }
+
+    public void setShowSupportLink(boolean show) {
+        getArguments().putBoolean(ARG_SHOW_SUPPORT_LINK, show);
+    }
+
     public void setAction(@NonNull Intent intent, @StringRes int titleRes) {
         getArguments().putParcelable(ARG_ACTION_INTENT, intent);
         getArguments().putInt(ARG_ACTION_TITLE_RES, titleRes);
     }
+
+    //endregion
 }

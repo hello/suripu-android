@@ -5,8 +5,16 @@ import android.support.annotation.NonNull;
 
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 
-final class DeviceSupport {
-    static @NonNull BluetoothStack.SupportLevel getDeviceSupportLevel() {
+/**
+ * Describes the bluetooth stack support characteristics of the user's device.
+ */
+public final class DeviceSupport {
+    /**
+     * Returns the support level for the user's device.
+     *
+     * @see is.hello.sense.bluetooth.stacks.BluetoothStack.SupportLevel
+     */
+    public static @NonNull BluetoothStack.SupportLevel getDeviceSupportLevel() {
         switch (Build.MODEL) {
             case "XT1032" /* Moto G first generation */:
             case "XT1060" /* Moto X first generation */:
@@ -40,5 +48,15 @@ final class DeviceSupport {
                 return BluetoothStack.SupportLevel.UNTESTED;
             }
         }
+    }
+
+    /**
+     * Returns whether or not the current device is known to require a
+     * high power pre-scan in order to detect a Sense's advertising data.
+     * <p/>
+     * Currently always returns false. Provided as a hook for future workarounds.
+     */
+    public static boolean isHighPowerPreScanNeeded() {
+        return false;
     }
 }

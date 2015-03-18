@@ -347,8 +347,9 @@ public final class Styles {
         }
     }
 
-    public static void initializeSupportFooter(@NonNull Activity activity, @NonNull TextView footer) {
-        SpannableStringBuilder contents = new SpannableStringBuilder(footer.getText());
+    public static SpannableStringBuilder resolveSupportLinks(@NonNull Activity activity,
+                                                             @NonNull CharSequence source) {
+        SpannableStringBuilder contents = new SpannableStringBuilder(source);
         URLSpan[] spans = contents.getSpans(0, contents.length(), URLSpan.class);
         for (URLSpan urlSpan : spans) {
             String url = urlSpan.getURL();
@@ -395,7 +396,11 @@ public final class Styles {
             contents.setSpan(clickableSpan, spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             contents.removeSpan(urlSpan);
         }
-        footer.setText(contents);
+        return contents;
+    }
+
+    public static void initializeSupportFooter(@NonNull Activity activity, @NonNull TextView footer) {
+        footer.setText(resolveSupportLinks(activity, footer.getText()));
         Views.makeTextViewLinksClickable(footer);
     }
 

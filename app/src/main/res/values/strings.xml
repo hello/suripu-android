@@ -152,6 +152,7 @@ so you can sleep better.</string>
     <string name="error_generic_sense_failure">The operation could not be completed due to an internal error. Please try again.</string>
     <string name="error_pill_already_paired">Your Sleep Pill is already paired to an account.</string>
     <string name="error_addendum_unstable_stack">\n\n<b>Please turn airplane mode on for a few seconds, turn it off, and then try again. If this problem persists, please visit our support site.</b></string>
+    <string name="error_addendum_support">\n\nHaving trouble? <b><a href="#email">Email support</a></b></string>
     <string name="label_firmware_version">Firmware</string>
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
     <string name="action_factory_reset">Factory Reset</string>
@@ -205,6 +206,8 @@ so you can sleep better.</string>
     <string name="action_help">Help</string>
     <string name="dialog_title_troubleshoot_sense">Sense Not Found</string>
     <string name="dialog_message_troubleshoot_sense">We could not connect to your Sense. Please make sure your Sense is plugged in, nearby, and in Pairing Mode.</string>
+    <string name="dialog_title_high_power_rescan">Sense Not Found</string>
+    <string name="dialog_message_high_power_rescan">We could not connect to your Sense. A high-power scan can sometimes resolve Sense discovery issues, but will take a bit longer, and may temporarily disrupt other Bluetooth services. Would you like to try a high-power scan?</string>
     <string name="info_onboarding_partner_info">To connect a second Sleep Pill, Sense needs to be put into Pairing Mode.\n\nPlace your hand on top of Sense for seven seconds, and then remove it.\n\nSense will glow purple when it is in Pairing Mode.</string>
     <string name="title_onboarding_partner_info">Add a second Sleep Pill</string>
     <string name="sec_type_wpa2">WPA2</string>
@@ -468,4 +471,6 @@ so you can sleep better.</string>
     <string name="duration_minutes_fmt">%dm</string>
     <string name="duration_hours_whole_fmt">%.0fh</string>
     <string name="duration_hours_fraction_fmt">%.1fh</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_email_support">Email Support</string>
 </resources>

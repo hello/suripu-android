@@ -1,6 +1,7 @@
 package is.hello.sense.bluetooth.stacks.android;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -74,7 +75,15 @@ public class AndroidBluetoothStack implements BluetoothStack {
     @Override
     public Observable<List<Peripheral>> discoverPeripherals(@NonNull PeripheralCriteria peripheralCriteria) {
         if (adapter != null && adapter.isEnabled()) {
-            return newConfiguredObservable(new PeripheralScanner(this, peripheralCriteria));
+            if (peripheralCriteria.wantsHighPowerPreScan) {
+                Observable<List<BluetoothDevice>> devices = newConfiguredObservable(new HighPowerPeripheralScanner(applicationContext, adapter, false));
+                return devices.flatMap(ignoredDevices -> {
+                    Logger.info(LOG_TAG, "High power pre-scan completed.");
+                    return newConfiguredObservable(new PeripheralScanner(this, peripheralCriteria));
+                });
+            } else {
+                return newConfiguredObservable(new PeripheralScanner(this, peripheralCriteria));
+            }
         } else {
             return Observable.error(new BluetoothDisabledError());
         }

@@ -1,11 +1,14 @@
 package is.hello.sense.bluetooth.devices;
 
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.protobuf.ByteString;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +44,30 @@ import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseComman
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state;
 
 public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
-    private static final int COMMAND_VERSION = 0;
+    //region Versions
+
+    /**
+     * The command version used by the firmware hasn't been determined yet.
+     */
+    public static final int VERSION_UNKNOWN = -1;
+
+    /**
+     * The command version used by the firmware on the original PVT units.
+     */
+    public static final int VERSION_PVT = 0;
+
+    /**
+     * The command version used by the firmware that
+     * is able to parse WEP keys from ASCII strings.
+     */
+    public static final int VERSION_WEP_FIX = 1;
+
+    @IntDef({VERSION_UNKNOWN, VERSION_PVT, VERSION_WEP_FIX})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Version {}
+
+    //endregion
+
 
     private static final long STACK_OPERATION_TIMEOUT_S = 30;
     private static final long SIMPLE_COMMAND_TIMEOUT_S = 45;
@@ -53,6 +79,8 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     private final PacketDataHandler<MorpheusCommand> dataHandler;
     private final PacketHandler packetHandler;
 
+    private @Version int version = VERSION_UNKNOWN;
+
     public static Observable<List<SensePeripheral>> discover(@NonNull BluetoothStack bluetoothStack,
                                                              @NonNull PeripheralCriteria criteria) {
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
@@ -60,9 +88,11 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     }
 
     public static Observable<SensePeripheral> rediscover(@NonNull BluetoothStack bluetoothStack,
-                                                         @NonNull String deviceId) {
+                                                         @NonNull String deviceId,
+                                                         boolean includeHighPowerPreScan) {
         PeripheralCriteria criteria = new PeripheralCriteria();
         criteria.setLimit(1);
+        criteria.setWantsHighPowerPreScan(includeHighPowerPreScan);
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
         criteria.addStartsWithPredicate(AdvertisingData.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId);
         return discover(bluetoothStack, criteria).flatMap(ds -> {
@@ -94,6 +124,30 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     public Observable<ConnectStatus> connect() {
         return super.connect(createOperationTimeout("Connect"));
     }
+
+    //region Versions
+
+    private void setFirmwareVersion(int firmwareVersion) {
+        Logger.info(Peripheral.LOG_TAG, "Sense firmware version is " + firmwareVersion);
+        this.version = firmwareVersion;
+    }
+
+    private int getCommandVersion() {
+        if (version == VERSION_UNKNOWN) {
+            return VERSION_PVT;
+        } else {
+            return version;
+        }
+    }
+
+    /**
+     * Returns the client-consumable firmware version of the peripheral, if known.
+     */
+    public @Version int getFirmwareVersion() {
+        return version;
+    }
+
+    //endregion
 
     //region Internal
 
@@ -150,7 +204,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 dataHandler.clearListeners();
 
                 MorpheusCommand timeoutResponse = MorpheusCommand.newBuilder()
-                        .setVersion(COMMAND_VERSION)
+                        .setVersion(getCommandVersion())
                         .setType(CommandType.MORPHEUS_COMMAND_ERROR)
                         .setError(SenseCommandProtos.ErrorType.TIME_OUT)
                         .build();
@@ -165,6 +219,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
             subscribe.subscribe(subscribedCharacteristic -> {
                 dataHandler.onResponse = response -> {
                     Logger.info(Peripheral.LOG_TAG, "Got response to command " + command + ": " + response);
+                    setFirmwareVersion(response.getVersion());
                     onCommandResponse.onResponse(response, s, timeout);
                 };
                 dataHandler.onError = dataError -> {
@@ -270,7 +325,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(commandType)
-                .setVersion(COMMAND_VERSION)
+                .setVersion(getCommandVersion())
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
@@ -284,7 +339,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_ERASE_PAIRED_PHONE)
-                .setVersion(COMMAND_VERSION)
+                .setVersion(getCommandVersion())
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
@@ -304,13 +359,14 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
             return Observable.error(new PeripheralSetWifiError(PeripheralSetWifiError.Reason.EMPTY_PASSWORD));
         }
 
+        int version = getCommandVersion();
         MorpheusCommand.Builder builder = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
-                .setVersion(COMMAND_VERSION)
+                .setVersion(version)
                 .setWifiName(bssid)
                 .setWifiSSID(ssid)
                 .setSecurityType(securityType);
-        if (securityType == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
+        if (version == VERSION_PVT && securityType == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
             byte[] keyBytes = Bytes.tryFromString(password);
             if (keyBytes == null) {
                 return Observable.error(new PeripheralSetWifiError(PeripheralSetWifiError.Reason.MALFORMED_BYTES));
@@ -336,7 +392,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_GET_WIFI_ENDPOINT)
-                .setVersion(COMMAND_VERSION)
+                .setVersion(getCommandVersion())
                 .build();
 
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(response ->
@@ -352,7 +408,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_PAIR_PILL)
-                .setVersion(COMMAND_VERSION)
+                .setVersion(getCommandVersion())
                 .setAccountId(accountToken)
                 .build();
         return performSimpleCommand(morpheusCommand, createPairPillTimeout()).map(MorpheusCommand::getDeviceId);
@@ -367,7 +423,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
-                .setVersion(COMMAND_VERSION)
+                .setVersion(getCommandVersion())
                 .setAccountId(accountToken)
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
@@ -382,7 +438,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_FACTORY_RESET)
-                .setVersion(COMMAND_VERSION)
+                .setVersion(getCommandVersion())
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
@@ -396,7 +452,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE)
-                .setVersion(COMMAND_VERSION)
+                .setVersion(getCommandVersion())
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
@@ -410,7 +466,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(animationType.commandType)
-                .setVersion(COMMAND_VERSION)
+                .setVersion(getCommandVersion())
                 .build();
         return performSimpleCommand(morpheusCommand, createAnimationTimeout()).map(Functions.TO_VOID);
     }
@@ -424,7 +480,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SCAN_WIFI)
-                .setVersion(COMMAND_VERSION)
+                .setVersion(getCommandVersion())
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
@@ -438,7 +494,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SCAN_WIFI)
-                .setVersion(COMMAND_VERSION)
+                .setVersion(getCommandVersion())
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(r -> r.getWifiScanResult(0));
     }
@@ -452,7 +508,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_START_WIFISCAN)
-                .setVersion(COMMAND_VERSION)
+                .setVersion(getCommandVersion())
                 .build();
 
         //noinspection MismatchedQueryAndUpdateOfCollection

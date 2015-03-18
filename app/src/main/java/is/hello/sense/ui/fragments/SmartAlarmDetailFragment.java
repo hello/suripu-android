@@ -74,12 +74,14 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            this.dirty = savedInstanceState.getBoolean("dirty", false);
-        }
-
         this.alarm = getDetailActivity().getAlarm();
         this.index = getDetailActivity().getIndex();
+
+        if (savedInstanceState != null) {
+            this.dirty = savedInstanceState.getBoolean("dirty", false);
+        } else {
+            this.dirty = (index == SmartAlarmDetailActivity.INDEX_NEW);
+        }
 
         smartAlarmPresenter.update();
         addPresenter(smartAlarmPresenter);
@@ -280,6 +282,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void saveAlarm() {
+        if (!dirty) {
+            finish();
+            return;
+        }
+
         if (alarm.getSound() == null) {
             LoadingDialogFragment.close(getFragmentManager());
 

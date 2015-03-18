@@ -61,7 +61,8 @@
         <item name="android:backgroundSplit">@drawable/app_theme_ab_bottom_solid</item>
         <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
         <item name="android:icon">@android:color/transparent</item>
-        <item name="android:titleTextStyle">@style/AppTheme.Text.ActionBar</item>
+        <item name="android:titleTextStyle">@style/AppTheme.Text.ActionTitle</item>
+        <item name="android:subtitleTextStyle">@style/AppTheme.Text.ActionSubtitle</item>
         <item name="android:height">@dimen/action_bar_height</item>
     </style>
 
@@ -74,10 +75,17 @@
         <item name="android:displayOptions">none</item>
     </style>
 
-    <style name="AppTheme.Text.ActionBar">
+    <style name="AppTheme.Text.ActionTitle">
         <item name="android:textSize">@dimen/action_bar_title_text_size</item>
         <item name="android:textColor">@color/text_dark</item>
         <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="AppTheme.Text.ActionSubtitle">
+        <item name="android:textSize">@dimen/action_bar_subtitle_text_size</item>
+        <item name="android:textColor">@color/text_medium</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:paddingTop">2dp</item>
     </style>
 
     <style name="AppTheme.Text.ActionMenu">
