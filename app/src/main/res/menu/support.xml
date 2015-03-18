@@ -2,23 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/help_share"
+        android:id="@+id/support_share"
         android:icon="@drawable/icon_share_enabled"
         android:title="@string/action_share"
         android:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/help_refresh"
+        android:id="@+id/support_refresh"
         android:title="@string/action_refresh"
         android:showAsAction="never" />
 
     <item
-        android:id="@+id/help_contact"
-        android:title="@string/label_email"
+        android:id="@+id/support_contact"
+        android:title="@string/action_email_support"
         android:showAsAction="never" />
 
     <item
-        android:id="@+id/help_feedback"
+        android:id="@+id/support_feedback"
         android:title="@string/action_feedback"
         android:showAsAction="never" />
 

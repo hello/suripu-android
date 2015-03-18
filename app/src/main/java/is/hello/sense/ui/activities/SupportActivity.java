@@ -23,8 +23,8 @@ import is.hello.sense.util.Share;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class HelpActivity extends SenseActivity {
-    public static final String EXTRA_URL = HelpActivity.class.getName() + ".EXTRA_URL";
+public class SupportActivity extends SenseActivity {
+    public static final String EXTRA_URL = SupportActivity.class.getName() + ".EXTRA_URL";
 
     private static final int MSG_SHOW_PROGRESS = 0;
     private static final int SHOW_PROGRESS_DELAY_MS = 2500;
@@ -52,7 +52,7 @@ public class HelpActivity extends SenseActivity {
     }
 
     public static Intent getIntent(@NonNull Context from, @NonNull Uri uri) {
-        Intent intent = new Intent(from, HelpActivity.class);
+        Intent intent = new Intent(from, SupportActivity.class);
         intent.putExtras(getArguments(uri));
         return intent;
     }
@@ -79,7 +79,6 @@ public class HelpActivity extends SenseActivity {
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
-        settings.setLoadWithOverviewMode(true);
         settings.setJavaScriptEnabled(true);
 
         if (savedInstanceState != null) {
@@ -120,29 +119,29 @@ public class HelpActivity extends SenseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.help, menu);
+        getMenuInflater().inflate(R.menu.support, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.help_share: {
+            case R.id.support_share: {
                 Share.text(webView.getUrl()).send(this);
                 return true;
             }
 
-            case R.id.help_refresh: {
+            case R.id.support_refresh: {
                 webView.reload();
                 return true;
             }
 
-            case R.id.help_contact: {
+            case R.id.support_contact: {
                 UserSupport.showSupport(this);
                 return true;
             }
 
-            case R.id.help_feedback: {
+            case R.id.support_feedback: {
                 UserSupport.showEmailFeedback(this);
                 return true;
             }

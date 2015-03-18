@@ -472,4 +472,5 @@ so you can sleep better.</string>
     <string name="duration_hours_whole_fmt">%.0fh</string>
     <string name="duration_hours_fraction_fmt">%.1fh</string>
     <string name="action_refresh">Refresh</string>
+    <string name="action_email_support">Email Support</string>
 </resources>

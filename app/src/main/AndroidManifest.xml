@@ -94,8 +94,8 @@
             android:parentActivityName=".ui.activities.HomeActivity" />
 
         <activity
-            android:name=".ui.activities.HelpActivity"
-            android:label="@string/action_help"/>
+            android:name=".ui.activities.SupportActivity"
+            android:label="@string/action_support"/>
 
         <activity
             android:name="com.mixpanel.android.surveys.SurveyActivity" />
