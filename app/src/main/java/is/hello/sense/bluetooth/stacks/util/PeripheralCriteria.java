@@ -49,8 +49,10 @@ public final class PeripheralCriteria {
     /**
      * Whether or not to perform a high power scan before performing a low energy scan.
      * Required for some devices to be able to detect advertising data.
+     *
+     * @see is.hello.sense.bluetooth.stacks.android.DeviceSupport#isHighPowerPreScanNeeded()
      */
-    public boolean wantsHighPowerPreScan = DeviceSupport.getAlwaysNeedsHighPowerPreScan();
+    public boolean wantsHighPowerPreScan = DeviceSupport.isHighPowerPreScanNeeded();
 
     /**
      * Returns a configured criteria that will search for one instance of a given address.
@@ -136,8 +138,8 @@ public final class PeripheralCriteria {
      * detect BLE advertising data. However, high power scans
      * are both slow and power intensive, so they should not
      * be used without the user requesting it.
-     * <p/>
-     * Defaults to <code>false</code>.
+     *
+     * @see is.hello.sense.bluetooth.stacks.android.DeviceSupport#isHighPowerPreScanNeeded()
      */
     public void setWantsHighPowerPreScan(boolean wantsHighPowerPreScan) {
         this.wantsHighPowerPreScan = wantsHighPowerPreScan;
