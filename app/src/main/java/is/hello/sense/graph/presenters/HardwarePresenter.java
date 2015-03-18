@@ -36,6 +36,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 @Singleton public class HardwarePresenter extends Presenter {
     public static final String ACTION_CONNECTION_LOST = HardwarePresenter.class.getName() + ".ACTION_CONNECTION_LOST";
+    public static final int FAILS_BEFORE_HIGH_POWER = 3;
 
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
@@ -44,6 +45,9 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     private @Nullable ReplaySubject<SensePeripheral> pendingDiscovery;
     private @Nullable ReplaySubject<SensePeripheral.ConnectStatus> connectingToPeripheral;
     private @Nullable SensePeripheral peripheral;
+
+    private int peripheralNotFoundCount = 0;
+    private boolean wantsHighPowerPreScan;
 
     private final Action1<Throwable> respondToError;
 
@@ -110,6 +114,19 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     }
 
 
+    public void trackPeripheralNotFound() {
+        this.peripheralNotFoundCount++;
+    }
+
+    public boolean shouldPromptForHighPowerScan() {
+        return (!wantsHighPowerPreScan && peripheralNotFoundCount >= FAILS_BEFORE_HIGH_POWER);
+    }
+
+    public void setWantsHighPowerPreScan(boolean wantsHighPowerPreScan) {
+        logEvent("setWantsHighPowerPreScan(" + wantsHighPowerPreScan + ")");
+        this.wantsHighPowerPreScan = wantsHighPowerPreScan;
+    }
+
     public void setPeripheral(@Nullable SensePeripheral peripheral) {
         this.peripheral = peripheral;
     }
@@ -161,21 +178,24 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
             return pendingDiscovery;
         }
 
-        Observable<SensePeripheral> discovery = SensePeripheral.discover(bluetoothStack, new PeripheralCriteria()).flatMap(peripherals -> {
-            if (!peripherals.isEmpty()) {
-                SensePeripheral closestPeripheral = getClosestPeripheral(peripherals);
+        PeripheralCriteria criteria = new PeripheralCriteria();
+        criteria.setWantsHighPowerPreScan(wantsHighPowerPreScan);
+        Observable<SensePeripheral> discovery = SensePeripheral.discover(bluetoothStack, criteria)
+                .flatMap(peripherals -> {
+                    if (!peripherals.isEmpty()) {
+                        SensePeripheral closestPeripheral = getClosestPeripheral(peripherals);
 
-                this.peripheral = closestPeripheral;
-                this.pendingDiscovery = null;
+                        this.peripheral = closestPeripheral;
+                        this.pendingDiscovery = null;
 
-                return Observable.just(closestPeripheral);
-            } else {
-                this.peripheral = null;
-                this.pendingDiscovery = null;
+                        return Observable.just(closestPeripheral);
+                    } else {
+                        this.peripheral = null;
+                        this.pendingDiscovery = null;
 
-                return Observable.error(new PeripheralNotFoundError());
-            }
-        });
+                        return Observable.error(new PeripheralNotFoundError());
+                    }
+                });
 
         this.pendingDiscovery = ReplaySubject.createWithSize(1);
         discovery.subscribe(this.pendingDiscovery);
@@ -199,18 +219,21 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         if (TextUtils.isEmpty(address)) {
             return closestPeripheral();
         } else {
-            Observable<SensePeripheral> rediscovery = SensePeripheral.discover(bluetoothStack, PeripheralCriteria.forAddress(address)).flatMap(peripherals -> {
-                this.pendingDiscovery = null;
+            PeripheralCriteria criteria = PeripheralCriteria.forAddress(address);
+            criteria.setWantsHighPowerPreScan(wantsHighPowerPreScan);
+            Observable<SensePeripheral> rediscovery = SensePeripheral.discover(bluetoothStack, criteria)
+                    .flatMap(peripherals -> {
+                        this.pendingDiscovery = null;
 
-                if (!peripherals.isEmpty()) {
-                    this.peripheral = peripherals.get(0);
-                    logEvent("rediscoveredDevice(" + peripheral + ")");
+                        if (!peripherals.isEmpty()) {
+                            this.peripheral = peripherals.get(0);
+                            logEvent("rediscoveredDevice(" + peripheral + ")");
 
-                    return Observable.just(peripheral);
-                } else {
-                    return Observable.error(new PeripheralNotFoundError());
-                }
-            });
+                            return Observable.just(peripheral);
+                        } else {
+                            return Observable.error(new PeripheralNotFoundError());
+                        }
+                    });
 
             this.pendingDiscovery = ReplaySubject.createWithSize(1);
             rediscovery.subscribe(this.pendingDiscovery);
@@ -234,15 +257,17 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
             return pendingDiscovery;
         }
 
-        Observable<SensePeripheral> rediscovery = SensePeripheral.rediscover(bluetoothStack, device.getDeviceId()).flatMap(peripheral -> {
-            logEvent("rediscoveredPeripheralForDevice(" + peripheral + ")");
-            this.peripheral = peripheral;
-            this.pendingDiscovery = null;
+        Observable<SensePeripheral> rediscovery = SensePeripheral.rediscover(bluetoothStack, device.getDeviceId(), wantsHighPowerPreScan)
+                .flatMap(peripheral -> {
+                    logEvent("rediscoveredPeripheralForDevice(" + peripheral + ")");
+                    this.peripheral = peripheral;
+                    this.pendingDiscovery = null;
 
-            return Observable.just(this.peripheral);
-        }).doOnError(ignored -> {
-            this.pendingDiscovery = null;
-        });
+                    return Observable.just(this.peripheral);
+                })
+                .doOnError(ignored -> {
+                    this.pendingDiscovery = null;
+                });
 
 
         this.pendingDiscovery = ReplaySubject.createWithSize(1);

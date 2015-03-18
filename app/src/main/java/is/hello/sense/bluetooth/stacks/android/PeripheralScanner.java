@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
-import is.hello.sense.bluetooth.stacks.util.Bytes;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -55,7 +54,6 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
 
     @Override
     public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanResponse) {
-        Logger.info(BluetoothStack.LOG_TAG, "Raw scanResponse for " + bluetoothDevice.getName() + ": " + Bytes.toString(scanResponse));
         AdvertisingData advertisingData = AdvertisingData.parse(scanResponse);
         Logger.info(BluetoothStack.LOG_TAG, "Found device " + bluetoothDevice.getName() + " - " + bluetoothDevice.getAddress() + " " + advertisingData);
 

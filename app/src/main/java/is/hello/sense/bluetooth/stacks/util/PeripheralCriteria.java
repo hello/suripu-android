@@ -19,7 +19,7 @@ public final class PeripheralCriteria {
     /**
      * The default timeout duration.
      */
-    public static final int DEFAULT_DURATION_MS = 15000;
+    public static final int DEFAULT_DURATION_MS = 10000;
 
     /**
      * Device addresses to match against.

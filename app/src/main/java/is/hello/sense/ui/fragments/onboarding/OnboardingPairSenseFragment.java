@@ -1,7 +1,9 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,6 +27,7 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
@@ -32,6 +35,8 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 
 public class OnboardingPairSenseFragment extends HardwareFragment {
+    private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
+
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferences;
 
@@ -60,7 +65,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 .setDiagramEdgeToEdge(false)
                 .setSecondaryButtonText(R.string.action_sense_pairing_mode_help)
                 .setSecondaryOnClickListener(this::showPairingModeHelp)
-                .setPrimaryOnClickListener(this::next)
+                .setPrimaryOnClickListener(ignored -> next())
                 .setToolbarWantsBackButton(true)
                 .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_SENSE_BLE))
                 .configure(b -> subscribe(hardwarePresenter.bluetoothEnabled, b.primaryButton::setEnabled, Functions.LOG_ERROR))
@@ -74,6 +79,15 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         outState.putBoolean("hasLinkedAccount", hasLinkedAccount);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_HIGH_POWER_RETRY && resultCode == Activity.RESULT_OK) {
+            hardwarePresenter.setWantsHighPowerPreScan(true);
+            next();
+        }
+    }
 
     private void checkConnectivityAndContinue() {
         showBlockingActivity(R.string.title_checking_connectivity);
@@ -158,7 +172,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         getOnboardingActivity().pushFragment(new OnboardingSensePairingModeHelpFragment(), null, true);
     }
 
-    public void next(@NonNull View sender) {
+    public void next() {
         showBlockingActivity(R.string.title_scanning_for_sense);
 
         Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
@@ -191,8 +205,16 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     public void presentError(Throwable e, @NonNull String operation) {
         hideAllActivityForFailure(() -> {
             if (e instanceof PeripheralNotFoundError) {
-                TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
-                dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
+                hardwarePresenter.trackPeripheralNotFound();
+
+                if (hardwarePresenter.shouldPromptForHighPowerScan()) {
+                    PromptForHighPowerDialogFragment dialogFragment = new PromptForHighPowerDialogFragment();
+                    dialogFragment.setTargetFragment(this, REQUEST_CODE_HIGH_POWER_RETRY);
+                    dialogFragment.show(getFragmentManager(), PromptForHighPowerDialogFragment.TAG);
+                } else {
+                    TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
+                    dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
+                }
 
                 Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null, operation);
             } else {
@@ -206,8 +228,6 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     public static class TroubleshootSenseDialogFragment extends DialogFragment {
         public static final String TAG = TroubleshootSenseDialogFragment.class.getSimpleName();
 
-        public static final int RESULT_HELP = 0x505;
-
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
@@ -217,9 +237,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
             dialog.setPositiveButton(android.R.string.ok, null);
             dialog.setNegativeButton(R.string.action_help, (sender, which) -> {
-                if (getTargetFragment() != null) {
-                    getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_HELP, null);
-                }
+                UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_SENSE_BLE);
             });
 
             return dialog;
