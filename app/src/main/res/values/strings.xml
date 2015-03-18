@@ -152,6 +152,7 @@ so you can sleep better.</string>
     <string name="error_generic_sense_failure">The operation could not be completed due to an internal error. Please try again.</string>
     <string name="error_pill_already_paired">Your Sleep Pill is already paired to an account.</string>
     <string name="error_addendum_unstable_stack">\n\n<b>Please turn airplane mode on for a few seconds, turn it off, and then try again. If this problem persists, please visit our support site.</b></string>
+    <string name="error_addendum_support">\n\nHaving trouble? <b><a href="#email">Email support</a></b></string>
     <string name="label_firmware_version">Firmware</string>
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
     <string name="action_factory_reset">Factory Reset</string>

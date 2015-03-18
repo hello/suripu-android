@@ -3,10 +3,9 @@ package is.hello.sense.ui.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -32,6 +31,7 @@ public class SenseAlertDialog extends Dialog {
 
         this.titleText = (TextView) findViewById(R.id.dialog_sense_alert_title);
         this.messageText = (TextView) findViewById(R.id.dialog_sense_alert_message);
+        messageText.setMovementMethod(LinkMovementMethod.getInstance());
 
         this.buttonDivider = findViewById(R.id.dialog_sense_alert_button_divider);
         this.negativeButton = (Button) findViewById(R.id.dialog_sense_alert_cancel);
@@ -54,20 +54,16 @@ public class SenseAlertDialog extends Dialog {
         titleText.setTextColor(color);
     }
 
-    public void setIcon(@Nullable Drawable icon) {
-        titleText.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
-    }
-
-    public void setIcon(@DrawableRes int iconId) {
-        titleText.setCompoundDrawablesRelativeWithIntrinsicBounds(iconId, 0, 0, 0);
-    }
-
     public void setMessage(CharSequence message) {
         messageText.setText(message);
     }
 
     public void setMessage(@StringRes int messageId) {
         messageText.setText(messageId);
+    }
+
+    public CharSequence getMessage() {
+        return messageText.getText();
     }
 
     private View.OnClickListener createClickListener(@Nullable DialogInterface.OnClickListener onClickListener, int which) {
