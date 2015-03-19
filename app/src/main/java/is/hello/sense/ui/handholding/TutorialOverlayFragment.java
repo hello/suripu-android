@@ -60,10 +60,6 @@ public class TutorialOverlayFragment extends SenseDialogFragment implements Even
     //region Lifecycle
 
     public static boolean shouldShow(@NonNull Activity context, @NonNull Tutorial tutorial) {
-        if (tutorial == Tutorial.SWIPE_TIMELINE) {
-            return true;
-        }
-
         SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
         return (!preferences.getBoolean(Constants.HANDHOLDING_SUPPRESSED, false) &&
                 !preferences.getBoolean(tutorial.getShownKey(), false) &&
