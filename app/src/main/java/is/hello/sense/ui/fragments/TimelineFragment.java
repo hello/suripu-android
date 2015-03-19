@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
+import org.json.JSONObject;
 
 import java.util.Collections;
 import java.util.List;
@@ -129,7 +130,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        timelinePresenter.setDateWithTimeline(getDate(), getCachedTimeline());
+        DateTime date = getDate();
+        JSONObject properties = Analytics.createProperties(
+            Analytics.Timeline.PROP_DATE, date.toString()
+        );
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE, properties);
+
+        timelinePresenter.setDateWithTimeline(date, getCachedTimeline());
         addPresenter(timelinePresenter);
 
         setRetainInstance(true);

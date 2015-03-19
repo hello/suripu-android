@@ -433,7 +433,11 @@ public class HomeActivity
         this.lastUpdated = System.currentTimeMillis();
 
         fragment.setControlsAlarmShortcut(true);
-        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_DATE_CHANGED, null);
+
+        JSONObject properties = Analytics.createProperties(
+            Analytics.Timeline.PROP_DATE, fragment.getDate().toString()
+        );
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_DATE_CHANGED, properties);
     }
 
     @Override
