@@ -52,8 +52,6 @@ import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
-import is.hello.sense.ui.handholding.Tutorial;
-import is.hello.sense.ui.handholding.TutorialOverlayFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.BlockableLinearLayout;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
@@ -436,8 +434,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                          breakdownHeaderMode::bindTimeline,
                          breakdownHeaderMode::timelineUnavailable);
         setHeaderMode(breakdownHeaderMode, this::showBreakdownTransition);
-		
-        TutorialOverlayFragment.markShown(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN);
+
     }
 
     public void share(@NonNull View sender) {
@@ -475,10 +472,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             getAnimatorContext().runWhenIdle(coordinator.bind(() -> {
                 if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
                     WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
-                } else if (TutorialOverlayFragment.shouldShow(getActivity(), Tutorial.SLEEP_SCORE_BREAKDOWN)) {
-                    TutorialOverlayFragment.show(getFragmentManager(), Tutorial.SLEEP_SCORE_BREAKDOWN);
-                } else if (TutorialOverlayFragment.shouldShow(getActivity(), Tutorial.SWIPE_TIMELINE)) {
-                    TutorialOverlayFragment.show(getFragmentManager(), Tutorial.SWIPE_TIMELINE);
                 }
             }));
         }
