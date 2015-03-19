@@ -56,8 +56,6 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
-import is.hello.sense.ui.handholding.Tutorial;
-import is.hello.sense.ui.handholding.TutorialOverlayFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.util.Views;
@@ -435,10 +433,6 @@ public class HomeActivity
         this.lastUpdated = System.currentTimeMillis();
 
         fragment.setControlsAlarmShortcut(true);
-
-        if (isInteractive) {
-            TutorialOverlayFragment.markShown(this, Tutorial.SWIPE_TIMELINE);
-        }
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_DATE_CHANGED, null);
     }
 

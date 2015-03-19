@@ -122,6 +122,11 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
         // from the linear layout manager, the children of the recycler
         // view, and neither worked 100% of the time. This does.
 
+        // Guard against rapid taps
+        if (!isVisible()) {
+            return;
+        }
+
         if (itemView.getAlpha() < 1f) {
             int recyclerViewCenter = recyclerView.getMeasuredWidth() / 2;
             if (itemView.getRight() < recyclerViewCenter) {
