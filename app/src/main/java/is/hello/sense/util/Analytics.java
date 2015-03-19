@@ -248,7 +248,7 @@ public class Analytics {
         String EVENT_TIMELINE = "Timeline";
         String PROP_DATE = "date";
 
-        String EVENT_TIMELINE_DATE_CHANGED = "Timeline date changed";
+        String EVENT_TIMELINE_SWIPE = "Timeline swipe";
 
         String EVENT_TIMELINE_OPENED = "Timeline opened";
         String EVENT_TIMELINE_CLOSED = "Timeline closed";

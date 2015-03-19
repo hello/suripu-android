@@ -434,10 +434,12 @@ public class HomeActivity
 
         fragment.setControlsAlarmShortcut(true);
 
-        JSONObject properties = Analytics.createProperties(
-            Analytics.Timeline.PROP_DATE, fragment.getDate().toString()
-        );
-        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_DATE_CHANGED, properties);
+        if (isInteractive) {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Timeline.PROP_DATE, fragment.getDate().toString()
+            );
+            Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_SWIPE, properties);
+        }
     }
 
     @Override
