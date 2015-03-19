@@ -6,6 +6,9 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.DimenRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -20,6 +23,7 @@ import android.widget.RelativeLayout;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.LambdaVar;
 
 public enum Tutorial {
@@ -50,6 +54,19 @@ public enum Tutorial {
 
     public String getShownKey() {
         return "tutorial_" + toString().toLowerCase() + "_shown";
+    }
+
+    public boolean shouldShow(@NonNull Activity context) {
+        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        return (!preferences.getBoolean(Constants.HANDHOLDING_SUPPRESSED, false) &&
+                !preferences.getBoolean(getShownKey(), false));
+    }
+
+    public void markShown(@NonNull Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        preferences.edit()
+                   .putBoolean(getShownKey(), true)
+                   .apply();
     }
 
 
