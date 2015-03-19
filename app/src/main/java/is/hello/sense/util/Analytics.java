@@ -171,9 +171,14 @@ public class Analytics {
         String EVENT_WIFI = "Onboarding WiFi";
 
         /**
-         * When the user explicitly rescans for wifi networks.
+         * When the user implicitly scans for wifi networks.
          */
         String EVENT_WIFI_SCAN = "Onboarding WiFi Scan";
+
+        /**
+         * When the user explicitly rescans for wifi networks.
+         */
+        String EVENT_WIFI_RESCAN = "Onboarding WiFi Rescan";
 
         /**
          * When the user lands on the "Enter Wifi Password" screen

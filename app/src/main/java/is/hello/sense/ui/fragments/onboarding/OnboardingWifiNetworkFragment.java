@@ -70,7 +70,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         this.rescanButton = (Button) view.findViewById(R.id.fragment_onboarding_wifi_networks_rescan);
         rescanButton.setEnabled(false);
         Views.setSafeOnClickListener(rescanButton, ignored -> {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_SCAN, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_RESCAN, null);
             rescan();
         });
 
@@ -86,6 +86,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         super.onViewCreated(view, savedInstanceState);
 
         if (networkAdapter.getCount() == 0) {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_SCAN, null);
             rescan();
         } else {
             scanningIndicatorLabel.setVisibility(View.GONE);
