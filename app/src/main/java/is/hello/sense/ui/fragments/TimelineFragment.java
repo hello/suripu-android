@@ -53,6 +53,8 @@ import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.BlockableLinearLayout;
 import is.hello.sense.ui.widget.SelectorLinearLayout;
@@ -106,6 +108,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private TimelineHeaderDrawable headerTabsBackground;
 
     private @Nullable PopupWindow timelinePopup;
+
+    private @Nullable TutorialOverlayView tutorialOverlay;
 
 
     public static TimelineFragment newInstance(@NonNull DateTime date, @Nullable Timeline cachedTimeline) {
@@ -229,6 +233,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        if (tutorialOverlay != null) {
+            tutorialOverlay.dismiss(false);
+        }
 
         this.breakdownHeaderMode = null;
     }
@@ -442,6 +450,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                          breakdownHeaderMode::timelineUnavailable);
         setHeaderMode(breakdownHeaderMode, this::showBreakdownTransition);
 
+        Tutorial.SLEEP_SCORE_BREAKDOWN.markShown(getActivity());
     }
 
     public void share(@NonNull View sender) {
@@ -472,6 +481,19 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     //endregion
 
 
+    private void showTutorial(@NonNull Tutorial tutorial) {
+        if (tutorialOverlay != null) {
+            return;
+        }
+
+        this.tutorialOverlay = new TutorialOverlayView(getActivity(), tutorial);
+        tutorialOverlay.setOnDismiss(() -> {
+            this.tutorialOverlay = null;
+        });
+        tutorialOverlay.setAnimatorContext(getAnimatorContext());
+        tutorialOverlay.show(R.id.activity_home_container);
+    }
+
     private void showHandholdingIfAppropriate() {
         if (homeActivity.getWillShowUnderside()) {
             WelcomeDialogFragment.markShown(homeActivity, R.xml.welcome_dialog_timeline);
@@ -479,6 +501,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             getAnimatorContext().runWhenIdle(coordinator.bind(() -> {
                 if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
                     WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
+                } else if (Tutorial.SLEEP_SCORE_BREAKDOWN.shouldShow(getActivity())) {
+                    showTutorial(Tutorial.SLEEP_SCORE_BREAKDOWN);
+                } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
+                    showTutorial(Tutorial.SWIPE_TIMELINE);
                 }
             }));
         }
