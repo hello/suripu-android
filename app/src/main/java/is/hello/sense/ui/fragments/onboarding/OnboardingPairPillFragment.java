@@ -16,7 +16,6 @@ import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -40,7 +39,11 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_PILL, null);
+        if (isPairOnlySession()) {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_PILL_IN_APP, null);
+        } else {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_PILL, null);
+        }
 
         setRetainInstance(true);
     }
@@ -99,7 +102,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         getFragmentManager().executePendingTransactions();
         LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
             coordinator.postOnResume(() -> {
-                if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false)) {
+                if (isPairOnlySession()) {
                     hardwarePresenter.clearPeripheral();
                     getOnboardingActivity().finish();
                 } else {

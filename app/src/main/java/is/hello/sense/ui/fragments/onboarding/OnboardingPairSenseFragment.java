@@ -23,7 +23,6 @@ import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -50,7 +49,11 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             this.hasLinkedAccount = savedInstanceState.getBoolean("hasLinkedAccount", false);
         }
 
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_SENSE, null);
+        if (isPairOnlySession()) {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_SENSE_IN_APP, null);
+        } else {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_SENSE, null);
+        }
 
         setRetainInstance(true);
     }
@@ -159,7 +162,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
     private void finished() {
         hideAllActivityForSuccess(() -> {
-            if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false)) {
+            if (isPairOnlySession()) {
                 hardwarePresenter.clearPeripheral();
                 getOnboardingActivity().finish();
             } else {

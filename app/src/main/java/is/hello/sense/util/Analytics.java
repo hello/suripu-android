@@ -161,9 +161,19 @@ public class Analytics {
         String EVENT_SENSE_SETUP = "Onboarding Sense Setup";
 
         /**
+         * When user lands on the Setting up Sense screen inside the app
+         */
+        String EVENT_SENSE_SETUP_IN_APP = "Sense Setup";
+
+        /**
          * When user lands on the "Pair your Sense" screen
          */
         String EVENT_PAIR_SENSE = "Onboarding Pair Sense";
+
+        /**
+         * When user lands on the "Pair your Sense" screen inside the app
+         */
+        String EVENT_PAIR_SENSE_IN_APP = "Pair Sense";
 
         /**
          * When user lands on the screen to scan for wifi
@@ -171,9 +181,19 @@ public class Analytics {
         String EVENT_WIFI = "Onboarding WiFi";
 
         /**
+         * When user lands on the screen to scan for wifi in the app
+         */
+        String EVENT_WIFI_IN_APP = "WiFi";
+
+        /**
          * When the user implicitly scans for wifi networks.
          */
         String EVENT_WIFI_SCAN = "Onboarding WiFi Scan";
+
+        /**
+         * When the user implicitly scans for wifi networks in the app.
+         */
+        String EVENT_WIFI_SCAN_IN_APP = "WiFi Scan";
 
         /**
          * When the user explicitly rescans for wifi networks.
@@ -181,15 +201,32 @@ public class Analytics {
         String EVENT_WIFI_RESCAN = "Onboarding WiFi Rescan";
 
         /**
+         * When the user explicitly rescans for wifi networks in the app.
+         */
+        String EVENT_WIFI_RESCAN_IN_APP = "WiFi Rescan";
+
+        /**
          * When the user lands on the "Enter Wifi Password" screen
          */
         String EVENT_WIFI_PASSWORD = "Onboarding WiFi Password";
+
+        /**
+         * When the user lands on the "Enter Wifi Password" screen in app
+         */
+        String EVENT_WIFI_PASSWORD_IN_APP = "WiFi Password";
+
         String PROP_WIFI_IS_OTHER = "Is Other";
 
         /**
          * When the user or the app sends WiFi credentials to Sense.
          */
         String EVENT_WIFI_CREDENTIALS_SUBMITTED = "Onboarding WiFi Credentials Submitted";
+
+        /**
+         * When the user or the app sends WiFi credentials to Sense in app.
+         */
+        String EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP = "WiFi Credentials Submitted";
+
         String PROP_WIFI_SECURITY_TYPE = "Security Type";
 
         /**
@@ -201,6 +238,11 @@ public class Analytics {
          * When user lands on the "Pairing your Sleep Pill" screen
          */
         String EVENT_PAIR_PILL = "Onboarding Pair Pill";
+
+        /**
+         * When user lands on the "Pairing your Sleep Pill" screen inside the app
+         */
+        String EVENT_PAIR_PILL_IN_APP = "Pair Pill";
 
         /**
          * When user lands on screen where it asks user to place the pill on the pillow

@@ -23,6 +23,14 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     private LoadingDialogFragment loadingDialogFragment;
 
+    protected boolean isPairOnlySession() {
+        return getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false);
+    }
+
+    protected boolean isWifiOnlySession() {
+        return getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false);
+    }
+
     protected void showBlockingActivity(@StringRes int titleRes) {
         if (loadingDialogFragment == null) {
             coordinator.postOnResume(() -> {
