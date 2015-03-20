@@ -481,6 +481,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     //endregion
 
 
+    public void update() {
+        timelinePresenter.update();
+    }
+
     private void showTutorial(@NonNull Tutorial tutorial) {
         if (tutorialOverlay != null) {
             return;
