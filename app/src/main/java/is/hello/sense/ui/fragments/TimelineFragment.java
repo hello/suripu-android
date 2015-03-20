@@ -109,6 +109,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private @Nullable PopupWindow timelinePopup;
 
+    private @Nullable TutorialOverlayView tutorialOverlay;
+
 
     public static TimelineFragment newInstance(@NonNull DateTime date, @Nullable Timeline cachedTimeline) {
         TimelineFragment fragment = new TimelineFragment();
@@ -231,6 +233,10 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        if (tutorialOverlay != null) {
+            tutorialOverlay.dismiss(false);
+        }
 
         this.breakdownHeaderMode = null;
     }
@@ -476,7 +482,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
 
     private void showTutorial(@NonNull Tutorial tutorial) {
-        TutorialOverlayView tutorialOverlay = new TutorialOverlayView(getActivity(), tutorial);
+        if (tutorialOverlay != null) {
+            return;
+        }
+
+        this.tutorialOverlay = new TutorialOverlayView(getActivity(), tutorial);
+        tutorialOverlay.setOnDismiss(() -> {
+            this.tutorialOverlay = null;
+        });
         tutorialOverlay.setAnimatorContext(getAnimatorContext());
         tutorialOverlay.show(R.id.activity_home_container);
     }

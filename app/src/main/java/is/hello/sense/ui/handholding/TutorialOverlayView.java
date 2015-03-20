@@ -49,6 +49,7 @@ public class TutorialOverlayView extends RelativeLayout {
     private boolean dispatchedLastEvent = false;
 
     private @Nullable ViewGroup container;
+    private @Nullable Runnable onDismiss;
     private @Nullable AnimatorContext animatorContext;
 
     //region Creation
@@ -134,6 +135,10 @@ public class TutorialOverlayView extends RelativeLayout {
         this.animatorContext = animatorContext;
     }
 
+    public void setOnDismiss(@Nullable Runnable onDismiss) {
+        this.onDismiss = onDismiss;
+    }
+
     public void show(@IdRes int containerRes) {
         this.container = (ViewGroup) activity.findViewById(containerRes);
         if (container == null) {
@@ -155,16 +160,26 @@ public class TutorialOverlayView extends RelativeLayout {
                          Functions.LOG_ERROR);
     }
 
-    public void dismiss() {
+    public void dismiss(boolean animate) {
         if (container != null) {
-            ViewGroup oldContainer = container;
-            PropertyAnimatorProxy.animate(this, animatorContext)
-                    .setDuration(Animation.DURATION_VERY_FAST)
-                    .fadeOut(GONE)
-                    .addOnAnimationCompleted(finished -> {
-                        oldContainer.removeView(this);
-                    })
-                    .start();
+            if (animate) {
+                ViewGroup oldContainer = container;
+                PropertyAnimatorProxy.animate(this, animatorContext)
+                        .setDuration(Animation.DURATION_VERY_FAST)
+                        .fadeOut(GONE)
+                        .addOnAnimationCompleted(finished -> {
+                            oldContainer.removeView(this);
+                            if (onDismiss != null) {
+                                onDismiss.run();
+                            }
+                        })
+                        .start();
+            } else {
+                container.removeView(this);
+                if (onDismiss != null) {
+                    onDismiss.run();
+                }
+            }
             this.container = null;
         }
     }
@@ -222,7 +237,7 @@ public class TutorialOverlayView extends RelativeLayout {
     private void interactionCanceled() {
         Log.i(getClass().getSimpleName(), "interactionCanceled()");
 
-        dismiss();
+        dismiss(true);
     }
 
     private void interactionCompleted() {
@@ -230,7 +245,7 @@ public class TutorialOverlayView extends RelativeLayout {
 
         tutorial.markShown(getContext());
 
-        dismiss();
+        dismiss(true);
     }
 
     //endregion
