@@ -264,9 +264,12 @@ public class TutorialOverlayView extends RelativeLayout {
             // If we don't do this, the description won't unhighlight
             // from the user dragging their finger outside.
             MotionEvent fakeCancelEvent = MotionEvent.obtain(event);
-            fakeCancelEvent.setAction(MotionEvent.ACTION_CANCEL);
-            dispatchTouchEvent(fakeCancelEvent);
-            fakeCancelEvent.recycle();
+            try {
+                fakeCancelEvent.setAction(MotionEvent.ACTION_CANCEL);
+                dispatchTouchEvent(fakeCancelEvent);
+            } finally {
+                fakeCancelEvent.recycle();
+            }
 
             this.dispatchedLastEvent = false;
         }
