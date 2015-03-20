@@ -56,6 +56,7 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
+import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.util.Views;
@@ -435,6 +436,8 @@ public class HomeActivity
         fragment.setControlsAlarmShortcut(true);
 
         if (isInteractive) {
+            Tutorial.SWIPE_TIMELINE.markShown(this);
+
             JSONObject properties = Analytics.createProperties(
                 Analytics.Timeline.PROP_DATE, fragment.getDate().toString()
             );
