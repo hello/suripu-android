@@ -444,6 +444,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                          breakdownHeaderMode::timelineUnavailable);
         setHeaderMode(breakdownHeaderMode, this::showBreakdownTransition);
 
+        Tutorial.SLEEP_SCORE_BREAKDOWN.markShown(getActivity());
     }
 
     public void share(@NonNull View sender) {
