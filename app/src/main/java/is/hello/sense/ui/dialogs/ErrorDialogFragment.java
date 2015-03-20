@@ -38,6 +38,7 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
+import retrofit.RetrofitError;
 
 public class ErrorDialogFragment extends DialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();
@@ -225,6 +226,12 @@ public class ErrorDialogFragment extends DialogFragment {
                             arguments.remove(ARG_MESSAGE);
                         }
                     }
+                }
+
+                RetrofitError stackError = error.getNetworkStackError();
+                fragment.setErrorOperation(stackError.getUrl());
+                if (stackError.getResponse() != null) {
+                    fragment.setErrorContext(Integer.toString(stackError.getResponse().getStatus()));
                 }
             }
         }
