@@ -15,7 +15,10 @@ import android.text.Spanned;
 import android.text.style.AlignmentSpan;
 
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.bluetooth.errors.BluetoothError;
+import is.hello.sense.ui.activities.SupportActivity;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
@@ -45,7 +48,10 @@ public class ErrorDialogFragment extends DialogFragment {
     public static ErrorDialogFragment presentBluetoothError(@NonNull FragmentManager fm, @NonNull Throwable e) {
         ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(e);
         if (BluetoothError.isFatal(e)) {
-            dialogFragment.setFatalMessage(R.string.error_addendum_unstable_stack);
+            Intent intent = new Intent(SenseApplication.getInstance(), SupportActivity.class);
+            intent.putExtras(SupportActivity.getArguments(UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH.getUri()));
+            dialogFragment.setAction(intent, R.string.action_more_info);
+            dialogFragment.setAddendum(R.string.error_addendum_unstable_stack);
         }
         dialogFragment.setShowSupportLink(true);
         dialogFragment.show(fm, TAG);
@@ -56,10 +62,11 @@ public class ErrorDialogFragment extends DialogFragment {
     public static ErrorDialogFragment newInstance(@Nullable Throwable e) {
         ErrorDialogFragment fragment = new ErrorDialogFragment();
 
-        fragment.setArguments(new Bundle());
-        fragment.setErrorMessage(Errors.getDisplayMessage(e));
-        fragment.setErrorType(Errors.getType(e));
-        fragment.setErrorContext(Errors.getContextInfo(e));
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ARG_ERROR_MESSAGE, Errors.getDisplayMessage(e));
+        arguments.putString(ARG_ERROR_OPERATION, Errors.getType(e));
+        arguments.putString(ARG_ERROR_CONTEXT, Errors.getContextInfo(e));
+        fragment.setArguments(arguments);
 
         return fragment;
     }
@@ -67,8 +74,9 @@ public class ErrorDialogFragment extends DialogFragment {
     public static ErrorDialogFragment newInstance(@NonNull String message) {
         ErrorDialogFragment fragment = new ErrorDialogFragment();
 
-        fragment.setArguments(new Bundle());
-        fragment.setErrorMessage(Errors.Message.from(message));
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ARG_ERROR_MESSAGE, Errors.Message.from(message));
+        fragment.setArguments(arguments);
 
         return fragment;
     }
@@ -76,14 +84,17 @@ public class ErrorDialogFragment extends DialogFragment {
     public static ErrorDialogFragment newInstance(@StringRes int messageRes) {
         ErrorDialogFragment fragment = new ErrorDialogFragment();
 
-        fragment.setArguments(new Bundle());
-        fragment.setErrorMessage(Errors.Message.from(messageRes));
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ARG_ERROR_MESSAGE, Errors.Message.from(messageRes));
+        fragment.setArguments(arguments);
 
         return fragment;
     }
 
     //endregion
 
+
+    //region Lifecycle
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,7 +115,7 @@ public class ErrorDialogFragment extends DialogFragment {
             dialog.setTitle(R.string.dialog_error_title);
         }
 
-        CharSequence message = getDisplayMessage();
+        CharSequence message = generateDisplayMessage();
         dialog.setMessage(message);
         Analytics.trackError(message.toString(), getErrorType(), getErrorContext(), getErrorOperation());
 
@@ -132,7 +143,7 @@ public class ErrorDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    private CharSequence getDisplayMessage() {
+    private CharSequence generateDisplayMessage() {
         CharSequence message;
         Errors.Message errorMessage = getErrorMessage();
         if (errorMessage != null) {
@@ -143,45 +154,32 @@ public class ErrorDialogFragment extends DialogFragment {
 
         if (getArguments().containsKey(ARG_FATAL_MESSAGE_RES)) {
             SpannableStringBuilder messageBuilder = new SpannableStringBuilder(message);
-            messageBuilder.append(getText(getFatalMessage()));
+            int fatalMessageRes = getArguments().getInt(ARG_FATAL_MESSAGE_RES);
+            messageBuilder.append(getText(fatalMessageRes));
             return messageBuilder;
         } else {
             return message;
         }
     }
 
+    //endregion
+
     //region Errors
 
-    private void setFatalMessage(@StringRes int messageRes) {
+    private void setAddendum(@StringRes int messageRes) {
         getArguments().putInt(ARG_FATAL_MESSAGE_RES, messageRes);
     }
 
-    private @StringRes int getFatalMessage() {
-        return getArguments().getInt(ARG_FATAL_MESSAGE_RES);
-    }
-
     private @Nullable Errors.Message getErrorMessage() {
-        return (Errors.Message) getArguments().getSerializable(ARG_ERROR_MESSAGE);
-    }
-
-    private void setErrorMessage(@Nullable Errors.Message message) {
-        getArguments().putSerializable(ARG_ERROR_MESSAGE, message);
+        return getArguments().getParcelable(ARG_ERROR_MESSAGE);
     }
 
     private @Nullable String getErrorContext() {
         return getArguments().getString(ARG_ERROR_CONTEXT);
     }
 
-    private void setErrorContext(@Nullable String errorContext) {
-        getArguments().putString(ARG_ERROR_CONTEXT, errorContext);
-    }
-
     private @Nullable String getErrorType() {
         return getArguments().getString(ARG_ERROR_TYPE);
-    }
-
-    private void setErrorType(@Nullable String errorType) {
-        getArguments().putString(ARG_ERROR_TYPE, errorType);
     }
 
     public @Nullable String getErrorOperation() {
