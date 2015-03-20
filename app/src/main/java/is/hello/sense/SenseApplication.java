@@ -36,6 +36,9 @@ public class SenseApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // Always do this first.
+        SenseApplication.instance = this;
+
         JodaTimeAndroid.init(this);
         Analytics.initialize(this);
         SessionLogger.init(this);
@@ -52,8 +55,6 @@ public class SenseApplication extends Application {
                             .clear()
                             .apply();
                 }, Functions.LOG_ERROR);
-
-        instance = this;
     }
 
     public void buildGraph() {

@@ -9,7 +9,29 @@ import android.support.annotation.StringRes;
 
 import java.io.Serializable;
 
+import is.hello.sense.SenseApplication;
+
 public class Errors {
+    public static final String LOG_TAG = "UnexpectedErrors";
+
+    /**
+     * Logs a given error object to the console, and to Analytics.
+     *
+     * @see is.hello.sense.functional.Functions#LOG_ERROR The global lambda.
+     */
+    public static void logError(@Nullable Throwable e) {
+        Logger.error(LOG_TAG, "An error occurred.", e);
+
+        Message message = getDisplayMessage(e);
+        String messageString;
+        if (message != null) {
+            messageString = message.resolve(SenseApplication.getInstance());
+        } else {
+            messageString = "Unknown";
+        }
+        Analytics.trackError(messageString, getType(e), getContextInfo(e), null);
+    }
+
     /**
      * Returns the type string for a given error object.
      */
@@ -54,6 +76,9 @@ public class Errors {
         return null;
     }
 
+    /**
+     * Describes an error with extended reporting facilities.
+     */
     public interface Reporting {
         /**
          * Returns the context of an error. Meaning and form
@@ -68,22 +93,57 @@ public class Errors {
         @NonNull Message getDisplayMessage();
     }
 
+
+    /**
+     * A string that can be formed in one of three ways:
+     * <ol>
+     *     <li>From a simple string resource.</li>
+     *     <li>From a string resource that has format arguments.</li>
+     *     <li>From a regular String instance</li>
+     * </ol>
+     * This makes it possible to represent localized messages,
+     * and fallback strings in a single return value.
+     * <p/>
+     * Always prefer parceling over serialization for Message if possible.
+     */
     public static final class Message implements Serializable, Parcelable {
-        private final @StringRes int formatRes;
+        /**
+         * A string resource that may or may not represent a format.
+         * <p/>
+         * A zero-value indicates the Message contains a String instance.
+         */
+        private final @StringRes int stringRes;
+
+        /**
+         * The arguments that go with the string resource, if any.
+         */
         private final @Nullable Serializable[] formatArgs;
+
+        /**
+         * A String instance. Should never by null in practice.
+         */
         private final @Nullable String message;
 
 
         //region Creation
 
+        /**
+         * Creates a message representing a string resource with format arguments.
+         */
         public static Message from(@StringRes int formatRes, Serializable... formatArgs) {
             return new Message(formatRes, formatArgs, null);
         }
 
+        /**
+         * Creates a message representing a simple string resource.
+         */
         public static Message from(@StringRes int formatRes) {
             return new Message(formatRes, null, null);
         }
 
+        /**
+         * Creates a message representing a String instance.
+         */
         public static Message from(@NonNull String message) {
             return new Message(0, null, message);
         }
@@ -93,10 +153,10 @@ public class Errors {
 
         //region Lifecycle
 
-        private Message(@StringRes int formatRes,
+        private Message(@StringRes int stringRes,
                         @Nullable Serializable[] formatArgs,
                         @Nullable String message) {
-            this.formatRes = formatRes;
+            this.stringRes = stringRes;
             this.formatArgs = formatArgs;
             this.message = message;
         }
@@ -122,7 +182,7 @@ public class Errors {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(formatRes);
+            dest.writeInt(stringRes);
             dest.writeArray(formatArgs);
             dest.writeString(message);
         }
@@ -132,12 +192,16 @@ public class Errors {
 
         //region Resolution
 
+        /**
+         * Resolves the contents of the Message using a
+         * given context to look up string resources.
+         */
         public String resolve(@NonNull Context context) {
-            if (formatRes > 0) {
+            if (stringRes > 0) {
                 if (formatArgs != null) {
-                    return context.getString(formatRes, (Object[]) formatArgs);
+                    return context.getString(stringRes, (Object[]) formatArgs);
                 } else {
-                    return context.getString(formatRes);
+                    return context.getString(stringRes);
                 }
             } else {
                 return message;
