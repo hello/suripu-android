@@ -328,7 +328,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
 
     public void presentError(Throwable e, @NonNull String operation) {
         hideAllActivityForFailure(() -> {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
             dialogFragment.setErrorOperation(operation);
         });
     }

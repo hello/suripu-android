@@ -3,6 +3,7 @@ package is.hello.sense.bluetooth.errors;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import is.hello.sense.R;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.util.Errors;
 
@@ -173,7 +174,17 @@ public class PeripheralBondAlterationError extends BluetoothError implements Err
 
     @Nullable
     @Override
-    public String getContext() {
+    public String getContextInfo() {
         return getReasonString(reason);
+    }
+
+    @NonNull
+    @Override
+    public Errors.Message getDisplayMessage() {
+        if (reason == PeripheralBondAlterationError.REASON_REMOTE_DEVICE_DOWN) {
+            return Errors.Message.from(R.string.error_bluetooth_out_of_range);
+        } else {
+            return Errors.Message.from(R.string.error_bluetooth_bonding_change_fmt, getContextInfo());
+        }
     }
 }

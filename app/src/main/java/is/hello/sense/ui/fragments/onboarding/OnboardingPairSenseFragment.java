@@ -218,7 +218,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
                 Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null, operation);
             } else {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
                 dialogFragment.setErrorOperation(operation);
             }
         });

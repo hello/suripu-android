@@ -48,8 +48,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private BluetoothAdapter bluetoothAdapter;
     private boolean didEnableBluetooth = false;
 
-    private int discoveryMissCount = 0;
-
     private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -254,7 +252,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
                 Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null, "Sense Details");
             } else {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
                 dialogFragment.setErrorOperation("Sense Details");
             }
 

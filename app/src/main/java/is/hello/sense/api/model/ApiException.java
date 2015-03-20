@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import is.hello.sense.R;
 import is.hello.sense.util.Errors;
 import retrofit.RetrofitError;
 
@@ -54,14 +55,6 @@ public class ApiException extends Exception implements Errors.Reporting {
             return null;
     }
 
-    public @Nullable String getReason() {
-        if (networkStackError.getResponse() != null) {
-            return networkStackError.getResponse().getReason();
-        } else {
-            return null;
-        }
-    }
-
     public boolean isNetworkError() {
         return (networkStackError.getKind() == RetrofitError.Kind.NETWORK);
     }
@@ -78,7 +71,7 @@ public class ApiException extends Exception implements Errors.Reporting {
 
     @Nullable
     @Override
-    public String getContext() {
+    public String getContextInfo() {
         String url = networkStackError.getUrl();
         Integer status = getStatus();
         if (status != null) {
@@ -86,5 +79,20 @@ public class ApiException extends Exception implements Errors.Reporting {
         } else {
             return url;
         }
+    }
+
+    @NonNull
+    @Override
+    public Errors.Message getDisplayMessage() {
+        if (isNetworkError()) {
+            return Errors.Message.from(R.string.error_network_unavailable);
+        } else if (getErrorResponse() != null) {
+            RegistrationError registrationError = RegistrationError.fromString(getErrorResponse().getMessage());
+            if (registrationError != RegistrationError.UNKNOWN) {
+                return Errors.Message.from(registrationError.messageRes);
+            }
+        }
+
+        return Errors.Message.from(getMessage());
     }
 }

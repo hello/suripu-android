@@ -76,7 +76,7 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
 
     public void presentError(Throwable e) {
         hideBlockingActivity(false, () -> {
-            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
         });
     }
 }

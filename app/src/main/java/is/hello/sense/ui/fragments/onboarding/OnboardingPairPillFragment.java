@@ -189,7 +189,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                 dialogFragment.setShowSupportLink(true);
                 dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
             } else {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
                 dialogFragment.setErrorOperation("Pair Pill");
             }
         });
