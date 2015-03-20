@@ -56,8 +56,6 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
-import is.hello.sense.ui.handholding.Tutorial;
-import is.hello.sense.ui.handholding.TutorialOverlayFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.util.Views;
@@ -437,9 +435,11 @@ public class HomeActivity
         fragment.setControlsAlarmShortcut(true);
 
         if (isInteractive) {
-            TutorialOverlayFragment.markShown(this, Tutorial.SWIPE_TIMELINE);
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Timeline.PROP_DATE, fragment.getDate().toString()
+            );
+            Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_SWIPE, properties);
         }
-        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_DATE_CHANGED, null);
     }
 
     @Override

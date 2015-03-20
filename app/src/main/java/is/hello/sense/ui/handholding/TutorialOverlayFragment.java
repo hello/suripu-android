@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -23,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.handholding.util.DismissTutorialsDialog;
@@ -50,7 +52,7 @@ public class TutorialOverlayFragment extends SenseDialogFragment implements Even
     private RelativeLayout contentLayout;
     private TextView descriptionText;
 
-    private InteractionView interactionView;
+    private @Nullable InteractionView interactionView;
     private View anchorView;
     private float interactionStartX = 0f, interactionStartY = 0f;
 
@@ -122,13 +124,14 @@ public class TutorialOverlayFragment extends SenseDialogFragment implements Even
 
         contentLayout.addView(descriptionText, tutorial.generateDescriptionLayoutParams());
 
-        View anchorView = getActivity().findViewById(tutorial.anchorId);
+        this.anchorView = getActivity().findViewById(tutorial.anchorId);
         if (anchorView != null) {
             if (anchorView.isLayoutRequested()) {
-                Views.observeNextLayout(anchorView)
-                     .subscribe(this::showInteractionFrom);
+                bindAndSubscribe(Views.observeNextLayout(anchorView),
+                                 ignored -> showInteractionFrom(),
+                                 Functions.LOG_ERROR);
             } else {
-                showInteractionFrom(anchorView);
+                showInteractionFrom();
             }
         }
 
@@ -149,7 +152,7 @@ public class TutorialOverlayFragment extends SenseDialogFragment implements Even
 
     //region Interactions
 
-    private void showInteractionFrom(@NonNull View anchorView) {
+    private void showInteractionFrom() {
         this.interactionView = new InteractionView(getActivity());
 
         int interactionMidX = interactionView.getMinimumWidth() / 2;
@@ -176,22 +179,22 @@ public class TutorialOverlayFragment extends SenseDialogFragment implements Even
                     })
                     .start();
         }, 150);
-
-        this.anchorView = anchorView;
     }
 
     private void interactionStarted() {
-        interactionView.stopAnimation();
+        if (interactionView != null) {
+            interactionView.stopAnimation();
 
-        animate(interactionView)
-                .setDuration(Animation.DURATION_VERY_FAST)
-                .fadeOut(View.GONE)
-                .start();
+            animate(interactionView)
+                    .setDuration(Animation.DURATION_VERY_FAST)
+                    .fadeOut(View.GONE)
+                    .start();
 
-        animate(descriptionText)
-                .setDuration(Animation.DURATION_VERY_FAST)
-                .fadeOut(View.GONE)
-                .start();
+            animate(descriptionText)
+                    .setDuration(Animation.DURATION_VERY_FAST)
+                    .fadeOut(View.GONE)
+                    .start();
+        }
     }
 
     private void interactionCanceled() {
@@ -221,7 +224,7 @@ public class TutorialOverlayFragment extends SenseDialogFragment implements Even
 
     @Override
     public boolean tryConsumeTouchEvent(@NonNull MotionEvent event) {
-        if (Views.isMotionEventInside(descriptionText, event)) {
+        if (getActivity() == null || Views.isMotionEventInside(descriptionText, event)) {
             return false;
         }
 
@@ -276,23 +279,27 @@ public class TutorialOverlayFragment extends SenseDialogFragment implements Even
 
     @Override
     public boolean tryConsumeTrackballEvent(@NonNull MotionEvent event) {
-        return getActivity().dispatchTrackballEvent(event);
+        return (getActivity() != null &&
+                getActivity().dispatchTrackballEvent(event));
     }
 
     @Override
     public boolean tryConsumeKeyEvent(@NonNull KeyEvent event) {
-        return (event.getKeyCode() != KeyEvent.KEYCODE_BACK &&
+        return (getActivity() != null &&
+                event.getKeyCode() != KeyEvent.KEYCODE_BACK &&
                 getActivity().dispatchKeyEvent(event));
     }
 
     @Override
     public boolean tryConsumeKeyShortcutKey(@NonNull KeyEvent event) {
-        return getActivity().dispatchKeyShortcutEvent(event);
+        return (getActivity() != null &&
+                getActivity().dispatchKeyShortcutEvent(event));
     }
 
     @Override
     public boolean tryConsumePopulateAccessibilityEvent(@NonNull AccessibilityEvent event) {
-        return getActivity().dispatchPopulateAccessibilityEvent(event);
+        return (getActivity() != null &&
+                getActivity().dispatchPopulateAccessibilityEvent(event));
     }
 
     //endregion
