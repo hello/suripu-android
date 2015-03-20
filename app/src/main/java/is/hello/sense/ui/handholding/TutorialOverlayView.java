@@ -60,7 +60,7 @@ public class TutorialOverlayView extends RelativeLayout {
         this.tutorial = tutorial;
 
         LayoutInflater inflater = LayoutInflater.from(activity);
-        this.descriptionText = (TextView) inflater.inflate(R.layout.sub_fragment_tutorial_description, this, false);
+        this.descriptionText = (TextView) inflater.inflate(R.layout.item_tutorial_description, this, false);
         descriptionText.setText(tutorial.descriptionRes);
         Views.setSafeOnClickListener(descriptionText, ignored -> interactionCompleted());
 
@@ -134,8 +134,8 @@ public class TutorialOverlayView extends RelativeLayout {
         this.animatorContext = animatorContext;
     }
 
-    public void show(@NonNull Activity from, @IdRes int containerRes) {
-        this.container = (ViewGroup) from.findViewById(containerRes);
+    public void show(@IdRes int containerRes) {
+        this.container = (ViewGroup) activity.findViewById(containerRes);
         if (container == null) {
             String idName = getResources().getResourceName(containerRes);
             throw new IllegalStateException("Could not find view by id " + idName);
@@ -227,6 +227,8 @@ public class TutorialOverlayView extends RelativeLayout {
 
     private void interactionCompleted() {
         Log.i(getClass().getSimpleName(), "interactionCompleted()");
+
+        tutorial.markShown(getContext());
 
         dismiss();
     }

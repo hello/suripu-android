@@ -6,7 +6,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.DimenRes;
@@ -56,7 +55,7 @@ public enum Tutorial {
         return "tutorial_" + toString().toLowerCase() + "_shown";
     }
 
-    public boolean shouldShow(@NonNull Activity context) {
+    public boolean shouldShow(@NonNull Context context) {
         SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
         return (!preferences.getBoolean(Constants.HANDHOLDING_SUPPRESSED, false) &&
                 !preferences.getBoolean(getShownKey(), false));
