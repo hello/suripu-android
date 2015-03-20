@@ -9,29 +9,7 @@ import android.support.annotation.StringRes;
 
 import java.io.Serializable;
 
-import is.hello.sense.SenseApplication;
-
 public class Errors {
-    public static final String LOG_TAG = "UnexpectedErrors";
-
-    /**
-     * Logs a given error object to the console, and to Analytics.
-     *
-     * @see is.hello.sense.functional.Functions#LOG_ERROR The global lambda.
-     */
-    public static void logError(@Nullable Throwable e) {
-        Logger.error(LOG_TAG, "An error occurred.", e);
-
-        Message message = getDisplayMessage(e);
-        String messageString;
-        if (message != null) {
-            messageString = message.resolve(SenseApplication.getInstance());
-        } else {
-            messageString = "Unknown";
-        }
-        Analytics.trackError(messageString, getType(e), getContextInfo(e), null);
-    }
-
     /**
      * Returns the type string for a given error object.
      */

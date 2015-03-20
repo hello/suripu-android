@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import is.hello.sense.BuildConfig;
+import is.hello.sense.SenseApplication;
 
 public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
@@ -473,6 +474,17 @@ public class Analytics {
             Global.PROP_ERROR_OPERATION, errorOperation
         );
         trackEvent(Global.EVENT_ERROR, properties);
+    }
+
+    public static void trackError(@Nullable Throwable e, @Nullable String errorOperation) {
+        Errors.Message message = Errors.getDisplayMessage(e);
+        String messageString;
+        if (message != null && SenseApplication.getInstance() != null) {
+            messageString = message.resolve(SenseApplication.getInstance());
+        } else {
+            messageString = "Unknown";
+        }
+        trackError(messageString, Errors.getType(e), Errors.getContextInfo(e), errorOperation);
     }
 
     //endregion

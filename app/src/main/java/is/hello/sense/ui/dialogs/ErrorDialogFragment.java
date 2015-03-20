@@ -27,12 +27,14 @@ import is.hello.sense.util.Errors;
 public class ErrorDialogFragment extends DialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();
 
+    private static final String ARG_ERROR_MESSAGE = ErrorDialogFragment.class.getName() + ".ARG_ERROR_MESSAGE";
     private static final String ARG_ERROR_TYPE = ErrorDialogFragment.class.getName() + ".ARG_ERROR_TYPE";
     private static final String ARG_ERROR_CONTEXT = ErrorDialogFragment.class.getName() + ".ARG_ERROR_CONTEXT";
     private static final String ARG_ERROR_OPERATION = ErrorDialogFragment.class.getName() + ".ARG_ERROR_OPERATION";
-    private static final String ARG_ERROR_MESSAGE = ErrorDialogFragment.class.getName() + ".ARG_ERROR_MESSAGE";
+
     private static final String ARG_SHOW_SUPPORT_LINK = ErrorDialogFragment.class.getName() + ".ARG_SHOW_SUPPORT_LINK";
     private static final String ARG_FATAL_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_FATAL_MESSAGE_RES";
+
     private static final String ARG_ACTION_INTENT = ErrorDialogFragment.class.getName() + ".ARG_ACTION_INTENT";
     private static final String ARG_ACTION_TITLE_RES = ErrorDialogFragment.class.getName() + ".ARG_ACTION_TITLE_RES";
 
@@ -72,20 +74,18 @@ public class ErrorDialogFragment extends DialogFragment {
     }
 
     public static ErrorDialogFragment newInstance(@NonNull String message) {
-        ErrorDialogFragment fragment = new ErrorDialogFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(ARG_ERROR_MESSAGE, Errors.Message.from(message));
-        fragment.setArguments(arguments);
-
-        return fragment;
+        return newInstance(Errors.Message.from(message));
     }
 
     public static ErrorDialogFragment newInstance(@StringRes int messageRes) {
+        return newInstance(Errors.Message.from(messageRes));
+    }
+
+    public static ErrorDialogFragment newInstance(@NonNull Errors.Message message) {
         ErrorDialogFragment fragment = new ErrorDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putParcelable(ARG_ERROR_MESSAGE, Errors.Message.from(messageRes));
+        arguments.putParcelable(ARG_ERROR_MESSAGE, message);
         fragment.setArguments(arguments);
 
         return fragment;
