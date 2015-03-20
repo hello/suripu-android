@@ -2,6 +2,10 @@ package is.hello.sense.bluetooth.errors;
 
 import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import is.hello.sense.R;
+import is.hello.sense.util.Errors;
 
 /**
  * Used to report errors from the gatt layer of the Android bluetooth stack.
@@ -9,7 +13,7 @@ import android.support.annotation.NonNull;
  * This error type generally should not be used outside of direct interactions
  * with a {@see is.hello.sense.bluetooth.stacks.Peripheral} object.
  */
-public class BluetoothGattError extends BluetoothError {
+public class BluetoothGattError extends BluetoothError implements Errors.Reporting {
     //region Undocumented error codes
 
     public static final int GATT_ILLEGAL_PARAMETER = 0x0087;
@@ -139,5 +143,37 @@ public class BluetoothGattError extends BluetoothError {
         // layer is unstable, and won't be fixed until the user
         // power cycles their phone's wireless radios.
         return (statusCode == BluetoothGattError.GATT_STACK_ERROR);
+    }
+
+    @Nullable
+    @Override
+    public String getContextInfo() {
+        return statusToString(statusCode);
+    }
+
+    @NonNull
+    @Override
+    public Errors.Message getDisplayMessage() {
+        switch (statusCode) {
+            case BluetoothGattError.GATT_STACK_ERROR: {
+                return Errors.Message.from(R.string.error_bluetooth_gatt_stack);
+            }
+
+            case BluetoothGattError.GATT_CONN_TERMINATE_LOCAL_HOST: {
+                return Errors.Message.from(R.string.error_bluetooth_gatt_connection_lost);
+            }
+
+            case BluetoothGattError.GATT_CONN_TIMEOUT: {
+                return Errors.Message.from(R.string.error_bluetooth_gatt_connection_timeout);
+            }
+
+            case BluetoothGattError.GATT_CONN_FAIL_ESTABLISH: {
+                return Errors.Message.from(R.string.error_bluetooth_gatt_connection_failed);
+            }
+
+            default: {
+                return Errors.Message.from(R.string.error_bluetooth_gatt_failure_fmt, getContextInfo());
+            }
+        }
     }
 }

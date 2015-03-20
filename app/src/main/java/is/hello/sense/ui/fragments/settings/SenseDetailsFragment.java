@@ -48,8 +48,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private BluetoothAdapter bluetoothAdapter;
     private boolean didEnableBluetooth = false;
 
-    private int discoveryMissCount = 0;
-
     private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -252,9 +250,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                     dialogFragment.show(getFragmentManager(), PromptForHighPowerDialogFragment.TAG);
                 }
 
-                Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null, "Sense Details");
+                Analytics.trackError(e, "Sense Details");
             } else {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
                 dialogFragment.setErrorOperation("Sense Details");
             }
 
@@ -278,7 +276,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                              Logger.error(getClass().getSimpleName(), "Could not get connectivity state, ignoring.", e);
                              showConnectedSenseActions(null);
 
-                             Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), "Ignored", "Sense Details");
+                             Analytics.trackError(e, "Sense Details");
                          });
     }
 
