@@ -1,6 +1,10 @@
 package is.hello.sense.bluetooth.errors;
 
-public class OperationTimeoutError extends BluetoothError {
+import android.support.annotation.Nullable;
+
+import is.hello.sense.util.Errors;
+
+public class OperationTimeoutError extends BluetoothError implements Errors.Reporting {
     public final Operation operation;
 
     public OperationTimeoutError(Operation operation, Throwable cause) {
@@ -10,6 +14,12 @@ public class OperationTimeoutError extends BluetoothError {
 
     public OperationTimeoutError(Operation operation) {
         this(operation, null);
+    }
+
+    @Nullable
+    @Override
+    public String getContext() {
+        return operation.toString();
     }
 
     public static enum Operation {

@@ -2,6 +2,9 @@ package is.hello.sense.bluetooth.errors;
 
 import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import is.hello.sense.util.Errors;
 
 /**
  * Used to report errors from the gatt layer of the Android bluetooth stack.
@@ -9,7 +12,7 @@ import android.support.annotation.NonNull;
  * This error type generally should not be used outside of direct interactions
  * with a {@see is.hello.sense.bluetooth.stacks.Peripheral} object.
  */
-public class BluetoothGattError extends BluetoothError {
+public class BluetoothGattError extends BluetoothError implements Errors.Reporting {
     //region Undocumented error codes
 
     public static final int GATT_ILLEGAL_PARAMETER = 0x0087;
@@ -139,5 +142,11 @@ public class BluetoothGattError extends BluetoothError {
         // layer is unstable, and won't be fixed until the user
         // power cycles their phone's wireless radios.
         return (statusCode == BluetoothGattError.GATT_STACK_ERROR);
+    }
+
+    @Nullable
+    @Override
+    public String getContext() {
+        return statusToString(statusCode);
     }
 }

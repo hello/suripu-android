@@ -38,7 +38,7 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
-import retrofit.RetrofitError;
+import is.hello.sense.util.Errors;
 
 public class ErrorDialogFragment extends DialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();
@@ -67,7 +67,6 @@ public class ErrorDialogFragment extends DialogFragment {
                                                             @NonNull Context context,
                                                             @NonNull Throwable e) {
         String message = null;
-        String errorContext = null;
         if (e instanceof BluetoothDisabledError) {
             message = context.getString(R.string.error_bluetooth_disabled);
         } else if (e instanceof BluetoothGattError) {
@@ -100,7 +99,6 @@ public class ErrorDialogFragment extends DialogFragment {
             }
         } else if (e instanceof OperationTimeoutError) {
             message = context.getString(R.string.error_generic_bluetooth_timeout);
-            errorContext = ((OperationTimeoutError) e).operation.toString();
         } else if (e instanceof PeripheralBondAlterationError) {
             int failureReason = ((PeripheralBondAlterationError) e).reason;
             if (failureReason == PeripheralBondAlterationError.REASON_REMOTE_DEVICE_DOWN) {
@@ -108,8 +106,6 @@ public class ErrorDialogFragment extends DialogFragment {
             } else {
                 message = context.getString(R.string.error_bluetooth_bonding_change_fmt, PeripheralBondAlterationError.getReasonString(failureReason));
             }
-
-            errorContext = PeripheralBondAlterationError.getReasonString(failureReason);
         } else if (e instanceof PeripheralConnectionError) {
             message = context.getString(R.string.error_bluetooth_no_connection);
         } else if (e instanceof PeripheralServiceDiscoveryFailedError) {
@@ -145,8 +141,6 @@ public class ErrorDialogFragment extends DialogFragment {
                     break;
                 }
             }
-
-            errorContext = reason.toString();
         } else if (e instanceof SensePeripheralError) {
             SenseCommandProtos.ErrorType errorType = ((SensePeripheralError) e).errorType;
             switch (errorType) {
@@ -185,8 +179,6 @@ public class ErrorDialogFragment extends DialogFragment {
                     message = errorType.toString();
                     break;
             }
-
-            errorContext = errorType.toString();
         }
 
 
@@ -195,8 +187,8 @@ public class ErrorDialogFragment extends DialogFragment {
             dialogFragment.setShowBluetoothSupport(true);
             dialogFragment.setFatalMessage(R.string.error_addendum_unstable_stack);
         }
-        dialogFragment.setErrorType(e.getClass().getCanonicalName());
-        dialogFragment.setErrorContext(errorContext);
+        dialogFragment.setErrorType(Errors.getType(e));
+        dialogFragment.setErrorContext(Errors.getContext(e));
         dialogFragment.setShowSupportLink(true);
         dialogFragment.show(fm, TAG);
 
@@ -227,18 +219,11 @@ public class ErrorDialogFragment extends DialogFragment {
                         }
                     }
                 }
-
-                RetrofitError stackError = error.getNetworkStackError();
-                fragment.setErrorOperation(stackError.getUrl());
-                if (stackError.getResponse() != null) {
-                    fragment.setErrorContext(Integer.toString(stackError.getResponse().getStatus()));
-                }
             }
         }
         fragment.setArguments(arguments);
-        if (e != null) {
-            fragment.setErrorType(e.getClass().getCanonicalName());
-        }
+        fragment.setErrorType(Errors.getType(e));
+        fragment.setErrorContext(Errors.getContext(e));
 
         return fragment;
     }

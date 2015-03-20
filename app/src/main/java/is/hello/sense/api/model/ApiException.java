@@ -4,9 +4,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import is.hello.sense.util.Errors;
 import retrofit.RetrofitError;
 
-public class ApiException extends Exception {
+public class ApiException extends Exception implements Errors.Reporting {
     private final ErrorResponse errorResponse;
     private final RetrofitError networkStackError;
 
@@ -72,6 +73,18 @@ public class ApiException extends Exception {
             return errorResponse.getMessage();
         } else {
             return networkStackError.getMessage();
+        }
+    }
+
+    @Nullable
+    @Override
+    public String getContext() {
+        String url = networkStackError.getUrl();
+        Integer status = getStatus();
+        if (status != null) {
+            return status + ": " + url;
+        } else {
+            return url;
         }
     }
 }

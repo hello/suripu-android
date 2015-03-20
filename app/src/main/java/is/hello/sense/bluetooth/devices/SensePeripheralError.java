@@ -4,8 +4,9 @@ import android.support.annotation.Nullable;
 
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.BluetoothError;
+import is.hello.sense.util.Errors;
 
-public class SensePeripheralError extends BluetoothError {
+public class SensePeripheralError extends BluetoothError implements Errors.Reporting {
     public final SenseCommandProtos.ErrorType errorType;
 
     public SensePeripheralError(@Nullable SenseCommandProtos.ErrorType errorType, @Nullable Throwable cause) {
@@ -22,5 +23,11 @@ public class SensePeripheralError extends BluetoothError {
         return (error != null && (error instanceof SensePeripheralError) &&
                 ((SensePeripheralError) error).errorType == errorType);
 
+    }
+
+    @Nullable
+    @Override
+    public String getContext() {
+        return errorType.toString();
     }
 }

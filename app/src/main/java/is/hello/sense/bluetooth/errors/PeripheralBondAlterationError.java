@@ -1,14 +1,16 @@
 package is.hello.sense.bluetooth.errors;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.util.Errors;
 
 /**
  * Used to indicate that a bond could not be created or removed for a peripheral.
  * Generally indicates an unstable bluetooth service on the host device.
  */
-public class PeripheralBondAlterationError extends BluetoothError {
+public class PeripheralBondAlterationError extends BluetoothError implements Errors.Reporting {
     public final int reason;
 
     public PeripheralBondAlterationError(int reason) {
@@ -167,5 +169,11 @@ public class PeripheralBondAlterationError extends BluetoothError {
         // bond state of the bluetooth device has gotten into a broken
         // state, and won't be fixed until the user restarts their phone.
         return (reason == PeripheralBondAlterationError.REASON_REMOVED);
+    }
+
+    @Nullable
+    @Override
+    public String getContext() {
+        return getReasonString(reason);
     }
 }
