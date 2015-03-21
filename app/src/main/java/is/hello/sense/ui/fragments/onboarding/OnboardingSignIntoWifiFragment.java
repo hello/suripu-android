@@ -84,7 +84,11 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
         JSONObject properties = Analytics.createProperties(
             Analytics.Onboarding.PROP_WIFI_IS_OTHER, (network == null)
         );
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_PASSWORD, properties);
+        if (isWifiOnlySession()) {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_PASSWORD_IN_APP, properties);
+        } else {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_PASSWORD, properties);
+        }
 
         setRetainInstance(true);
     }
@@ -261,7 +265,11 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
             JSONObject properties = Analytics.createProperties(
                 Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
             );
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED, properties);
+            if (isWifiOnlySession()) {
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP, properties);
+            } else {
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED, properties);
+            }
 
             bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, securityType, password), ignored -> {
                 this.hasConnectedToNetwork = true;
@@ -328,7 +336,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
 
     public void presentError(Throwable e, @NonNull String operation) {
         hideAllActivityForFailure(() -> {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
             dialogFragment.setErrorOperation(operation);
         });
     }

@@ -41,7 +41,11 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
         addPresenter(hardwarePresenter);
 
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI, null);
+        if (isWifiOnlySession()) {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_IN_APP, null);
+        } else {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI, null);
+        }
 
         setRetainInstance(true);
     }
@@ -70,7 +74,11 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         this.rescanButton = (Button) view.findViewById(R.id.fragment_onboarding_wifi_networks_rescan);
         rescanButton.setEnabled(false);
         Views.setSafeOnClickListener(rescanButton, ignored -> {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_RESCAN, null);
+            if (isWifiOnlySession()) {
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_RESCAN_IN_APP, null);
+            } else {
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_RESCAN, null);
+            }
             rescan();
         });
 
@@ -86,7 +94,11 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         super.onViewCreated(view, savedInstanceState);
 
         if (networkAdapter.getCount() == 0) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_SCAN, null);
+            if (isWifiOnlySession()) {
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_SCAN_IN_APP, null);
+            } else {
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_SCAN, null);
+            }
             rescan();
         } else {
             scanningIndicatorLabel.setVisibility(View.GONE);
@@ -163,7 +175,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             rescanButton.setVisibility(View.VISIBLE);
             rescanButton.setEnabled(true);
 
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
             dialogFragment.setErrorOperation("Scan for networks");
         }, null);
     }
@@ -176,7 +188,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         rescanButton.setVisibility(View.VISIBLE);
         rescanButton.setEnabled(true);
 
-        ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+        ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
         dialogFragment.setErrorOperation("Scan for networks");
     }
 }

@@ -108,6 +108,12 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.adapter = null;
+    }
+
+    @Override
     public void onSwipeInteractionDidFinish() {
         WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_current_conditions);
     }

@@ -252,10 +252,16 @@ public class HomeActivity
             this.showUnderside = false;
         }
 
-        if ((System.currentTimeMillis() - lastUpdated) > Constants.STALE_INTERVAL_MS && !isCurrentFragmentLastNight()) {
-            Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
-            TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
-            viewPager.setCurrentFragment(fragment);
+        if ((System.currentTimeMillis() - lastUpdated) > Constants.STALE_INTERVAL_MS) {
+            if (isCurrentFragmentLastNight()) {
+                Logger.info(getClass().getSimpleName(), "Timeline content stale, reloading.");
+                TimelineFragment fragment = viewPager.getCurrentFragment();
+                fragment.update();
+            } else {
+                Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
+                TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
+                viewPager.setCurrentFragment(fragment);
+            }
 
 
             Fragment navigatorFragment = getFragmentManager().findFragmentByTag(TimelineNavigatorFragment.TAG);

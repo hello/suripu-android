@@ -5,10 +5,8 @@ import android.support.annotation.Nullable;
 import java.io.Closeable;
 import java.io.IOException;
 
-import is.hello.sense.api.model.ApiException;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
-import retrofit.RetrofitError;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
@@ -33,19 +31,7 @@ public final class Functions {
     }
     public static final Action1<Throwable> LOG_ERROR = e -> {
         Logger.error("UnexpectedErrors", "An error occurred.", e);
-
-        String operation = null;
-        String context = "Ignored";
-        if (e instanceof ApiException) {
-            ApiException error = (ApiException) e;
-            RetrofitError stackError = error.getNetworkStackError();
-            operation = stackError.getUrl();
-            if (stackError.getResponse() != null) {
-                context = Integer.toString(stackError.getResponse().getStatus());
-            }
-        }
-
-        Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), context, operation);
+        Analytics.trackError(e, null);
     };
     public static final Func1<Boolean, Boolean> IS_TRUE = is -> is;
     public static final Func1<Boolean, Boolean> IS_FALSE = is -> !is;

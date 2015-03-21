@@ -1,6 +1,12 @@
 package is.hello.sense.bluetooth.errors;
 
-public class PeripheralConnectionError extends BluetoothError {
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import is.hello.sense.R;
+import is.hello.sense.util.Errors;
+
+public class PeripheralConnectionError extends BluetoothError implements Errors.Reporting {
     public PeripheralConnectionError() {
         super("You are not connected");
     }
@@ -9,11 +15,15 @@ public class PeripheralConnectionError extends BluetoothError {
         super(detailMessage);
     }
 
-    public PeripheralConnectionError(String detailMessage, Throwable throwable) {
-        super(detailMessage, throwable);
+    @Nullable
+    @Override
+    public String getContextInfo() {
+        return null;
     }
 
-    public PeripheralConnectionError(Throwable throwable) {
-        super(throwable);
+    @NonNull
+    @Override
+    public Errors.Message getDisplayMessage() {
+        return Errors.Message.from(R.string.error_bluetooth_no_connection);
     }
 }

@@ -16,7 +16,6 @@ import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheralError;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -40,7 +39,11 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_PILL, null);
+        if (isPairOnlySession()) {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_PILL_IN_APP, null);
+        } else {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_PILL, null);
+        }
 
         setRetainInstance(true);
     }
@@ -99,7 +102,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         getFragmentManager().executePendingTransactions();
         LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
             coordinator.postOnResume(() -> {
-                if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false)) {
+                if (isPairOnlySession()) {
                     hardwarePresenter.clearPeripheral();
                     getOnboardingActivity().finish();
                 } else {
@@ -177,7 +180,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                 MessageDialogFragment messageDialogFragment = MessageDialogFragment.newInstance(getString(R.string.error_title_sleep_pill_scan_timeout), getString(R.string.error_message_sleep_pill_scan_timeout));
                 messageDialogFragment.show(getFragmentManager(), MessageDialogFragment.TAG);
 
-                Analytics.trackError(e.getMessage(), e.getClass().getCanonicalName(), null, "Pair Pill");
+                Analytics.trackError(e, "Pair Pill");
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
                 ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_network_failure_pair_pill));
                 dialogFragment.setErrorOperation("Pair Pill");
@@ -189,7 +192,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                 dialogFragment.setShowSupportLink(true);
                 dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
             } else {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), getActivity(), e);
+                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
                 dialogFragment.setErrorOperation("Pair Pill");
             }
         });
