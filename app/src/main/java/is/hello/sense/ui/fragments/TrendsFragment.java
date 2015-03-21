@@ -76,6 +76,13 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.trendsAdapter = null;
+    }
+
+    @Override
     public void onSwipeInteractionDidFinish() {
         WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_trends);
     }

@@ -109,6 +109,12 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.adapter = null;
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 

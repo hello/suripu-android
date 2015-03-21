@@ -20,7 +20,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.graph.presenters.InsightsPresenter;
-import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
@@ -112,6 +111,12 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.insightsAdapter = null;
+    }
+
+    @Override
     public void onSwipeInteractionDidFinish() {
 
     }
@@ -119,15 +124,6 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
     @Override
     public void onUpdate() {
         onRefresh();
-    }
-
-    @Override
-    public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
-
-        if (level >= Presenter.BASE_TRIM_LEVEL) {
-            insightsAdapter.clear();
-        }
     }
 
 
