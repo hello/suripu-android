@@ -1,10 +1,14 @@
 package is.hello.sense.bluetooth.stacks.android;
 
-import android.bluetooth.BluetoothAdapter;
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.sense.bluetooth.errors.BluetoothLeScanError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
@@ -22,38 +27,59 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>>, BluetoothAdapter.LeScanCallback {
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnSubscribe<List<Peripheral>> {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull PeripheralCriteria peripheralCriteria;
-    private final @NonNull Map<String, Pair<BluetoothDevice, Integer>> results = new HashMap<>();
+    private final @NonNull BluetoothLeScanner scanner;
+    private final @NonNull Map<String, ScanResult> results = new HashMap<>();
 
     private @Nullable Subscriber<? super List<Peripheral>> subscriber;
     private @Nullable Subscription timeout;
     private boolean scanning = false;
 
-    PeripheralScanner(@NonNull AndroidBluetoothStack stack, @NonNull PeripheralCriteria peripheralCriteria) {
+    LollipopLePeripheralScanner(@NonNull AndroidBluetoothStack stack, @NonNull PeripheralCriteria peripheralCriteria) {
         this.stack = stack;
         this.peripheralCriteria = peripheralCriteria;
+        this.scanner = stack.getAdapter().getBluetoothLeScanner();
     }
 
 
     @Override
     public void call(Subscriber<? super List<Peripheral>> subscriber) {
-        Logger.info(BluetoothStack.LOG_TAG, "Beginning Scan");
+        Logger.info(BluetoothStack.LOG_TAG, "Beginning Scan (Lollipop impl)");
 
         this.subscriber = subscriber;
         Subscription unsubscribe = Subscriptions.create(this::onConcludeScan);
         subscriber.add(unsubscribe);
 
         this.scanning = true;
-        stack.getAdapter().startLeScan(this);
+        ScanSettings.Builder builder = new ScanSettings.Builder();
+        builder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);
+        scanner.startScan(null, builder.build(), this);
+
         this.timeout = stack.scheduler
                             .createWorker()
                             .schedule(this::onConcludeScan, peripheralCriteria.duration, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanResponse) {
+    public void onBatchScanResults(List<ScanResult> results) {
+        Logger.info(BluetoothStack.LOG_TAG, "Forwarding batch results");
+
+        for (ScanResult result : results) {
+            onScanResult(ScanSettings.CALLBACK_TYPE_ALL_MATCHES, result);
+        }
+    }
+
+    @Override
+    public void onScanResult(int callbackType, ScanResult result) {
+        if (result.getScanRecord() == null) {
+            return;
+        }
+
+        BluetoothDevice bluetoothDevice = result.getDevice();
+        byte[] scanResponse = result.getScanRecord().getBytes();
         AdvertisingData advertisingData = AdvertisingData.parse(scanResponse);
         Logger.info(BluetoothStack.LOG_TAG, "Found device " + bluetoothDevice.getName() + " - " + bluetoothDevice.getAddress() + " " + advertisingData);
 
@@ -65,11 +91,28 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
             return;
         }
 
-        results.put(bluetoothDevice.getAddress(), Pair.create(bluetoothDevice, rssi));
+        results.put(bluetoothDevice.getAddress(), result);
 
         if (results.size() >= peripheralCriteria.limit) {
             Logger.info(BluetoothStack.LOG_TAG, "Discovery limit reached, concluding scan");
             onConcludeScan();
+        }
+    }
+
+    @Override
+    public void onScanFailed(int errorCode) {
+        this.scanning = false;
+
+        if (timeout != null) {
+            timeout.unsubscribe();
+            this.timeout = null;
+        }
+
+        BluetoothLeScanError error = new BluetoothLeScanError(errorCode);
+        if (subscriber != null) {
+            subscriber.onError(error);
+        } else {
+            Logger.error(BluetoothStack.LOG_TAG, "LePeripheralScanner invoked without a subscriber.", error);
         }
     }
 
@@ -79,7 +122,7 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
         }
 
         this.scanning = false;
-        stack.getAdapter().stopLeScan(this);
+        scanner.stopScan(this);
 
         if (timeout != null) {
             timeout.unsubscribe();
@@ -87,8 +130,8 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
         }
 
         List<Peripheral> peripherals = new ArrayList<>();
-        for (Pair<BluetoothDevice, Integer> scanRecord : results.values()) {
-            peripherals.add(new AndroidPeripheral(stack, scanRecord.first, scanRecord.second));
+        for (ScanResult result : results.values()) {
+            peripherals.add(new AndroidPeripheral(stack, result.getDevice(), result.getRssi()));
         }
         Logger.info(BluetoothStack.LOG_TAG, "Completed Scan " + peripherals);
 
@@ -96,7 +139,7 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
             subscriber.onNext(peripherals);
             subscriber.onCompleted();
         } else {
-            Logger.warn(BluetoothStack.LOG_TAG, "PeripheralScanner invoked without a subscriber, ignoring.");
+            Logger.warn(BluetoothStack.LOG_TAG, "LePeripheralScanner invoked without a subscriber, ignoring.");
         }
     }
 }

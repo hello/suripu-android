@@ -229,6 +229,7 @@ so you can sleep better.</string>
     <string name="error_message_sleep_pill_scan_timeout">Sense couldn\'t register your Sleep Pill. Please try pairing again. Try moving your Sleep Pill closer to Sense, and shaking it harder.</string>
     <string name="error_sense_not_found">Could not detect a Sense nearby. Make sure Sense is plugged in, nearby, and in pairing mode. Ensure no other devices are connected with Sense over Bluetooth.</string>
     <string name="error_peripheral_connection_lost">The connection to your Sense was lost.</string>
+    <string name="error_peripheral_scan_failure">Could not detect a Sense because an error occurred with your device‘s Bluetooth, please try again.</string>
     <string name="onboarding_register_info_explanation">This information is used to provide you with more personalized sleep insights.</string>
     <string name="error_bluetooth_disabled">Please enable Bluetooth to continue.</string>
     <string name="error_bluetooth_gatt_failure_fmt">An internal Bluetooth error has occurred (%1$s)</string>
