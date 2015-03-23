@@ -142,7 +142,12 @@ public class AndroidPeripheral implements Peripheral {
                     hasRetried.set(true);
                     gatt.close();
                     this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
-                    timeout.reschedule();
+                    //noinspection ConstantConditions
+                    if (gatt != null) {
+                        timeout.reschedule();
+                    } else {
+                        s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR));
+                    }
                 } else if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
                     timeout.unschedule();
 
@@ -182,7 +187,12 @@ public class AndroidPeripheral implements Peripheral {
                             // We can't reuse a BluetoothGatt object after removing a bond, because, whatever.
                             gatt.close();
                             this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
-                            timeout.schedule();
+                            //noinspection ConstantConditions
+                            if (gatt != null) {
+                                timeout.schedule();
+                            } else {
+                                s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR));
+                            }
                         }, e -> {
                             Logger.warn(LOG_TAG, "Could not remove previously persisted bonding information, ignoring.", e);
 
