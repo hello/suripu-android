@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
+import is.hello.sense.bluetooth.errors.PeripheralBusyError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
@@ -229,8 +230,11 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     @Override
     public Observable<Peripheral> disconnect() {
-        if (getConnectionStatus() != STATUS_CONNECTED) {
-            return Observable.error(new PeripheralConnectionError());
+        int connectionStatus = getConnectionStatus();
+        if (connectionStatus == STATUS_DISCONNECTED || connectionStatus == STATUS_DISCONNECTING) {
+            return Observable.just(this);
+        } else if (connectionStatus == STATUS_CONNECTING) {
+            return Observable.error(new PeripheralBusyError());
         }
 
         Logger.info(LOG_TAG, "Disconnecting " + toString());
