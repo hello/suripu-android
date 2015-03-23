@@ -118,7 +118,7 @@ public class AndroidPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<Peripheral> connect() {
+    public Observable<Peripheral> connect(@NonNull OperationTimeout timeout) {
         if (this.gatt != null) {
             if (getConnectionStatus() == STATUS_CONNECTED) {
                 Logger.warn(LOG_TAG, "Redundant call to connect(), ignoring.");
@@ -131,7 +131,7 @@ public class AndroidPeripheral implements Peripheral {
 
         return stack.newConfiguredObservable(s -> {
             AtomicBoolean hasRetried = new AtomicBoolean(false);
-            gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
+            GattDispatcher.ConnectionStateListener listener = (gatt, gattStatus, newState, removeThisListener) -> {
                 // The first connection attempt made after the user has power-cycled their
                 // bluetooth radio will result in a 133/gatt stack error. Trying again
                 // seems to work 100% of the time.
@@ -141,12 +141,17 @@ public class AndroidPeripheral implements Peripheral {
                     hasRetried.set(true);
                     gatt.close();
                     this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
+                    timeout.reschedule();
                 } else if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
+                    timeout.unschedule();
+
                     Logger.error(LOG_TAG, "Could not connect. " + BluetoothGattError.statusToString(gattStatus));
                     s.onError(new BluetoothGattError(gattStatus));
 
                     removeThisListener.call();
                 } else if (newState == STATUS_CONNECTED) {
+                    timeout.unschedule();
+
                     Logger.info(LOG_TAG, "Connected " + toString());
 
                     Observable<Intent> bluetoothStateObserver = fromBroadcast(stack.applicationContext, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
@@ -176,6 +181,7 @@ public class AndroidPeripheral implements Peripheral {
                             // We can't reuse a BluetoothGatt object after removing a bond, because, whatever.
                             gatt.close();
                             this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
+                            timeout.schedule();
                         }, e -> {
                             Logger.warn(LOG_TAG, "Could not remove previously persisted bonding information, ignoring.", e);
 
@@ -186,14 +192,36 @@ public class AndroidPeripheral implements Peripheral {
                         });
                     }
                 }
-            });
+            };
+            gattDispatcher.addConnectionStateListener(listener);
+
+            timeout.setTimeoutAction(() -> {
+                timeout.unschedule();
+
+                gattDispatcher.removeConnectionStateListener(listener);
+                if (bluetoothStateSubscription != null) {
+                    bluetoothStateSubscription.unsubscribe();
+                    this.bluetoothStateSubscription = null;
+                }
+
+                s.onError(new OperationTimeoutError(OperationTimeoutError.Operation.CONNECT));
+            }, stack.scheduler);
 
             Logger.info(LOG_TAG, "Connecting " + toString());
 
             if (gatt != null) {
-                gatt.connect();
+                if (gatt.connect()) {
+                    timeout.schedule();
+                } else {
+                    s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR));
+                }
             } else {
                 this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
+                if (gatt != null) {
+                    timeout.schedule();
+                } else {
+                    s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR));
+                }
             }
         });
     }

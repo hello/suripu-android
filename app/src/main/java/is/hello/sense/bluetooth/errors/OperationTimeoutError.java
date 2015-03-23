@@ -31,6 +31,7 @@ public class OperationTimeoutError extends BluetoothError implements Errors.Repo
     }
 
     public static enum Operation {
+        CONNECT,
         DISCOVER_SERVICES,
         SUBSCRIBE_NOTIFICATION,
         UNSUBSCRIBE_NOTIFICATION,
