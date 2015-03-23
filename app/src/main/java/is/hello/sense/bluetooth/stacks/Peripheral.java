@@ -135,8 +135,9 @@ public interface Peripheral {
      * <p/>
      * Yields an {@see is.hello.sense.bluetooth.errors.PeripheralConnectionError} if called
      * when peripheral connection status is changing.
+     * @param timeout   The timeout to apply to the connect operation. Will only fire on certain phones.
      */
-    @NonNull Observable<Peripheral> connect();
+    @NonNull Observable<Peripheral> connect(@NonNull OperationTimeout timeout);
 
     /**
      * Ends the gatt connection of the peripheral.

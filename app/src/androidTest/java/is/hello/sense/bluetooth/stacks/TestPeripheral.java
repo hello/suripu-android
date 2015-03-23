@@ -58,7 +58,7 @@ public class TestPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<Peripheral> connect() {
+    public Observable<Peripheral> connect(@NonNull OperationTimeout timeout) {
         behavior.trackMethodCall(TestPeripheralBehavior.Method.CONNECT);
         return createResponseWith(behavior.connectResponse, null);
     }

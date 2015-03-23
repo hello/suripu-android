@@ -128,7 +128,6 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     //region Versions
 
     private void setFirmwareVersion(int firmwareVersion) {
-        Logger.info(Peripheral.LOG_TAG, "Sense firmware version is " + firmwareVersion);
         this.version = firmwareVersion;
     }
 

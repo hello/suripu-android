@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
+import is.hello.sense.bluetooth.errors.PeripheralBusyError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
@@ -118,7 +119,7 @@ public class AndroidPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<Peripheral> connect() {
+    public Observable<Peripheral> connect(@NonNull OperationTimeout timeout) {
         if (this.gatt != null) {
             if (getConnectionStatus() == STATUS_CONNECTED) {
                 Logger.warn(LOG_TAG, "Redundant call to connect(), ignoring.");
@@ -131,7 +132,7 @@ public class AndroidPeripheral implements Peripheral {
 
         return stack.newConfiguredObservable(s -> {
             AtomicBoolean hasRetried = new AtomicBoolean(false);
-            gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
+            GattDispatcher.ConnectionStateListener listener = (gatt, gattStatus, newState, removeThisListener) -> {
                 // The first connection attempt made after the user has power-cycled their
                 // bluetooth radio will result in a 133/gatt stack error. Trying again
                 // seems to work 100% of the time.
@@ -141,12 +142,22 @@ public class AndroidPeripheral implements Peripheral {
                     hasRetried.set(true);
                     gatt.close();
                     this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
+                    //noinspection ConstantConditions
+                    if (gatt != null) {
+                        timeout.reschedule();
+                    } else {
+                        s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR));
+                    }
                 } else if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
+                    timeout.unschedule();
+
                     Logger.error(LOG_TAG, "Could not connect. " + BluetoothGattError.statusToString(gattStatus));
                     s.onError(new BluetoothGattError(gattStatus));
 
                     removeThisListener.call();
                 } else if (newState == STATUS_CONNECTED) {
+                    timeout.unschedule();
+
                     Logger.info(LOG_TAG, "Connected " + toString());
 
                     Observable<Intent> bluetoothStateObserver = fromBroadcast(stack.applicationContext, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
@@ -176,6 +187,12 @@ public class AndroidPeripheral implements Peripheral {
                             // We can't reuse a BluetoothGatt object after removing a bond, because, whatever.
                             gatt.close();
                             this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
+                            //noinspection ConstantConditions
+                            if (gatt != null) {
+                                timeout.schedule();
+                            } else {
+                                s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR));
+                            }
                         }, e -> {
                             Logger.warn(LOG_TAG, "Could not remove previously persisted bonding information, ignoring.", e);
 
@@ -186,14 +203,36 @@ public class AndroidPeripheral implements Peripheral {
                         });
                     }
                 }
-            });
+            };
+            gattDispatcher.addConnectionStateListener(listener);
+
+            timeout.setTimeoutAction(() -> {
+                timeout.unschedule();
+
+                gattDispatcher.removeConnectionStateListener(listener);
+                if (bluetoothStateSubscription != null) {
+                    bluetoothStateSubscription.unsubscribe();
+                    this.bluetoothStateSubscription = null;
+                }
+
+                s.onError(new OperationTimeoutError(OperationTimeoutError.Operation.CONNECT));
+            }, stack.scheduler);
 
             Logger.info(LOG_TAG, "Connecting " + toString());
 
             if (gatt != null) {
-                gatt.connect();
+                if (gatt.connect()) {
+                    timeout.schedule();
+                } else {
+                    s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR));
+                }
             } else {
                 this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
+                if (gatt != null) {
+                    timeout.schedule();
+                } else {
+                    s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR));
+                }
             }
         });
     }
@@ -201,8 +240,11 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     @Override
     public Observable<Peripheral> disconnect() {
-        if (getConnectionStatus() != STATUS_CONNECTED) {
-            return Observable.error(new PeripheralConnectionError());
+        int connectionStatus = getConnectionStatus();
+        if (connectionStatus == STATUS_DISCONNECTED || connectionStatus == STATUS_DISCONNECTING) {
+            return Observable.just(this);
+        } else if (connectionStatus == STATUS_CONNECTING) {
+            return Observable.error(new PeripheralBusyError());
         }
 
         Logger.info(LOG_TAG, "Disconnecting " + toString());

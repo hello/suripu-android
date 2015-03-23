@@ -37,6 +37,10 @@ class GattDispatcher extends BluetoothGattCallback {
         connectionStateListeners.add(changeHandler);
     }
 
+    void removeConnectionStateListener(@NonNull ConnectionStateListener changeHandler) {
+        connectionStateListeners.remove(changeHandler);
+    }
+
     Action0 addDisconnectListener(@NonNull Action0 disconnectListener) {
         disconnectListeners.add(disconnectListener);
         return disconnectListener;

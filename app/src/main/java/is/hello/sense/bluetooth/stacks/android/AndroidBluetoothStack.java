@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -71,18 +72,26 @@ public class AndroidBluetoothStack implements BluetoothStack {
     }
 
 
+    private Observable<List<Peripheral>> createLeScanner(@NonNull PeripheralCriteria peripheralCriteria) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return newConfiguredObservable(new LollipopLePeripheralScanner(this, peripheralCriteria));
+        } else {
+            return newConfiguredObservable(new LegacyLePeripheralScanner(this, peripheralCriteria));
+        }
+    }
+
     @NonNull
     @Override
     public Observable<List<Peripheral>> discoverPeripherals(@NonNull PeripheralCriteria peripheralCriteria) {
         if (adapter != null && adapter.isEnabled()) {
             if (peripheralCriteria.wantsHighPowerPreScan) {
-                Observable<List<BluetoothDevice>> devices = newConfiguredObservable(new HighPowerPeripheralScanner(applicationContext, adapter, false));
+                Observable<List<BluetoothDevice>> devices = newConfiguredObservable(new HighPowerPeripheralScanner(this, false));
                 return devices.flatMap(ignoredDevices -> {
                     Logger.info(LOG_TAG, "High power pre-scan completed.");
-                    return newConfiguredObservable(new PeripheralScanner(this, peripheralCriteria));
+                    return createLeScanner(peripheralCriteria);
                 });
             } else {
-                return newConfiguredObservable(new PeripheralScanner(this, peripheralCriteria));
+                return createLeScanner(peripheralCriteria);
             }
         } else {
             return Observable.error(new BluetoothDisabledError());

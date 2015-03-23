@@ -36,7 +36,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 @Singleton public class HardwarePresenter extends Presenter {
     public static final String ACTION_CONNECTION_LOST = HardwarePresenter.class.getName() + ".ACTION_CONNECTION_LOST";
-    public static final int FAILS_BEFORE_HIGH_POWER = 3;
+    public static final int FAILS_BEFORE_HIGH_POWER = 2;
 
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;

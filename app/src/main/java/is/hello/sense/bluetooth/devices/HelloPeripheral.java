@@ -53,7 +53,7 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
             Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
 
             s.onNext(ConnectStatus.CONNECTING);
-            peripheral.connect().subscribe(peripheral -> {
+            peripheral.connect(timeout).subscribe(peripheral -> {
                 Logger.info(Peripheral.LOG_TAG, "connected to " + toString());
 
                 s.onNext(ConnectStatus.BONDING);
