@@ -48,8 +48,8 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
         this.scanning = true;
         stack.getAdapter().startLeScan(this);
         this.timeout = stack.scheduler
-                                   .createWorker()
-                                   .schedule(this::onConcludeScan, peripheralCriteria.duration, TimeUnit.MILLISECONDS);
+                            .createWorker()
+                            .schedule(this::onConcludeScan, peripheralCriteria.duration, TimeUnit.MILLISECONDS);
     }
 
     @Override

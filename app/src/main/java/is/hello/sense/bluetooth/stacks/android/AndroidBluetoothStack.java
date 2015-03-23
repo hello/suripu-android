@@ -76,7 +76,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
     public Observable<List<Peripheral>> discoverPeripherals(@NonNull PeripheralCriteria peripheralCriteria) {
         if (adapter != null && adapter.isEnabled()) {
             if (peripheralCriteria.wantsHighPowerPreScan) {
-                Observable<List<BluetoothDevice>> devices = newConfiguredObservable(new HighPowerPeripheralScanner(applicationContext, adapter, false));
+                Observable<List<BluetoothDevice>> devices = newConfiguredObservable(new HighPowerPeripheralScanner(this, false));
                 return devices.flatMap(ignoredDevices -> {
                     Logger.info(LOG_TAG, "High power pre-scan completed.");
                     return newConfiguredObservable(new PeripheralScanner(this, peripheralCriteria));
