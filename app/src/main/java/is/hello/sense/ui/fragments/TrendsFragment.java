@@ -78,7 +78,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
+        trendsPresenter.unbindScope();
         this.trendsAdapter = null;
     }
 
@@ -89,7 +89,9 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
 
     @Override
     public void onUpdate() {
-        trendsPresenter.update();
+        if (!trendsPresenter.bindScope(getScope())) {
+            trendsPresenter.update();
+        }
     }
 
     public void bindTrends(@NonNull ArrayList<TrendGraph> trends) {

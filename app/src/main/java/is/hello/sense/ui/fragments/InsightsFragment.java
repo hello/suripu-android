@@ -113,6 +113,7 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        insightsPresenter.unbindScope();
         this.insightsAdapter = null;
     }
 
@@ -123,7 +124,12 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
 
     @Override
     public void onUpdate() {
-        onRefresh();
+        if (!insightsPresenter.bindScope(getScope())) {
+            swipeRefreshLayout.setRefreshing(true);
+            insightsPresenter.update();
+        }
+
+        questionsPresenter.update();
     }
 
 

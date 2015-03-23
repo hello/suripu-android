@@ -9,7 +9,7 @@ import is.hello.sense.api.model.Insight;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
-public class InsightsPresenter extends ValuePresenter<ArrayList<Insight>> {
+public class InsightsPresenter extends ScopedValuePresenter<ArrayList<Insight>> {
     @Inject ApiService apiService;
 
     public final PresenterSubject<ArrayList<Insight>> insights = this.subject;
