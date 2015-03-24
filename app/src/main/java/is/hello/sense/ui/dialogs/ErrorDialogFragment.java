@@ -66,7 +66,7 @@ public class ErrorDialogFragment extends DialogFragment {
 
         Bundle arguments = new Bundle();
         arguments.putParcelable(ARG_ERROR_MESSAGE, Errors.getDisplayMessage(e));
-        arguments.putString(ARG_ERROR_OPERATION, Errors.getType(e));
+        arguments.putString(ARG_ERROR_TYPE, Errors.getType(e));
         arguments.putString(ARG_ERROR_CONTEXT, Errors.getContextInfo(e));
         fragment.setArguments(arguments);
 

@@ -3,7 +3,6 @@ package is.hello.sense.bluetooth.devices;
 import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
 
-import java.util.Collections;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -13,10 +12,13 @@ import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.TestOperationTimeout;
 import is.hello.sense.bluetooth.stacks.TestPeripheral;
 import is.hello.sense.bluetooth.stacks.TestPeripheralBehavior;
+import is.hello.sense.bluetooth.stacks.TestPeripheralService;
 import is.hello.sense.functional.Either;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 import rx.Observable;
@@ -86,9 +88,10 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
     public void testSuccessfulConnect() throws Exception {
         Either<Peripheral, Throwable> successResponse = Either.left(peripheral.peripheral);
+        TestPeripheralService service = new TestPeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY);
         peripheralBehavior.setConnectResponse(successResponse)
                         .setCreateBondResponse(successResponse)
-                        .setServicesResponse(Either.left(Collections.emptyList()));
+                        .setServicesResponse(Either.left(Lists.newArrayList(service)));
 
         Sync.last(peripheral.connect());
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CONNECT));
