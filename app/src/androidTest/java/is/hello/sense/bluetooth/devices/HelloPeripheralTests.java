@@ -129,7 +129,7 @@ public class HelloPeripheralTests extends InjectionTestCase {
         peripheralBehavior.reset();
         peripheralBehavior.setConnectResponse(successResponse);
         peripheralBehavior.setCreateBondResponse(successResponse);
-        peripheralBehavior.setServicesResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_FAILURE)));
+        peripheralBehavior.setServicesResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_FAILURE, BluetoothGattError.Operation.DISCOVER_SERVICES)));
         peripheralBehavior.setDisconnectResponse(successResponse);
 
         Sync.wrap(peripheral.connect())
@@ -149,7 +149,7 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
 
         peripheralBehavior.reset();
-        peripheralBehavior.setDisconnectResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_FAILURE)));
+        peripheralBehavior.setDisconnectResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_FAILURE, BluetoothGattError.Operation.DISCONNECT)));
 
         Sync.wrap(peripheral.disconnect())
             .assertThrows(BluetoothGattError.class);
@@ -166,7 +166,7 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
 
         peripheralBehavior.reset();
-        peripheralBehavior.setSubscriptionResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION)));
+        peripheralBehavior.setSubscriptionResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION, BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION)));
 
         Sync.wrap(peripheral.subscribe(id, timeout))
             .assertThrows(BluetoothGattError.class);
@@ -183,7 +183,7 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
 
         peripheralBehavior.reset();
-        peripheralBehavior.setUnsubscriptionResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION)));
+        peripheralBehavior.setUnsubscriptionResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION, BluetoothGattError.Operation.UNSUBSCRIBE_NOTIFICATION)));
 
         Sync.wrap(peripheral.unsubscribe(id, timeout))
             .assertThrows(BluetoothGattError.class);

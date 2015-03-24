@@ -146,13 +146,13 @@ public class AndroidPeripheral implements Peripheral {
                     if (gatt != null) {
                         timeout.reschedule();
                     } else {
-                        s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR));
+                        s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR, BluetoothGattError.Operation.CONNECT));
                     }
                 } else if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
                     timeout.unschedule();
 
                     Logger.error(LOG_TAG, "Could not connect. " + BluetoothGattError.statusToString(gattStatus));
-                    s.onError(new BluetoothGattError(gattStatus));
+                    s.onError(new BluetoothGattError(gattStatus, BluetoothGattError.Operation.CONNECT));
 
                     removeThisListener.call();
                 } else if (newState == STATUS_CONNECTED) {
@@ -191,7 +191,7 @@ public class AndroidPeripheral implements Peripheral {
                             if (gatt != null) {
                                 timeout.schedule();
                             } else {
-                                s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR));
+                                s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR, BluetoothGattError.Operation.CONNECT));
                             }
                         }, e -> {
                             Logger.warn(LOG_TAG, "Could not remove previously persisted bonding information, ignoring.", e);
@@ -224,14 +224,14 @@ public class AndroidPeripheral implements Peripheral {
                 if (gatt.connect()) {
                     timeout.schedule();
                 } else {
-                    s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR));
+                    s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR, BluetoothGattError.Operation.CONNECT));
                 }
             } else {
                 this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
                 if (gatt != null) {
                     timeout.schedule();
                 } else {
-                    s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR));
+                    s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR, BluetoothGattError.Operation.CONNECT));
                 }
             }
         });
@@ -255,7 +255,7 @@ public class AndroidPeripheral implements Peripheral {
                     if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
                         Logger.info(LOG_TAG, "Could not disconnect " + toString() + "; " + BluetoothGattError.statusToString(gattStatus));
 
-                        s.onError(new BluetoothGattError(gattStatus));
+                        s.onError(new BluetoothGattError(gattStatus, BluetoothGattError.Operation.DISCONNECT));
                     } else {
                         Logger.info(LOG_TAG, "Disconnected " + toString());
 
@@ -503,7 +503,7 @@ public class AndroidPeripheral implements Peripheral {
                     Logger.error(LOG_TAG, "Could not discover services. " + BluetoothGattError.statusToString(status));
 
                     this.cachedPeripheralServices = null;
-                    s.onError(new BluetoothGattError(status));
+                    s.onError(new BluetoothGattError(status, BluetoothGattError.Operation.DISCOVER_SERVICES));
 
                     gattDispatcher.onServicesDiscovered = null;
                 }
@@ -569,7 +569,7 @@ public class AndroidPeripheral implements Peripheral {
                         s.onCompleted();
                     } else {
                         Logger.error(LOG_TAG, "Could not subscribe to characteristic. " + BluetoothGattError.statusToString(status));
-                        s.onError(new BluetoothGattError(status));
+                        s.onError(new BluetoothGattError(status, BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION));
                     }
 
                     gattDispatcher.onDescriptorWrite = null;
@@ -584,10 +584,10 @@ public class AndroidPeripheral implements Peripheral {
                     gattDispatcher.onDescriptorWrite = null;
                     gattDispatcher.removeDisconnectListener(onDisconnect);
 
-                    s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE));
+                    s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE, BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION));
                 }
             } else {
-                s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
+                s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED, BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION));
             }
         });
     }
@@ -622,10 +622,10 @@ public class AndroidPeripheral implements Peripheral {
                         s.onCompleted();
                     } else {
                         Logger.error(LOG_TAG, "Could not unsubscribe from characteristic. " + BluetoothGattError.statusToString(status));
-                        s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE));
+                        s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE, BluetoothGattError.Operation.UNSUBSCRIBE_NOTIFICATION));
                     }
                 } else {
-                    s.onError(new BluetoothGattError(status));
+                    s.onError(new BluetoothGattError(status, BluetoothGattError.Operation.UNSUBSCRIBE_NOTIFICATION));
                 }
 
                 gattDispatcher.removeDisconnectListener(onDisconnect);
@@ -640,7 +640,7 @@ public class AndroidPeripheral implements Peripheral {
                 gattDispatcher.removeDisconnectListener(onDisconnect);
                 gattDispatcher.onDescriptorWrite = null;
 
-                s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
+                s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED, BluetoothGattError.Operation.UNSUBSCRIBE_NOTIFICATION));
             }
         });
     }
@@ -664,7 +664,7 @@ public class AndroidPeripheral implements Peripheral {
 
                 if (status != BluetoothGatt.GATT_SUCCESS) {
                     Logger.error(LOG_TAG, "Could not write command " + identifier + ", " + BluetoothGattError.statusToString(status));
-                    s.onError(new BluetoothGattError(status));
+                    s.onError(new BluetoothGattError(status, BluetoothGattError.Operation.WRITE_COMMAND));
                 } else {
                     s.onNext(null);
                     s.onCompleted();
@@ -683,7 +683,7 @@ public class AndroidPeripheral implements Peripheral {
                 gattDispatcher.removeDisconnectListener(onDisconnect);
                 gattDispatcher.onCharacteristicWrite = null;
 
-                s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
+                s.onError(new BluetoothGattError(BluetoothGatt.GATT_WRITE_NOT_PERMITTED, BluetoothGattError.Operation.WRITE_COMMAND));
             }
         });
     }
