@@ -13,7 +13,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
-public class TrendsPresenter extends ValuePresenter<ArrayList<TrendGraph>> {
+public class TrendsPresenter extends ScopedValuePresenter<ArrayList<TrendGraph>> {
     @Inject ApiService apiService;
 
     public final PresenterSubject<ArrayList<TrendGraph>> trends = subject;

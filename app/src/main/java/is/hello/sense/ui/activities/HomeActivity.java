@@ -49,7 +49,7 @@ import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
-import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
@@ -73,7 +73,7 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public class HomeActivity
-        extends InjectionActivity
+        extends ScopedInjectionActivity
         implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
 {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
