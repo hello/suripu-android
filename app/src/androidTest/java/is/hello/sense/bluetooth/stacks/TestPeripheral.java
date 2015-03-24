@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.functional.Either;
 import is.hello.sense.functional.Lists;
@@ -99,6 +100,19 @@ public class TestPeripheral implements Peripheral {
     public Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
         behavior.trackMethodCall(TestPeripheralBehavior.Method.DISCOVER_SERVICES);
         return createResponseWith(behavior.servicesResponse, timeout);
+    }
+
+    @NonNull
+    @Override
+    public Observable<PeripheralService> discoverService(@NonNull UUID serviceIdentifier, @NonNull OperationTimeout timeout) {
+        return discoverServices(timeout).flatMap(ignored -> {
+            PeripheralService service = getService(serviceIdentifier);
+            if (service != null) {
+                return Observable.just(service);
+            } else {
+                return Observable.error(new PeripheralServiceDiscoveryFailedError());
+            }
+        });
     }
 
     @Nullable

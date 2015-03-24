@@ -133,7 +133,7 @@ public interface Peripheral {
      * <p/>
      * Does nothing if there is already an active connection.
      * <p/>
-     * Yields an {@see is.hello.sense.bluetooth.errors.PeripheralConnectionError} if called
+     * Yields an {@link is.hello.sense.bluetooth.errors.PeripheralConnectionError} if called
      * when peripheral connection status is changing.
      * @param timeout   The timeout to apply to the connect operation. Will only fire on certain phones.
      */
@@ -142,8 +142,11 @@ public interface Peripheral {
     /**
      * Ends the gatt connection of the peripheral.
      * <p/>
-     * Yields {@see is.hello.sense.bluetooth.errors.NotConnectedException}
-     * if the peripheral is not connected.
+     * Safe to call multiple times if the peripheral is disconnected,
+     * or in the process of disconnecting.
+     * <p/>
+     * Yields a {@link is.hello.sense.bluetooth.errors.PeripheralConnectionError}
+     * if the peripheral is currently connecting.
      */
     @NonNull Observable<Peripheral> disconnect();
 
@@ -193,12 +196,27 @@ public interface Peripheral {
     /**
      * Performs service discovery on the peripheral.
      * <p/>
-     * Yields a {@see NotConnectedException} if the peripheral
-     * is not connected when this method is called.
+     * Yields a {@link is.hello.sense.bluetooth.errors.PeripheralConnectionError}
+     * if the peripheral is not connected when this method is called.
      *
      * @see Peripheral#getService(java.util.UUID)
      */
     @NonNull Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout);
+
+    /**
+     * Performs service discovery on the peripheral,
+     * yielding the service matching a given identifier.
+     * <p/>
+     * If the service cannot be found, this method will yield
+     * a {@link is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError}.
+     * <p/>
+     * Yields a {@link is.hello.sense.bluetooth.errors.PeripheralConnectionError}
+     * if the peripheral is not connected when this method is called.
+     *
+     * @see #discoverServices(OperationTimeout)
+     * @see #getService(java.util.UUID)
+     */
+    @NonNull Observable<PeripheralService> discoverService(@NonNull UUID serviceIdentifier, @NonNull OperationTimeout timeout);
 
     /**
      * Looks up a peripheral service by identifier on the peripheral.

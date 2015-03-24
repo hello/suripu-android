@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
-import is.hello.sense.bluetooth.errors.PeripheralBusyError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
@@ -244,7 +243,7 @@ public class AndroidPeripheral implements Peripheral {
         if (connectionStatus == STATUS_DISCONNECTED || connectionStatus == STATUS_DISCONNECTING) {
             return Observable.just(this);
         } else if (connectionStatus == STATUS_CONNECTING) {
-            return Observable.error(new PeripheralBusyError());
+            return Observable.error(new PeripheralConnectionError("Peripheral is connecting"));
         }
 
         Logger.info(LOG_TAG, "Disconnecting " + toString());
@@ -519,6 +518,19 @@ public class AndroidPeripheral implements Peripheral {
         });
     }
 
+    @NonNull
+    @Override
+    public Observable<PeripheralService> discoverService(@NonNull UUID serviceIdentifier, @NonNull OperationTimeout timeout) {
+        return discoverServices(timeout).flatMap(ignored -> {
+            PeripheralService service = cachedPeripheralServices.get(serviceIdentifier);
+            if (service != null) {
+                return Observable.just(service);
+            } else {
+                return Observable.error(new PeripheralServiceDiscoveryFailedError());
+            }
+        });
+    }
+
     @Nullable
     @Override
     public PeripheralService getService(@NonNull UUID serviceIdentifier) {
@@ -550,7 +562,6 @@ public class AndroidPeripheral implements Peripheral {
         }
 
         return stack.newConfiguredObservable(s -> {
-
             BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
             if (gatt.setCharacteristicNotification(characteristic, true)) {
