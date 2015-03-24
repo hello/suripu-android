@@ -21,6 +21,7 @@ import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.bluetooth.stacks.util.ErrorListener;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -30,15 +31,19 @@ import rx.subjects.ReplaySubject;
 public class AndroidBluetoothStack implements BluetoothStack {
     final @NonNull Context applicationContext;
     final @NonNull Scheduler scheduler;
+    final @NonNull ErrorListener errorListener;
 
     final @NonNull BluetoothManager bluetoothManager;
     private final @Nullable BluetoothAdapter adapter;
 
     private final @NonNull ReplaySubject<Boolean> enabled = ReplaySubject.createWithSize(1);
 
-    public AndroidBluetoothStack(@NonNull Context applicationContext, @NonNull Scheduler scheduler) {
+    public AndroidBluetoothStack(@NonNull Context applicationContext,
+                                 @NonNull Scheduler scheduler,
+                                 @NonNull ErrorListener errorListener) {
         this.applicationContext = applicationContext;
         this.scheduler = scheduler;
+        this.errorListener = errorListener;
 
         this.bluetoothManager = (BluetoothManager) applicationContext.getSystemService(Context.BLUETOOTH_SERVICE);
         this.adapter = bluetoothManager.getAdapter();
@@ -106,7 +111,9 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
     @Override
     public <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe) {
-        return Observable.create(onSubscribe).subscribeOn(getScheduler());
+        return Observable.create(onSubscribe)
+                         .subscribeOn(getScheduler())
+                         .doOnError(errorListener);
     }
 
     @Override
