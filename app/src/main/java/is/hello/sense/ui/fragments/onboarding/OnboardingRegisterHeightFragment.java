@@ -24,7 +24,6 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
     private TextView secondaryReading;
 
     private boolean hasAnimated = false;
-    private Button nextButton;
 
 
     @Override
@@ -56,7 +55,7 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
             scale.setValue(account.getHeight(), true);
         }
 
-        this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
+        Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
         Views.setSafeOnClickListener(nextButton, ignored -> next());
 
         Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
@@ -78,11 +77,8 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
 
         Account account = getContainer().getAccount();
         if (!hasAnimated && account.getHeight() != null) {
-            nextButton.setEnabled(false);
             scale.setValue(scale.getMinValue(), true);
-            scale.postDelayed(() -> {
-                scale.animateToValue(account.getHeight(), () -> nextButton.setEnabled(true));
-            }, 250);
+            scale.postDelayed(() -> scale.animateToValue(account.getHeight(), null), 250);
             this.hasAnimated = true;
         }
     }
@@ -107,7 +103,9 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
 
     public void next() {
         try {
-            getContainer().getAccount().setHeight(scale.getValue());
+            if (!scale.isAnimating()) {
+                getContainer().getAccount().setHeight(scale.getValue());
+            }
             getContainer().onAccountUpdated(this);
         } catch (NumberFormatException e) {
             Logger.warn(OnboardingRegisterHeightFragment.class.getSimpleName(), "Invalid input fed to height fragment, ignoring.", e);

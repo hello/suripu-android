@@ -44,6 +44,8 @@ public class ScaleView extends FrameLayout {
     private final LinearLayoutManager layoutManager;
     private final TickAdapter adapter;
 
+    private boolean animating = false;
+
 
     //region Properties
 
@@ -247,8 +249,17 @@ public class ScaleView extends FrameLayout {
             }
 
             @Override
+            protected void onStart() {
+                super.onStart();
+
+                ScaleView.this.animating = true;
+            }
+
+            @Override
             protected void onStop() {
                 super.onStop();
+
+                ScaleView.this.animating = false;
 
                 if (onStop != null) {
                     onStop.run();
@@ -267,6 +278,10 @@ public class ScaleView extends FrameLayout {
         } else {
             return minValue + recyclerView.getChildPosition(tick);
         }
+    }
+
+    public boolean isAnimating() {
+        return animating;
     }
 
     public void setOnValueChangedListener(@Nullable OnValueChangedListener onValueChangedListener) {

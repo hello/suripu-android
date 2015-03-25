@@ -24,7 +24,6 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
     private TextView secondaryReading;
 
     private boolean hasAnimated = false;
-    private Button nextButton;
 
 
     @Override
@@ -59,7 +58,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
             scale.setValue(pounds, true);
         }
 
-        this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
+        Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
         Views.setSafeOnClickListener(nextButton, ignored -> next());
 
         Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
@@ -81,12 +80,11 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
 
         Account account = getContainer().getAccount();
         if (!hasAnimated && account.getWeight() != null) {
-            nextButton.setEnabled(false);
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> {
                 int weightInGrams = Math.round(account.getWeight());
                 int pounds = UnitOperations.gramsToPounds(weightInGrams);
-                scale.animateToValue(pounds, () -> nextButton.setEnabled(true));
+                scale.animateToValue(pounds, null);
             }, 250);
             this.hasAnimated = true;
         }
@@ -110,9 +108,11 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
 
     public void next() {
         try {
-            int pounds = scale.getValue();
-            int grams = UnitOperations.poundsToGrams(pounds);
-            getContainer().getAccount().setWeight(grams);
+            if (!scale.isAnimating()) {
+                int pounds = scale.getValue();
+                int grams = UnitOperations.poundsToGrams(pounds);
+                getContainer().getAccount().setWeight(grams);
+            }
             getContainer().onAccountUpdated(this);
         } catch (NumberFormatException e) {
             Logger.warn(OnboardingRegisterWeightFragment.class.getSimpleName(), "Invalid input fed to weight fragment, ignoring", e);
