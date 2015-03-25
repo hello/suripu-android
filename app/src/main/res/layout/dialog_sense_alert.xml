@@ -16,6 +16,8 @@
         android:drawablePadding="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.ScreenTitle"/>
 
+    <!-- Lollipop 5.0 doesn't honor textColorLink in styles,
+         it has to be included here to render correctly. -->
     <TextView
         android:id="@+id/dialog_sense_alert_message"
         android:layout_width="match_parent"
@@ -25,6 +27,7 @@
         android:layout_marginTop="@dimen/gap_medium"
         android:layout_marginBottom="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Body.Light"
+        android:textColorLink="@color/text_link"
         android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
     <View style="@style/Divider.Horizontal" />
