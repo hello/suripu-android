@@ -247,7 +247,9 @@ public class HomeActivity
             slidingLayersView.openWithoutAnimation();
             slidingLayersView.post(() -> {
                 UndersideFragment underside = getUndersideFragment();
-                underside.notifyTabSelected(false);
+                if (underside != null) {
+                    underside.notifyTabSelected(false);
+                }
             });
             this.showUnderside = false;
         }
@@ -365,7 +367,9 @@ public class HomeActivity
     @Override
     public void onBackPressed() {
         if(slidingLayersView.isOpen()) {
-            slidingLayersView.close();
+            if (!slidingLayersView.isAnimating() && !slidingLayersView.hasActiveGesture()) {
+                slidingLayersView.close();
+            }
         } else {
             super.onBackPressed();
         }
@@ -650,7 +654,7 @@ public class HomeActivity
         return slidingLayersView;
     }
 
-    private UndersideFragment getUndersideFragment() {
+    private @Nullable UndersideFragment getUndersideFragment() {
         return (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
     }
 
@@ -690,7 +694,9 @@ public class HomeActivity
     public void showUndersideWithItem(int item, boolean animate) {
         if (slidingLayersView.isOpen()) {
             UndersideFragment underside = getUndersideFragment();
-            underside.setCurrentItem(item, UndersideFragment.OPTION_ANIMATE | UndersideFragment.OPTION_NOTIFY);
+            if (underside != null) {
+                underside.setCurrentItem(item, UndersideFragment.OPTION_ANIMATE | UndersideFragment.OPTION_NOTIFY);
+            }
         } else {
             UndersideFragment.saveCurrentItem(this, item);
             if (animate) {
@@ -750,7 +756,9 @@ public class HomeActivity
 
                         if (slidingLayersView.isOpen()) {
                             UndersideFragment underside = getUndersideFragment();
-                            underside.notifyTabSelected(false);
+                            if (underside != null) {
+                                underside.notifyTabSelected(false);
+                            }
                         }
                     })
                     .start();

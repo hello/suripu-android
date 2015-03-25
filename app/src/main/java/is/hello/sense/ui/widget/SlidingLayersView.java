@@ -38,8 +38,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     private ListView listView;
 
     private VelocityTracker velocityTracker;
-    private boolean isTrackingTouchEvents = false;
-    private boolean isAnimating = false;
+    private boolean trackingTouchEvents = false;
+    private boolean animating = false;
 
     private boolean isOpen = false;
     private @Nullable OnInteractionListener onInteractionListener;
@@ -198,7 +198,11 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
     @Override
     public boolean hasActiveGesture() {
-        return isTrackingTouchEvents;
+        return trackingTouchEvents;
+    }
+
+    public boolean isAnimating() {
+        return animating;
     }
 
     //endregion
@@ -301,7 +305,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     }
 
     private void stopAnimations() {
-        this.isAnimating = false;
+        this.animating = false;
         PropertyAnimatorProxy.stop(topView);
         if (interactiveAnimator != null) {
             interactiveAnimator.cancel();
@@ -309,13 +313,13 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     }
 
     private void animateOpen(long duration) {
-        this.isAnimating = true;
+        this.animating = true;
         PropertyAnimatorProxy.animate(topView, animatorContext)
                 .y(getMeasuredHeight() - topViewOpenHeight)
                 .setDuration(duration)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
-                        this.isAnimating = false;
+                        this.animating = false;
                         this.isOpen = true;
                         this.listView = null;
                     }
@@ -328,13 +332,13 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     }
 
     private void animateClosed(long duration) {
-        this.isAnimating = true;
+        this.animating = true;
         PropertyAnimatorProxy.animate(topView, animatorContext)
                 .y(-shadowHeight)
                 .setDuration(duration)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
-                        this.isAnimating = false;
+                        this.animating = false;
                         this.isOpen = false;
                         this.listView = null;
 
@@ -353,13 +357,13 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-        if (isAnimating) {
+        if (animating) {
             return true;
         }
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE: {
-                if (isTrackingTouchEvents) {
+                if (trackingTouchEvents) {
                     if (velocityTracker == null) {
                         this.velocityTracker = VelocityTracker.obtain();
                     }
@@ -404,18 +408,18 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                     velocityTracker.recycle();
                 }
 
-                if (isTrackingTouchEvents && animatorContext != null) {
+                if (trackingTouchEvents && animatorContext != null) {
                     animatorContext.endAnimation();
                 }
 
                 this.velocityTracker = null;
-                this.isTrackingTouchEvents = false;
+                this.trackingTouchEvents = false;
 
                 return true;
             }
         }
 
-        return isTrackingTouchEvents;
+        return trackingTouchEvents;
     }
 
     @Override
@@ -424,7 +428,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
             return false;
         }
 
-        if (isAnimating) {
+        if (animating) {
             return true;
         }
 
@@ -448,7 +452,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                         animatorContext.beginAnimation();
                     }
 
-                    this.isTrackingTouchEvents = true;
+                    this.trackingTouchEvents = true;
                     return true;
                 }
 
@@ -465,7 +469,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 float deltaY = y - lastEventY;
                 if (Math.abs(deltaY) >= touchSlop && Math.abs(deltaY) > Math.abs(deltaX) &&
                         (!isOpen && deltaY > 0.0) && isListViewAtTop(listView)) {
-                    this.isTrackingTouchEvents = true;
+                    this.trackingTouchEvents = true;
 
                     if (animatorContext != null) {
                         animatorContext.beginAnimation();
