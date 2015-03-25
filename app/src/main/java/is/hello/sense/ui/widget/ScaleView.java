@@ -232,7 +232,7 @@ public class ScaleView extends FrameLayout {
         }
     }
 
-    public void animateToValue(int newValue) {
+    public void animateToValue(int newValue, @Nullable Runnable onStop) {
         LinearSmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
             final float timePerPx = ANIMATION_MS_PER_PX / getResources().getDisplayMetrics().densityDpi;
 
@@ -244,6 +244,15 @@ public class ScaleView extends FrameLayout {
             @Override
             protected int calculateTimeForScrolling(int dx) {
                 return (int) Math.ceil(Math.abs(dx) * timePerPx);
+            }
+
+            @Override
+            protected void onStop() {
+                super.onStop();
+
+                if (onStop != null) {
+                    onStop.run();
+                }
             }
         };
         int newPosition = Math.max(minValue, (newValue - minValue - 1));

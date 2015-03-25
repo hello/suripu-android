@@ -24,6 +24,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
     private TextView secondaryReading;
 
     private boolean hasAnimated = false;
+    private Button nextButton;
 
 
     @Override
@@ -58,7 +59,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
             scale.setValue(pounds, true);
         }
 
-        Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
+        this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
         Views.setSafeOnClickListener(nextButton, ignored -> next());
 
         Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
@@ -80,11 +81,12 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
 
         Account account = getContainer().getAccount();
         if (!hasAnimated && account.getWeight() != null) {
+            nextButton.setEnabled(false);
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> {
                 int weightInGrams = Math.round(account.getWeight());
                 int pounds = UnitOperations.gramsToPounds(weightInGrams);
-                scale.animateToValue(pounds);
+                scale.animateToValue(pounds, () -> nextButton.setEnabled(true));
             }, 250);
             this.hasAnimated = true;
         }
