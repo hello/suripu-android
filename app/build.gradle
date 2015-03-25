@@ -71,7 +71,7 @@ android {
 
 
         debug {
-            def TARGET_STAGING = false
+            def TARGET_STAGING = true
 
             buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.VERBOSE"
             buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, TRUE
