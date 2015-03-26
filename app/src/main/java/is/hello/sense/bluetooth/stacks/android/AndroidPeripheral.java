@@ -634,6 +634,10 @@ public class AndroidPeripheral implements Peripheral {
                     gattDispatcher.onDescriptorWrite = null;
                     gattDispatcher.removeDisconnectListener(onDisconnect);
 
+                    if (shouldAutoActivateCompatibiltyShims()) {
+                        setWaitAfterServiceDiscovery();
+                    }
+
                     s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE, BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION));
                 }
             } else {
