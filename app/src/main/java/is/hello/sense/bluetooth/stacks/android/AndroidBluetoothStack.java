@@ -11,7 +11,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
@@ -23,6 +22,7 @@ import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.util.ErrorListener;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
+import is.hello.sense.bluetooth.stacks.util.Util;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Scheduler;
@@ -213,11 +213,6 @@ public class AndroidBluetoothStack implements BluetoothStack {
     }
 
     @Override
-    public EnumSet<Traits> getTraits() {
-        return EnumSet.of(Traits.BONDS_NOT_PERSISTENT);
-    }
-
-    @Override
     public SupportLevel getDeviceSupportLevel() {
         return DeviceSupport.getDeviceSupportLevel();
     }
@@ -229,7 +224,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
                 "applicationContext=" + applicationContext +
                 ", scheduler=" + scheduler +
                 ", adapter=" + adapter +
-                ", traits=" + getTraits() +
+                ", defaultConfig=" + Util.peripheralConfigToString(getDefaultConfig()) +
                 '}';
     }
 }

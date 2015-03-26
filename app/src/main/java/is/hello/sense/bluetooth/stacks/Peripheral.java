@@ -173,13 +173,6 @@ public interface Peripheral {
     @NonNull Observable<Peripheral> createBond();
 
     /**
-     * Removes the bond to the peripheral from the current device.
-     * <p/>
-     * Does nothing if the device is not bonded.
-     */
-    @NonNull Observable<Peripheral> removeBond();
-
-    /**
      * Returns the bond status of the peripheral.
      *
      * @see Peripheral#BOND_NONE
@@ -252,11 +245,6 @@ public interface Peripheral {
      * All characteristic data read by the Peripheral should be piped into the packet handler.
      */
     void setPacketHandler(@Nullable PacketHandler dataHandler);
-
-    /**
-     * Returns the associated packet handler of the Peripheral.
-     */
-    @Nullable PacketHandler getPacketHandler();
 
     //endregion
 
