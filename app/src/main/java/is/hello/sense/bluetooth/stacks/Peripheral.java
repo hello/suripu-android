@@ -259,4 +259,44 @@ public interface Peripheral {
     @Nullable PacketHandler getPacketHandler();
 
     //endregion
+
+
+    //region Configuration
+
+    /**
+     * Represents no config options specified.
+     */
+    int CONFIG_EMPTY = 0;
+
+    /**
+     * Whether or not the peripheral should clear its bond information on disconnect.
+     * <p/>
+     * Clearing bond information on disconnect speeds up future connection operations.
+     */
+    int CONFIG_CLEAR_BOND_ON_DISCONNECT = (1 << 1);
+
+    /**
+     * Whether or not the peripheral should automatically
+     * activate compatibility shims in response to errors.
+     */
+    int CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS = (1 << 2);
+
+    /**
+     * Whether or not to add an artificial delay after
+     * service discovery to increase connection stability.
+     */
+    int CONFIG_WAIT_AFTER_SERVICE_DISCOVERY = (1 << 3);
+
+    void setConfig(@Config int newConfig);
+
+    @IntDef(value = {
+        CONFIG_EMPTY,
+        CONFIG_CLEAR_BOND_ON_DISCONNECT,
+        CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS,
+        CONFIG_WAIT_AFTER_SERVICE_DISCOVERY
+    }, flag = true)
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Config {}
+
+    //endregion
 }

@@ -75,6 +75,11 @@ public interface BluetoothStack {
     boolean errorRequiresReconnect(@Nullable Throwable e);
 
     /**
+     * Returns the default peripheral config for the stack.
+     */
+    @Peripheral.Config int getDefaultConfig();
+
+    /**
      * Returns the behaviors of the stack that are implementation specific.
      */
     EnumSet<Traits> getTraits();

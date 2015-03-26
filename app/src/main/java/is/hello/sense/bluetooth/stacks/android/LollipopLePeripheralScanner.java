@@ -131,7 +131,11 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
 
         List<Peripheral> peripherals = new ArrayList<>();
         for (ScanResult result : results.values()) {
-            peripherals.add(new AndroidPeripheral(stack, result.getDevice(), result.getRssi()));
+            AndroidPeripheral peripheral = new AndroidPeripheral(stack, result.getDevice(), result.getRssi());
+            if (peripheralCriteria.config != Peripheral.CONFIG_EMPTY) {
+                peripheral.setConfig(peripheralCriteria.config);
+            }
+            peripherals.add(peripheral);
         }
         Logger.info(BluetoothStack.LOG_TAG, "Completed Scan " + peripherals);
 

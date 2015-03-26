@@ -207,6 +207,12 @@ public class AndroidBluetoothStack implements BluetoothStack {
     }
 
     @Override
+    public @Peripheral.Config int getDefaultConfig() {
+        return (Peripheral.CONFIG_CLEAR_BOND_ON_DISCONNECT |
+                Peripheral.CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS);
+    }
+
+    @Override
     public EnumSet<Traits> getTraits() {
         return EnumSet.of(Traits.BONDS_NOT_PERSISTENT);
     }

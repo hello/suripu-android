@@ -32,6 +32,7 @@ import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
+import is.hello.sense.bluetooth.stacks.util.Util;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
@@ -49,6 +50,7 @@ public class AndroidPeripheral implements Peripheral {
     private BluetoothGatt gatt;
     private Map<UUID, PeripheralService> cachedPeripheralServices;
     private Subscription bluetoothStateSubscription;
+    private @Config int config;
 
     AndroidPeripheral(@NonNull AndroidBluetoothStack stack,
                       @NonNull BluetoothDevice bluetoothDevice,
@@ -56,6 +58,7 @@ public class AndroidPeripheral implements Peripheral {
         this.stack = stack;
         this.bluetoothDevice = bluetoothDevice;
         this.scannedRssi = scannedRssi;
+        this.config = stack.getDefaultConfig();
 
         gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
             if (newState == STATUS_DISCONNECTED) {
@@ -92,6 +95,11 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     public BluetoothStack getStack() {
         return stack;
+    }
+
+    @Override
+    public void setConfig(@Config int newConfig) {
+        this.config = newConfig;
     }
 
     //endregion
@@ -268,7 +276,8 @@ public class AndroidPeripheral implements Peripheral {
                 }
             });
 
-            if (getBondStatus() == BOND_BONDED) {
+            boolean clearBondOnDisconnect = ((config & CONFIG_CLEAR_BOND_ON_DISCONNECT) == CONFIG_CLEAR_BOND_ON_DISCONNECT);
+            if (clearBondOnDisconnect && getBondStatus() == BOND_BONDED) {
                 removeBond().subscribe(ignored -> {}, s::onError);
             } else {
                 gatt.disconnect();
@@ -286,6 +295,15 @@ public class AndroidPeripheral implements Peripheral {
 
 
     //region Internal
+
+    private void activateWaitAfterServiceDiscoveryIfAppropriate() {
+        boolean activateShims = ((config & CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS) == CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS);
+        boolean waitsAfterDiscovery = ((config & CONFIG_WAIT_AFTER_SERVICE_DISCOVERY) == CONFIG_WAIT_AFTER_SERVICE_DISCOVERY);
+        if (activateShims && !waitsAfterDiscovery) {
+            Log.i(LOG_TAG, "Activating " + Util.peripheralConfigToString(CONFIG_WAIT_AFTER_SERVICE_DISCOVERY));
+            config |= CONFIG_WAIT_AFTER_SERVICE_DISCOVERY;
+        }
+    }
 
     private <T> void setupTimeout(@NonNull OperationTimeoutError.Operation operation,
                                   @NonNull OperationTimeout timeout,
@@ -482,7 +500,7 @@ public class AndroidPeripheral implements Peripheral {
             return Observable.error(new PeripheralConnectionError());
         }
 
-        return stack.newConfiguredObservable(s -> {
+        Observable<Collection<PeripheralService>> services = stack.newConfiguredObservable(s -> {
             Action0 onDisconnect = gattDispatcher.addTimeoutDisconnectListener(s, timeout);
             setupTimeout(OperationTimeoutError.Operation.DISCOVER_SERVICES, timeout, s, onDisconnect);
 
@@ -516,6 +534,15 @@ public class AndroidPeripheral implements Peripheral {
                 s.onError(new PeripheralServiceDiscoveryFailedError());
             }
         });
+
+
+        boolean waitAfterDiscovery = ((config & CONFIG_WAIT_AFTER_SERVICE_DISCOVERY) == CONFIG_WAIT_AFTER_SERVICE_DISCOVERY);
+        if (waitAfterDiscovery) {
+            // See <https://code.google.com/p/android/issues/detail?id=58381>
+            return services.delay(5, TimeUnit.SECONDS);
+        } else {
+            return services;
+        }
     }
 
     @NonNull
@@ -580,6 +607,7 @@ public class AndroidPeripheral implements Peripheral {
                         s.onCompleted();
                     } else {
                         Logger.error(LOG_TAG, "Could not subscribe to characteristic. " + BluetoothGattError.statusToString(status));
+                        activateWaitAfterServiceDiscoveryIfAppropriate();
                         s.onError(new BluetoothGattError(status, BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION));
                     }
 
