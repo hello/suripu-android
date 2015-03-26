@@ -32,6 +32,7 @@ import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
+import is.hello.sense.bluetooth.stacks.util.Util;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
@@ -49,6 +50,7 @@ public class AndroidPeripheral implements Peripheral {
     private BluetoothGatt gatt;
     private Map<UUID, PeripheralService> cachedPeripheralServices;
     private Subscription bluetoothStateSubscription;
+    private @Config int config;
 
     AndroidPeripheral(@NonNull AndroidBluetoothStack stack,
                       @NonNull BluetoothDevice bluetoothDevice,
@@ -56,6 +58,7 @@ public class AndroidPeripheral implements Peripheral {
         this.stack = stack;
         this.bluetoothDevice = bluetoothDevice;
         this.scannedRssi = scannedRssi;
+        this.config = stack.getDefaultConfig();
 
         gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
             if (newState == STATUS_DISCONNECTED) {
@@ -92,6 +95,11 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     public BluetoothStack getStack() {
         return stack;
+    }
+
+    @Override
+    public void setConfig(@Config int newConfig) {
+        this.config = newConfig;
     }
 
     //endregion
@@ -132,10 +140,11 @@ public class AndroidPeripheral implements Peripheral {
         return stack.newConfiguredObservable(s -> {
             AtomicBoolean hasRetried = new AtomicBoolean(false);
             GattDispatcher.ConnectionStateListener listener = (gatt, gattStatus, newState, removeThisListener) -> {
-                // The first connection attempt made after the user has power-cycled their
-                // bluetooth radio will result in a 133/gatt stack error. Trying again
-                // seems to work 100% of the time.
-                if (gattStatus == BluetoothGattError.GATT_STACK_ERROR && !hasRetried.get()) {
+                // The first connection attempt made after a user has power cycled their radio,
+                // or the connection to a device is unexpectedly lost, will seemingly fail 100%
+                // of the time. The error code varies by manufacturer. Retrying silently resolves
+                // the issue.
+                if (BluetoothGattError.isRecoverableConnectError(gattStatus) && !hasRetried.get()) {
                     Logger.warn(LOG_TAG, "First connection attempt failed due to stack error, retrying.");
 
                     hasRetried.set(true);
@@ -268,7 +277,8 @@ public class AndroidPeripheral implements Peripheral {
                 }
             });
 
-            if (getBondStatus() == BOND_BONDED) {
+            boolean clearBondOnDisconnect = ((config & CONFIG_CLEAR_BOND_ON_DISCONNECT) == CONFIG_CLEAR_BOND_ON_DISCONNECT);
+            if (clearBondOnDisconnect && getBondStatus() == BOND_BONDED) {
                 removeBond().subscribe(ignored -> {}, s::onError);
             } else {
                 gatt.disconnect();
@@ -287,6 +297,18 @@ public class AndroidPeripheral implements Peripheral {
 
     //region Internal
 
+    private boolean shouldAutoActivateCompatibiltyShims() {
+        return ((config & CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS) == CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS);
+    }
+
+    private void setWaitAfterServiceDiscovery() {
+        boolean waitsAfterDiscovery = ((config & CONFIG_WAIT_AFTER_SERVICE_DISCOVERY) == CONFIG_WAIT_AFTER_SERVICE_DISCOVERY);
+        if (!waitsAfterDiscovery) {
+            Log.i(LOG_TAG, "Activating " + Util.peripheralConfigToString(CONFIG_WAIT_AFTER_SERVICE_DISCOVERY));
+            config |= CONFIG_WAIT_AFTER_SERVICE_DISCOVERY;
+        }
+    }
+
     private <T> void setupTimeout(@NonNull OperationTimeoutError.Operation operation,
                                   @NonNull OperationTimeout timeout,
                                   @NonNull Subscriber<T> subscriber,
@@ -298,6 +320,12 @@ public class AndroidPeripheral implements Peripheral {
                     break;
 
                 case SUBSCRIBE_NOTIFICATION:
+                    gattDispatcher.onDescriptorWrite = null;
+                    if (shouldAutoActivateCompatibiltyShims()) {
+                        setWaitAfterServiceDiscovery();
+                    }
+                    break;
+
                 case UNSUBSCRIBE_NOTIFICATION:
                     gattDispatcher.onDescriptorWrite = null;
                     break;
@@ -412,8 +440,7 @@ public class AndroidPeripheral implements Peripheral {
     }
 
     @NonNull
-    @Override
-    public Observable<Peripheral> removeBond() {
+    private Observable<Peripheral> removeBond() {
         if (getConnectionStatus() != STATUS_CONNECTED) {
             return Observable.error(new PeripheralConnectionError());
         }
@@ -482,7 +509,7 @@ public class AndroidPeripheral implements Peripheral {
             return Observable.error(new PeripheralConnectionError());
         }
 
-        return stack.newConfiguredObservable(s -> {
+        Observable<Collection<PeripheralService>> services = stack.newConfiguredObservable(s -> {
             Action0 onDisconnect = gattDispatcher.addTimeoutDisconnectListener(s, timeout);
             setupTimeout(OperationTimeoutError.Operation.DISCOVER_SERVICES, timeout, s, onDisconnect);
 
@@ -516,6 +543,15 @@ public class AndroidPeripheral implements Peripheral {
                 s.onError(new PeripheralServiceDiscoveryFailedError());
             }
         });
+
+
+        boolean waitAfterDiscovery = ((config & CONFIG_WAIT_AFTER_SERVICE_DISCOVERY) == CONFIG_WAIT_AFTER_SERVICE_DISCOVERY);
+        if (waitAfterDiscovery) {
+            // See <https://code.google.com/p/android/issues/detail?id=58381>
+            return services.delay(5, TimeUnit.SECONDS);
+        } else {
+            return services;
+        }
     }
 
     @NonNull
@@ -580,6 +616,9 @@ public class AndroidPeripheral implements Peripheral {
                         s.onCompleted();
                     } else {
                         Logger.error(LOG_TAG, "Could not subscribe to characteristic. " + BluetoothGattError.statusToString(status));
+                        if (shouldAutoActivateCompatibiltyShims()) {
+                            setWaitAfterServiceDiscovery();
+                        }
                         s.onError(new BluetoothGattError(status, BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION));
                     }
 
@@ -594,6 +633,10 @@ public class AndroidPeripheral implements Peripheral {
                 } else {
                     gattDispatcher.onDescriptorWrite = null;
                     gattDispatcher.removeDisconnectListener(onDisconnect);
+
+                    if (shouldAutoActivateCompatibiltyShims()) {
+                        setWaitAfterServiceDiscovery();
+                    }
 
                     s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE, BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION));
                 }
@@ -702,12 +745,6 @@ public class AndroidPeripheral implements Peripheral {
     @Override
     public void setPacketHandler(@Nullable PacketHandler dataHandler) {
         gattDispatcher.packetHandler = dataHandler;
-    }
-
-    @Nullable
-    @Override
-    public PacketHandler getPacketHandler() {
-        return gattDispatcher.packetHandler;
     }
 
     //endregion

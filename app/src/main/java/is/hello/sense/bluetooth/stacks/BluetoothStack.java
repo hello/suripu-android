@@ -3,7 +3,6 @@ package is.hello.sense.bluetooth.stacks;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
@@ -75,24 +74,9 @@ public interface BluetoothStack {
     boolean errorRequiresReconnect(@Nullable Throwable e);
 
     /**
-     * Returns the behaviors of the stack that are implementation specific.
+     * Returns the default peripheral config for the stack.
      */
-    EnumSet<Traits> getTraits();
-
-    /**
-     * Describes behaviors of the stack that vary between backing implementations.
-     */
-    public enum Traits {
-        /**
-         * Indicates that bonding information is wiped out
-         * whenever a vended Peripheral disconnects.
-         * <p/>
-         * Clients should always attempt to bond after connecting.
-         *
-         * @see Peripheral#createBond()
-         */
-        BONDS_NOT_PERSISTENT,
-    }
+    @Peripheral.Config int getDefaultConfig();
 
 
     /**

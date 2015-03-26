@@ -173,13 +173,6 @@ public interface Peripheral {
     @NonNull Observable<Peripheral> createBond();
 
     /**
-     * Removes the bond to the peripheral from the current device.
-     * <p/>
-     * Does nothing if the device is not bonded.
-     */
-    @NonNull Observable<Peripheral> removeBond();
-
-    /**
      * Returns the bond status of the peripheral.
      *
      * @see Peripheral#BOND_NONE
@@ -253,10 +246,45 @@ public interface Peripheral {
      */
     void setPacketHandler(@Nullable PacketHandler dataHandler);
 
+    //endregion
+
+
+    //region Configuration
+
     /**
-     * Returns the associated packet handler of the Peripheral.
+     * Represents no config options specified.
      */
-    @Nullable PacketHandler getPacketHandler();
+    int CONFIG_EMPTY = 0;
+
+    /**
+     * Whether or not the peripheral should clear its bond information on disconnect.
+     * <p/>
+     * Clearing bond information on disconnect speeds up future connection operations.
+     */
+    int CONFIG_CLEAR_BOND_ON_DISCONNECT = (1 << 1);
+
+    /**
+     * Whether or not the peripheral should automatically
+     * activate compatibility shims in response to errors.
+     */
+    int CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS = (1 << 2);
+
+    /**
+     * Whether or not to add an artificial delay after
+     * service discovery to increase connection stability.
+     */
+    int CONFIG_WAIT_AFTER_SERVICE_DISCOVERY = (1 << 3);
+
+    void setConfig(@Config int newConfig);
+
+    @IntDef(value = {
+        CONFIG_EMPTY,
+        CONFIG_CLEAR_BOND_ON_DISCONNECT,
+        CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS,
+        CONFIG_WAIT_AFTER_SERVICE_DISCOVERY
+    }, flag = true)
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Config {}
 
     //endregion
 }
