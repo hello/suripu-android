@@ -59,6 +59,11 @@ public class BluetoothGattError extends BluetoothError implements Errors.Reporti
     public final int statusCode;
     public final @Nullable Operation operation;
 
+    public static boolean isRecoverableConnectError(int status) {
+        return (status == GATT_CONN_TERMINATE_LOCAL_HOST || // Nexus devices
+                status == GATT_STACK_ERROR); // Samsung devices
+    }
+
     public static @NonNull String statusToString(int status) {
         switch (status) {
             case BluetoothGatt.GATT_SUCCESS:

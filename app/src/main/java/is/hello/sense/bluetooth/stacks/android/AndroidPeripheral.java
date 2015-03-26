@@ -140,10 +140,11 @@ public class AndroidPeripheral implements Peripheral {
         return stack.newConfiguredObservable(s -> {
             AtomicBoolean hasRetried = new AtomicBoolean(false);
             GattDispatcher.ConnectionStateListener listener = (gatt, gattStatus, newState, removeThisListener) -> {
-                // The first connection attempt made after the user has power-cycled their
-                // bluetooth radio will result in a 133/gatt stack error. Trying again
-                // seems to work 100% of the time.
-                if (gattStatus == BluetoothGattError.GATT_STACK_ERROR && !hasRetried.get()) {
+                // The first connection attempt made after a user has power cycled their radio,
+                // or the connection to a device is unexpectedly lost, will seemingly fail 100%
+                // of the time. The error code varies by manufacturer. Retrying silently resolves
+                // the issue.
+                if (BluetoothGattError.isRecoverableConnectError(gattStatus) && !hasRetried.get()) {
                     Logger.warn(LOG_TAG, "First connection attempt failed due to stack error, retrying.");
 
                     hasRetried.set(true);
