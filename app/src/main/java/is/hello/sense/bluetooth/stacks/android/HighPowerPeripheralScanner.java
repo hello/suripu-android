@@ -64,7 +64,11 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
         startDiscovery();
 
         // This is only necessary on some (Samsung?) devices.
-        this.timeout = worker.schedule(this::stopDiscovery, SCAN_DURATION_S, TimeUnit.SECONDS);
+        this.timeout = worker.schedule(() -> {
+            if (timeout != null && !timeout.isUnsubscribed()) {
+                stopDiscovery();
+            }
+        }, SCAN_DURATION_S, TimeUnit.SECONDS);
     }
 
     //endregion
