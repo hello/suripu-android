@@ -132,8 +132,8 @@
 
     <!-- Switch -->
 
-    <dimen name="switch_width">48dp</dimen>
-    <dimen name="switch_height">24dp</dimen>
+    <dimen name="widget_switch_width">39dp</dimen>
+    <dimen name="widget_switch_height">26dp</dimen>
 
     <!-- Action Bar -->
 

@@ -5,16 +5,14 @@
     android:layout_height="wrap_content"
     android:descendantFocusability="blocksDescendants">
 
-    <ToggleButton
+    <include
         android:id="@+id/item_smart_alarm_enabled"
-        android:layout_width="@dimen/switch_width"
-        android:layout_height="@dimen/switch_height"
+        android:layout_width="@dimen/widget_switch_width"
+        android:layout_height="@dimen/widget_switch_height"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/gap_outer"
-        android:textOn=""
-        android:textOff=""
-        android:background="@drawable/switch_selector"/>
+        layout="@layout/widget_switch" />
 
     <TextView
         android:id="@+id/item_smart_alarm_time"
