@@ -273,7 +273,7 @@
     </style>
 
     <style name="AppTheme.Button.ModeSelector.Timeline">
-        <item name="android:textAppearance">@style/AppTheme.Text.Body.Light.Small</item>
+        <item name="android:textAppearance">@style/AppTheme.Text.Body.Small</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:drawablePadding">@dimen/gap_small</item>
@@ -431,7 +431,7 @@
         <item name="android:background">@drawable/raised_item_selector</item>
     </style>
 
-    <style name="AppTheme.Card.Item" parent="AppTheme.Text.Body.Light">
+    <style name="AppTheme.Card.Item" parent="AppTheme.Text.Body">
         <item name="android:paddingLeft">@dimen/gap_outer</item>
         <item name="android:paddingRight">@dimen/gap_outer</item>
         <item name="android:paddingTop">@dimen/gap_medium</item>

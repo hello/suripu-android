@@ -41,10 +41,11 @@
 
     <color name="text_dark">#4D4D4D</color>
     <color name="text_medium">#878787</color>
-    <color name="text_light">#ffc2c2c2</color>
+    <color name="text_light">#b2b2b2</color>
     <color name="text_dim">#77000000</color>
-    <color name="text_section_header">#999999</color>
+    <color name="text_section_header">#878787</color>
     <color name="text_dim_placeholder">#e0e0e0</color>
+    <color name="text_footer">#7e7e7e</color>
     <color name="text_link">#009CFF</color>
 
     <color name="edit_text_bottom_line_normal">#919191</color>
