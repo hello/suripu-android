@@ -19,6 +19,7 @@ import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -27,11 +28,11 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
     /**
      * Roughly how long the documentation says a scan should take.
      */
-    private static final int SCAN_DURATION_S = 12;
+    private static final int SCAN_DURATION_S = 15;
 
-    private final AndroidBluetoothStack stack;
     private final Context context;
     private final BluetoothAdapter adapter;
+    private final Scheduler.Worker worker;
 
     private @Nullable final List<BluetoothDevice> devices;
     private @Nullable Subscriber<? super List<BluetoothDevice>> subscriber;
@@ -42,9 +43,9 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
     //region Lifecycle
 
     HighPowerPeripheralScanner(@NonNull AndroidBluetoothStack stack, boolean saveResults) {
-        this.stack = stack;
         this.context = stack.applicationContext;
         this.adapter = stack.getAdapter();
+        this.worker = stack.scheduler.createWorker();
 
         if (saveResults) {
             this.devices = new ArrayList<>();
@@ -63,9 +64,11 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
         startDiscovery();
 
         // This is only necessary on some (Samsung?) devices.
-        this.timeout = stack.scheduler
-                            .createWorker()
-                            .schedule(this::stopDiscovery, SCAN_DURATION_S, TimeUnit.SECONDS);
+        this.timeout = worker.schedule(() -> {
+            if (timeout != null && !timeout.isUnsubscribed()) {
+                stopDiscovery();
+            }
+        }, SCAN_DURATION_S, TimeUnit.SECONDS);
     }
 
     //endregion
@@ -81,18 +84,18 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
                 short rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, (short) 0);
                 ParcelUuid uuid = intent.getParcelableExtra(BluetoothDevice.EXTRA_UUID);
                 String name = intent.getStringExtra(BluetoothDevice.EXTRA_NAME);
-                onDeviceFound(device, rssi, uuid, name);
+                worker.schedule(() -> onDeviceFound(device, rssi, uuid, name));
 
                 break;
             }
 
             case BluetoothAdapter.ACTION_DISCOVERY_STARTED: {
-                onDiscoveryStarted();
+                worker.schedule(this::onDiscoveryStarted);
                 break;
             }
 
             case BluetoothAdapter.ACTION_DISCOVERY_FINISHED: {
-                onDiscoveryFinished();
+                worker.schedule(this::onDiscoveryFinished);
                 break;
             }
 

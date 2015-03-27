@@ -154,6 +154,8 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     }
 
     public void startScan(boolean includeHighPowerPreScan) {
+        hardwarePresenter.setWantsHighPowerPreScan(includeHighPowerPreScan);
+
         PeripheralCriteria criteria = new PeripheralCriteria();
         criteria.setWantsHighPowerPreScan(includeHighPowerPreScan);
 
