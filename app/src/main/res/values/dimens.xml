@@ -50,8 +50,8 @@
     <dimen name="pie_graph_stroke_width">1dp</dimen>
 
     <dimen name="gap_raised_item_inset_side">1px</dimen>
-    <dimen name="gap_raised_item_inset_bottom">1dp</dimen>
-    <dimen name="raised_item_corner_radius">3dp</dimen>
+    <dimen name="gap_raised_item_inset_bottom">2dp</dimen>
+    <dimen name="raised_item_corner_radius">2dp</dimen>
     <dimen name="widget_last_night_corner_radius">38dp</dimen>
 
     <dimen name="page_dot_size">10dp</dimen>
