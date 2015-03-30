@@ -75,32 +75,40 @@ public class LineGraphDrawable extends GraphDrawable {
                 fillPath.moveTo(0f, minY + height + bottomInset);
 
                 float sectionWidth = width / sectionCount;
+                float lastX = 0f, lastY = 0f;
                 for (int section = 0; section < sectionCount; section++) {
                     int pointCount = adapterCache.getSectionCount(section);
-                    if (pointCount == 0)
+                    if (pointCount == 0) {
                         continue;
+                    }
 
                     float segmentWidth = sectionWidth / (float) pointCount;
                     for (int position = 0; position < pointCount; position++) {
-                        float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, section, position);
-                        float segmentY = minY + adapterCache.calculateSegmentY(height, section, position);
+                        float currentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, section, position);
+                        float currentY = minY + adapterCache.calculateSegmentY(height, section, position);
 
                         if (section == 0 && position == 0) {
-                            linePath.moveTo(segmentX, segmentY);
+                            linePath.moveTo(currentX, currentY);
+                        } else if (lastX > 0) {
+                            float controlX = (lastX + currentX) / 2f;
+                            float controlY = (lastY + currentY) / 2f;
+
+                            linePath.quadTo((lastX + controlX) / 2f, lastY, controlX, controlY);
+                            linePath.quadTo((controlX + currentX) / 2f, currentY, currentX, currentY);
                         } else {
-                            linePath.lineTo(segmentX, segmentY);
+                            linePath.lineTo(currentX, currentY);
                         }
-                        fillPath.lineTo(segmentX, segmentY - halfOfTopLine);
 
-                        if (section == sectionCount - 1 && position == pointCount - 1) {
-                            linePath.lineTo(width, segmentY);
-
-                            fillPath.lineTo(width, segmentY - halfOfTopLine);
-                            fillPath.lineTo(width, minY + height + bottomInset);
-                            fillPath.lineTo(0f, minY + height + bottomInset);
-                        }
+                        lastX = currentX;
+                        lastY = currentY;
                     }
                 }
+
+                linePath.lineTo(width, lastY);
+
+                fillPath.addPath(linePath);
+                fillPath.lineTo(width, minY + height + bottomInset);
+                fillPath.lineTo(0f, minY + height + bottomInset);
             }
 
             canvas.save();
