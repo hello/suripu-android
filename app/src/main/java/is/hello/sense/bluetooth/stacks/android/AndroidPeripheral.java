@@ -177,7 +177,8 @@ public class AndroidPeripheral implements Peripheral {
                         }
                     }, e -> Logger.error(LOG_TAG, "Bluetooth state observation error", e));
 
-                    if (getBondStatus() == BOND_NONE) {
+                    boolean clearBondOnConnect = ((config & CONFIG_FRAGILE_BONDS) == CONFIG_FRAGILE_BONDS);
+                    if (getBondStatus() == BOND_NONE || !clearBondOnConnect) {
                         s.onNext(this);
                         s.onCompleted();
 
@@ -277,7 +278,7 @@ public class AndroidPeripheral implements Peripheral {
                 }
             });
 
-            boolean clearBondOnDisconnect = ((config & CONFIG_CLEAR_BOND_ON_DISCONNECT) == CONFIG_CLEAR_BOND_ON_DISCONNECT);
+            boolean clearBondOnDisconnect = ((config & CONFIG_FRAGILE_BONDS) == CONFIG_FRAGILE_BONDS);
             if (clearBondOnDisconnect && getBondStatus() == BOND_BONDED) {
                 removeBond().subscribe(ignored -> {}, s::onError);
             } else {
@@ -297,7 +298,7 @@ public class AndroidPeripheral implements Peripheral {
 
     //region Internal
 
-    private boolean shouldAutoActivateCompatibiltyShims() {
+    private boolean shouldAutoActivateCompatibilityShims() {
         return ((config & CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS) == CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS);
     }
 
@@ -321,7 +322,7 @@ public class AndroidPeripheral implements Peripheral {
 
                 case SUBSCRIBE_NOTIFICATION:
                     gattDispatcher.onDescriptorWrite = null;
-                    if (shouldAutoActivateCompatibiltyShims()) {
+                    if (shouldAutoActivateCompatibilityShims()) {
                         setWaitAfterServiceDiscovery();
                     }
                     break;
@@ -616,7 +617,7 @@ public class AndroidPeripheral implements Peripheral {
                         s.onCompleted();
                     } else {
                         Logger.error(LOG_TAG, "Could not subscribe to characteristic. " + BluetoothGattError.statusToString(status));
-                        if (shouldAutoActivateCompatibiltyShims()) {
+                        if (shouldAutoActivateCompatibilityShims()) {
                             setWaitAfterServiceDiscovery();
                         }
                         s.onError(new BluetoothGattError(status, BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION));
@@ -634,7 +635,7 @@ public class AndroidPeripheral implements Peripheral {
                     gattDispatcher.onDescriptorWrite = null;
                     gattDispatcher.removeDisconnectListener(onDisconnect);
 
-                    if (shouldAutoActivateCompatibiltyShims()) {
+                    if (shouldAutoActivateCompatibilityShims()) {
                         setWaitAfterServiceDiscovery();
                     }
 

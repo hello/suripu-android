@@ -257,11 +257,10 @@ public interface Peripheral {
     int CONFIG_EMPTY = 0;
 
     /**
-     * Whether or not the peripheral should clear its bond information on disconnect.
-     * <p/>
-     * Clearing bond information on disconnect speeds up future connection operations.
+     * Whether or not the peripheral should clear bond information
+     * before connecting to a hardware device.
      */
-    int CONFIG_CLEAR_BOND_ON_DISCONNECT = (1 << 1);
+    int CONFIG_FRAGILE_BONDS = (1 << 1);
 
     /**
      * Whether or not the peripheral should automatically
@@ -279,7 +278,7 @@ public interface Peripheral {
 
     @IntDef(value = {
         CONFIG_EMPTY,
-        CONFIG_CLEAR_BOND_ON_DISCONNECT,
+        CONFIG_FRAGILE_BONDS,
         CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS,
         CONFIG_WAIT_AFTER_SERVICE_DISCOVERY
     }, flag = true)
