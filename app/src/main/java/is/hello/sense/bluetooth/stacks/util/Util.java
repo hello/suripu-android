@@ -9,8 +9,8 @@ public class Util {
         }
 
         String options = "";
-        if ((peripheralConfig & Peripheral.CONFIG_CLEAR_BOND_ON_DISCONNECT) == Peripheral.CONFIG_CLEAR_BOND_ON_DISCONNECT) {
-            options += "CONFIG_CLEAR_BOND_ON_DISCONNECT | ";
+        if ((peripheralConfig & Peripheral.CONFIG_FRAGILE_BONDS) == Peripheral.CONFIG_FRAGILE_BONDS) {
+            options += "CONFIG_FRAGILE_BONDS | ";
         }
         if ((peripheralConfig & Peripheral.CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS) == Peripheral.CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS) {
             options += "CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS | ";
