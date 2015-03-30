@@ -425,6 +425,7 @@
         <item name="android:paddingRight">@dimen/gap_raised_item_inset_side</item>
         <item name="android:paddingBottom">@dimen/gap_raised_item_inset_bottom</item>
         <item name="android:gravity">start|center_vertical</item>
+        <item name="senseCornerRadius">@dimen/raised_item_corner_radius</item>
     </style>
 
     <style name="AppTheme.Card.Clickable">

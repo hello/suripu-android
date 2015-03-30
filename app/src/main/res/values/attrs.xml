@@ -34,4 +34,9 @@
             <enum name="blue" value="1" />
         </attr>
     </declare-styleable>
+
+    <!-- Used by RoundedLinearLayout and RoundedRelativeLayout -->
+    <declare-styleable name="RoundedLayout">
+        <attr name="senseCornerRadius" format="dimension" />
+    </declare-styleable>
 </resources>

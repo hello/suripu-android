@@ -8,11 +8,11 @@ import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 
 import is.hello.sense.R;
 
-public class RoundedRelativeLayout extends RelativeLayout {
+public class RoundedLinearLayout extends LinearLayout {
     //region Fields
 
     private final Path clippingPath = new Path();
@@ -25,15 +25,15 @@ public class RoundedRelativeLayout extends RelativeLayout {
 
     //region Lifecycle
 
-    public RoundedRelativeLayout(@NonNull Context context) {
+    public RoundedLinearLayout(@NonNull Context context) {
         this(context, null);
     }
 
-    public RoundedRelativeLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public RoundedLinearLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public RoundedRelativeLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public RoundedLinearLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         if (attrs != null) {
