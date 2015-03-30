@@ -138,7 +138,6 @@
     <style name="AppTheme.Dialog.Simple" parent="Platform.Dialog.MinWidth">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@drawable/raised_item_normal</item>
-        <item name="android:paddingBottom">@dimen/gap_raised_item_inset_bottom</item>
     </style>
 
     <style name="AppTheme.Dialog.Selector">
