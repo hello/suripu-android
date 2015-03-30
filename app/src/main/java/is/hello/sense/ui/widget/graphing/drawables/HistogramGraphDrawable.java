@@ -27,8 +27,8 @@ public class HistogramGraphDrawable extends GraphDrawable {
         //noinspection SuspiciousNameCombination
         linePaint.setStrokeWidth(topLine);
 
-        linePaint.setColor(resources.getColor(R.color.graph_fill_color));
-        this.fillDrawable = Styles.createGraphFillDrawable(resources);
+        linePaint.setColor(resources.getColor(R.color.graph_stroke_color));
+        this.fillDrawable = Styles.createGraphFillGradientDrawable(resources);
     }
 
 

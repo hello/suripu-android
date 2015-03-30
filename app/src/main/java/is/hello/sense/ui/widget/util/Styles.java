@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
@@ -34,6 +33,7 @@ import java.lang.annotation.RetentionPolicy;
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
 
@@ -215,11 +215,15 @@ public final class Styles {
         return builder;
     }
 
-    public static @NonNull Drawable createGraphFillDrawable(@NonNull Resources resources) {
+    public static @NonNull GradientDrawable createGraphFillGradientDrawable(@NonNull Resources resources) {
         return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
                 resources.getColor(R.color.graph_fill_gradient_top),
                 resources.getColor(R.color.graph_fill_gradient_bottom),
         });
+    }
+
+    public static @NonNull ColorDrawableCompat createGraphFillSolidDrawable(@NonNull Resources resources) {
+        return new ColorDrawableCompat(resources.getColor(R.color.graph_fill_solid));
     }
 
     public static @NonNull TextView createItemView(@NonNull Context context,

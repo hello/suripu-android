@@ -193,7 +193,12 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
 
     @Override
     public int getSectionFooterTextColor(int section) {
-        return resources.getColor(R.color.text_medium);
+        if (trendGraph.getGraphType() == GraphType.HISTOGRAM &&
+                trendGraph.getDataType() == TrendGraph.DataType.SLEEP_DURATION) {
+            return resources.getColor(R.color.light_accent);
+        } else {
+            return resources.getColor(R.color.text_medium);
+        }
     }
 
     @NonNull

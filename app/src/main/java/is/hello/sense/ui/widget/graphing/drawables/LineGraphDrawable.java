@@ -30,7 +30,7 @@ public class LineGraphDrawable extends GraphDrawable {
     private @Nullable MarkerState markers;
 
 
-    public LineGraphDrawable(@NonNull Resources resources) {
+    public LineGraphDrawable(@NonNull Resources resources, @NonNull Drawable fillDrawable) {
         this.resources = resources;
 
         this.topLineHeight = resources.getDimensionPixelSize(R.dimen.series_graph_line_size);
@@ -39,8 +39,12 @@ public class LineGraphDrawable extends GraphDrawable {
         Styles.applyGraphLineParameters(linePaint);
         //noinspection SuspiciousNameCombination
         linePaint.setStrokeWidth(topLineHeight);
-        linePaint.setColor(resources.getColor(R.color.graph_fill_color));
-        this.fillDrawable = Styles.createGraphFillDrawable(resources);
+        linePaint.setColor(resources.getColor(R.color.graph_stroke_color));
+        this.fillDrawable = fillDrawable;
+    }
+
+    public LineGraphDrawable(@NonNull Resources resources) {
+        this(resources, Styles.createGraphFillGradientDrawable(resources));
     }
 
 

@@ -60,8 +60,8 @@
     <color name="background_button_dark_pressed">#EEdff2fe</color>
 
     <color name="sensor_alert">#FF974C</color>
-    <color name="sensor_warning">#FFCC00</color>
-    <color name="sensor_ideal">#1ED7AA</color>
+    <color name="sensor_warning">#FFBF00</color>
+    <color name="sensor_ideal">#41D7AC</color>
     <color name="sensor_unknown">#565961</color>
 
     <color name="sleep_awake">#ffffff</color>
@@ -74,9 +74,10 @@
     <color name="sleep_intermediate_dimmed">#ffebebeb</color>
     <color name="sleep_deep_dimmed">#ffe5e5e5</color>
 
-    <color name="graph_fill_color">#70000000</color>
-    <color name="graph_fill_gradient_top">#35000000</color>
-    <color name="graph_fill_gradient_bottom">#20000000</color>
+    <color name="graph_stroke_color">#66000000</color>
+    <color name="graph_fill_gradient_top">#19000000</color>
+    <color name="graph_fill_gradient_bottom">#09000000</color>
+    <color name="graph_fill_solid">#19D6D6D6</color>
 
     <color name="view_scale_tick_normal">#dfdfdf</color>
     <color name="view_scale_tick_emphasized">#c1c1c1</color>
