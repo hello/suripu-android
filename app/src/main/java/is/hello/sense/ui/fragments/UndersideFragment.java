@@ -156,6 +156,15 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         }
     }
 
+    public boolean onBackPressed() {
+        if (pager.getCurrentItem() != DEFAULT_START_ITEM) {
+            setCurrentItem(DEFAULT_START_ITEM, OPTION_ANIMATE | OPTION_NOTIFY);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private SpannableString createIconSpan(@NonNull CharSequence title, @DrawableRes int iconRes) {
         ImageSpan image = new ImageSpan(getActivity(), iconRes);
         SpannableString span = new SpannableString(title);
