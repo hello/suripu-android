@@ -15,6 +15,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Message;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -355,6 +356,14 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
     public void setGridDrawable(@Nullable Drawable gridDrawable) {
         this.gridDrawable = gridDrawable;
         invalidate();
+    }
+
+    public void setGridDrawable(@DrawableRes int drawableRes) {
+        if (drawableRes != 0) {
+            setGridDrawable(getResources().getDrawable(drawableRes));
+        } else {
+            setGridDrawable(null);
+        }
     }
 
     public void setHeaderTypeface(@NonNull Typeface typeface) {

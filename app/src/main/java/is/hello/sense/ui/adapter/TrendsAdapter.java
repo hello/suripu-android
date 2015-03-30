@@ -75,9 +75,12 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         }
 
         holder.graphView.setNumberOfLines(TrendGraphAdapter.getNumberOfLines(graph));
+        holder.graphView.setGridDrawable(graph.getGraphType().getGridDrawable());
         holder.graphAdapter.bindTrendGraph(graph, () -> {
             if (graphDrawable instanceof LineGraphDrawable) {
-                ((LineGraphDrawable) graphDrawable).setMarkers(holder.graphAdapter.getMarkers());
+                LineGraphDrawable lineGraph = (LineGraphDrawable) graphDrawable;
+                lineGraph.setMarkers(holder.graphAdapter.getMarkers());
+                lineGraph.setTopInset(resources.getDimensionPixelSize(R.dimen.gap_outer));
             }
         });
 

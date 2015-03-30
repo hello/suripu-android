@@ -198,7 +198,7 @@ public class LineGraphDrawable extends GraphDrawable {
                         textX = width - edgeInset - textBounds.width();
                     }
 
-                    if (textY < minY) {
+                    if (textY < 0f) {
                         float fontSpacing = fontMetrics.leading + fontMetrics.bottom + fontMetrics.descent;
                         textY = segmentY + textBounds.height() + pointSizeHalf + fontSpacing;
                     }
