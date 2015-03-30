@@ -17,19 +17,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ToggleButton;
 
-import java.util.List;
-
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
-import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
 import static is.hello.sense.ui.adapter.StaticFragmentAdapter.Item;
 
-public class UndersideFragment extends Fragment implements ViewPager.OnPageChangeListener, SelectorLinearLayout.OnSelectionChangedListener {
+public class UndersideFragment extends Fragment implements ViewPager.OnPageChangeListener, SelectorView.OnSelectionChangedListener {
     public static final int ITEM_ROOM_CONDITIONS = 0;
     public static final int ITEM_TRENDS = 1;
     public static final int ITEM_INSIGHTS = 2;
@@ -44,7 +42,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
     private SharedPreferences preferences;
 
-    private SelectorLinearLayout tabs;
+    private SelectorView tabs;
     private TabsBackgroundDrawable tabLine;
     private ViewPager pager;
     private StaticFragmentAdapter adapter;
@@ -117,10 +115,9 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
         pager.setOnPageChangeListener(this);
 
-        this.tabs = (SelectorLinearLayout) view.findViewById(R.id.fragment_underside_tabs);
-        List<ToggleButton> toggleButtons = tabs.getToggleButtons();
-        for (int i = 0; i < toggleButtons.size(); i++) {
-            ToggleButton button = toggleButtons.get(i);
+        this.tabs = (SelectorView) view.findViewById(R.id.fragment_underside_tabs);
+        for (int i = 0; i < tabs.getButtonCount(); i++) {
+            ToggleButton button = tabs.getButtonAt(i);
 
             SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i), ICONS_INACTIVE[i]);
             button.setText(inactiveContent);
@@ -130,7 +127,6 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
             button.setTextOn(activeContent);
 
             button.setPadding(0, 0, 0, 0);
-            button.setBackground(null);
         }
         tabs.setSelectedIndex(pager.getCurrentItem());
         tabs.setOnSelectionChangedListener(this);

@@ -12,11 +12,11 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Gender;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditingFragment;
-import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingRegisterGenderFragment extends AccountEditingFragment implements SelectorLinearLayout.OnSelectionChangedListener {
+public class OnboardingRegisterGenderFragment extends AccountEditingFragment implements SelectorView.OnSelectionChangedListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,13 +31,13 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_register_gender, container, false);
 
-        SelectorLinearLayout genderSelector = (SelectorLinearLayout) view.findViewById(R.id.fragment_onboarding_register_gender_mode);
+        SelectorView genderSelector = (SelectorView) view.findViewById(R.id.fragment_onboarding_register_gender_mode);
         genderSelector.setOnSelectionChangedListener(this);
 
         Account account = getContainer().getAccount();
         if (account.getGender() != null) {
             if (account.getGender() == Gender.OTHER) {
-                genderSelector.setSelectedIndex(SelectorLinearLayout.EMPTY_SELECTION);
+                genderSelector.setSelectedIndex(SelectorView.EMPTY_SELECTION);
             } else {
                 genderSelector.setSelectedIndex(account.getGender().ordinal());
             }

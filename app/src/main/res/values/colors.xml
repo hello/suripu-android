@@ -26,6 +26,7 @@
     <color name="background_raised_item_clicked">#fafafa</color>
 
     <color name="border">#e5e5e5</color>
+    <color name="border_tabs">#d0d0d0</color>
     <color name="shadow_end">#18000000</color>
 
     <color name="timeline_segment_stripe">#40009cff</color>

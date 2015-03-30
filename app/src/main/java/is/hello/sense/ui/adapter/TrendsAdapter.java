@@ -16,7 +16,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.GraphType;
 import is.hello.sense.api.model.TrendGraph;
-import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
@@ -85,12 +85,13 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
     }
 
 
-    class ViewHolder implements SelectorLinearLayout.OnSelectionChangedListener {
+    class ViewHolder implements SelectorView.OnSelectionChangedListener {
         final ViewGroup itemView;
         final TextView title;
         final GraphView graphView;
         final TrendGraphAdapter graphAdapter;
-        @Nullable SelectorLinearLayout optionSelector;
+        @Nullable
+        SelectorView optionSelector;
 
         ViewHolder(@NonNull View view) {
             this.itemView = (ViewGroup) view;
@@ -102,23 +103,23 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
 
         void addOptionSelector(int index, @NonNull List<String> options, @NonNull String selectedOption) {
             if (optionSelector == null) {
-                this.optionSelector = new SelectorLinearLayout(getContext());
+                this.optionSelector = new SelectorView(getContext());
                 optionSelector.setBackground(new TabsBackgroundDrawable(resources, options.size()));
                 optionSelector.setOnSelectionChangedListener(this);
                 itemView.addView(optionSelector, 0);
             } else {
-                optionSelector.removeAllOptions();
+                optionSelector.removeAllButtons();
             }
 
             for (String option : options) {
-                int optionIndex = optionSelector.addOption(option, option);
+                int optionIndex = optionSelector.addOptionButton(option, option);
                 if (option.equals(selectedOption)) {
                     optionSelector.setSelectedIndex(optionIndex);
                 }
             }
 
             optionSelector.setTag(index);
-            optionSelector.synchronizeButtonStates();
+            optionSelector.synchronize();
         }
 
         void removeOptionSelector() {
@@ -133,7 +134,7 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         public void onSelectionChanged(int newSelectionIndex) {
             if (optionSelector != null && onTrendOptionSelected != null) {
                 int index = (int) optionSelector.getTag();
-                String option = optionSelector.getButtonTag(newSelectionIndex).toString();
+                String option = optionSelector.getButtonTagAt(newSelectionIndex).toString();
                 onTrendOptionSelected.onTrendOptionSelected(index, option);
             }
         }

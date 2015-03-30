@@ -19,25 +19,31 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
 
-public class SelectorLinearLayout extends LinearLayout implements View.OnClickListener {
+public class SelectorView extends LinearLayout implements View.OnClickListener {
     public static final int EMPTY_SELECTION = -1;
 
-    private final List<ToggleButton> toggleButtons = new ArrayList<>();
+    private final List<ToggleButton> buttons = new ArrayList<>();
     private int selectedIndex = EMPTY_SELECTION;
+
     private @Nullable SelectionAwareDrawable selectionAwareBackground;
     private @Nullable OnSelectionChangedListener onSelectionChangedListener;
 
-    public SelectorLinearLayout(Context context) {
-        super(context);
+
+    //region Lifecycle
+
+    public SelectorView(@NonNull Context context) {
+        this(context, null);
     }
 
-    public SelectorLinearLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public SelectorView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
     }
 
-    public SelectorLinearLayout(Context context, AttributeSet attrs, int defStyle) {
+    public SelectorView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
+
+    //endregion
 
 
     //region Backgrounds
@@ -55,7 +61,7 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
 
     public void setSelectionAwareDrawable(@Nullable SelectionAwareDrawable drawable) {
         this.selectionAwareBackground = drawable;
-        synchronizeButtonStates();
+        synchronize();
     }
 
     //endregion
@@ -67,13 +73,13 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
     public void addView(@NonNull View child, int index, ViewGroup.LayoutParams params) {
         if (child instanceof ToggleButton) {
             ToggleButton button = (ToggleButton) child;
-            int buttonIndex = toggleButtons.size();
+            int buttonIndex = buttons.size();
             button.setOnClickListener(this);
             button.setTag(R.id.layout_linear_selector_tag_key_index, buttonIndex);
             if (button.isChecked()) {
                 this.selectedIndex = buttonIndex;
             }
-            toggleButtons.add(button);
+            buttons.add(button);
         }
 
         super.addView(child, index, params);
@@ -82,21 +88,21 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
     @Override
     public void onClick(@NonNull View view) {
         this.selectedIndex = (Integer) view.getTag(R.id.layout_linear_selector_tag_key_index);
-        synchronizeButtonStates();
+        synchronize();
         if (getOnSelectionChangedListener() != null) {
             getOnSelectionChangedListener().onSelectionChanged(selectedIndex);
         }
     }
 
-    public void synchronizeButtonStates() {
-        for (ToggleButton button : toggleButtons) {
+    public void synchronize() {
+        for (ToggleButton button : buttons) {
             int index = (Integer) button.getTag(R.id.layout_linear_selector_tag_key_index);
             boolean isSelected = (index == selectedIndex);
             button.setChecked(isSelected);
         }
 
         if (selectionAwareBackground != null) {
-            selectionAwareBackground.setNumberOfItems(toggleButtons.size());
+            selectionAwareBackground.setNumberOfItems(buttons.size());
             selectionAwareBackground.setSelectedIndex(selectedIndex);
         }
     }
@@ -106,13 +112,17 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
 
     //region Properties
 
-    public @NonNull List<ToggleButton> getToggleButtons() {
-        return toggleButtons;
+    public int getButtonCount() {
+        return buttons.size();
+    }
+
+    public @NonNull ToggleButton getButtonAt(int index) {
+        return buttons.get(index);
     }
 
     public void setSelectedIndex(int selectedIndex) {
         this.selectedIndex = selectedIndex;
-        synchronizeButtonStates();
+        synchronize();
     }
 
     public @Nullable OnSelectionChangedListener getOnSelectionChangedListener() {
@@ -129,17 +139,17 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
     //region Button Tags
 
     public void setButtonTags(Object... tags) {
-        if (tags.length != toggleButtons.size()) {
-            throw new IllegalArgumentException("Expected " + toggleButtons.size() + " tags, got " + tags.length);
+        if (tags.length != buttons.size()) {
+            throw new IllegalArgumentException("Expected " + buttons.size() + " tags, got " + tags.length);
         }
 
         for (int i = 0, count = tags.length; i < count; i++) {
-            toggleButtons.get(i).setTag(R.id.layout_linear_selector_tag_key_user, tags[i]);
+            buttons.get(i).setTag(R.id.layout_linear_selector_tag_key_user, tags[i]);
         }
     }
 
-    public Object getButtonTag(int index) {
-        return toggleButtons.get(index).getTag(R.id.layout_linear_selector_tag_key_user);
+    public Object getButtonTagAt(int index) {
+        return buttons.get(index).getTag(R.id.layout_linear_selector_tag_key_user);
     }
 
     //endregion
@@ -147,11 +157,11 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
 
     //region Options
 
-    public int addOption(@NonNull String title, @Nullable Object tag) {
+    public int addOptionButton(@NonNull String title, @Nullable Object tag) {
         Resources resources = getResources();
 
         ToggleButton optionButton = new ToggleButton(getContext());
-        optionButton.setBackgroundResource(R.drawable.selectable_dark);
+        optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
         optionButton.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Medium);
         optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
         optionButton.setTextColor(resources.getColorStateList(R.color.text_color_selector_toggle_button));
@@ -165,20 +175,20 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
         if (getChildCount() > 0) {
             View divider = Styles.createVerticalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
             LayoutParams layoutParams = new LayoutParams(divider.getLayoutParams());
-            int margin = resources.getDimensionPixelSize(R.dimen.gap_small);
+            int margin = resources.getDimensionPixelSize(R.dimen.gap_medium);
             layoutParams.setMargins(0, margin, 0, margin);
             addView(divider, layoutParams);
         }
 
-        int index = toggleButtons.size();
+        int index = buttons.size();
         LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
         addView(optionButton, layoutParams);
         return index;
     }
 
-    public void removeAllOptions() {
+    public void removeAllButtons() {
         removeViews(0, getChildCount());
-        toggleButtons.clear();
+        buttons.clear();
         this.selectedIndex = EMPTY_SELECTION;
     }
 

@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
 
-public class TimelineHeaderDrawable extends SelectorLinearLayout.SelectionAwareDrawable {
+public class TimelineHeaderDrawable extends SelectorView.SelectionAwareDrawable {
     //region Drawing Constants
 
     private final int barHeight;

@@ -32,7 +32,8 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
@@ -64,10 +65,11 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         listView.setOnItemClickListener(this);
 
 
-        SelectorLinearLayout selector = (SelectorLinearLayout) findViewById(R.id.activity_debug_modes);
+        SelectorView selector = (SelectorView) findViewById(R.id.activity_debug_modes);
         selector.setButtonTags(debugActionItems, buildInfoItems);
         selector.setSelectedIndex(0);
-        selector.setOnSelectionChangedListener(index -> listView.setAdapter((StaticItemAdapter) selector.getButtonTag(index)));
+        selector.setOnSelectionChangedListener(index -> listView.setAdapter((StaticItemAdapter) selector.getButtonTagAt(index)));
+        selector.setBackground(new TabsBackgroundDrawable(getResources(), selector.getButtonCount()));
     }
 
 

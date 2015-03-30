@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <is.hello.sense.ui.widget.SelectorLinearLayout
+    <is.hello.sense.ui.widget.SelectorView
         android:id="@+id/activity_debug_modes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -34,10 +34,7 @@
             android:textAllCaps="true"
             style="@style/AppTheme.Button.ModeSelector"/>
 
-    </is.hello.sense.ui.widget.SelectorLinearLayout>
-
-    <View
-        style="@style/Divider.Horizontal" />
+    </is.hello.sense.ui.widget.SelectorView>
 
     <include layout="@layout/list_view_static" />
 
