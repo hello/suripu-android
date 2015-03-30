@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/gap_medium"
         android:drawableStart="@drawable/sense_icon"
-        android:drawableEnd="@drawable/chevron"
+        android:drawableEnd="@drawable/disclosure_chevron"
         android:drawablePadding="@dimen/gap_small"
         android:gravity="start|center_vertical"
         android:textAppearance="@style/AppTheme.Text.Actionable"
