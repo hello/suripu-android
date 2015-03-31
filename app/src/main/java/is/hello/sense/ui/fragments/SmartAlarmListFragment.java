@@ -44,6 +44,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     @Inject SmartAlarmPresenter smartAlarmPresenter;
     @Inject PreferencesPresenter preferences;
 
+    private ListView listView;
     private ProgressBar activityIndicator;
     private View emptyPrompt;
     private View emptyView;
@@ -82,7 +83,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
             smartAlarmPresenter.update();
         });
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        this.listView = (ListView) view.findViewById(android.R.id.list);
         this.adapter = new SmartAlarmAdapter(getActivity(), this);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
@@ -222,12 +223,14 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
         Analytics.trackEvent(Analytics.TopView.EVENT_EDIT_ALARM, null);
 
         Alarm alarm = (Alarm) adapterView.getItemAtPosition(position);
-        editAlarm(alarm, position);
+        int alarmPosition = ListViews.getAdapterPosition(listView, position);
+        editAlarm(alarm, alarmPosition);
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-        DeleteAlarmDialogFragment deleteDialog = DeleteAlarmDialogFragment.newInstance(position);
+        int alarmPosition = ListViews.getAdapterPosition(listView, position);
+        DeleteAlarmDialogFragment deleteDialog = DeleteAlarmDialogFragment.newInstance(alarmPosition);
         deleteDialog.setTargetFragment(this, DELETE_REQUEST_CODE);
         deleteDialog.show(getFragmentManager(), DeleteAlarmDialogFragment.TAG);
         return true;
