@@ -74,7 +74,7 @@ public class TrendGraph extends ApiResponse {
             }
 
             case TIME_PERIOD_OVER_TIME_1W: {
-                return dateTime.toString("E");
+                return dateTime.toString("E").substring(0, 1);
             }
 
             case TIME_PERIOD_OVER_TIME_2W: {
