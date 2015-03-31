@@ -127,7 +127,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
 
         void display(@NonNull Device device) {
             title.setText(device.getType().nameRes);
-            title.setCompoundDrawablesRelativeWithIntrinsicBounds(device.getType().iconRes, 0, wantsChevron() ? R.drawable.chevron : 0, 0);
+            title.setCompoundDrawablesRelativeWithIntrinsicBounds(device.getType().iconRes, 0, wantsChevron() ? R.drawable.disclosure_chevron : 0, 0);
         }
     }
 

@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
+        <is.hello.sense.ui.widget.RoundedLinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/gap_outer"
@@ -50,9 +50,9 @@
                 android:text="@string/label_units_and_time"
                 style="@style/AppTheme.Card.Item"/>
 
-        </LinearLayout>
+        </is.hello.sense.ui.widget.RoundedLinearLayout>
 
-        <LinearLayout
+        <is.hello.sense.ui.widget.RoundedLinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/gap_outer"
@@ -68,7 +68,7 @@
                 android:text="@string/action_feedback"
                 style="@style/AppTheme.Card.Item"/>
 
-        </LinearLayout>
+        </is.hello.sense.ui.widget.RoundedLinearLayout>
 
         <include layout="@layout/footer_help" />
 
@@ -76,9 +76,12 @@
             android:id="@+id/fragment_app_settings_version"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/gap_outer"
+            android:paddingTop="@dimen/gap_outer"
+            android:paddingBottom="@dimen/gap_outer"
+            android:paddingLeft="@dimen/gap_outer_footer"
+            android:paddingRight="@dimen/gap_outer_footer"
             android:gravity="bottom|center_horizontal"
-            android:textAppearance="@style/AppTheme.Text.Body.Light.Small"
+            android:textAppearance="@style/AppTheme.Text.Body.Footer"
             android:text="@string/app_name"/>
 
     </LinearLayout>

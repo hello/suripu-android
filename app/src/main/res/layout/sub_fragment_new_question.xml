@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<is.hello.sense.ui.widget.RoundedLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/sub_fragment_new_question"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -56,4 +56,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</is.hello.sense.ui.widget.RoundedLinearLayout>

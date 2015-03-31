@@ -59,7 +59,7 @@ import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.BlockableLinearLayout;
-import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.TimelineHeaderDrawable;
@@ -78,7 +78,7 @@ import rx.functions.Action1;
 
 import static is.hello.sense.ui.animation.Animation.Transition;
 
-public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorLinearLayout.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment, AdapterView.OnItemLongClickListener {
+public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorView.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment, AdapterView.OnItemLongClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
 
@@ -97,7 +97,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private TextView dateText;
     private FrameLayout headerViewContainer;
     private HeaderViewMode headerMode;
-    private SelectorLinearLayout headerModeSelector;
+    private SelectorView headerModeSelector;
 
     private ScoreViewMode timelineScore;
     private BeforeSleepHeaderMode beforeSleep;
@@ -178,7 +178,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.headerViewContainer = (FrameLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_container);
 
-        this.headerModeSelector = (SelectorLinearLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
+        this.headerModeSelector = (SelectorView) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
         headerModeSelector.setVisibility(View.INVISIBLE);
         headerModeSelector.setSelectionAwareDrawable(headerTabsBackground);
         headerModeSelector.setOnSelectionChangedListener(this);

@@ -7,5 +7,5 @@
     android:paddingRight="@dimen/gap_outer"
     android:paddingTop="@dimen/gap_medium"
     android:paddingBottom="@dimen/gap_medium"
-    android:textAppearance="@style/AppTheme.Text.Body.Light.Small"
+    android:textAppearance="@style/AppTheme.Text.Body.Small"
     android:lineSpacingMultiplier="@dimen/line_multiple_body"/>

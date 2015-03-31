@@ -3,7 +3,6 @@ package is.hello.sense.bluetooth.stacks;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -70,8 +69,9 @@ public class TestBluetoothStack implements BluetoothStack {
     }
 
     @Override
-    public EnumSet<Traits> getTraits() {
-        return EnumSet.noneOf(Traits.class);
+    public @Peripheral.Config int getDefaultConfig() {
+        return (Peripheral.CONFIG_FRAGILE_BONDS |
+                Peripheral.CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS);
     }
 
     @Override

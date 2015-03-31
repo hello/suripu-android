@@ -44,6 +44,8 @@ public class ScaleView extends FrameLayout {
     private final LinearLayoutManager layoutManager;
     private final TickAdapter adapter;
 
+    private boolean animating = false;
+
 
     //region Properties
 
@@ -232,7 +234,7 @@ public class ScaleView extends FrameLayout {
         }
     }
 
-    public void animateToValue(int newValue) {
+    public void animateToValue(int newValue, @Nullable Runnable onStop) {
         LinearSmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
             final float timePerPx = ANIMATION_MS_PER_PX / getResources().getDisplayMetrics().densityDpi;
 
@@ -244,6 +246,24 @@ public class ScaleView extends FrameLayout {
             @Override
             protected int calculateTimeForScrolling(int dx) {
                 return (int) Math.ceil(Math.abs(dx) * timePerPx);
+            }
+
+            @Override
+            protected void onStart() {
+                super.onStart();
+
+                ScaleView.this.animating = true;
+            }
+
+            @Override
+            protected void onStop() {
+                super.onStop();
+
+                ScaleView.this.animating = false;
+
+                if (onStop != null) {
+                    onStop.run();
+                }
             }
         };
         int newPosition = Math.max(minValue, (newValue - minValue - 1));
@@ -258,6 +278,10 @@ public class ScaleView extends FrameLayout {
         } else {
             return minValue + recyclerView.getChildPosition(tick);
         }
+    }
+
+    public boolean isAnimating() {
+        return animating;
     }
 
     public void setOnValueChangedListener(@Nullable OnValueChangedListener onValueChangedListener) {

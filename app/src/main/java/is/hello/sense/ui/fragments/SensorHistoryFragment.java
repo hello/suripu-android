@@ -30,7 +30,8 @@ import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.widget.BlockableScrollView;
-import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.units.UnitSystem;
@@ -42,7 +43,7 @@ import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class SensorHistoryFragment extends InjectionFragment implements SelectorLinearLayout.OnSelectionChangedListener {
+public class SensorHistoryFragment extends InjectionFragment implements SelectorView.OnSelectionChangedListener {
     @Inject RoomConditionsPresenter conditionsPresenter;
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
     @Inject Markdown markdown;
@@ -55,7 +56,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     private TextView readingText;
     private TextView messageText;
     private TextView insightText;
-    private SelectorLinearLayout historyModeSelector;
+    private SelectorView historyModeSelector;
     private String sensor;
 
     private ProgressBar loadingIndicator;
@@ -106,9 +107,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         graphView.setHighlightListener(sensorDataSource);
         graphView.setTintColor(getResources().getColor(R.color.sensor_unknown));
 
-        this.historyModeSelector = (SelectorLinearLayout) view.findViewById(R.id.fragment_sensor_history_mode);
+        this.historyModeSelector = (SelectorView) view.findViewById(R.id.fragment_sensor_history_mode);
         historyModeSelector.setOnSelectionChangedListener(this);
         historyModeSelector.setButtonTags(SensorHistoryPresenter.Mode.DAY, SensorHistoryPresenter.Mode.WEEK);
+        historyModeSelector.setBackground(new TabsBackgroundDrawable(getResources(), historyModeSelector.getButtonCount()));
 
         return view;
     }
@@ -202,7 +204,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         graphPlaceholder.setVisibility(View.GONE);
         sensorDataSource.clear();
 
-        SensorHistoryPresenter.Mode newMode = (SensorHistoryPresenter.Mode) historyModeSelector.getButtonTag(newSelectionIndex);
+        SensorHistoryPresenter.Mode newMode = (SensorHistoryPresenter.Mode) historyModeSelector.getButtonTagAt(newSelectionIndex);
         sensorHistoryPresenter.setMode(newMode);
     }
 

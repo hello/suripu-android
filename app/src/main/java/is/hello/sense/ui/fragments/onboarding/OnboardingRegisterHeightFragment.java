@@ -78,7 +78,7 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
         Account account = getContainer().getAccount();
         if (!hasAnimated && account.getHeight() != null) {
             scale.setValue(scale.getMinValue(), true);
-            scale.postDelayed(() -> scale.animateToValue(account.getHeight()), 250);
+            scale.postDelayed(() -> scale.animateToValue(account.getHeight(), null), 250);
             this.hasAnimated = true;
         }
     }
@@ -103,7 +103,9 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
 
     public void next() {
         try {
-            getContainer().getAccount().setHeight(scale.getValue());
+            if (!scale.isAnimating()) {
+                getContainer().getAccount().setHeight(scale.getValue());
+            }
             getContainer().onAccountUpdated(this);
         } catch (NumberFormatException e) {
             Logger.warn(OnboardingRegisterHeightFragment.class.getSimpleName(), "Invalid input fed to height fragment, ignoring.", e);

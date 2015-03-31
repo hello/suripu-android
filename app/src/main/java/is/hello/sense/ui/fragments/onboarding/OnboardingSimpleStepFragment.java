@@ -27,6 +27,7 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
     private static final String ARG_DIAGRAM_RES = OnboardingSimpleStepFragment.class.getName() + "ARG_DIAGRAM_RES";
     private static final String ARG_DIAGRAM_INSET_START_RES = OnboardingSimpleStepFragment.class.getName() + "ARG_DIAGRAM_INSET_START_RES";
     private static final String ARG_DIAGRAM_INSET_END_RES = OnboardingSimpleStepFragment.class.getName() + "ARG_DIAGRAM_INSET_END_RES";
+    private static final String ARG_DIAGRAM_EDGE_TO_EDGE = OnboardingSimpleStepFragment.class.getName() + ".ARG_DIAGRAM_EDGE_TO_EDGE";
     private static final String ARG_BUTTON_TEXT = OnboardingSimpleStepFragment.class.getName() + "ARG_BUTTON_TEXT";
     private static final String ARG_HIDE_TOOLBAR = OnboardingSimpleStepFragment.class.getName() + "ARG_HIDE_TOOLBAR";
     private static final String ARG_WANTS_BACK = OnboardingSimpleStepFragment.class.getName() + ".ARG_WANTS_BACK";
@@ -69,6 +70,7 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
             simpleStepHolder.setDiagramImage(getArguments().getInt(ARG_DIAGRAM_RES));
             simpleStepHolder.setDiagramInset(getArguments().getInt(ARG_DIAGRAM_INSET_START_RES, 0),
                                              getArguments().getInt(ARG_DIAGRAM_INSET_END_RES, 0));
+            simpleStepHolder.setDiagramEdgeToEdge(getArguments().getBoolean(ARG_DIAGRAM_EDGE_TO_EDGE, true));
         }
 
         simpleStepHolder.setPrimaryOnClickListener(this::next);
@@ -165,6 +167,11 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
             Resources resources = context.getResources();
             arguments.putInt(ARG_DIAGRAM_INSET_START_RES, resources.getDimensionPixelSize(startInsetRes));
             arguments.putInt(ARG_DIAGRAM_INSET_END_RES, resources.getDimensionPixelSize(endInsetRes));
+            return this;
+        }
+
+        public Builder setDiagramEdgeToEdge(boolean edgeToEdge) {
+            arguments.putBoolean(ARG_DIAGRAM_EDGE_TO_EDGE, edgeToEdge);
             return this;
         }
 

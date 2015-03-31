@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -25,6 +24,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
+import is.hello.sense.bluetooth.stacks.util.Util;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -32,7 +32,8 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
@@ -64,10 +65,11 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         listView.setOnItemClickListener(this);
 
 
-        SelectorLinearLayout selector = (SelectorLinearLayout) findViewById(R.id.activity_debug_modes);
+        SelectorView selector = (SelectorView) findViewById(R.id.activity_debug_modes);
         selector.setButtonTags(debugActionItems, buildInfoItems);
         selector.setSelectedIndex(0);
-        selector.setOnSelectionChangedListener(index -> listView.setAdapter((StaticItemAdapter) selector.getButtonTag(index)));
+        selector.setOnSelectionChangedListener(index -> listView.setAdapter((StaticItemAdapter) selector.getButtonTagAt(index)));
+        selector.setBackground(new TabsBackgroundDrawable(getResources(), selector.getButtonCount()));
     }
 
 
@@ -82,7 +84,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         buildInfoItems.addTextItem("Build Type", BuildConfig.BUILD_TYPE);
         buildInfoItems.addTextItem("Device Model", Build.MODEL);
         buildInfoItems.addTextItem("BLE Device Support", bluetoothStack.getDeviceSupportLevel().toString());
-        buildInfoItems.addTextItem("BLE Stack Traits", TextUtils.join(", ", bluetoothStack.getTraits()));
+        buildInfoItems.addTextItem("BLE Stack Config", Util.peripheralConfigToString(bluetoothStack.getDefaultConfig()));
         buildInfoItems.addTextItem("Access Token", sessionManager.getAccessToken());
         buildInfoItems.addTextItem("GCM ID", getSharedPreferences(Constants.NOTIFICATION_PREFS, 0).getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, "<none>"));
         buildInfoItems.addTextItem("Host", BuildConfig.BASE_URL);

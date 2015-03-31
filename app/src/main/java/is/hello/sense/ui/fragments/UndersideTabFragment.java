@@ -1,8 +1,16 @@
 package is.hello.sense.ui.fragments;
 
+import is.hello.sense.graph.Scope;
 import is.hello.sense.ui.common.InjectionFragment;
 
 public abstract class UndersideTabFragment extends InjectionFragment {
+    /**
+     * Returns the scope associated with the underside tab.
+     */
+    protected Scope getScope() {
+        return (Scope) getActivity();
+    }
+
     /**
      * Notifies the fragment that it is on screen, and may perform an update.
      */

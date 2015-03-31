@@ -9,6 +9,8 @@ import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.android.AndroidBluetoothStack;
+import is.hello.sense.bluetooth.stacks.util.ErrorListener;
+import is.hello.sense.util.Errors;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -21,12 +23,17 @@ import rx.android.schedulers.AndroidSchedulers;
 @Module(library = true, complete = false)
 @SuppressWarnings("UnusedDeclaration")
 public class BluetoothModule {
-    @Provides @Singleton Scheduler provideScheduler() {
+    @Provides Scheduler provideScheduler() {
         return AndroidSchedulers.mainThread();
     }
 
+    @Provides ErrorListener provideErrorListener() {
+        return Errors.REPORT_UNEXPECTED;
+    }
+
     @Provides @Singleton BluetoothStack provideDeviceCenter(@NonNull Context applicationContext,
-                                                            @NonNull Scheduler scheduler) {
-        return new AndroidBluetoothStack(applicationContext, scheduler);
+                                                            @NonNull Scheduler scheduler,
+                                                            @NonNull ErrorListener errorListener) {
+        return new AndroidBluetoothStack(applicationContext, scheduler, errorListener);
     }
 }

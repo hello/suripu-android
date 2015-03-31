@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.functional.Either;
 import is.hello.sense.functional.Lists;
@@ -17,11 +18,13 @@ public class TestPeripheral implements Peripheral {
     final TestPeripheralBehavior behavior;
 
     PacketHandler dataHandler;
+    @Config int config;
 
     public TestPeripheral(@NonNull BluetoothStack stack,
                           @NonNull TestPeripheralBehavior peripheralBehavior) {
         this.stack = stack;
         this.behavior = peripheralBehavior;
+        this.config = stack.getDefaultConfig();
     }
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
@@ -56,9 +59,14 @@ public class TestPeripheral implements Peripheral {
         return stack;
     }
 
+    @Override
+    public void setConfig(@Config int newConfig) {
+        this.config = newConfig;
+    }
+
     @NonNull
     @Override
-    public Observable<Peripheral> connect() {
+    public Observable<Peripheral> connect(@NonNull OperationTimeout timeout) {
         behavior.trackMethodCall(TestPeripheralBehavior.Method.CONNECT);
         return createResponseWith(behavior.connectResponse, null);
     }
@@ -82,13 +90,6 @@ public class TestPeripheral implements Peripheral {
         return createResponseWith(behavior.createBondResponse, null);
     }
 
-    @NonNull
-    @Override
-    public Observable<Peripheral> removeBond() {
-        behavior.trackMethodCall(TestPeripheralBehavior.Method.REMOVE_BOND);
-        return createResponseWith(behavior.removeBondResponse, null);
-    }
-
     @Override
     public @BondStatus int getBondStatus() {
         return behavior.bondStatus;
@@ -99,6 +100,19 @@ public class TestPeripheral implements Peripheral {
     public Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
         behavior.trackMethodCall(TestPeripheralBehavior.Method.DISCOVER_SERVICES);
         return createResponseWith(behavior.servicesResponse, timeout);
+    }
+
+    @NonNull
+    @Override
+    public Observable<PeripheralService> discoverService(@NonNull UUID serviceIdentifier, @NonNull OperationTimeout timeout) {
+        return discoverServices(timeout).flatMap(ignored -> {
+            PeripheralService service = getService(serviceIdentifier);
+            if (service != null) {
+                return Observable.just(service);
+            } else {
+                return Observable.error(new PeripheralServiceDiscoveryFailedError());
+            }
+        });
     }
 
     @Nullable
@@ -146,9 +160,4 @@ public class TestPeripheral implements Peripheral {
         this.dataHandler = dataHandler;
     }
 
-    @Nullable
-    @Override
-    public PacketHandler getPacketHandler() {
-        return this.dataHandler;
-    }
 }

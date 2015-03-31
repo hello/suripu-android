@@ -68,7 +68,7 @@
                 android:layout_weight="1"
                 android:minHeight="@dimen/gap_small"/>
 
-            <is.hello.sense.ui.widget.SelectorLinearLayout
+            <is.hello.sense.ui.widget.SelectorView
                 android:id="@+id/fragment_onboarding_register_gender_mode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
                     android:textOff="@string/gender_female"
                     style="@style/AppTheme.Button.Gender"/>
 
-            </is.hello.sense.ui.widget.SelectorLinearLayout>
+            </is.hello.sense.ui.widget.SelectorView>
 
             <Space
                 android:layout_width="match_parent"

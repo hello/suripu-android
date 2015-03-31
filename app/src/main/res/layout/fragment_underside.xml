@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <is.hello.sense.ui.widget.SelectorLinearLayout
+    <is.hello.sense.ui.widget.SelectorView
         android:id="@+id/fragment_underside_tabs"
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_height"
@@ -15,7 +15,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/underside_icon_currently"
             android:contentDescription="@string/title_current_conditions"
             android:checked="true"
             style="@style/AppTheme.Button.ModeSelector"/>
@@ -24,7 +23,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/underside_icon_trends"
             android:contentDescription="@string/title_trends"
             style="@style/AppTheme.Button.ModeSelector"/>
 
@@ -32,7 +30,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/underside_icon_insights"
             android:contentDescription="@string/action_insights"
             style="@style/AppTheme.Button.ModeSelector"/>
 
@@ -40,7 +37,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/underside_icon_alarm"
             android:contentDescription="@string/action_alarm"
             style="@style/AppTheme.Button.ModeSelector"/>
 
@@ -48,11 +44,10 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/underside_icon_settings"
             android:contentDescription="@string/action_settings"
             style="@style/AppTheme.Button.ModeSelector"/>
 
-    </is.hello.sense.ui.widget.SelectorLinearLayout>
+    </is.hello.sense.ui.widget.SelectorView>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/fragment_underside_pager"

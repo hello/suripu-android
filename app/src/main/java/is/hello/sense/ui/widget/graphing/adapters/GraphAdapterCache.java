@@ -28,10 +28,6 @@ public class GraphAdapterCache {
         rebuild();
     }
 
-    public float getPeakMagnitude() {
-        return peakMagnitude;
-    }
-
     public int getNumberSections() {
         return sectionCounts.size();
     }

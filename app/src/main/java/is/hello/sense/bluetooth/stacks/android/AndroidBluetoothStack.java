@@ -7,10 +7,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
@@ -20,7 +20,9 @@ import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
+import is.hello.sense.bluetooth.stacks.util.ErrorListener;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
+import is.hello.sense.bluetooth.stacks.util.Util;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Scheduler;
@@ -29,15 +31,19 @@ import rx.subjects.ReplaySubject;
 public class AndroidBluetoothStack implements BluetoothStack {
     final @NonNull Context applicationContext;
     final @NonNull Scheduler scheduler;
+    final @NonNull ErrorListener errorListener;
 
     final @NonNull BluetoothManager bluetoothManager;
     private final @Nullable BluetoothAdapter adapter;
 
     private final @NonNull ReplaySubject<Boolean> enabled = ReplaySubject.createWithSize(1);
 
-    public AndroidBluetoothStack(@NonNull Context applicationContext, @NonNull Scheduler scheduler) {
+    public AndroidBluetoothStack(@NonNull Context applicationContext,
+                                 @NonNull Scheduler scheduler,
+                                 @NonNull ErrorListener errorListener) {
         this.applicationContext = applicationContext;
         this.scheduler = scheduler;
+        this.errorListener = errorListener;
 
         this.bluetoothManager = (BluetoothManager) applicationContext.getSystemService(Context.BLUETOOTH_SERVICE);
         this.adapter = bluetoothManager.getAdapter();
@@ -71,18 +77,26 @@ public class AndroidBluetoothStack implements BluetoothStack {
     }
 
 
+    private Observable<List<Peripheral>> createLeScanner(@NonNull PeripheralCriteria peripheralCriteria) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return newConfiguredObservable(new LollipopLePeripheralScanner(this, peripheralCriteria));
+        } else {
+            return newConfiguredObservable(new LegacyLePeripheralScanner(this, peripheralCriteria));
+        }
+    }
+
     @NonNull
     @Override
     public Observable<List<Peripheral>> discoverPeripherals(@NonNull PeripheralCriteria peripheralCriteria) {
         if (adapter != null && adapter.isEnabled()) {
             if (peripheralCriteria.wantsHighPowerPreScan) {
-                Observable<List<BluetoothDevice>> devices = newConfiguredObservable(new HighPowerPeripheralScanner(applicationContext, adapter, false));
+                Observable<List<BluetoothDevice>> devices = newConfiguredObservable(new HighPowerPeripheralScanner(this, false));
                 return devices.flatMap(ignoredDevices -> {
                     Logger.info(LOG_TAG, "High power pre-scan completed.");
-                    return newConfiguredObservable(new PeripheralScanner(this, peripheralCriteria));
+                    return createLeScanner(peripheralCriteria);
                 });
             } else {
-                return newConfiguredObservable(new PeripheralScanner(this, peripheralCriteria));
+                return createLeScanner(peripheralCriteria);
             }
         } else {
             return Observable.error(new BluetoothDisabledError());
@@ -97,7 +111,9 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
     @Override
     public <T> Observable<T> newConfiguredObservable(Observable.OnSubscribe<T> onSubscribe) {
-        return Observable.create(onSubscribe).subscribeOn(getScheduler());
+        return Observable.create(onSubscribe)
+                         .subscribeOn(getScheduler())
+                         .doOnError(errorListener);
     }
 
     @Override
@@ -191,8 +207,9 @@ public class AndroidBluetoothStack implements BluetoothStack {
     }
 
     @Override
-    public EnumSet<Traits> getTraits() {
-        return EnumSet.of(Traits.BONDS_NOT_PERSISTENT);
+    public @Peripheral.Config int getDefaultConfig() {
+        return (Peripheral.CONFIG_FRAGILE_BONDS |
+                Peripheral.CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS);
     }
 
     @Override
@@ -207,7 +224,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
                 "applicationContext=" + applicationContext +
                 ", scheduler=" + scheduler +
                 ", adapter=" + adapter +
-                ", traits=" + getTraits() +
+                ", defaultConfig=" + Util.peripheralConfigToString(getDefaultConfig()) +
                 '}';
     }
 }

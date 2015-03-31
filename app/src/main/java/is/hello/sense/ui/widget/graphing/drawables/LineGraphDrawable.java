@@ -30,7 +30,7 @@ public class LineGraphDrawable extends GraphDrawable {
     private @Nullable MarkerState markers;
 
 
-    public LineGraphDrawable(@NonNull Resources resources) {
+    public LineGraphDrawable(@NonNull Resources resources, @NonNull Drawable fillDrawable) {
         this.resources = resources;
 
         this.topLineHeight = resources.getDimensionPixelSize(R.dimen.series_graph_line_size);
@@ -39,8 +39,12 @@ public class LineGraphDrawable extends GraphDrawable {
         Styles.applyGraphLineParameters(linePaint);
         //noinspection SuspiciousNameCombination
         linePaint.setStrokeWidth(topLineHeight);
-        linePaint.setColor(resources.getColor(R.color.graph_fill_color));
-        this.fillDrawable = Styles.createGraphFillDrawable(resources);
+        linePaint.setColor(resources.getColor(R.color.graph_stroke_color));
+        this.fillDrawable = fillDrawable;
+    }
+
+    public LineGraphDrawable(@NonNull Resources resources) {
+        this(resources, Styles.createGraphFillGradientDrawable(resources));
     }
 
 
@@ -71,32 +75,38 @@ public class LineGraphDrawable extends GraphDrawable {
                 fillPath.moveTo(0f, minY + height + bottomInset);
 
                 float sectionWidth = width / sectionCount;
+                float lastX = 0f, lastY = 0f;
                 for (int section = 0; section < sectionCount; section++) {
                     int pointCount = adapterCache.getSectionCount(section);
-                    if (pointCount == 0)
+                    if (pointCount == 0) {
                         continue;
+                    }
 
                     float segmentWidth = sectionWidth / (float) pointCount;
                     for (int position = 0; position < pointCount; position++) {
-                        float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, section, position);
-                        float segmentY = minY + adapterCache.calculateSegmentY(height, section, position);
+                        float currentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, section, position);
+                        float currentY = minY + adapterCache.calculateSegmentY(height, section, position);
 
                         if (section == 0 && position == 0) {
-                            linePath.moveTo(segmentX, segmentY);
+                            linePath.moveTo(currentX, currentY);
                         } else {
-                            linePath.lineTo(segmentX, segmentY);
-                        }
-                        fillPath.lineTo(segmentX, segmentY - halfOfTopLine);
+                            float controlX = (lastX + currentX) / 2f;
+                            float controlY = (lastY + currentY) / 2f;
 
-                        if (section == sectionCount - 1 && position == pointCount - 1) {
-                            linePath.lineTo(width, segmentY);
-
-                            fillPath.lineTo(width, segmentY - halfOfTopLine);
-                            fillPath.lineTo(width, minY + height + bottomInset);
-                            fillPath.lineTo(0f, minY + height + bottomInset);
+                            linePath.quadTo((lastX + controlX) / 2f, lastY, controlX, controlY);
+                            linePath.quadTo((controlX + currentX) / 2f, currentY, currentX, currentY);
                         }
+
+                        lastX = currentX;
+                        lastY = currentY;
                     }
                 }
+
+                linePath.lineTo(width, lastY);
+
+                fillPath.addPath(linePath);
+                fillPath.lineTo(width, minY + height + bottomInset);
+                fillPath.lineTo(0f, minY + height + bottomInset);
             }
 
             canvas.save();
@@ -194,7 +204,7 @@ public class LineGraphDrawable extends GraphDrawable {
                         textX = width - edgeInset - textBounds.width();
                     }
 
-                    if (textY < minY) {
+                    if (textY < 0f) {
                         float fontSpacing = fontMetrics.leading + fontMetrics.bottom + fontMetrics.descent;
                         textY = segmentY + textBounds.height() + pointSizeHalf + fontSpacing;
                     }

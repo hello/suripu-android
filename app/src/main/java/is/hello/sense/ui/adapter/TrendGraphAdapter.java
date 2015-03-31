@@ -193,14 +193,23 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
 
     @Override
     public int getSectionFooterTextColor(int section) {
-        return resources.getColor(R.color.text_medium);
+        if (trendGraph.getGraphType() == GraphType.HISTOGRAM &&
+                trendGraph.getDataType() == TrendGraph.DataType.SLEEP_DURATION) {
+            return resources.getColor(R.color.light_accent);
+        } else {
+            return resources.getColor(R.color.text_medium);
+        }
     }
 
     @NonNull
     @Override
     public String getSectionHeader(int section) {
-        GraphSample sample = sectionSamples.get(section);
-        return sample.getXValue();
+        if (trendGraph.getGraphType() == GraphType.HISTOGRAM) {
+            GraphSample sample = sectionSamples.get(section);
+            return sample.getXValue();
+        } else {
+            return "";
+        }
     }
 
     @NonNull
@@ -221,7 +230,7 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
             case NONE:
             case SLEEP_SCORE: {
                 if (trendGraph.getGraphType() == GraphType.TIME_SERIES_LINE) {
-                    return sample.getShiftedDateTime().toString("MMM d");
+                    return trendGraph.formatSampleDate(sample);
                 } else {
                     return String.format("%.0f", value);
                 }

@@ -14,13 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.GraphType;
 import is.hello.sense.api.model.TrendGraph;
-import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
-import is.hello.sense.ui.widget.util.Styles;
 
 public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
     private final LayoutInflater inflater;
@@ -65,7 +64,6 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         holder.graphView.setGraphDrawable(graphDrawable);
         holder.graphView.setTintColor(graphTintColor);
         holder.graphView.setAdapter(holder.graphAdapter);
-        holder.graphView.setWantsHeaders(graph.getGraphType() == GraphType.HISTOGRAM);
         holder.graphView.setHeaderFooterProvider(holder.graphAdapter);
 
         if (graph.getOptions() == null || graph.getOptions().size() < 2) {
@@ -75,9 +73,11 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         }
 
         holder.graphView.setNumberOfLines(TrendGraphAdapter.getNumberOfLines(graph));
+        holder.graphView.setGridDrawable(graph.getGraphType().getGridDrawable());
         holder.graphAdapter.bindTrendGraph(graph, () -> {
             if (graphDrawable instanceof LineGraphDrawable) {
-                ((LineGraphDrawable) graphDrawable).setMarkers(holder.graphAdapter.getMarkers());
+                LineGraphDrawable lineGraph = (LineGraphDrawable) graphDrawable;
+                lineGraph.setMarkers(holder.graphAdapter.getMarkers());
             }
         });
 
@@ -85,13 +85,13 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
     }
 
 
-    class ViewHolder implements SelectorLinearLayout.OnSelectionChangedListener {
+    class ViewHolder implements SelectorView.OnSelectionChangedListener {
         final ViewGroup itemView;
         final TextView title;
         final GraphView graphView;
         final TrendGraphAdapter graphAdapter;
-        @Nullable SelectorLinearLayout optionSelector;
-        @Nullable View optionSelectorDivider;
+        @Nullable
+        SelectorView optionSelector;
 
         ViewHolder(@NonNull View view) {
             this.itemView = (ViewGroup) view;
@@ -103,24 +103,23 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
 
         void addOptionSelector(int index, @NonNull List<String> options, @NonNull String selectedOption) {
             if (optionSelector == null) {
-                this.optionSelectorDivider = Styles.createHorizontalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
-                itemView.addView(optionSelectorDivider, 0);
-
-                this.optionSelector = new SelectorLinearLayout(getContext());
+                this.optionSelector = new SelectorView(getContext());
+                optionSelector.setBackground(new TabsBackgroundDrawable(resources, options.size()));
                 optionSelector.setOnSelectionChangedListener(this);
                 itemView.addView(optionSelector, 0);
             } else {
-                optionSelector.removeAllOptions();
+                optionSelector.removeAllButtons();
             }
 
             for (String option : options) {
-                int optionIndex = optionSelector.addOption(option, option);
+                int optionIndex = optionSelector.addOptionButton(option, option);
                 if (option.equals(selectedOption)) {
                     optionSelector.setSelectedIndex(optionIndex);
                 }
             }
 
             optionSelector.setTag(index);
+            optionSelector.synchronize();
         }
 
         void removeOptionSelector() {
@@ -129,18 +128,13 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
                 this.optionSelector = null;
 
             }
-
-            if (optionSelectorDivider != null) {
-                itemView.removeView(optionSelectorDivider);
-                this.optionSelectorDivider = null;
-            }
         }
 
         @Override
         public void onSelectionChanged(int newSelectionIndex) {
             if (optionSelector != null && onTrendOptionSelected != null) {
                 int index = (int) optionSelector.getTag();
-                String option = optionSelector.getButtonTag(newSelectionIndex).toString();
+                String option = optionSelector.getButtonTagAt(newSelectionIndex).toString();
                 onTrendOptionSelected.onTrendOptionSelected(index, option);
             }
         }

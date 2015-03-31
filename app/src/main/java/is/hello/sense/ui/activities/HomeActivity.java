@@ -49,7 +49,7 @@ import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
-import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
@@ -73,7 +73,7 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
 import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
 public class HomeActivity
-        extends InjectionActivity
+        extends ScopedInjectionActivity
         implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
 {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
@@ -164,8 +164,7 @@ public class HomeActivity
         viewPager.setResumeCoordinator(coordinator);
         viewPager.setAnimatorContext(animatorContext);
         if (viewPager.getCurrentFragment() == null) {
-            TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
-            viewPager.setCurrentFragment(fragment);
+            jumpToLastNight(false);
         }
 
 
@@ -247,7 +246,9 @@ public class HomeActivity
             slidingLayersView.openWithoutAnimation();
             slidingLayersView.post(() -> {
                 UndersideFragment underside = getUndersideFragment();
-                underside.notifyTabSelected(false);
+                if (underside != null) {
+                    underside.notifyTabSelected(false);
+                }
             });
             this.showUnderside = false;
         }
@@ -364,8 +365,15 @@ public class HomeActivity
 
     @Override
     public void onBackPressed() {
-        if(slidingLayersView.isOpen()) {
-            slidingLayersView.close();
+        if (slidingLayersView.isOpen()) {
+            if (!slidingLayersView.isAnimating() && !slidingLayersView.hasActiveGesture()) {
+                UndersideFragment undersideFragment = getUndersideFragment();
+                if (undersideFragment == null || !undersideFragment.onBackPressed()) {
+                    slidingLayersView.close();
+                }
+            }
+        } else if (!viewPager.isAnimating() && !isCurrentFragmentLastNight()) {
+            jumpToLastNight(true);
         } else {
             super.onBackPressed();
         }
@@ -379,6 +387,15 @@ public class HomeActivity
     public boolean isCurrentFragmentLastNight() {
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
+    }
+
+    public void jumpToLastNight(boolean animate) {
+        TimelineFragment lastNight = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
+        if (animate) {
+            viewPager.animateToFragment(lastNight, FragmentPageView.Position.AFTER);
+        } else {
+            viewPager.setCurrentFragment(lastNight);
+        }
     }
 
 
@@ -650,7 +667,7 @@ public class HomeActivity
         return slidingLayersView;
     }
 
-    private UndersideFragment getUndersideFragment() {
+    private @Nullable UndersideFragment getUndersideFragment() {
         return (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
     }
 
@@ -690,7 +707,9 @@ public class HomeActivity
     public void showUndersideWithItem(int item, boolean animate) {
         if (slidingLayersView.isOpen()) {
             UndersideFragment underside = getUndersideFragment();
-            underside.setCurrentItem(item, UndersideFragment.OPTION_ANIMATE | UndersideFragment.OPTION_NOTIFY);
+            if (underside != null) {
+                underside.setCurrentItem(item, UndersideFragment.OPTION_ANIMATE | UndersideFragment.OPTION_NOTIFY);
+            }
         } else {
             UndersideFragment.saveCurrentItem(this, item);
             if (animate) {
@@ -750,7 +769,9 @@ public class HomeActivity
 
                         if (slidingLayersView.isOpen()) {
                             UndersideFragment underside = getUndersideFragment();
-                            underside.notifyTabSelected(false);
+                            if (underside != null) {
+                                underside.notifyTabSelected(false);
+                            }
                         }
                     })
                     .start();

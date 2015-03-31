@@ -1,6 +1,7 @@
 package is.hello.sense.ui.widget.util;
 
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Layout;
@@ -51,6 +52,15 @@ public final class Views {
 
         return (x >= coordinates[0] && x <= coordinates[0] + width &&
                 y >= coordinates[1] && y <= coordinates[1] + height);
+    }
+
+    public static void setBackgroundKeepingPadding(@NonNull View view, @Nullable Drawable background) {
+        int paddingLeft = view.getPaddingLeft(),
+            paddingTop = view.getPaddingTop(),
+            paddingRight = view.getPaddingRight(),
+            paddingBottom = view.getPaddingBottom();
+        view.setBackground(background);
+        view.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
     }
 
     /**

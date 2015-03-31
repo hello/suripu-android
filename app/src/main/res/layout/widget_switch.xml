@@ -2,8 +2,8 @@
 
 <ToggleButton
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/switch_width"
-    android:layout_height="@dimen/switch_height"
+    android:layout_width="@dimen/widget_switch_width"
+    android:layout_height="@dimen/widget_switch_height"
     android:textOn=""
     android:textOff=""
     android:background="@drawable/switch_selector"/>

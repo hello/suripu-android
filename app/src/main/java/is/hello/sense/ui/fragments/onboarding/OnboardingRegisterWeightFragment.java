@@ -84,7 +84,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
             scale.postDelayed(() -> {
                 int weightInGrams = Math.round(account.getWeight());
                 int pounds = UnitOperations.gramsToPounds(weightInGrams);
-                scale.animateToValue(pounds);
+                scale.animateToValue(pounds, null);
             }, 250);
             this.hasAnimated = true;
         }
@@ -108,9 +108,11 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
 
     public void next() {
         try {
-            int pounds = scale.getValue();
-            int grams = UnitOperations.poundsToGrams(pounds);
-            getContainer().getAccount().setWeight(grams);
+            if (!scale.isAnimating()) {
+                int pounds = scale.getValue();
+                int grams = UnitOperations.poundsToGrams(pounds);
+                getContainer().getAccount().setWeight(grams);
+            }
             getContainer().onAccountUpdated(this);
         } catch (NumberFormatException e) {
             Logger.warn(OnboardingRegisterWeightFragment.class.getSimpleName(), "Invalid input fed to weight fragment, ignoring", e);

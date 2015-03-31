@@ -53,7 +53,7 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
             Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
 
             s.onNext(ConnectStatus.CONNECTING);
-            peripheral.connect().subscribe(peripheral -> {
+            peripheral.connect(timeout).subscribe(peripheral -> {
                 Logger.info(Peripheral.LOG_TAG, "connected to " + toString());
 
                 s.onNext(ConnectStatus.BONDING);
@@ -61,10 +61,10 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
                     Logger.info(Peripheral.LOG_TAG, "bonded to " + toString());
 
                     s.onNext(ConnectStatus.DISCOVERING_SERVICES);
-                    peripheral.discoverServices(timeout).subscribe(services -> {
-                        Logger.info(Peripheral.LOG_TAG, "discovered services for " + toString());
+                    peripheral.discoverService(getTargetServiceIdentifier(), timeout).subscribe(service -> {
+                        Logger.info(Peripheral.LOG_TAG, "discovered service for " + toString());
 
-                        this.peripheralService = peripheral.getService(getTargetServiceIdentifier());
+                        this.peripheralService = service;
                         s.onNext(ConnectStatus.CONNECTED);
                         s.onCompleted();
                     }, e -> {

@@ -6,8 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
@@ -62,19 +62,19 @@ public class SmartAlarmAdapter extends ArrayAdapter<Alarm> implements View.OnCli
     @Override
     public void onClick(View view) {
         int position = (Integer) view.getTag();
-        boolean enabled = ((ToggleButton) view).isChecked();
+        boolean enabled = ((CompoundButton) view).isChecked();
         onAlarmEnabledChanged.onAlarmEnabledChanged(position, enabled);
     }
 
 
     private class ViewHolder {
-        final ToggleButton enabled;
+        final CompoundButton enabled;
         final TextView time;
         final TextView timePeriod;
         final TextView repeat;
 
         ViewHolder(@NonNull View view) {
-            this.enabled = (ToggleButton) view.findViewById(R.id.item_smart_alarm_enabled);
+            this.enabled = (CompoundButton) view.findViewById(R.id.item_smart_alarm_enabled);
             this.time = (TextView) view.findViewById(R.id.item_smart_alarm_time);
             this.timePeriod = (TextView) view.findViewById(R.id.item_smart_alarm_time_period);
             this.repeat = (TextView) view.findViewById(R.id.item_smart_alarm_repeat);

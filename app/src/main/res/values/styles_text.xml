@@ -4,6 +4,7 @@
 
     <style name="AppTheme.Text" parent="android:TextAppearance">
         <item name="android:textColor">@color/text_dark</item>
+        <item name="android:textColorLink">@color/text_link</item>
     </style>
 
     <style name="AppTheme.Text.Heading">
@@ -41,7 +42,6 @@
 
     <style name="AppTheme.Text.SectionHeading">
         <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/text_size_section_heading</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/text_section_header</item>
@@ -68,15 +68,11 @@
         <item name="android:textStyle">normal</item>
     </style>
 
-    <!-- All body text is light right now, leaving
-         this if we want to distinguish again. -->
-    <style name="AppTheme.Text.Body.Light" />
-
-    <style name="AppTheme.Text.Body.Light.MidSized">
+    <style name="AppTheme.Text.Body.MidSized">
         <item name="android:textSize">@dimen/text_size_body_mid_sized</item>
     </style>
 
-    <style name="AppTheme.Text.Body.Light.Small">
+    <style name="AppTheme.Text.Body.Small">
         <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
 
@@ -95,6 +91,10 @@
 
     <style name="AppTheme.Text.Body.Dimmed">
         <item name="android:textColor">@color/grey</item>
+    </style>
+
+    <style name="AppTheme.Text.Body.Footer" parent="AppTheme.Text.Body.Small">
+        <item name="android:textColor">@color/text_footer</item>
     </style>
 
 
@@ -136,8 +136,12 @@
     </style>
 
     <style name="AppTheme.Text.Condition">
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textSize">@dimen/text_size_subheading</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textSize">@dimen/text_size_condition</item>
+    </style>
+
+    <style name="AppTheme.Text.Condition.Large">
+        <item name="android:textSize">@dimen/text_size_big_score</item>
     </style>
 
     <style name="AppTheme.Text.Timestamp">
@@ -157,12 +161,16 @@
     </style>
 
     <style name="AppTheme.Text.SmartAlarm.Time.Period">
-        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">@dimen/text_size_smart_alarm_time_period</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
     <style name="AppTheme.Text.SmartAlarm.Repeat">
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:textSize">@dimen/text_size_section_heading</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/text_light</item>
     </style>
 
     <style name="AppTheme.Text.SmartAlarm.Time.Big">

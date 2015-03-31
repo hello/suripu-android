@@ -133,16 +133,20 @@ public interface Peripheral {
      * <p/>
      * Does nothing if there is already an active connection.
      * <p/>
-     * Yields an {@see is.hello.sense.bluetooth.errors.PeripheralConnectionError} if called
+     * Yields an {@link is.hello.sense.bluetooth.errors.PeripheralConnectionError} if called
      * when peripheral connection status is changing.
+     * @param timeout   The timeout to apply to the connect operation. Will only fire on certain phones.
      */
-    @NonNull Observable<Peripheral> connect();
+    @NonNull Observable<Peripheral> connect(@NonNull OperationTimeout timeout);
 
     /**
      * Ends the gatt connection of the peripheral.
      * <p/>
-     * Yields {@see is.hello.sense.bluetooth.errors.NotConnectedException}
-     * if the peripheral is not connected.
+     * Safe to call multiple times if the peripheral is disconnected,
+     * or in the process of disconnecting.
+     * <p/>
+     * Yields a {@link is.hello.sense.bluetooth.errors.PeripheralConnectionError}
+     * if the peripheral is currently connecting.
      */
     @NonNull Observable<Peripheral> disconnect();
 
@@ -169,13 +173,6 @@ public interface Peripheral {
     @NonNull Observable<Peripheral> createBond();
 
     /**
-     * Removes the bond to the peripheral from the current device.
-     * <p/>
-     * Does nothing if the device is not bonded.
-     */
-    @NonNull Observable<Peripheral> removeBond();
-
-    /**
      * Returns the bond status of the peripheral.
      *
      * @see Peripheral#BOND_NONE
@@ -192,12 +189,27 @@ public interface Peripheral {
     /**
      * Performs service discovery on the peripheral.
      * <p/>
-     * Yields a {@see NotConnectedException} if the peripheral
-     * is not connected when this method is called.
+     * Yields a {@link is.hello.sense.bluetooth.errors.PeripheralConnectionError}
+     * if the peripheral is not connected when this method is called.
      *
      * @see Peripheral#getService(java.util.UUID)
      */
     @NonNull Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout);
+
+    /**
+     * Performs service discovery on the peripheral,
+     * yielding the service matching a given identifier.
+     * <p/>
+     * If the service cannot be found, this method will yield
+     * a {@link is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError}.
+     * <p/>
+     * Yields a {@link is.hello.sense.bluetooth.errors.PeripheralConnectionError}
+     * if the peripheral is not connected when this method is called.
+     *
+     * @see #discoverServices(OperationTimeout)
+     * @see #getService(java.util.UUID)
+     */
+    @NonNull Observable<PeripheralService> discoverService(@NonNull UUID serviceIdentifier, @NonNull OperationTimeout timeout);
 
     /**
      * Looks up a peripheral service by identifier on the peripheral.
@@ -234,10 +246,44 @@ public interface Peripheral {
      */
     void setPacketHandler(@Nullable PacketHandler dataHandler);
 
+    //endregion
+
+
+    //region Configuration
+
     /**
-     * Returns the associated packet handler of the Peripheral.
+     * Represents no config options specified.
      */
-    @Nullable PacketHandler getPacketHandler();
+    int CONFIG_EMPTY = 0;
+
+    /**
+     * Whether or not the peripheral should clear bond information
+     * before connecting to a hardware device.
+     */
+    int CONFIG_FRAGILE_BONDS = (1 << 1);
+
+    /**
+     * Whether or not the peripheral should automatically
+     * activate compatibility shims in response to errors.
+     */
+    int CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS = (1 << 2);
+
+    /**
+     * Whether or not to add an artificial delay after
+     * service discovery to increase connection stability.
+     */
+    int CONFIG_WAIT_AFTER_SERVICE_DISCOVERY = (1 << 3);
+
+    void setConfig(@Config int newConfig);
+
+    @IntDef(value = {
+        CONFIG_EMPTY,
+        CONFIG_FRAGILE_BONDS,
+        CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS,
+        CONFIG_WAIT_AFTER_SERVICE_DISCOVERY
+    }, flag = true)
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Config {}
 
     //endregion
 }

@@ -1,7 +1,9 @@
 package is.hello.sense.bluetooth.stacks.android;
 
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Pair;
@@ -22,7 +24,9 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>>, BluetoothAdapter.LeScanCallback {
+@SuppressWarnings("deprecation")
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+final class LegacyLePeripheralScanner implements Observable.OnSubscribe<List<Peripheral>>, BluetoothAdapter.LeScanCallback {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull PeripheralCriteria peripheralCriteria;
     private final @NonNull Map<String, Pair<BluetoothDevice, Integer>> results = new HashMap<>();
@@ -31,7 +35,7 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
     private @Nullable Subscription timeout;
     private boolean scanning = false;
 
-    PeripheralScanner(@NonNull AndroidBluetoothStack stack, @NonNull PeripheralCriteria peripheralCriteria) {
+    LegacyLePeripheralScanner(@NonNull AndroidBluetoothStack stack, @NonNull PeripheralCriteria peripheralCriteria) {
         this.stack = stack;
         this.peripheralCriteria = peripheralCriteria;
     }
@@ -39,7 +43,7 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
 
     @Override
     public void call(Subscriber<? super List<Peripheral>> subscriber) {
-        Logger.info(BluetoothStack.LOG_TAG, "Beginning Scan");
+        Logger.info(BluetoothStack.LOG_TAG, "Beginning Scan (legacy impl)");
 
         this.subscriber = subscriber;
         Subscription unsubscribe = Subscriptions.create(this::onConcludeScan);
@@ -48,8 +52,8 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
         this.scanning = true;
         stack.getAdapter().startLeScan(this);
         this.timeout = stack.scheduler
-                                   .createWorker()
-                                   .schedule(this::onConcludeScan, peripheralCriteria.duration, TimeUnit.MILLISECONDS);
+                            .createWorker()
+                            .schedule(this::onConcludeScan, peripheralCriteria.duration, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -88,7 +92,11 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
 
         List<Peripheral> peripherals = new ArrayList<>();
         for (Pair<BluetoothDevice, Integer> scanRecord : results.values()) {
-            peripherals.add(new AndroidPeripheral(stack, scanRecord.first, scanRecord.second));
+            AndroidPeripheral peripheral = new AndroidPeripheral(stack, scanRecord.first, scanRecord.second);
+            if (peripheralCriteria.config != Peripheral.CONFIG_EMPTY) {
+                peripheral.setConfig(peripheralCriteria.config);
+            }
+            peripherals.add(peripheral);
         }
         Logger.info(BluetoothStack.LOG_TAG, "Completed Scan " + peripherals);
 
@@ -96,7 +104,7 @@ final class PeripheralScanner implements Observable.OnSubscribe<List<Peripheral>
             subscriber.onNext(peripherals);
             subscriber.onCompleted();
         } else {
-            Logger.warn(BluetoothStack.LOG_TAG, "PeripheralScanner invoked without a subscriber, ignoring.");
+            Logger.warn(BluetoothStack.LOG_TAG, "LegacyLePeripheralScanner invoked without a subscriber, ignoring.");
         }
     }
 }

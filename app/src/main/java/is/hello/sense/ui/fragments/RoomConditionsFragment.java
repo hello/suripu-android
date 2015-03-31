@@ -32,6 +32,7 @@ import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
+import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitSystem;
@@ -261,7 +262,9 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
                 this.reading = (TextView) view.findViewById(R.id.item_sensor_condition_reading);
                 this.message = (TextView) view.findViewById(R.id.item_sensor_condition_message);
 
-                this.lineGraphDrawable = new LineGraphDrawable(getResources());
+                Resources resources = getResources();
+                ColorDrawableCompat fill = Styles.createGraphFillSolidDrawable(resources);
+                this.lineGraphDrawable = new LineGraphDrawable(resources, fill);
                 lineGraphDrawable.setBottomInset(graphBottomInset);
 
                 View graph = view.findViewById(R.id.fragment_room_sensor_condition_graph);

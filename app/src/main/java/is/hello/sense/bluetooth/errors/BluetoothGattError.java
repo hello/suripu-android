@@ -57,6 +57,12 @@ public class BluetoothGattError extends BluetoothError implements Errors.Reporti
 
 
     public final int statusCode;
+    public final @Nullable Operation operation;
+
+    public static boolean isRecoverableConnectError(int status) {
+        return (status == GATT_CONN_TERMINATE_LOCAL_HOST || // Nexus devices
+                status == GATT_STACK_ERROR); // Samsung devices
+    }
 
     public static @NonNull String statusToString(int status) {
         switch (status) {
@@ -131,10 +137,11 @@ public class BluetoothGattError extends BluetoothError implements Errors.Reporti
         }
     }
 
-    public BluetoothGattError(int statusCode) {
+    public BluetoothGattError(int statusCode, @Nullable Operation operation) {
         super(statusToString(statusCode));
 
         this.statusCode = statusCode;
+        this.operation = operation;
     }
 
     @Override
@@ -148,7 +155,11 @@ public class BluetoothGattError extends BluetoothError implements Errors.Reporti
     @Nullable
     @Override
     public String getContextInfo() {
-        return statusToString(statusCode);
+        if (operation != null) {
+            return operation + ": " + statusToString(statusCode);
+        } else {
+            return statusToString(statusCode);
+        }
     }
 
     @NonNull
@@ -175,5 +186,14 @@ public class BluetoothGattError extends BluetoothError implements Errors.Reporti
                 return Errors.Message.from(R.string.error_bluetooth_gatt_failure_fmt, getContextInfo());
             }
         }
+    }
+
+    public static enum Operation {
+        CONNECT,
+        DISCONNECT,
+        DISCOVER_SERVICES,
+        SUBSCRIBE_NOTIFICATION,
+        UNSUBSCRIBE_NOTIFICATION,
+        WRITE_COMMAND,
     }
 }

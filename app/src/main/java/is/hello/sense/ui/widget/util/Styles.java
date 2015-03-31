@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
@@ -17,8 +16,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.text.style.RelativeSizeSpan;
+import android.text.style.TypefaceSpan;
 import android.text.style.URLSpan;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,10 +33,13 @@ import java.lang.annotation.RetentionPolicy;
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
+import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
 
 public final class Styles {
     public static final int TIMELINE_HOURS_ON_SCREEN = 10;
+    public static final boolean UNDERLINE_LINKS = false;
 
     public static final int CARD_SPACING_HEADER = (1 << 1);
     public static final int CARD_SPACING_FOOTER = (1 << 2);
@@ -265,9 +269,15 @@ public final class Styles {
 
 
     public static CharSequence createUnitSuffixSpan(@NonNull String suffix) {
-        SpannableString spannableSuffix = new SpannableString(suffix);
-        spannableSuffix.setSpan(new RelativeSizeSpan(0.5f), 0, suffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        spannableSuffix.setSpan(new SuperscriptSpanAdjuster(0.75f), 0, suffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        SpannableString spannableSuffix = new SpannableString(' ' + suffix);
+        if (UnitSystem.TEMP_SUFFIX.equals(suffix)) {
+            spannableSuffix.setSpan(new RelativeSizeSpan(0.6f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            spannableSuffix.setSpan(new SuperscriptSpanAdjuster(0.45f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        } else {
+            spannableSuffix.setSpan(new RelativeSizeSpan(0.4f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            spannableSuffix.setSpan(new SuperscriptSpanAdjuster(0.95f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+        spannableSuffix.setSpan(new TypefaceSpan("sans-serif-light"), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         return spannableSuffix;
     }
 
@@ -278,11 +288,15 @@ public final class Styles {
         return builder;
     }
 
-    public static @NonNull Drawable createGraphFillDrawable(@NonNull Resources resources) {
+    public static @NonNull GradientDrawable createGraphFillGradientDrawable(@NonNull Resources resources) {
         return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
                 resources.getColor(R.color.graph_fill_gradient_top),
                 resources.getColor(R.color.graph_fill_gradient_bottom),
         });
+    }
+
+    public static @NonNull ColorDrawableCompat createGraphFillSolidDrawable(@NonNull Resources resources) {
+        return new ColorDrawableCompat(resources.getColor(R.color.graph_fill_solid));
     }
 
     public static @NonNull TextView createItemView(@NonNull Context context,
@@ -350,39 +364,24 @@ public final class Styles {
     public static SpannableStringBuilder resolveSupportLinks(@NonNull Activity activity,
                                                              @NonNull CharSequence source) {
         SpannableStringBuilder contents = new SpannableStringBuilder(source);
-        URLSpan[] spans = contents.getSpans(0, contents.length(), URLSpan.class);
-        for (URLSpan urlSpan : spans) {
+        URLSpan[] urlSpans = contents.getSpans(0, contents.length(), URLSpan.class);
+        for (URLSpan urlSpan : urlSpans) {
             String url = urlSpan.getURL();
 
-            ClickableSpan clickableSpan;
+            SimpleClickableSpan clickableSpan;
             switch (url) {
                 case "#support": {
-                    clickableSpan = new ClickableSpan() {
-                        @Override
-                        public void onClick(View widget) {
-                            UserSupport.showSupport(activity);
-                        }
-                    };
+                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showSupport(activity));
                     break;
                 }
 
                 case "#email": {
-                    clickableSpan = new ClickableSpan() {
-                        @Override
-                        public void onClick(View widget) {
-                            UserSupport.showEmailSupport(activity);
-                        }
-                    };
+                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showEmailSupport(activity));
                     break;
                 }
 
                 case "#second-pill": {
-                    clickableSpan = new ClickableSpan() {
-                        @Override
-                        public void onClick(View widget) {
-                            UserSupport.showForDeviceIssue(activity, UserSupport.DeviceIssue.PAIRING_2ND_PILL);
-                        }
-                    };
+                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showForDeviceIssue(activity, UserSupport.DeviceIssue.PAIRING_2ND_PILL));
                     break;
                 }
 
@@ -422,4 +421,24 @@ public final class Styles {
     }
 
     //endregion
+
+
+    private static final class SimpleClickableSpan extends ClickableSpan {
+        private final View.OnClickListener onClickListener;
+
+        private SimpleClickableSpan(@NonNull View.OnClickListener onClickListener) {
+            this.onClickListener = onClickListener;
+        }
+
+        @Override
+        public void onClick(View widget) {
+            onClickListener.onClick(widget);
+        }
+
+        @Override
+        public void updateDrawState(@NonNull TextPaint ds) {
+            ds.setColor(ds.linkColor);
+            ds.setUnderlineText(UNDERLINE_LINKS);
+        }
+    }
 }

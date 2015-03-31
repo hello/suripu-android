@@ -63,7 +63,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <is.hello.sense.ui.widget.RoundedLinearLayout
             android:id="@+id/fragment_device_details_actions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

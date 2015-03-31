@@ -86,6 +86,16 @@ public final class PresenterSubject<T> extends Subject<T, T> {
         subscriptionManager.error = null;
     }
 
+    /**
+     * Returns whether or not the presenter subject currently has a value.
+     * <p/>
+     * PresenterSubject can be updated from a background thread,
+     * so this should be treated as an instantaneous value.
+     */
+    public boolean hasValue() {
+        return (subscriptionManager.state == SubscriptionManager.STATE_VALUE);
+    }
+
 
     /**
      * Serialize the current value of the presenter subject into a Bundle.

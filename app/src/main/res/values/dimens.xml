@@ -2,6 +2,7 @@
     <!-- Standard Sizing -->
 
     <dimen name="gap_outer">24dp</dimen>
+    <dimen name="gap_outer_footer">40dp</dimen>
     <dimen name="gap_tiny">3dp</dimen>
     <dimen name="gap_xsmall">6dp</dimen>
     <dimen name="gap_small">10dp</dimen>
@@ -14,8 +15,8 @@
     <dimen name="text_size_body">16sp</dimen>
     <dimen name="text_size_body_mid_sized">14sp</dimen>
     <dimen name="text_size_body_small">13sp</dimen>
-    <dimen name="text_size_graph_header">10sp</dimen>
-    <dimen name="text_size_graph_footer">13sp</dimen>
+    <dimen name="text_size_graph_header">11sp</dimen>
+    <dimen name="text_size_graph_footer">14sp</dimen>
     <dimen name="text_size_button">16sp</dimen>
     <dimen name="text_size_large_button">20sp</dimen>
     <dimen name="text_size_section_heading">11sp</dimen>
@@ -26,7 +27,9 @@
     <dimen name="text_size_tiny_score">28sp</dimen>
     <dimen name="text_size_small_score">40sp</dimen>
     <dimen name="text_size_big_score">76sp</dimen>
-    <dimen name="text_size_smart_alarm_time">32sp</dimen>
+    <dimen name="text_size_smart_alarm_time">36sp</dimen>
+    <dimen name="text_size_smart_alarm_time_period">16sp</dimen>
+    <dimen name="text_size_condition">36sp</dimen>
     <dimen name="text_size_scale_reading">64sp</dimen>
     <dimen name="text_size_timeline_date">11sp</dimen>
 
@@ -48,8 +51,8 @@
     <dimen name="pie_graph_stroke_width">1dp</dimen>
 
     <dimen name="gap_raised_item_inset_side">1px</dimen>
-    <dimen name="gap_raised_item_inset_bottom">1dp</dimen>
-    <dimen name="raised_item_corner_radius">3dp</dimen>
+    <dimen name="gap_raised_item_inset_bottom">2dp</dimen>
+    <dimen name="raised_item_corner_radius">2dp</dimen>
     <dimen name="widget_last_night_corner_radius">38dp</dimen>
 
     <dimen name="page_dot_size">10dp</dimen>
@@ -134,8 +137,8 @@
 
     <!-- Switch -->
 
-    <dimen name="switch_width">48dp</dimen>
-    <dimen name="switch_height">24dp</dimen>
+    <dimen name="widget_switch_width">39dp</dimen>
+    <dimen name="widget_switch_height">26dp</dimen>
 
     <!-- Action Bar -->
 

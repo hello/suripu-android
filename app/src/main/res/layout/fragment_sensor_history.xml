@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/gap_outer"
             android:gravity="center"
-            android:textAppearance="@style/AppTheme.Text.BigScore"
+            android:textAppearance="@style/AppTheme.Text.Condition.Large"
             android:text="@string/missing_data_placeholder"/>
 
         <TextView
@@ -48,7 +48,7 @@
             android:layout_weight="1"
             android:minHeight="@dimen/gap_medium"/>
 
-        <is.hello.sense.ui.widget.SelectorLinearLayout
+        <is.hello.sense.ui.widget.SelectorView
             android:id="@+id/fragment_sensor_history_mode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,9 +78,7 @@
                 android:textAllCaps="true"
                 style="@style/AppTheme.Button.ModeSelector"/>
 
-        </is.hello.sense.ui.widget.SelectorLinearLayout>
-
-        <View style="@style/Divider.Horizontal" />
+        </is.hello.sense.ui.widget.SelectorView>
 
         <FrameLayout
             android:layout_width="match_parent"

@@ -4,12 +4,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -23,18 +17,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ToggleButton;
 
-import java.util.List;
-
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
-import is.hello.sense.ui.widget.SelectorLinearLayout;
+import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
 import static is.hello.sense.ui.adapter.StaticFragmentAdapter.Item;
 
-public class UndersideFragment extends Fragment implements ViewPager.OnPageChangeListener, SelectorLinearLayout.OnSelectionChangedListener {
+public class UndersideFragment extends Fragment implements ViewPager.OnPageChangeListener, SelectorView.OnSelectionChangedListener {
     public static final int ITEM_ROOM_CONDITIONS = 0;
     public static final int ITEM_TRENDS = 1;
     public static final int ITEM_INSIGHTS = 2;
@@ -49,7 +42,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
     private SharedPreferences preferences;
 
-    private SelectorLinearLayout tabs;
+    private SelectorView tabs;
     private TabsBackgroundDrawable tabLine;
     private ViewPager pager;
     private StaticFragmentAdapter adapter;
@@ -122,10 +115,9 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
         pager.setOnPageChangeListener(this);
 
-        this.tabs = (SelectorLinearLayout) view.findViewById(R.id.fragment_underside_tabs);
-        List<ToggleButton> toggleButtons = tabs.getToggleButtons();
-        for (int i = 0; i < toggleButtons.size(); i++) {
-            ToggleButton button = toggleButtons.get(i);
+        this.tabs = (SelectorView) view.findViewById(R.id.fragment_underside_tabs);
+        for (int i = 0; i < tabs.getButtonCount(); i++) {
+            ToggleButton button = tabs.getButtonAt(i);
 
             SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i), ICONS_INACTIVE[i]);
             button.setText(inactiveContent);
@@ -135,7 +127,6 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
             button.setTextOn(activeContent);
 
             button.setPadding(0, 0, 0, 0);
-            button.setBackground(null);
         }
         tabs.setSelectedIndex(pager.getCurrentItem());
         tabs.setOnSelectionChangedListener(this);
@@ -153,6 +144,15 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         UndersideTabFragment fragment = getCurrentTabFragment();
         if (fragment != null) {
             fragment.onUpdate();
+        }
+    }
+
+    public boolean onBackPressed() {
+        if (pager.getCurrentItem() != DEFAULT_START_ITEM) {
+            setCurrentItem(DEFAULT_START_ITEM, OPTION_ANIMATE | OPTION_NOTIFY);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -207,7 +207,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         tabLine.setPositionOffset(positionOffset);
-        tabLine.setSelectedItem(position);
+        tabLine.setSelectedIndex(position);
     }
 
     @Override
@@ -225,81 +225,5 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
         setCurrentItem(newSelectionIndex, OPTION_NOTIFY | OPTION_ANIMATE);
-    }
-
-
-    static class TabsBackgroundDrawable extends Drawable {
-        private final Paint paint = new Paint();
-
-        private final int itemCount;
-        private final int lineHeight;
-        private final int dividerHeight;
-
-        private final int backgroundColor = Color.WHITE;
-        private final int fillColor;
-        private final int dividerColor;
-
-        private int selectedItem = 0;
-        private float positionOffset = 0f;
-
-        TabsBackgroundDrawable(@NonNull Resources resources, int itemCount) {
-            this.itemCount = itemCount;
-            this.lineHeight = resources.getDimensionPixelSize(R.dimen.bottom_line);
-            this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
-            this.fillColor = resources.getColor(R.color.light_accent);
-            this.dividerColor = resources.getColor(R.color.border);
-        }
-
-        @Override
-        public void draw(Canvas canvas) {
-            int width = canvas.getWidth();
-            int height = canvas.getHeight() - dividerHeight;
-
-            
-            paint.setColor(backgroundColor);
-            canvas.drawRect(0, 0, width, height, paint);
-
-
-            int itemWidth = width / itemCount;
-            float itemOffset = (itemWidth * selectedItem) + (itemWidth * positionOffset);
-            paint.setColor(fillColor);
-            canvas.drawRect(itemOffset, height - lineHeight, itemOffset + itemWidth, height, paint);
-
-
-            paint.setColor(dividerColor);
-            canvas.drawRect(0, height, width, height + dividerHeight, paint);
-        }
-
-        @Override
-        public int getOpacity() {
-            return PixelFormat.TRANSLUCENT;
-        }
-
-
-        //region Attributes
-
-        @Override
-        public void setAlpha(int alpha) {
-            paint.setAlpha(alpha);
-            invalidateSelf();
-        }
-
-        @Override
-        public void setColorFilter(ColorFilter colorFilter) {
-            paint.setColorFilter(colorFilter);
-            invalidateSelf();
-        }
-
-        public void setSelectedItem(int selectedItem) {
-            this.selectedItem = selectedItem;
-            invalidateSelf();
-        }
-
-        public void setPositionOffset(float positionOffset) {
-            this.positionOffset = positionOffset;
-            invalidateSelf();
-        }
-
-        //endregion
     }
 }

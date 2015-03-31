@@ -529,5 +529,11 @@ public class Analytics {
         trackError(messageString, Errors.getType(e), Errors.getContextInfo(e), errorOperation);
     }
 
+    public static void trackUnexpectedError(@Nullable Throwable e) {
+        if (e != null && Crashlytics.getInstance().isInitialized()) {
+            Crashlytics.logException(e);
+        }
+    }
+
     //endregion
 }
