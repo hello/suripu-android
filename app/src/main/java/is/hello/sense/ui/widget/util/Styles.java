@@ -266,7 +266,7 @@ public final class Styles {
         Context context = listView.getContext();
         Resources resources = listView.getResources();
 
-        int spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_small);
+        int spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_card_header_footer);
         if ((spacing & CARD_SPACING_HEADER) == CARD_SPACING_HEADER) {
             View topSpacing = new View(context);
             topSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));

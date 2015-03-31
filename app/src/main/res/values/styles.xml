@@ -403,10 +403,10 @@
     <style name="AppTheme.ListView" />
 
     <style name="AppTheme.ListView.Cards">
-        <item name="android:paddingLeft">@dimen/gap_medium</item>
-        <item name="android:paddingRight">@dimen/gap_medium</item>
+        <item name="android:paddingLeft">@dimen/gap_card_sides</item>
+        <item name="android:paddingRight">@dimen/gap_card_sides</item>
         <item name="android:divider">@color/transparent</item>
-        <item name="android:dividerHeight">@dimen/gap_small</item>
+        <item name="android:dividerHeight">@dimen/gap_card_spacing</item>
         <item name="android:scrollbars">none</item>
         <item name="android:listSelector">@color/transparent</item>
     </style>
