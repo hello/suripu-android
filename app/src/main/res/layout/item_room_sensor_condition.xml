@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<is.hello.sense.ui.widget.RoundedLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -20,7 +20,7 @@
             android:layout_gravity="center"
             android:minWidth="@dimen/item_room_sensor_condition_reading_min_width"
             android:gravity="center"
-            android:textAppearance="@style/AppTheme.Text.SmallScore"
+            android:textAppearance="@style/AppTheme.Text.Condition"
             android:textColor="@color/sensor_unknown" />
 
         <View
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/gap_medium"
             android:layout_gravity="center"
-            android:textAppearance="@style/AppTheme.Text.Body"
+            android:textAppearance="@style/AppTheme.Text.Body.MidSized"
             android:lineSpacingMultiplier="@dimen/line_multiple_body" />
 
     </LinearLayout>
@@ -45,4 +45,4 @@
         android:layout_height="@dimen/condition_graph_height"
         android:background="@color/white" />
 
-</LinearLayout>
+</is.hello.sense.ui.widget.RoundedLinearLayout>

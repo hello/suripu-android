@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<is.hello.sense.ui.widget.RoundedLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="@dimen/gap_raised_item_inset_side"
-    android:paddingRight="@dimen/gap_raised_item_inset_side">
+    app:senseCornerRadius="@dimen/raised_item_corner_radius">
 
     <TextView
         android:id="@+id/dialog_sense_alert_title"
@@ -26,7 +26,7 @@
         android:layout_marginRight="@dimen/gap_outer"
         android:layout_marginTop="@dimen/gap_medium"
         android:layout_marginBottom="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.Body.Light"
+        android:textAppearance="@style/AppTheme.Text.Body"
         android:textColorLink="@color/text_link"
         android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
@@ -68,4 +68,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</is.hello.sense.ui.widget.RoundedLinearLayout>

@@ -1,54 +1,61 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
 import is.hello.sense.R;
 
 public class RoundedRelativeLayout extends RelativeLayout {
+    //region Fields
+
     private final Path clippingPath = new Path();
     private final RectF clippingRect = new RectF();
 
-    private float[] cornerRadii;
+    private final float[] cornerRadii = new float[8];
 
-    public RoundedRelativeLayout(Context context) {
+    //endregion
+
+
+    //region Lifecycle
+
+    public RoundedRelativeLayout(@NonNull Context context) {
         this(context, null);
     }
 
-    public RoundedRelativeLayout(Context context, AttributeSet attrs) {
+    public RoundedRelativeLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public RoundedRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RoundedRelativeLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        if (isInEditMode()) {
-            this.cornerRadii = new float[]{
-                0f, 0f, 0f, 0f,
-                0f, 0f, 0f, 0f,
-            };
-        } else {
-            float radius = context.getResources().getDimension(R.dimen.raised_item_corner_radius);
-            this.cornerRadii = new float[]{
-                radius, radius, radius, radius,
-                0f, 0f, 0f, 0f,
-            };
-        }
+        if (attrs != null) {
+            TypedArray values = context.obtainStyledAttributes(attrs, R.styleable.RoundedLayout, defStyleAttr, 0);
 
-        setWillNotDraw(false);
+            float radius = values.getDimension(R.styleable.RoundedLayout_senseCornerRadius, 0f);
+            setCornerRadii(radius);
+
+            values.recycle();
+        }
     }
 
+    //endregion
+
+
+    //region Drawing
 
     @Override
-    public void draw(@NonNull Canvas canvas) {
+    protected void dispatchDraw(@NonNull Canvas canvas) {
         canvas.save();
         canvas.clipPath(clippingPath);
-        super.draw(canvas);
+        super.dispatchDraw(canvas);
         canvas.restore();
     }
 
@@ -57,13 +64,34 @@ public class RoundedRelativeLayout extends RelativeLayout {
         super.onSizeChanged(w, h, oldW, oldH);
 
         clippingPath.reset();
-        clippingRect.set(0f, 0f, w, h);
+        clippingRect.set(getPaddingLeft(), getPaddingTop(), w - getPaddingRight(), h - getPaddingBottom());
         clippingPath.addRoundRect(clippingRect, cornerRadii, Path.Direction.CW);
     }
 
+    //endregion
 
-    public void setCornerRadii(@NonNull float[] cornerRadii) {
-        this.cornerRadii = cornerRadii;
+
+    //region Properties
+
+    public void setCornerRadii(float topLeft, float topRight, float bottomLeft, float bottomRight) {
+        cornerRadii[0] = topLeft;
+        cornerRadii[1] = topLeft;
+
+        cornerRadii[2] = topRight;
+        cornerRadii[3] = topRight;
+
+        cornerRadii[4] = bottomLeft;
+        cornerRadii[5] = bottomLeft;
+
+        cornerRadii[6] = bottomRight;
+        cornerRadii[7] = bottomRight;
+
         invalidate();
     }
+
+    public void setCornerRadii(float value) {
+        setCornerRadii(value, value, value, value);
+    }
+
+    //endregion
 }

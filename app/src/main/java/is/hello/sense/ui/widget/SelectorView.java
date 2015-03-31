@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,29 +19,34 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
 
-public class SelectorLinearLayout extends LinearLayout implements View.OnClickListener {
+public class SelectorView extends LinearLayout implements View.OnClickListener {
     public static final int EMPTY_SELECTION = -1;
 
-    private final List<ToggleButton> toggleButtons = new ArrayList<>();
+    private final List<ToggleButton> buttons = new ArrayList<>();
     private int selectedIndex = EMPTY_SELECTION;
+
     private @Nullable SelectionAwareDrawable selectionAwareBackground;
     private @Nullable OnSelectionChangedListener onSelectionChangedListener;
-    private @Nullable ButtonStyler buttonStyler;
 
-    @SuppressWarnings("UnusedDeclaration")
-    public SelectorLinearLayout(Context context) {
-        super(context);
+
+    //region Lifecycle
+
+    public SelectorView(@NonNull Context context) {
+        this(context, null);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public SelectorLinearLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public SelectorView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public SelectorLinearLayout(Context context, AttributeSet attrs, int defStyle) {
+    public SelectorView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
+
+    //endregion
+
+
+    //region Backgrounds
 
     @Override
     public void setBackground(Drawable background) {
@@ -55,19 +61,25 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
 
     public void setSelectionAwareDrawable(@Nullable SelectionAwareDrawable drawable) {
         this.selectionAwareBackground = drawable;
-        synchronizeButtonStates();
+        synchronize();
     }
+
+    //endregion
+
+
+    //region Hooks
 
     @Override
     public void addView(@NonNull View child, int index, ViewGroup.LayoutParams params) {
         if (child instanceof ToggleButton) {
             ToggleButton button = (ToggleButton) child;
-            int buttonIndex = toggleButtons.size();
+            int buttonIndex = buttons.size();
             button.setOnClickListener(this);
             button.setTag(R.id.layout_linear_selector_tag_key_index, buttonIndex);
-            if (button.isChecked())
+            if (button.isChecked()) {
                 this.selectedIndex = buttonIndex;
-            toggleButtons.add(button);
+            }
+            buttons.add(button);
         }
 
         super.addView(child, index, params);
@@ -76,36 +88,41 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
     @Override
     public void onClick(@NonNull View view) {
         this.selectedIndex = (Integer) view.getTag(R.id.layout_linear_selector_tag_key_index);
-        synchronizeButtonStates();
+        synchronize();
         if (getOnSelectionChangedListener() != null) {
             getOnSelectionChangedListener().onSelectionChanged(selectedIndex);
         }
     }
 
-    private void synchronizeButtonStates() {
-        for (ToggleButton button : toggleButtons) {
+    public void synchronize() {
+        for (ToggleButton button : buttons) {
             int index = (Integer) button.getTag(R.id.layout_linear_selector_tag_key_index);
             boolean isSelected = (index == selectedIndex);
-            if (buttonStyler != null) {
-                buttonStyler.styleButton(button, index, isSelected);
-            }
             button.setChecked(isSelected);
         }
 
         if (selectionAwareBackground != null) {
-            selectionAwareBackground.setNumberOfItems(toggleButtons.size());
+            selectionAwareBackground.setNumberOfItems(buttons.size());
             selectionAwareBackground.setSelectedIndex(selectedIndex);
         }
     }
 
+    //endregion
 
-    public @NonNull List<ToggleButton> getToggleButtons() {
-        return toggleButtons;
+
+    //region Properties
+
+    public int getButtonCount() {
+        return buttons.size();
+    }
+
+    public @NonNull ToggleButton getButtonAt(int index) {
+        return buttons.get(index);
     }
 
     public void setSelectedIndex(int selectedIndex) {
         this.selectedIndex = selectedIndex;
-        synchronizeButtonStates();
+        synchronize();
     }
 
     public @Nullable OnSelectionChangedListener getOnSelectionChangedListener() {
@@ -116,64 +133,73 @@ public class SelectorLinearLayout extends LinearLayout implements View.OnClickLi
         this.onSelectionChangedListener = onSelectionChangedListener;
     }
 
+    //endregion
+
+
+    //region Button Tags
+
     public void setButtonTags(Object... tags) {
-        if (tags.length != toggleButtons.size()) {
-            throw new IllegalArgumentException("Expected " + toggleButtons.size() + " tags, got " + tags.length);
+        if (tags.length != buttons.size()) {
+            throw new IllegalArgumentException("Expected " + buttons.size() + " tags, got " + tags.length);
         }
 
         for (int i = 0, count = tags.length; i < count; i++) {
-            toggleButtons.get(i).setTag(R.id.layout_linear_selector_tag_key_user, tags[i]);
+            buttons.get(i).setTag(R.id.layout_linear_selector_tag_key_user, tags[i]);
         }
     }
 
-    public Object getButtonTag(int index) {
-        return toggleButtons.get(index).getTag(R.id.layout_linear_selector_tag_key_user);
+    public Object getButtonTagAt(int index) {
+        return buttons.get(index).getTag(R.id.layout_linear_selector_tag_key_user);
     }
 
-    public void setButtonStyler(@Nullable ButtonStyler buttonStyler) {
-        this.buttonStyler = buttonStyler;
-    }
+    //endregion
 
-    public int addOption(@NonNull String title, @Nullable Object tag) {
+
+    //region Options
+
+    public int addOptionButton(@NonNull String title, @Nullable Object tag) {
         Resources resources = getResources();
 
-        ToggleButton optionButton = new ToggleButton(getContext());
-        optionButton.setBackgroundResource(R.drawable.selectable_dark);
-        optionButton.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold);
+        // Creating the button with a style does not actually style it,
+        // but on Lollipop it removes the intrusive elevation added to
+        // all buttons by default.
+        ToggleButton optionButton = new ToggleButton(getContext(), null, R.style.AppTheme_Button_ModeSelector);
+        optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
+        optionButton.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Medium);
+        optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
         optionButton.setTextColor(resources.getColorStateList(R.color.text_color_selector_toggle_button));
         optionButton.setTextOn(title);
         optionButton.setTextOff(title);
         optionButton.setText(title);
         optionButton.setGravity(Gravity.CENTER);
         optionButton.setTag(R.id.layout_linear_selector_tag_key_user, tag);
+        optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
 
         if (getChildCount() > 0) {
             View divider = Styles.createVerticalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
             LayoutParams layoutParams = new LayoutParams(divider.getLayoutParams());
-            int margin = resources.getDimensionPixelSize(R.dimen.gap_small);
+            int margin = resources.getDimensionPixelSize(R.dimen.gap_medium);
             layoutParams.setMargins(0, margin, 0, margin);
             addView(divider, layoutParams);
         }
 
-        int index = toggleButtons.size();
-        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(R.dimen.button_min_size), 1);
+        int index = buttons.size();
+        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
         addView(optionButton, layoutParams);
         return index;
     }
 
-    public void removeAllOptions() {
+    public void removeAllButtons() {
         removeViews(0, getChildCount());
-        toggleButtons.clear();
+        buttons.clear();
         this.selectedIndex = EMPTY_SELECTION;
     }
+
+    //endregion
 
 
     public interface OnSelectionChangedListener {
         void onSelectionChanged(int newSelectionIndex);
-    }
-
-    public interface ButtonStyler {
-        void styleButton(ToggleButton button, int position, boolean checked);
     }
 
     public static abstract class SelectionAwareDrawable extends Drawable {

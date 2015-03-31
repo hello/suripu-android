@@ -15,6 +15,8 @@ import is.hello.sense.units.systems.UsCustomaryUnitSystem;
  * An object that converts raw SI units to human readable values.
  */
 public class UnitSystem implements Serializable {
+    public static final String TEMP_SUFFIX = "°";
+
     //region Vending Systems
 
     public static @NonNull String getLocaleUnitSystemName(@NonNull Locale locale) {
@@ -57,7 +59,7 @@ public class UnitSystem implements Serializable {
     }
 
     public CharSequence formatTemperature(long temperature) {
-        return Styles.assembleReadingAndUnit(temperature, "°");
+        return Styles.assembleReadingAndUnit(temperature, TEMP_SUFFIX);
     }
 
     public CharSequence formatHumidity(long humidity) {

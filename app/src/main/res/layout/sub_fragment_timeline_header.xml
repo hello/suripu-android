@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:minHeight="@dimen/timeline_header_min_height" />
 
-    <is.hello.sense.ui.widget.SelectorLinearLayout
+    <is.hello.sense.ui.widget.SelectorView
         android:id="@+id/sub_fragment_timeline_header_mode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -80,6 +80,6 @@
             android:textOff="@string/label_before_sleep"
             style="@style/AppTheme.Button.ModeSelector.Timeline"/>
 
-    </is.hello.sense.ui.widget.SelectorLinearLayout>
+    </is.hello.sense.ui.widget.SelectorView>
 
 </is.hello.sense.ui.widget.BlockableLinearLayout>

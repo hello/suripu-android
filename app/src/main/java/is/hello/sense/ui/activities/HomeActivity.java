@@ -164,8 +164,7 @@ public class HomeActivity
         viewPager.setResumeCoordinator(coordinator);
         viewPager.setAnimatorContext(animatorContext);
         if (viewPager.getCurrentFragment() == null) {
-            TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
-            viewPager.setCurrentFragment(fragment);
+            jumpToLastNight(false);
         }
 
 
@@ -366,10 +365,15 @@ public class HomeActivity
 
     @Override
     public void onBackPressed() {
-        if(slidingLayersView.isOpen()) {
+        if (slidingLayersView.isOpen()) {
             if (!slidingLayersView.isAnimating() && !slidingLayersView.hasActiveGesture()) {
-                slidingLayersView.close();
+                UndersideFragment undersideFragment = getUndersideFragment();
+                if (undersideFragment == null || !undersideFragment.onBackPressed()) {
+                    slidingLayersView.close();
+                }
             }
+        } else if (!viewPager.isAnimating() && !isCurrentFragmentLastNight()) {
+            jumpToLastNight(true);
         } else {
             super.onBackPressed();
         }
@@ -383,6 +387,15 @@ public class HomeActivity
     public boolean isCurrentFragmentLastNight() {
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
+    }
+
+    public void jumpToLastNight(boolean animate) {
+        TimelineFragment lastNight = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
+        if (animate) {
+            viewPager.animateToFragment(lastNight, FragmentPageView.Position.AFTER);
+        } else {
+            viewPager.setCurrentFragment(lastNight);
+        }
     }
 
 
