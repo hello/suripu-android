@@ -3,6 +3,7 @@ package is.hello.sense.ui.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -208,8 +209,14 @@ public class InsightsAdapter extends BaseAdapter {
         CharSequence insightDate = DateUtils.getRelativeTimeSpanString(context, insight.getCreated());
         holder.date.setText(insightDate);
 
-        holder.previewDivider.setVisibility(View.GONE);
-        holder.preview.setVisibility(View.GONE);
+        if (!TextUtils.isEmpty(insight.getInfoPreview())) {
+            holder.previewDivider.setVisibility(View.VISIBLE);
+            holder.preview.setVisibility(View.VISIBLE);
+            holder.preview.setText(insight.getInfoPreview());
+        } else {
+            holder.previewDivider.setVisibility(View.GONE);
+            holder.preview.setVisibility(View.GONE);
+        }
 
         return view;
     }
