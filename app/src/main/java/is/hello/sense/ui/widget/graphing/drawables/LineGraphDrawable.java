@@ -89,14 +89,12 @@ public class LineGraphDrawable extends GraphDrawable {
 
                         if (section == 0 && position == 0) {
                             linePath.moveTo(currentX, currentY);
-                        } else if (lastX > 0) {
+                        } else {
                             float controlX = (lastX + currentX) / 2f;
                             float controlY = (lastY + currentY) / 2f;
 
                             linePath.quadTo((lastX + controlX) / 2f, lastY, controlX, controlY);
                             linePath.quadTo((controlX + currentX) / 2f, currentY, currentX, currentY);
-                        } else {
-                            linePath.lineTo(currentX, currentY);
                         }
 
                         lastX = currentX;

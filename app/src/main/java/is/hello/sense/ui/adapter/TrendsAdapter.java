@@ -80,7 +80,6 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
             if (graphDrawable instanceof LineGraphDrawable) {
                 LineGraphDrawable lineGraph = (LineGraphDrawable) graphDrawable;
                 lineGraph.setMarkers(holder.graphAdapter.getMarkers());
-                lineGraph.setTopInset(resources.getDimensionPixelSize(R.dimen.gap_outer));
             }
         });
 
