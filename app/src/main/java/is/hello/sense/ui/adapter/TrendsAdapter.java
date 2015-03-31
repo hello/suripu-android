@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.GraphType;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
@@ -65,7 +64,6 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         holder.graphView.setGraphDrawable(graphDrawable);
         holder.graphView.setTintColor(graphTintColor);
         holder.graphView.setAdapter(holder.graphAdapter);
-        holder.graphView.setWantsHeaders(graph.getGraphType() == GraphType.HISTOGRAM);
         holder.graphView.setHeaderFooterProvider(holder.graphAdapter);
 
         if (graph.getOptions() == null || graph.getOptions().size() < 2) {

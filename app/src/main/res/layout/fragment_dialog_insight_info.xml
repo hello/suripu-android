@@ -78,7 +78,7 @@
             android:src="@drawable/icon_share_enabled"
             android:scaleType="center"
             android:contentDescription="@string/action_share"
-            style="@style/AppTheme.Button.Borderless.Accent.Heavy"/>
+            style="@style/AppTheme.Button.Dialog"/>
 
         <View
             android:layout_marginTop="@dimen/gap_medium"
@@ -90,7 +90,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            style="@style/AppTheme.Button.Borderless.Accent.Heavy"
+            style="@style/AppTheme.Button.Dialog.Positive"
             android:text="@android:string/ok"/>
 
     </LinearLayout>

@@ -160,7 +160,10 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     public int addOptionButton(@NonNull String title, @Nullable Object tag) {
         Resources resources = getResources();
 
-        ToggleButton optionButton = new ToggleButton(getContext());
+        // Creating the button with a style does not actually style it,
+        // but on Lollipop it removes the intrusive elevation added to
+        // all buttons by default.
+        ToggleButton optionButton = new ToggleButton(getContext(), null, R.style.AppTheme_Button_ModeSelector);
         optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
         optionButton.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Medium);
         optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));

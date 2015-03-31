@@ -27,9 +27,7 @@ public enum GraphType {
     TIME_SERIES_LINE {
         @Override
         public GraphDrawable createDrawable(@NonNull Resources resources) {
-            LineGraphDrawable lineGraph = new LineGraphDrawable(resources);
-            lineGraph.setTopInset(resources.getDimensionPixelSize(R.dimen.gap_outer));
-            return lineGraph;
+            return new LineGraphDrawable(resources);
         }
 
         @Override
