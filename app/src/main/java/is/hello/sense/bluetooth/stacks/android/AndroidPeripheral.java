@@ -42,6 +42,15 @@ import rx.functions.Action0;
 import static rx.android.observables.AndroidObservable.fromBroadcast;
 
 public class AndroidPeripheral implements Peripheral {
+    /**
+     * How long to delay response after a successful service discovery
+     * if {@link #CONFIG_WAIT_AFTER_SERVICE_DISCOVERY} is specified.
+     * <p/>
+     * Settled on 3 seconds after experimenting with Jackson. Idea for delay from
+     * <a href="https://code.google.com/p/android/issues/detail?id=58381">here</a>.
+     */
+    private static final int SERVICES_DELAY_S = 3;
+
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull BluetoothDevice bluetoothDevice;
     private final int scannedRssi;
@@ -549,7 +558,7 @@ public class AndroidPeripheral implements Peripheral {
         boolean waitAfterDiscovery = ((config & CONFIG_WAIT_AFTER_SERVICE_DISCOVERY) == CONFIG_WAIT_AFTER_SERVICE_DISCOVERY);
         if (waitAfterDiscovery) {
             // See <https://code.google.com/p/android/issues/detail?id=58381>
-            return services.delay(5, TimeUnit.SECONDS);
+            return services.delay(SERVICES_DELAY_S, TimeUnit.SECONDS);
         } else {
             return services;
         }
