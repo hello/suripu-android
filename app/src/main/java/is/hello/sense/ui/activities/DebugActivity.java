@@ -69,7 +69,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         selector.setButtonTags(debugActionItems, buildInfoItems);
         selector.setSelectedIndex(0);
         selector.setOnSelectionChangedListener(index -> listView.setAdapter((StaticItemAdapter) selector.getButtonTagAt(index)));
-        selector.setBackground(new TabsBackgroundDrawable(getResources(), selector.getButtonCount()));
+        selector.setBackground(new TabsBackgroundDrawable(getResources(), TabsBackgroundDrawable.Style.INLINE));
     }
 
 

@@ -7,6 +7,8 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
@@ -14,24 +16,22 @@ import is.hello.sense.R;
 public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable {
     private final Paint paint = new Paint();
 
-    private final int lineHeight;
+    private final int selectionHeight;
     private final int dividerHeight;
 
     private final int backgroundColor;
-    private final int fillColor;
+    private final int selectionColor;
     private final int dividerColor;
 
     private float positionOffset = 0f;
 
-    public TabsBackgroundDrawable(@NonNull Resources resources, int numberOfItems) {
-        this.lineHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
-        this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
+    public TabsBackgroundDrawable(@NonNull Resources resources, @NonNull Style style) {
+        this.selectionHeight = resources.getDimensionPixelSize(style.selectionHeightRes);
+        this.dividerHeight = resources.getDimensionPixelSize(style.dividerHeightRes);
 
         this.backgroundColor = Color.WHITE;
-        this.fillColor = resources.getColor(R.color.light_accent);
-        this.dividerColor = resources.getColor(R.color.border_tabs);
-
-        setNumberOfItems(numberOfItems);
+        this.selectionColor = resources.getColor(style.selectionColorRes);
+        this.dividerColor = resources.getColor(style.dividerColorRes);
     }
 
 
@@ -51,8 +51,8 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
         if (isSelectionValid()) {
             int itemWidth = width / numberOfItems;
             float itemOffset = (itemWidth * selectedIndex) + (itemWidth * positionOffset);
-            paint.setColor(fillColor);
-            canvas.drawRect(itemOffset, height - lineHeight, itemOffset + itemWidth, height, paint);
+            paint.setColor(selectionColor);
+            canvas.drawRect(itemOffset, height - selectionHeight, itemOffset + itemWidth, height, paint);
         }
     }
 
@@ -63,11 +63,12 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
 
     @Override
     public boolean getPadding(Rect padding) {
-        padding.bottom = lineHeight;
+        padding.bottom = selectionHeight;
         return true;
     }
 
     //endregion
+
 
     //region Attributes
 
@@ -89,4 +90,26 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
     }
 
     //endregion
+
+
+    public static enum Style {
+        UNDERSIDE(R.dimen.bottom_line, R.dimen.bottom_line, R.color.light_accent, R.color.border_underside_tabs),
+        INLINE(R.dimen.bottom_line, R.dimen.divider_size, R.color.light_accent, R.color.border);
+
+        public final @DimenRes int selectionHeightRes;
+        public final @DimenRes int dividerHeightRes;
+
+        public final @ColorRes int selectionColorRes;
+        public final @ColorRes int dividerColorRes;
+
+        private Style(@DimenRes int selectionHeightRes,
+                      @DimenRes int dividerHeightRes,
+                      @ColorRes int selectionColorRes,
+                      @ColorRes int dividerColorRes) {
+            this.selectionHeightRes = selectionHeightRes;
+            this.dividerHeightRes = dividerHeightRes;
+            this.selectionColorRes = selectionColorRes;
+            this.dividerColorRes = dividerColorRes;
+        }
+    }
 }

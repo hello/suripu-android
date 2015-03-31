@@ -104,7 +104,7 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         void addOptionSelector(int index, @NonNull List<String> options, @NonNull String selectedOption) {
             if (optionSelector == null) {
                 this.optionSelector = new SelectorView(getContext());
-                optionSelector.setBackground(new TabsBackgroundDrawable(resources, options.size()));
+                optionSelector.setBackground(new TabsBackgroundDrawable(resources, TabsBackgroundDrawable.Style.INLINE));
                 optionSelector.setOnSelectionChangedListener(this);
                 itemView.addView(optionSelector, 0);
             } else {
