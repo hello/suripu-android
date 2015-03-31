@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.R;
@@ -43,20 +42,6 @@ public class TrendGraph extends ApiResponse {
     private List<GraphSample> dataPoints;
 
 
-    public TrendGraph() {
-
-    }
-
-    public TrendGraph(@NonNull Throwable e) {
-        this.title = e.getMessage();
-        this.dataType = DataType.SLEEP_DURATION;
-        this.graphType = GraphType.HISTOGRAM;
-        this.timePeriod = TIME_PERIOD_OVER_TIME_ALL;
-        this.options = Collections.emptyList();
-        this.dataPoints = Collections.emptyList();
-    }
-
-
     public String getTitle() {
         return title;
     }
@@ -79,6 +64,33 @@ public class TrendGraph extends ApiResponse {
 
     public List<GraphSample> getDataPoints() {
         return dataPoints;
+    }
+
+    public String formatSampleDate(@NonNull GraphSample sample) {
+        DateTime dateTime = sample.getShiftedDateTime();
+        switch (getTimePeriod()) {
+            case TIME_PERIOD_DAY_OF_WEEK: {
+                return dateTime.toString("hh:mm");
+            }
+
+            case TIME_PERIOD_OVER_TIME_1W: {
+                return dateTime.toString("E");
+            }
+
+            case TIME_PERIOD_OVER_TIME_2W: {
+                return dateTime.toString("MMM d");
+            }
+
+            case TIME_PERIOD_OVER_TIME_1M:
+            case TIME_PERIOD_OVER_TIME_3M: {
+                return dateTime.toString("M/d");
+            }
+
+            default:
+            case TIME_PERIOD_OVER_TIME_ALL: {
+                return dateTime.toString("MMM");
+            }
+        }
     }
 
 

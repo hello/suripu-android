@@ -226,7 +226,7 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
             case NONE:
             case SLEEP_SCORE: {
                 if (trendGraph.getGraphType() == GraphType.TIME_SERIES_LINE) {
-                    return sample.getShiftedDateTime().toString("MMM d");
+                    return trendGraph.formatSampleDate(sample);
                 } else {
                     return String.format("%.0f", value);
                 }
