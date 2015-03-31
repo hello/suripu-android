@@ -113,7 +113,7 @@
     <string name="title_sign_into_wifi_other">Enter WiFi credentials</string>
     <string name="wifi_other_network">Other…</string>
     <string name="label_network_name">Network Name</string>
-    <string name="action_skip">Skip for now</string>
+    <string name="action_skip">Skip</string>
     <string name="info_introduction">A simple system that tracks your sleep, monitors the surroundings in your bedroom and reinvents the alarm,
 so you can sleep better.</string>
     <string name="action_play_video">Play</string>

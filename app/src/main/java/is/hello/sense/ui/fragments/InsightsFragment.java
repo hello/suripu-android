@@ -1,36 +1,28 @@
 package is.hello.sense.ui.fragments;
 
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
-import is.hello.sense.api.model.Question;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
-import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Markdown;
 
-public class InsightsFragment extends UndersideTabFragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class InsightsFragment extends UndersideTabFragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.Listener {
     @Inject InsightsPresenter insightsPresenter;
     @Inject Markdown markdown;
 
@@ -38,11 +30,6 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
 
     private InsightsAdapter insightsAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
-
-    private ListView listView;
-    private View topSpacing;
-    private ViewGroup questionContainer;
-    private TextView questionAnswerTitle;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,32 +52,13 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
         swipeRefreshLayout.setOnRefreshListener(this);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
-
-        this.listView = (ListView) view.findViewById(android.R.id.list);
+        ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
-        View[] spacers = new View[Styles.CARD_SPACING_OUT_COUNT];
-        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER, spacers);
-        this.topSpacing = spacers[0];
 
+        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER, null);
 
-        FrameLayout questionLayoutFix = new FrameLayout(getActivity());
-        this.questionContainer = (ViewGroup) inflater.inflate(R.layout.sub_fragment_new_question, questionLayoutFix, false);
-        this.questionAnswerTitle = (TextView) questionContainer.findViewById(R.id.sub_fragment_new_question_title);
-
-        Button skipQuestion = (Button) questionContainer.findViewById(R.id.sub_fragment_new_question_skip);
-        Views.setSafeOnClickListener(skipQuestion, ignored -> questionsPresenter.skipQuestion());
-
-        Button answerQuestion = (Button) questionContainer.findViewById(R.id.sub_fragment_new_question_answer);
-        Views.setSafeOnClickListener(answerQuestion, ignored -> answerQuestion());
-
-        questionLayoutFix.addView(questionContainer);
-        ListViews.addHeaderView(listView, questionLayoutFix, null, false);
-
-
-        this.insightsAdapter = new InsightsAdapter(getActivity(), markdown, () -> swipeRefreshLayout.setRefreshing(false));
+        this.insightsAdapter = new InsightsAdapter(getActivity(), markdown, this);
         listView.setAdapter(insightsAdapter);
-
-        setQuestionVisible(false);
 
         return view;
     }
@@ -99,15 +67,13 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(insightsPresenter.insights, insightsAdapter::bindInsights, insightsAdapter::insightsUnavailable);
+        bindAndSubscribe(insightsPresenter.insights,
+                         insightsAdapter::bindInsights,
+                         insightsAdapter::insightsUnavailable);
 
-        bindAndSubscribe(questionsPresenter.currentQuestion, currentQuestion -> {
-            if (currentQuestion == null || isAnswerQuestionOpen()) {
-                hideNewQuestion();
-            } else {
-                showNewQuestion(currentQuestion);
-            }
-        }, ignored -> questionContainer.setVisibility(View.GONE));
+        bindAndSubscribe(questionsPresenter.currentQuestion,
+                         insightsAdapter::bindCurrentQuestion,
+                         insightsAdapter::currentQuestionUnavailable);
     }
 
     @Override
@@ -156,40 +122,21 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
 
     //region Questions
 
-    public void setQuestionVisible(boolean isVisible) {
-        Resources resources = getResources();
-        int spacerHeight = resources.getDimensionPixelSize(R.dimen.gap_small);
-
-        int newSpacingHeight;
-        if (isVisible) {
-            questionContainer.setVisibility(View.VISIBLE);
-            newSpacingHeight = spacerHeight;
-        } else {
-            questionContainer.setVisibility(View.GONE);
-            newSpacingHeight = spacerHeight - listView.getDividerHeight();
-        }
-
-        topSpacing.getLayoutParams().height = newSpacingHeight;
-        topSpacing.requestLayout();
+    @Override
+    public void onDismissLoadingIndicator() {
+        swipeRefreshLayout.setRefreshing(false);
     }
 
-    public void showNewQuestion(@NonNull Question question) {
-        questionAnswerTitle.setText(question.getText());
-        setQuestionVisible(true);
+    @Override
+    public void onSkipQuestion() {
+        insightsAdapter.clearCurrentQuestion();
     }
 
-    public void hideNewQuestion() {
-        setQuestionVisible(false);
-    }
-
-    public boolean isAnswerQuestionOpen() {
-        return (getFragmentManager().findFragmentByTag(QuestionsDialogFragment.TAG) != null);
-    }
-
-    public void answerQuestion() {
+    @Override
+    public void onAnswerQuestion() {
         QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
         dialogFragment.show(getActivity().getFragmentManager(), QuestionsDialogFragment.TAG);
-        hideNewQuestion();
+        insightsAdapter.clearCurrentQuestion();
     }
 
     //endregion
