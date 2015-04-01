@@ -115,6 +115,11 @@ public class TestPeripheral implements Peripheral {
         });
     }
 
+    @Override
+    public boolean hasDiscoveredServices() {
+        return (behavior.servicesResponse != null && behavior.servicesResponse.isLeft());
+    }
+
     @Nullable
     @Override
     public PeripheralService getService(@NonNull UUID serviceIdentifier) {
