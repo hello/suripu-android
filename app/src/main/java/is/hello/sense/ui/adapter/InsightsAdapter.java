@@ -203,7 +203,6 @@ public class InsightsAdapter extends BaseAdapter {
         Insight insight = getInsightItem(position);
         InsightViewHolder holder = (InsightViewHolder) view.getTag();
 
-        holder.title.setText(insight.getTitle());
         markdown.renderInto(holder.body, insight.getMessage());
 
         CharSequence insightDate = DateUtils.getRelativeTimeSpanString(context, insight.getCreated());
@@ -222,14 +221,12 @@ public class InsightsAdapter extends BaseAdapter {
     }
 
     class InsightViewHolder {
-        final TextView title;
         final TextView body;
         final TextView date;
         final View previewDivider;
         final TextView preview;
 
         InsightViewHolder(@NonNull View view) {
-            this.title = (TextView) view.findViewById(R.id.item_insight_title);
             this.body = (TextView) view.findViewById(R.id.item_insight_body);
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.previewDivider = view.findViewById(R.id.item_insight_preview_divider);
