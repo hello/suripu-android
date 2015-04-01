@@ -38,6 +38,7 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     public static final String ACTION_CONNECTION_LOST = HardwarePresenter.class.getName() + ".ACTION_CONNECTION_LOST";
     public static final int FAILS_BEFORE_HIGH_POWER = 2;
 
+    private final Context context;
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
     private final BluetoothStack bluetoothStack;
@@ -57,13 +58,13 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
                                      @NonNull PreferencesPresenter preferencesPresenter,
                                      @NonNull ApiSessionManager apiSessionManager,
                                      @NonNull BluetoothStack bluetoothStack) {
+        this.context = context;
         this.preferencesPresenter = preferencesPresenter;
         this.apiSessionManager = apiSessionManager;
         this.bluetoothStack = bluetoothStack;
         this.respondToError = e -> {
             if (bluetoothStack.errorRequiresReconnect(e)) {
                 clearPeripheral();
-                LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
             } else if (e != null && e instanceof PeripheralConnectionError) {
                 LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
             }
@@ -71,6 +72,9 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
         Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
+
+        Observable<Intent> disconnectSignal = fromLocalBroadcast(context, new IntentFilter(Peripheral.ACTION_DISCONNECTED));
+        disconnectSignal.subscribe(this::onPeripheralDisconnected, Functions.LOG_ERROR);
 
         this.bluetoothEnabled = bluetoothStack.isEnabled();
         bluetoothEnabled.subscribe(this::onBluetoothEnabledChanged, Functions.LOG_ERROR);
@@ -85,6 +89,18 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         logEvent("onBluetoothEnabledChanged(" + enabled + ")");
         if (!enabled) {
             this.peripheral = null;
+        }
+    }
+
+    public void onPeripheralDisconnected(@NonNull Intent intent) {
+        if (peripheral != null) {
+            String currentAddress = peripheral.getAddress();
+            String intentAddress = intent.getStringExtra(Peripheral.EXTRA_ADDRESS);
+            if (TextUtils.equals(currentAddress, intentAddress)) {
+                logEvent("broadcasting disconnect");
+
+                LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
+            }
         }
     }
 

@@ -77,7 +77,6 @@ public class AndroidPeripheral implements Peripheral {
                 Intent disconnect = new Intent(ACTION_DISCONNECTED);
                 disconnect.putExtra(EXTRA_NAME, getName());
                 disconnect.putExtra(EXTRA_ADDRESS, getAddress());
-                disconnect.putExtra(EXTRA_SILENT, (gattDispatcher.getNumberConnectionStateListeners() == 1));
                 LocalBroadcastManager.getInstance(stack.applicationContext)
                                      .sendBroadcast(disconnect);
             }
