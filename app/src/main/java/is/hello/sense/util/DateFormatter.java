@@ -8,10 +8,15 @@ import android.text.format.DateFormat;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
+import org.joda.time.Hours;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+import org.joda.time.Minutes;
+import org.joda.time.Months;
+import org.joda.time.Seconds;
 import org.joda.time.Weeks;
+import org.joda.time.Years;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -79,7 +84,7 @@ import is.hello.sense.R;
         }
     }
 
-    public @NonNull String formatAsBirthDate(@Nullable LocalDate date) {
+    public @NonNull String formatAsLocalizedDate(@Nullable LocalDate date) {
         if (date != null) {
             return DateFormat.getDateFormat(context).format(date.toDate());
         } else {
@@ -127,6 +132,52 @@ import is.hello.sense.R;
             }
         }
         return context.getString(R.string.format_date_placeholder);
+    }
+
+    /**
+     * Based on Joda-Android's DateUtils.getRelativeTimeSpanString,
+     * except supporting a few more time interval types, and omitting
+     * support for dates in the future.
+     */
+    public @NonNull String formatAsRelativeTime(@Nullable DateTime time) {
+        if (time != null) {
+            DateTime now = DateTime.now(time.getZone()).withMillisOfSecond(0);
+            DateTime roundTime = time.withMillisOfSecond(0);
+            if (now.isBefore(roundTime)) {
+                Logger.warn(getClass().getSimpleName(), "formatAsRelativeTime not meant to be used with dates in the past");
+                return formatAsLocalizedDate(roundTime.toLocalDate());
+            }
+
+            Interval interval = new Interval(roundTime, now);
+
+            int pluralRes;
+            int count;
+            if (Minutes.minutesIn(interval).isLessThan(Minutes.ONE)) {
+                count = Seconds.secondsIn(interval).getSeconds();
+                pluralRes = R.plurals.format_relative_time_seconds;
+            } else if (Hours.hoursIn(interval).isLessThan(Hours.ONE)) {
+                count = Minutes.minutesIn(interval).getMinutes();
+                pluralRes = R.plurals.format_relative_time_minutes;
+            } else if (Days.daysIn(interval).isLessThan(Days.ONE)) {
+                count = Hours.hoursIn(interval).getHours();
+                pluralRes = R.plurals.format_relative_time_hours;
+            } else if (Weeks.weeksIn(interval).isLessThan(Weeks.ONE)) {
+                count = Days.daysIn(interval).getDays();
+                pluralRes = R.plurals.format_relative_time_days;
+            } else if (Months.monthsIn(interval).isLessThan(Months.ONE)) {
+                count = Weeks.weeksIn(interval).getWeeks();
+                pluralRes = R.plurals.format_relative_time_weeks;
+            } else if (Years.yearsIn(interval).isLessThan(Years.ONE)) {
+                count = Months.monthsIn(interval).getMonths();
+                pluralRes = R.plurals.format_relative_time_months;
+            } else {
+                return formatAsLocalizedDate(roundTime.toLocalDate());
+            }
+
+            return context.getResources().getQuantityString(pluralRes, count, count);
+        } else {
+            return context.getString(R.string.format_date_placeholder);
+        }
     }
 
     //endregion

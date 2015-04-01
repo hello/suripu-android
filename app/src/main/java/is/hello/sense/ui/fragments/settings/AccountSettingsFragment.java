@@ -196,7 +196,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         nameItem.setDetail(account.getName());
         emailItem.setDetail(account.getEmail());
 
-        birthdayItem.setDetail(dateFormatter.formatAsBirthDate(account.getBirthDate()));
+        birthdayItem.setDetail(dateFormatter.formatAsLocalizedDate(account.getBirthDate()));
         genderItem.setDetail(getString(account.getGender().nameRes));
         heightItem.setDetail(unitSystem.formatHeight(account.getHeight()).toString());
         weightItem.setDetail(unitSystem.formatMass(account.getWeight()).toString());

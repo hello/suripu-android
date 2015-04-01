@@ -20,11 +20,13 @@ import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
 
 public class InsightsFragment extends UndersideTabFragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.Listener {
     @Inject InsightsPresenter insightsPresenter;
     @Inject Markdown markdown;
+    @Inject DateFormatter dateFormatter;
 
     @Inject QuestionsPresenter questionsPresenter;
 
@@ -57,7 +59,7 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
 
         Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER, null);
 
-        this.insightsAdapter = new InsightsAdapter(getActivity(), markdown, this);
+        this.insightsAdapter = new InsightsAdapter(getActivity(), markdown, dateFormatter, this);
         listView.setAdapter(insightsAdapter);
 
         return view;

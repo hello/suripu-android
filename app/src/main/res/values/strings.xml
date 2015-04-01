@@ -33,17 +33,6 @@
     <string name="dialog_loading_message">Loading…</string>
     <string name="timeline_error_message">Could not load timeline</string>
 
-    <string name="format_date">MMMM d</string>
-    <string name="format_time_12_hr">h:mm a</string>
-    <string name="format_time_24_hr">H:mm</string>
-    <string name="format_day_and_time_12_hr">EEEE – h:mm a</string>
-    <string name="format_day_and_time_24_hr">EEEE – H:mm</string>
-    <string name="format_date_placeholder">--</string>
-    <string name="format_date_last_night">Last Night</string>
-    <string name="format_timeline_time_12_hr">h:mm</string>
-    <string name="format_timeline_time_24_hr">H:mm</string>
-    <string name="format_date_weekday">EEEE</string>
-
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>
     <string name="condition_humidity">Humidity</string>
