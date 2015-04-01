@@ -28,6 +28,35 @@ public interface Peripheral {
      */
     public static final String LOG_TAG = "Bluetooth." + Peripheral.class.getSimpleName();
 
+    /**
+     * A local broadcast that informs interested listeners that a Peripheral has disconnected.
+     *
+     * @see #EXTRA_NAME
+     * @see #EXTRA_ADDRESS
+     */
+    public static final String ACTION_DISCONNECTED = Peripheral.class.getName() + ".ACTION_DISCONNECTED";
+
+    /**
+     * The name of the affected Peripheral.
+     *
+     * @see #ACTION_DISCONNECTED
+     */
+    public static final String EXTRA_NAME = Peripheral.class.getName() + ".EXTRA_NAME";
+
+    /**
+     * The address of the affected Peripheral.
+     *
+     * @see #ACTION_DISCONNECTED
+     */
+    public static final String EXTRA_ADDRESS = Peripheral.class.getName() + ".EXTRA_ADDRESS";
+
+    /**
+     * Whether or not the disconnect event was observed as a side-effect of a running command.
+     *
+     * @see #ACTION_DISCONNECTED
+     */
+    public static final String EXTRA_SILENT = Peripheral.class.getName() + ".EXTRA_SILENT";
+
 
     //region Bond Status
 

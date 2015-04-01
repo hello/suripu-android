@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.lang.reflect.Method;
@@ -72,6 +73,13 @@ public class AndroidPeripheral implements Peripheral {
         gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
             if (newState == STATUS_DISCONNECTED) {
                 closeGatt(gatt);
+
+                Intent disconnect = new Intent(ACTION_DISCONNECTED);
+                disconnect.putExtra(EXTRA_NAME, getName());
+                disconnect.putExtra(EXTRA_ADDRESS, getAddress());
+                disconnect.putExtra(EXTRA_SILENT, (gattDispatcher.getNumberConnectionStateListeners() == 1));
+                LocalBroadcastManager.getInstance(stack.applicationContext)
+                                     .sendBroadcast(disconnect);
             }
         });
     }
