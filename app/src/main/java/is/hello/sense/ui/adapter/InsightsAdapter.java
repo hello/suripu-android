@@ -11,14 +11,13 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import net.danlew.android.joda.DateUtils;
-
 import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 
@@ -27,9 +26,9 @@ public class InsightsAdapter extends BaseAdapter {
     private static final int TYPE_INSIGHT = 1;
     private static final int TYPE_COUNT = 2;
 
-    private final Context context;
     private final LayoutInflater inflater;
     private final Markdown markdown;
+    private final DateFormatter dateFormatter;
     private final Listener listener;
 
     private @Nullable List<Insight> insights;
@@ -37,8 +36,9 @@ public class InsightsAdapter extends BaseAdapter {
 
     public InsightsAdapter(@NonNull Context context,
                            @NonNull Markdown markdown,
+                           @NonNull DateFormatter dateFormatter,
                            @NonNull Listener listener) {
-        this.context = context;
+        this.dateFormatter = dateFormatter;
         this.inflater = LayoutInflater.from(context);
         this.markdown = markdown;
         this.listener = listener;
@@ -205,7 +205,7 @@ public class InsightsAdapter extends BaseAdapter {
 
         markdown.renderInto(holder.body, insight.getMessage());
 
-        CharSequence insightDate = DateUtils.getRelativeTimeSpanString(context, insight.getCreated());
+        CharSequence insightDate = dateFormatter.formatAsRelativeTime(insight.getCreated());
         holder.date.setText(insightDate);
 
         if (!TextUtils.isEmpty(insight.getInfoPreview())) {
