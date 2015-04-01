@@ -3,6 +3,7 @@ package is.hello.sense.bluetooth.devices;
 import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -45,6 +46,11 @@ public class HelloPeripheralTests extends InjectionTestCase {
     //region Delegated Methods
 
     public void testIsConnected() throws Exception {
+        peripheralBehavior.setServicesResponse(null);
+        peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
+        assertFalse(peripheral.isConnected());
+
+        peripheralBehavior.setServicesResponse(Either.left(Collections.emptyList()));
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
         assertTrue(peripheral.isConnected());
 

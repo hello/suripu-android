@@ -106,7 +106,8 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
     }
 
     public boolean isConnected() {
-        return peripheral.getConnectionStatus() == Peripheral.STATUS_CONNECTED;
+        return (peripheral.getConnectionStatus() == Peripheral.STATUS_CONNECTED &&
+                peripheral.hasDiscoveredServices());
     }
 
     public int getBondStatus() {

@@ -2,6 +2,7 @@ package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -85,6 +86,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
 
     public void testConnectivityGetters() throws Exception {
         HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
+        peripheralBehavior.setServicesResponse(Either.left(Collections.emptyList()));
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
 
         assertTrue(presenter.hasPeripheral());
@@ -132,6 +134,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
 
     public void testClearPeripheral() throws Exception {
         HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
+        peripheralBehavior.setServicesResponse(Either.left(Collections.emptyList()));
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
         peripheralBehavior.setDisconnectResponse(Either.left(testPeripheral));
 

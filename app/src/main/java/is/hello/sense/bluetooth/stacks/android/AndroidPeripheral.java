@@ -577,10 +577,15 @@ public class AndroidPeripheral implements Peripheral {
         });
     }
 
+    @Override
+    public boolean hasDiscoveredServices() {
+        return (gatt != null && cachedPeripheralServices != null);
+    }
+
     @Nullable
     @Override
     public PeripheralService getService(@NonNull UUID serviceIdentifier) {
-        if (gatt != null) {
+        if (hasDiscoveredServices()) {
             return cachedPeripheralServices.get(serviceIdentifier);
         } else {
             return null;
