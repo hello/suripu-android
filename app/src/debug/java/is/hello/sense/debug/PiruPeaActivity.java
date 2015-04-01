@@ -229,8 +229,6 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     }
 
     public void setWifiNetwork() {
-        hardwarePresenter.setPeripheral(selectedPeripheral);
-
         Intent intent = new Intent(this, OnboardingActivity.class);
         intent.putExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, true);
         startActivity(intent);
@@ -273,7 +271,8 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
             this.selectedPeripheral = scannedPeripheralsAdapter.getItem(position);
 
             showLoadingIndicator();
-            bindAndSubscribe(selectedPeripheral.connect(), status -> {
+            hardwarePresenter.setPeripheral(selectedPeripheral);
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                     hideLoadingIndicator();
                     listView.setAdapter(peripheralActions);
