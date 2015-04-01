@@ -1,14 +1,12 @@
 package is.hello.sense.ui.dialogs;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -23,7 +21,6 @@ import is.hello.sense.api.model.InsightInfo;
 import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.util.Analytics;
 import is.hello.sense.util.ImageLoader;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
@@ -85,9 +82,6 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
         this.titleText = (TextView) contentContainer.findViewById(R.id.fragment_dialog_insight_info_title);
         this.messageText = (TextView) contentContainer.findViewById(R.id.fragment_dialog_insight_info_message);
 
-        ImageButton shareButton = (ImageButton) dialog.findViewById(R.id.fragment_dialog_insight_info_share);
-        Views.setSafeOnClickListener(shareButton, this::share);
-
         Button doneButton = (Button) dialog.findViewById(R.id.fragment_dialog_insight_info_done);
         Views.setSafeOnClickListener(doneButton, this::done);
 
@@ -144,15 +138,6 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
         showContent();
     }
 
-
-    public void share(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_SHARE, null);
-
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, titleText.getText() + "\n\n" + messageText.getText());
-        startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
-    }
 
     public void done(@NonNull View sender) {
         dismiss();
