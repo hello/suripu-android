@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import is.hello.sense.units.UnitSystem;
 
+@SuppressWarnings("deprecation")
 public class UnitSystemTests extends TestCase {
     private final UnitSystem testSystem = new UnitSystem();
 
@@ -20,21 +21,21 @@ public class UnitSystemTests extends TestCase {
     }
 
     public void testFormatHumidity() throws Exception {
-        assertEquals("50%", testSystem.formatHumidity(50).toString());
-        assertEquals("75%", testSystem.formatHumidity(75).toString());
-        assertEquals("100%", testSystem.formatHumidity(100).toString());
+        assertEquals("50 %", testSystem.formatHumidity(50).toString());
+        assertEquals("75 %", testSystem.formatHumidity(75).toString());
+        assertEquals("100 %", testSystem.formatHumidity(100).toString());
     }
 
     public void testFormatDecibels() throws Exception {
-        assertEquals("1db", testSystem.formatDecibels(1).toString());
-        assertEquals("5db", testSystem.formatDecibels(5).toString());
-        assertEquals("10db", testSystem.formatDecibels(10).toString());
+        assertEquals("1 db", testSystem.formatDecibels(1).toString());
+        assertEquals("5 db", testSystem.formatDecibels(5).toString());
+        assertEquals("10 db", testSystem.formatDecibels(10).toString());
     }
 
     public void testFormatLight() throws Exception {
-        assertEquals("5lux", testSystem.formatLight(5).toString());
-        assertEquals("50lux", testSystem.formatLight(50).toString());
-        assertEquals("100lux", testSystem.formatLight(100).toString());
+        assertEquals("5 lux", testSystem.formatLight(5).toString());
+        assertEquals("50 lux", testSystem.formatLight(50).toString());
+        assertEquals("100 lux", testSystem.formatLight(100).toString());
     }
 
     public void testFormatParticulates() throws Exception {

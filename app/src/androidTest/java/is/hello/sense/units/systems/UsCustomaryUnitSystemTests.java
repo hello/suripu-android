@@ -6,11 +6,11 @@ public class UsCustomaryUnitSystemTests extends TestCase {
     private final UsCustomaryUnitSystem unitSystem = new UsCustomaryUnitSystem();
 
     public void testFormatMass() throws Exception {
-        assertEquals("6lbs", unitSystem.formatMass(2500).toString());
+        assertEquals("6 lbs", unitSystem.formatMass(2500).toString());
     }
 
     public void testFormatTemperature() throws Exception {
-        assertEquals("39°", unitSystem.formatTemperature(4).toString());
+        assertEquals("39 °", unitSystem.formatTemperature(4).toString());
     }
 
     public void testFormatHeight() throws Exception {
