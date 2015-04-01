@@ -25,7 +25,6 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnSubscribe<List<Peripheral>> {
@@ -50,8 +49,6 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
         Logger.info(BluetoothStack.LOG_TAG, "Beginning Scan (Lollipop impl)");
 
         this.subscriber = subscriber;
-        Subscription unsubscribe = Subscriptions.create(this::onConcludeScan);
-        subscriber.add(unsubscribe);
 
         this.scanning = true;
         ScanSettings.Builder builder = new ScanSettings.Builder();

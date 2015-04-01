@@ -22,7 +22,6 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 
 class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable.OnSubscribe<List<BluetoothDevice>> {
     /**
@@ -38,6 +37,7 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
     private @Nullable Subscriber<? super List<BluetoothDevice>> subscriber;
     private @Nullable Subscription timeout;
 
+    private boolean discovering = false;
     private boolean registered = false;
 
     //region Lifecycle
@@ -57,9 +57,6 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
     @Override
     public void call(Subscriber<? super List<BluetoothDevice>> subscriber) {
         this.subscriber = subscriber;
-
-        Subscription unsubscribe = Subscriptions.create(this::stopDiscovery);
-        subscriber.add(unsubscribe);
 
         startDiscovery();
 
@@ -117,6 +114,7 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
 
     private void onDiscoveryStarted() {
         Logger.info(BluetoothStack.LOG_TAG, "high power scan started");
+        this.discovering = true;
         if (devices != null) {
             devices.clear();
         }
@@ -125,6 +123,7 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
     private void onDiscoveryFinished() {
         Logger.info(BluetoothStack.LOG_TAG, "high power scan finished");
 
+        this.discovering = false;
         stopDiscovery();
     }
 
@@ -162,7 +161,10 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
             this.timeout = null;
         }
 
-        if (adapter.isDiscovering() && !adapter.cancelDiscovery()) {
+        context.unregisterReceiver(this);
+        this.registered = false;
+
+        if (discovering && !adapter.cancelDiscovery()) {
             Logger.error(BluetoothStack.LOG_TAG, "Could not stop discovery");
 
             if (subscriber != null && !subscriber.isUnsubscribed()) {
@@ -170,9 +172,6 @@ class HighPowerPeripheralScanner extends BroadcastReceiver implements Observable
                 this.subscriber = null;
             }
         }
-
-        context.unregisterReceiver(this);
-        this.registered = false;
 
         if (subscriber != null && !subscriber.isUnsubscribed()) {
             if (devices != null) {

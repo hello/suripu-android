@@ -22,7 +22,6 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 
 @SuppressWarnings("deprecation")
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -46,8 +45,6 @@ final class LegacyLePeripheralScanner implements Observable.OnSubscribe<List<Per
         Logger.info(BluetoothStack.LOG_TAG, "Beginning Scan (legacy impl)");
 
         this.subscriber = subscriber;
-        Subscription unsubscribe = Subscriptions.create(this::onConcludeScan);
-        subscriber.add(unsubscribe);
 
         this.scanning = true;
         stack.getAdapter().startLeScan(this);
