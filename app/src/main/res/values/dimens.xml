@@ -146,6 +146,7 @@
     <!-- Action Bar -->
 
     <dimen name="action_bar_height">60dp</dimen>
+    <dimen name="action_bar_height_compact">50dp</dimen>
     <dimen name="action_bar_title_text_size">20dp</dimen>
     <dimen name="action_bar_subtitle_text_size">15dp</dimen>
 

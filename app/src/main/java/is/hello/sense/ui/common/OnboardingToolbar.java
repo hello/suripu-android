@@ -3,6 +3,7 @@ package is.hello.sense.ui.common;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
@@ -95,6 +96,18 @@ public class OnboardingToolbar {
     public OnboardingToolbar setOnHelpClickListener(@Nullable View.OnClickListener onHelpClickListener) {
         this.onHelpClickListener = onHelpClickListener;
         setWantsHelpButton(onHelpClickListener != null);
+
+        return this;
+    }
+
+    public OnboardingToolbar setCompact(boolean compact) {
+        Resources resources = toolbarView.getResources();
+        if (compact) {
+            toolbarView.getLayoutParams().height = resources.getDimensionPixelSize(R.dimen.action_bar_height_compact);
+        } else {
+            toolbarView.getLayoutParams().height = resources.getDimensionPixelSize(R.dimen.action_bar_height);
+        }
+        toolbarView.invalidate();
 
         return this;
     }
