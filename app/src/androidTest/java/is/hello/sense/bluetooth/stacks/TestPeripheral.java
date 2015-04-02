@@ -3,7 +3,6 @@ package is.hello.sense.bluetooth.stacks;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -97,7 +96,7 @@ public class TestPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
+    public Observable<Map<UUID, PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
         behavior.trackMethodCall(TestPeripheralBehavior.Method.DISCOVER_SERVICES);
         return createResponseWith(behavior.servicesResponse, timeout);
     }

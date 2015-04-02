@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -221,7 +221,7 @@ public interface Peripheral {
      *
      * @see Peripheral#getService(java.util.UUID)
      */
-    @NonNull Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout);
+    @NonNull Observable<Map<UUID, PeripheralService>> discoverServices(@NonNull OperationTimeout timeout);
 
     /**
      * Performs service discovery on the peripheral,
