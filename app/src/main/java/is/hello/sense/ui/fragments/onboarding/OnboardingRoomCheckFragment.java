@@ -295,9 +295,9 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             currentValueAnimator.cancel();
         }
 
-        if (itemContainer.getParent() != null) {
-            conditionsContainer.removeView(itemContainer);
-        }
+        conditionsContainer.removeView(itemContainer);
+        conditionsContainer.removeView(topDivider);
+        conditionsContainer.removeView(bottomDivider);
 
         if (endContainer.getParent() == null) {
             for (int i = 0, size = conditionsContainer.getChildCount(); i < size; i++) {
