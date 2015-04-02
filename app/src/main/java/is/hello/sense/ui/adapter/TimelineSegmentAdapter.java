@@ -75,6 +75,7 @@ public class TimelineSegmentAdapter extends ArrayAdapter<TimelineSegment> {
      */
     private void buildItemInfoCache(@NonNull List<TimelineSegment> segments) {
         this.itemHeights = new float[segments.size()];
+        timePositions.clear();
 
         Set<Integer> hoursRepresented = new HashSet<>();
         for (int i = 0, size = itemHeights.length; i < size; i++) {
