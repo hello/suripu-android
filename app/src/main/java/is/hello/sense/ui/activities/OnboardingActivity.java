@@ -327,7 +327,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             Logger.info(getClass().getSimpleName(), "Performing preemptive BLE Sense scan");
             bindAndSubscribe(hardwarePresenter.closestPeripheral(),
                     peripheral -> Logger.info(getClass().getSimpleName(), "Found and cached Sense " + peripheral),
-                    Functions.LOG_ERROR);
+                    Functions.IGNORE_ERROR);
 
             pushFragment(new OnboardingRegisterBirthdayFragment(), null, false);
         } else {
