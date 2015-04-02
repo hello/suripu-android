@@ -16,7 +16,6 @@ import android.util.Log;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -58,8 +57,8 @@ public class AndroidPeripheral implements Peripheral {
     private final GattDispatcher gattDispatcher = new GattDispatcher();
 
     private BluetoothGatt gatt;
-    private Map<UUID, PeripheralService> cachedPeripheralServices;
-    private Subscription bluetoothStateSubscription;
+    private @Nullable Map<UUID, PeripheralService> cachedPeripheralServices;
+    private @Nullable Subscription bluetoothStateSubscription;
     private @Config int config;
 
     AndroidPeripheral(@NonNull AndroidBluetoothStack stack,
@@ -521,12 +520,12 @@ public class AndroidPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
+    public Observable<Map<UUID, PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
         if (getConnectionStatus() != STATUS_CONNECTED) {
             return Observable.error(new PeripheralConnectionError());
         }
 
-        Observable<Collection<PeripheralService>> services = stack.newConfiguredObservable(s -> {
+        Observable<Map<UUID, PeripheralService>> discoverServices = stack.newConfiguredObservable(s -> {
             Action0 onDisconnect = gattDispatcher.addTimeoutDisconnectListener(s, timeout);
             setupTimeout(OperationTimeoutError.Operation.DISCOVER_SERVICES, timeout, s, onDisconnect);
 
@@ -536,9 +535,10 @@ public class AndroidPeripheral implements Peripheral {
                 gattDispatcher.removeDisconnectListener(onDisconnect);
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
-                    this.cachedPeripheralServices = AndroidPeripheralService.wrapGattServices(gatt.getServices());
+                    Map<UUID, PeripheralService> services = AndroidPeripheralService.wrapGattServices(gatt.getServices());
+                    this.cachedPeripheralServices = services;
 
-                    s.onNext(cachedPeripheralServices.values());
+                    s.onNext(services);
                     s.onCompleted();
 
                     gattDispatcher.onServicesDiscovered = null;
@@ -565,17 +565,17 @@ public class AndroidPeripheral implements Peripheral {
         boolean waitAfterDiscovery = ((config & CONFIG_WAIT_AFTER_SERVICE_DISCOVERY) == CONFIG_WAIT_AFTER_SERVICE_DISCOVERY);
         if (waitAfterDiscovery) {
             // See <https://code.google.com/p/android/issues/detail?id=58381>
-            return services.delay(SERVICES_DELAY_S, TimeUnit.SECONDS);
+            return discoverServices.delay(SERVICES_DELAY_S, TimeUnit.SECONDS);
         } else {
-            return services;
+            return discoverServices;
         }
     }
 
     @NonNull
     @Override
     public Observable<PeripheralService> discoverService(@NonNull UUID serviceIdentifier, @NonNull OperationTimeout timeout) {
-        return discoverServices(timeout).flatMap(ignored -> {
-            PeripheralService service = cachedPeripheralServices.get(serviceIdentifier);
+        return discoverServices(timeout).flatMap(services -> {
+            PeripheralService service = services.get(serviceIdentifier);
             if (service != null) {
                 return Observable.just(service);
             } else {
@@ -592,8 +592,13 @@ public class AndroidPeripheral implements Peripheral {
     @Nullable
     @Override
     public PeripheralService getService(@NonNull UUID serviceIdentifier) {
-        if (hasDiscoveredServices()) {
-            return cachedPeripheralServices.get(serviceIdentifier);
+        if (gatt != null) {
+            if (cachedPeripheralServices != null) {
+                return cachedPeripheralServices.get(serviceIdentifier);
+            } else {
+                Logger.warn(LOG_TAG, "getService called before discoverServices.");
+                return null;
+            }
         } else {
             return null;
         }
