@@ -76,9 +76,9 @@
     <color name="sleep_deep_dimmed">#ffe5e5e5</color>
 
     <color name="graph_stroke_color">#66000000</color>
-    <color name="graph_fill_gradient_top">#19000000</color>
-    <color name="graph_fill_gradient_bottom">#09000000</color>
-    <color name="graph_fill_solid">#19D6D6D6</color>
+    <color name="graph_fill_gradient_top">#22000000</color>
+    <color name="graph_fill_gradient_bottom">#11000000</color>
+    <color name="graph_fill_solid">#22D6D6D6</color>
 
     <color name="view_scale_tick_normal">#dfdfdf</color>
     <color name="view_scale_tick_emphasized">#c1c1c1</color>
