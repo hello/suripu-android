@@ -69,7 +69,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_underside_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_list_cards_compact, container, false);
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
@@ -80,7 +80,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
                 new SensorEntry(ApiService.SENSOR_NAME_LIGHT),
                 new SensorEntry(ApiService.SENSOR_NAME_SOUND),
         });
-        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER, null);
+        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER | Styles.CARD_SPACING_USE_COMPACT, null);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
 

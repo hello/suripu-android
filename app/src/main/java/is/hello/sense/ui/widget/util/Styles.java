@@ -43,6 +43,7 @@ public final class Styles {
 
     public static final int CARD_SPACING_HEADER = (1 << 1);
     public static final int CARD_SPACING_FOOTER = (1 << 2);
+    public static final int CARD_SPACING_USE_COMPACT = (1 << 3);
     public static final int CARD_SPACING_HEADER_AND_FOOTER = CARD_SPACING_HEADER | CARD_SPACING_FOOTER;
     public static final int CARD_SPACING_OUT_COUNT = 2;
 
@@ -50,6 +51,7 @@ public final class Styles {
             value = {
                     CARD_SPACING_HEADER,
                     CARD_SPACING_FOOTER,
+                    CARD_SPACING_USE_COMPACT,
                     CARD_SPACING_HEADER_AND_FOOTER
             },
             flag = true
@@ -266,7 +268,13 @@ public final class Styles {
         Context context = listView.getContext();
         Resources resources = listView.getResources();
 
-        int spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_card_header_footer);
+        boolean isCompact = ((spacing & CARD_SPACING_USE_COMPACT) == CARD_SPACING_USE_COMPACT);
+        int spacingHeight;
+        if (isCompact) {
+            spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_card_header_footer_compact);
+        } else {
+            spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_card_header_footer);
+        }
         if ((spacing & CARD_SPACING_HEADER) == CARD_SPACING_HEADER) {
             View topSpacing = new View(context);
             topSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
