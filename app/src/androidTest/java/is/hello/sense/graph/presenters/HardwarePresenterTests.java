@@ -86,7 +86,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
 
     public void testConnectivityGetters() throws Exception {
         HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
-        peripheralBehavior.setServicesResponse(Either.left(Collections.emptyList()));
+        peripheralBehavior.setServicesResponse(Either.left(Collections.emptyMap()));
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
 
         assertTrue(presenter.hasPeripheral());
@@ -134,7 +134,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
 
     public void testClearPeripheral() throws Exception {
         HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
-        peripheralBehavior.setServicesResponse(Either.left(Collections.emptyList()));
+        peripheralBehavior.setServicesResponse(Either.left(Collections.emptyMap()));
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
         peripheralBehavior.setDisconnectResponse(Either.left(testPeripheral));
 

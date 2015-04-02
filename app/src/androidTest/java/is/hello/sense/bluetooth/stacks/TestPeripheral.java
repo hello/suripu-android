@@ -3,13 +3,13 @@ package is.hello.sense.bluetooth.stacks;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.functional.Either;
-import is.hello.sense.functional.Lists;
 import rx.Observable;
 
 public class TestPeripheral implements Peripheral {
@@ -26,7 +26,7 @@ public class TestPeripheral implements Peripheral {
         this.config = stack.getDefaultConfig();
     }
 
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "UnusedParameters"})
     private <T> Observable<T> createResponseWith(@NonNull Either<T, Throwable> value, @Nullable OperationTimeout timeout) {
         Observable<T> observable = value.<Observable<T>>map(Observable::just, Observable::error);
         return observable.delay(behavior.latency, TimeUnit.MILLISECONDS);
@@ -123,7 +123,7 @@ public class TestPeripheral implements Peripheral {
     @Override
     public PeripheralService getService(@NonNull UUID serviceIdentifier) {
         if (behavior.servicesResponse != null && behavior.servicesResponse.isLeft()) {
-            return Lists.findFirst(behavior.servicesResponse.getLeft(), s -> s.getUuid().equals(serviceIdentifier));
+            return behavior.servicesResponse.getLeft().get(serviceIdentifier);
         } else {
             return null;
         }

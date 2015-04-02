@@ -3,8 +3,8 @@ package is.hello.sense.bluetooth.stacks;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
@@ -21,11 +21,10 @@ public class TestPeripheralBehavior {
 
     @Peripheral.ConnectivityStatus int connectionStatus = Peripheral.STATUS_DISCONNECTED;
     @Peripheral.BondStatus int bondStatus = Peripheral.BOND_NONE;
-    Either<Collection<PeripheralService>, Throwable> servicesResponse;
+    Either<Map<UUID, PeripheralService>, Throwable> servicesResponse;
     Either<Peripheral, Throwable> connectResponse;
     Either<Peripheral, Throwable> disconnectResponse;
     Either<Peripheral, Throwable> createBondResponse;
-    Either<Peripheral, Throwable> removeBondResponse;
     Either<UUID, Throwable> subscriptionResponse;
     Either<UUID, Throwable> unsubscriptionResponse;
     Either<Void, Throwable> writeCommandResponse;
@@ -42,7 +41,7 @@ public class TestPeripheralBehavior {
         return this;
     }
 
-    public TestPeripheralBehavior setServicesResponse(Either<Collection<PeripheralService>, Throwable> servicesResponse) {
+    public TestPeripheralBehavior setServicesResponse(Either<Map<UUID, PeripheralService>, Throwable> servicesResponse) {
         this.servicesResponse = servicesResponse;
         return this;
     }
@@ -69,11 +68,6 @@ public class TestPeripheralBehavior {
 
     public TestPeripheralBehavior setCreateBondResponse(@NonNull Either<Peripheral, Throwable> createBondResponse) {
         this.createBondResponse = createBondResponse;
-        return this;
-    }
-
-    public TestPeripheralBehavior setRemoveBondResponse(@NonNull Either<Peripheral, Throwable> removeBondResponse) {
-        this.removeBondResponse = removeBondResponse;
         return this;
     }
 
@@ -105,7 +99,6 @@ public class TestPeripheralBehavior {
         this.connectResponse = null;
         this.disconnectResponse = null;
         this.createBondResponse = null;
-        this.removeBondResponse = null;
         this.subscriptionResponse = null;
         this.unsubscriptionResponse = null;
         this.writeCommandResponse = null;
@@ -132,7 +125,6 @@ public class TestPeripheralBehavior {
         CONNECT,
         DISCONNECT,
         CREATE_BOND,
-        REMOVE_BOND,
         DISCOVER_SERVICES,
         SUBSCRIBE,
         UNSUBSCRIBE,
