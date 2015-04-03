@@ -46,10 +46,10 @@ public class AndroidPeripheral implements Peripheral {
      * How long to delay response after a successful service discovery
      * if {@link #CONFIG_WAIT_AFTER_SERVICE_DISCOVERY} is specified.
      * <p/>
-     * Settled on 3 seconds after experimenting with Jackson. Idea for delay from
+     * Settled on 5 seconds after experimenting with Jackson. Idea for delay from
      * <a href="https://code.google.com/p/android/issues/detail?id=58381">here</a>.
      */
-    private static final int SERVICES_DELAY_S = 3;
+    private static final int SERVICES_DELAY_S = 5;
 
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull BluetoothDevice bluetoothDevice;
