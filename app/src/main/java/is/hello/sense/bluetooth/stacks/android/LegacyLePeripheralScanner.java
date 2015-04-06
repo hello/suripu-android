@@ -74,7 +74,7 @@ final class LegacyLePeripheralScanner implements Observable.OnSubscribe<List<Per
             return;
         }
 
-        results.put(device.getAddress(), new ScannedPeripheral(device, rssi, advertisingData));
+        results.put(address, new ScannedPeripheral(device, rssi, advertisingData));
 
         if (results.size() >= peripheralCriteria.limit) {
             Logger.info(BluetoothStack.LOG_TAG, "Discovery limit reached, concluding scan");

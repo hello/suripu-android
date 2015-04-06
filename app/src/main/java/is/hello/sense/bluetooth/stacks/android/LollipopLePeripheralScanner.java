@@ -97,7 +97,7 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
             return;
         }
 
-        results.put(device.getAddress(), new ScannedPeripheral(device, result.getRssi(), advertisingData));
+        results.put(address, new ScannedPeripheral(device, result.getRssi(), advertisingData));
 
         if (results.size() >= peripheralCriteria.limit) {
             Logger.info(BluetoothStack.LOG_TAG, "Discovery limit reached, concluding scan");
