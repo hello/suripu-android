@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
+import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import rx.Observable;
 
 /**
@@ -132,6 +133,11 @@ public interface Peripheral {
      * This value should be included in the implementation's toString method.
      */
     String getName();
+
+    /**
+     * Returns the advertising data associated with the Peripheral.
+     */
+    AdvertisingData getAdvertisingData();
 
     /**
      * Returns the stack this Peripheral is tied to.

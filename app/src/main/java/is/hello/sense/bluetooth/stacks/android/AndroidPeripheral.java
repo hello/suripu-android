@@ -32,6 +32,7 @@ import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
+import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import is.hello.sense.bluetooth.stacks.util.Util;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -54,6 +55,7 @@ public class AndroidPeripheral implements Peripheral {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull BluetoothDevice bluetoothDevice;
     private final int scannedRssi;
+    private final AdvertisingData advertisingData;
     private final GattDispatcher gattDispatcher = new GattDispatcher();
 
     private BluetoothGatt gatt;
@@ -63,10 +65,12 @@ public class AndroidPeripheral implements Peripheral {
 
     AndroidPeripheral(@NonNull AndroidBluetoothStack stack,
                       @NonNull BluetoothDevice bluetoothDevice,
-                      int scannedRssi) {
+                      int scannedRssi,
+                      @NonNull AdvertisingData advertisingData) {
         this.stack = stack;
         this.bluetoothDevice = bluetoothDevice;
         this.scannedRssi = scannedRssi;
+        this.advertisingData = advertisingData;
         this.config = stack.getDefaultConfig();
 
         gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
@@ -104,6 +108,11 @@ public class AndroidPeripheral implements Peripheral {
     @Override
     public String getName() {
         return bluetoothDevice.getName();
+    }
+
+    @Override
+    public AdvertisingData getAdvertisingData() {
+        return advertisingData;
     }
 
     @Override
