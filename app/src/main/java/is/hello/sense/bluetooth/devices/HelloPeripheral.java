@@ -9,6 +9,7 @@ import is.hello.sense.R;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
+import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
@@ -35,6 +36,10 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
 
     public String getName() {
         return peripheral.getName();
+    }
+
+    public AdvertisingData getAdvertisingData() {
+        return peripheral.getAdvertisingData();
     }
 
     //endregion

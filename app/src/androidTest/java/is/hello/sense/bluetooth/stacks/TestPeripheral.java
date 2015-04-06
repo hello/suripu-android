@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.errors.PeripheralServiceDiscoveryFailedError;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
+import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import is.hello.sense.functional.Either;
 import rx.Observable;
 
@@ -51,6 +52,11 @@ public class TestPeripheral implements Peripheral {
     @Override
     public String getName() {
         return behavior.name;
+    }
+
+    @Override
+    public AdvertisingData getAdvertisingData() {
+        return behavior.advertisingData;
     }
 
     @Override

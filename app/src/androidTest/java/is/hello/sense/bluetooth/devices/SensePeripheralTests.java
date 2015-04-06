@@ -17,7 +17,7 @@ import is.hello.sense.util.Sync;
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand;
 
 public class SensePeripheralTests extends InjectionTestCase {
-    private static final String TEST_DEVICE_ID = "ca154ffa";
+    private static final String TEST_DEVICE_ID = "CA154FFA";
 
     @Inject TestBluetoothStackBehavior stackBehavior;
     @Inject BluetoothStack stack;
@@ -69,6 +69,17 @@ public class SensePeripheralTests extends InjectionTestCase {
             .assertTrue(p -> "Sense-Test".equals(p.getName()));
     }
 
+
+    public void testGetDeviceId() throws Exception {
+        AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
+        builder.add(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
+        builder.add(AdvertisingData.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + TEST_DEVICE_ID);
+        AdvertisingData advertisingData = builder.build();
+
+        peripheralBehavior.setAdvertisingData(advertisingData);
+
+        assertEquals(TEST_DEVICE_ID, peripheral.getDeviceId());
+    }
 
     public void testWriteLargeCommand() throws Exception {
         //noinspection ConstantConditions

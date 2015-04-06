@@ -10,6 +10,7 @@ import com.google.protobuf.ByteString;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -123,6 +124,19 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     public Observable<ConnectStatus> connect() {
         return super.connect(createOperationTimeout("Connect"));
+    }
+
+    public @Nullable String getDeviceId() {
+        Collection<byte[]> serviceDataRecords = getAdvertisingData().getRecordsForType(AdvertisingData.TYPE_SERVICE_DATA);
+        if (serviceDataRecords != null) {
+            byte[] servicePrefix = Bytes.fromString(SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT);
+            for (byte[] serviceDataRecord : serviceDataRecords) {
+                if (Bytes.startWith(serviceDataRecord, servicePrefix)) {
+                    return Bytes.toString(serviceDataRecord, servicePrefix.length, serviceDataRecord.length);
+                }
+            }
+        }
+        return null;
     }
 
     //region Versions

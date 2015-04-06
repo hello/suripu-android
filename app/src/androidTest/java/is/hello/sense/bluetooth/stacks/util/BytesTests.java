@@ -7,6 +7,20 @@ import java.util.Arrays;
 import static is.hello.sense.AssertExtensions.assertThrows;
 
 public class BytesTests extends TestCase {
+    public void testToStringWithBounds() throws Exception {
+        byte[] emptyBytes = {};
+        String emptyString = Bytes.toString(emptyBytes, 0, 0);
+        assertEquals("", emptyString);
+
+
+        byte[] testBytes = { 0x12, 0x14, 0x0f, 0x12 };
+        assertEquals("1214", Bytes.toString(testBytes, 0, 2));
+        assertEquals("0F12", Bytes.toString(testBytes, 2, 4));
+
+        assertThrows(() -> Bytes.toString(emptyBytes, 0, 1));
+        assertThrows(() -> Bytes.toString(testBytes, 3, 2));
+    }
+
     public void testToString() throws Exception {
         byte[] emptyBytes = {};
         String emptyString = Bytes.toString(emptyBytes);
