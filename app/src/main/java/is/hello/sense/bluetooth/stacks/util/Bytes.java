@@ -7,16 +7,27 @@ import android.text.TextUtils;
 public final class Bytes {
 
     /**
-     * Converts an array of bytes to a string of the format <code>0122FF</code>
+     * Converts a subsection of an array of bytes to a string of the format <code>0122FF</code>
      */
-    public static @NonNull String toString(@NonNull byte[] bytes) {
+    public static @NonNull String toString(@NonNull byte[] bytes, int start, int end) {
+        if (start > end || end > bytes.length) {
+            throw new IndexOutOfBoundsException();
+        }
+
         StringBuilder builder = new StringBuilder(bytes.length * 2);
 
-        for (byte b : bytes) {
-            builder.append(String.format("%02X", b));
+        for (int i = start; i < end; i++) {
+            builder.append(String.format("%02X", bytes[i]));
         }
 
         return builder.toString();
+    }
+
+    /**
+     * Converts an entire array of bytes to a string of the format <code>0122FF</code>
+     */
+    public static @NonNull String toString(@NonNull byte[] bytes) {
+        return toString(bytes, 0, bytes.length);
     }
 
     /**

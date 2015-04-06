@@ -155,6 +155,14 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
         return (peripheral != null && peripheral.isConnected());
     }
 
+    public @Nullable String getDeviceId() {
+        if (peripheral != null) {
+            return peripheral.getDeviceId();
+        } else {
+            return null;
+        }
+    }
+
     public BluetoothStack.SupportLevel getDeviceSupportLevel() {
         return bluetoothStack.getDeviceSupportLevel();
     }
