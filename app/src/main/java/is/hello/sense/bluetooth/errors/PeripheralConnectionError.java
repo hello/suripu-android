@@ -18,7 +18,7 @@ public class PeripheralConnectionError extends BluetoothError implements Errors.
     @Nullable
     @Override
     public String getContextInfo() {
-        return null;
+        return getMessage();
     }
 
     @NonNull

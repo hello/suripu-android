@@ -196,6 +196,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     public void completePeripheralPair() {
+        Analytics.setSenseId(hardwarePresenter.getDeviceId());
         bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
             if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                 checkConnectivityAndContinue();

@@ -20,6 +20,9 @@ public class Insight extends ApiResponse {
     @JsonProperty("category")
     private InsightCategory category;
 
+    @JsonProperty("info_preview")
+    private String infoPreview;
+
 
     public long getAccountId() {
         return accountId;
@@ -41,6 +44,9 @@ public class Insight extends ApiResponse {
         return category;
     }
 
+    public String getInfoPreview() {
+        return infoPreview;
+    }
 
     @Override
     public String toString() {
@@ -50,6 +56,7 @@ public class Insight extends ApiResponse {
                 ", message='" + message + '\'' +
                 ", created=" + created +
                 ", category=" + category +
+                ", infoPreview='" + infoPreview + '\'' +
                 '}';
     }
 

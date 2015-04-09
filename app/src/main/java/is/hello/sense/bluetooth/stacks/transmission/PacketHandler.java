@@ -51,4 +51,5 @@ public abstract class PacketHandler {
     public final void unregisterDataHandler(final PacketDataHandler handler) {
         this.dataHandlers.remove(handler);
     }
+
 }

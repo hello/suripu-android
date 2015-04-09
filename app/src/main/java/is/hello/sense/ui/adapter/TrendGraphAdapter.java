@@ -206,7 +206,7 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
     public String getSectionHeader(int section) {
         if (trendGraph.getGraphType() == GraphType.HISTOGRAM) {
             GraphSample sample = sectionSamples.get(section);
-            return sample.getXValue();
+            return sample.getXValue().substring(0, 1);
         } else {
             return "";
         }

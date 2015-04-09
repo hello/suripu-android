@@ -8,11 +8,12 @@ import android.support.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
+import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import rx.Observable;
 
 /**
@@ -27,6 +28,33 @@ public interface Peripheral {
      * The logging tag that should be used by implementations of the Peripheral interface.
      */
     public static final String LOG_TAG = "Bluetooth." + Peripheral.class.getSimpleName();
+
+
+    //region Local Broadcasts
+
+    /**
+     * A local broadcast that informs interested listeners that a Peripheral has disconnected.
+     *
+     * @see #EXTRA_NAME
+     * @see #EXTRA_ADDRESS
+     */
+    public static final String ACTION_DISCONNECTED = Peripheral.class.getName() + ".ACTION_DISCONNECTED";
+
+    /**
+     * The name of the affected Peripheral.
+     *
+     * @see #ACTION_DISCONNECTED
+     */
+    public static final String EXTRA_NAME = Peripheral.class.getName() + ".EXTRA_NAME";
+
+    /**
+     * The address of the affected Peripheral.
+     *
+     * @see #ACTION_DISCONNECTED
+     */
+    public static final String EXTRA_ADDRESS = Peripheral.class.getName() + ".EXTRA_ADDRESS";
+
+    //endregion
 
 
     //region Bond Status
@@ -105,6 +133,11 @@ public interface Peripheral {
      * This value should be included in the implementation's toString method.
      */
     String getName();
+
+    /**
+     * Returns the advertising data associated with the Peripheral.
+     */
+    AdvertisingData getAdvertisingData();
 
     /**
      * Returns the stack this Peripheral is tied to.
@@ -194,7 +227,7 @@ public interface Peripheral {
      *
      * @see Peripheral#getService(java.util.UUID)
      */
-    @NonNull Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout);
+    @NonNull Observable<Map<UUID, PeripheralService>> discoverServices(@NonNull OperationTimeout timeout);
 
     /**
      * Performs service discovery on the peripheral,
@@ -210,6 +243,11 @@ public interface Peripheral {
      * @see #getService(java.util.UUID)
      */
     @NonNull Observable<PeripheralService> discoverService(@NonNull UUID serviceIdentifier, @NonNull OperationTimeout timeout);
+
+    /**
+     * Returns whether or not the Peripheral has performed service discovery.
+     */
+    boolean hasDiscoveredServices();
 
     /**
      * Looks up a peripheral service by identifier on the peripheral.

@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,14 +21,14 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 
 @SuppressWarnings("deprecation")
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 final class LegacyLePeripheralScanner implements Observable.OnSubscribe<List<Peripheral>>, BluetoothAdapter.LeScanCallback {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull PeripheralCriteria peripheralCriteria;
-    private final @NonNull Map<String, Pair<BluetoothDevice, Integer>> results = new HashMap<>();
+    private final @NonNull Map<String, ScannedPeripheral> results = new HashMap<>();
+    private final boolean hasAddresses;
 
     private @Nullable Subscriber<? super List<Peripheral>> subscriber;
     private @Nullable Subscription timeout;
@@ -38,6 +37,7 @@ final class LegacyLePeripheralScanner implements Observable.OnSubscribe<List<Per
     LegacyLePeripheralScanner(@NonNull AndroidBluetoothStack stack, @NonNull PeripheralCriteria peripheralCriteria) {
         this.stack = stack;
         this.peripheralCriteria = peripheralCriteria;
+        this.hasAddresses = !peripheralCriteria.peripheralAddresses.isEmpty();
     }
 
 
@@ -46,8 +46,6 @@ final class LegacyLePeripheralScanner implements Observable.OnSubscribe<List<Per
         Logger.info(BluetoothStack.LOG_TAG, "Beginning Scan (legacy impl)");
 
         this.subscriber = subscriber;
-        Subscription unsubscribe = Subscriptions.create(this::onConcludeScan);
-        subscriber.add(unsubscribe);
 
         this.scanning = true;
         stack.getAdapter().startLeScan(this);
@@ -57,19 +55,26 @@ final class LegacyLePeripheralScanner implements Observable.OnSubscribe<List<Per
     }
 
     @Override
-    public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanResponse) {
+    public void onLeScan(BluetoothDevice device, int rssi, byte[] scanResponse) {
+        String address = device.getAddress();
+        ScannedPeripheral existingResult = results.get(address);
+        if (existingResult != null) {
+            existingResult.rssi = rssi;
+            return;
+        }
+
         AdvertisingData advertisingData = AdvertisingData.parse(scanResponse);
-        Logger.info(BluetoothStack.LOG_TAG, "Found device " + bluetoothDevice.getName() + " - " + bluetoothDevice.getAddress() + " " + advertisingData);
+        Logger.info(BluetoothStack.LOG_TAG, "Found device " + device.getName() + " - " + address + " " + advertisingData);
 
         if (!peripheralCriteria.matches(advertisingData)) {
             return;
         }
 
-        if (!peripheralCriteria.peripheralAddresses.isEmpty() && !peripheralCriteria.peripheralAddresses.contains(bluetoothDevice.getAddress())) {
+        if (hasAddresses && !peripheralCriteria.peripheralAddresses.contains(address)) {
             return;
         }
 
-        results.put(bluetoothDevice.getAddress(), Pair.create(bluetoothDevice, rssi));
+        results.put(address, new ScannedPeripheral(device, rssi, advertisingData));
 
         if (results.size() >= peripheralCriteria.limit) {
             Logger.info(BluetoothStack.LOG_TAG, "Discovery limit reached, concluding scan");
@@ -91,8 +96,8 @@ final class LegacyLePeripheralScanner implements Observable.OnSubscribe<List<Per
         }
 
         List<Peripheral> peripherals = new ArrayList<>();
-        for (Pair<BluetoothDevice, Integer> scanRecord : results.values()) {
-            AndroidPeripheral peripheral = new AndroidPeripheral(stack, scanRecord.first, scanRecord.second);
+        for (ScannedPeripheral scannedPeripheral : results.values()) {
+            AndroidPeripheral peripheral = scannedPeripheral.createPeripheral(stack);
             if (peripheralCriteria.config != Peripheral.CONFIG_EMPTY) {
                 peripheral.setConfig(peripheralCriteria.config);
             }

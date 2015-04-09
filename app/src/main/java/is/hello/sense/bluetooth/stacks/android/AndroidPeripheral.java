@@ -11,11 +11,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +32,7 @@ import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
+import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import is.hello.sense.bluetooth.stacks.util.Util;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -42,27 +43,45 @@ import rx.functions.Action0;
 import static rx.android.observables.AndroidObservable.fromBroadcast;
 
 public class AndroidPeripheral implements Peripheral {
+    /**
+     * How long to delay response after a successful service discovery
+     * if {@link #CONFIG_WAIT_AFTER_SERVICE_DISCOVERY} is specified.
+     * <p/>
+     * Settled on 5 seconds after experimenting with Jackson. Idea for delay from
+     * <a href="https://code.google.com/p/android/issues/detail?id=58381">here</a>.
+     */
+    private static final int SERVICES_DELAY_S = 5;
+
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull BluetoothDevice bluetoothDevice;
     private final int scannedRssi;
+    private final AdvertisingData advertisingData;
     private final GattDispatcher gattDispatcher = new GattDispatcher();
 
     private BluetoothGatt gatt;
-    private Map<UUID, PeripheralService> cachedPeripheralServices;
-    private Subscription bluetoothStateSubscription;
+    private @Nullable Map<UUID, PeripheralService> cachedPeripheralServices;
+    private @Nullable Subscription bluetoothStateSubscription;
     private @Config int config;
 
     AndroidPeripheral(@NonNull AndroidBluetoothStack stack,
                       @NonNull BluetoothDevice bluetoothDevice,
-                      int scannedRssi) {
+                      int scannedRssi,
+                      @NonNull AdvertisingData advertisingData) {
         this.stack = stack;
         this.bluetoothDevice = bluetoothDevice;
         this.scannedRssi = scannedRssi;
+        this.advertisingData = advertisingData;
         this.config = stack.getDefaultConfig();
 
         gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
             if (newState == STATUS_DISCONNECTED) {
                 closeGatt(gatt);
+
+                Intent disconnect = new Intent(ACTION_DISCONNECTED);
+                disconnect.putExtra(EXTRA_NAME, getName());
+                disconnect.putExtra(EXTRA_ADDRESS, getAddress());
+                LocalBroadcastManager.getInstance(stack.applicationContext)
+                                     .sendBroadcast(disconnect);
             }
         });
     }
@@ -89,6 +108,11 @@ public class AndroidPeripheral implements Peripheral {
     @Override
     public String getName() {
         return bluetoothDevice.getName();
+    }
+
+    @Override
+    public AdvertisingData getAdvertisingData() {
+        return advertisingData;
     }
 
     @Override
@@ -505,12 +529,12 @@ public class AndroidPeripheral implements Peripheral {
 
     @NonNull
     @Override
-    public Observable<Collection<PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
+    public Observable<Map<UUID, PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
         if (getConnectionStatus() != STATUS_CONNECTED) {
             return Observable.error(new PeripheralConnectionError());
         }
 
-        Observable<Collection<PeripheralService>> services = stack.newConfiguredObservable(s -> {
+        Observable<Map<UUID, PeripheralService>> discoverServices = stack.newConfiguredObservable(s -> {
             Action0 onDisconnect = gattDispatcher.addTimeoutDisconnectListener(s, timeout);
             setupTimeout(OperationTimeoutError.Operation.DISCOVER_SERVICES, timeout, s, onDisconnect);
 
@@ -520,9 +544,10 @@ public class AndroidPeripheral implements Peripheral {
                 gattDispatcher.removeDisconnectListener(onDisconnect);
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
-                    this.cachedPeripheralServices = AndroidPeripheralService.wrapGattServices(gatt.getServices());
+                    Map<UUID, PeripheralService> services = AndroidPeripheralService.wrapGattServices(gatt.getServices());
+                    this.cachedPeripheralServices = services;
 
-                    s.onNext(cachedPeripheralServices.values());
+                    s.onNext(services);
                     s.onCompleted();
 
                     gattDispatcher.onServicesDiscovered = null;
@@ -549,17 +574,17 @@ public class AndroidPeripheral implements Peripheral {
         boolean waitAfterDiscovery = ((config & CONFIG_WAIT_AFTER_SERVICE_DISCOVERY) == CONFIG_WAIT_AFTER_SERVICE_DISCOVERY);
         if (waitAfterDiscovery) {
             // See <https://code.google.com/p/android/issues/detail?id=58381>
-            return services.delay(5, TimeUnit.SECONDS);
+            return discoverServices.delay(SERVICES_DELAY_S, TimeUnit.SECONDS);
         } else {
-            return services;
+            return discoverServices;
         }
     }
 
     @NonNull
     @Override
     public Observable<PeripheralService> discoverService(@NonNull UUID serviceIdentifier, @NonNull OperationTimeout timeout) {
-        return discoverServices(timeout).flatMap(ignored -> {
-            PeripheralService service = cachedPeripheralServices.get(serviceIdentifier);
+        return discoverServices(timeout).flatMap(services -> {
+            PeripheralService service = services.get(serviceIdentifier);
             if (service != null) {
                 return Observable.just(service);
             } else {
@@ -568,11 +593,21 @@ public class AndroidPeripheral implements Peripheral {
         });
     }
 
+    @Override
+    public boolean hasDiscoveredServices() {
+        return (gatt != null && cachedPeripheralServices != null);
+    }
+
     @Nullable
     @Override
     public PeripheralService getService(@NonNull UUID serviceIdentifier) {
         if (gatt != null) {
-            return cachedPeripheralServices.get(serviceIdentifier);
+            if (cachedPeripheralServices != null) {
+                return cachedPeripheralServices.get(serviceIdentifier);
+            } else {
+                Logger.warn(LOG_TAG, "getService called before discoverServices.");
+                return null;
+            }
         } else {
             return null;
         }

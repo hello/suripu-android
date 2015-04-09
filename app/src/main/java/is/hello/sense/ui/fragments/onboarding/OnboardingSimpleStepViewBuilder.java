@@ -21,6 +21,8 @@ import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.widget.util.Views;
 import rx.functions.Action1;
 
+import static android.view.ViewGroup.MarginLayoutParams;
+
 public final class OnboardingSimpleStepViewBuilder {
     private final ViewGroup stepView;
 
@@ -66,6 +68,8 @@ public final class OnboardingSimpleStepViewBuilder {
     //region Toolbar
 
     public OnboardingSimpleStepViewBuilder hideToolbar() {
+        int newTopPadding = stepView.getResources().getDimensionPixelSize(R.dimen.gap_outer);
+        headingText.setPadding(headingText.getPaddingLeft(), newTopPadding, headingText.getRight(), headingText.getBottom());
         toolbar.hide();
         return this;
     }
@@ -85,6 +89,21 @@ public final class OnboardingSimpleStepViewBuilder {
         return this;
     }
 
+    public OnboardingSimpleStepViewBuilder setCompact(boolean compact) {
+        toolbar.setCompact(compact);
+
+        Resources resources = stepView.getResources();
+        int newBottomMargin;
+        if (compact) {
+            newBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_small);
+        } else {
+            newBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_outer);
+        }
+        ((MarginLayoutParams) primaryButton.getLayoutParams()).bottomMargin = newBottomMargin;
+        primaryButton.invalidate();
+
+        return this;
+    }
 
     //endregion
 

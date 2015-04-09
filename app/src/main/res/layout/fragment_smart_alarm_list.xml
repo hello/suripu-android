@@ -9,7 +9,7 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        style="@style/AppTheme.ListView.Cards"/>
+        style="@style/AppTheme.ListView.Cards.Compact"/>
 
     <LinearLayout
         android:id="@android:id/empty"

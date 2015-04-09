@@ -131,7 +131,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         tabs.setSelectedIndex(pager.getCurrentItem());
         tabs.setOnSelectionChangedListener(this);
 
-        this.tabLine = new TabsBackgroundDrawable(resources, pager.getAdapter().getCount());
+        this.tabLine = new TabsBackgroundDrawable(resources, TabsBackgroundDrawable.Style.UNDERSIDE);
         tabs.setBackground(tabLine);
 
         return view;

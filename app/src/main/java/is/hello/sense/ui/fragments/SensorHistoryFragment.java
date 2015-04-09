@@ -110,7 +110,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         this.historyModeSelector = (SelectorView) view.findViewById(R.id.fragment_sensor_history_mode);
         historyModeSelector.setOnSelectionChangedListener(this);
         historyModeSelector.setButtonTags(SensorHistoryPresenter.Mode.DAY, SensorHistoryPresenter.Mode.WEEK);
-        historyModeSelector.setBackground(new TabsBackgroundDrawable(getResources(), historyModeSelector.getButtonCount()));
+        historyModeSelector.setBackground(new TabsBackgroundDrawable(getResources(), TabsBackgroundDrawable.Style.INLINE));
 
         return view;
     }

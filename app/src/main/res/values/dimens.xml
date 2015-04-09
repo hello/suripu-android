@@ -10,6 +10,14 @@
     <dimen name="gap_large">25dp</dimen>
     <dimen name="gap_xlarge">50dp</dimen>
 
+    <!-- Cards -->
+
+    <dimen name="gap_card_sides">@dimen/gap_medium</dimen>
+    <dimen name="gap_card_spacing">@dimen/gap_medium</dimen>
+    <dimen name="gap_card_spacing_compact">8dp</dimen>
+    <dimen name="gap_card_header_footer_compact">8dp</dimen>
+    <dimen name="gap_card_header_footer">0dp</dimen><!-- actually covered by gap_card_spacing -->
+
     <!-- Text -->
 
     <dimen name="text_size_body">16sp</dimen>
@@ -143,6 +151,7 @@
     <!-- Action Bar -->
 
     <dimen name="action_bar_height">60dp</dimen>
+    <dimen name="action_bar_height_compact">50dp</dimen>
     <dimen name="action_bar_title_text_size">20dp</dimen>
     <dimen name="action_bar_subtitle_text_size">15dp</dimen>
 

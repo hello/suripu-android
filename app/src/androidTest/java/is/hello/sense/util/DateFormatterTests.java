@@ -72,8 +72,8 @@ public class DateFormatterTests extends InjectionTestCase {
         Date canonicalDate = new Date(calendar.getTimeInMillis());
         Context context = getInstrumentation().getTargetContext();
         String canonicalString = DateFormat.getDateFormat(context).format(canonicalDate);
-        assertEquals(canonicalString, formatter.formatAsBirthDate(new LocalDate(2001, 9, 3)));
-        assertEquals(placeholder, formatter.formatAsBirthDate(null));
+        assertEquals(canonicalString, formatter.formatAsLocalizedDate(new LocalDate(2001, 9, 3)));
+        assertEquals(placeholder, formatter.formatAsLocalizedDate(null));
     }
 
     public void testFormatAsTimelineStamp() {
@@ -95,5 +95,17 @@ public class DateFormatterTests extends InjectionTestCase {
         assertEquals("Saturday – 14:30", formatter.formatAsDayAndTime(new DateTime(2001, 2, 3, 14, 30), true));
         assertEquals(placeholder, formatter.formatAsDayAndTime(null, false));
         assertEquals(placeholder, formatter.formatAsDayAndTime(null, true));
+    }
+
+    public void testFormatAsRelativeTime() {
+        assertEquals("10 seconds ago", formatter.formatAsRelativeTime(DateTime.now().minusSeconds(10)));
+        assertEquals("10 minutes ago", formatter.formatAsRelativeTime(DateTime.now().minusMinutes(10)));
+        assertEquals("10 hours ago", formatter.formatAsRelativeTime(DateTime.now().minusHours(10)));
+        assertEquals("5 days ago", formatter.formatAsRelativeTime(DateTime.now().minusDays(5)));
+        assertEquals("1 week ago", formatter.formatAsRelativeTime(DateTime.now().minusDays(10)));
+        assertEquals("10 months ago", formatter.formatAsRelativeTime(DateTime.now().minusMonths(10)));
+
+        DateTime twoYearsAgo = DateTime.now().minusYears(2);
+        assertEquals(formatter.formatAsLocalizedDate(twoYearsAgo.toLocalDate()), formatter.formatAsRelativeTime(twoYearsAgo));
     }
 }

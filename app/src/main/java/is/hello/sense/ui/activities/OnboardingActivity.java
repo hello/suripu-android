@@ -327,7 +327,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             Logger.info(getClass().getSimpleName(), "Performing preemptive BLE Sense scan");
             bindAndSubscribe(hardwarePresenter.closestPeripheral(),
                     peripheral -> Logger.info(getClass().getSimpleName(), "Found and cached Sense " + peripheral),
-                    Functions.LOG_ERROR);
+                    Functions.IGNORE_ERROR);
 
             pushFragment(new OnboardingRegisterBirthdayFragment(), null, false);
         } else {
@@ -444,7 +444,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         builder.setHeadingText(R.string.title_intro_sleep_pill);
         builder.setSubheadingText(R.string.info_intro_sleep_pill);
         builder.setDiagramImage(R.drawable.onboarding_clip_pill);
-        builder.setDiagramEdgeToEdge(false);
+        builder.setCompact(true);
         builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_PLACEMENT);
         builder.setHelpStep(UserSupport.OnboardingStep.PILL_PLACEMENT);
 

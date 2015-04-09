@@ -205,6 +205,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/AppTheme.Button.Raised"
+                android:textColor="@color/destructive_accent"
                 android:text="@string/action_delete"/>
 
         </LinearLayout>

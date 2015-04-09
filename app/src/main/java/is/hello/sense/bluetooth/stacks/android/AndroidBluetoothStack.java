@@ -208,8 +208,7 @@ public class AndroidBluetoothStack implements BluetoothStack {
 
     @Override
     public @Peripheral.Config int getDefaultConfig() {
-        return (Peripheral.CONFIG_FRAGILE_BONDS |
-                Peripheral.CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS);
+        return (Peripheral.CONFIG_WAIT_AFTER_SERVICE_DISCOVERY);
     }
 
     @Override

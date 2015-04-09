@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     style="@style/AppTheme.Card.Clickable"
@@ -8,10 +8,8 @@
 
     <TextView
         android:id="@+id/item_insight_date"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
         android:layout_marginTop="@dimen/gap_medium"
         android:layout_marginBottom="@dimen/gap_medium"
         android:layout_marginEnd="@dimen/gap_medium"
@@ -19,46 +17,19 @@
         android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
 
     <TextView
-        android:id="@+id/item_insight_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@id/item_insight_date"
-        android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginStart="@dimen/gap_medium"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading.Accent"
-        android:text="@string/app_name"/>
-
-    <TextView
         android:id="@+id/item_insight_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/item_insight_title"
         android:layout_marginLeft="@dimen/gap_medium"
         android:layout_marginRight="@dimen/gap_medium"
         android:layout_marginBottom="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
-    <TextView
-        android:id="@+id/item_insight_more_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/item_insight_body"
-        android:layout_marginLeft="@dimen/gap_medium"
-        android:layout_marginRight="@dimen/gap_medium"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.Body.MidSized"
-        android:textColor="@color/light_accent"
-        android:text="@string/action_more_info"/>
-
     <View
         android:id="@+id/item_insight_preview_divider"
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
-        android:layout_below="@+id/item_insight_more_info"
         android:layout_marginStart="@dimen/gap_medium"
         style="@style/Divider.Horizontal" />
 
@@ -66,12 +37,12 @@
         android:id="@+id/item_insight_preview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/item_insight_preview_divider"
         android:layout_margin="@dimen/gap_medium"
         android:drawableEnd="@drawable/disclosure_chevron"
         android:drawablePadding="@dimen/gap_small"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:textAppearance="@style/AppTheme.Text.Body.Bold"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
         android:text="@string/app_name"/>
 
-</RelativeLayout>
+</LinearLayout>

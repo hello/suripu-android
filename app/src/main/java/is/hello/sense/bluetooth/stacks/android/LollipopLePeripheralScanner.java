@@ -25,14 +25,14 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnSubscribe<List<Peripheral>> {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull PeripheralCriteria peripheralCriteria;
     private final @NonNull BluetoothLeScanner scanner;
-    private final @NonNull Map<String, ScanResult> results = new HashMap<>();
+    private final @NonNull Map<String, ScannedPeripheral> results = new HashMap<>();
+    private final boolean hasAddresses;
 
     private @Nullable Subscriber<? super List<Peripheral>> subscriber;
     private @Nullable Subscription timeout;
@@ -41,6 +41,7 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
     LollipopLePeripheralScanner(@NonNull AndroidBluetoothStack stack, @NonNull PeripheralCriteria peripheralCriteria) {
         this.stack = stack;
         this.peripheralCriteria = peripheralCriteria;
+        this.hasAddresses = !peripheralCriteria.peripheralAddresses.isEmpty();
         this.scanner = stack.getAdapter().getBluetoothLeScanner();
     }
 
@@ -50,8 +51,6 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
         Logger.info(BluetoothStack.LOG_TAG, "Beginning Scan (Lollipop impl)");
 
         this.subscriber = subscriber;
-        Subscription unsubscribe = Subscriptions.create(this::onConcludeScan);
-        subscriber.add(unsubscribe);
 
         this.scanning = true;
         ScanSettings.Builder builder = new ScanSettings.Builder();
@@ -78,20 +77,27 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
             return;
         }
 
-        BluetoothDevice bluetoothDevice = result.getDevice();
+        BluetoothDevice device = result.getDevice();
+        String address = device.getAddress();
+        ScannedPeripheral existingResult = results.get(address);
+        if (existingResult != null) {
+            existingResult.rssi = result.getRssi();
+            return;
+        }
+
         byte[] scanResponse = result.getScanRecord().getBytes();
         AdvertisingData advertisingData = AdvertisingData.parse(scanResponse);
-        Logger.info(BluetoothStack.LOG_TAG, "Found device " + bluetoothDevice.getName() + " - " + bluetoothDevice.getAddress() + " " + advertisingData);
+        Logger.info(BluetoothStack.LOG_TAG, "Found device " + device.getName() + " - " + address + " " + advertisingData);
 
         if (!peripheralCriteria.matches(advertisingData)) {
             return;
         }
 
-        if (!peripheralCriteria.peripheralAddresses.isEmpty() && !peripheralCriteria.peripheralAddresses.contains(bluetoothDevice.getAddress())) {
+        if (hasAddresses && !peripheralCriteria.peripheralAddresses.contains(address)) {
             return;
         }
 
-        results.put(bluetoothDevice.getAddress(), result);
+        results.put(address, new ScannedPeripheral(device, result.getRssi(), advertisingData));
 
         if (results.size() >= peripheralCriteria.limit) {
             Logger.info(BluetoothStack.LOG_TAG, "Discovery limit reached, concluding scan");
@@ -130,8 +136,8 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
         }
 
         List<Peripheral> peripherals = new ArrayList<>();
-        for (ScanResult result : results.values()) {
-            AndroidPeripheral peripheral = new AndroidPeripheral(stack, result.getDevice(), result.getRssi());
+        for (ScannedPeripheral scannedPeripheral : results.values()) {
+            AndroidPeripheral peripheral = scannedPeripheral.createPeripheral(stack);
             if (peripheralCriteria.config != Peripheral.CONFIG_EMPTY) {
                 peripheral.setConfig(peripheralCriteria.config);
             }

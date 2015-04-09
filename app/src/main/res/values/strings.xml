@@ -33,17 +33,6 @@
     <string name="dialog_loading_message">Loading…</string>
     <string name="timeline_error_message">Could not load timeline</string>
 
-    <string name="format_date">MMMM d</string>
-    <string name="format_time_12_hr">h:mm a</string>
-    <string name="format_time_24_hr">H:mm</string>
-    <string name="format_day_and_time_12_hr">EEEE – h:mm a</string>
-    <string name="format_day_and_time_24_hr">EEEE – H:mm</string>
-    <string name="format_date_placeholder">--</string>
-    <string name="format_date_last_night">Last Night</string>
-    <string name="format_timeline_time_12_hr">h:mm</string>
-    <string name="format_timeline_time_24_hr">H:mm</string>
-    <string name="format_date_weekday">EEEE</string>
-
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>
     <string name="condition_humidity">Humidity</string>
@@ -113,7 +102,7 @@
     <string name="title_sign_into_wifi_other">Enter WiFi credentials</string>
     <string name="wifi_other_network">Other…</string>
     <string name="label_network_name">Network Name</string>
-    <string name="action_skip">Skip for now</string>
+    <string name="action_skip">Skip</string>
     <string name="info_introduction">A simple system that tracks your sleep, monitors the surroundings in your bedroom and reinvents the alarm,
 so you can sleep better.</string>
     <string name="action_play_video">Play</string>
@@ -130,7 +119,7 @@ so you can sleep better.</string>
     <string name="weight_pounds_fmt">%1$d lbs</string>
     <string name="weight_kg_fmt">%1$d kg</string>
     <string name="title_intro_sleep_pill">Clip Sleep Pill to your Pillow</string>
-    <string name="info_intro_sleep_pill">Clip your Sleep Pill to the pillowcase you sleep on. You may need to pull it taut between two hands. Attach your Sleep Pill to the side of your pillow closest to the edge of your bed.</string>
+    <string name="info_intro_sleep_pill">Clip Sleep Pill to your pillowcase by pulling the edge of the pillowcase taut.  For best results, place your Sleep Pill on the side of your pillowcase closest to the edge of the bed.</string>
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
     <string name="info_pair_pill">Shake your Sleep Pill for three seconds to pair it with your Sense. You may need to shake it quickly for it to register.</string>
     <string name="title_sense_colors_1">Sense Colors</string>

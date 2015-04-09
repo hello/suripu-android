@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -33,6 +32,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SoundPlayer;
@@ -345,6 +345,8 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     }
 
     public void adjustSegmentTime(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.Timeline.EVENT_ADJUST_TIME, null);
+
         @TimePickerDialogFragment.Config int config = TimePickerDialogFragment.FLAG_ALWAYS_USE_SPINNER;
         if (preferences.getUse24Time()) {
             config |= TimePickerDialogFragment.FLAG_USE_24_TIME;

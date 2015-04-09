@@ -32,6 +32,7 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
     private static final String ARG_HIDE_TOOLBAR = OnboardingSimpleStepFragment.class.getName() + "ARG_HIDE_TOOLBAR";
     private static final String ARG_WANTS_BACK = OnboardingSimpleStepFragment.class.getName() + ".ARG_WANTS_BACK";
     private static final String ARG_HELP_STEP = OnboardingSimpleStepFragment.class.getName() + "ARG_HELP_STEP";
+    private static final String ARG_COMPACT = OnboardingSimpleStepFragment.class.getName() + ".ARG_COMPACT";
     private static final String ARG_NEXT_CLASS = OnboardingSimpleStepFragment.class.getName() + ".ARG_NEXT_CLASS";
     private static final String ARG_NEXT_ARGUMENTS = OnboardingSimpleStepFragment.class.getName() + ".ARG_NEXT_ARGUMENTS";
     private static final String ARG_EXIT_ANIMATION_NAME = OnboardingSimpleStepFragment.class.getName() + ".ARG_EXIT_ANIMATION_NAME";
@@ -72,6 +73,8 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
                                              getArguments().getInt(ARG_DIAGRAM_INSET_END_RES, 0));
             simpleStepHolder.setDiagramEdgeToEdge(getArguments().getBoolean(ARG_DIAGRAM_EDGE_TO_EDGE, true));
         }
+
+        simpleStepHolder.setCompact(getArguments().getBoolean(ARG_COMPACT, false));
 
         simpleStepHolder.setPrimaryOnClickListener(this::next);
         simpleStepHolder.setWantsSecondaryButton(false);
@@ -201,6 +204,11 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
 
         public Builder setHelpStep(@NonNull UserSupport.OnboardingStep step) {
             arguments.putString(ARG_HELP_STEP, step.toString());
+            return this;
+        }
+
+        public Builder setCompact(boolean compact) {
+            arguments.putBoolean(ARG_COMPACT, compact);
             return this;
         }
 

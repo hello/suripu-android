@@ -39,7 +39,7 @@ public class ApiModule {
 
     public static ObjectMapper createConfiguredObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
-        if (BuildConfig.DEBUG) {
+        if (!BuildConfig.DEBUG) {
             mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         }
         mapper.registerModule(new JodaModule());

@@ -3,6 +3,9 @@ package is.hello.sense.bluetooth.devices;
 import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -18,7 +21,6 @@ import is.hello.sense.bluetooth.stacks.TestPeripheral;
 import is.hello.sense.bluetooth.stacks.TestPeripheralBehavior;
 import is.hello.sense.bluetooth.stacks.TestPeripheralService;
 import is.hello.sense.functional.Either;
-import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 import rx.Observable;
@@ -45,6 +47,11 @@ public class HelloPeripheralTests extends InjectionTestCase {
     //region Delegated Methods
 
     public void testIsConnected() throws Exception {
+        peripheralBehavior.setServicesResponse(null);
+        peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
+        assertFalse(peripheral.isConnected());
+
+        peripheralBehavior.setServicesResponse(Either.left(Collections.emptyMap()));
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
         assertTrue(peripheral.isConnected());
 
@@ -89,9 +96,11 @@ public class HelloPeripheralTests extends InjectionTestCase {
     public void testSuccessfulConnect() throws Exception {
         Either<Peripheral, Throwable> successResponse = Either.left(peripheral.peripheral);
         TestPeripheralService service = new TestPeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY);
+        Map<UUID, PeripheralService> services = new HashMap<>();
+        services.put(service.getUuid(), service);
         peripheralBehavior.setConnectResponse(successResponse)
                         .setCreateBondResponse(successResponse)
-                        .setServicesResponse(Either.left(Lists.newArrayList(service)));
+                        .setServicesResponse(Either.left(services));
 
         Sync.last(peripheral.connect());
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CONNECT));
