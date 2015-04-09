@@ -159,7 +159,7 @@ public class TestPeripheral implements Peripheral {
     @Override
     public Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService,
                                          @NonNull UUID identifier,
-                                         @NonNull byte[] payload,
+                                         @NonNull WriteType writeType, @NonNull byte[] payload,
                                          @NonNull OperationTimeout timeout) {
         behavior.trackMethodCall(TestPeripheralBehavior.Method.WRITE_COMMAND);
         return createResponseWith(behavior.writeCommandResponse, timeout);

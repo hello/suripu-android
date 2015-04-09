@@ -1,6 +1,7 @@
 package is.hello.sense.bluetooth.stacks;
 
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothProfile;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -274,6 +275,7 @@ public interface Peripheral {
 
     @NonNull Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService,
                                            @NonNull UUID identifier,
+                                           @NonNull WriteType writeType,
                                            @NonNull byte[] payload,
                                            @NonNull OperationTimeout timeout);
 
@@ -324,4 +326,34 @@ public interface Peripheral {
     @interface Config {}
 
     //endregion
+
+
+    /**
+     * Determines how a command will be written to a peripheral.
+     */
+    public static enum WriteType {
+        /**
+         * Write characteristic, requesting acknowledgement by the remote device.
+         */
+        DEFAULT(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT),
+
+        /**
+         * Write characteristic without requiring a response by the remote device.
+         */
+        NO_RESPONSE(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE),
+
+        /**
+         * Write characteristic including authentication signature.
+         */
+        SIGNED(BluetoothGattCharacteristic.WRITE_TYPE_SIGNED);
+
+        /**
+         * The underlying enumeration value used by the Android stack.
+         */
+        public final int value;
+
+        private WriteType(int value) {
+            this.value = value;
+        }
+    }
 }

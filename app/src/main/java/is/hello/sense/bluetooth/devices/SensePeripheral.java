@@ -288,7 +288,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     //region Operations
 
-    Observable<Void> writeLargeCommand(UUID commandUUID, byte[] commandData) {
+    Observable<Void> writeLargeCommand(@NonNull UUID commandUUID, @NonNull byte[] commandData) {
         List<byte[]> blePackets = packetHandler.createPackets(commandData);
         LinkedList<byte[]> remainingPackets = new LinkedList<>(blePackets);
 
@@ -314,12 +314,12 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                         s.onCompleted();
                     } else {
                         Logger.info(Peripheral.LOG_TAG, "Writing next chunk of large command " + commandUUID);
-                        peripheral.writeCommand(peripheralService, commandUUID, remainingPackets.getFirst(), createOperationTimeout("Write Partial Command")).subscribe(this);
+                        peripheral.writeCommand(peripheralService, commandUUID, Peripheral.WriteType.NO_RESPONSE, remainingPackets.getFirst(), createOperationTimeout("Write Partial Command")).subscribe(this);
                     }
                 }
             };
             Logger.info(Peripheral.LOG_TAG, "Writing first chunk of large command (" + remainingPackets.size() + " chunks) " + commandUUID);
-            peripheral.writeCommand(peripheralService, commandUUID, remainingPackets.getFirst(), createOperationTimeout("Write Partial Command")).subscribe(writeObserver);
+            peripheral.writeCommand(peripheralService, commandUUID, Peripheral.WriteType.NO_RESPONSE, remainingPackets.getFirst(), createOperationTimeout("Write Partial Command")).subscribe(writeObserver);
         });
     }
 
