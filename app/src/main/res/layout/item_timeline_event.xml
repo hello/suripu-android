@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_timeline_event"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="@dimen/timeline_event_item_min_height"
-    android:background="@drawable/background_borders_top_bottom">
+    android:minHeight="@dimen/timeline_event_item_min_height">
 
     <ImageView
         android:id="@+id/item_timeline_event_image"
@@ -25,8 +25,7 @@
         android:layout_marginEnd="@dimen/gap_small"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:textAppearance="@style/AppTheme.Text.Body.Small"
-        android:textColor="@color/light_accent"/>
+        android:textAppearance="@style/AppTheme.Text.Body.Small"/>
 
     <TextView
         android:id="@+id/item_timeline_event_text"

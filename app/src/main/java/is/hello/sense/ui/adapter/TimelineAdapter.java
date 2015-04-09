@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,11 +27,14 @@ import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.widget.TimelineBarDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
+import rx.functions.Func1;
 
 public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
     private static final int TYPE_BAR = 0;
     private static final int TYPE_EVENT = 1;
-    private static final int TYPE_COUNT = 2;
+    private static final int TYPE_EVENT_WITH_ADJUST_TIME = 2;
+    private static final int TYPE_EVENT_WITH_AUDIO = 3;
+    private static final int TYPE_COUNT = 4;
 
     private final LayoutInflater inflater;
     private final Resources resources;
@@ -136,43 +141,69 @@ public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
 
     @Override
     public int getItemViewType(int position) {
-        if (getItem(position).hasEventInfo()) {
-            return TYPE_EVENT;
+        TimelineSegment segment = getItem(position);
+        if (segment.hasEventInfo()) {
+            if (segment.isTimeAdjustable()) {
+                return TYPE_EVENT_WITH_ADJUST_TIME;
+            } else if (segment.getSound() != null) {
+                return TYPE_EVENT_WITH_AUDIO;
+            } else {
+                return TYPE_EVENT;
+            }
         } else {
             return TYPE_BAR;
         }
+    }
+
+    private View inflateEventView(@LayoutRes int layoutRes,
+                                  @NonNull ViewGroup parent,
+                                  @NonNull Func1<View, ? extends ViewHolder> viewHolderFactory) {
+        View view = inflater.inflate(layoutRes, parent, false);
+        view.setTag(viewHolderFactory.call(view));
+        return view;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TimelineSegment segment = getItem(position);
         View view = convertView;
-        if (segment.hasEventInfo()) {
-            if (view == null) {
-                view = inflater.inflate(R.layout.item_timeline_event, parent, false);
-                view.setTag(new EventViewHolder(view));
-            }
-
-            EventViewHolder holder = (EventViewHolder) view.getTag();
-            holder.bind(position, segment);
-        } else {
-            if (view == null) {
+        if (view == null) {
+            if (segment.hasEventInfo()) {
+                if (segment.isTimeAdjustable()) {
+                    view = inflateEventView(R.layout.item_timeline_event_actionable, parent, ActionableEventViewHolder::new);
+                } else if (segment.getSound() != null) {
+                    view = inflateEventView(R.layout.item_timeline_event, parent, EventViewHolder::new);
+                } else {
+                    view = inflateEventView(R.layout.item_timeline_event, parent, EventViewHolder::new);
+                }
+            } else {
                 view = new View(getContext());
                 view.setTag(new BarViewHolder(view));
             }
-
-            BarViewHolder holder = (BarViewHolder) view.getTag();
-            holder.bind(position, segment);
         }
+
+        ViewHolder holder = (ViewHolder) view.getTag();
+        holder.bind(position, segment);
+
         return view;
     }
 
-    class BarViewHolder {
+    static class ViewHolder {
         final View itemView;
+
+        ViewHolder(@NonNull View itemView) {
+            this.itemView = itemView;
+        }
+
+        void bind(int position, @NonNull TimelineSegment segment) {
+        }
+    }
+
+    class BarViewHolder extends ViewHolder {
         final TimelineBarDrawable bar;
 
         BarViewHolder(@NonNull View itemView) {
-            this.itemView = itemView;
+            super(itemView);
 
             this.bar = new TimelineBarDrawable(resources);
             itemView.setBackground(bar);
@@ -184,14 +215,14 @@ public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
         }
     }
 
-    class EventViewHolder {
-        final View itemView;
+    class EventViewHolder extends ViewHolder {
         final ImageView image;
         final TextView text;
         final TextView date;
 
         EventViewHolder(@NonNull View view) {
-            this.itemView = view;
+            super(view);
+
             this.image = (ImageView) view.findViewById(R.id.item_timeline_event_image);
             this.text = (TextView) view.findViewById(R.id.item_timeline_event_text);
             this.date = (TextView) view.findViewById(R.id.item_timeline_event_date);
@@ -242,6 +273,17 @@ public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
 
                 text.setText(segment.getMessage());
             }
+        }
+    }
+
+    class ActionableEventViewHolder extends EventViewHolder {
+        final Button action;
+
+        ActionableEventViewHolder(@NonNull View view) {
+            super(view);
+
+            this.action = (Button) view.findViewById(R.id.item_timeline_event_action);
+            action.setClickable(false);
         }
     }
 

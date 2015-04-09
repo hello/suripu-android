@@ -54,6 +54,7 @@
     <dimen name="shadow_size">3dp</dimen>
     <dimen name="bottom_line">1dp</dimen>
     <dimen name="divider_size">1px</dimen> <!-- px is not a typo -->
+    <dimen name="divider_size_thick">1dp</dimen>
     <dimen name="divider_height_edit_text">1dp</dimen>
     <dimen name="smart_alarm_toggle_line_height">2dp</dimen>
     <dimen name="pie_graph_stroke_width">1dp</dimen>
@@ -131,6 +132,7 @@
     <!-- Buttons -->
 
     <dimen name="button_min_size">40dp</dimen>
+    <dimen name="button_inline_min_height">48dp</dimen>
     <dimen name="button_rounded_min_height">50dp</dimen>
     <dimen name="button_corner_radius">3dp</dimen>
     <dimen name="button_rounded_border_width">1dp</dimen>
