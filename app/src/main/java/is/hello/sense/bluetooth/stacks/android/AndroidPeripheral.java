@@ -739,6 +739,7 @@ public class AndroidPeripheral implements Peripheral {
     @Override
     public Observable<Void> writeCommand(@NonNull PeripheralService onPeripheralService,
                                          @NonNull UUID identifier,
+                                         @NonNull WriteType writeType,
                                          @NonNull byte[] payload,
                                          @NonNull OperationTimeout timeout) {
         if (getConnectionStatus() != STATUS_CONNECTED) {
@@ -766,6 +767,9 @@ public class AndroidPeripheral implements Peripheral {
 
             BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(identifier);
+            // Looks like write type might need to be specified for some phones. See
+            // <http://stackoverflow.com/questions/25888817/android-bluetooth-status-133-in-oncharacteristicwrite>
+            characteristic.setWriteType(writeType.value);
             characteristic.setValue(payload);
             if (gatt.writeCharacteristic(characteristic)) {
                 timeout.schedule();
