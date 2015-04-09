@@ -25,7 +25,7 @@
         android:layout_marginEnd="@dimen/gap_small"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:textAppearance="@style/AppTheme.Text.Body.Light.Small"
+        android:textAppearance="@style/AppTheme.Text.Body.Small"
         android:textColor="@color/light_accent"/>
 
     <TextView
@@ -37,7 +37,7 @@
         android:layout_centerVertical="true"
         android:layout_toEndOf="@id/item_timeline_event_image"
         android:layout_toStartOf="@id/item_timeline_event_date"
-        android:textAppearance="@style/AppTheme.Text.Body.Light.Small"
+        android:textAppearance="@style/AppTheme.Text.Body.Small"
         android:lineSpacingMultiplier="@dimen/line_multiple_body_small"/>
 
 </RelativeLayout>
