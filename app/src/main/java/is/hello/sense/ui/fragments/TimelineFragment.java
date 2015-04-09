@@ -46,7 +46,6 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
-import is.hello.sense.ui.adapter.AbstractTimelineAdapter;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
@@ -86,7 +85,7 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     @Inject Markdown markdown;
 
     private ListView listView;
-    private AbstractTimelineAdapter segmentAdapter;
+    private TimelineAdapter segmentAdapter;
 
     private ImageButton menuButton;
     private ImageButton shareButton;

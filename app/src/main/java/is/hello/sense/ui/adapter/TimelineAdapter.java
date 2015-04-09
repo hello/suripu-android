@@ -2,6 +2,7 @@ package is.hello.sense.ui.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +11,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,7 +26,7 @@ import is.hello.sense.ui.widget.TimelineBarDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
 
-public class TimelineAdapter extends AbstractTimelineAdapter {
+public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
     private static final int TYPE_BAR = 0;
     private static final int TYPE_EVENT = 1;
     private static final int TYPE_COUNT = 2;
@@ -31,31 +34,61 @@ public class TimelineAdapter extends AbstractTimelineAdapter {
     private final LayoutInflater inflater;
     private final Resources resources;
 
+    protected final DateFormatter dateFormatter;
+    protected boolean use24Time = false;
+
+    private final int baseItemHeight;
+    private final int itemEventImageHeight;
+
+    private int[] itemHeights;
+
     private final Set<Integer> repeatedEventPositions = new HashSet<>();
-    private @Nullable TimelineSegment lastEventSegment;
 
     public TimelineAdapter(@NonNull Context context, @NonNull DateFormatter dateFormatter) {
-        super(context, dateFormatter);
+        super(context, R.layout.item_simple_text);
+
+        this.dateFormatter = dateFormatter;
 
         this.inflater = LayoutInflater.from(context);
         this.resources = context.getResources();
+
+        int minItemHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Point size = new Point();
+        windowManager.getDefaultDisplay().getSize(size);
+        this.baseItemHeight = Math.max(minItemHeight, size.y / Styles.TIMELINE_HOURS_ON_SCREEN);
+        this.itemEventImageHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_image_height);
     }
 
 
-    //region Binding
+    //region Item Info
 
-    @Override
-    protected void processSegment(int position, @NonNull TimelineSegment segment) {
-        super.processSegment(position, segment);
-
+    protected int calculateItemHeight(@NonNull TimelineSegment segment) {
         if (segment.hasEventInfo()) {
-            if (lastEventSegment != null &&
-                lastEventSegment.getEventType() == segment.getEventType() &&
-                TextUtils.equals(lastEventSegment.getMessage(), segment.getMessage())) {
-                repeatedEventPositions.add(position);
-            }
+            return (int) (Math.ceil(segment.getDuration() / 3600f) * this.itemEventImageHeight);
+        } else {
+            return (int) ((segment.getDuration() / 3600f) * this.baseItemHeight);
+        }
+    }
 
-            this.lastEventSegment = segment;
+    protected void buildItemInfoCache(@NonNull List<TimelineSegment> segments) {
+        this.itemHeights = new int[segments.size()];
+
+        TimelineSegment lastEventSegment = null;
+        for (int i = 0, size = itemHeights.length; i < size; i++) {
+            TimelineSegment segment = segments.get(i);
+            int height = calculateItemHeight(segment);
+            this.itemHeights[i] = height;
+
+            if (segment.hasEventInfo()) {
+                if (lastEventSegment != null &&
+                        lastEventSegment.getEventType() == segment.getEventType() &&
+                        TextUtils.equals(lastEventSegment.getMessage(), segment.getMessage())) {
+                    repeatedEventPositions.add(i);
+                }
+
+                lastEventSegment = segment;
+            }
         }
     }
 
@@ -64,10 +97,19 @@ public class TimelineAdapter extends AbstractTimelineAdapter {
         super.clear();
 
         repeatedEventPositions.clear();
-        this.lastEventSegment = null;
+        this.itemHeights = null;
     }
 
-    @Override
+    //endregion
+
+
+    //region Binding
+
+    public void setUse24Time(boolean use24Time) {
+        this.use24Time = use24Time;
+        notifyDataSetChanged();
+    }
+
     public void bindSegments(@Nullable List<TimelineSegment> segments) {
         clear();
 
@@ -77,7 +119,7 @@ public class TimelineAdapter extends AbstractTimelineAdapter {
         }
     }
 
-    @Override
+    @SuppressWarnings("UnusedParameters")
     public void handleError(@NonNull Throwable e) {
         clear();
     }
@@ -138,7 +180,7 @@ public class TimelineAdapter extends AbstractTimelineAdapter {
 
         void bind(int position, @NonNull TimelineSegment segment) {
             bar.bind(segment);
-            itemView.setMinimumHeight((int) getItemHeight(position));
+            itemView.setMinimumHeight(itemHeights[position]);
         }
     }
 
