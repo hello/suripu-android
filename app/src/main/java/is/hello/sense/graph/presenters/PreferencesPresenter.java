@@ -45,8 +45,6 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
     public static final String LAST_ONBOARDING_CHECK_POINT = "last_onboarding_check_point";
     public static final String ONBOARDING_COMPLETED = "onboarding_completed";
 
-    public static final String USE_MODERN_TIMELINE = "use_modern_timeline";
-
 
     private final Context context;
     private final SharedPreferences sharedPreferences;
@@ -221,10 +219,6 @@ import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
 
     public boolean getUse24Time() {
         return getBoolean(USE_24_TIME, DateFormat.is24HourFormat(context));
-    }
-
-    public boolean getUseModernTimeline() {
-        return getBoolean(USE_MODERN_TIMELINE, true);
     }
 
     public Observable<Boolean> observableUse24Time() {

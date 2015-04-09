@@ -23,7 +23,7 @@ import is.hello.sense.ui.widget.TimelineBarDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
 
-public class ModernTimelineAdapter extends AbstractTimelineAdapter {
+public class TimelineAdapter extends AbstractTimelineAdapter {
     private static final int TYPE_BAR = 0;
     private static final int TYPE_EVENT = 1;
     private static final int TYPE_COUNT = 2;
@@ -34,7 +34,7 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
     private final Set<Integer> repeatedEventPositions = new HashSet<>();
     private @Nullable TimelineSegment lastEventSegment;
 
-    public ModernTimelineAdapter(@NonNull Context context, @NonNull DateFormatter dateFormatter) {
+    public TimelineAdapter(@NonNull Context context, @NonNull DateFormatter dateFormatter) {
         super(context, dateFormatter);
 
         this.inflater = LayoutInflater.from(context);
@@ -165,7 +165,7 @@ public class ModernTimelineAdapter extends AbstractTimelineAdapter {
         }
 
         void bind(int position, @NonNull TimelineSegment segment) {
-            image.setImageResource(Styles.getModernTimelineEventIconRes(segment));
+            image.setImageResource(Styles.getTimelineEventIconRes(segment));
             image.setContentDescription(resources.getString(segment.getEventType().nameString));
 
             date.setText(dateFormatter.formatAsTime(segment.getShiftedTimestamp(), use24Time));

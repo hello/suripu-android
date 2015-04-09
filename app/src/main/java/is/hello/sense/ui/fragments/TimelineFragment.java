@@ -16,7 +16,6 @@ import android.text.Html;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -48,8 +47,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.AbstractTimelineAdapter;
-import is.hello.sense.ui.adapter.LegacyTimelineAdapter;
-import is.hello.sense.ui.adapter.ModernTimelineAdapter;
+import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -78,7 +76,7 @@ import rx.functions.Action1;
 
 import static is.hello.sense.ui.animation.Animation.Transition;
 
-public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorView.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment, AdapterView.OnItemLongClickListener {
+public class TimelineFragment extends InjectionFragment implements AdapterView.OnItemClickListener, SlidingLayersView.OnInteractionListener, SelectorView.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
 
@@ -152,18 +150,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
-        if (preferences.getUseModernTimeline()) {
-            this.segmentAdapter = new ModernTimelineAdapter(getActivity(), dateFormatter);
-        } else {
-            this.segmentAdapter = new LegacyTimelineAdapter(getActivity(), dateFormatter);
-        }
+        this.segmentAdapter = new TimelineAdapter(getActivity(), dateFormatter);
 
         Observable<Boolean> use24HourTime = preferences.observableUse24Time();
         track(use24HourTime.subscribe(segmentAdapter::setUse24Time));
 
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
-        listView.setOnItemLongClickListener(this);
 
 
         this.headerView = (BlockableLinearLayout) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
@@ -531,9 +524,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                     shareButton.setVisibility(View.VISIBLE);
                 }
 
-                if (!preferences.getUseModernTimeline()) {
-                    headerView.setBackground(headerTabsBackground);
-                }
+                headerView.setBackground(headerTabsBackground);
                 headerModeSelector.setVisibility(View.VISIBLE);
 
                 showHandholdingIfAppropriate();
@@ -591,13 +582,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     //region Event Details
 
-    private void closePopUp() {
-        if (timelinePopup != null) {
-            timelinePopup.dismiss();
-            this.timelinePopup = null;
-        }
-    }
-
     private PopupWindow showPopUp(@NonNull ViewGroup parent, @NonNull View view, @NonNull TimelineSegment segment) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         TextView contents = (TextView) inflater.inflate(R.layout.tooltip_timeline_overlay, parent, false);
@@ -646,53 +630,20 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         TimelineSegment segment = (TimelineSegment) parent.getItemAtPosition(position);
-        if (preferences.getUseModernTimeline()) {
-            if (segment.isTimeAdjustable()) {
-                Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
+        if (segment.isTimeAdjustable()) {
+            Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
 
-                TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment, true);
-                dialogFragment.setTargetFragment(this, 0x00);
-                dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
-            } else {
-                Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
-                
-                PopupWindow popUp = showPopUp(parent, view, segment);
-                parent.postDelayed(popUp::dismiss, 1000);
-            }
+            TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment, true);
+            dialogFragment.setTargetFragment(this, 0x00);
+            dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
         } else {
-            if (segment.hasEventInfo()) {
-                Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
+            Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
 
-                TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment, false);
-                dialogFragment.setTargetFragment(this, 0x00);
-                dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
-            }
+            PopupWindow popUp = showPopUp(parent, view, segment);
+            parent.postDelayed(popUp::dismiss, 1000);
         }
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        closePopUp();
-
-        TimelineSegment segment = (TimelineSegment) parent.getItemAtPosition(position);
-        if (segment == null) {
-            return false;
-        }
-
-        PopupWindow popUp = showPopUp(parent, view, segment);
-        parent.setOnTouchListener((ignored, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                parent.postDelayed(popUp::dismiss, 1000);
-                parent.setOnTouchListener(null);
-            }
-            return false;
-        });
-
-        Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
-
-        return true;
     }
 
     @Override
