@@ -219,7 +219,7 @@ public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
             date.setText(dateFormatter.formatAsTime(segment.getShiftedTimestamp(), use24Time));
             if (segment.isTimeAdjustable()) {
                 date.setTextAppearance(getContext(), R.style.AppTheme_Text_TimelineDate_Actionable);
-                date.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.timeline_action_icon, 0, 0, 0);
+                date.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.timeline_action_icon, 0);
             } else {
                 date.setTextAppearance(getContext(), R.style.AppTheme_Text_TimelineDate);
                 date.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);

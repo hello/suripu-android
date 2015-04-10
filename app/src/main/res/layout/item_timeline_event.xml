@@ -25,7 +25,7 @@
         android:layout_marginEnd="@dimen/gap_small"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:drawablePadding="@dimen/gap_small"
+        android:drawablePadding="@dimen/gap_xsmall"
         android:textAppearance="@style/AppTheme.Text.Body.Small"/>
 
     <TextView
