@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -51,6 +52,8 @@ import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
@@ -71,13 +74,15 @@ import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SafeOnClickListener;
 import is.hello.sense.util.Share;
 import rx.Observable;
-import rx.functions.Action1;
 
 import static is.hello.sense.ui.animation.Animation.Transition;
 
-public class TimelineFragment extends InjectionFragment implements AdapterView.OnItemClickListener, SlidingLayersView.OnInteractionListener, SelectorView.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment {
+public class TimelineFragment extends InjectionFragment implements AdapterView.OnItemClickListener, SlidingLayersView.OnInteractionListener, SelectorView.OnSelectionChangedListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
+
+    private static final String EXTRA_SEGMENT_POSITION = TimelineFragment.class.getName() + ".EXTRA_SEGMENT_POSITION";
+    private static final int REQUEST_CODE_ADJUST_TIME = 0xA1;
 
     @Inject DateFormatter dateFormatter;
     @Inject TimelinePresenter timelinePresenter;
@@ -224,8 +229,8 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         subscribe(segments, segmentAdapter::bindSegments, segmentAdapter::handleError);
 
         bindAndSubscribe(timelinePresenter.message,
-                         timelineScore.messageText::setText,
-                         Functions.LOG_ERROR);
+                timelineScore.messageText::setText,
+                Functions.LOG_ERROR);
     }
 
     @Override
@@ -579,6 +584,62 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
     }
 
 
+    //region Adjust Time
+
+    private void adjustSegmentTime(int position, @NonNull TimelineSegment segment) {
+        LocalTime time = segment.getShiftedTimestamp().toLocalTime();
+        @TimePickerDialogFragment.Config int config = TimePickerDialogFragment.FLAG_ALWAYS_USE_SPINNER;
+        if (preferences.getUse24Time()) {
+            config |= TimePickerDialogFragment.FLAG_USE_24_TIME;
+        }
+        TimePickerDialogFragment pickerDialogFragment = TimePickerDialogFragment.newInstance(time, config);
+        Bundle extras = new Bundle();
+        extras.putInt(EXTRA_SEGMENT_POSITION, position);
+        pickerDialogFragment.putExtras(extras);
+        pickerDialogFragment.setTargetFragment(this, REQUEST_CODE_ADJUST_TIME);
+        pickerDialogFragment.show(getFragmentManager(), TimePickerDialogFragment.TAG);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_ADJUST_TIME && resultCode == Activity.RESULT_OK) {
+            Bundle extras = data.getBundleExtra(TimePickerDialogFragment.RESULT_EXTRAS);
+            int position = extras.getInt(EXTRA_SEGMENT_POSITION);
+            int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 12);
+            int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 0);
+            LocalTime newTime = new LocalTime(hour, minute);
+            completeAdjustSegmentTime(position, newTime);
+        }
+    }
+
+    private void completeAdjustSegmentTime(int segmentPosition, @NonNull LocalTime newTime) {
+        LoadingDialogFragment.show(getFragmentManager());
+        Observable<List<TimelineSegment>> segmentsObservable = timelinePresenter.timeline.take(1).map(Timeline::getSegments);
+        bindAndSubscribe(segmentsObservable,
+                         segments -> {
+                             TimelineSegment segment = segments.get(segmentPosition);
+                             Feedback correction = new Feedback();
+                             correction.setEventType(segment.getEventType());
+                             correction.setNight(getDate().toLocalDate());
+                             correction.setOldTime(segment.getShiftedTimestamp().toLocalTime());
+                             correction.setNewTime(newTime);
+                             bindAndSubscribe(timelinePresenter.submitCorrection(correction),
+                                     ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                                     e -> {
+                                         LoadingDialogFragment.close(getFragmentManager());
+                                         ErrorDialogFragment.presentError(getFragmentManager(), e);
+                                     });
+                         },
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Could not get timeline segment", e);
+                             LoadingDialogFragment.close(getFragmentManager());
+                         });
+    }
+
+    //endregion
+
     //region Event Details
 
     private PopupWindow showPopUp(@NonNull ViewGroup parent, @NonNull View view, @NonNull TimelineSegment segment) {
@@ -632,8 +693,9 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         if (segment.isTimeAdjustable()) {
             Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
 
-            TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment, true);
-            dialogFragment.setTargetFragment(this, 0x00);
+            adjustSegmentTime(ListViews.getAdapterPosition(listView, position), segment);
+        } else if (segment.getSound() != null) {
+            TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment);
             dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
         } else {
             Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
@@ -643,24 +705,6 @@ public class TimelineFragment extends InjectionFragment implements AdapterView.O
         }
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
-    }
-
-    @Override
-    public void onAdjustSegmentTime(@NonNull TimelineSegment segment,
-                                    @NonNull LocalTime newTime,
-                                    @NonNull Action1<Boolean> continuation) {
-        Feedback correction = new Feedback();
-        correction.setEventType(segment.getEventType());
-        correction.setNight(getDate().toLocalDate());
-        correction.setOldTime(segment.getShiftedTimestamp().toLocalTime());
-        correction.setNewTime(newTime);
-        bindAndSubscribe(timelinePresenter.submitCorrection(correction),
-                ignored -> {
-                    continuation.call(true);
-                }, e -> {
-                    ErrorDialogFragment.presentError(getFragmentManager(), e);
-                    continuation.call(false);
-                });
     }
 
     //endregion

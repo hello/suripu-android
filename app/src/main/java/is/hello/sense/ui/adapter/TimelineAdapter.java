@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,9 +31,7 @@ import rx.functions.Func1;
 public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
     private static final int TYPE_BAR = 0;
     private static final int TYPE_EVENT = 1;
-    private static final int TYPE_EVENT_WITH_ADJUST_TIME = 2;
-    private static final int TYPE_EVENT_WITH_AUDIO = 3;
-    private static final int TYPE_COUNT = 4;
+    private static final int TYPE_COUNT = 2;
 
     private final LayoutInflater inflater;
     private final Resources resources;
@@ -143,13 +140,7 @@ public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
     public int getItemViewType(int position) {
         TimelineSegment segment = getItem(position);
         if (segment.hasEventInfo()) {
-            if (segment.isTimeAdjustable()) {
-                return TYPE_EVENT_WITH_ADJUST_TIME;
-            } else if (segment.getSound() != null) {
-                return TYPE_EVENT_WITH_AUDIO;
-            } else {
-                return TYPE_EVENT;
-            }
+            return TYPE_EVENT;
         } else {
             return TYPE_BAR;
         }
@@ -169,13 +160,7 @@ public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
         View view = convertView;
         if (view == null) {
             if (segment.hasEventInfo()) {
-                if (segment.isTimeAdjustable()) {
-                    view = inflateEventView(R.layout.item_timeline_event_actionable, parent, ActionableEventViewHolder::new);
-                } else if (segment.getSound() != null) {
-                    view = inflateEventView(R.layout.item_timeline_event, parent, EventViewHolder::new);
-                } else {
-                    view = inflateEventView(R.layout.item_timeline_event, parent, EventViewHolder::new);
-                }
+                view = inflateEventView(R.layout.item_timeline_event, parent, EventViewHolder::new);
             } else {
                 view = new View(getContext());
                 view.setTag(new BarViewHolder(view));
@@ -273,17 +258,6 @@ public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
 
                 text.setText(segment.getMessage());
             }
-        }
-    }
-
-    class ActionableEventViewHolder extends EventViewHolder {
-        final Button action;
-
-        ActionableEventViewHolder(@NonNull View view) {
-            super(view);
-
-            this.action = (Button) view.findViewById(R.id.item_timeline_event_action);
-            action.setClickable(false);
         }
     }
 
