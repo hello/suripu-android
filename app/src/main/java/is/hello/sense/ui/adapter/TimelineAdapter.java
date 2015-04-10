@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +24,6 @@ import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.widget.TimelineBarDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
-import rx.functions.Func1;
 
 public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
     private static final int TYPE_BAR = 0;
@@ -146,21 +143,14 @@ public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
         }
     }
 
-    private View inflateEventView(@LayoutRes int layoutRes,
-                                  @NonNull ViewGroup parent,
-                                  @NonNull Func1<View, ? extends ViewHolder> viewHolderFactory) {
-        View view = inflater.inflate(layoutRes, parent, false);
-        view.setTag(viewHolderFactory.call(view));
-        return view;
-    }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TimelineSegment segment = getItem(position);
         View view = convertView;
         if (view == null) {
             if (segment.hasEventInfo()) {
-                view = inflateEventView(R.layout.item_timeline_event, parent, EventViewHolder::new);
+                view = inflater.inflate(R.layout.item_timeline_event, parent, false);
+                view.setTag(new EventViewHolder(view));
             } else {
                 view = new View(getContext());
                 view.setTag(new BarViewHolder(view));
@@ -229,10 +219,10 @@ public class TimelineAdapter extends ArrayAdapter<TimelineSegment> {
             date.setText(dateFormatter.formatAsTime(segment.getShiftedTimestamp(), use24Time));
             if (segment.isTimeAdjustable()) {
                 date.setTextAppearance(getContext(), R.style.AppTheme_Text_TimelineDate_Actionable);
-                date.setPaintFlags(date.getPaintFlags() | TextPaint.UNDERLINE_TEXT_FLAG);
+                date.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.timeline_action_icon, 0, 0, 0);
             } else {
                 date.setTextAppearance(getContext(), R.style.AppTheme_Text_TimelineDate);
-                date.setPaintFlags(date.getPaintFlags() & ~TextPaint.UNDERLINE_TEXT_FLAG);
+                date.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
             }
 
             if (repeatedEventPositions.contains(position)) {
