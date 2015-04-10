@@ -32,8 +32,8 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
-import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
+import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
 import is.hello.sense.ui.fragments.RoomConditionsFragment;
@@ -50,6 +50,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment2;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
@@ -58,11 +59,11 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.fragments.settings.ChangeEmailFragment;
 import is.hello.sense.ui.fragments.settings.ChangePasswordFragment;
+import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.DeviceTimeZoneFragment;
 import is.hello.sense.ui.fragments.settings.NotificationsSettingsFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
-import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
 
 @Module(
@@ -92,6 +93,7 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
         OnboardingPairPillFragment.class,
         Onboarding2ndPillInfoFragment.class,
         OnboardingRoomCheckFragment.class,
+        OnboardingRoomCheckFragment2.class,
 
         DeviceListFragment.class,
         DevicesPresenter.class,
