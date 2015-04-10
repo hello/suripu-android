@@ -1,6 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/fragment_onboarding_room_check_sense"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/gap_outer"
+        android:layout_gravity="center"
+        android:src="@drawable/room_check_sense"
+        android:contentDescription="@string/app_name"/>
+
+    <LinearLayout
+        android:id="@+id/fragment_onboarding_room_check_sensors"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <is.hello.sense.ui.widget.SensorConditionView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:senseSensorIcon="@drawable/room_check_sensor_temperature" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <is.hello.sense.ui.widget.SensorConditionView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:senseSensorIcon="@drawable/room_check_sensor_humidity" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <is.hello.sense.ui.widget.SensorConditionView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:senseSensorIcon="@drawable/room_check_sensor_dust" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <is.hello.sense.ui.widget.SensorConditionView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:senseSensorIcon="@drawable/room_check_sensor_motion" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <is.hello.sense.ui.widget.SensorConditionView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:senseSensorIcon="@drawable/room_check_sensor_light" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+    
 </LinearLayout>
