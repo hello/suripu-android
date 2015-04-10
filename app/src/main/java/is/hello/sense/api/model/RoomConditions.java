@@ -35,7 +35,6 @@ public class RoomConditions extends ApiResponse {
         return humidity;
     }
 
-    @Deprecated
     public SensorState getParticulates() {
         return particulates;
     }

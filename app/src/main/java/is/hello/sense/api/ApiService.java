@@ -10,22 +10,22 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
+import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.Feedback;
+import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
-import is.hello.sense.api.model.RoomSensorHistory;
-import is.hello.sense.api.model.SensorGraphSample;
-import is.hello.sense.api.model.UpdateCheckIn;
-import is.hello.sense.api.model.Device;
-import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
+import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TrendGraph;
+import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
@@ -47,7 +47,6 @@ public interface ApiService {
 
     String SENSOR_NAME_TEMPERATURE = "temperature";
     String SENSOR_NAME_HUMIDITY = "humidity";
-    @Deprecated
     String SENSOR_NAME_PARTICULATES = "particulates";
     String SENSOR_NAME_LIGHT = "light";
     String SENSOR_NAME_SOUND = "sound";

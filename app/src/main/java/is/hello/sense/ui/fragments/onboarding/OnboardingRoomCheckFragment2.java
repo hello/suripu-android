@@ -14,9 +14,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.SensorState;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
+import is.hello.sense.units.UnitSystem;
+import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Logger;
 
 public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     @Inject RoomConditionsPresenter presenter;
@@ -24,9 +28,17 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     private ImageView sense;
     private final List<SensorConditionView> sensorViews = new ArrayList<>();
 
+    private final List<SensorState> conditions = new ArrayList<>();
+    private final List<UnitSystem.Formatter> conditionFormatters = new ArrayList<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        presenter.update();
+        addPresenter(presenter);
+
+        setRetainInstance(true);
     }
 
     @Nullable
@@ -58,17 +70,47 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
 
     //region Animations
 
+    private void animateConditionAt(int position) {
+        SensorConditionView conditionView = sensorViews.get(position);
+        conditionView.setProgressState();
+    }
+
+    private void jumpToEnd() {
+
+    }
+
     //endregion
 
 
     //region Binding
 
     public void bindConditions(@NonNull RoomConditionsPresenter.Result current) {
+        conditions.clear();
+        conditionFormatters.clear();
 
+        conditions.add(current.conditions.getTemperature());
+        conditionFormatters.add(current.units::formatTemperature);
+
+        conditions.add(current.conditions.getHumidity());
+        conditionFormatters.add(current.units::formatHumidity);
+
+        conditions.add(current.conditions.getParticulates());
+        conditionFormatters.add(current.units::formatParticulates);
+
+        conditions.add(current.conditions.getLight());
+        conditionFormatters.add(current.units::formatLight);
+
+        animateConditionAt(0);
     }
 
     public void conditionsUnavailable(Throwable e) {
+        Analytics.trackError(e, "Room check");
+        Logger.error(getClass().getSimpleName(), "Could not load conditions for room check", e);
 
+        conditions.clear();
+        conditionFormatters.clear();
+
+        jumpToEnd();
     }
 
     //endregion

@@ -78,7 +78,6 @@ public class UnitSystem implements Serializable {
         return Styles.assembleReadingAndUnit(lux, "lux");
     }
 
-    @Deprecated
     public CharSequence formatParticulates(long particulates) {
         return Long.toString(particulates);
     }

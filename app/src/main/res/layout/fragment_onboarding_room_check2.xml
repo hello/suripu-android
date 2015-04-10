@@ -59,16 +59,6 @@
         <is.hello.sense.ui.widget.SensorConditionView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:senseSensorIcon="@drawable/room_check_sensor_motion" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-
-        <is.hello.sense.ui.widget.SensorConditionView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             app:senseSensorIcon="@drawable/room_check_sensor_light" />
 
         <Space
