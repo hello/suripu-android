@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -29,14 +30,20 @@ import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
+import rx.Scheduler;
 
 public class OnboardingRoomCheckFragment2 extends InjectionFragment {
+    private static final long CONDITION_VISIBLE_MS = 2500;
+    private static final long COUNT_UP_DURATION_MS = 850;
+
     @Inject RoomConditionsPresenter presenter;
 
     private ImageView sense;
     private final List<SensorConditionView> sensorViews = new ArrayList<>();
     private TextView status;
     private TextView ticker;
+
+    private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
 
     private final List<SensorState> conditions = new ArrayList<>();
     private final List<UnitSystem.Formatter> conditionFormatters = new ArrayList<>();
@@ -98,6 +105,7 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
         int value = condition.getValue() != null ? condition.getValue().intValue() : 0;
         ValueAnimator scoreAnimator = ValueAnimator.ofInt(0, value);
         AnimatorConfig.DEFAULT.apply(scoreAnimator);
+        scoreAnimator.setDuration(COUNT_UP_DURATION_MS);
 
         Resources resources = getResources();
         int startColor = resources.getColor(Condition.ALERT.colorRes);
@@ -114,7 +122,7 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
             @Override
             public void onAnimationEnd(Animator animation) {
                 conditionView.setCompletedState(condition.getCondition());
-                animateConditionAt(position + 1);
+                deferWorker.schedule(() -> animateConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
             }
         });
         scoreAnimator.start();
@@ -139,8 +147,8 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
         conditions.add(current.conditions.getHumidity());
         conditionFormatters.add(current.units::formatHumidity);
 
-        conditions.add(current.conditions.getParticulates());
-        conditionFormatters.add(current.units::formatParticulates);
+        conditions.add(current.conditions.getSound());
+        conditionFormatters.add(current.units::formatDecibels);
 
         conditions.add(current.conditions.getLight());
         conditionFormatters.add(current.units::formatLight);
