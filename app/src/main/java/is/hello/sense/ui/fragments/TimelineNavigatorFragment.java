@@ -171,7 +171,7 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
                 }
             }
 
-            TimelineNavigatorAdapter.ItemViewHolder holder = (TimelineNavigatorAdapter.ItemViewHolder) recyclerView.findViewHolderForPosition(layoutManager.findLastVisibleItemPosition());
+            TimelineNavigatorAdapter.ItemViewHolder holder = (TimelineNavigatorAdapter.ItemViewHolder) recyclerView.findViewHolderForLayoutPosition(layoutManager.findLastVisibleItemPosition());
             if (holder.date != null) {
                 monthText.setText(holder.date.toString("MMMM"));
             } else {
@@ -200,7 +200,7 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
             int lastItem = layoutManager.findLastVisibleItemPosition();
             int lastCompleteItem = layoutManager.findLastCompletelyVisibleItemPosition();
             if (lastItem != lastCompleteItem) {
-                View itemView = recyclerView.findViewHolderForPosition(lastItem).itemView;
+                View itemView = recyclerView.findViewHolderForLayoutPosition(lastItem).itemView;
                 int width = itemView.getMeasuredWidth();
                 int x = Math.abs(itemView.getRight());
 
