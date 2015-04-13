@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
-import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public abstract class ApiSessionManager {
@@ -47,9 +46,6 @@ public abstract class ApiSessionManager {
 
     public final void setSession(@Nullable OAuthSession session) {
         storeOAuthSession(session);
-        if (session != null) {
-            Analytics.setUserId(session.getAccountId());
-        }
     }
 
     public final @Nullable OAuthSession getSession() {

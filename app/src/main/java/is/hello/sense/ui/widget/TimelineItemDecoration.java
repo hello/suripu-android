@@ -29,7 +29,7 @@ public class TimelineItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(Rect outRect, View child, RecyclerView parent, RecyclerView.State state) {
         int padding = parent.getMeasuredWidth() / 3;
-        int position = parent.getChildPosition(child);
+        int position = parent.getChildAdapterPosition(child);
         if (position == 0) {
             outRect.right += padding;
         } else if (position == state.getItemCount() - 1) {

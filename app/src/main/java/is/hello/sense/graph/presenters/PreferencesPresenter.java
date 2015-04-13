@@ -31,7 +31,7 @@ import rx.Subscription;
 import rx.functions.Func2;
 import rx.subscriptions.Subscriptions;
 
-import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
+import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 @Singleton public class PreferencesPresenter extends Presenter {
     public static final String UNIT_SYSTEM = "unit_system_name";

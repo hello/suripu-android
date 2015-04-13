@@ -4,14 +4,14 @@ import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 
+import is.hello.sense.graph.OperatorConditionalBinding;
 import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.graph.UnsafeOperatorObserveOn;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.UnsafeOperatorObserveOn;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.android.operators.OperatorConditionalBinding;
 import rx.functions.Action1;
 import rx.functions.Func1;
 

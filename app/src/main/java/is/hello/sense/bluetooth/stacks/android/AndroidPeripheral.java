@@ -40,7 +40,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 
-import static rx.android.observables.AndroidObservable.fromBroadcast;
+import static rx.android.content.ContentObservable.fromBroadcast;
 
 public class AndroidPeripheral implements Peripheral {
     /**

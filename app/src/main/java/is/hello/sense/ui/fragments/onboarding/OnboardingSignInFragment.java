@@ -94,7 +94,9 @@ public class OnboardingSignInFragment extends InjectionFragment {
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             apiSessionManager.setSession(session);
             preferencesPresenter.pullAccountPreferences().subscribe();
-            Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
+
+            String accountId = session.getAccountId();
+            Analytics.trackSignIn(accountId);
 
             getOnboardingActivity().showHomeActivity();
         }, error -> {

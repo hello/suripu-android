@@ -405,13 +405,20 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 this.velocityTracker = null;
             }
 
-            exchangeOnAndOffScreen();
+            Runnable finish = () -> {
+                exchangeOnAndOffScreen();
 
-            if (getOnTransitionObserver() != null) {
-                getOnTransitionObserver().onDidTransitionToFragment(getCurrentFragment(), true);
+                if (getOnTransitionObserver() != null) {
+                    getOnTransitionObserver().onDidTransitionToFragment(getCurrentFragment(), true);
+                }
+
+                this.animating = false;
+            };
+            if (resumeCoordinator != null) {
+                resumeCoordinator.postOnResume(finish);
+            } else {
+                finish.run();
             }
-
-            this.animating = false;
         });
 
         if (getOnTransitionObserver() != null) {
@@ -443,15 +450,21 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 this.velocityTracker = null;
             }
 
-            removeOffScreenFragment();
-            getOnScreenView().setX(0f);
-            getOffScreenView().setVisibility(INVISIBLE);
+            Runnable finish = () -> {
+                getOnScreenView().setX(0f);
+                removeOffScreenFragment();
 
-            if (getOnTransitionObserver() != null) {
-                getOnTransitionObserver().onDidSnapBackToFragment(getCurrentFragment());
+                if (getOnTransitionObserver() != null) {
+                    getOnTransitionObserver().onDidSnapBackToFragment(getCurrentFragment());
+                }
+
+                this.animating = false;
+            };
+            if (resumeCoordinator != null) {
+                resumeCoordinator.postOnResume(finish);
+            } else {
+                finish.run();
             }
-
-            this.animating = false;
         });
 
         onScreenViewAnimator.start();
