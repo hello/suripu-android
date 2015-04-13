@@ -151,17 +151,20 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     @Override
     public Observable<Peripheral> connect(@NonNull OperationTimeout timeout) {
-        if (this.gatt != null) {
-            if (getConnectionStatus() == STATUS_CONNECTED) {
-                Logger.warn(LOG_TAG, "Redundant call to connect(), ignoring.");
-
-                return Observable.just(this);
-            } else if (getConnectionStatus() == STATUS_CONNECTING || getConnectionStatus() == STATUS_DISCONNECTING) {
-                return Observable.error(new PeripheralConnectionError("Peripheral is changing connection status."));
-            }
-        }
-
         return stack.newConfiguredObservable(s -> {
+            if (this.gatt != null) {
+                if (getConnectionStatus() == STATUS_CONNECTED) {
+                    Logger.warn(LOG_TAG, "Redundant call to connect(), ignoring.");
+
+                    s.onNext(this);
+                    s.onCompleted();
+                    return;
+                } else if (getConnectionStatus() == STATUS_CONNECTING || getConnectionStatus() == STATUS_DISCONNECTING) {
+                    s.onError(new PeripheralConnectionError("Peripheral is changing connection status."));
+                    return;
+                }
+            }
+
             AtomicBoolean hasRetried = new AtomicBoolean(false);
             GattDispatcher.ConnectionStateListener listener = (gatt, gattStatus, newState, removeThisListener) -> {
                 // The first connection attempt made after a user has power cycled their radio,
@@ -273,16 +276,19 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     @Override
     public Observable<Peripheral> disconnect() {
-        int connectionStatus = getConnectionStatus();
-        if (connectionStatus == STATUS_DISCONNECTED || connectionStatus == STATUS_DISCONNECTING) {
-            return Observable.just(this);
-        } else if (connectionStatus == STATUS_CONNECTING) {
-            return Observable.error(new PeripheralConnectionError("Peripheral is connecting"));
-        }
-
-        Logger.info(LOG_TAG, "Disconnecting " + toString());
-
         return stack.newConfiguredObservable(s -> {
+            int connectionStatus = getConnectionStatus();
+            if (connectionStatus == STATUS_DISCONNECTED || connectionStatus == STATUS_DISCONNECTING) {
+                s.onNext(this);
+                s.onCompleted();
+                return;
+            } else if (connectionStatus == STATUS_CONNECTING) {
+                s.onError(new PeripheralConnectionError("Peripheral is connecting"));
+                return;
+            }
+
+            Logger.info(LOG_TAG, "Disconnecting " + toString());
+
             gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
@@ -409,19 +415,22 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     @Override
     public Observable<Peripheral> createBond() {
-        if (getConnectionStatus() != STATUS_CONNECTED) {
-            Logger.error(LOG_TAG, "Cannot create bond without device being connected.");
-
-            return Observable.error(new PeripheralConnectionError());
-        }
-
-        if (getBondStatus() == BOND_BONDED) {
-            Logger.info(Peripheral.LOG_TAG, "Device already bonded, skipping.");
-
-            return Observable.just(this);
-        }
-
         return stack.newConfiguredObservable(s -> {
+            if (getConnectionStatus() != STATUS_CONNECTED) {
+                Logger.error(LOG_TAG, "Cannot create bond without device being connected.");
+
+                s.onError(new PeripheralConnectionError());
+                return;
+            }
+
+            if (getBondStatus() == BOND_BONDED) {
+                Logger.info(Peripheral.LOG_TAG, "Device already bonded, skipping.");
+
+                s.onNext(this);
+                s.onCompleted();
+                return;
+            }
+
             Subscription subscription = createBondReceiver().subscribe(new Subscriber<Intent>() {
                 @Override
                 public void onCompleted() {}
@@ -466,15 +475,18 @@ public class AndroidPeripheral implements Peripheral {
 
     @NonNull
     private Observable<Peripheral> removeBond() {
-        if (getConnectionStatus() != STATUS_CONNECTED) {
-            return Observable.error(new PeripheralConnectionError());
-        }
-
-        if (getBondStatus() == BOND_NONE) {
-            return Observable.just(this);
-        }
-
         return stack.newConfiguredObservable(s -> {
+            if (getConnectionStatus() != STATUS_CONNECTED) {
+                s.onError(new PeripheralConnectionError());
+                return;
+            }
+
+            if (getBondStatus() == BOND_NONE) {
+                s.onNext(this);
+                s.onCompleted();
+                return;
+            }
+
             if (tryRemoveBond()) {
                 createBondReceiver().subscribe(new Subscriber<Intent>() {
                     @Override
@@ -530,11 +542,12 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     @Override
     public Observable<Map<UUID, PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
-        if (getConnectionStatus() != STATUS_CONNECTED) {
-            return Observable.error(new PeripheralConnectionError());
-        }
-
         Observable<Map<UUID, PeripheralService>> discoverServices = stack.newConfiguredObservable(s -> {
+            if (getConnectionStatus() != STATUS_CONNECTED) {
+                s.onError(new PeripheralConnectionError());
+                return;
+            }
+
             Action0 onDisconnect = gattDispatcher.addTimeoutDisconnectListener(s, timeout);
             setupTimeout(OperationTimeoutError.Operation.DISCOVER_SERVICES, timeout, s, onDisconnect);
 
@@ -596,21 +609,6 @@ public class AndroidPeripheral implements Peripheral {
     @Override
     public boolean hasDiscoveredServices() {
         return (gatt != null && cachedPeripheralServices != null);
-    }
-
-    @Nullable
-    @Override
-    public PeripheralService getService(@NonNull UUID serviceIdentifier) {
-        if (gatt != null) {
-            if (cachedPeripheralServices != null) {
-                return cachedPeripheralServices.get(serviceIdentifier);
-            } else {
-                Logger.warn(LOG_TAG, "getService called before discoverServices.");
-                return null;
-            }
-        } else {
-            return null;
-        }
     }
 
 
