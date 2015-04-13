@@ -1,6 +1,7 @@
 package is.hello.sense.bluetooth.devices;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import java.util.UUID;
@@ -174,6 +175,13 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
 
         private ConnectStatus(@StringRes int messageRes) {
             this.messageRes = messageRes;
+        }
+    }
+
+
+    public static class Tests {
+        public static void setPeripheralService(@NonNull HelloPeripheral<? extends HelloPeripheral> peripheral, @Nullable PeripheralService service) {
+            peripheral.peripheralService = service;
         }
     }
 }
