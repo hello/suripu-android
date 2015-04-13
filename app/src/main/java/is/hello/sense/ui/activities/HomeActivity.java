@@ -70,7 +70,7 @@ import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
-import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
+import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends ScopedInjectionActivity

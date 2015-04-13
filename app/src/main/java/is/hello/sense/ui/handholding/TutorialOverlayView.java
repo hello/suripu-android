@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.OperatorConditionalBinding;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
@@ -33,7 +34,6 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscription;
-import rx.android.operators.OperatorConditionalBinding;
 import rx.functions.Action1;
 
 @SuppressLint("ViewConstructor")

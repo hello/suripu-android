@@ -35,7 +35,7 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
-import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
+import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public class PiruPeaActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject BluetoothStack stack;

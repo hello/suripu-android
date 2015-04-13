@@ -32,7 +32,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.subjects.ReplaySubject;
 
-import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
+import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 @Singleton public class HardwarePresenter extends Presenter {
     public static final String ACTION_CONNECTION_LOST = HardwarePresenter.class.getName() + ".ACTION_CONNECTION_LOST";
