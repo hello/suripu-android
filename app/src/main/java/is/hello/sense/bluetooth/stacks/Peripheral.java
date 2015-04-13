@@ -242,11 +242,6 @@ public interface Peripheral {
      */
     @NonNull Observable<PeripheralService> discoverService(@NonNull UUID serviceIdentifier, @NonNull OperationTimeout timeout);
 
-    /**
-     * Returns whether or not the Peripheral has performed service discovery.
-     */
-    boolean hasDiscoveredServices();
-
     //endregion
 
 

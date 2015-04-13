@@ -121,11 +121,6 @@ public class TestPeripheral implements Peripheral {
         });
     }
 
-    @Override
-    public boolean hasDiscoveredServices() {
-        return (behavior.servicesResponse != null && behavior.servicesResponse.isLeft());
-    }
-
     @NonNull
     @Override
     public Observable<UUID> subscribeNotification(@NonNull PeripheralService onPeripheralService,
