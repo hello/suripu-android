@@ -29,7 +29,7 @@ def generateVersionCode() {
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    buildToolsVersion "22.0.0"
 
     defaultConfig {
         applicationId "is.hello.sense"
