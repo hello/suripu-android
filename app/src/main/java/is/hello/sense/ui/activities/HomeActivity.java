@@ -372,8 +372,10 @@ public class HomeActivity
                     slidingLayersView.close();
                 }
             }
-        } else if (!viewPager.isAnimating() && !isCurrentFragmentLastNight()) {
-            jumpToLastNight(true);
+        } else if (!isCurrentFragmentLastNight()) {
+            if (!viewPager.isAnimating() && !viewPager.hasActiveGesture()) {
+                jumpToLastNight(true);
+            }
         } else {
             super.onBackPressed();
         }
