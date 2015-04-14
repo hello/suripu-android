@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -14,22 +15,26 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.widget.util.Drawables;
 
 public class SensorConditionView extends View {
-    private final ValueAnimator rotateAnimator;
-    private final List<Animator> runningAnimators = new ArrayList<>();
+    public static final int ROTATE_START_DELAY_MS = 30;
+    public static final int ROTATE_DURATION_MS = 1000;
 
-    private float rotateAmount = 0f;
+    private final ValueAnimator rotateAnimator;
+    private final Resources resources;
+
+    private boolean rotating = false;
+    private float rotateDegrees = 0f;
+
     private int tintColor;
     private @Nullable Drawable fill;
     private @Nullable Drawable transitionFill;
     private @Nullable Drawable icon;
+
+
     //region Lifecycle
 
     public SensorConditionView(@NonNull Context context) {
@@ -47,12 +52,14 @@ public class SensorConditionView extends View {
         rotateAnimator.setRepeatMode(ValueAnimator.RESTART);
         rotateAnimator.setRepeatCount(ValueAnimator.INFINITE);
         rotateAnimator.setInterpolator(new LinearInterpolator());
-        rotateAnimator.setStartDelay(30);
-        rotateAnimator.setDuration(1000);
+        rotateAnimator.setStartDelay(ROTATE_START_DELAY_MS);
+        rotateAnimator.setDuration(ROTATE_DURATION_MS);
         rotateAnimator.addUpdateListener(a -> {
-            this.rotateAmount = (float) a.getAnimatedValue();
+            this.rotateDegrees = (float) a.getAnimatedValue();
             invalidate();
         });
+
+        this.resources = getResources();
 
         if (attrs != null) {
             TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.SensorConditionView, defStyleAttr, 0);
@@ -60,7 +67,7 @@ public class SensorConditionView extends View {
             attributes.recycle();
         }
 
-        setTint(getResources().getColor(R.color.sensor_empty));
+        setTint(resources.getColor(R.color.sensor_empty));
         setFill(R.drawable.room_check_sensor_border_empty);
     }
 
@@ -68,25 +75,20 @@ public class SensorConditionView extends View {
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
 
-        if (visibility == VISIBLE) {
-            for (Animator animator : runningAnimators) {
-                if (!animator.isRunning()) {
-                    animator.start();
+        if (rotating) {
+            if (visibility == VISIBLE) {
+                if (!rotateAnimator.isRunning()) {
+                    rotateAnimator.start();
                 }
-            }
-        } else {
-            for (Animator animator : runningAnimators) {
-                animator.cancel();
+            } else {
+                rotateAnimator.cancel();
             }
         }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        for (Animator animator : runningAnimators) {
-            animator.cancel();
-        }
-        runningAnimators.clear();
+        rotateAnimator.cancel();
 
         super.onDetachedFromWindow();
     }
@@ -98,30 +100,28 @@ public class SensorConditionView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        int width = canvas.getWidth(),
-            height = canvas.getHeight();
-            int canvasMidX = canvas.getWidth() / 2,
-                canvasMidY = canvas.getHeight() / 2;
+        int canvasWidth = canvas.getWidth(),
+            canvasHeight = canvas.getHeight();
+        int canvasMidX = canvasWidth / 2,
+            canvasMidY = canvasHeight / 2;
 
-        if (fill != null || transitionFill != null) {
-            if (rotateAmount >= 0f) {
-                canvas.save();
-                canvas.rotate(rotateAmount, canvasMidX, canvasMidY);
-            }
+        if (rotateDegrees > 0f) {
+            canvas.save();
+            canvas.rotate(rotateDegrees, canvasMidX, canvasMidY);
+        }
 
-            if (fill != null) {
-                fill.setBounds(0, 0, width, height);
-                fill.draw(canvas);
-            }
+        if (fill != null) {
+            fill.setBounds(0, 0, canvasWidth, canvasHeight);
+            fill.draw(canvas);
+        }
 
-            if (transitionFill != null) {
-                transitionFill.setBounds(0, 0, width, height);
-                transitionFill.draw(canvas);
-            }
+        if (transitionFill != null) {
+            transitionFill.setBounds(0, 0, canvasWidth, canvasHeight);
+            transitionFill.draw(canvas);
+        }
 
-            if (rotateAmount >= 0f) {
-                canvas.restore();
-            }
+        if (rotateDegrees > 0f) {
+            canvas.restore();
         }
 
         if (icon != null) {
@@ -138,29 +138,30 @@ public class SensorConditionView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int intrinsicWidth = 0,
             intrinsicHeight = 0;
+
         if (fill != null) {
             intrinsicWidth = fill.getIntrinsicWidth();
             intrinsicHeight = fill.getIntrinsicHeight();
         }
 
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec),
-            heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int specWidthMode = MeasureSpec.getMode(widthMeasureSpec),
+            specHeightMode = MeasureSpec.getMode(heightMeasureSpec);
 
-        int width = MeasureSpec.getSize(widthMeasureSpec),
-            height = MeasureSpec.getSize(heightMeasureSpec);
+        int specWidth = MeasureSpec.getSize(widthMeasureSpec),
+            specHeight = MeasureSpec.getSize(heightMeasureSpec);
 
         int measuredWidth,
             measuredHeight;
-        if (widthMode == MeasureSpec.AT_MOST) {
-            measuredWidth = Math.min(intrinsicWidth, width);
+        if (specWidthMode == MeasureSpec.AT_MOST) {
+            measuredWidth = Math.min(intrinsicWidth, specWidth);
         } else {
-            measuredWidth = width;
+            measuredWidth = specWidth;
         }
 
-        if (heightMode == MeasureSpec.AT_MOST) {
-            measuredHeight = Math.min(intrinsicHeight, height);
+        if (specHeightMode == MeasureSpec.AT_MOST) {
+            measuredHeight = Math.min(intrinsicHeight, specHeight);
         } else {
-            measuredHeight = height;
+            measuredHeight = specHeight;
         }
 
         setMeasuredDimension(measuredWidth, measuredHeight);
@@ -220,31 +221,41 @@ public class SensorConditionView extends View {
     }
 
     public void setFill(@DrawableRes int fillRes) {
-        setFill(getResources().getDrawable(fillRes));
+        setFill(resources.getDrawable(fillRes));
     }
 
-    public void transitionToFill(@NonNull Drawable newFill, boolean rotate, @Nullable Runnable onCompletion) {
+    public void crossFadeToFill(@NonNull Drawable newFill, boolean rotate, @Nullable Runnable onCompletion) {
         this.transitionFill = newFill;
         Drawables.setTintColor(newFill, tintColor);
         newFill.setAlpha(0);
 
-        ValueAnimator transition = ValueAnimator.ofFloat(0f, 1f);
-        transition.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
-        transition.setDuration(Animation.DURATION_SLOW);
-        transition.addUpdateListener(a -> {
-            float fraction = a.getAnimatedFraction();
-            if (fill != null) {
-                fill.setAlpha(Math.round(255f * (1f - fraction)));
-            }
+        ValueAnimator crossFade = ValueAnimator.ofFloat(0f, 1f);
+        crossFade.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
+        crossFade.setDuration(Animation.DURATION_SLOW);
 
+        Drawable oldFill = fill;
+        if (oldFill == null) {
+            throw new IllegalStateException("Cannot transition from nothing");
+        }
+
+        crossFade.addUpdateListener(a -> {
+            float fraction = a.getAnimatedFraction();
+            oldFill.setAlpha(Math.round(255f * (1f - fraction)));
             newFill.setAlpha(Math.round(255f * fraction));
         });
-        transition.addListener(new AnimatorListenerAdapter() {
+
+        crossFade.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
                 if (rotate) {
                     startRotating();
                 }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                oldFill.setAlpha(0);
+                newFill.setAlpha(255);
             }
 
             @Override
@@ -262,12 +273,11 @@ public class SensorConditionView extends View {
             }
         });
 
-        runningAnimators.add(transition);
-        transition.start();
+        crossFade.start();
     }
 
-    public void transitionToFill(@DrawableRes int fillRes, boolean rotate, @Nullable Runnable onCompletion) {
-        transitionToFill(getResources().getDrawable(fillRes), rotate, onCompletion);
+    public void crossFadeToFill(@DrawableRes int fillRes, boolean rotate, @Nullable Runnable onCompletion) {
+        crossFadeToFill(resources.getDrawable(fillRes), rotate, onCompletion);
     }
 
     //endregion
@@ -277,13 +287,13 @@ public class SensorConditionView extends View {
 
     public void startRotating() {
         rotateAnimator.start();
-        runningAnimators.add(rotateAnimator);
+        this.rotating = true;
     }
 
     public void stopRotation() {
-        this.rotateAmount = 0f;
+        this.rotateDegrees = 0f;
         rotateAnimator.cancel();
-        runningAnimators.remove(rotateAnimator);
+        this.rotating = false;
     }
 
     //endregion

@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,13 +31,17 @@ import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.Markdown;
 import rx.Scheduler;
+
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     private static final long CONDITION_VISIBLE_MS = 2500;
     private static final long COUNT_UP_DURATION_MS = 850;
 
     @Inject RoomConditionsPresenter presenter;
+    @Inject Markdown markdown;
 
     private ImageView sense;
     private final List<SensorConditionView> sensorViews = new ArrayList<>();
@@ -47,6 +52,12 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
 
     private final List<SensorState> conditions = new ArrayList<>();
     private final List<UnitSystem.Formatter> conditionFormatters = new ArrayList<>();
+    private final @StringRes int[] conditionStrings = {
+        R.string.checking_condition_temperature,
+        R.string.checking_condition_humidity,
+        R.string.checking_condition_sound,
+        R.string.checking_condition_light,
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,7 +108,9 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
         }
 
         SensorConditionView conditionView = sensorViews.get(position);
-        conditionView.transitionToFill(R.drawable.room_check_sensor_border_loading, true, () -> {
+        status.setTextAppearance(getActivity(), R.style.AppTheme_Text_SectionHeading);
+        status.setText(conditionStrings[position]);
+        conditionView.crossFadeToFill(R.drawable.room_check_sensor_border_loading, true, () -> {
             SensorState condition = conditions.get(position);
             UnitSystem.Formatter formatter = conditionFormatters.get(position);
 
@@ -121,9 +134,23 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
             scoreAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    conditionView.transitionToFill(R.drawable.room_check_sensor_border_filled, false, () -> {
-                        deferWorker.schedule(() -> animateConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
-                    });
+                    animate(status)
+                            .fadeOut(View.VISIBLE)
+                            .addOnAnimationCompleted(finished -> {
+                                status.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body);
+                                status.setText(null);
+                                status.setTransformationMethod(null);
+                                markdown.renderInto(status, condition.getMessage());
+
+                                animate(status)
+                                        .fadeIn()
+                                        .start();
+
+                                conditionView.crossFadeToFill(R.drawable.room_check_sensor_border_filled, false, () -> {
+                                    deferWorker.schedule(() -> animateConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
+                                });
+                            })
+                            .start();
                 }
             });
             scoreAnimator.start();
