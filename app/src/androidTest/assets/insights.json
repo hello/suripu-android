@@ -1,17 +1,26 @@
 [
     {
-        "created_utc": 1414447740000,
-        "message": "You've been drinking too much coffee, it's destroying your sleep.",
-        "title": "Lately"
+        "account_id": 2164,
+        "category": "GENERIC",
+        "info_preview": null,
+        "message": "Welcome to Sense. This is where you'll see personalized **Sleep Insights** related to your sleeping patterns, habits and bedroom.\n\nFrom time to time, you'll also be shown **Questions**. Answering these questions will help Sense learn more about you, to provide more accurate and detailed insights over time.",
+        "timestamp": 1428082329484,
+        "title": "Nice To Meet You"
     },
     {
-        "created_utc": 1414447740000,
-        "message": "Your sleep was more agitated than usual.",
-        "title": "Last night"
+        "account_id": 2164,
+        "category": "SLEEP_DURATION",
+        "info_preview": "Sleep Duration: What's the ideal?",
+        "message": "The National Sleep Foundation recently published a recommendation of 7 to 9 hours of sleep for people your age. While a few people do need a lot less or more, aim to sleep **no less than 6** and **no more than 11** hours a night.",
+        "timestamp": 1428082329444,
+        "title": "How Much Sleep Do We Need?"
     },
     {
-        "created_utc": 1414447740000,
-        "message": "Your sleep score is 10% lower than last week's.",
-        "title": "This week"
+        "account_id": 2164,
+        "category": "SLEEP_HYGIENE",
+        "info_preview": "Healthy Sleep Habits",
+        "message": "Having **healthy sleep habits** is crucial to a good night's sleep. Some quick tips:\n\n- Try to stick to the same sleep and wake up time.\n- Avoid naps, caffeine drinks and heavy meals close to bedtime.\n- Exercise frequently.\n- Wind down about an hour before sleep.\n",
+        "timestamp": 1428082329434,
+        "title": "Sleep Tips"
     }
 ]
