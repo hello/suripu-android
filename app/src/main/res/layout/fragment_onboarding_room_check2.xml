@@ -95,14 +95,12 @@
         android:textAppearance="@style/AppTheme.Text.SectionHeading"
         android:text="@string/dialog_loading_message"/>
 
-    <TextView
+    <is.hello.sense.ui.widget.TickerView
         android:id="@+id/fragment_onboarding_room_check_ticker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginTop="@dimen/gap_xlarge"
-        android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.BigScore"/>
+        android:layout_marginTop="@dimen/gap_xlarge" />
 
 </LinearLayout>

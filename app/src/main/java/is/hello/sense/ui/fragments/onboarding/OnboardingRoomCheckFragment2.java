@@ -28,6 +28,7 @@ import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
+import is.hello.sense.ui.widget.TickerView;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -46,7 +47,7 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     private ImageView sense;
     private final List<SensorConditionView> sensorViews = new ArrayList<>();
     private TextView status;
-    private TextView ticker;
+    private TickerView ticker;
 
     private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
 
@@ -76,7 +77,7 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
 
         this.sense = (ImageView) view.findViewById(R.id.fragment_onboarding_room_check_sense);
         this.status = (TextView) view.findViewById(R.id.fragment_onboarding_room_check_status);
-        this.ticker = (TextView) view.findViewById(R.id.fragment_onboarding_room_check_ticker);
+        this.ticker = (TickerView) view.findViewById(R.id.fragment_onboarding_room_check_ticker);
 
         ViewGroup sensors = (ViewGroup) view.findViewById(R.id.fragment_onboarding_room_check_sensors);
         for (int i = 0, count = sensors.getChildCount(); i < count; i++) {
@@ -126,8 +127,8 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
 
             scoreAnimator.addUpdateListener(a -> {
                 int color = (int) colorEvaluator.evaluate(a.getAnimatedFraction(), startColor, endColor);
-                ticker.setTextColor(color);
-                ticker.setText(formatter.format(((Integer) a.getAnimatedValue()).longValue()));
+                ticker.setColor(color);
+                ticker.setValue(a.getAnimatedValue().toString());
                 conditionView.setTint(color);
             });
 
