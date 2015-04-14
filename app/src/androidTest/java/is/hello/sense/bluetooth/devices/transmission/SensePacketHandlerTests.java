@@ -44,8 +44,14 @@ public class SensePacketHandlerTests extends TestCase {
 
     public void testAllPacketsRightLength() throws Exception {
         byte[] failureCase = Bytes.fromString("08011002320832574952453137373A083257495245313737420A303132333435363738397803");
-        List<byte[]> packets = packetHandler.createPackets(failureCase);
-        for (byte[] packet : packets) {
+        List<byte[]> failureCasePackets = packetHandler.createPackets(failureCase);
+        for (byte[] packet : failureCasePackets) {
+            assertTrue(packet.length <= 20);
+        }
+
+        byte[] successCase = Bytes.fromString("080110023A083257495245313737420A303132333435363738397803");
+        List<byte[]> successCasePackets = packetHandler.createPackets(successCase);
+        for (byte[] packet : successCasePackets) {
             assertTrue(packet.length <= 20);
         }
     }

@@ -24,16 +24,8 @@ public class SensePacketHandler extends PacketHandler {
 
     @Override
     public List<byte[]> createPackets(final @NonNull byte[] applicationData) {
-        int totalPacketCount = 1;
-        if (applicationData.length > PacketHandler.HEADER_PACKET_PAYLOAD_LEN) {
-            totalPacketCount = 1 + (applicationData.length - PacketHandler.HEADER_PACKET_PAYLOAD_LEN) / PacketHandler.PACKET_PAYLOAD_LEN;
-            if (applicationData.length % PacketHandler.PACKET_PAYLOAD_LEN > 0) {
-                totalPacketCount += 1;
-            }
-        }
-
         final ArrayList<byte[]> packets = new ArrayList<>();
-        if (totalPacketCount == 1) {
+        if (applicationData.length <= PacketHandler.HEADER_PACKET_PAYLOAD_LEN) {
             final byte[] headPacket = new byte[2 + applicationData.length];
             headPacket[1] = 1;
             System.arraycopy(
@@ -44,44 +36,45 @@ public class SensePacketHandler extends PacketHandler {
                     /* length */ applicationData.length
             );
             packets.add(headPacket);
-            return packets;
-        }
+        } else {
+            int lengthNoHeader = (applicationData.length - PacketHandler.HEADER_PACKET_PAYLOAD_LEN);
+            int packetCount = (int) Math.ceil(1f + lengthNoHeader / (float) PacketHandler.PACKET_PAYLOAD_LEN);
 
+            int bytesRemaining = applicationData.length;
+            for (int packetIndex = 0; packetIndex < packetCount; packetIndex++) {
+                if (packetIndex == 0) {
+                    final byte[] headerPacket = new byte[PacketHandler.BLE_PACKET_LEN];
+                    headerPacket[0] = (byte) packetIndex;
+                    headerPacket[1] = (byte) packetCount;
 
-        int bytesRemaining = applicationData.length;
-        for (int packetIndex = 0; packetIndex < totalPacketCount; packetIndex++) {
-            if (packetIndex == 0) {
-                final byte[] headerPacket = new byte[PacketHandler.BLE_PACKET_LEN];
-                headerPacket[0] = (byte) packetIndex;
-                headerPacket[1] = (byte) totalPacketCount;
-
-                System.arraycopy(
+                    System.arraycopy(
                         /* src */ applicationData,
                         /* srcStart */ 0,
                         /* dest */ headerPacket,
                         /* destStart */ 2,
                         /* length */ PacketHandler.HEADER_PACKET_PAYLOAD_LEN
-                );
-                bytesRemaining -= PacketHandler.HEADER_PACKET_PAYLOAD_LEN;
+                    );
+                    bytesRemaining -= PacketHandler.HEADER_PACKET_PAYLOAD_LEN;
 
-                packets.add(headerPacket);
-            } else {
-                final int packetLength = (packetIndex == totalPacketCount - 1) ? (bytesRemaining + 1) : PacketHandler.BLE_PACKET_LEN;
-                final byte[] packet = new byte[packetLength];
-                packet[0] = (byte) packetIndex;
+                    packets.add(headerPacket);
+                } else {
+                    final int packetLength = (packetIndex == packetCount - 1) ? (bytesRemaining + 1) : PacketHandler.BLE_PACKET_LEN;
+                    final byte[] packet = new byte[packetLength];
+                    packet[0] = (byte) packetIndex;
 
-                int dataStart = PacketHandler.HEADER_PACKET_PAYLOAD_LEN + (packetIndex - 1) * PacketHandler.PACKET_PAYLOAD_LEN;
-                int dataAmount = packetLength - 1;
-                System.arraycopy(
+                    int dataStart = PacketHandler.HEADER_PACKET_PAYLOAD_LEN + (packetIndex - 1) * PacketHandler.PACKET_PAYLOAD_LEN;
+                    int dataAmount = packetLength - 1;
+                    System.arraycopy(
                         /* src */ applicationData,
                         /* srcStart */ dataStart,
                         /* dest */ packet,
                         /* destStart */ 1,
                         /* length */ dataAmount
-                );
-                bytesRemaining -= dataAmount;
+                    );
+                    bytesRemaining -= dataAmount;
 
-                packets.add(packet);
+                    packets.add(packet);
+                }
             }
         }
 
