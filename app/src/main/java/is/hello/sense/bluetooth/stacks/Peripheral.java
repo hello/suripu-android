@@ -225,8 +225,6 @@ public interface Peripheral {
      * <p/>
      * Yields a {@link is.hello.sense.bluetooth.errors.PeripheralConnectionError}
      * if the peripheral is not connected when this method is called.
-     *
-     * @see Peripheral#getService(java.util.UUID)
      */
     @NonNull Observable<Map<UUID, PeripheralService>> discoverServices(@NonNull OperationTimeout timeout);
 
@@ -241,22 +239,8 @@ public interface Peripheral {
      * if the peripheral is not connected when this method is called.
      *
      * @see #discoverServices(OperationTimeout)
-     * @see #getService(java.util.UUID)
      */
     @NonNull Observable<PeripheralService> discoverService(@NonNull UUID serviceIdentifier, @NonNull OperationTimeout timeout);
-
-    /**
-     * Returns whether or not the Peripheral has performed service discovery.
-     */
-    boolean hasDiscoveredServices();
-
-    /**
-     * Looks up a peripheral service by identifier on the peripheral.
-     * <p/>
-     * This method requires {@see Peripheral#discoverServices()}
-     * be called before it will return a non-null value.
-     */
-    @Nullable PeripheralService getService(@NonNull UUID serviceIdentifier);
 
     //endregion
 

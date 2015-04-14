@@ -420,8 +420,8 @@ public class Analytics {
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
         if (provider != null) {
-            provider.getPeople().identify(userId);
             provider.alias(userId, null);
+            provider.getPeople().identify(userId);
         }
 
         if (Crashlytics.getInstance().isInitialized()) {
@@ -433,8 +433,8 @@ public class Analytics {
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
         if (provider != null) {
-            provider.getPeople().identify(userId);
             provider.identify(userId);
+            provider.getPeople().identify(userId);
         }
 
         if (Crashlytics.getInstance().isInitialized()) {

@@ -59,7 +59,6 @@ public class AndroidPeripheral implements Peripheral {
     private final GattDispatcher gattDispatcher = new GattDispatcher();
 
     private BluetoothGatt gatt;
-    private @Nullable Map<UUID, PeripheralService> cachedPeripheralServices;
     private @Nullable Subscription bluetoothStateSubscription;
     private @Config int config;
 
@@ -151,17 +150,18 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     @Override
     public Observable<Peripheral> connect(@NonNull OperationTimeout timeout) {
-        if (this.gatt != null) {
+        return stack.newConfiguredObservable(s -> {
             if (getConnectionStatus() == STATUS_CONNECTED) {
                 Logger.warn(LOG_TAG, "Redundant call to connect(), ignoring.");
 
-                return Observable.just(this);
+                s.onNext(this);
+                s.onCompleted();
+                return;
             } else if (getConnectionStatus() == STATUS_CONNECTING || getConnectionStatus() == STATUS_DISCONNECTING) {
-                return Observable.error(new PeripheralConnectionError("Peripheral is changing connection status."));
+                s.onError(new PeripheralConnectionError("Peripheral is changing connection status."));
+                return;
             }
-        }
 
-        return stack.newConfiguredObservable(s -> {
             AtomicBoolean hasRetried = new AtomicBoolean(false);
             GattDispatcher.ConnectionStateListener listener = (gatt, gattStatus, newState, removeThisListener) -> {
                 // The first connection attempt made after a user has power cycled their radio,
@@ -273,16 +273,17 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     @Override
     public Observable<Peripheral> disconnect() {
-        int connectionStatus = getConnectionStatus();
-        if (connectionStatus == STATUS_DISCONNECTED || connectionStatus == STATUS_DISCONNECTING) {
-            return Observable.just(this);
-        } else if (connectionStatus == STATUS_CONNECTING) {
-            return Observable.error(new PeripheralConnectionError("Peripheral is connecting"));
-        }
-
-        Logger.info(LOG_TAG, "Disconnecting " + toString());
-
         return stack.newConfiguredObservable(s -> {
+            int connectionStatus = getConnectionStatus();
+            if (connectionStatus == STATUS_DISCONNECTED || connectionStatus == STATUS_DISCONNECTING) {
+                s.onNext(this);
+                s.onCompleted();
+                return;
+            } else if (connectionStatus == STATUS_CONNECTING) {
+                s.onError(new PeripheralConnectionError("Peripheral is connecting"));
+                return;
+            }
+
             gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
@@ -296,11 +297,11 @@ public class AndroidPeripheral implements Peripheral {
                         s.onCompleted();
                     }
 
-                    this.cachedPeripheralServices = null;
-
                     removeThisListener.call();
                 }
             });
+
+            Logger.info(LOG_TAG, "Disconnecting " + toString());
 
             boolean clearBondOnDisconnect = ((config & CONFIG_FRAGILE_BONDS) == CONFIG_FRAGILE_BONDS);
             if (clearBondOnDisconnect && getBondStatus() == BOND_BONDED) {
@@ -409,19 +410,22 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     @Override
     public Observable<Peripheral> createBond() {
-        if (getConnectionStatus() != STATUS_CONNECTED) {
-            Logger.error(LOG_TAG, "Cannot create bond without device being connected.");
-
-            return Observable.error(new PeripheralConnectionError());
-        }
-
-        if (getBondStatus() == BOND_BONDED) {
-            Logger.info(Peripheral.LOG_TAG, "Device already bonded, skipping.");
-
-            return Observable.just(this);
-        }
-
         return stack.newConfiguredObservable(s -> {
+            if (getConnectionStatus() != STATUS_CONNECTED) {
+                Logger.error(LOG_TAG, "Cannot create bond without device being connected.");
+
+                s.onError(new PeripheralConnectionError());
+                return;
+            }
+
+            if (getBondStatus() == BOND_BONDED) {
+                Logger.info(Peripheral.LOG_TAG, "Device already bonded, skipping.");
+
+                s.onNext(this);
+                s.onCompleted();
+                return;
+            }
+
             Subscription subscription = createBondReceiver().subscribe(new Subscriber<Intent>() {
                 @Override
                 public void onCompleted() {}
@@ -466,15 +470,18 @@ public class AndroidPeripheral implements Peripheral {
 
     @NonNull
     private Observable<Peripheral> removeBond() {
-        if (getConnectionStatus() != STATUS_CONNECTED) {
-            return Observable.error(new PeripheralConnectionError());
-        }
-
-        if (getBondStatus() == BOND_NONE) {
-            return Observable.just(this);
-        }
-
         return stack.newConfiguredObservable(s -> {
+            if (getConnectionStatus() != STATUS_CONNECTED) {
+                s.onError(new PeripheralConnectionError());
+                return;
+            }
+
+            if (getBondStatus() == BOND_NONE) {
+                s.onNext(this);
+                s.onCompleted();
+                return;
+            }
+
             if (tryRemoveBond()) {
                 createBondReceiver().subscribe(new Subscriber<Intent>() {
                     @Override
@@ -530,11 +537,12 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     @Override
     public Observable<Map<UUID, PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
-        if (getConnectionStatus() != STATUS_CONNECTED) {
-            return Observable.error(new PeripheralConnectionError());
-        }
-
         Observable<Map<UUID, PeripheralService>> discoverServices = stack.newConfiguredObservable(s -> {
+            if (getConnectionStatus() != STATUS_CONNECTED) {
+                s.onError(new PeripheralConnectionError());
+                return;
+            }
+
             Action0 onDisconnect = gattDispatcher.addTimeoutDisconnectListener(s, timeout);
             setupTimeout(OperationTimeoutError.Operation.DISCOVER_SERVICES, timeout, s, onDisconnect);
 
@@ -545,8 +553,6 @@ public class AndroidPeripheral implements Peripheral {
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     Map<UUID, PeripheralService> services = AndroidPeripheralService.wrapGattServices(gatt.getServices());
-                    this.cachedPeripheralServices = services;
-
                     s.onNext(services);
                     s.onCompleted();
 
@@ -554,7 +560,6 @@ public class AndroidPeripheral implements Peripheral {
                 } else {
                     Logger.error(LOG_TAG, "Could not discover services. " + BluetoothGattError.statusToString(status));
 
-                    this.cachedPeripheralServices = null;
                     s.onError(new BluetoothGattError(status, BluetoothGattError.Operation.DISCOVER_SERVICES));
 
                     gattDispatcher.onServicesDiscovered = null;
@@ -593,26 +598,6 @@ public class AndroidPeripheral implements Peripheral {
         });
     }
 
-    @Override
-    public boolean hasDiscoveredServices() {
-        return (gatt != null && cachedPeripheralServices != null);
-    }
-
-    @Nullable
-    @Override
-    public PeripheralService getService(@NonNull UUID serviceIdentifier) {
-        if (gatt != null) {
-            if (cachedPeripheralServices != null) {
-                return cachedPeripheralServices.get(serviceIdentifier);
-            } else {
-                Logger.warn(LOG_TAG, "getService called before discoverServices.");
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
 
     //endregion
 
@@ -629,11 +614,12 @@ public class AndroidPeripheral implements Peripheral {
                                                   @NonNull UUID characteristicIdentifier,
                                                   @NonNull UUID descriptorIdentifier,
                                                   @NonNull OperationTimeout timeout) {
-        if (getConnectionStatus() != STATUS_CONNECTED) {
-            return Observable.error(new PeripheralConnectionError());
-        }
-
         return stack.newConfiguredObservable(s -> {
+            if (getConnectionStatus() != STATUS_CONNECTED) {
+                s.onError(new PeripheralConnectionError());
+                return;
+            }
+
             BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
             if (gatt.setCharacteristicNotification(characteristic, true)) {
@@ -688,11 +674,12 @@ public class AndroidPeripheral implements Peripheral {
                                                     @NonNull UUID characteristicIdentifier,
                                                     @NonNull UUID descriptorIdentifier,
                                                     @NonNull OperationTimeout timeout) {
-        if (getConnectionStatus() != STATUS_CONNECTED) {
-            return Observable.error(new PeripheralConnectionError());
-        }
-
         return stack.newConfiguredObservable(s -> {
+            if (getConnectionStatus() != STATUS_CONNECTED) {
+                s.onError(new PeripheralConnectionError());
+                return;
+            }
+
             BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
 
@@ -742,11 +729,12 @@ public class AndroidPeripheral implements Peripheral {
                                          @NonNull WriteType writeType,
                                          @NonNull byte[] payload,
                                          @NonNull OperationTimeout timeout) {
-        if (getConnectionStatus() != STATUS_CONNECTED) {
-            return Observable.error(new PeripheralConnectionError());
-        }
-
         return stack.newConfiguredObservable(s -> {
+            if (getConnectionStatus() != STATUS_CONNECTED) {
+                s.onError(new PeripheralConnectionError());
+                return;
+            }
+
             Action0 onDisconnect = gattDispatcher.addTimeoutDisconnectListener(s, timeout);
             setupTimeout(OperationTimeoutError.Operation.SUBSCRIBE_NOTIFICATION, timeout, s, onDisconnect);
 

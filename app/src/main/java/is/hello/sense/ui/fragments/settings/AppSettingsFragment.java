@@ -14,6 +14,7 @@ import android.widget.TextView;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.DebugActivity;
+import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.UndersideTabFragment;
@@ -40,7 +41,7 @@ public class AppSettingsFragment extends UndersideTabFragment {
         Views.setSafeOnClickListener(accountItem, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account));
 
         View devicesItem = view.findViewById(R.id.fragment_app_settings_devices);
-        Views.setSafeOnClickListener(devicesItem, ignored -> showFragment(DeviceListFragment.class, R.string.label_devices));
+        Views.setSafeOnClickListener(devicesItem, this::showDeviceList);
 
         View notificationsItem = view.findViewById(R.id.fragment_app_settings_notifications);
         Views.setSafeOnClickListener(notificationsItem, ignored -> showFragment(NotificationsSettingsFragment.class, R.string.label_notifications));
@@ -76,6 +77,13 @@ public class AppSettingsFragment extends UndersideTabFragment {
 
     }
 
+
+    private void showDeviceList(@NonNull View ignored) {
+        Bundle intentArguments = HardwareFragmentActivity.getArguments(getString(R.string.label_devices), DeviceListFragment.class, null);
+        Intent intent = new Intent(getActivity(), HardwareFragmentActivity.class);
+        intent.putExtras(intentArguments);
+        startActivity(intent);
+    }
 
     private void showFragment(@NonNull Class<? extends Fragment> fragmentClass, @StringRes int titleRes) {
         Bundle intentArguments = FragmentNavigationActivity.getArguments(getString(titleRes), fragmentClass, null);
