@@ -14,6 +14,7 @@ import android.widget.TextView;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.DebugActivity;
+import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.UndersideTabFragment;
@@ -37,19 +38,22 @@ public class AppSettingsFragment extends UndersideTabFragment {
         View view = inflater.inflate(R.layout.fragment_app_settings, container, false);
 
         View accountItem = view.findViewById(R.id.fragment_app_settings_account);
-        accountItem.setOnClickListener(ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account));
+        Views.setSafeOnClickListener(accountItem, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account));
 
         View devicesItem = view.findViewById(R.id.fragment_app_settings_devices);
-        devicesItem.setOnClickListener(ignored -> showFragment(DeviceListFragment.class, R.string.label_devices));
+        Views.setSafeOnClickListener(devicesItem, this::showDeviceList);
 
         View notificationsItem = view.findViewById(R.id.fragment_app_settings_notifications);
-        notificationsItem.setOnClickListener(ignored -> showFragment(NotificationsSettingsFragment.class, R.string.label_notifications));
+        Views.setSafeOnClickListener(notificationsItem, ignored -> showFragment(NotificationsSettingsFragment.class, R.string.label_notifications));
 
         View unitsItem = view.findViewById(R.id.fragment_app_settings_units);
-        unitsItem.setOnClickListener(ignored -> showFragment(UnitSettingsFragment.class, R.string.label_units_and_time));
+        Views.setSafeOnClickListener(unitsItem, ignored -> showFragment(UnitSettingsFragment.class, R.string.label_units_and_time));
 
         View feedbackItem = view.findViewById(R.id.fragment_app_settings_feedback);
-        feedbackItem.setOnClickListener(ignored -> UserSupport.showEmailFeedback(getActivity()));
+        Views.setSafeOnClickListener(feedbackItem, ignored -> UserSupport.showEmailFeedback(getActivity()));
+
+        View userGuideItem = view.findViewById(R.id.fragment_app_settings_user_guide);
+        Views.setSafeOnClickListener(userGuideItem, ignored -> UserSupport.showSupport(getActivity()));
 
         TextView footer = (TextView) view.findViewById(R.id.footer_help);
         Styles.initializeSupportFooter(getActivity(), footer);
@@ -73,6 +77,13 @@ public class AppSettingsFragment extends UndersideTabFragment {
 
     }
 
+
+    private void showDeviceList(@NonNull View ignored) {
+        Bundle intentArguments = HardwareFragmentActivity.getArguments(getString(R.string.label_devices), DeviceListFragment.class, null);
+        Intent intent = new Intent(getActivity(), HardwareFragmentActivity.class);
+        intent.putExtras(intentArguments);
+        startActivity(intent);
+    }
 
     private void showFragment(@NonNull Class<? extends Fragment> fragmentClass, @StringRes int titleRes) {
         Bundle intentArguments = FragmentNavigationActivity.getArguments(getString(titleRes), fragmentClass, null);

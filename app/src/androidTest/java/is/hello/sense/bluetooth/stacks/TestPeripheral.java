@@ -111,28 +111,14 @@ public class TestPeripheral implements Peripheral {
     @Override
     public Observable<PeripheralService> discoverService(@NonNull UUID serviceIdentifier, @NonNull OperationTimeout timeout) {
         return discoverServices(timeout).flatMap(ignored -> {
-            PeripheralService service = getService(serviceIdentifier);
-            if (service != null) {
-                return Observable.just(service);
-            } else {
-                return Observable.error(new PeripheralServiceDiscoveryFailedError());
+            if (behavior.servicesResponse != null && behavior.servicesResponse.isLeft()) {
+                PeripheralService service = behavior.servicesResponse.getLeft().get(serviceIdentifier);
+                if (service != null) {
+                    return Observable.just(service);
+                }
             }
+            return Observable.error(new PeripheralServiceDiscoveryFailedError());
         });
-    }
-
-    @Override
-    public boolean hasDiscoveredServices() {
-        return (behavior.servicesResponse != null && behavior.servicesResponse.isLeft());
-    }
-
-    @Nullable
-    @Override
-    public PeripheralService getService(@NonNull UUID serviceIdentifier) {
-        if (behavior.servicesResponse != null && behavior.servicesResponse.isLeft()) {
-            return behavior.servicesResponse.getLeft().get(serviceIdentifier);
-        } else {
-            return null;
-        }
     }
 
     @NonNull

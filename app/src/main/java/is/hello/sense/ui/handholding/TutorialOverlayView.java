@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.OperatorConditionalBinding;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
@@ -33,7 +34,6 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscription;
-import rx.android.operators.OperatorConditionalBinding;
 import rx.functions.Action1;
 
 @SuppressLint("ViewConstructor")
@@ -43,7 +43,7 @@ public class TutorialOverlayView extends RelativeLayout {
     private final TextView descriptionText;
 
     private @Nullable InteractionView interactionView;
-    private View anchorView;
+    private @Nullable View anchorView;
     private float interactionStartX = 0f, interactionStartY = 0f;
     private boolean trackingInteraction = false;
     private boolean dispatchedLastEvent = false;
@@ -190,6 +190,10 @@ public class TutorialOverlayView extends RelativeLayout {
     //region Interactions
 
     private void showInteractionFrom() {
+        if (anchorView == null) {
+            return;
+        }
+
         this.interactionView = new InteractionView(getContext());
 
         int interactionMidX = interactionView.getMinimumWidth() / 2;
@@ -288,7 +292,7 @@ public class TutorialOverlayView extends RelativeLayout {
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
                 if (tutorial.interaction == Interaction.TAP) {
-                    if (Views.isMotionEventInside(anchorView, event)) {
+                    if (anchorView != null && Views.isMotionEventInside(anchorView, event)) {
                         interactionCompleted();
                     } else {
                         interactionCanceled();

@@ -305,7 +305,7 @@ so you can sleep better.</string>
     <string name="error_sense_no_connectivity">Your Sense <b>cannot connect to Wi-Fi</b>. Tap below to troubleshoot.</string>
     <string name="error_sense_missing_fmt">Your Sense was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
     <string name="error_sleep_pill_missing_fmt">Your Sleep Pill was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
-    <string name="support_footer">If you’re having trouble, visit <a href="#support">Support</a> or contact us at <a href="#email">support@hello.is</a>.</string>
+    <string name="support_footer">If you‘re having trouble, please contact us at <a href="#email">support@hello.is</a></string>
     <string name="devices_support_footer">Setting up a <a href="#second-pill">second Sleep Pill</a> for your partner?</string>
     <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
     <string name="label_wifi_network_name">"WiFi network: "</string>
@@ -463,4 +463,5 @@ so you can sleep better.</string>
     <string name="duration_hours_fraction_fmt">%.1fh</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_email_support">Email Support</string>
+    <string name="action_user_guide">User Guide</string>
 </resources>

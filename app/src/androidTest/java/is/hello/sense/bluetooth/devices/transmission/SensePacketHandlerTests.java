@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import is.hello.sense.bluetooth.devices.SenseIdentifiers;
 import is.hello.sense.bluetooth.stacks.transmission.SequencedPacket;
+import is.hello.sense.bluetooth.stacks.util.Bytes;
 
 public class SensePacketHandlerTests extends TestCase {
     private final SensePacketHandler packetHandler = new SensePacketHandler();
@@ -38,6 +39,20 @@ public class SensePacketHandlerTests extends TestCase {
         int index = 0;
         for (byte[] packet : packets) {
             assertEquals(index++, packet[0]);
+        }
+    }
+
+    public void testAllPacketsRightLength() throws Exception {
+        byte[] failureCase = Bytes.fromString("08011002320832574952453137373A083257495245313737420A303132333435363738397803");
+        List<byte[]> failureCasePackets = packetHandler.createPackets(failureCase);
+        for (byte[] packet : failureCasePackets) {
+            assertTrue(packet.length <= 20);
+        }
+
+        byte[] successCase = Bytes.fromString("080110023A083257495245313737420A303132333435363738397803");
+        List<byte[]> successCasePackets = packetHandler.createPackets(successCase);
+        for (byte[] packet : successCasePackets) {
+            assertTrue(packet.length <= 20);
         }
     }
 }

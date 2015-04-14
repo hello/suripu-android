@@ -225,11 +225,11 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             SenseAlertDialog builder = new SenseAlertDialog(this);
             builder.setTitle(R.string.dialog_title_confirm_leave_onboarding);
             builder.setMessage(R.string.dialog_message_confirm_leave_onboarding);
-            builder.setPositiveButton(android.R.string.ok, (dialog, which) -> super.onBackPressed());
+            builder.setPositiveButton(android.R.string.ok, (dialog, which) -> coordinator.postOnResume(super::onBackPressed));
             builder.setNegativeButton(android.R.string.cancel, null);
             builder.show();
         } else {
-            super.onBackPressed();
+            coordinator.postOnResume(super::onBackPressed);
         }
     }
 

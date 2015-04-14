@@ -70,7 +70,7 @@ import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
-import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
+import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends ScopedInjectionActivity
@@ -372,8 +372,10 @@ public class HomeActivity
                     slidingLayersView.close();
                 }
             }
-        } else if (!viewPager.isAnimating() && !isCurrentFragmentLastNight()) {
-            jumpToLastNight(true);
+        } else if (!isCurrentFragmentLastNight()) {
+            if (!viewPager.isAnimating() && !viewPager.hasActiveGesture()) {
+                jumpToLastNight(true);
+            }
         } else {
             super.onBackPressed();
         }

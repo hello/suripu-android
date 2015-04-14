@@ -103,7 +103,6 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
             coordinator.postOnResume(() -> {
                 if (isPairOnlySession()) {
-                    hardwarePresenter.clearPeripheral();
                     getOnboardingActivity().finish();
                 } else {
                     if (success) {

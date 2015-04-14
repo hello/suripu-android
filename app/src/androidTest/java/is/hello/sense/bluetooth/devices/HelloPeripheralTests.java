@@ -3,7 +3,6 @@ package is.hello.sense.bluetooth.devices;
 import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -51,8 +50,8 @@ public class HelloPeripheralTests extends InjectionTestCase {
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
         assertFalse(peripheral.isConnected());
 
-        peripheralBehavior.setServicesResponse(Either.left(Collections.emptyMap()));
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
+        peripheral.setPeripheralService(new TestPeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY));
         assertTrue(peripheral.isConnected());
 
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_DISCONNECTED);
@@ -217,6 +216,10 @@ public class HelloPeripheralTests extends InjectionTestCase {
         @Override
         protected UUID getDescriptorIdentifier() {
             return SenseIdentifiers.DESCRIPTOR_CHARACTERISTIC_COMMAND_RESPONSE_CONFIG;
+        }
+
+        void setPeripheralService(PeripheralService service) {
+            this.peripheralService = service;
         }
 
         Observable<ConnectStatus> connect() {

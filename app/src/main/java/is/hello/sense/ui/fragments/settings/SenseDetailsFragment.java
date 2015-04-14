@@ -116,13 +116,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        this.hardwarePresenter.clearPeripheral();
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 

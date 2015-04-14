@@ -20,7 +20,7 @@ import is.hello.sense.util.SessionLogger;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
+import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public class SenseApplication extends Application {
     public static final String ACTION_BUILT_GRAPH = SenseApplication.class.getName() + ".ACTION_BUILT_GRAPH";
