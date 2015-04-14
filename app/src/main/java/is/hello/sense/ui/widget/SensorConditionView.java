@@ -2,7 +2,6 @@ package is.hello.sense.ui.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -19,8 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Condition;
-import is.hello.sense.ui.animation.AnimatorConfig;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.widget.util.Drawables;
 
 public class SensorConditionView extends View {
@@ -30,8 +28,8 @@ public class SensorConditionView extends View {
     private float rotateAmount = 0f;
     private int tintColor;
     private @Nullable Drawable fill;
+    private @Nullable Drawable transitionFill;
     private @Nullable Drawable icon;
-
     //region Lifecycle
 
     public SensorConditionView(@NonNull Context context) {
@@ -62,7 +60,8 @@ public class SensorConditionView extends View {
             attributes.recycle();
         }
 
-        setEmptyState();
+        setTint(getResources().getColor(R.color.sensor_empty));
+        setFill(R.drawable.room_check_sensor_border_empty);
     }
 
     @Override
@@ -104,14 +103,21 @@ public class SensorConditionView extends View {
             int canvasMidX = canvas.getWidth() / 2,
                 canvasMidY = canvas.getHeight() / 2;
 
-        if (fill != null) {
+        if (fill != null || transitionFill != null) {
             if (rotateAmount >= 0f) {
                 canvas.save();
                 canvas.rotate(rotateAmount, canvasMidX, canvasMidY);
             }
 
-            fill.setBounds(0, 0, width, height);
-            fill.draw(canvas);
+            if (fill != null) {
+                fill.setBounds(0, 0, width, height);
+                fill.draw(canvas);
+            }
+
+            if (transitionFill != null) {
+                transitionFill.setBounds(0, 0, width, height);
+                transitionFill.draw(canvas);
+            }
 
             if (rotateAmount >= 0f) {
                 canvas.restore();
@@ -119,7 +125,6 @@ public class SensorConditionView extends View {
         }
 
         if (icon != null) {
-
             int iconMidX = icon.getIntrinsicWidth() / 2;
             int iconMidY = icon.getIntrinsicHeight() / 2;
 
@@ -177,37 +182,11 @@ public class SensorConditionView extends View {
             Drawables.setTintColor(fill, color);
         }
 
+        if (transitionFill != null) {
+            Drawables.setTintColor(transitionFill, color);
+        }
+
         invalidate();
-    }
-
-    public void animateToTint(int newColor, @Nullable Runnable onCompletion) {
-        ValueAnimator animator = ValueAnimator.ofInt(tintColor, newColor);
-        animator.setEvaluator(new ArgbEvaluator());
-        AnimatorConfig.DEFAULT.apply(animator);
-        animator.addUpdateListener(a -> {
-            setTint((int) a.getAnimatedValue());
-        });
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                runningAnimators.remove(animation);
-                setTint(newColor);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                runningAnimators.remove(animation);
-                if (onCompletion != null) {
-                    onCompletion.run();
-                }
-            }
-
-            @Override
-            public void onAnimationStart(Animator animation) {
-                runningAnimators.add(animation);
-            }
-        });
-        animator.start();
     }
 
     public void setIcon(@Nullable Drawable icon) {
@@ -244,6 +223,53 @@ public class SensorConditionView extends View {
         setFill(getResources().getDrawable(fillRes));
     }
 
+    public void transitionToFill(@NonNull Drawable newFill, boolean rotate, @Nullable Runnable onCompletion) {
+        this.transitionFill = newFill;
+        Drawables.setTintColor(newFill, tintColor);
+        newFill.setAlpha(0);
+
+        ValueAnimator transition = ValueAnimator.ofFloat(0f, 1f);
+        transition.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
+        transition.setDuration(Animation.DURATION_SLOW);
+        transition.addUpdateListener(a -> {
+            float fraction = a.getAnimatedFraction();
+            if (fill != null) {
+                fill.setAlpha(Math.round(255f * (1f - fraction)));
+            }
+
+            newFill.setAlpha(Math.round(255f * fraction));
+        });
+        transition.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                if (rotate) {
+                    startRotating();
+                }
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                setFill(newFill);
+                SensorConditionView.this.transitionFill = null;
+
+                if (!rotate) {
+                    stopRotation();
+                }
+
+                if (onCompletion != null) {
+                    onCompletion.run();
+                }
+            }
+        });
+
+        runningAnimators.add(transition);
+        transition.start();
+    }
+
+    public void transitionToFill(@DrawableRes int fillRes, boolean rotate, @Nullable Runnable onCompletion) {
+        transitionToFill(getResources().getDrawable(fillRes), rotate, onCompletion);
+    }
+
     //endregion
 
 
@@ -262,27 +288,4 @@ public class SensorConditionView extends View {
 
     //endregion
 
-
-    //region Modes
-
-    public void setEmptyState() {
-        stopRotation();
-        setTint(getResources().getColor(R.color.sensor_empty));
-        setFill(R.drawable.room_check_sensor_border_empty);
-    }
-
-    public void setProgressState() {
-        animateToTint(getResources().getColor(R.color.light_accent), () -> {
-            setFill(R.drawable.room_check_sensor_border_loading);
-            startRotating();
-        });
-    }
-
-    public void setCompletedState(@NonNull Condition condition) {
-        stopRotation();
-        animateToTint(getResources().getColor(condition.colorRes), null);
-        setFill(R.drawable.room_check_sensor_border_filled);
-    }
-
-    //endregion
 }

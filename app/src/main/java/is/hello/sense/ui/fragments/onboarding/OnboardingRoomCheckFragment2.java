@@ -97,35 +97,37 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
         }
 
         SensorConditionView conditionView = sensorViews.get(position);
-        conditionView.setProgressState();
+        conditionView.transitionToFill(R.drawable.room_check_sensor_border_loading, true, () -> {
+            SensorState condition = conditions.get(position);
+            UnitSystem.Formatter formatter = conditionFormatters.get(position);
 
-        SensorState condition = conditions.get(position);
-        UnitSystem.Formatter formatter = conditionFormatters.get(position);
+            int value = condition.getValue() != null ? condition.getValue().intValue() : 0;
+            ValueAnimator scoreAnimator = ValueAnimator.ofInt(0, value);
+            AnimatorConfig.DEFAULT.apply(scoreAnimator);
+            scoreAnimator.setDuration(COUNT_UP_DURATION_MS);
 
-        int value = condition.getValue() != null ? condition.getValue().intValue() : 0;
-        ValueAnimator scoreAnimator = ValueAnimator.ofInt(0, value);
-        AnimatorConfig.DEFAULT.apply(scoreAnimator);
-        scoreAnimator.setDuration(COUNT_UP_DURATION_MS);
+            Resources resources = getResources();
+            int startColor = resources.getColor(Condition.ALERT.colorRes);
+            int endColor = resources.getColor(condition.getCondition().colorRes);
+            ArgbEvaluator colorEvaluator = new ArgbEvaluator();
 
-        Resources resources = getResources();
-        int startColor = resources.getColor(Condition.ALERT.colorRes);
-        int endColor = resources.getColor(condition.getCondition().colorRes);
-        ArgbEvaluator colorEvaluator = new ArgbEvaluator();
+            scoreAnimator.addUpdateListener(a -> {
+                int color = (int) colorEvaluator.evaluate(a.getAnimatedFraction(), startColor, endColor);
+                ticker.setTextColor(color);
+                ticker.setText(formatter.format(((Integer) a.getAnimatedValue()).longValue()));
+                conditionView.setTint(color);
+            });
 
-        scoreAnimator.addUpdateListener(a -> {
-            int color = (int) colorEvaluator.evaluate(a.getAnimatedFraction(), startColor, endColor);
-            ticker.setTextColor(color);
-            ticker.setText(formatter.format(((Integer) a.getAnimatedValue()).longValue()));
+            scoreAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    conditionView.transitionToFill(R.drawable.room_check_sensor_border_filled, false, () -> {
+                        deferWorker.schedule(() -> animateConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
+                    });
+                }
+            });
+            scoreAnimator.start();
         });
-
-        scoreAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                conditionView.setCompletedState(condition.getCondition());
-                deferWorker.schedule(() -> animateConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
-            }
-        });
-        scoreAnimator.start();
     }
 
     private void jumpToEnd() {
