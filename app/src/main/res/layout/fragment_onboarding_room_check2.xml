@@ -95,7 +95,7 @@
         android:textAppearance="@style/AppTheme.Text.SectionHeading"
         android:text="@string/dialog_loading_message"/>
 
-    <is.hello.sense.ui.widget.TickerView
+    <is.hello.sense.ui.widget.SensorTickerView
         android:id="@+id/fragment_onboarding_room_check_ticker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
