@@ -58,6 +58,7 @@ public class AndroidPeripheral implements Peripheral {
     private final AdvertisingData advertisingData;
     private final GattDispatcher gattDispatcher = new GattDispatcher();
 
+    private boolean suspendDisconnectBroadcasts = false;
     private BluetoothGatt gatt;
     private @Nullable Subscription bluetoothStateSubscription;
     private @Config int config;
@@ -76,11 +77,13 @@ public class AndroidPeripheral implements Peripheral {
             if (newState == STATUS_DISCONNECTED) {
                 closeGatt(gatt);
 
-                Intent disconnect = new Intent(ACTION_DISCONNECTED);
-                disconnect.putExtra(EXTRA_NAME, getName());
-                disconnect.putExtra(EXTRA_ADDRESS, getAddress());
-                LocalBroadcastManager.getInstance(stack.applicationContext)
-                                     .sendBroadcast(disconnect);
+                if (!suspendDisconnectBroadcasts) {
+                    Intent disconnect = new Intent(ACTION_DISCONNECTED);
+                    disconnect.putExtra(EXTRA_NAME, getName());
+                    disconnect.putExtra(EXTRA_ADDRESS, getAddress());
+                    LocalBroadcastManager.getInstance(stack.applicationContext)
+                                         .sendBroadcast(disconnect);
+                }
             }
         });
     }
@@ -178,12 +181,14 @@ public class AndroidPeripheral implements Peripheral {
                     if (gatt != null) {
                         timeout.reschedule();
                     } else {
+                        this.suspendDisconnectBroadcasts = false;
                         s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR, BluetoothGattError.Operation.CONNECT));
                     }
                 } else if (gattStatus != BluetoothGatt.GATT_SUCCESS) {
                     timeout.unschedule();
 
                     Logger.error(LOG_TAG, "Could not connect. " + BluetoothGattError.statusToString(gattStatus));
+                    this.suspendDisconnectBroadcasts = false;
                     s.onError(new BluetoothGattError(gattStatus, BluetoothGattError.Operation.CONNECT));
 
                     removeThisListener.call();
@@ -203,6 +208,7 @@ public class AndroidPeripheral implements Peripheral {
 
                     boolean clearBondOnConnect = ((config & CONFIG_FRAGILE_BONDS) == CONFIG_FRAGILE_BONDS);
                     if (getBondStatus() == BOND_NONE || !clearBondOnConnect) {
+                        this.suspendDisconnectBroadcasts = false;
                         s.onNext(this);
                         s.onCompleted();
 
@@ -224,11 +230,13 @@ public class AndroidPeripheral implements Peripheral {
                             if (gatt != null) {
                                 timeout.schedule();
                             } else {
+                                this.suspendDisconnectBroadcasts = false;
                                 s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR, BluetoothGattError.Operation.CONNECT));
                             }
                         }, e -> {
                             Logger.warn(LOG_TAG, "Could not remove previously persisted bonding information, ignoring.", e);
 
+                            this.suspendDisconnectBroadcasts = false;
                             s.onNext(this);
                             s.onCompleted();
 
@@ -248,6 +256,7 @@ public class AndroidPeripheral implements Peripheral {
                     this.bluetoothStateSubscription = null;
                 }
 
+                this.suspendDisconnectBroadcasts = false;
                 s.onError(new OperationTimeoutError(OperationTimeoutError.Operation.CONNECT));
             }, stack.scheduler);
 
@@ -255,6 +264,7 @@ public class AndroidPeripheral implements Peripheral {
 
             if (gatt != null) {
                 if (gatt.connect()) {
+                    this.suspendDisconnectBroadcasts = true;
                     timeout.schedule();
                 } else {
                     s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR, BluetoothGattError.Operation.CONNECT));
@@ -262,6 +272,7 @@ public class AndroidPeripheral implements Peripheral {
             } else {
                 this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
                 if (gatt != null) {
+                    this.suspendDisconnectBroadcasts = true;
                     timeout.schedule();
                 } else {
                     s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR, BluetoothGattError.Operation.CONNECT));
