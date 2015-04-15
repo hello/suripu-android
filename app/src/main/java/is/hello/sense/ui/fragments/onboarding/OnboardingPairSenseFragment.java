@@ -163,7 +163,6 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     private void finished() {
         hideAllActivityForSuccess(() -> {
             if (isPairOnlySession()) {
-                hardwarePresenter.clearPeripheral();
                 getOnboardingActivity().finish();
             } else {
                 getOnboardingActivity().showPairPill(true);

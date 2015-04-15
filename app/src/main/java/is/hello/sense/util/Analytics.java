@@ -2,7 +2,6 @@ package is.hello.sense.util;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -21,7 +20,6 @@ public class Analytics {
     public static final String PLATFORM = "android";
 
     private static @Nullable MixpanelAPI provider;
-    private static @Nullable SharedPreferences preferences;
 
     public interface Global {
 
@@ -344,7 +342,6 @@ public class Analytics {
 
         String EVENT_MAIN_VIEW = "Main View";
         String EVENT_INSIGHT_DETAIL = "Insight Detail";
-        String EVENT_SHARE = "Share Insight";
         String EVENT_QUESTION = "Question";
         String EVENT_SKIP_QUESTION = "Skip Question";
         String EVENT_ANSWER_QUESTION = "Answer Question";
@@ -401,7 +398,6 @@ public class Analytics {
 
     public static void initialize(@NonNull Context context) {
         Analytics.provider = MixpanelAPI.getInstance(context, BuildConfig.MP_API_KEY);
-        Analytics.preferences = context.getSharedPreferences(Constants.INTERNAL_PREFS, 0);
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -420,29 +416,29 @@ public class Analytics {
 
     //region User Identity
 
-    public static void setUserId(@NonNull String userId) {
-        if (preferences != null && provider != null) {
-            String existingUserId = preferences.getString(Constants.INTERNAL_PREF_ANALYTICS_USER_ID, null);
+    public static void trackRegistration(@NonNull String userId) {
+        Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
+
+        if (provider != null) {
+            provider.alias(userId, null);
             provider.getPeople().identify(userId);
-            if (existingUserId == null) {
-                Logger.info(LOG_TAG, "Identifying user.");
-                provider.identify(userId);
-            } else if (!existingUserId.equals(userId)) {
-                Logger.info(LOG_TAG, "Establishing user alias.");
-                try {
-                    provider.alias(userId, existingUserId);
-                } catch (NullPointerException e) {
-                    Logger.error(LOG_TAG, "Mixpanel API is still broken.", e);
-                }
-            }
+        }
 
-            if (Crashlytics.getInstance().isInitialized()) {
-                Crashlytics.setUserIdentifier(userId);
-            }
+        if (Crashlytics.getInstance().isInitialized()) {
+            Crashlytics.setUserIdentifier(userId);
+        }
+    }
 
-            preferences.edit()
-                    .putString(Constants.INTERNAL_PREF_ANALYTICS_USER_ID, userId)
-                    .apply();
+    public static void trackSignIn(@NonNull String userId) {
+        Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
+
+        if (provider != null) {
+            provider.identify(userId);
+            provider.getPeople().identify(userId);
+        }
+
+        if (Crashlytics.getInstance().isInitialized()) {
+            Crashlytics.setUserIdentifier(userId);
         }
     }
 

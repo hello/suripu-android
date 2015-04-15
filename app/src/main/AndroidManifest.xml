@@ -94,6 +94,10 @@
             android:parentActivityName=".ui.activities.HomeActivity" />
 
         <activity
+            android:name=".ui.activities.HardwareFragmentActivity"
+            android:parentActivityName=".ui.activities.HomeActivity" />
+
+        <activity
             android:name=".ui.activities.SupportActivity"
             android:label="@string/action_support"/>
 

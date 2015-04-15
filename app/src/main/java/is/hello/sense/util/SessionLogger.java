@@ -23,7 +23,7 @@ import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
+import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public final class SessionLogger {
     public static final String FILENAME = "Sense-Session-Log.txt";

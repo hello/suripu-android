@@ -28,7 +28,7 @@
 
     </FrameLayout>
 
-    <android.support.v4.view.ViewPager
+    <is.hello.sense.ui.widget.FixedViewPager
         android:id="@+id/fragment_onboarding_sense_colors_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

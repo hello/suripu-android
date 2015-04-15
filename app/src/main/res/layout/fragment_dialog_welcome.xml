@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_dark_overlay">
 
-    <android.support.v4.view.ViewPager
+    <is.hello.sense.ui.widget.FixedViewPager
         android:id="@+id/fragment_dialog_welcome_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

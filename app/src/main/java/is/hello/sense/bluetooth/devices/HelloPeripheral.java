@@ -1,11 +1,13 @@
 package is.hello.sense.bluetooth.devices;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import java.util.UUID;
 
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
@@ -107,12 +109,16 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
 
     public Observable<TSelf> disconnect() {
         //noinspection unchecked
-        return peripheral.disconnect().map(ignored -> (TSelf) this);
+        return peripheral.disconnect()
+                         .map(ignored -> (TSelf) this)
+                         .finallyDo(() -> {
+                             this.peripheralService = null;
+                         });
     }
 
     public boolean isConnected() {
         return (peripheral.getConnectionStatus() == Peripheral.STATUS_CONNECTED &&
-                peripheral.hasDiscoveredServices());
+                peripheralService != null);
     }
 
     public int getBondStatus() {
@@ -134,6 +140,10 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
     protected Observable<UUID> subscribe(@NonNull UUID characteristicIdentifier,
                                          @NonNull OperationTimeout timeout) {
         Logger.info(Peripheral.LOG_TAG, "Subscribing to " + characteristicIdentifier);
+
+        if (!isConnected()) {
+            return Observable.error(new PeripheralConnectionError());
+        }
 
         return peripheral.subscribeNotification(getTargetService(),
                                                 characteristicIdentifier,
@@ -174,6 +184,13 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
 
         private ConnectStatus(@StringRes int messageRes) {
             this.messageRes = messageRes;
+        }
+    }
+
+
+    public static class Tests {
+        public static void setPeripheralService(@NonNull HelloPeripheral<? extends HelloPeripheral> peripheral, @Nullable PeripheralService service) {
+            peripheral.peripheralService = service;
         }
     }
 }

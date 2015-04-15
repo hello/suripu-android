@@ -276,7 +276,7 @@ public class ScaleView extends FrameLayout {
         if (tick == null) {
             return minValue;
         } else {
-            return minValue + recyclerView.getChildPosition(tick);
+            return minValue + recyclerView.getChildAdapterPosition(tick);
         }
     }
 

@@ -25,7 +25,7 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static rx.android.observables.AndroidObservable.fromLocalBroadcast;
+import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 @Singleton public class QuestionsPresenter extends Presenter {
     private final ApiService apiService;

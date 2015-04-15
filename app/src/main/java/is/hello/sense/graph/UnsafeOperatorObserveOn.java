@@ -1,4 +1,4 @@
-package is.hello.sense.util;
+package is.hello.sense.graph;
 
 import android.support.annotation.NonNull;
 
