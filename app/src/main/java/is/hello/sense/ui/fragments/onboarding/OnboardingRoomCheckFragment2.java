@@ -1,8 +1,5 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -25,11 +22,10 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
-import is.hello.sense.ui.animation.AnimatorConfig;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SensorTickerView;
-import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
@@ -39,7 +35,6 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     private static final long CONDITION_VISIBLE_MS = 2500;
-    private static final long COUNT_UP_DURATION_MS = 850;
 
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
@@ -52,7 +47,6 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
 
     private final List<SensorState> conditions = new ArrayList<>();
-    private final List<UnitSystem.Formatter> conditionFormatters = new ArrayList<>();
     private final @StringRes int[] conditionStrings = {
         R.string.checking_condition_temperature,
         R.string.checking_condition_humidity,
@@ -113,45 +107,34 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
         status.setText(conditionStrings[position]);
         conditionView.crossFadeToFill(R.drawable.room_check_sensor_border_loading, true, () -> {
             SensorState condition = conditions.get(position);
-            UnitSystem.Formatter formatter = conditionFormatters.get(position);
-
-            int value = condition.getValue() != null ? condition.getValue().intValue() : 0;
-            ValueAnimator scoreAnimator = ValueAnimator.ofInt(0, value);
-            AnimatorConfig.DEFAULT.apply(scoreAnimator);
-            scoreAnimator.setDuration(COUNT_UP_DURATION_MS);
 
             Resources resources = getResources();
             int startColor = resources.getColor(Condition.ALERT.colorRes);
             int endColor = resources.getColor(condition.getCondition().colorRes);
-            ArgbEvaluator colorEvaluator = new ArgbEvaluator();
 
-            ticker.animateToValue(value, endColor);
-            scoreAnimator.addUpdateListener(a -> {
-                int color = (int) colorEvaluator.evaluate(a.getAnimatedFraction(), startColor, endColor);
-                conditionView.setTint(color);
-            });
+            ValueAnimator scoreAnimator = Animation.createColorAnimator(startColor, endColor);
+            scoreAnimator.setDuration(SensorTickerView.ANIMATION_DURATION_MS);
+            scoreAnimator.addUpdateListener(a -> conditionView.setTint((int) a.getAnimatedValue()));
 
-            scoreAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    animate(status)
-                            .fadeOut(View.VISIBLE)
-                            .addOnAnimationCompleted(finished -> {
-                                status.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body);
-                                status.setText(null);
-                                status.setTransformationMethod(null);
-                                markdown.renderInto(status, condition.getMessage());
+            int value = condition.getValue() != null ? condition.getValue().intValue() : 0;
+            ticker.animateToValue(value, endColor, () -> {
+                animate(status)
+                        .fadeOut(View.VISIBLE)
+                        .addOnAnimationCompleted(finished -> {
+                            status.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body);
+                            status.setText(null);
+                            status.setTransformationMethod(null);
+                            markdown.renderInto(status, condition.getMessage());
 
-                                animate(status)
-                                        .fadeIn()
-                                        .start();
+                            animate(status)
+                                    .fadeIn()
+                                    .start();
 
-                                conditionView.crossFadeToFill(R.drawable.room_check_sensor_border_filled, false, () -> {
-                                    deferWorker.schedule(() -> animateConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
-                                });
-                            })
-                            .start();
-                }
+                            conditionView.crossFadeToFill(R.drawable.room_check_sensor_border_filled, false, () -> {
+                                deferWorker.schedule(() -> animateConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
+                            });
+                        })
+                        .start();
             });
             scoreAnimator.start();
         });
@@ -168,19 +151,11 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
 
     public void bindConditions(@NonNull RoomConditionsPresenter.Result current) {
         conditions.clear();
-        conditionFormatters.clear();
 
         conditions.add(current.conditions.getTemperature());
-        conditionFormatters.add(current.units::formatTemperature);
-
         conditions.add(current.conditions.getHumidity());
-        conditionFormatters.add(current.units::formatHumidity);
-
         conditions.add(current.conditions.getSound());
-        conditionFormatters.add(current.units::formatDecibels);
-
         conditions.add(current.conditions.getLight());
-        conditionFormatters.add(current.units::formatLight);
 
         animateConditionAt(0);
     }
@@ -190,7 +165,6 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
         Logger.error(getClass().getSimpleName(), "Could not load conditions for room check", e);
 
         conditions.clear();
-        conditionFormatters.clear();
 
         jumpToEnd();
     }
