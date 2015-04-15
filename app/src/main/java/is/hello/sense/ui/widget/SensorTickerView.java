@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
+import is.hello.sense.ui.animation.AnimatorContext;
 
 public class SensorTickerView extends RecyclerView {
     public static final int RAMP_UP_DURATION_MS = 550;
@@ -37,6 +38,8 @@ public class SensorTickerView extends RecyclerView {
     private int endColor;
 
     private boolean animating = false;
+
+    private @Nullable AnimatorContext animatorContext;
 
     //region Lifecycle
 
@@ -120,6 +123,11 @@ public class SensorTickerView extends RecyclerView {
 
     //region Values
 
+
+    public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
+        this.animatorContext = animatorContext;
+    }
+
     public void setValue(int value, int endColor) {
         this.endColor = endColor;
         adapter.setCount(value);
@@ -156,6 +164,9 @@ public class SensorTickerView extends RecyclerView {
             protected void onStart() {
                 super.onStart();
 
+                if (animatorContext != null) {
+                    animatorContext.beginAnimation();
+                }
                 SensorTickerView.this.animating = true;
             }
 
@@ -163,6 +174,9 @@ public class SensorTickerView extends RecyclerView {
             protected void onStop() {
                 super.onStop();
 
+                if (animatorContext != null) {
+                    animatorContext.endAnimation();
+                }
                 SensorTickerView.this.animating = false;
                 onCompletion.run();
             }
@@ -177,6 +191,7 @@ public class SensorTickerView extends RecyclerView {
 
     public void stopAnimating() {
         stopScroll();
+        scrollToPosition(adapter.getItemCount());
     }
 
     //endregion

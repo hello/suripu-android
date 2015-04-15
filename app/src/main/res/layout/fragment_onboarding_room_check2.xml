@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/room_check_sense"
+            android:src="@drawable/room_check_sense_gray"
             android:contentDescription="@string/app_name"/>
 
     </FrameLayout>
@@ -67,7 +67,7 @@
         <is.hello.sense.ui.widget.SensorConditionView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:senseSensorIcon="@drawable/room_check_sensor_dust" />
+            app:senseSensorIcon="@drawable/room_check_sensor_motion" />
 
         <Space
             android:layout_width="0dp"

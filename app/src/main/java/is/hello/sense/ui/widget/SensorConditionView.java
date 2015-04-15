@@ -17,6 +17,7 @@ import android.view.animation.LinearInterpolator;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.widget.util.Drawables;
 
 public class SensorConditionView extends View {
@@ -33,6 +34,8 @@ public class SensorConditionView extends View {
     private @Nullable Drawable fill;
     private @Nullable Drawable transitionFill;
     private @Nullable Drawable icon;
+
+    private @Nullable AnimatorContext animatorContext;
 
 
     //region Lifecycle
@@ -172,6 +175,10 @@ public class SensorConditionView extends View {
 
     //region Contents
 
+    public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
+        this.animatorContext = animatorContext;
+    }
+
     public void setTint(int color) {
         this.tintColor = color;
 
@@ -250,6 +257,10 @@ public class SensorConditionView extends View {
                 if (rotate) {
                     startRotating();
                 }
+
+                if (animatorContext != null) {
+                    animatorContext.beginAnimation();
+                }
             }
 
             @Override
@@ -265,6 +276,10 @@ public class SensorConditionView extends View {
 
                 if (!rotate) {
                     stopRotation();
+                }
+
+                if (animatorContext != null) {
+                    animatorContext.endAnimation();
                 }
 
                 if (onCompletion != null) {

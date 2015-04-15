@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorState;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -106,17 +107,19 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
         status.setTextAppearance(getActivity(), R.style.AppTheme_Text_SectionHeading);
         status.setText(conditionStrings[position]);
         conditionView.crossFadeToFill(R.drawable.room_check_sensor_border_loading, true, () -> {
-            SensorState condition = conditions.get(position);
+            SensorState sensor = conditions.get(position);
 
             Resources resources = getResources();
             int startColor = resources.getColor(Condition.ALERT.colorRes);
-            int endColor = resources.getColor(condition.getCondition().colorRes);
+            int endColor = resources.getColor(sensor.getCondition().colorRes);
 
             ValueAnimator scoreAnimator = Animation.createColorAnimator(startColor, endColor);
             scoreAnimator.setDuration(SensorTickerView.ANIMATION_DURATION_MS);
             scoreAnimator.addUpdateListener(a -> conditionView.setTint((int) a.getAnimatedValue()));
 
-            int value = condition.getValue() != null ? condition.getValue().intValue() : 0;
+            setSenseCondition(sensor.getCondition());
+
+            int value = sensor.getValue() != null ? sensor.getValue().intValue() : 0;
             ticker.animateToValue(value, endColor, () -> {
                 animate(status)
                         .fadeOut(View.VISIBLE)
@@ -124,7 +127,7 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
                             status.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body);
                             status.setText(null);
                             status.setTransformationMethod(null);
-                            markdown.renderInto(status, condition.getMessage());
+                            markdown.renderInto(status, sensor.getMessage());
 
                             animate(status)
                                     .fadeIn()
@@ -141,7 +144,34 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     }
 
     private void jumpToEnd() {
+        if (ticker.isAnimating()) {
+            ticker.stopAnimating();
+        }
 
+        int totalConditionValue = Lists.sumInt(conditions, c -> c.getCondition().ordinal());
+        int roundedAverage = Math.round((totalConditionValue / conditions.size()) + 0.5f);
+        Condition condition = Condition.values()[roundedAverage];
+        setSenseCondition(condition);
+    }
+
+    private void setSenseCondition(@NonNull Condition condition) {
+        switch (condition) {
+            case UNKNOWN:
+                sense.setImageResource(R.drawable.room_check_sense_gray);
+                break;
+
+            case ALERT:
+                sense.setImageResource(R.drawable.room_check_sense_red);
+                break;
+
+            case WARNING:
+                sense.setImageResource(R.drawable.room_check_sense_yellow);
+                break;
+
+            case IDEAL:
+                sense.setImageResource(R.drawable.room_check_sense_green);
+                break;
+        }
     }
 
     //endregion
