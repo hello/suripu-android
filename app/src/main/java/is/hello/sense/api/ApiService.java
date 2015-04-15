@@ -32,6 +32,7 @@ import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
+import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
@@ -155,6 +156,8 @@ public interface ApiService {
                                             @NonNull @Body List<Question.Choice> answers);
 
     @PUT("/questions/skip")
+    @Headers("Content-Type: application/json")
+
     Observable<VoidResponse> skipQuestion(@Query("account_question_id") long accountId,
                                           @Query("id") long questionId);
 
