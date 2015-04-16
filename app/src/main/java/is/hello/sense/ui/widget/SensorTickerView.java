@@ -34,8 +34,8 @@ public class SensorTickerView extends RecyclerView {
     private final int contentHeight;
 
     private final ArgbEvaluator colorEvaluator = new ArgbEvaluator();
-    private final int startColor;
-    private int endColor;
+    private final int baseColor;
+    private int valueColor;
 
     private boolean animating = false;
 
@@ -71,8 +71,8 @@ public class SensorTickerView extends RecyclerView {
         Paint.FontMetricsInt fontMetrics = paint.getFontMetricsInt();
         this.contentHeight = Math.abs(fontMetrics.descent - fontMetrics.ascent);
 
-        this.startColor = getResources().getColor(Condition.ALERT.colorRes);
-        this.endColor = startColor;
+        this.baseColor = getResources().getColor(Condition.ALERT.colorRes);
+        this.valueColor = baseColor;
     }
 
     @Override
@@ -128,14 +128,8 @@ public class SensorTickerView extends RecyclerView {
         this.animatorContext = animatorContext;
     }
 
-    public void setValue(int value, int endColor) {
-        this.endColor = endColor;
-        adapter.setCount(value);
-        scrollToPosition(value);
-    }
-
-    public void animateToValue(int value, int endColor, @NonNull Runnable onCompletion) {
-        this.endColor = endColor;
+    public void animateToValue(int value, int valueColor, @NonNull Runnable onCompletion) {
+        this.valueColor = valueColor;
         adapter.setCount(value);
         scrollToPosition(0);
 
@@ -228,7 +222,7 @@ public class SensorTickerView extends RecyclerView {
 
         int getColorForPosition(int position) {
             float fraction = (position / (float) count);
-            return (int) colorEvaluator.evaluate(fraction, startColor, endColor);
+            return (int) colorEvaluator.evaluate(fraction, baseColor, valueColor);
         }
 
         @Override
@@ -311,7 +305,7 @@ public class SensorTickerView extends RecyclerView {
             for (int i = 0, length = textViews.length; i < length; i++) {
                 TextView textView = textViews[i];
                 if (i < start) {
-                    textView.setVisibility(INVISIBLE);
+                    textView.setVisibility(GONE);
                 } else {
                     int offset = i - start;
                     textView.setText(asString.substring(offset, offset + 1));

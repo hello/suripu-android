@@ -2,6 +2,8 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.animation.ValueAnimator;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +26,7 @@ import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SensorTickerView;
@@ -72,13 +75,18 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
 
         this.sense = (ImageView) view.findViewById(R.id.fragment_onboarding_room_check_sense);
         this.status = (TextView) view.findViewById(R.id.fragment_onboarding_room_check_status);
+
+        AnimatorContext animatorContext = getAnimatorContext();
         this.ticker = (SensorTickerView) view.findViewById(R.id.fragment_onboarding_room_check_ticker);
+        ticker.setAnimatorContext(animatorContext);
 
         ViewGroup sensors = (ViewGroup) view.findViewById(R.id.fragment_onboarding_room_check_sensors);
         for (int i = 0, count = sensors.getChildCount(); i < count; i++) {
             View sensorChild = sensors.getChildAt(i);
             if (sensorChild instanceof SensorConditionView) {
-                sensorViews.add((SensorConditionView) sensorChild);
+                SensorConditionView conditionView = (SensorConditionView) sensorChild;
+                conditionView.setAnimatorContext(animatorContext);
+                sensorViews.add(conditionView);
             }
         }
 
@@ -117,11 +125,11 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
             scoreAnimator.setDuration(SensorTickerView.ANIMATION_DURATION_MS);
             scoreAnimator.addUpdateListener(a -> conditionView.setTint((int) a.getAnimatedValue()));
 
-            setSenseCondition(sensor.getCondition());
+            animateSenseCondition(sensor.getCondition());
 
             int value = sensor.getValue() != null ? sensor.getValue().intValue() : 0;
             ticker.animateToValue(value, endColor, () -> {
-                animate(status)
+                animate(status, getAnimatorContext())
                         .fadeOut(View.VISIBLE)
                         .addOnAnimationCompleted(finished -> {
                             status.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body);
@@ -129,14 +137,12 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
                             status.setTransformationMethod(null);
                             markdown.renderInto(status, sensor.getMessage());
 
-                            animate(status)
-                                    .fadeIn()
-                                    .start();
-
                             conditionView.crossFadeToFill(R.drawable.room_check_sensor_border_filled, false, () -> {
                                 deferWorker.schedule(() -> animateConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
                             });
                         })
+                        .andThen()
+                        .fadeIn()
                         .start();
             });
             scoreAnimator.start();
@@ -151,27 +157,33 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
         int totalConditionValue = Lists.sumInt(conditions, c -> c.getCondition().ordinal());
         int roundedAverage = Math.round((totalConditionValue / conditions.size()) + 0.5f);
         Condition condition = Condition.values()[roundedAverage];
-        setSenseCondition(condition);
+        animateSenseCondition(condition);
     }
 
-    private void setSenseCondition(@NonNull Condition condition) {
+    private void animateSenseCondition(@NonNull Condition condition) {
+        int drawableRes = 0;
         switch (condition) {
             case UNKNOWN:
-                sense.setImageResource(R.drawable.room_check_sense_gray);
+                drawableRes = R.drawable.room_check_sense_gray;
                 break;
-
             case ALERT:
-                sense.setImageResource(R.drawable.room_check_sense_red);
+                drawableRes = R.drawable.room_check_sense_red;
                 break;
-
             case WARNING:
-                sense.setImageResource(R.drawable.room_check_sense_yellow);
+                drawableRes = R.drawable.room_check_sense_yellow;
                 break;
-
             case IDEAL:
-                sense.setImageResource(R.drawable.room_check_sense_green);
+                drawableRes = R.drawable.room_check_sense_green;
                 break;
         }
+
+        TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[] {
+            sense.getDrawable(),
+            getResources().getDrawable(drawableRes),
+        });
+        transitionDrawable.setCrossFadeEnabled(true);
+        sense.setImageDrawable(transitionDrawable);
+        transitionDrawable.startTransition(Animation.DURATION_NORMAL);
     }
 
     //endregion

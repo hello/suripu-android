@@ -257,10 +257,6 @@ public class SensorConditionView extends View {
                 if (rotate) {
                     startRotating();
                 }
-
-                if (animatorContext != null) {
-                    animatorContext.beginAnimation();
-                }
             }
 
             @Override
@@ -278,15 +274,15 @@ public class SensorConditionView extends View {
                     stopRotation();
                 }
 
-                if (animatorContext != null) {
-                    animatorContext.endAnimation();
-                }
-
                 if (onCompletion != null) {
                     onCompletion.run();
                 }
             }
         });
+
+        if (animatorContext != null) {
+            crossFade.addListener(animatorContext);
+        }
 
         crossFade.start();
     }
