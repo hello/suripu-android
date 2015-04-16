@@ -112,6 +112,10 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
             return;
         }
 
+        if (position > 0) {
+            animateSenseToGrey();
+        }
+
         SensorConditionView conditionView = sensorViews.get(position);
         status.setTextAppearance(getActivity(), R.style.AppTheme_Text_SectionHeading);
         status.setText(conditionStrings[position]);
@@ -133,6 +137,7 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
                             status.setTransformationMethod(null);
                             markdown.renderInto(status, sensor.getMessage());
 
+                            animateSenseCondition(sensor.getCondition());
                             conditionView.crossFadeToFill(R.drawable.room_check_sensor_border_filled, false, () -> {
                                 deferWorker.schedule(() -> animateConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
                             });
@@ -142,7 +147,6 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
                         .start();
             });
 
-            animateSenseCondition(sensor.getCondition());
 
             ValueAnimator scoreAnimator = Animation.createColorAnimator(startColor, endColor);
             scoreAnimator.addUpdateListener(a -> {
@@ -160,6 +164,13 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
         int roundedAverage = Math.round((totalConditionValue / conditions.size()) + 0.5f);
         Condition condition = Condition.values()[roundedAverage];
         animateSenseCondition(condition);
+    }
+
+    private void animateSenseToGrey() {
+        Drawable senseDrawable = sense.getDrawable();
+        if (senseDrawable instanceof TransitionDrawable) {
+            ((TransitionDrawable) senseDrawable).reverseTransition(Animation.DURATION_NORMAL);
+        }
     }
 
     private void animateSenseCondition(@NonNull Condition condition) {
