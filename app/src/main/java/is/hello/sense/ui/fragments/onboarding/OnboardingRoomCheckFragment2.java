@@ -122,15 +122,9 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
             int startColor = resources.getColor(Condition.ALERT.colorRes);
             int endColor = resources.getColor(sensor.getCondition().colorRes);
 
-            ValueAnimator scoreAnimator = Animation.createColorAnimator(startColor, endColor);
-            scoreAnimator.setDuration(SensorTickerView.ANIMATION_DURATION_MS);
-            scoreAnimator.addUpdateListener(a -> conditionView.setTint((int) a.getAnimatedValue()));
-
-            animateSenseCondition(sensor.getCondition());
-
             int value = sensor.getValue() != null ? sensor.getValue().intValue() : 0;
-            ticker.setValue(value, endColor, conditionUnits.get(position));
-            ticker.startAnimating(() -> {
+            String unit = conditionUnits.get(position);
+            long duration = ticker.animateToValue(value, unit, ignored -> {
                 animate(status, getAnimatorContext())
                         .fadeOut(View.VISIBLE)
                         .addOnAnimationCompleted(finished -> {
@@ -147,15 +141,17 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
                         .fadeIn()
                         .start();
             });
+
+            animateSenseCondition(sensor.getCondition());
+
+            ValueAnimator scoreAnimator = Animation.createColorAnimator(startColor, endColor);
+            scoreAnimator.addUpdateListener(a -> conditionView.setTint((int) a.getAnimatedValue()));
+            scoreAnimator.setDuration(duration);
             scoreAnimator.start();
         });
     }
 
     private void jumpToEnd() {
-        if (ticker.isAnimating()) {
-            ticker.stopAnimating();
-        }
-
         int totalConditionValue = Lists.sumInt(conditions, c -> c.getCondition().ordinal());
         int roundedAverage = Math.round((totalConditionValue / conditions.size()) + 0.5f);
         Condition condition = Condition.values()[roundedAverage];

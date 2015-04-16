@@ -10,25 +10,21 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StyleRes;
 import android.text.TextPaint;
 import android.text.style.TextAppearanceSpan;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AnticipateInterpolator;
 
 import is.hello.sense.R;
 import rx.functions.Action1;
 
 public class RotaryView extends View {
-    private static final int NO_ITEM = -1;
+    public static final int NO_ITEM = -1;
 
-    public static final long DURATION_NORMAL_SPIN_MS = 70;
-    public static final long DURATION_LAST_SPIN_MS = 80;
-    public static final long DURATION_ONE_OFF_SPIN_MS = 500;
-
-    public final AccelerateInterpolator INTERPOLATOR = new AccelerateInterpolator();
-    public final AnticipateInterpolator INTERPOLATOR_LAST = new AnticipateInterpolator(0.6f);
+    public static final @StyleRes int TEXT_APPEARANCE = R.style.AppTheme_Text_BigScore;
+    public static final AccelerateInterpolator INTERPOLATOR = new AccelerateInterpolator();
 
     //region Drawing
 
@@ -58,7 +54,7 @@ public class RotaryView extends View {
     public RotaryView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        TextAppearanceSpan textAppearance = new TextAppearanceSpan(context, R.style.AppTheme_Text_BigScore);
+        TextAppearanceSpan textAppearance = new TextAppearanceSpan(context, TEXT_APPEARANCE);
         textAppearance.updateMeasureState(textPaint);
         textPaint.setTextAlign(Paint.Align.CENTER);
 
@@ -145,7 +141,7 @@ public class RotaryView extends View {
 
     //region Attributes
 
-    private void setOnScreenItem(int onScreenItem) {
+    public void setOnScreenItem(int onScreenItem) {
         this.itemsOffset = 0f;
         this.onScreenItem = onScreenItem;
 
@@ -160,6 +156,10 @@ public class RotaryView extends View {
         }
 
         invalidate();
+    }
+
+    public int getOnScreenItem() {
+        return onScreenItem;
     }
 
     public void setItems(@NonNull String[] items) {
@@ -212,8 +212,15 @@ public class RotaryView extends View {
         offsetAnimator.start();
     }
 
-    public void spinTo(int targetItem,
-                       int rotations,
+    public Spin createSpin(int targetItem, int rotations, long targetDuration) {
+        if (items == null) {
+            throw new IllegalStateException("Cannot create spin without items");
+        }
+
+        return new Spin(items.length, targetItem, rotations, targetDuration);
+    }
+
+    public void spinTo(@NonNull Spin spin,
                        @NonNull Action1<Integer> onRotation,
                        @NonNull Action1<Boolean> onCompletion) {
         if (items == null) {
@@ -222,7 +229,7 @@ public class RotaryView extends View {
         }
 
         setOnScreenItem(0);
-        spinToNext(DURATION_NORMAL_SPIN_MS, INTERPOLATOR, new Action1<Boolean>() {
+        spinToNext(spin.singleSpinDuration, INTERPOLATOR, new Action1<Boolean>() {
             final int repetitionRollover = items.length;
             int repetitions = 0, rotationCount = 0;
 
@@ -241,8 +248,8 @@ public class RotaryView extends View {
                     this.rotationCount++;
                 }
 
-                if (rotationCount < rotations || onScreenItem < targetItem) {
-                    spinToNext(DURATION_NORMAL_SPIN_MS, INTERPOLATOR, this);
+                if (rotationCount < spin.rotations || onScreenItem < spin.targetItem) {
+                    spinToNext(spin.singleSpinDuration, INTERPOLATOR, this);
                 } else {
                     onCompletion.call(true);
                 }
@@ -251,4 +258,22 @@ public class RotaryView extends View {
     }
 
     //endregion
+
+
+    public static class Spin {
+        public final int targetItem;
+        public final int rotations;
+
+        public final long singleSpinDuration;
+        public final long totalDuration;
+
+        public Spin(int itemCount, int targetItem, int rotations, long targetDuration) {
+            this.targetItem = targetItem;
+            this.rotations = rotations;
+
+            int itemsShown = (itemCount * rotations) + targetItem;
+            this.singleSpinDuration = Math.max(30, targetDuration / itemsShown);
+            this.totalDuration = singleSpinDuration * itemsShown;
+        }
+    }
 }
