@@ -14,13 +14,23 @@ public class UsCustomaryUnitSystem extends UnitSystem {
     }
 
     @Override
+    public String getMassUnit() {
+        return "lbs";
+    }
+
+    @Override
     public CharSequence formatMass(long mass) {
-        return Styles.assembleReadingAndUnit(UnitOperations.gramsToPounds((int) mass), "lbs");
+        return Styles.assembleReadingAndUnit(UnitOperations.gramsToPounds((int) mass), getMassUnit());
     }
 
     @Override
     public CharSequence formatTemperature(long temperature) {
-        return Styles.assembleReadingAndUnit(UnitOperations.celsiusToFahrenheit(temperature), "°");
+        return Styles.assembleReadingAndUnit(UnitOperations.celsiusToFahrenheit(temperature), getTemperatureUnit());
+    }
+
+    @Override
+    public String getHeightUnit() {
+        return "";
     }
 
     @Override

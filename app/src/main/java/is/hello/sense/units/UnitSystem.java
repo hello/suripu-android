@@ -54,28 +54,56 @@ public class UnitSystem implements Serializable {
 
     //region Formatting
 
+    public String getMassUnit() {
+        return "g";
+    }
+
     public CharSequence formatMass(long mass) {
-        return Styles.assembleReadingAndUnit(mass, "g");
+        return Styles.assembleReadingAndUnit(mass, getMassUnit());
+    }
+
+    public String getTemperatureUnit() {
+        return TEMP_SUFFIX;
     }
 
     public CharSequence formatTemperature(long temperature) {
-        return Styles.assembleReadingAndUnit(temperature, TEMP_SUFFIX);
+        return Styles.assembleReadingAndUnit(temperature, getTemperatureUnit());
+    }
+
+    public String getHumidityUnit() {
+        return "%";
     }
 
     public CharSequence formatHumidity(long humidity) {
-        return Styles.assembleReadingAndUnit(humidity, "%");
+        return Styles.assembleReadingAndUnit(humidity, getHumidityUnit());
+    }
+
+    public String getHeightUnit() {
+        return "cm";
     }
 
     public CharSequence formatHeight(long distance) {
-        return Styles.assembleReadingAndUnit(distance, "cm");
+        return Styles.assembleReadingAndUnit(distance, getHeightUnit());
+    }
+
+    public String getSoundUnit() {
+        return "db";
     }
 
     public CharSequence formatDecibels(long decibels) {
-        return Styles.assembleReadingAndUnit(decibels, "db");
+        return Styles.assembleReadingAndUnit(decibels, getSoundUnit());
+    }
+
+    public String getLightUnit() {
+        return "lux";
     }
 
     public CharSequence formatLight(long lux) {
-        return Styles.assembleReadingAndUnit(lux, "lux");
+        return Styles.assembleReadingAndUnit(lux, getLightUnit());
+    }
+
+    public String getParticulatesUnit() {
+        return "";
     }
 
     public CharSequence formatParticulates(long particulates) {

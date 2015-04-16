@@ -128,11 +128,13 @@ public class SensorTickerView extends RecyclerView {
         this.animatorContext = animatorContext;
     }
 
-    public void animateToValue(int value, int valueColor, @NonNull Runnable onCompletion) {
+    public void setValue(int value, int valueColor, @Nullable String unit) {
         this.valueColor = valueColor;
-        adapter.setCount(value);
+        adapter.configure(value, unit);
         scrollToPosition(0);
+    }
 
+    public void startAnimating(@NonNull Runnable onCompletion) {
         LinearSmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
             @Override
             public PointF computeScrollVectorForPosition(int targetPosition) {
@@ -175,7 +177,7 @@ public class SensorTickerView extends RecyclerView {
                 onCompletion.run();
             }
         };
-        smoothScroller.setTargetPosition(value);
+        smoothScroller.setTargetPosition(adapter.getItemCount());
         layoutManager.startSmoothScroll(smoothScroller);
     }
 
@@ -210,13 +212,16 @@ public class SensorTickerView extends RecyclerView {
         private final ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         private final Context context;
         private int count = 0;
+        private String unit;
 
         NumberAdapter(@NonNull Context context) {
             this.context = context;
         }
 
-        void setCount(int count) {
+        void configure(int count, @Nullable String unit) {
             this.count = count;
+            this.unit = unit;
+
             notifyDataSetChanged();
         }
 
@@ -252,7 +257,7 @@ public class SensorTickerView extends RecyclerView {
             }
 
             void display(int position) {
-                numberView.setValue(position);
+                numberView.setValue(position, unit);
                 numberView.setColor(getColorForPosition(position));
             }
         }
@@ -261,7 +266,8 @@ public class SensorTickerView extends RecyclerView {
     static class NumberView extends LinearLayout {
         private static final int NUMBER_DIGITS = 3;
 
-        private final TextView[] textViews = new TextView[NUMBER_DIGITS];
+        private final TextView[] digitTexts = new TextView[NUMBER_DIGITS];
+        private final TextView unitText;
 
         NumberView(@NonNull Context context) {
             this(context, null);
@@ -279,31 +285,43 @@ public class SensorTickerView extends RecyclerView {
             setClipChildren(false);
 
             LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            for (int i = 0, length = textViews.length; i < length; i++) {
-                TextView textView = new TextView(context, attrs, defStyleAttr);
-                textView.setTextAppearance(context, R.style.AppTheme_Text_BigScore);
-                textView.setText(DEFAULT_DIGIT);
+            for (int i = 0, length = digitTexts.length; i < length; i++) {
+                TextView textView = createTextView(context);
                 addView(textView, layoutParams);
-
-                this.textViews[i] = textView;
+                this.digitTexts[i] = textView;
             }
+
+            this.unitText = createTextView(context);
+            unitText.setTextSize(30f);
+            unitText.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+            addView(unitText, layoutParams);
+        }
+
+        TextView createTextView(@NonNull Context context) {
+            TextView textView = new TextView(context);
+            textView.setSingleLine(true);
+            textView.setTextAppearance(context, R.style.AppTheme_Text_BigScore);
+            textView.setText(DEFAULT_DIGIT);
+            textView.setGravity(Gravity.CENTER);
+            return textView;
         }
 
         void setColor(int color) {
-            for (TextView textView : textViews) {
+            for (TextView textView : digitTexts) {
                 textView.setTextColor(color);
             }
+            unitText.setTextColor(color);
         }
 
-        void setValue(int value) {
+        void setValue(int value, @Nullable String unit) {
             if (value > 999) {
                 throw new IllegalArgumentException("Colors larger than 999 not supported");
             }
 
             String asString = Integer.toString(value);
-            int start = textViews.length - asString.length();
-            for (int i = 0, length = textViews.length; i < length; i++) {
-                TextView textView = textViews[i];
+            int start = digitTexts.length - asString.length();
+            for (int i = 0, length = digitTexts.length; i < length; i++) {
+                TextView textView = digitTexts[i];
                 if (i < start) {
                     textView.setVisibility(GONE);
                 } else {
@@ -312,15 +330,25 @@ public class SensorTickerView extends RecyclerView {
                     textView.setVisibility(VISIBLE);
                 }
             }
+
+            unitText.setText(unit);
+        }
+
+        float calculateStagger(float normalizedOffset, int position) {
+            return (0.1f * position) * normalizedOffset;
         }
 
         void setOffset(float offset) {
-            setAlpha(1f - Math.abs(offset));
-            for (int i = 0, length = textViews.length; i < length; i++) {
-                TextView textView = textViews[i];
-                float fraction = (0.1f * i) * Math.abs(offset);
+            float normalizedOffset = Math.abs(offset);
+            setAlpha(1f - normalizedOffset);
+            for (int i = 0, length = digitTexts.length; i < length; i++) {
+                TextView textView = digitTexts[i];
+                float fraction = calculateStagger(normalizedOffset, i);
                 textView.setTranslationY(textView.getMeasuredHeight() * fraction);
             }
+
+            float fraction = calculateStagger(normalizedOffset, NUMBER_DIGITS);
+            unitText.setTranslationY(unitText.getMeasuredHeight() * fraction);
         }
     }
 

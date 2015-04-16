@@ -51,6 +51,7 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
 
     private final List<SensorState> conditions = new ArrayList<>();
+    private final List<String> conditionUnits = new ArrayList<>();
     private final @StringRes int[] conditionStrings = {
         R.string.checking_condition_temperature,
         R.string.checking_condition_humidity,
@@ -128,7 +129,8 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
             animateSenseCondition(sensor.getCondition());
 
             int value = sensor.getValue() != null ? sensor.getValue().intValue() : 0;
-            ticker.animateToValue(value, endColor, () -> {
+            ticker.setValue(value, endColor, conditionUnits.get(position));
+            ticker.startAnimating(() -> {
                 animate(status, getAnimatorContext())
                         .fadeOut(View.VISIBLE)
                         .addOnAnimationCompleted(finished -> {
@@ -195,9 +197,13 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
         conditions.clear();
 
         conditions.add(current.conditions.getTemperature());
+        conditionUnits.add(current.units.getTemperatureUnit());
         conditions.add(current.conditions.getHumidity());
+        conditionUnits.add(current.units.getHumidityUnit());
         conditions.add(current.conditions.getSound());
+        conditionUnits.add(current.units.getSoundUnit());
         conditions.add(current.conditions.getLight());
+        conditionUnits.add(current.units.getLightUnit());
 
         animateConditionAt(0);
     }
