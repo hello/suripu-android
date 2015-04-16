@@ -3,14 +3,13 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.ui.widget.util.Styles;
 import rx.functions.Action1;
 
 public class SensorTickerView extends LinearLayout {
@@ -49,7 +48,8 @@ public class SensorTickerView extends LinearLayout {
 
         this.unitText = new TextView(context);
         unitText.setTextAppearance(context, RotaryView.TEXT_APPEARANCE);
-        unitText.setGravity(Gravity.CENTER);
+        unitText.setTextSize(TypedValue.COMPLEX_UNIT_PX, 0.4f * unitText.getTextSize());
+        unitText.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
         addView(unitText, layoutParams);
     }
 
@@ -62,16 +62,19 @@ public class SensorTickerView extends LinearLayout {
         this.animatorContext = animatorContext;
     }
 
+    public void setTextColor(int color) {
+        unitText.setTextColor(color);
+        for (RotaryView digit : digits) {
+            digit.setTextColor(color);
+        }
+    }
+
     public long animateToValue(int value, @Nullable String unit, @NonNull Action1<Boolean> onCompletion) {
         if (value >= 1000) {
             throw new IllegalArgumentException("Values above 999 not supported");
         }
 
-        if (TextUtils.isEmpty(unit)) {
-            unitText.setText(null);
-        } else {
-            unitText.setText(Styles.createUnitSuffixSpan(unit));
-        }
+        unitText.setText(unit);
 
         String valueString = Integer.toString(value);
         int digitsCount = valueString.length();
@@ -99,7 +102,7 @@ public class SensorTickerView extends LinearLayout {
 
         RotaryView digitView = digits[digitIndex];
         RotaryView.Spin spin = digitView.createSpin(targetDigit, rotations, 1000);
-        digitView.spinTo(spin, rotation -> {
+        digitView.runSpin(spin, rotation -> {
             incrementAdjacent(spin.singleSpinDuration, digitIndex - 1);
         }, finished -> {
             if (animatorContext != null) {
@@ -113,7 +116,7 @@ public class SensorTickerView extends LinearLayout {
 
     private void incrementAdjacent(long spinDuration, int digitIndex) {
         RotaryView digit = digits[digitIndex];
-        digit.spinToNext(spinDuration, RotaryView.INTERPOLATOR, finished -> {
+        digit.spinToNext(spinDuration, finished -> {
             if (digit.getOnScreenItem() == 0 && digitIndex >= 0) {
                 incrementAdjacent(spinDuration, digitIndex - 1);
             }

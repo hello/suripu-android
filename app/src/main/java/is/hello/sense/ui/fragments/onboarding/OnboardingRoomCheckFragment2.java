@@ -145,7 +145,11 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
             animateSenseCondition(sensor.getCondition());
 
             ValueAnimator scoreAnimator = Animation.createColorAnimator(startColor, endColor);
-            scoreAnimator.addUpdateListener(a -> conditionView.setTint((int) a.getAnimatedValue()));
+            scoreAnimator.addUpdateListener(a -> {
+                int color = (int) a.getAnimatedValue();
+                conditionView.setTint(color);
+                ticker.setTextColor(color);
+            });
             scoreAnimator.setDuration(duration);
             scoreAnimator.start();
         });

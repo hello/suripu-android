@@ -2,7 +2,6 @@ package is.hello.sense.ui.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -15,16 +14,20 @@ import android.text.TextPaint;
 import android.text.style.TextAppearanceSpan;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 import is.hello.sense.R;
 import rx.functions.Action1;
 
 public class RotaryView extends View {
+    //region Constants
+
     public static final int NO_ITEM = -1;
 
     public static final @StyleRes int TEXT_APPEARANCE = R.style.AppTheme_Text_BigScore;
-    public static final AccelerateInterpolator INTERPOLATOR = new AccelerateInterpolator();
+
+    //endregion
+
 
     //region Drawing
 
@@ -35,10 +38,22 @@ public class RotaryView extends View {
 
     //endregion
 
+
+    //region Items
+
     private @Nullable String[] items;
     private int onScreenItem = NO_ITEM;
     private int offScreenItem = NO_ITEM;
+
+    //endregion
+
+
+    //region Animation
+
+    private final ValueAnimator offsetAnimator;
     private float itemsOffset = 0f;
+
+    //endregion
 
 
     //region Lifecycle
@@ -59,12 +74,19 @@ public class RotaryView extends View {
         textPaint.setTextAlign(Paint.Align.CENTER);
 
         Rect textBounds = new Rect();
-        textPaint.getTextBounds("W", 0, 1, textBounds);
+        textPaint.getTextBounds("4", 0, 1, textBounds); // widest number in Roboto
         this.itemWidth = textBounds.width();
 
         Paint.FontMetricsInt fontMetrics = textPaint.getFontMetricsInt();
         this.itemHeight = Math.abs(fontMetrics.bottom - fontMetrics.top);
         this.textYFixUp = fontMetrics.bottom;
+
+        this.offsetAnimator = ValueAnimator.ofFloat(0f, 1f);
+        offsetAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        offsetAnimator.addUpdateListener(a -> {
+            this.itemsOffset = a.getAnimatedFraction();
+            invalidate();
+        });
     }
 
     //endregion
@@ -172,26 +194,23 @@ public class RotaryView extends View {
         }
     }
 
+    public void setTextColor(int textColor) {
+        textPaint.setColor(textColor);
+    }
+
     //endregion
 
 
     //region Animation
 
-    private ValueAnimator createBasicOffsetAnimator() {
-        ValueAnimator offsetAnimator = ValueAnimator.ofFloat(0f, 1f);
-        offsetAnimator.addUpdateListener(a -> {
-            this.itemsOffset = a.getAnimatedFraction();
-            invalidate();
-        });
-        return offsetAnimator;
+    private void prepareForOffsetAnimation() {
+        offsetAnimator.cancel();
     }
 
-    public void spinToNext(long duration,
-                           @NonNull TimeInterpolator interpolator,
-                           @NonNull Action1<Boolean> onCompletion) {
-        ValueAnimator offsetAnimator = createBasicOffsetAnimator();
+    public void spinToNext(long duration, @NonNull Action1<Boolean> onCompletion) {
+        prepareForOffsetAnimation();
+
         offsetAnimator.setDuration(duration);
-        offsetAnimator.setInterpolator(interpolator);
         offsetAnimator.addListener(new AnimatorListenerAdapter() {
             boolean wasCanceled = false;
 
@@ -202,11 +221,15 @@ public class RotaryView extends View {
 
             @Override
             public void onAnimationEnd(Animator animation) {
+                animation.removeListener(this);
+
                 if (!wasCanceled) {
                     setOnScreenItem(offScreenItem);
                 }
 
-                onCompletion.call(!wasCanceled);
+                // Re-using the ValueAnimator means we can't
+                // call this on the same looper callback.
+                post(() -> onCompletion.call(!wasCanceled));
             }
         });
         offsetAnimator.start();
@@ -220,16 +243,16 @@ public class RotaryView extends View {
         return new Spin(items.length, targetItem, rotations, targetDuration);
     }
 
-    public void spinTo(@NonNull Spin spin,
-                       @NonNull Action1<Integer> onRotation,
-                       @NonNull Action1<Boolean> onCompletion) {
+    public void runSpin(@NonNull Spin spin,
+                        @NonNull Action1<Integer> onRotation,
+                        @NonNull Action1<Boolean> onCompletion) {
         if (items == null) {
             onCompletion.call(false);
             return;
         }
 
         setOnScreenItem(0);
-        spinToNext(spin.singleSpinDuration, INTERPOLATOR, new Action1<Boolean>() {
+        spinToNext(spin.singleSpinDuration, new Action1<Boolean>() {
             final int repetitionRollover = items.length;
             int repetitions = 0, rotationCount = 0;
 
@@ -249,7 +272,7 @@ public class RotaryView extends View {
                 }
 
                 if (rotationCount < spin.rotations || onScreenItem < spin.targetItem) {
-                    spinToNext(spin.singleSpinDuration, INTERPOLATOR, this);
+                    spinToNext(spin.singleSpinDuration, this);
                 } else {
                     onCompletion.call(true);
                 }
@@ -272,7 +295,7 @@ public class RotaryView extends View {
             this.rotations = rotations;
 
             int itemsShown = (itemCount * rotations) + targetItem;
-            this.singleSpinDuration = Math.max(30, targetDuration / itemsShown);
+            this.singleSpinDuration = Math.max(20, targetDuration / itemsShown);
             this.totalDuration = singleSpinDuration * itemsShown;
         }
     }
