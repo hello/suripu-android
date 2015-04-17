@@ -68,6 +68,12 @@ public class SensorTickerView extends LinearLayout {
         }
     }
 
+    public void stopAnimating() {
+        for (DigitRotaryView digit : digits) {
+            digit.stopAnimating();
+        }
+    }
+
     public long animateToValue(int value, @Nullable String unit, @NonNull Action1<Boolean> onCompletion) {
         unitText.setText(unit);
 

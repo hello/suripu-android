@@ -11,6 +11,7 @@ import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,20 +26,24 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SensorTickerView;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import rx.Scheduler;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.stop;
 
 public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     private static final long CONDITION_VISIBLE_MS = 2500;
+    private static final long END_CONTAINER_DELAY_MS = 50;
 
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
@@ -46,7 +51,10 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     private ImageView sense;
     private final List<SensorConditionView> sensorViews = new ArrayList<>();
     private TextView status;
-    private SensorTickerView ticker;
+    private SensorTickerView scoreTicker;
+
+    private int startColor;
+    private boolean animationCompleted = false;
 
     private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
 
@@ -55,13 +63,17 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     private final @StringRes int[] conditionStrings = {
         R.string.checking_condition_temperature,
         R.string.checking_condition_humidity,
-        R.string.checking_condition_sound,
         R.string.checking_condition_light,
+        R.string.checking_condition_sound,
     };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            this.animationCompleted = savedInstanceState.getBoolean("animationCompleted", false);
+        }
 
         presenter.update();
         addPresenter(presenter);
@@ -78,8 +90,8 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
         this.status = (TextView) view.findViewById(R.id.fragment_onboarding_room_check_status);
 
         AnimatorContext animatorContext = getAnimatorContext();
-        this.ticker = (SensorTickerView) view.findViewById(R.id.fragment_onboarding_room_check_ticker);
-        ticker.setAnimatorContext(animatorContext);
+        this.scoreTicker = (SensorTickerView) view.findViewById(R.id.fragment_onboarding_room_check_ticker);
+        scoreTicker.setAnimatorContext(animatorContext);
 
         ViewGroup sensors = (ViewGroup) view.findViewById(R.id.fragment_onboarding_room_check_sensors);
         for (int i = 0, count = sensors.getChildCount(); i < count; i++) {
@@ -91,6 +103,8 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
             }
         }
 
+        this.startColor = getResources().getColor(Condition.ALERT.colorRes);
+
         return view;
     }
 
@@ -98,21 +112,47 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(presenter.currentConditions,
-                         this::bindConditions,
-                         this::conditionsUnavailable);
+        if (animationCompleted) {
+            jumpToEnd();
+        } else {
+            bindAndSubscribe(presenter.currentConditions,
+                             this::bindConditions,
+                             this::conditionsUnavailable);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        jumpToEnd();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        stopAnimations();
+        deferWorker.unsubscribe();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("animationCompleted", animationCompleted);
     }
 
 
     //region Animations
 
-    private void animateConditionAt(int position) {
+    private void showConditionAt(int position) {
         if (position >= conditions.size()) {
             jumpToEnd();
             return;
         }
 
-        animateSenseToGrey();
+        animateSenseToGray();
 
         SensorConditionView conditionView = sensorViews.get(position);
         status.setTextAppearance(getActivity(), R.style.AppTheme_Text_SectionHeading);
@@ -120,16 +160,20 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
         conditionView.crossFadeToFill(R.drawable.room_check_sensor_border_loading, true, () -> {
             SensorState sensor = conditions.get(position);
 
-            Resources resources = getResources();
-            int startColor = resources.getColor(Condition.ALERT.colorRes);
-            int endColor = resources.getColor(sensor.getCondition().colorRes);
-
             int value = sensor.getValue() != null ? sensor.getValue().intValue() : 0;
             String unit = conditionUnits.get(position);
-            long duration = ticker.animateToValue(value, unit, ignored -> {
+            long duration = scoreTicker.animateToValue(value, unit, finishedTicker -> {
+                if (!finishedTicker) {
+                    return;
+                }
+
                 animate(status, getAnimatorContext())
                         .fadeOut(View.VISIBLE)
-                        .addOnAnimationCompleted(finished -> {
+                        .addOnAnimationCompleted(finishedStatus -> {
+                            if (!finishedStatus) {
+                                return;
+                            }
+
                             status.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body);
                             status.setText(null);
                             status.setTransformationMethod(null);
@@ -137,7 +181,7 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
 
                             animateSenseCondition(sensor.getCondition());
                             conditionView.crossFadeToFill(R.drawable.room_check_sensor_border_filled, false, () -> {
-                                deferWorker.schedule(() -> animateConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
+                                deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
                             });
                         })
                         .andThen()
@@ -146,25 +190,79 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
             });
 
 
+            int endColor = getResources().getColor(sensor.getCondition().colorRes);
             ValueAnimator scoreAnimator = Animation.createColorAnimator(startColor, endColor);
+            scoreAnimator.setDuration(duration);
             scoreAnimator.addUpdateListener(a -> {
                 int color = (int) a.getAnimatedValue();
                 conditionView.setTint(color);
-                ticker.setTextColor(color);
+                scoreTicker.setTextColor(color);
             });
-            scoreAnimator.setDuration(duration);
             scoreAnimator.start();
         });
     }
 
     private void jumpToEnd() {
-        int totalConditionValue = Lists.sumInt(conditions, c -> c.getCondition().ordinal());
-        int roundedAverage = Math.round((totalConditionValue / conditions.size()) + 0.5f);
-        Condition condition = Condition.values()[roundedAverage];
-        animateSenseCondition(condition);
+        int conditionCount = conditions.size();
+        if (conditionCount > 0) {
+            int conditionSum = Lists.sumInt(conditions, c -> c.getCondition().ordinal());
+            int conditionAverage = (int) Math.ceil(conditionSum / (float) conditionCount);
+            int conditionOrdinal = Math.min(Condition.IDEAL.ordinal(), conditionAverage);
+            Condition condition = Condition.values()[conditionOrdinal];
+            animateSenseCondition(condition);
+        } else {
+            int defaultTint = getResources().getColor(R.color.light_accent);
+            for (SensorConditionView sensorView : sensorViews) {
+                sensorView.setTint(defaultTint);
+                sensorView.setFill(R.drawable.room_check_sensor_border_filled);
+            }
+        }
+
+        stopAnimations();
+        showCompletion();
     }
 
-    private void animateSenseToGrey() {
+    private void showCompletion() {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        ViewGroup container = (ViewGroup) getView();
+        if (container == null) {
+            return;
+        }
+
+        container.removeView(status);
+        container.removeView(scoreTicker);
+
+        ViewGroup endContainer = (ViewGroup) inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, container, false);
+        endContainer.setVisibility(View.INVISIBLE);
+        container.addView(endContainer);
+
+        endContainer.post(() -> {
+            Button continueButton = (Button) endContainer.findViewById(R.id.sub_fragment_room_check_end_continue);
+            getAnimatorContext().transaction(f -> {
+                float slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+                for (int i = 0, count = endContainer.getChildCount(); i < count; i++) {
+                    View child = endContainer.getChildAt(i);
+                    f.animate(child)
+                            .setStartDelay(END_CONTAINER_DELAY_MS * i)
+                            .slideYAndFade(slideAmount, 0f, 0f, 1f);
+                }
+            }, finished -> {
+                if (!finished) {
+                    return;
+                }
+
+                Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
+            });
+            endContainer.setVisibility(View.VISIBLE);
+        });
+    }
+
+    private void stopAnimations() {
+        scoreTicker.stopAnimating();
+        stop(status);
+    }
+
+    private void animateSenseToGray() {
         Drawable senseDrawable = sense.getDrawable();
         if (senseDrawable instanceof TransitionDrawable) {
             ((TransitionDrawable) senseDrawable).reverseTransition(Animation.DURATION_NORMAL);
@@ -205,17 +303,12 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
 
     public void bindConditions(@NonNull RoomConditionsPresenter.Result current) {
         conditions.clear();
+        conditions.addAll(current.conditions.toList());
 
-        conditions.add(current.conditions.getTemperature());
-        conditionUnits.add(current.units.getTemperatureUnit());
-        conditions.add(current.conditions.getHumidity());
-        conditionUnits.add(current.units.getHumidityUnit());
-        conditions.add(current.conditions.getSound());
-        conditionUnits.add(current.units.getSoundUnit());
-        conditions.add(current.conditions.getLight());
-        conditionUnits.add(current.units.getLightUnit());
+        conditionUnits.clear();
+        conditionUnits.addAll(current.units.getUnitNamesAsList());
 
-        animateConditionAt(0);
+        showConditionAt(0);
     }
 
     public void conditionsUnavailable(Throwable e) {
@@ -228,4 +321,9 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
     }
 
     //endregion
+
+
+    public void continueOnboarding(@NonNull View sender) {
+        ((OnboardingActivity) getActivity()).showSmartAlarmInfo();
+    }
 }

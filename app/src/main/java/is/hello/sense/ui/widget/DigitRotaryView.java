@@ -253,6 +253,10 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
         });
     }
 
+    public void stopAnimating() {
+        offsetAnimator.cancel();
+    }
+
     //endregion
 
 

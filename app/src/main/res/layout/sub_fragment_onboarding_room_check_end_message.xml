@@ -4,10 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <View
-        android:layout_marginTop="@dimen/gap_outer"
-        style="@style/Divider.Horizontal" />
-
     <TextView
         android:id="@+id/sub_fragment_room_check_end_title"
         android:layout_width="match_parent"

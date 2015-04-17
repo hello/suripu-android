@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import is.hello.sense.api.ApiService;
@@ -110,8 +112,7 @@ public class UnitSystem implements Serializable {
         return Long.toString(particulates);
     }
 
-    public @Nullable
-    Formatter getUnitFormatterForSensor(@NonNull String sensor) {
+    public @Nullable Formatter getUnitFormatterForSensor(@NonNull String sensor) {
         switch (sensor) {
             case ApiService.SENSOR_NAME_TEMPERATURE:
                 return this::formatTemperature;
@@ -122,6 +123,10 @@ public class UnitSystem implements Serializable {
             default:
                 return null;
         }
+    }
+
+    public List<String> getUnitNamesAsList() {
+        return Arrays.asList(getTemperatureUnit(), getHumidityUnit(), getLightUnit(), getSoundUnit());
     }
 
     public interface Formatter {
