@@ -35,7 +35,6 @@ import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
-import is.hello.sense.bluetooth.stacks.util.Util;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
@@ -46,8 +45,7 @@ import static rx.android.content.ContentObservable.fromBroadcast;
 
 public class AndroidPeripheral implements Peripheral {
     /**
-     * How long to delay response after a successful service discovery
-     * if {@link #CONFIG_WAIT_AFTER_SERVICE_DISCOVERY} is specified.
+     * How long to delay response after a successful service discovery.
      * <p/>
      * Settled on 5 seconds after experimenting with Jackson. Idea for delay from
      * <a href="https://code.google.com/p/android/issues/detail?id=58381">here</a>.
@@ -63,7 +61,6 @@ public class AndroidPeripheral implements Peripheral {
     private boolean suspendDisconnectBroadcasts = false;
     private BluetoothGatt gatt;
     private @Nullable Subscription bluetoothStateSubscription;
-    private @Config int config;
 
     AndroidPeripheral(@NonNull AndroidBluetoothStack stack,
                       @NonNull BluetoothDevice bluetoothDevice,
@@ -73,7 +70,6 @@ public class AndroidPeripheral implements Peripheral {
         this.bluetoothDevice = bluetoothDevice;
         this.scannedRssi = scannedRssi;
         this.advertisingData = advertisingData;
-        this.config = stack.getDefaultConfig();
 
         gattDispatcher.addConnectionStateListener((gatt, gattStatus, newState, removeThisListener) -> {
             if (newState == STATUS_DISCONNECTED) {
@@ -123,11 +119,6 @@ public class AndroidPeripheral implements Peripheral {
     @NonNull
     public BluetoothStack getStack() {
         return stack;
-    }
-
-    @Override
-    public void setConfig(@Config int newConfig) {
-        this.config = newConfig;
     }
 
     //endregion
@@ -299,18 +290,6 @@ public class AndroidPeripheral implements Peripheral {
 
     //region Internal
 
-    private boolean shouldAutoActivateCompatibilityShims() {
-        return ((config & CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS) == CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS);
-    }
-
-    private void setWaitAfterServiceDiscovery() {
-        boolean waitsAfterDiscovery = ((config & CONFIG_WAIT_AFTER_SERVICE_DISCOVERY) == CONFIG_WAIT_AFTER_SERVICE_DISCOVERY);
-        if (!waitsAfterDiscovery) {
-            Log.i(LOG_TAG, "Activating " + Util.peripheralConfigToString(CONFIG_WAIT_AFTER_SERVICE_DISCOVERY));
-            config |= CONFIG_WAIT_AFTER_SERVICE_DISCOVERY;
-        }
-    }
-
     private <T> void setupTimeout(@NonNull OperationTimeoutError.Operation operation,
                                   @NonNull OperationTimeout timeout,
                                   @NonNull Subscriber<T> subscriber,
@@ -323,9 +302,6 @@ public class AndroidPeripheral implements Peripheral {
 
                 case SUBSCRIBE_NOTIFICATION:
                     gattDispatcher.onDescriptorWrite = null;
-                    if (shouldAutoActivateCompatibilityShims()) {
-                        setWaitAfterServiceDiscovery();
-                    }
                     break;
 
                 case UNSUBSCRIBE_NOTIFICATION:
@@ -467,14 +443,8 @@ public class AndroidPeripheral implements Peripheral {
             }
         });
 
-
-        boolean waitAfterDiscovery = ((config & CONFIG_WAIT_AFTER_SERVICE_DISCOVERY) == CONFIG_WAIT_AFTER_SERVICE_DISCOVERY);
-        if (waitAfterDiscovery) {
-            // See <https://code.google.com/p/android/issues/detail?id=58381>
-            return discoverServices.delay(SERVICES_DELAY_S, TimeUnit.SECONDS);
-        } else {
-            return discoverServices;
-        }
+        // See <https://code.google.com/p/android/issues/detail?id=58381>
+        return discoverServices.delay(SERVICES_DELAY_S, TimeUnit.SECONDS);
     }
 
     @NonNull
