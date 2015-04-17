@@ -88,13 +88,6 @@ public class TestPeripheral implements Peripheral {
         return behavior.connectionStatus;
     }
 
-    @NonNull
-    @Override
-    public Observable<Peripheral> createBond() {
-        behavior.trackMethodCall(TestPeripheralBehavior.Method.CREATE_BOND);
-        return createResponseWith(behavior.createBondResponse, null);
-    }
-
     @Override
     public @BondStatus int getBondStatus() {
         return behavior.bondStatus;

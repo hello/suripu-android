@@ -11,7 +11,6 @@ import javax.inject.Inject;
 
 import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
 import is.hello.sense.bluetooth.errors.BluetoothGattError;
-import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.PeripheralService;
@@ -98,12 +97,10 @@ public class HelloPeripheralTests extends InjectionTestCase {
         Map<UUID, PeripheralService> services = new HashMap<>();
         services.put(service.getUuid(), service);
         peripheralBehavior.setConnectResponse(successResponse)
-                        .setCreateBondResponse(successResponse)
                         .setServicesResponse(Either.left(services));
 
         Sync.last(peripheral.connect());
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CONNECT));
-        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CREATE_BOND));
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCOVER_SERVICES));
     }
 
@@ -117,29 +114,8 @@ public class HelloPeripheralTests extends InjectionTestCase {
             .assertThrows(BluetoothDisabledError.class);
 
 
-        // ---- //
-
-
         peripheralBehavior.reset();
         peripheralBehavior.setConnectResponse(successResponse);
-        peripheralBehavior.setCreateBondResponse(Either.right(new PeripheralBondAlterationError(PeripheralBondAlterationError.REASON_ANDROID_API_CHANGED)));
-        peripheralBehavior.setDisconnectResponse(successResponse);
-
-        Sync.wrap(peripheral.connect())
-            .assertThrows(PeripheralBondAlterationError.class);
-
-        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CONNECT));
-        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CREATE_BOND));
-        assertFalse(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCOVER_SERVICES));
-        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
-
-
-        // ---- //
-
-
-        peripheralBehavior.reset();
-        peripheralBehavior.setConnectResponse(successResponse);
-        peripheralBehavior.setCreateBondResponse(successResponse);
         peripheralBehavior.setServicesResponse(Either.right(new BluetoothGattError(BluetoothGatt.GATT_FAILURE, BluetoothGattError.Operation.DISCOVER_SERVICES)));
         peripheralBehavior.setDisconnectResponse(successResponse);
 
@@ -147,7 +123,6 @@ public class HelloPeripheralTests extends InjectionTestCase {
             .assertThrows(BluetoothGattError.class);
 
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CONNECT));
-        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CREATE_BOND));
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCOVER_SERVICES));
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
     }

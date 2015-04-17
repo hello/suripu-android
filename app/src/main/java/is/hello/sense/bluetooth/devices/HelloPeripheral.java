@@ -63,39 +63,23 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
             peripheral.connect(timeout).subscribe(peripheral -> {
                 Logger.info(Peripheral.LOG_TAG, "connected to " + toString());
 
-                s.onNext(ConnectStatus.BONDING);
-                peripheral.createBond().subscribe(peripheral1 -> {
-                    Logger.info(Peripheral.LOG_TAG, "bonded to " + toString());
+                s.onNext(ConnectStatus.DISCOVERING_SERVICES);
+                peripheral.discoverService(getTargetServiceIdentifier(), timeout).subscribe(service -> {
+                    Logger.info(Peripheral.LOG_TAG, "discovered service for " + toString());
 
-                    s.onNext(ConnectStatus.DISCOVERING_SERVICES);
-                    peripheral.discoverService(getTargetServiceIdentifier(), timeout).subscribe(service -> {
-                        Logger.info(Peripheral.LOG_TAG, "discovered service for " + toString());
-
-                        this.peripheralService = service;
-                        s.onNext(ConnectStatus.CONNECTED);
-                        s.onCompleted();
-                    }, e -> {
-                        // discoverServices took ownership of timeout,
-                        // we don't need to worry about it anymore.
-
-                        Logger.error(Peripheral.LOG_TAG, "Disconnecting due to service discovery failure", e);
-                        disconnect().subscribe(ignored -> {
-                            Logger.info(Peripheral.LOG_TAG, "Disconnected from service discovery failure");
-                            s.onError(e);
-                        }, disconnectError -> {
-                            Logger.error(Peripheral.LOG_TAG, "Could not disconnect for service discovery failure", disconnectError);
-                            s.onError(e);
-                        });
-                    });
+                    this.peripheralService = service;
+                    s.onNext(ConnectStatus.CONNECTED);
+                    s.onCompleted();
                 }, e -> {
-                    timeout.unschedule();
+                    // discoverServices took ownership of timeout,
+                    // we don't need to worry about it anymore.
 
-                    Logger.error(Peripheral.LOG_TAG, "Disconnecting due to bond change failure", e);
+                    Logger.error(Peripheral.LOG_TAG, "Disconnecting due to service discovery failure", e);
                     disconnect().subscribe(ignored -> {
-                        Logger.info(Peripheral.LOG_TAG, "Disconnected from bond change failure");
+                        Logger.info(Peripheral.LOG_TAG, "Disconnected from service discovery failure");
                         s.onError(e);
                     }, disconnectError -> {
-                        Logger.error(Peripheral.LOG_TAG, "Could not disconnect for bond change failure", disconnectError);
+                        Logger.error(Peripheral.LOG_TAG, "Could not disconnect for service discovery failure", disconnectError);
                         s.onError(e);
                     });
                 });
@@ -176,7 +160,6 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
 
     public static enum ConnectStatus {
         CONNECTING(R.string.title_connecting),
-        BONDING(R.string.title_pairing),
         DISCOVERING_SERVICES(R.string.title_discovering_services),
         CONNECTED(0);
 

@@ -200,13 +200,6 @@ public interface Peripheral {
     //region Bonding
 
     /**
-     * Creates a bond to the peripheral from the current device.
-     * <p/>
-     * Does nothing if the device is already bonded.
-     */
-    @NonNull Observable<Peripheral> createBond();
-
-    /**
      * Returns the bond status of the peripheral.
      *
      * @see Peripheral#BOND_NONE

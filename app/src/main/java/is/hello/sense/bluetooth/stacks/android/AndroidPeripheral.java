@@ -9,11 +9,13 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
@@ -206,43 +208,11 @@ public class AndroidPeripheral implements Peripheral {
                         }
                     }, e -> Logger.error(LOG_TAG, "Bluetooth state observation error", e));
 
-                    boolean clearBondOnConnect = ((config & CONFIG_FRAGILE_BONDS) == CONFIG_FRAGILE_BONDS);
-                    if (getBondStatus() == BOND_NONE || !clearBondOnConnect) {
-                        this.suspendDisconnectBroadcasts = false;
-                        s.onNext(this);
-                        s.onCompleted();
+                    this.suspendDisconnectBroadcasts = false;
+                    s.onNext(this);
+                    s.onCompleted();
 
-                        removeThisListener.call();
-                    } else {
-                        // Pre-existing bonding information guarantees that every
-                        // other connection will not function correctly, so we just
-                        // get rid of it right off to save us the trouble later.
-
-                        Logger.info(LOG_TAG, "Previously persisted bonding discovered, removing.");
-
-                        removeBond().subscribe(ignored -> {
-                            Logger.info(LOG_TAG, "Previously persisted bonding removed, reconnecting.");
-
-                            // We can't reuse a BluetoothGatt object after removing a bond, because, whatever.
-                            gatt.close();
-                            this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
-                            //noinspection ConstantConditions
-                            if (gatt != null) {
-                                timeout.schedule();
-                            } else {
-                                this.suspendDisconnectBroadcasts = false;
-                                s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR, BluetoothGattError.Operation.CONNECT));
-                            }
-                        }, e -> {
-                            Logger.warn(LOG_TAG, "Could not remove previously persisted bonding information, ignoring.", e);
-
-                            this.suspendDisconnectBroadcasts = false;
-                            s.onNext(this);
-                            s.onCompleted();
-
-                            removeThisListener.call();
-                        });
-                    }
+                    removeThisListener.call();
                 }
             };
             gattDispatcher.addConnectionStateListener(listener);
@@ -270,6 +240,7 @@ public class AndroidPeripheral implements Peripheral {
                     s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR, BluetoothGattError.Operation.CONNECT));
                 }
             } else {
+                setPairingConfirmation(true);
                 this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
                 if (gatt != null) {
                     this.suspendDisconnectBroadcasts = true;
@@ -313,13 +284,7 @@ public class AndroidPeripheral implements Peripheral {
             });
 
             Logger.info(LOG_TAG, "Disconnecting " + toString());
-
-            boolean clearBondOnDisconnect = ((config & CONFIG_FRAGILE_BONDS) == CONFIG_FRAGILE_BONDS);
-            if (clearBondOnDisconnect && getBondStatus() == BOND_BONDED) {
-                removeBond().subscribe(ignored -> {}, s::onError);
-            } else {
-                gatt.disconnect();
-            }
+            gatt.disconnect();
         });
     }
 
@@ -387,7 +352,23 @@ public class AndroidPeripheral implements Peripheral {
 
     //region Bonding
 
-    private Observable<Intent> createBondReceiver() {
+    private void setPairingConfirmation(boolean confirm) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            bluetoothDevice.setPairingConfirmation(confirm);
+        } else {
+            try {
+                Method m = bluetoothDevice.getClass().getMethod("setPairingConfirmation", boolean.class);
+                m.setAccessible(true);
+                m.invoke(bluetoothDevice, confirm);
+            } catch (NoSuchMethodException e) {
+                Logger.error(LOG_TAG, "Could not find setPairingConfirmation", e);
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                Logger.error(LOG_TAG, "Could not call setPairingConfirmation", e);
+            }
+        }
+    }
+
+    private Observable<Intent> createBondChangeReceiver() {
         return fromBroadcast(stack.applicationContext, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
                 .subscribeOn(stack.scheduler)
                 .filter(intent -> {
@@ -396,50 +377,12 @@ public class AndroidPeripheral implements Peripheral {
                 });
     }
 
-    private boolean tryCreateBond() {
-        try {
-            Method method = bluetoothDevice.getClass().getMethod("createBond", (Class[]) null);
-            method.invoke(bluetoothDevice, (Object[]) null);
-            return true;
-        } catch (Exception e) {
-            Logger.error(LOG_TAG, "Could not invoke `createBond` on native BluetoothDevice.", e);
-            return false;
-        }
-    }
-
-    private boolean tryRemoveBond() {
-        try {
-            Method method = bluetoothDevice.getClass().getMethod("removeBond", (Class[]) null);
-            method.invoke(bluetoothDevice, (Object[]) null);
-            return true;
-        } catch (Exception e) {
-            Logger.error(LOG_TAG, "Could not invoke `removeBond` on native BluetoothDevice.", e);
-            return false;
-        }
-    }
-
-    @NonNull
-    @Override
-    public Observable<Peripheral> createBond() {
+    private Observable<Intent> listenForBonding() {
         return stack.newConfiguredObservable(s -> {
-            if (getConnectionStatus() != STATUS_CONNECTED) {
-                Logger.error(LOG_TAG, "Cannot create bond without device being connected.");
-
-                s.onError(new PeripheralConnectionError());
-                return;
-            }
-
-            if (getBondStatus() == BOND_BONDED) {
-                Logger.info(Peripheral.LOG_TAG, "Device already bonded, skipping.");
-
-                s.onNext(this);
-                s.onCompleted();
-                return;
-            }
-
-            Subscription subscription = createBondReceiver().subscribe(new Subscriber<Intent>() {
+            createBondChangeReceiver().subscribe(new Subscriber<Intent>() {
                 @Override
-                public void onCompleted() {}
+                public void onCompleted() {
+                }
 
                 @Override
                 public void onError(Throwable e) {
@@ -451,86 +394,24 @@ public class AndroidPeripheral implements Peripheral {
                     int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
                     int previousState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
 
-                    Logger.info(Peripheral.LOG_TAG, "Bond status changed from " + PeripheralBondAlterationError.getBondStateString(previousState) + " to " + PeripheralBondAlterationError.getBondStateString(state));
+                    Logger.debug(Peripheral.LOG_TAG, "Bond status changed from " + PeripheralBondAlterationError.getBondStateString(previousState) + " to " + PeripheralBondAlterationError.getBondStateString(state));
 
                     if (state == BluetoothDevice.BOND_BONDED) {
-                        Logger.info(LOG_TAG, "Bonding succeeded.");
+                        Logger.debug(LOG_TAG, "Bonding succeeded.");
 
-                        s.onNext(AndroidPeripheral.this);
+                        s.onNext(intent);
                         s.onCompleted();
 
                         unsubscribe();
                     } else if (state == BluetoothDevice.ERROR || state == BOND_NONE && previousState == BOND_BONDING) {
                         int reason = intent.getIntExtra(PeripheralBondAlterationError.EXTRA_REASON, PeripheralBondAlterationError.REASON_UNKNOWN_FAILURE);
-                        Logger.error(LOG_TAG, "Bonding failed for reason " + PeripheralBondAlterationError.getReasonString(reason));
+                        Logger.error(LOG_TAG, "Bonding failed for reason " + PeripheralBondAlterationError.getReasonString(reason), null);
                         s.onError(new PeripheralBondAlterationError(reason));
 
                         unsubscribe();
                     }
                 }
             });
-
-            if (!tryCreateBond()) {
-                Logger.error(LOG_TAG, "createBond failed.");
-
-                subscription.unsubscribe();
-                s.onError(new PeripheralBondAlterationError(PeripheralBondAlterationError.REASON_ANDROID_API_CHANGED));
-            }
-        });
-    }
-
-    @NonNull
-    private Observable<Peripheral> removeBond() {
-        return stack.newConfiguredObservable(s -> {
-            if (getConnectionStatus() != STATUS_CONNECTED) {
-                s.onError(new PeripheralConnectionError());
-                return;
-            }
-
-            if (getBondStatus() == BOND_NONE) {
-                s.onNext(this);
-                s.onCompleted();
-                return;
-            }
-
-            if (tryRemoveBond()) {
-                createBondReceiver().subscribe(new Subscriber<Intent>() {
-                    @Override
-                    public void onCompleted() {}
-
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-
-                    @Override
-                    public void onNext(Intent intent) {
-                        int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-                        int previousState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
-
-                        Logger.info(Peripheral.LOG_TAG, "Bond status changed from " + PeripheralBondAlterationError.getBondStateString(previousState) + " to " + PeripheralBondAlterationError.getBondStateString(state));
-
-                        if (state == BOND_NONE) {
-                            Logger.info(LOG_TAG, "Unbonding succeeded.");
-
-                            s.onNext(AndroidPeripheral.this);
-                            s.onCompleted();
-
-                            unsubscribe();
-                        } else if (state == BluetoothDevice.ERROR) {
-                            int reason = intent.getIntExtra(PeripheralBondAlterationError.EXTRA_REASON, PeripheralBondAlterationError.REASON_UNKNOWN_FAILURE);
-                            Logger.error(LOG_TAG, "Unbonding failed for reason " + PeripheralBondAlterationError.getReasonString(reason));
-                            s.onError(new PeripheralBondAlterationError(reason));
-
-                            unsubscribe();
-                        }
-                    }
-                });
-            } else {
-                Logger.error(LOG_TAG, "removeBond failed.");
-
-                s.onError(new PeripheralBondAlterationError(PeripheralBondAlterationError.REASON_ANDROID_API_CHANGED));
-            }
         });
     }
 
@@ -625,17 +506,19 @@ public class AndroidPeripheral implements Peripheral {
                                                   @NonNull UUID characteristicIdentifier,
                                                   @NonNull UUID descriptorIdentifier,
                                                   @NonNull OperationTimeout timeout) {
-        return stack.newConfiguredObservable(s -> {
-            if (getConnectionStatus() != STATUS_CONNECTED) {
-                s.onError(new PeripheralConnectionError());
-                return;
-            }
+        if (getConnectionStatus() != STATUS_CONNECTED) {
+            return Observable.error(new PeripheralConnectionError());
+        }
 
+        return stack.newConfiguredObservable(s -> {
             BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
             if (gatt.setCharacteristicNotification(characteristic, true)) {
                 Action0 onDisconnect = gattDispatcher.addTimeoutDisconnectListener(s, timeout);
                 setupTimeout(OperationTimeoutError.Operation.SUBSCRIBE_NOTIFICATION, timeout, s, onDisconnect);
+
+                BluetoothGattDescriptor descriptorToWrite = characteristic.getDescriptor(descriptorIdentifier);
+                descriptorToWrite.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
 
                 gattDispatcher.onDescriptorWrite = (gatt, descriptor, status) -> {
                     if (!Arrays.equals(descriptor.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)) {
@@ -644,14 +527,27 @@ public class AndroidPeripheral implements Peripheral {
 
                     timeout.unschedule();
 
+                    if (status == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
+                        Logger.info(LOG_TAG, "Waiting for implicit bond");
+                        listenForBonding().subscribe(intent -> {
+                            Logger.debug(LOG_TAG, "Retrying descriptor write.");
+                            if (gatt.writeDescriptor(descriptorToWrite)) {
+                                timeout.schedule();
+                            } else {
+                                s.onError(new BluetoothGattError(status, BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION));
+                                gattDispatcher.onDescriptorWrite = null;
+                                gattDispatcher.removeDisconnectListener(onDisconnect);
+                            }
+                        }, s::onError);
+
+                        return;
+                    }
+
                     if (status == BluetoothGatt.GATT_SUCCESS) {
                         s.onNext(characteristicIdentifier);
                         s.onCompleted();
                     } else {
-                        Logger.error(LOG_TAG, "Could not subscribe to characteristic. " + BluetoothGattError.statusToString(status));
-                        if (shouldAutoActivateCompatibilityShims()) {
-                            setWaitAfterServiceDiscovery();
-                        }
+                        Logger.error(LOG_TAG, "Could not subscribe to characteristic. " + BluetoothGattError.statusToString(status), null);
                         s.onError(new BluetoothGattError(status, BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION));
                     }
 
@@ -659,17 +555,11 @@ public class AndroidPeripheral implements Peripheral {
                     gattDispatcher.removeDisconnectListener(onDisconnect);
                 };
 
-                BluetoothGattDescriptor descriptorToWrite = characteristic.getDescriptor(descriptorIdentifier);
-                descriptorToWrite.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                 if (gatt.writeDescriptor(descriptorToWrite)) {
                     timeout.schedule();
                 } else {
                     gattDispatcher.onDescriptorWrite = null;
                     gattDispatcher.removeDisconnectListener(onDisconnect);
-
-                    if (shouldAutoActivateCompatibilityShims()) {
-                        setWaitAfterServiceDiscovery();
-                    }
 
                     s.onError(new BluetoothGattError(BluetoothGatt.GATT_FAILURE, BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION));
                 }

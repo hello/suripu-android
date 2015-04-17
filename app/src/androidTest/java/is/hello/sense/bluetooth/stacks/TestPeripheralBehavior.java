@@ -24,7 +24,6 @@ public class TestPeripheralBehavior {
     Either<Map<UUID, PeripheralService>, Throwable> servicesResponse;
     Either<Peripheral, Throwable> connectResponse;
     Either<Peripheral, Throwable> disconnectResponse;
-    Either<Peripheral, Throwable> createBondResponse;
     Either<UUID, Throwable> subscriptionResponse;
     Either<UUID, Throwable> unsubscriptionResponse;
     Either<Void, Throwable> writeCommandResponse;
@@ -66,11 +65,6 @@ public class TestPeripheralBehavior {
         return this;
     }
 
-    public TestPeripheralBehavior setCreateBondResponse(@NonNull Either<Peripheral, Throwable> createBondResponse) {
-        this.createBondResponse = createBondResponse;
-        return this;
-    }
-
     public TestPeripheralBehavior setSubscriptionResponse(@NonNull Either<UUID, Throwable> subscriptionResponse) {
         this.subscriptionResponse = subscriptionResponse;
         return this;
@@ -98,7 +92,6 @@ public class TestPeripheralBehavior {
         this.servicesResponse = null;
         this.connectResponse = null;
         this.disconnectResponse = null;
-        this.createBondResponse = null;
         this.subscriptionResponse = null;
         this.unsubscriptionResponse = null;
         this.writeCommandResponse = null;
@@ -124,7 +117,6 @@ public class TestPeripheralBehavior {
     public static enum Method {
         CONNECT,
         DISCONNECT,
-        CREATE_BOND,
         DISCOVER_SERVICES,
         SUBSCRIBE,
         UNSUBSCRIBE,
