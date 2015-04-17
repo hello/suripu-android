@@ -19,11 +19,10 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import is.hello.sense.R;
 import rx.functions.Action1;
 
-public class RotaryView extends View {
+public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdateListener {
     //region Constants
 
-    public static final int NO_ITEM = -1;
-
+    public static final long MIN_SPIN_DURATION_MS = 20;
     public static final @StyleRes int TEXT_APPEARANCE = R.style.AppTheme_Text_BigScore;
 
     //endregion
@@ -41,9 +40,9 @@ public class RotaryView extends View {
 
     //region Items
 
-    private @Nullable String[] items;
-    private int onScreenItem = NO_ITEM;
-    private int offScreenItem = NO_ITEM;
+    private final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    private int onScreenDigit = 0;
+    private int offScreenDigit = 1;
 
     //endregion
 
@@ -51,22 +50,22 @@ public class RotaryView extends View {
     //region Animation
 
     private final ValueAnimator offsetAnimator;
-    private float itemsOffset = 0f;
+    private float digitsOffset = 0f;
 
     //endregion
 
 
     //region Lifecycle
 
-    public RotaryView(@NonNull Context context) {
+    public DigitRotaryView(@NonNull Context context) {
         this(context, null);
     }
 
-    public RotaryView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public DigitRotaryView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public RotaryView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public DigitRotaryView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         TextAppearanceSpan textAppearance = new TextAppearanceSpan(context, TEXT_APPEARANCE);
@@ -74,7 +73,7 @@ public class RotaryView extends View {
         textPaint.setTextAlign(Paint.Align.CENTER);
 
         Rect textBounds = new Rect();
-        textPaint.getTextBounds("4", 0, 1, textBounds); // widest number in Roboto
+        textPaint.getTextBounds(DIGITS, 4, 1, textBounds); // '4' is the widest number in Roboto
         this.itemWidth = textBounds.width();
 
         Paint.FontMetricsInt fontMetrics = textPaint.getFontMetricsInt();
@@ -83,10 +82,7 @@ public class RotaryView extends View {
 
         this.offsetAnimator = ValueAnimator.ofFloat(0f, 1f);
         offsetAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-        offsetAnimator.addUpdateListener(a -> {
-            this.itemsOffset = a.getAnimatedFraction();
-            invalidate();
-        });
+        offsetAnimator.addUpdateListener(this);
     }
 
     //endregion
@@ -96,22 +92,16 @@ public class RotaryView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (items == null || onScreenItem == NO_ITEM) {
-            return;
-        }
-
         int canvasWidth = canvas.getWidth(),
-            canvasHeight = canvas.getHeight();
+                canvasHeight = canvas.getHeight();
 
         float midX = canvasWidth / 2f;
-        float offsetY = (canvasHeight * itemsOffset);
+        float offsetY = (canvasHeight * digitsOffset);
 
-        String visible = items[onScreenItem];
-        canvas.drawText(visible, midX, canvasHeight - textYFixUp + offsetY, textPaint);
+        canvas.drawText(DIGITS, onScreenDigit, 1, midX, canvasHeight - textYFixUp + offsetY, textPaint);
 
-        if (offScreenItem != NO_ITEM && itemsOffset > 0f) {
-            String upcoming = items[offScreenItem];
-            canvas.drawText(upcoming, midX, offsetY - textYFixUp, textPaint);
+        if (digitsOffset > 0f) {
+            canvas.drawText(DIGITS, offScreenDigit, 1, midX, offsetY - textYFixUp, textPaint);
         }
     }
 
@@ -163,39 +153,26 @@ public class RotaryView extends View {
 
     //region Attributes
 
-    public void setOnScreenItem(int onScreenItem) {
-        this.itemsOffset = 0f;
-        this.onScreenItem = onScreenItem;
+    public void setOnScreenDigit(int onScreenDigit) {
+        this.digitsOffset = 0f;
+        this.onScreenDigit = onScreenDigit;
 
-        if (items != null && onScreenItem != NO_ITEM) {
-            if (onScreenItem < items.length - 1) {
-                this.offScreenItem = onScreenItem + 1;
-            } else {
-                this.offScreenItem = 0;
-            }
+        if (onScreenDigit < DIGITS.length - 1) {
+            this.offScreenDigit = onScreenDigit + 1;
         } else {
-            this.offScreenItem = NO_ITEM;
+            this.offScreenDigit = 0;
         }
 
         invalidate();
     }
 
-    public int getOnScreenItem() {
-        return onScreenItem;
-    }
-
-    public void setItems(@NonNull String[] items) {
-        this.items = items;
-
-        if (items.length == 0) {
-            setOnScreenItem(NO_ITEM);
-        } else {
-            setOnScreenItem(0);
-        }
+    public int getOnScreenDigit() {
+        return onScreenDigit;
     }
 
     public void setTextColor(int textColor) {
         textPaint.setColor(textColor);
+        invalidate();
     }
 
     //endregion
@@ -207,7 +184,13 @@ public class RotaryView extends View {
         offsetAnimator.cancel();
     }
 
-    public void spinToNext(long duration, @NonNull Action1<Boolean> onCompletion) {
+    @Override
+    public void onAnimationUpdate(ValueAnimator animation) {
+        this.digitsOffset = animation.getAnimatedFraction();
+        invalidate();
+    }
+
+    public void spinToNextDigit(long duration, @NonNull Action1<Boolean> onCompletion) {
         prepareForOffsetAnimation();
 
         offsetAnimator.setDuration(duration);
@@ -216,7 +199,6 @@ public class RotaryView extends View {
 
             @Override
             public void onAnimationCancel(Animator animation) {
-                this.wasCanceled = true;
             }
 
             @Override
@@ -224,7 +206,7 @@ public class RotaryView extends View {
                 animation.removeListener(this);
 
                 if (!wasCanceled) {
-                    setOnScreenItem(offScreenItem);
+                    setOnScreenDigit(offScreenDigit);
                 }
 
                 // Re-using the ValueAnimator means we can't
@@ -235,25 +217,16 @@ public class RotaryView extends View {
         offsetAnimator.start();
     }
 
-    public Spin createSpin(int targetItem, int rotations, long targetDuration) {
-        if (items == null) {
-            throw new IllegalStateException("Cannot create spin without items");
-        }
-
-        return new Spin(items.length, targetItem, rotations, targetDuration);
+    public Spin createSpin(int targetDigit, int rotations, long targetDuration) {
+        return new Spin(DIGITS.length, targetDigit, rotations, targetDuration);
     }
 
     public void runSpin(@NonNull Spin spin,
                         @NonNull Action1<Integer> onRotation,
                         @NonNull Action1<Boolean> onCompletion) {
-        if (items == null) {
-            onCompletion.call(false);
-            return;
-        }
-
-        setOnScreenItem(0);
-        spinToNext(spin.singleSpinDuration, new Action1<Boolean>() {
-            final int repetitionRollover = items.length;
+        setOnScreenDigit(0);
+        spinToNextDigit(spin.singleSpinDuration, new Action1<Boolean>() {
+            final int repetitionRollover = DIGITS.length;
             int repetitions = 0, rotationCount = 0;
 
             @Override
@@ -271,8 +244,8 @@ public class RotaryView extends View {
                     this.rotationCount++;
                 }
 
-                if (rotationCount < spin.rotations || onScreenItem < spin.targetItem) {
-                    spinToNext(spin.singleSpinDuration, this);
+                if (rotationCount < spin.rotations || onScreenDigit < spin.targetDigit) {
+                    spinToNextDigit(spin.singleSpinDuration, this);
                 } else {
                     onCompletion.call(true);
                 }
@@ -284,19 +257,19 @@ public class RotaryView extends View {
 
 
     public static class Spin {
-        public final int targetItem;
+        public final int targetDigit;
         public final int rotations;
 
         public final long singleSpinDuration;
         public final long totalDuration;
 
-        public Spin(int itemCount, int targetItem, int rotations, long targetDuration) {
-            this.targetItem = targetItem;
+        public Spin(int totalDigits, int targetDigit, int rotations, long targetDuration) {
+            this.targetDigit = targetDigit;
             this.rotations = rotations;
 
-            int itemsShown = (itemCount * rotations) + targetItem;
-            this.singleSpinDuration = Math.max(20, targetDuration / itemsShown);
-            this.totalDuration = singleSpinDuration * itemsShown;
+            int digitsShown = (totalDigits * rotations) + targetDigit;
+            this.singleSpinDuration = Math.max(MIN_SPIN_DURATION_MS, targetDuration / digitsShown);
+            this.totalDuration = singleSpinDuration * digitsShown;
         }
     }
 }

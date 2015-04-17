@@ -112,9 +112,7 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
             return;
         }
 
-        if (position > 0) {
-            animateSenseToGrey();
-        }
+        animateSenseToGrey();
 
         SensorConditionView conditionView = sensorViews.get(position);
         status.setTextAppearance(getActivity(), R.style.AppTheme_Text_SectionHeading);
@@ -190,9 +188,10 @@ public class OnboardingRoomCheckFragment2 extends InjectionFragment {
                 break;
         }
 
+        Resources resources = getResources();
         TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[] {
-            sense.getDrawable(),
-            getResources().getDrawable(drawableRes),
+            resources.getDrawable(R.drawable.room_check_sense_gray),
+            resources.getDrawable(drawableRes),
         });
         transitionDrawable.setCrossFadeEnabled(true);
         sense.setImageDrawable(transitionDrawable);
