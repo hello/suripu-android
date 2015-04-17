@@ -170,6 +170,10 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
         return onScreenDigit;
     }
 
+    public int getOffScreenDigit() {
+        return offScreenDigit;
+    }
+
     public void setTextColor(int textColor) {
         textPaint.setColor(textColor);
         invalidate();
@@ -190,7 +194,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
         invalidate();
     }
 
-    public void spinToNextDigit(long duration, @NonNull Action1<Boolean> onCompletion) {
+    public void spinToNextDigit(long duration, @Nullable Action1<Boolean> onCompletion) {
         prepareForOffsetAnimation();
 
         offsetAnimator.setDuration(duration);
@@ -211,7 +215,9 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
 
                 // Re-using the ValueAnimator means we can't
                 // call this on the same looper callback.
-                post(() -> onCompletion.call(!wasCanceled));
+                if (onCompletion != null) {
+                    post(() -> onCompletion.call(!wasCanceled));
+                }
             }
         });
         offsetAnimator.start();
@@ -265,6 +271,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
         public final int rotations;
 
         public final long singleSpinDuration;
+        public final long adjacentDuration;
         public final long totalDuration;
 
         public Spin(int totalDigits, int targetDigit, int rotations, long targetDuration) {
@@ -273,6 +280,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
 
             int digitsShown = (totalDigits * rotations) + targetDigit;
             this.singleSpinDuration = Math.max(MIN_SPIN_DURATION_MS, targetDuration / digitsShown);
+            this.adjacentDuration = singleSpinDuration * totalDigits;
             this.totalDuration = singleSpinDuration * digitsShown;
         }
     }

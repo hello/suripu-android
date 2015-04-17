@@ -51,7 +51,6 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment2;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
@@ -94,7 +93,6 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
         OnboardingPairPillFragment.class,
         Onboarding2ndPillInfoFragment.class,
         OnboardingRoomCheckFragment.class,
-        OnboardingRoomCheckFragment2.class,
 
         HardwareFragmentActivity.class,
         DeviceListFragment.class,

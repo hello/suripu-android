@@ -1,21 +1,18 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.LayoutTransition;
 import android.animation.ValueAnimator;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
-import android.view.Gravity;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -25,63 +22,50 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.RoomConditions;
+import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorState;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.widget.SensorConditionView;
+import is.hello.sense.ui.widget.SensorTickerView;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.units.UnitSystem;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import rx.Scheduler;
 
-import static android.widget.LinearLayout.LayoutParams;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.stop;
 
 public class OnboardingRoomCheckFragment extends InjectionFragment {
     private static final long CONDITION_VISIBLE_MS = 2500;
-    private static final long COUNT_UP_DURATION_MS = 850;
     private static final long END_CONTAINER_DELAY_MS = 50;
 
-    @Inject RoomConditionsPresenter roomConditionsPresenter;
+    @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
+
+    private ImageView sense;
+    private final List<SensorConditionView> sensorViews = new ArrayList<>();
+    private TextView status;
+    private SensorTickerView scoreTicker;
+
+    private int startColor;
+    private boolean animationCompleted = false;
 
     private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
 
-    // Be sure to update fragment layout too.
-    private final int[] CONDITION_TITLES = {
-            R.string.room_condition_checking_temperature,
-            R.string.room_condition_checking_humidity,
-            R.string.room_condition_checking_sound,
-            R.string.room_condition_checking_light,
-    };
-    private final int[] ACTIVE_STATE_IMAGES = {
-            R.drawable.room_check_temperature_blue,
-            R.drawable.room_check_humidity_blue,
-            R.drawable.room_check_sound_blue,
-            R.drawable.room_check_light_blue,
-    };
     private final List<SensorState> conditions = new ArrayList<>();
-    private final List<UnitSystem.Formatter> conditionFormatters = new ArrayList<>();
-
-    private boolean animationCompleted = false;
-    private @Nullable ValueAnimator currentValueAnimator = null;
-
-    private LinearLayout conditionsContainer;
-
-    private LinearLayout itemContainer;
-    private TextView itemTitle;
-    private TextView itemMessage;
-    private TextView itemValue;
-
-    private View topDivider;
-    private View bottomDivider;
-
-    private LinearLayout endContainer;
-    private TextView endTitle;
-    private TextView endMessage;
+    private final List<String> conditionUnits = new ArrayList<>();
+    private final @StringRes int[] conditionStrings = {
+        R.string.checking_condition_temperature,
+        R.string.checking_condition_humidity,
+        R.string.checking_condition_light,
+        R.string.checking_condition_sound,
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,8 +75,8 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             this.animationCompleted = savedInstanceState.getBoolean("animationCompleted", false);
         }
 
-        roomConditionsPresenter.update();
-        addPresenter(roomConditionsPresenter);
+        presenter.update();
+        addPresenter(presenter);
 
         setRetainInstance(true);
     }
@@ -102,22 +86,24 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_room_check, container, false);
 
-        this.conditionsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_container);
-        conditionsContainer.getLayoutTransition().setDuration(400);
+        this.sense = (ImageView) view.findViewById(R.id.fragment_onboarding_room_check_sense);
+        this.status = (TextView) view.findViewById(R.id.fragment_onboarding_room_check_status);
 
-        this.itemContainer = (LinearLayout) inflater.inflate(R.layout.item_room_check_condition, container, false);
-        this.itemTitle = (TextView) itemContainer.findViewById(R.id.item_room_check_condition_title);
-        this.itemMessage = (TextView) itemContainer.findViewById(R.id.item_room_check_condition_message);
-        this.itemValue = (TextView) itemContainer.findViewById(R.id.item_room_check_condition_value);
+        AnimatorContext animatorContext = getAnimatorContext();
+        this.scoreTicker = (SensorTickerView) view.findViewById(R.id.fragment_onboarding_room_check_ticker);
+        scoreTicker.setAnimatorContext(animatorContext);
 
-        this.topDivider = createDivider();
-        this.bottomDivider = createDivider();
+        ViewGroup sensors = (ViewGroup) view.findViewById(R.id.fragment_onboarding_room_check_sensors);
+        for (int i = 0, count = sensors.getChildCount(); i < count; i++) {
+            View sensorChild = sensors.getChildAt(i);
+            if (sensorChild instanceof SensorConditionView) {
+                SensorConditionView conditionView = (SensorConditionView) sensorChild;
+                conditionView.setAnimatorContext(animatorContext);
+                sensorViews.add(conditionView);
+            }
+        }
 
-        this.endContainer = (LinearLayout) inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, container, false);
-        this.endTitle = (TextView) endContainer.findViewById(R.id.sub_fragment_room_check_end_title);
-        this.endMessage = (TextView) endContainer.findViewById(R.id.sub_fragment_room_check_end_message);
-        Button continueButton = (Button) endContainer.findViewById(R.id.sub_fragment_room_check_end_continue);
-        Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
+        this.startColor = getResources().getColor(Condition.ALERT.colorRes);
 
         return view;
     }
@@ -129,7 +115,9 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         if (animationCompleted) {
             jumpToEnd();
         } else {
-            bindAndSubscribe(roomConditionsPresenter.currentConditions.take(1), this::bindConditions, this::conditionsUnavailable);
+            bindAndSubscribe(presenter.currentConditions,
+                             this::bindConditions,
+                             this::conditionsUnavailable);
         }
     }
 
@@ -141,13 +129,10 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
 
-        if (this.currentValueAnimator != null) {
-            currentValueAnimator.cancel();
-        }
-
+        stopAnimations();
         deferWorker.unsubscribe();
     }
 
@@ -159,270 +144,186 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     }
 
 
-    private View createDivider() {
-        View divider = new View(getActivity());
-        divider.setBackgroundResource(R.color.border);
+    //region Animations
 
-        Resources resources = getResources();
-        int dividerMargin = resources.getDimensionPixelSize(R.dimen.gap_medium);
-        int dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, dividerHeight);
-        layoutParams.setMargins(0, dividerMargin, 0, dividerMargin);
-        divider.setLayoutParams(layoutParams);
-
-        return divider;
-    }
-
-
-    //region Displaying Conditions
-
-    public void showConditionsAt(int position, @NonNull Runnable onBefore, @NonNull Runnable onFinish) {
-        if (itemContainer.getParent() != null) {
-            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.DISAPPEARING, itemContainer) {
-                @Override
-                protected void onEnd() {
-                    showConditionsAt(position, onBefore, onFinish);
-                }
-            };
-            withTransitionListener(listener).removeView(itemContainer);
-
-            if (topDivider.getParent() != null) {
-                conditionsContainer.removeView(topDivider);
-            }
-
-            if (bottomDivider.getParent() != null) {
-                conditionsContainer.removeView(bottomDivider);
-            }
-        } else {
-            onBefore.run();
-
-            SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, itemContainer) {
-                @Override
-                protected void onEnd() {
-                    onFinish.run();
-                }
-            };
-            withTransitionListener(listener).addView(itemContainer, position);
-
-            int bottomDividerPosition = position + 1;
-            if (position > 1) {
-                conditionsContainer.addView(topDivider, position - 1);
-                bottomDividerPosition++;
-            }
-
-            if (position < conditions.size()) {
-                conditionsContainer.addView(bottomDivider, bottomDividerPosition);
-            }
-        }
-    }
-
-    public void showConditionAt(int position) {
-        if (endContainer.getParent() != null || isDetached()) {
+    private void showConditionAt(int position) {
+        if (position >= conditions.size()) {
+            jumpToEnd();
             return;
         }
 
-        if (position < conditions.size()) {
-            conditionsContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+        animateSenseToGray();
 
-            SensorState condition = conditions.get(position);
-            UnitSystem.Formatter formatter = conditionFormatters.get(position);
+        SensorConditionView conditionView = sensorViews.get(position);
+        status.setTextAppearance(getActivity(), R.style.AppTheme_Text_SectionHeading);
+        status.setText(conditionStrings[position]);
+        conditionView.crossFadeToFill(R.drawable.room_check_sensor_border_loading, true, () -> {
+            SensorState sensor = conditions.get(position);
 
-            showConditionsAt(position + 1, () -> {
-                int conditionColorRes = R.color.sensor_unknown;
-                String message = null;
-                if (condition != null) {
-                    conditionColorRes = condition.getCondition().colorRes;
-                    message = condition.getMessage();
+            int value = sensor.getValue() != null ? sensor.getValue().intValue() : 0;
+            String unit = conditionUnits.get(position);
+            long duration = scoreTicker.animateToValue(value, unit, finishedTicker -> {
+                if (!finishedTicker) {
+                    return;
                 }
 
+                animate(status, getAnimatorContext())
+                        .fadeOut(View.VISIBLE)
+                        .addOnAnimationCompleted(finishedStatus -> {
+                            if (!finishedStatus) {
+                                return;
+                            }
 
-                itemTitle.setText(CONDITION_TITLES[position]);
+                            status.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body);
+                            status.setText(null);
+                            status.setTransformationMethod(null);
+                            markdown.renderInto(status, sensor.getMessage());
 
-                if (TextUtils.isEmpty(message)) {
-                    itemMessage.setText(R.string.missing_data_placeholder);
-                } else {
-                    markdown.renderInto(itemMessage, message);
-                }
-
-                itemValue.setTextColor(getResources().getColor(conditionColorRes));
-                itemValue.setText("0");
-
-                ImageView conditionImage = (ImageView) conditionsContainer.getChildAt(position);
-                conditionImage.setImageResource(ACTIVE_STATE_IMAGES[position]);
-            }, () -> {
-                if (condition == null || condition.getValue() == null || condition.getValue() == 0f) {
-                    deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
-                } else {
-                    this.currentValueAnimator = ValueAnimator.ofInt(0, condition.getValue().intValue());
-                    currentValueAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
-                    currentValueAnimator.setDuration(COUNT_UP_DURATION_MS);
-                    currentValueAnimator.addUpdateListener(a -> {
-                        int value = (int) a.getAnimatedValue();
-                        if (formatter != null) {
-                            itemValue.setText(formatter.format((long) value));
-                        } else {
-                            itemContainer.setTag(value + condition.getValue());
-                        }
-                    });
-                    currentValueAnimator.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
-                            OnboardingRoomCheckFragment.this.currentValueAnimator = null;
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-                            OnboardingRoomCheckFragment.this.currentValueAnimator = null;
-                        }
-                    });
-                    currentValueAnimator.start();
-                }
+                            animateSenseCondition(sensor.getCondition());
+                            conditionView.crossFadeToFill(R.drawable.room_check_sensor_border_filled, false, () -> {
+                                deferWorker.schedule(() -> showConditionAt(position + 1), CONDITION_VISIBLE_MS, TimeUnit.MILLISECONDS);
+                            });
+                        })
+                        .andThen()
+                        .fadeIn()
+                        .start();
             });
+
+
+            int endColor = getResources().getColor(sensor.getCondition().colorRes);
+            ValueAnimator scoreAnimator = Animation.createColorAnimator(startColor, endColor);
+            scoreAnimator.setDuration(duration);
+            scoreAnimator.addUpdateListener(a -> {
+                int color = (int) a.getAnimatedValue();
+                conditionView.setTint(color);
+                scoreTicker.setTextColor(color);
+            });
+            scoreAnimator.start();
+        });
+    }
+
+    private void jumpToEnd() {
+        int conditionCount = conditions.size();
+        if (conditionCount > 0) {
+            int conditionSum = Lists.sumInt(conditions, c -> c.getCondition().ordinal());
+            int conditionAverage = (int) Math.ceil(conditionSum / (float) conditionCount);
+            int conditionOrdinal = Math.min(Condition.IDEAL.ordinal(), conditionAverage);
+            Condition condition = Condition.values()[conditionOrdinal];
+            animateSenseCondition(condition);
         } else {
-            deferWorker.schedule(this::showComplete);
+            int defaultTint = getResources().getColor(R.color.light_accent);
+            for (SensorConditionView sensorView : sensorViews) {
+                sensorView.setTint(defaultTint);
+                sensorView.setFill(R.drawable.room_check_sensor_border_filled);
+            }
         }
+
+        stopAnimations();
+        showCompletion();
     }
 
-    public void jumpToEnd() {
-        LayoutTransition layoutTransition = conditionsContainer.getLayoutTransition();
-        layoutTransition.disableTransitionType(LayoutTransition.CHANGE_APPEARING);
-        layoutTransition.disableTransitionType(LayoutTransition.APPEARING);
-        layoutTransition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
-        layoutTransition.disableTransitionType(LayoutTransition.DISAPPEARING);
-
-        if (this.currentValueAnimator != null) {
-            currentValueAnimator.cancel();
+    private void showCompletion() {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        ViewGroup container = (ViewGroup) getView();
+        if (container == null) {
+            return;
         }
 
-        conditionsContainer.removeView(itemContainer);
-        conditionsContainer.removeView(topDivider);
-        conditionsContainer.removeView(bottomDivider);
+        container.removeView(status);
+        container.removeView(scoreTicker);
 
-        if (endContainer.getParent() == null) {
-            for (int i = 0, size = conditionsContainer.getChildCount(); i < size; i++) {
-                ImageView image = (ImageView) conditionsContainer.getChildAt(i);
-                image.setImageResource(ACTIVE_STATE_IMAGES[i]);
-            }
-            showComplete();
-        }
-    }
+        ViewGroup endContainer = (ViewGroup) inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, container, false);
+        endContainer.setVisibility(View.INVISIBLE);
+        container.addView(endContainer);
 
-    public void showComplete() {
-        this.animationCompleted = true;
-
-        conditionsContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
-        conditionsContainer.removeView(itemContainer);
-        conditionsContainer.removeView(topDivider);
-        conditionsContainer.removeView(bottomDivider);
-
-        SimpleTransitionListener listener = new SimpleTransitionListener(LayoutTransition.APPEARING, endContainer) {
-            @Override
-            protected void onStart() {
-                for (View child : Views.children(endContainer)) {
-                    child.setAlpha(0f);
-                }
-            }
-
-            @Override
-            protected void onEnd() {
+        endContainer.post(() -> {
+            Button continueButton = (Button) endContainer.findViewById(R.id.sub_fragment_room_check_end_continue);
+            getAnimatorContext().transaction(f -> {
                 float slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_outer);
-                long delay = (END_CONTAINER_DELAY_MS * endContainer.getChildCount());
-                for (View child : Views.children(endContainer)) {
-                    animate(child)
-                            .setStartDelay(delay)
-                            .slideYAndFade(slideAmount, 0f, 0f, 1f)
-                            .start();
-
-                    delay -= END_CONTAINER_DELAY_MS;
+                for (int i = 0, count = endContainer.getChildCount(); i < count; i++) {
+                    View child = endContainer.getChildAt(i);
+                    f.animate(child)
+                            .setStartDelay(END_CONTAINER_DELAY_MS * i)
+                            .slideYAndFade(slideAmount, 0f, 0f, 1f);
                 }
-            }
-        };
-        withTransitionListener(listener).addView(endContainer);
+            }, finished -> {
+                if (!finished) {
+                    return;
+                }
+
+                Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
+            });
+            endContainer.setVisibility(View.VISIBLE);
+        });
+    }
+
+    private void stopAnimations() {
+        scoreTicker.stopAnimating();
+        stop(status);
+    }
+
+    private void animateSenseToGray() {
+        Drawable senseDrawable = sense.getDrawable();
+        if (senseDrawable instanceof TransitionDrawable) {
+            ((TransitionDrawable) senseDrawable).reverseTransition(Animation.DURATION_NORMAL);
+        }
+    }
+
+    private void animateSenseCondition(@NonNull Condition condition) {
+        int drawableRes = 0;
+        switch (condition) {
+            case UNKNOWN:
+                drawableRes = R.drawable.room_check_sense_gray;
+                break;
+            case ALERT:
+                drawableRes = R.drawable.room_check_sense_red;
+                break;
+            case WARNING:
+                drawableRes = R.drawable.room_check_sense_yellow;
+                break;
+            case IDEAL:
+                drawableRes = R.drawable.room_check_sense_green;
+                break;
+        }
+
+        Resources resources = getResources();
+        TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[] {
+            resources.getDrawable(R.drawable.room_check_sense_gray),
+            resources.getDrawable(drawableRes),
+        });
+        transitionDrawable.setCrossFadeEnabled(true);
+        sense.setImageDrawable(transitionDrawable);
+        transitionDrawable.startTransition(Animation.DURATION_NORMAL);
     }
 
     //endregion
 
 
-    public void bindConditions(@NonNull RoomConditionsPresenter.Result result) {
-        if (endContainer.getParent() != null) {
-            return;
-        }
+    //region Binding
 
-        UnitSystem unitSystem = result.units;
-        RoomConditions roomConditions = result.conditions;
+    public void bindConditions(@NonNull RoomConditionsPresenter.Result current) {
+        conditions.clear();
+        conditions.addAll(current.conditions.toList());
 
-        this.conditions.add(roomConditions.getTemperature());
-        this.conditionFormatters.add(unitSystem::formatTemperature);
-
-        this.conditions.add(roomConditions.getHumidity());
-        this.conditionFormatters.add(unitSystem::formatHumidity);
-
-        this.conditions.add(roomConditions.getSound());
-        this.conditionFormatters.add(unitSystem::formatDecibels);
-
-        this.conditions.add(roomConditions.getLight());
-        this.conditionFormatters.add(unitSystem::formatLight);
+        conditionUnits.clear();
+        conditionUnits.addAll(current.units.getUnitNamesAsList());
 
         showConditionAt(0);
     }
 
     public void conditionsUnavailable(Throwable e) {
-        Logger.error(getClass().getSimpleName(), "Could not load conditions", e);
+        Analytics.trackError(e, "Room check");
+        Logger.error(getClass().getSimpleName(), "Could not load conditions for room check", e);
 
-        endTitle.setText(R.string.onboarding_room_check_title_failure);
-        endMessage.setText(R.string.onboarding_room_check_info_failure);
+        conditions.clear();
 
-        showComplete();
+        jumpToEnd();
     }
+
+    //endregion
 
 
     public void continueOnboarding(@NonNull View sender) {
         ((OnboardingActivity) getActivity()).showSmartAlarmInfo();
     }
-
-
-    //region Transitions
-
-    private @NonNull LinearLayout withTransitionListener(@NonNull SimpleTransitionListener listener) {
-        conditionsContainer.getLayoutTransition().addTransitionListener(listener);
-        return conditionsContainer;
-    }
-
-    private static abstract class SimpleTransitionListener implements LayoutTransition.TransitionListener {
-        private final int targetTransition;
-        private final View targetView;
-
-        private SimpleTransitionListener(int targetTransition, View targetView) {
-            this.targetTransition = targetTransition;
-            this.targetView = targetView;
-        }
-
-
-        protected void onStart() {
-
-        }
-
-        protected void onEnd() {
-
-        }
-
-
-        @Override
-        public final void startTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int transitionType) {
-            if (view == targetView && transitionType == targetTransition) {
-                onStart();
-            }
-        }
-
-        @Override
-        public final void endTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int transitionType) {
-            if (view == targetView && transitionType == targetTransition) {
-                onEnd();
-                layoutTransition.removeTransitionListener(this);
-            }
-        }
-    }
-
-    //endregion
 }

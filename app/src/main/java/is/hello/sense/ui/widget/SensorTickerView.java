@@ -109,7 +109,7 @@ public class SensorTickerView extends LinearLayout {
         DigitRotaryView digitView = digits[digitIndex];
         DigitRotaryView.Spin spin = digitView.createSpin(targetDigit, rotations, 1000);
         digitView.runSpin(spin, rotation -> {
-            incrementAdjacent(spin.singleSpinDuration, digitIndex - 1);
+            incrementAdjacent(spin.adjacentDuration, digitIndex - 1);
         }, finished -> {
             if (animatorContext != null) {
                 animatorContext.endAnimation();
@@ -122,11 +122,10 @@ public class SensorTickerView extends LinearLayout {
 
     private void incrementAdjacent(long spinDuration, int digitIndex) {
         DigitRotaryView digit = digits[digitIndex];
-        digit.spinToNextDigit(spinDuration, finished -> {
-            if (digit.getOnScreenDigit() == 0 && digitIndex >= 0) {
-                incrementAdjacent(spinDuration, digitIndex - 1);
-            }
-        });
+        if (digit.getOffScreenDigit() == 0 && digitIndex >= 0) {
+            incrementAdjacent(spinDuration, digitIndex - 1);
+        }
+        digit.spinToNextDigit(spinDuration, null);
     }
 
     //endregion

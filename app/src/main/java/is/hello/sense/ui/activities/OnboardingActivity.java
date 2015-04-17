@@ -49,7 +49,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment2;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSetup2ndPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
@@ -461,7 +461,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
     public void showRoomCheckIntro() {
         OnboardingSimpleStepFragment.Builder introBuilder = new OnboardingSimpleStepFragment.Builder(this);
-        introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment2.class);
+        introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
         introBuilder.setHeadingText(R.string.onboarding_title_room_check);
         introBuilder.setSubheadingText(R.string.onboarding_info_room_check);
         introBuilder.setDiagramImage(R.drawable.onboarding_sense_intro);
