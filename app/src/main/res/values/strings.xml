@@ -467,4 +467,5 @@ so you can sleep better.</string>
     <string name="title_advanced">Advanced</string>
     <string name="description_replace_this_sense">If you have a new Sense you want to pair with this account.</string>
     <string name="description_factory_reset">If you are going to give your Sense to someone else.</string>
+    <string name="description_replace_sleep_pill">If you have a new Sleep Pill you want to pair with this account.</string>
 </resources>

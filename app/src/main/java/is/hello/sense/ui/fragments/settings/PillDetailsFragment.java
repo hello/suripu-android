@@ -1,8 +1,12 @@
 package is.hello.sense.ui.fragments.settings;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -10,12 +14,19 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Logger;
 
 public class PillDetailsFragment extends DeviceDetailsFragment {
+    private static final int REQUEST_CODE_ADVANCED = 0xAd;
+
+    private static final int OPTION_ID_REPLACE_PILL = 0;
+
     @Inject DevicesPresenter devicesPresenter;
 
     //region Lifecycle
@@ -40,8 +51,8 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         super.onViewCreated(view, savedInstanceState);
 
         showActions();
-        addDeviceAction(R.string.action_replace_sleep_pill, true, this::unregisterDevice);
         addDeviceAction(R.string.action_replace_battery, true, this::replaceBattery);
+        addDeviceAction(R.string.title_advanced, false, this::showAdvancedOptions);
 
         if (device.getState() == Device.State.LOW_BATTERY) {
             showTroubleshootingAlert(R.string.alert_message_low_battery,
@@ -57,12 +68,32 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_ADVANCED && resultCode == Activity.RESULT_OK) {
+            SenseBottomSheet.Option option = (SenseBottomSheet.Option) data.getSerializableExtra(BottomSheetDialogFragment.RESULT_OPTION);
+            switch (option.getOptionId()) {
+                case OPTION_ID_REPLACE_PILL: {
+                    replaceDevice();
+                    break;
+                }
+
+                default: {
+                    Logger.warn(getClass().getSimpleName(), "Unknown option " + option.getOptionId());
+                    break;
+                }
+            }
+        }
+    }
+
     //endregion
 
 
     //region Pill Actions
 
-    public void unregisterDevice() {
+    public void replaceDevice() {
         Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_PILL, null);
 
         SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
@@ -89,6 +120,19 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_BATTERY, null);
 
         UserSupport.showReplaceBattery(getActivity());
+    }
+
+    public void showAdvancedOptions() {
+        ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
+        options.add(
+            new SenseBottomSheet.Option(OPTION_ID_REPLACE_PILL)
+                    .setTitle(R.string.action_replace_sleep_pill)
+                    .setTitleColor(getResources().getColor(R.color.light_accent))
+                    .setDescription(R.string.description_replace_sleep_pill)
+        );
+        BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);
+        advancedOptions.setTargetFragment(this, REQUEST_CODE_ADVANCED);
+        advancedOptions.show(getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
     //endregion
