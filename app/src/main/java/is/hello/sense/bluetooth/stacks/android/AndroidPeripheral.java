@@ -325,8 +325,12 @@ public class AndroidPeripheral implements Peripheral {
 
     @Override
     public @ConnectivityStatus int getConnectionStatus() {
-        @ConnectivityStatus int status = stack.bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
-        return status;
+        if (gatt != null) {
+            @ConnectivityStatus int status = stack.bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
+            return status;
+        } else {
+            return STATUS_DISCONNECTED;
+        }
     }
 
     //endregion
