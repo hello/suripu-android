@@ -55,7 +55,7 @@ public class AndroidPeripheral implements Peripheral {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull BluetoothDevice bluetoothDevice;
     private final int scannedRssi;
-    private final AdvertisingData advertisingData;
+    private final @NonNull AdvertisingData advertisingData;
     private final GattDispatcher gattDispatcher = new GattDispatcher();
 
     private boolean suspendDisconnectBroadcasts = false;
@@ -112,6 +112,7 @@ public class AndroidPeripheral implements Peripheral {
         return bluetoothDevice.getName();
     }
 
+    @NonNull
     @Override
     public AdvertisingData getAdvertisingData() {
         return advertisingData;
