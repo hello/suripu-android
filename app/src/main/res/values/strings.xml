@@ -144,7 +144,7 @@ so you can sleep better.</string>
     <string name="error_addendum_support">\n\nHaving trouble? <b><a href="#email">Email support</a></b></string>
     <string name="label_firmware_version">Firmware</string>
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
-    <string name="action_factory_reset">Factory Reset</string>
+    <string name="action_factory_reset">Factory reset</string>
     <string name="dialog_title_factory_reset">Perform factory reset?</string>
     <string name="dialog_messsage_factory_reset">Are you sure you want to restore Sense to factory settings? This will disconnect your account from Sense, as well as any Sleep Pills you\'ve paired. You will need to have a Sense paired to continue using the application.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave Onboarding?</string>
@@ -295,8 +295,8 @@ so you can sleep better.</string>
     <string name="label_color">Color</string>
     <string name="info_no_sense_connected">You don\'t currently have a Sense connected to your account.</string>
     <string name="info_no_sleep_pill_connected">You don\'t currently have a Sleep Pill connected to your account.</string>
-    <string name="action_replace_this_sense">Replace This Sense</string>
-    <string name="action_replace_sleep_pill">Replace This Sleep Pill</string>
+    <string name="action_replace_this_sense">Replace this Sense</string>
+    <string name="action_replace_sleep_pill">Replace this Sleep Pill</string>
     <string name="action_replace_battery">Replace Battery</string>
     <string name="action_replace">Replace</string>
     <string name="action_troubleshoot">Troubleshoot</string>

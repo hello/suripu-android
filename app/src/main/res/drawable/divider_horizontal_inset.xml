@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
+    <item
+        android:left="@dimen/gap_outer">
         <shape android:shape="rectangle">
             <size android:height="@dimen/divider_size" />
             <solid android:color="@color/border" />

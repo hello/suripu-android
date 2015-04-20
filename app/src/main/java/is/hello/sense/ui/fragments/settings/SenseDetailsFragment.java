@@ -352,7 +352,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                         .setTitleColor(getResources().getColor(R.color.light_accent))
                         .setDescription(R.string.description_replace_this_sense)
         );
-        if (hardwarePresenter.hasPeripheral()) {
+        if (hardwarePresenter.isConnected()) {
             options.add(
                 new SenseBottomSheet.Option(OPTION_ID_FACTORY_RESET)
                         .setTitle(R.string.action_factory_reset)

@@ -3,7 +3,6 @@ package is.hello.sense.ui.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -25,14 +24,12 @@ import is.hello.sense.util.Errors;
 public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     private static final String SAVED_DIALOG_STATE = SenseBottomSheet.class.getSimpleName() + "#SAVED_DIALOG_STATE";
     private static final String SAVED_TITLE = SenseBottomSheet.class.getSimpleName() + "#SAVED_TITLE";
-    private static final String SAVED_ICON_RES = SenseBottomSheet.class.getSimpleName() + "#SAVED_ICON_RES";
     private static final String SAVED_OPTIONS = SenseBottomSheet.class.getSimpleName() + "#SAVED_OPTIONS";
 
     private final ArrayList<Option> options = new ArrayList<>();
     private final LayoutInflater inflater;
 
     private @Nullable String title;
-    private @DrawableRes int iconRes;
 
     private @Nullable LinearLayout optionsContainer;
     private @Nullable TextView titleText;
@@ -65,7 +62,6 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         }
 
         this.titleText = (TextView) findViewById(R.id.dialog_bottom_sheet_title);
-        titleText.setCompoundDrawablesRelativeWithIntrinsicBounds(0, iconRes, 0, 0);
         if (title != null) {
             titleText.setText(title);
         } else {
@@ -76,10 +72,9 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     @Override
     public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         this.title = savedInstanceState.getString(SAVED_TITLE);
-        this.iconRes = savedInstanceState.getInt(SAVED_ICON_RES);
 
         //noinspection unchecked
-        ArrayList<Option> savedOptions = (ArrayList<Option>) savedInstanceState.getSerializable(SAVED_ICON_RES);
+        ArrayList<Option> savedOptions = (ArrayList<Option>) savedInstanceState.getSerializable(SAVED_OPTIONS);
         options.clear();
         options.addAll(savedOptions);
 
@@ -91,7 +86,6 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     public Bundle onSaveInstanceState() {
         Bundle savedState = new Bundle();
         savedState.putString(SAVED_TITLE, title);
-        savedState.putInt(SAVED_ICON_RES, iconRes);
         savedState.putSerializable(SAVED_OPTIONS, options);
         savedState.putParcelable(SAVED_DIALOG_STATE, super.onSaveInstanceState());
         return savedState;
@@ -113,11 +107,6 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         TextView title = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_title);
         TextView description = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_description);
 
-        if (option.getIcon() != 0) {
-            title.setCompoundDrawablesRelativeWithIntrinsicBounds(0, option.getIcon(), 0, 0);
-            title.setGravity(Gravity.CENTER);
-        }
-
         if (option.getTitle() != null) {
             String itemTitle = option.getTitle().resolve(getContext());
             title.setText(itemTitle);
@@ -138,22 +127,10 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         optionsContainer.addView(optionView);
     }
 
-    public void addOption(@NonNull Option option) {
-        options.add(option);
-        addViewForOption(option);
-    }
-
     public void addOptions(@NonNull Collection<Option> options) {
         this.options.addAll(options);
         for (Option option : options) {
             addViewForOption(option);
-        }
-    }
-
-    public void clearOptions() {
-        options.clear();
-        if (optionsContainer != null) {
-            optionsContainer.removeAllViews();
         }
     }
 
@@ -176,19 +153,6 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
                 titleText.setVisibility(View.VISIBLE);
             } else {
                 titleText.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    public void setIcon(@DrawableRes int iconRes) {
-        this.iconRes = iconRes;
-
-        if (titleText != null) {
-            titleText.setCompoundDrawablesRelativeWithIntrinsicBounds(0, iconRes, 0, 0);
-            if (iconRes != 0) {
-                titleText.setGravity(Gravity.CENTER);
-            } else {
-                titleText.setGravity(Gravity.START);
             }
         }
     }
@@ -218,7 +182,6 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
     public static class Option implements Serializable {
         private final int optionId;
-        private @DrawableRes int icon;
         private @Nullable Integer titleColor;
         private @Nullable Errors.Message title;
         private @Nullable Errors.Message description;
@@ -230,19 +193,6 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         public int getOptionId() {
             return optionId;
         }
-
-        //region Icon
-
-        public Option setIcon(@DrawableRes int icon) {
-            this.icon = icon;
-            return this;
-        }
-
-        public @DrawableRes int getIcon() {
-            return icon;
-        }
-
-        //endregion
 
 
         //region Text

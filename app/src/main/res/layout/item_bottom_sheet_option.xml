@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/gap_outer"
     android:paddingRight="@dimen/gap_outer"
     android:paddingTop="@dimen/gap_medium"
-    android:paddingBottom="@dimen/gap_medium"
+    android:paddingBottom="@dimen/gap_outer"
     android:background="@drawable/selectable_dark_bounded"
     android:descendantFocusability="blocksDescendants">
 
@@ -14,10 +14,10 @@
         android:id="@+id/item_bottom_sheet_option_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_tiny"
         android:drawablePadding="@dimen/gap_medium"
         android:gravity="center_vertical|start"
-        android:textAppearance="@style/AppTheme.Text.Body"
-        android:text="@string/app_name"/>
+        android:textAppearance="@style/AppTheme.Text.Body" />
 
     <TextView
         android:id="@+id/item_bottom_sheet_option_description"
@@ -25,6 +25,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/gap_small"
         android:textAppearance="@style/AppTheme.Text.Body.Small"
-        android:textColor="@color/text_medium" />
+        android:textColor="@color/text_dim" />
 
 </LinearLayout>
