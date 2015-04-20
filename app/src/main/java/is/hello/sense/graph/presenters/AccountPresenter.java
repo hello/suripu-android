@@ -51,6 +51,10 @@ public class AccountPresenter extends ValuePresenter<Account> {
         });
     }
 
+    public Observable<SenseTimeZone> currentTimeZone() {
+        return apiService.currentTimeZone();
+    }
+
     public Observable<SenseTimeZone> updateTimeZone(@NonNull SenseTimeZone senseTimeZone) {
         return apiService.updateTimeZone(senseTimeZone);
     }

@@ -13,7 +13,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.joda.time.DateTimeZone;
-import org.joda.time.Instant;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -21,7 +20,6 @@ import java.util.TimeZone;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.adapter.TimeZoneAdapter;
@@ -38,8 +36,6 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
 
     private ListView listView;
     private ProgressBar activityIndicator;
-
-    private @Nullable Account account;
     private TextView headerDetail;
 
     //region Lifecycle
@@ -88,7 +84,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         super.onViewCreated(view, savedInstanceState);
 
         beginActivity();
-        bindAndSubscribe(accountPresenter.account, this::bindAccount, this::presentError);
+        bindAndSubscribe(accountPresenter.currentTimeZone(), this::bindTimeZone, this::presentError);
     }
 
     //endregion
@@ -109,40 +105,28 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (account == null) {
-            return;
-        }
-
         String timeZoneId = (String) parent.getItemAtPosition(position);
         if (timeZoneId == null) {
             return;
         }
 
         DateTimeZone timeZone = DateTimeZone.forID(timeZoneId);
-        int offset = timeZone.getOffset(Instant.now());
-        account.setTimeZoneOffset(offset);
-
+        SenseTimeZone senseTimeZone = SenseTimeZone.fromDateTimeZone(timeZone);
         LoadingDialogFragment.show(getFragmentManager(), null, true);
-        bindAndSubscribe(accountPresenter.updateTimeZone(SenseTimeZone.fromDateTimeZone(timeZone)),
+        bindAndSubscribe(accountPresenter.updateTimeZone(senseTimeZone),
                          ignored -> {
                              Logger.info(getClass().getSimpleName(), "Updated time zone");
-                             bindAndSubscribe(accountPresenter.saveAccount(account),
-                                              updatedAccount -> {
-                                                  LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-                                                      FragmentNavigation navigation = (FragmentNavigation) getActivity();
-                                                      navigation.popFragment(this, true);
-                                                  });
-                                              },
-                                              this::presentError);
+                             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
+                                 FragmentNavigation navigation = (FragmentNavigation) getActivity();
+                                 navigation.popFragment(this, true);
+                             });
                          },
                          this::presentError);
     }
 
 
-    public void bindAccount(@NonNull Account account) {
-        this.account = account;
-
-        DateTimeZone timeZone = DateTimeZone.forOffsetMillis(account.getTimeZoneOffset());
+    public void bindTimeZone(@NonNull SenseTimeZone senseTimeZone) {
+        DateTimeZone timeZone = senseTimeZone.toDateTimeZone();
         TimeZone displayTimeZone = timeZone.toTimeZone();
         boolean inDST = displayTimeZone.inDaylightTime(new Date());
         String timeZoneName = displayTimeZone.getDisplayName(inDST, TimeZone.LONG);
