@@ -15,6 +15,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -30,23 +32,28 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state;
 
 public class SenseDetailsFragment extends DeviceDetailsFragment implements FragmentNavigationActivity.BackInterceptingFragment {
-    private static final int WIFI_REQUEST_CODE = 0x94;
+    private static final int REQUEST_CODE_WIFI = 0x94;
     private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
+    private static final int REQUEST_CODE_ADVANCED = 0xAd;
+
+    private static final int OPTION_ID_REPLACE_SENSE = 0;
+    private static final int OPTION_ID_FACTORY_RESET = 1;
 
     @Inject DevicesPresenter devicesPresenter;
     @Inject PreferencesPresenter preferences;
 
     private View pairingMode;
-    private View factoryReset;
     private View changeWiFi;
 
     private BluetoothAdapter bluetoothAdapter;
@@ -93,14 +100,12 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        addDeviceAction(R.string.action_replace_this_sense, true, this::unregisterDevice);
         this.pairingMode = addDeviceAction(R.string.action_enter_pairing_mode, true, this::putIntoPairingMode);
         pairingMode.setEnabled(false);
-        this.factoryReset = addDeviceAction(R.string.action_factory_reset, true, this::factoryReset);
-        factoryReset.setEnabled(false);
         this.changeWiFi = addDeviceAction(R.string.action_select_wifi_network, true, this::changeWifiNetwork);
         changeWiFi.setEnabled(false);
-        addDeviceAction(R.string.action_change_time_zone, false, this::changeTimeZone);
+        addDeviceAction(R.string.action_change_time_zone, true, this::changeTimeZone);
+        addDeviceAction(R.string.title_advanced, false, this::showAdvancedOptions);
         showActions();
 
         IntentFilter fatalErrors = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
@@ -133,7 +138,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == WIFI_REQUEST_CODE) {
+        if (requestCode == REQUEST_CODE_WIFI) {
             if (hardwarePresenter.isConnected()) {
                 hideAlert();
                 checkConnectivityState();
@@ -141,6 +146,24 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         } else if (requestCode == REQUEST_CODE_HIGH_POWER_RETRY && resultCode == Activity.RESULT_OK) {
             hardwarePresenter.setWantsHighPowerPreScan(true);
             connectToPeripheral();
+        } else if (requestCode == REQUEST_CODE_ADVANCED && resultCode == Activity.RESULT_OK) {
+            SenseBottomSheet.Option option = (SenseBottomSheet.Option) data.getSerializableExtra(BottomSheetDialogFragment.RESULT_OPTION);
+            switch (option.getOptionId()) {
+                case OPTION_ID_REPLACE_SENSE: {
+                    replaceDevice();
+                    break;
+                }
+
+                case OPTION_ID_FACTORY_RESET: {
+                    factoryReset();
+                    break;
+                }
+
+                default: {
+                    Logger.warn(getClass().getSimpleName(), "Unknown option " + option.getOptionId());
+                    break;
+                }
+            }
         }
     }
 
@@ -171,7 +194,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     @Override
     protected void clearActions() {
         pairingMode.setEnabled(false);
-        factoryReset.setEnabled(false);
         changeWiFi.setEnabled(false);
     }
 
@@ -181,7 +203,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     private void showConnectedSenseActions(@Nullable SensePeripheral.SenseWifiNetwork network) {
         pairingMode.setEnabled(true);
-        factoryReset.setEnabled(true);
         changeWiFi.setEnabled(true);
 
         if (network == null ||
@@ -300,7 +321,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         Intent intent = new Intent(getActivity(), OnboardingActivity.class);
         intent.putExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, true);
-        startActivityForResult(intent, WIFI_REQUEST_CODE);
+        startActivityForResult(intent, REQUEST_CODE_WIFI);
     }
 
     public void putIntoPairingMode() {
@@ -321,6 +342,27 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void changeTimeZone() {
         DeviceTimeZoneFragment timeZoneFragment = new DeviceTimeZoneFragment();
         ((FragmentNavigation) getActivity()).pushFragment(timeZoneFragment, getString(R.string.action_change_time_zone), true);
+    }
+
+    public void showAdvancedOptions() {
+        ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
+        options.add(
+                new SenseBottomSheet.Option(OPTION_ID_REPLACE_SENSE)
+                        .setTitle(R.string.action_replace_this_sense)
+                        .setTitleColor(getResources().getColor(R.color.light_accent))
+                        .setDescription(R.string.description_replace_this_sense)
+        );
+        if (hardwarePresenter.hasPeripheral()) {
+            options.add(
+                new SenseBottomSheet.Option(OPTION_ID_FACTORY_RESET)
+                        .setTitle(R.string.action_factory_reset)
+                        .setTitleColor(getResources().getColor(R.color.destructive_accent))
+                        .setDescription(R.string.description_factory_reset)
+            );
+        }
+        BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);
+        advancedOptions.setTargetFragment(this, REQUEST_CODE_ADVANCED);
+        advancedOptions.show(getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
     public void factoryReset() {
@@ -359,7 +401,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                          this::presentError);
     }
 
-    public void unregisterDevice() {
+    public void replaceDevice() {
         Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_SENSE, null);
 
         SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());

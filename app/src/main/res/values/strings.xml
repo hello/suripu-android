@@ -464,4 +464,7 @@ so you can sleep better.</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_email_support">Email Support</string>
     <string name="action_user_guide">User Guide</string>
+    <string name="title_advanced">Advanced</string>
+    <string name="description_replace_this_sense">If you have a new Sense you want to pair with this account.</string>
+    <string name="description_factory_reset">If you are going to give your Sense to someone else.</string>
 </resources>
