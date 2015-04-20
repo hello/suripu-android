@@ -229,31 +229,42 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             return;
         }
 
-        container.removeView(status);
-        container.removeView(scoreTicker);
+        getAnimatorContext().transaction(f -> {
+            f.animate(status)
+             .fadeOut(View.GONE);
+            f.animate(scoreTicker)
+             .fadeOut(View.GONE);
+        }, finishedFadeOut -> {
+            if (!finishedFadeOut) {
+                return;
+            }
 
-        ViewGroup endContainer = (ViewGroup) inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, container, false);
-        endContainer.setVisibility(View.INVISIBLE);
-        container.addView(endContainer);
+            container.removeView(status);
+            container.removeView(scoreTicker);
 
-        endContainer.post(() -> {
-            Button continueButton = (Button) endContainer.findViewById(R.id.sub_fragment_room_check_end_continue);
-            getAnimatorContext().transaction(f -> {
-                float slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_outer);
-                for (int i = 0, count = endContainer.getChildCount(); i < count; i++) {
-                    View child = endContainer.getChildAt(i);
-                    f.animate(child)
-                            .setStartDelay(END_CONTAINER_DELAY_MS * i)
-                            .slideYAndFade(slideAmount, 0f, 0f, 1f);
-                }
-            }, finished -> {
-                if (!finished) {
-                    return;
-                }
+            ViewGroup endContainer = (ViewGroup) inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, container, false);
+            endContainer.setVisibility(View.INVISIBLE);
+            container.addView(endContainer);
 
-                Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
+            endContainer.post(() -> {
+                endContainer.setVisibility(View.VISIBLE);
+                getAnimatorContext().transaction(f -> {
+                    float slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+                    for (int i = 0, count = endContainer.getChildCount(); i < count; i++) {
+                        View child = endContainer.getChildAt(i);
+                        f.animate(child)
+                         .setStartDelay(END_CONTAINER_DELAY_MS * i)
+                         .slideYAndFade(slideAmount, 0f, 0f, 1f);
+                    }
+                }, finishedTransitionIn -> {
+                    if (!finishedTransitionIn) {
+                        return;
+                    }
+
+                    Button continueButton = (Button) endContainer.findViewById(R.id.sub_fragment_room_check_end_continue);
+                    Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
+                });
             });
-            endContainer.setVisibility(View.VISIBLE);
         });
     }
 
