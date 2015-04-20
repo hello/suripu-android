@@ -45,6 +45,10 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     @Inject DevicesPresenter devicesPresenter;
     @Inject PreferencesPresenter preferences;
 
+    private View pairingMode;
+    private View factoryReset;
+    private View changeWiFi;
+
     private BluetoothAdapter bluetoothAdapter;
     private boolean didEnableBluetooth = false;
 
@@ -88,6 +92,16 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        addDeviceAction(R.string.action_replace_this_sense, true, this::unregisterDevice);
+        this.pairingMode = addDeviceAction(R.string.action_enter_pairing_mode, true, this::putIntoPairingMode);
+        pairingMode.setEnabled(false);
+        this.factoryReset = addDeviceAction(R.string.action_factory_reset, true, this::factoryReset);
+        factoryReset.setEnabled(false);
+        this.changeWiFi = addDeviceAction(R.string.action_select_wifi_network, true, this::changeWifiNetwork);
+        changeWiFi.setEnabled(false);
+        addDeviceAction(R.string.action_change_time_zone, false, this::changeTimeZone);
+        showActions();
 
         IntentFilter fatalErrors = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
         LocalBroadcastManager.getInstance(getActivity())
@@ -153,23 +167,22 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     //region Displaying Actions
 
+
+    @Override
+    protected void clearActions() {
+        pairingMode.setEnabled(false);
+        factoryReset.setEnabled(false);
+        changeWiFi.setEnabled(false);
+    }
+
     private void showRestrictedSenseActions() {
         clearActions();
-        showActions();
-
-        addDeviceAction(R.string.action_replace_this_sense, true, this::unregisterDevice);
-        addDeviceAction(R.string.action_change_time_zone, false, this::changeTimeZone);
     }
 
     private void showConnectedSenseActions(@Nullable SensePeripheral.SenseWifiNetwork network) {
-        clearActions();
-        showActions();
-
-        addDeviceAction(R.string.action_replace_this_sense, true, this::unregisterDevice);
-        addDeviceAction(R.string.action_enter_pairing_mode, true, this::putIntoPairingMode);
-        addDeviceAction(R.string.action_factory_reset, true, this::factoryReset);
-        addDeviceAction(R.string.action_select_wifi_network, true, this::changeWifiNetwork);
-        addDeviceAction(R.string.action_change_time_zone, false, this::changeTimeZone);
+        pairingMode.setEnabled(true);
+        factoryReset.setEnabled(true);
+        changeWiFi.setEnabled(true);
 
         if (network == null ||
             TextUtils.isEmpty(network.ssid) ||
