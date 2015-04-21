@@ -138,7 +138,7 @@ public interface Peripheral {
     /**
      * Returns the advertising data associated with the Peripheral.
      */
-    AdvertisingData getAdvertisingData();
+    @NonNull AdvertisingData getAdvertisingData();
 
     /**
      * Returns the stack this Peripheral is tied to.

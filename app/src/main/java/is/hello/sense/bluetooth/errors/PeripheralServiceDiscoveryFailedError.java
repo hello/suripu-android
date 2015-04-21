@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
 import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 
 public class PeripheralServiceDiscoveryFailedError extends BluetoothError implements Errors.Reporting {
     public PeripheralServiceDiscoveryFailedError() {
@@ -19,7 +20,7 @@ public class PeripheralServiceDiscoveryFailedError extends BluetoothError implem
 
     @NonNull
     @Override
-    public Errors.Message getDisplayMessage() {
-        return Errors.Message.from(R.string.error_bluetooth_service_discovery_failed);
+    public StringRef getDisplayMessage() {
+        return StringRef.from(R.string.error_bluetooth_service_discovery_failed);
     }
 }

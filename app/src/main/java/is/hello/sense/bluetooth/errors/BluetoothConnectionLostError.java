@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
 import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 
 public class BluetoothConnectionLostError extends BluetoothError implements Errors.Reporting {
     public BluetoothConnectionLostError() {
@@ -19,7 +20,7 @@ public class BluetoothConnectionLostError extends BluetoothError implements Erro
 
     @NonNull
     @Override
-    public Errors.Message getDisplayMessage() {
-        return Errors.Message.from(R.string.error_bluetooth_connection_lost);
+    public StringRef getDisplayMessage() {
+        return StringRef.from(R.string.error_bluetooth_connection_lost);
     }
 }

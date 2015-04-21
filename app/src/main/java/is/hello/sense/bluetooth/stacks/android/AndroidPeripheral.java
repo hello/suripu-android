@@ -55,11 +55,11 @@ public class AndroidPeripheral implements Peripheral {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull BluetoothDevice bluetoothDevice;
     private final int scannedRssi;
-    private final AdvertisingData advertisingData;
+    private final @NonNull AdvertisingData advertisingData;
     private final GattDispatcher gattDispatcher = new GattDispatcher();
 
     private boolean suspendDisconnectBroadcasts = false;
-    private BluetoothGatt gatt;
+    private @Nullable BluetoothGatt gatt;
     private @Nullable Subscription bluetoothStateSubscription;
     private @Config int config;
 
@@ -112,6 +112,7 @@ public class AndroidPeripheral implements Peripheral {
         return bluetoothDevice.getName();
     }
 
+    @NonNull
     @Override
     public AdvertisingData getAdvertisingData() {
         return advertisingData;
@@ -286,7 +287,7 @@ public class AndroidPeripheral implements Peripheral {
     public Observable<Peripheral> disconnect() {
         return stack.newConfiguredObservable(s -> {
             int connectionStatus = getConnectionStatus();
-            if (connectionStatus == STATUS_DISCONNECTED || connectionStatus == STATUS_DISCONNECTING) {
+            if (connectionStatus == STATUS_DISCONNECTED || connectionStatus == STATUS_DISCONNECTING || gatt == null) {
                 s.onNext(this);
                 s.onCompleted();
                 return;
@@ -325,8 +326,12 @@ public class AndroidPeripheral implements Peripheral {
 
     @Override
     public @ConnectivityStatus int getConnectionStatus() {
-        @ConnectivityStatus int status = stack.bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
-        return status;
+        if (gatt != null) {
+            @ConnectivityStatus int status = stack.bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
+            return status;
+        } else {
+            return STATUS_DISCONNECTED;
+        }
     }
 
     //endregion
@@ -549,7 +554,7 @@ public class AndroidPeripheral implements Peripheral {
     @Override
     public Observable<Map<UUID, PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
         Observable<Map<UUID, PeripheralService>> discoverServices = stack.newConfiguredObservable(s -> {
-            if (getConnectionStatus() != STATUS_CONNECTED) {
+            if (getConnectionStatus() != STATUS_CONNECTED || gatt == null) {
                 s.onError(new PeripheralConnectionError());
                 return;
             }
@@ -626,7 +631,7 @@ public class AndroidPeripheral implements Peripheral {
                                                   @NonNull UUID descriptorIdentifier,
                                                   @NonNull OperationTimeout timeout) {
         return stack.newConfiguredObservable(s -> {
-            if (getConnectionStatus() != STATUS_CONNECTED) {
+            if (getConnectionStatus() != STATUS_CONNECTED || gatt == null) {
                 s.onError(new PeripheralConnectionError());
                 return;
             }
@@ -686,7 +691,7 @@ public class AndroidPeripheral implements Peripheral {
                                                     @NonNull UUID descriptorIdentifier,
                                                     @NonNull OperationTimeout timeout) {
         return stack.newConfiguredObservable(s -> {
-            if (getConnectionStatus() != STATUS_CONNECTED) {
+            if (getConnectionStatus() != STATUS_CONNECTED || gatt == null) {
                 s.onError(new PeripheralConnectionError());
                 return;
             }
@@ -741,7 +746,7 @@ public class AndroidPeripheral implements Peripheral {
                                          @NonNull byte[] payload,
                                          @NonNull OperationTimeout timeout) {
         return stack.newConfiguredObservable(s -> {
-            if (getConnectionStatus() != STATUS_CONNECTED) {
+            if (getConnectionStatus() != STATUS_CONNECTED || gatt == null) {
                 s.onError(new PeripheralConnectionError());
                 return;
             }

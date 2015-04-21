@@ -37,7 +37,7 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/text_size_body_small</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/light_accent</item>
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
     <style name="AppTheme.Text.SectionHeading">

@@ -47,6 +47,7 @@ public class TutorialOverlayView extends RelativeLayout {
     private float interactionStartX = 0f, interactionStartY = 0f;
     private boolean trackingInteraction = false;
     private boolean dispatchedLastEvent = false;
+    private boolean attachedToWindow = false; // For API level 18
 
     private @Nullable ViewGroup container;
     private @Nullable Runnable onDismiss;
@@ -84,13 +85,15 @@ public class TutorialOverlayView extends RelativeLayout {
     private <T> Subscription bindAndSubscribe(@NonNull Observable<T> observable,
                                               @NonNull Action1<T> onNext,
                                               @NonNull Action1<Throwable> onError) {
-        return observable.lift(new OperatorConditionalBinding<>(this, View::isAttachedToWindow))
+        return observable.lift(new OperatorConditionalBinding<>(this, t -> t.attachedToWindow))
                          .subscribe(onNext, onError);
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+
+        this.attachedToWindow = true;
 
         Window window = getWindow();
         if (window != null && !(window.getCallback() instanceof EventInterceptor)) {
@@ -115,6 +118,8 @@ public class TutorialOverlayView extends RelativeLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+
+        this.attachedToWindow = false;
 
         Window window = getWindow();
         if (window != null && (window.getCallback() instanceof EventInterceptor)) {
@@ -341,7 +346,7 @@ public class TutorialOverlayView extends RelativeLayout {
 
         @Override
         public boolean dispatchTouchEvent(MotionEvent event) {
-            return ((isAttachedToWindow() && interceptTouchEvent(event)) ||
+            return ((attachedToWindow && interceptTouchEvent(event)) ||
                     target.dispatchTouchEvent(event));
         }
 

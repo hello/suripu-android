@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
 import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 
 public class PeripheralSetWifiError extends BluetoothError implements Errors.Reporting {
     public final Reason reason;
@@ -23,22 +24,22 @@ public class PeripheralSetWifiError extends BluetoothError implements Errors.Rep
 
     @NonNull
     @Override
-    public Errors.Message getDisplayMessage() {
+    public StringRef getDisplayMessage() {
         switch (reason) {
             case MALFORMED_BYTES: {
-                return Errors.Message.from(R.string.error_bluetooth_malformed_wifi_password);
+                return StringRef.from(R.string.error_bluetooth_malformed_wifi_password);
             }
 
             case CONTAINS_NUL_BYTE: {
-                return Errors.Message.from(R.string.error_bluetooth_wep_password_nul);
+                return StringRef.from(R.string.error_bluetooth_wep_password_nul);
             }
 
             case EMPTY_PASSWORD: {
-                return Errors.Message.from(R.string.error_bluetooth_empty_wifi_password);
+                return StringRef.from(R.string.error_bluetooth_empty_wifi_password);
             }
 
             default: {
-                return Errors.Message.from(reason.toString());
+                return StringRef.from(reason.toString());
             }
         }
     }
