@@ -36,6 +36,7 @@ public class ErrorDialogFragment extends DialogFragment {
     private static final String ARG_FATAL_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_FATAL_MESSAGE_RES";
 
     private static final String ARG_ACTION_INTENT = ErrorDialogFragment.class.getName() + ".ARG_ACTION_INTENT";
+    private static final String ARG_ACTION_RESULT_CODE = ErrorDialogFragment.class.getName() + ".ARG_ACTION_RESULT_CODE";
     private static final String ARG_ACTION_TITLE_RES = ErrorDialogFragment.class.getName() + ".ARG_ACTION_TITLE_RES";
 
 
@@ -132,12 +133,21 @@ public class ErrorDialogFragment extends DialogFragment {
 
         dialog.setPositiveButton(android.R.string.ok, null);
 
-        if (getArguments().containsKey(ARG_ACTION_INTENT) && getArguments().containsKey(ARG_ACTION_TITLE_RES)) {
+        if (getArguments().containsKey(ARG_ACTION_TITLE_RES)) {
             int titleRes = getArguments().getInt(ARG_ACTION_TITLE_RES);
-            dialog.setNegativeButton(titleRes, (button, which) -> {
-                Intent intent = getArguments().getParcelable(ARG_ACTION_INTENT);
-                startActivity(intent);
-            });
+            if (getArguments().containsKey(ARG_ACTION_INTENT)) {
+                dialog.setNegativeButton(titleRes, (button, which) -> {
+                    Intent intent = getArguments().getParcelable(ARG_ACTION_INTENT);
+                    startActivity(intent);
+                });
+            } else {
+                dialog.setNegativeButton(titleRes, (button, which) -> {
+                    if (getTargetFragment() != null) {
+                        int resultCode = getArguments().getInt(ARG_ACTION_RESULT_CODE);
+                        getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, null);
+                    }
+                });
+            }
         }
 
         return dialog;
@@ -205,6 +215,11 @@ public class ErrorDialogFragment extends DialogFragment {
 
     public void setAction(@NonNull Intent intent, @StringRes int titleRes) {
         getArguments().putParcelable(ARG_ACTION_INTENT, intent);
+        getArguments().putInt(ARG_ACTION_TITLE_RES, titleRes);
+    }
+
+    public void setAction(int resultCode, @StringRes int titleRes) {
+        getArguments().putInt(ARG_ACTION_RESULT_CODE, resultCode);
         getArguments().putInt(ARG_ACTION_TITLE_RES, titleRes);
     }
 
