@@ -45,6 +45,8 @@ public class HardwarePresenterTests extends InjectionTestCase {
             this.testPeripheral = new TestPeripheral(stack, peripheralBehavior);
             this.peripheral = new SensePeripheral(testPeripheral);
         }
+
+        HelloPeripheral.Tests.setPeripheralService(peripheral, null);
     }
 
     @Override
@@ -60,7 +62,10 @@ public class HardwarePresenterTests extends InjectionTestCase {
         assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
 
         OperationTimeoutError error = new OperationTimeoutError(OperationTimeoutError.Operation.SUBSCRIBE_NOTIFICATION);
+        peripheralBehavior.setDisconnectResponse(Either.left(testPeripheral));
         peripheralBehavior.setSubscriptionResponse(Either.right(error));
+        peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
+        HelloPeripheral.Tests.setPeripheralService(peripheral, new TestPeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY));
 
         assertThrows(() -> {
             Sync.last(presenter.currentWifiNetwork());

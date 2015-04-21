@@ -35,10 +35,17 @@ import rx.Observable;
 
 public class OnboardingPairSenseFragment extends HardwareFragment {
     private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
+    private static final int REQUEST_CODE_EDIT_WIFI = 0xf1;
+
+    private static final int RESULT_EDIT_WIFI = 0x99;
+
+    private static final int LINK_ACCOUNT_FAILURES_BEFORE_EDIT_WIFI = 3;
+    private static final String OPERATION_LINK_ACCOUNT = "Linking account";
 
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferences;
 
+    private int linkAccountFailures = 0;
     private boolean hasLinkedAccount = false;
 
     @Override
@@ -89,6 +96,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         if (requestCode == REQUEST_CODE_HIGH_POWER_RETRY && resultCode == Activity.RESULT_OK) {
             hardwarePresenter.setWantsHighPowerPreScan(true);
             next();
+        } else if (requestCode == REQUEST_CODE_EDIT_WIFI && resultCode == RESULT_EDIT_WIFI) {
+            getOnboardingActivity().showSelectWifiNetwork(true);
         }
     }
 
@@ -127,7 +136,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                              },
                              error -> {
                                  Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not link Sense to account", error);
-                                 presentError(error, "Linking account");
+                                 presentError(error, OPERATION_LINK_ACCOUNT);
                              });
         }
     }
@@ -207,6 +216,21 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
     public void presentError(Throwable e, @NonNull String operation) {
         hideAllActivityForFailure(() -> {
+            if (OPERATION_LINK_ACCOUNT.equals(operation)) {
+                this.linkAccountFailures++;
+                if (linkAccountFailures >= LINK_ACCOUNT_FAILURES_BEFORE_EDIT_WIFI) {
+                    ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(R.string.error_link_account_failed_multiple_times);
+                    dialogFragment.setAction(RESULT_EDIT_WIFI, R.string.action_select_wifi_network);
+                    dialogFragment.setTargetFragment(this, REQUEST_CODE_EDIT_WIFI);
+                    dialogFragment.setErrorOperation(operation);
+                    dialogFragment.setShowSupportLink(true);
+                    dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+
+                    Analytics.trackError(e, operation);
+                    return;
+                }
+            }
+
             if (e instanceof PeripheralNotFoundError) {
                 hardwarePresenter.trackPeripheralNotFound();
 

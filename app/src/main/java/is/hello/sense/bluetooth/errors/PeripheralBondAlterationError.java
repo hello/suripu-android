@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import is.hello.sense.R;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 
 /**
  * Used to indicate that a bond could not be created or removed for a peripheral.
@@ -180,11 +181,11 @@ public class PeripheralBondAlterationError extends BluetoothError implements Err
 
     @NonNull
     @Override
-    public Errors.Message getDisplayMessage() {
+    public StringRef getDisplayMessage() {
         if (reason == PeripheralBondAlterationError.REASON_REMOTE_DEVICE_DOWN) {
-            return Errors.Message.from(R.string.error_bluetooth_out_of_range);
+            return StringRef.from(R.string.error_bluetooth_out_of_range);
         } else {
-            return Errors.Message.from(R.string.error_bluetooth_bonding_change_fmt, getContextInfo());
+            return StringRef.from(R.string.error_bluetooth_bonding_change_fmt, getContextInfo());
         }
     }
 }

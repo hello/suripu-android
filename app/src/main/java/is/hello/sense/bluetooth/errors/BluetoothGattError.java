@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
 import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 
 /**
  * Used to report errors from the gatt layer of the Android bluetooth stack.
@@ -164,26 +165,26 @@ public class BluetoothGattError extends BluetoothError implements Errors.Reporti
 
     @NonNull
     @Override
-    public Errors.Message getDisplayMessage() {
+    public StringRef getDisplayMessage() {
         switch (statusCode) {
             case BluetoothGattError.GATT_STACK_ERROR: {
-                return Errors.Message.from(R.string.error_bluetooth_gatt_stack);
+                return StringRef.from(R.string.error_bluetooth_gatt_stack);
             }
 
             case BluetoothGattError.GATT_CONN_TERMINATE_LOCAL_HOST: {
-                return Errors.Message.from(R.string.error_bluetooth_gatt_connection_lost);
+                return StringRef.from(R.string.error_bluetooth_gatt_connection_lost);
             }
 
             case BluetoothGattError.GATT_CONN_TIMEOUT: {
-                return Errors.Message.from(R.string.error_bluetooth_gatt_connection_timeout);
+                return StringRef.from(R.string.error_bluetooth_gatt_connection_timeout);
             }
 
             case BluetoothGattError.GATT_CONN_FAIL_ESTABLISH: {
-                return Errors.Message.from(R.string.error_bluetooth_gatt_connection_failed);
+                return StringRef.from(R.string.error_bluetooth_gatt_connection_failed);
             }
 
             default: {
-                return Errors.Message.from(R.string.error_bluetooth_gatt_failure_fmt, getContextInfo());
+                return StringRef.from(R.string.error_bluetooth_gatt_failure_fmt, getContextInfo());
             }
         }
     }

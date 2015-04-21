@@ -516,7 +516,7 @@ public class Analytics {
     }
 
     public static void trackError(@Nullable Throwable e, @Nullable String errorOperation) {
-        Errors.Message message = Errors.getDisplayMessage(e);
+        StringRef message = Errors.getDisplayMessage(e);
         String messageString;
         if (message != null && SenseApplication.getInstance() != null) {
             messageString = message.resolve(SenseApplication.getInstance());

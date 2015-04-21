@@ -11,9 +11,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Layout;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.AlignmentSpan;
 import android.view.View;
 import android.view.WindowManager;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -30,27 +36,42 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.SenseBottomSheet;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state;
 
 public class SenseDetailsFragment extends DeviceDetailsFragment implements FragmentNavigationActivity.BackInterceptingFragment {
-    private static final int WIFI_REQUEST_CODE = 0x94;
+    private static final int REQUEST_CODE_WIFI = 0x94;
     private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
+    private static final int REQUEST_CODE_ADVANCED = 0xAd;
+
+    private static final int OPTION_ID_REPLACE_SENSE = 0;
+    private static final int OPTION_ID_FACTORY_RESET = 1;
 
     @Inject DevicesPresenter devicesPresenter;
     @Inject PreferencesPresenter preferences;
 
+    private View pairingMode;
+    private View changeWiFi;
+
     private BluetoothAdapter bluetoothAdapter;
+    private boolean factoryResetting = false;
     private boolean didEnableBluetooth = false;
 
     private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (factoryResetting) {
+                return;
+            }
+
             hideBlockingActivity(false, () -> {
                 showTroubleshootingAlert(R.string.error_peripheral_connection_lost,
                         R.string.action_reconnect,
@@ -75,6 +96,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         if (savedInstanceState != null) {
             this.didEnableBluetooth = savedInstanceState.getBoolean("didEnableBluetooth", false);
+            this.factoryResetting = savedInstanceState.getBoolean("factoryResetting", false);
         } else {
             Analytics.trackEvent(Analytics.TopView.EVENT_SENSE_DETAIL, null);
         }
@@ -88,6 +110,14 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        this.pairingMode = addDeviceAction(R.string.action_enter_pairing_mode, true, this::putIntoPairingMode);
+        pairingMode.setEnabled(false);
+        this.changeWiFi = addDeviceAction(R.string.action_select_wifi_network, true, this::changeWifiNetwork);
+        changeWiFi.setEnabled(false);
+        addDeviceAction(R.string.action_change_time_zone, true, this::changeTimeZone);
+        addDeviceAction(R.string.title_advanced, false, this::showAdvancedOptions);
+        showActions();
 
         IntentFilter fatalErrors = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
         LocalBroadcastManager.getInstance(getActivity())
@@ -113,13 +143,14 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("didEnableBluetooth", didEnableBluetooth);
+        outState.putBoolean("factoryResetting", factoryResetting);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == WIFI_REQUEST_CODE) {
+        if (requestCode == REQUEST_CODE_WIFI) {
             if (hardwarePresenter.isConnected()) {
                 hideAlert();
                 checkConnectivityState();
@@ -127,6 +158,24 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         } else if (requestCode == REQUEST_CODE_HIGH_POWER_RETRY && resultCode == Activity.RESULT_OK) {
             hardwarePresenter.setWantsHighPowerPreScan(true);
             connectToPeripheral();
+        } else if (requestCode == REQUEST_CODE_ADVANCED && resultCode == Activity.RESULT_OK) {
+            SenseBottomSheet.Option option = (SenseBottomSheet.Option) data.getSerializableExtra(BottomSheetDialogFragment.RESULT_OPTION);
+            switch (option.getOptionId()) {
+                case OPTION_ID_REPLACE_SENSE: {
+                    replaceDevice();
+                    break;
+                }
+
+                case OPTION_ID_FACTORY_RESET: {
+                    factoryReset();
+                    break;
+                }
+
+                default: {
+                    Logger.warn(getClass().getSimpleName(), "Unknown option " + option.getOptionId());
+                    break;
+                }
+            }
         }
     }
 
@@ -153,23 +202,20 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     //region Displaying Actions
 
+
+    @Override
+    protected void clearActions() {
+        pairingMode.setEnabled(false);
+        changeWiFi.setEnabled(false);
+    }
+
     private void showRestrictedSenseActions() {
         clearActions();
-        showActions();
-
-        addDeviceAction(R.string.action_replace_this_sense, true, this::unregisterDevice);
-        addDeviceAction(R.string.action_change_time_zone, false, this::changeTimeZone);
     }
 
     private void showConnectedSenseActions(@Nullable SensePeripheral.SenseWifiNetwork network) {
-        clearActions();
-        showActions();
-
-        addDeviceAction(R.string.action_replace_this_sense, true, this::unregisterDevice);
-        addDeviceAction(R.string.action_enter_pairing_mode, true, this::putIntoPairingMode);
-        addDeviceAction(R.string.action_factory_reset, true, this::factoryReset);
-        addDeviceAction(R.string.action_select_wifi_network, true, this::changeWifiNetwork);
-        addDeviceAction(R.string.action_change_time_zone, false, this::changeTimeZone);
+        pairingMode.setEnabled(true);
+        changeWiFi.setEnabled(true);
 
         if (network == null ||
             TextUtils.isEmpty(network.ssid) ||
@@ -287,7 +333,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         Intent intent = new Intent(getActivity(), OnboardingActivity.class);
         intent.putExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, true);
-        startActivityForResult(intent, WIFI_REQUEST_CODE);
+        startActivityForResult(intent, REQUEST_CODE_WIFI);
     }
 
     public void putIntoPairingMode() {
@@ -300,14 +346,35 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         showBlockingActivity(R.string.dialog_loading_message);
         showHardwareActivity(() -> {
             bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                             ignored -> hideAllActivityForSuccess(() -> getFragmentManager().popBackStackImmediate(), this::presentError),
-                             this::presentError);
+                    ignored -> hideBlockingActivity(true, () -> getFragmentManager().popBackStackImmediate()),
+                    this::presentError);
         }, this::presentError);
     }
 
     public void changeTimeZone() {
         DeviceTimeZoneFragment timeZoneFragment = new DeviceTimeZoneFragment();
         ((FragmentNavigation) getActivity()).pushFragment(timeZoneFragment, getString(R.string.action_change_time_zone), true);
+    }
+
+    public void showAdvancedOptions() {
+        ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
+        options.add(
+                new SenseBottomSheet.Option(OPTION_ID_REPLACE_SENSE)
+                        .setTitle(R.string.action_replace_this_sense)
+                        .setTitleColor(getResources().getColor(R.color.light_accent))
+                        .setDescription(R.string.description_replace_this_sense)
+        );
+        if (hardwarePresenter.isConnected()) {
+            options.add(
+                new SenseBottomSheet.Option(OPTION_ID_FACTORY_RESET)
+                        .setTitle(R.string.action_factory_reset)
+                        .setTitleColor(getResources().getColor(R.color.destructive_accent))
+                        .setDescription(R.string.description_factory_reset)
+            );
+        }
+        BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);
+        advancedOptions.setTargetFragment(this, REQUEST_CODE_ADVANCED);
+        advancedOptions.show(getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
     public void factoryReset() {
@@ -320,7 +387,12 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
         dialog.setDestructive(true);
         dialog.setTitle(R.string.dialog_title_factory_reset);
-        dialog.setMessage(R.string.dialog_messsage_factory_reset);
+
+        SpannableStringBuilder message = Styles.resolveSupportLinks(getActivity(), getText(R.string.destructive_action_addendum));
+        message.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, message.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        message.insert(0, getString(R.string.dialog_message_factory_reset));
+        dialog.setMessage(message);
+
         dialog.setNegativeButton(android.R.string.cancel, null);
         dialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> resetAllDevices());
         dialog.show();
@@ -336,6 +408,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     private void completeFactoryReset() {
+        this.factoryResetting = true;
+
         bindAndSubscribe(hardwarePresenter.factoryReset(),
                          device -> {
                              hideBlockingActivity(true, () -> {
@@ -346,23 +420,28 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                          this::presentError);
     }
 
-    public void unregisterDevice() {
+    public void replaceDevice() {
         Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_SENSE, null);
 
-        SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
-        alertDialog.setDestructive(true);
-        alertDialog.setTitle(R.string.dialog_title_replace_sense);
-        alertDialog.setMessage(R.string.dialog_message_replace_sense);
-        alertDialog.setNegativeButton(android.R.string.cancel, null);
-        alertDialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
+        SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+        dialog.setDestructive(true);
+        dialog.setTitle(R.string.dialog_title_replace_sense);
+
+        SpannableStringBuilder message = Styles.resolveSupportLinks(getActivity(), getText(R.string.destructive_action_addendum));
+        message.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, message.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        message.insert(0, getString(R.string.dialog_message_replace_sense));
+        dialog.setMessage(message);
+
+        dialog.setNegativeButton(android.R.string.cancel, null);
+        dialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
-                             ignored -> {
-                                 Analytics.setSenseId("unpaired");
-                                 finishDeviceReplaced();
-                             },
-                             this::presentError);
+                    ignored -> {
+                        Analytics.setSenseId("unpaired");
+                        finishDeviceReplaced();
+                    },
+                    this::presentError);
         });
-        alertDialog.show();
+        dialog.show();
     }
 
     //endregion

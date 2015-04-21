@@ -23,6 +23,7 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 
 public class ErrorDialogFragment extends DialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();
@@ -36,6 +37,7 @@ public class ErrorDialogFragment extends DialogFragment {
     private static final String ARG_FATAL_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_FATAL_MESSAGE_RES";
 
     private static final String ARG_ACTION_INTENT = ErrorDialogFragment.class.getName() + ".ARG_ACTION_INTENT";
+    private static final String ARG_ACTION_RESULT_CODE = ErrorDialogFragment.class.getName() + ".ARG_ACTION_RESULT_CODE";
     private static final String ARG_ACTION_TITLE_RES = ErrorDialogFragment.class.getName() + ".ARG_ACTION_TITLE_RES";
 
 
@@ -74,14 +76,14 @@ public class ErrorDialogFragment extends DialogFragment {
     }
 
     public static ErrorDialogFragment newInstance(@NonNull String message) {
-        return newInstance(Errors.Message.from(message));
+        return newInstance(StringRef.from(message));
     }
 
     public static ErrorDialogFragment newInstance(@StringRes int messageRes) {
-        return newInstance(Errors.Message.from(messageRes));
+        return newInstance(StringRef.from(messageRes));
     }
 
-    public static ErrorDialogFragment newInstance(@NonNull Errors.Message message) {
+    public static ErrorDialogFragment newInstance(@NonNull StringRef message) {
         ErrorDialogFragment fragment = new ErrorDialogFragment();
 
         Bundle arguments = new Bundle();
@@ -132,12 +134,21 @@ public class ErrorDialogFragment extends DialogFragment {
 
         dialog.setPositiveButton(android.R.string.ok, null);
 
-        if (getArguments().containsKey(ARG_ACTION_INTENT) && getArguments().containsKey(ARG_ACTION_TITLE_RES)) {
+        if (getArguments().containsKey(ARG_ACTION_TITLE_RES)) {
             int titleRes = getArguments().getInt(ARG_ACTION_TITLE_RES);
-            dialog.setNegativeButton(titleRes, (button, which) -> {
-                Intent intent = getArguments().getParcelable(ARG_ACTION_INTENT);
-                startActivity(intent);
-            });
+            if (getArguments().containsKey(ARG_ACTION_INTENT)) {
+                dialog.setNegativeButton(titleRes, (button, which) -> {
+                    Intent intent = getArguments().getParcelable(ARG_ACTION_INTENT);
+                    startActivity(intent);
+                });
+            } else {
+                dialog.setNegativeButton(titleRes, (button, which) -> {
+                    if (getTargetFragment() != null) {
+                        int resultCode = getArguments().getInt(ARG_ACTION_RESULT_CODE);
+                        getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, null);
+                    }
+                });
+            }
         }
 
         return dialog;
@@ -145,7 +156,7 @@ public class ErrorDialogFragment extends DialogFragment {
 
     private CharSequence generateDisplayMessage() {
         CharSequence message;
-        Errors.Message errorMessage = getErrorMessage();
+        StringRef errorMessage = getErrorMessage();
         if (errorMessage != null) {
             message = errorMessage.resolve(getActivity());
         } else {
@@ -170,7 +181,8 @@ public class ErrorDialogFragment extends DialogFragment {
         getArguments().putInt(ARG_FATAL_MESSAGE_RES, messageRes);
     }
 
-    private @Nullable Errors.Message getErrorMessage() {
+    private @Nullable
+    StringRef getErrorMessage() {
         return getArguments().getParcelable(ARG_ERROR_MESSAGE);
     }
 
@@ -205,6 +217,11 @@ public class ErrorDialogFragment extends DialogFragment {
 
     public void setAction(@NonNull Intent intent, @StringRes int titleRes) {
         getArguments().putParcelable(ARG_ACTION_INTENT, intent);
+        getArguments().putInt(ARG_ACTION_TITLE_RES, titleRes);
+    }
+
+    public void setAction(int resultCode, @StringRes int titleRes) {
+        getArguments().putInt(ARG_ACTION_RESULT_CODE, resultCode);
         getArguments().putInt(ARG_ACTION_TITLE_RES, titleRes);
     }
 
