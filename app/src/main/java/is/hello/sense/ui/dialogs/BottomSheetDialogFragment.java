@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
-import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 
 import static is.hello.sense.ui.widget.SenseBottomSheet.Option;
 
@@ -26,7 +26,7 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
 
     //region Lifecycle
 
-    public static BottomSheetDialogFragment newInstance(@NonNull Errors.Message title,
+    public static BottomSheetDialogFragment newInstance(@NonNull StringRef title,
                                                         @NonNull ArrayList<Option> options) {
         BottomSheetDialogFragment dialogFragment = new BottomSheetDialogFragment();
 
@@ -40,12 +40,12 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
 
     public static BottomSheetDialogFragment newInstance(@NonNull String title,
                                                         @NonNull ArrayList<Option> options) {
-        return newInstance(Errors.Message.from(title), options);
+        return newInstance(StringRef.from(title), options);
     }
 
     public static BottomSheetDialogFragment newInstance(@StringRes int titleRes,
                                                         @NonNull ArrayList<Option> options) {
-        return newInstance(Errors.Message.from(titleRes), options);
+        return newInstance(StringRef.from(titleRes), options);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
         bottomSheet.setOnOptionSelectedListener(this);
 
         if (savedInstanceState == null) {
-            Errors.Message title = (Errors.Message) getArguments().getSerializable(ARG_TITLE);
+            StringRef title = (StringRef) getArguments().getSerializable(ARG_TITLE);
             bottomSheet.setTitle(title.resolve(getActivity()));
 
             //noinspection unchecked

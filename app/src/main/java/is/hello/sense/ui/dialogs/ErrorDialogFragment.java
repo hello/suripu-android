@@ -23,6 +23,7 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 
 public class ErrorDialogFragment extends DialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();
@@ -75,14 +76,14 @@ public class ErrorDialogFragment extends DialogFragment {
     }
 
     public static ErrorDialogFragment newInstance(@NonNull String message) {
-        return newInstance(Errors.Message.from(message));
+        return newInstance(StringRef.from(message));
     }
 
     public static ErrorDialogFragment newInstance(@StringRes int messageRes) {
-        return newInstance(Errors.Message.from(messageRes));
+        return newInstance(StringRef.from(messageRes));
     }
 
-    public static ErrorDialogFragment newInstance(@NonNull Errors.Message message) {
+    public static ErrorDialogFragment newInstance(@NonNull StringRef message) {
         ErrorDialogFragment fragment = new ErrorDialogFragment();
 
         Bundle arguments = new Bundle();
@@ -155,7 +156,7 @@ public class ErrorDialogFragment extends DialogFragment {
 
     private CharSequence generateDisplayMessage() {
         CharSequence message;
-        Errors.Message errorMessage = getErrorMessage();
+        StringRef errorMessage = getErrorMessage();
         if (errorMessage != null) {
             message = errorMessage.resolve(getActivity());
         } else {
@@ -180,7 +181,8 @@ public class ErrorDialogFragment extends DialogFragment {
         getArguments().putInt(ARG_FATAL_MESSAGE_RES, messageRes);
     }
 
-    private @Nullable Errors.Message getErrorMessage() {
+    private @Nullable
+    StringRef getErrorMessage() {
         return getArguments().getParcelable(ARG_ERROR_MESSAGE);
     }
 

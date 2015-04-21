@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
 import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand.CommandType;
 
@@ -28,7 +29,7 @@ public class PeripheralUnexpectedResponseError extends BluetoothError implements
 
     @NonNull
     @Override
-    public Errors.Message getDisplayMessage() {
-        return Errors.Message.from(R.string.error_message_unexpected_response);
+    public StringRef getDisplayMessage() {
+        return StringRef.from(R.string.error_message_unexpected_response);
     }
 }

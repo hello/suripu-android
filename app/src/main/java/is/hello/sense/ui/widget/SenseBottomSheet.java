@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import is.hello.sense.R;
-import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 
 public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     private static final String SAVED_DIALOG_STATE = SenseBottomSheet.class.getSimpleName() + "#SAVED_DIALOG_STATE";
@@ -183,8 +183,10 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     public static class Option implements Serializable {
         private final int optionId;
         private @Nullable Integer titleColor;
-        private @Nullable Errors.Message title;
-        private @Nullable Errors.Message description;
+        private @Nullable
+        StringRef title;
+        private @Nullable
+        StringRef description;
 
         public Option(int optionId) {
             this.optionId = optionId;
@@ -199,7 +201,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
         public Option setTitle(@Nullable String title) {
             if (title != null) {
-                this.title = Errors.Message.from(title);
+                this.title = StringRef.from(title);
             } else {
                 this.title = null;
             }
@@ -208,7 +210,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
         public Option setTitle(@StringRes int titleRes) {
             if (titleRes != 0) {
-                this.title = Errors.Message.from(titleRes);
+                this.title = StringRef.from(titleRes);
             } else {
                 this.title = null;
             }
@@ -216,7 +218,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         }
 
         @Nullable
-        public Errors.Message getTitle() {
+        public StringRef getTitle() {
             return title;
         }
 
@@ -232,7 +234,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
         public Option setDescription(@Nullable String description) {
             if (description != null) {
-                this.description = Errors.Message.from(description);
+                this.description = StringRef.from(description);
             } else {
                 this.description = null;
             }
@@ -241,7 +243,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
         public Option setDescription(@StringRes int descriptionRes) {
             if (descriptionRes != 0) {
-                this.description = Errors.Message.from(descriptionRes);
+                this.description = StringRef.from(descriptionRes);
             } else {
                 this.description = null;
             }
@@ -249,7 +251,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         }
 
         @Nullable
-        public Errors.Message getDescription() {
+        public StringRef getDescription() {
             return description;
         }
 
