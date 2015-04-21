@@ -52,6 +52,7 @@ public class TestPeripheral implements Peripheral {
         return behavior.name;
     }
 
+    @NonNull
     @Override
     public AdvertisingData getAdvertisingData() {
         return behavior.advertisingData;

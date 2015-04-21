@@ -36,7 +36,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 21
         versionCode generateVersionCode()
-        versionName "1.0.7"
+        versionName "1.0.8"
 
         testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
@@ -174,7 +174,7 @@ dependencies {
         exclude group: 'joda-time'
     }
 
-    compile 'net.danlew:android.joda:2.7.1'
+    compile 'net.danlew:android.joda:2.7.2'
     compile "com.mixpanel.android:mixpanel-android:4.5.3"
     compile 'com.google.protobuf:protobuf-java:2.5.0'
 

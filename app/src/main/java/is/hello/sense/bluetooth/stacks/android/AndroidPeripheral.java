@@ -35,6 +35,7 @@ import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
+import is.hello.sense.bluetooth.stacks.util.Util;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
@@ -55,11 +56,11 @@ public class AndroidPeripheral implements Peripheral {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull BluetoothDevice bluetoothDevice;
     private final int scannedRssi;
-    private final AdvertisingData advertisingData;
+    private final @NonNull AdvertisingData advertisingData;
     private final GattDispatcher gattDispatcher = new GattDispatcher();
 
     private boolean suspendDisconnectBroadcasts = false;
-    private BluetoothGatt gatt;
+    private @Nullable BluetoothGatt gatt;
     private @Nullable Subscription bluetoothStateSubscription;
 
     AndroidPeripheral(@NonNull AndroidBluetoothStack stack,
@@ -110,6 +111,7 @@ public class AndroidPeripheral implements Peripheral {
         return bluetoothDevice.getName();
     }
 
+    @NonNull
     @Override
     public AdvertisingData getAdvertisingData() {
         return advertisingData;
@@ -231,7 +233,6 @@ public class AndroidPeripheral implements Peripheral {
                     s.onError(new BluetoothGattError(BluetoothGattError.GATT_INTERNAL_ERROR, BluetoothGattError.Operation.CONNECT));
                 }
             } else {
-                setPairingConfirmation(true);
                 this.gatt = bluetoothDevice.connectGatt(stack.applicationContext, false, gattDispatcher);
                 if (gatt != null) {
                     this.suspendDisconnectBroadcasts = true;
@@ -248,7 +249,7 @@ public class AndroidPeripheral implements Peripheral {
     public Observable<Peripheral> disconnect() {
         return stack.newConfiguredObservable(s -> {
             int connectionStatus = getConnectionStatus();
-            if (connectionStatus == STATUS_DISCONNECTED || connectionStatus == STATUS_DISCONNECTING) {
+            if (connectionStatus == STATUS_DISCONNECTED || connectionStatus == STATUS_DISCONNECTING || gatt == null) {
                 s.onNext(this);
                 s.onCompleted();
                 return;
@@ -281,8 +282,12 @@ public class AndroidPeripheral implements Peripheral {
 
     @Override
     public @ConnectivityStatus int getConnectionStatus() {
-        @ConnectivityStatus int status = stack.bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
-        return status;
+        if (gatt != null) {
+            @ConnectivityStatus int status = stack.bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
+            return status;
+        } else {
+            return STATUS_DISCONNECTED;
+        }
     }
 
     //endregion
@@ -406,7 +411,7 @@ public class AndroidPeripheral implements Peripheral {
     @Override
     public Observable<Map<UUID, PeripheralService>> discoverServices(@NonNull OperationTimeout timeout) {
         Observable<Map<UUID, PeripheralService>> discoverServices = stack.newConfiguredObservable(s -> {
-            if (getConnectionStatus() != STATUS_CONNECTED) {
+            if (getConnectionStatus() != STATUS_CONNECTED || gatt == null) {
                 s.onError(new PeripheralConnectionError());
                 return;
             }
@@ -476,11 +481,12 @@ public class AndroidPeripheral implements Peripheral {
                                                   @NonNull UUID characteristicIdentifier,
                                                   @NonNull UUID descriptorIdentifier,
                                                   @NonNull OperationTimeout timeout) {
-        if (getConnectionStatus() != STATUS_CONNECTED) {
-            return Observable.error(new PeripheralConnectionError());
-        }
-
         return stack.newConfiguredObservable(s -> {
+            if (getConnectionStatus() != STATUS_CONNECTED || gatt == null) {
+                s.onError(new PeripheralConnectionError());
+                return;
+            }
+
             BluetoothGattService service = getGattService(onPeripheralService);
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicIdentifier);
             if (gatt.setCharacteristicNotification(characteristic, true)) {
@@ -546,7 +552,7 @@ public class AndroidPeripheral implements Peripheral {
                                                     @NonNull UUID descriptorIdentifier,
                                                     @NonNull OperationTimeout timeout) {
         return stack.newConfiguredObservable(s -> {
-            if (getConnectionStatus() != STATUS_CONNECTED) {
+            if (getConnectionStatus() != STATUS_CONNECTED || gatt == null) {
                 s.onError(new PeripheralConnectionError());
                 return;
             }
@@ -601,7 +607,7 @@ public class AndroidPeripheral implements Peripheral {
                                          @NonNull byte[] payload,
                                          @NonNull OperationTimeout timeout) {
         return stack.newConfiguredObservable(s -> {
-            if (getConnectionStatus() != STATUS_CONNECTED) {
+            if (getConnectionStatus() != STATUS_CONNECTED || gatt == null) {
                 s.onError(new PeripheralConnectionError());
                 return;
             }

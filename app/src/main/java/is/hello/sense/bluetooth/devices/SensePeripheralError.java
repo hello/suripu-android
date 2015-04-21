@@ -7,6 +7,7 @@ import is.hello.sense.R;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 
 public class SensePeripheralError extends BluetoothError implements Errors.Reporting {
     public final SenseCommandProtos.ErrorType errorType;
@@ -35,34 +36,34 @@ public class SensePeripheralError extends BluetoothError implements Errors.Repor
 
     @NonNull
     @Override
-    public Errors.Message getDisplayMessage() {
+    public StringRef getDisplayMessage() {
         switch (errorType) {
             case DEVICE_ALREADY_PAIRED:
-                return Errors.Message.from(R.string.error_sense_already_paired);
+                return StringRef.from(R.string.error_sense_already_paired);
 
             case DEVICE_DATABASE_FULL:
-                return Errors.Message.from(R.string.error_sense_device_db_full);
+                return StringRef.from(R.string.error_sense_device_db_full);
 
             case TIME_OUT:
-                return Errors.Message.from(R.string.error_generic_bluetooth_timeout);
+                return StringRef.from(R.string.error_generic_bluetooth_timeout);
 
             case NETWORK_ERROR:
-                return Errors.Message.from(R.string.error_network_failure);
+                return StringRef.from(R.string.error_network_failure);
 
             case WLAN_CONNECTION_ERROR:
             case NO_ENDPOINT_IN_RANGE:
-                return Errors.Message.from(R.string.error_wifi_connection_failed);
+                return StringRef.from(R.string.error_wifi_connection_failed);
 
             case FAIL_TO_OBTAIN_IP:
-                return Errors.Message.from(R.string.error_wifi_ip_failure);
+                return StringRef.from(R.string.error_wifi_ip_failure);
 
             case INTERNAL_DATA_ERROR:
             case DEVICE_NO_MEMORY:
             case INTERNAL_OPERATION_FAILED:
-                return Errors.Message.from(R.string.error_generic_sense_failure);
+                return StringRef.from(R.string.error_generic_sense_failure);
 
             default:
-                return Errors.Message.from(errorType.toString());
+                return StringRef.from(errorType.toString());
         }
     }
 }
