@@ -133,6 +133,8 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
     }
 
     public void showAdvancedOptions() {
+        Analytics.trackEvent(Analytics.TopView.EVENT_PILL_ADVANCED, null);
+
         ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
         options.add(
             new SenseBottomSheet.Option(OPTION_ID_REPLACE_PILL)

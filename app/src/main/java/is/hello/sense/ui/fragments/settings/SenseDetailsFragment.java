@@ -357,6 +357,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     public void showAdvancedOptions() {
+        Analytics.trackEvent(Analytics.TopView.EVENT_SENSE_ADVANCED, null);
+
         ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_REPLACE_SENSE)
