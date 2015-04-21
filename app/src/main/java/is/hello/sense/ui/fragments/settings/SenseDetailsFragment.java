@@ -57,11 +57,16 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private View changeWiFi;
 
     private BluetoothAdapter bluetoothAdapter;
+    private boolean factoryResetting = false;
     private boolean didEnableBluetooth = false;
 
     private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (factoryResetting) {
+                return;
+            }
+
             hideBlockingActivity(false, () -> {
                 showTroubleshootingAlert(R.string.error_peripheral_connection_lost,
                         R.string.action_reconnect,
@@ -86,6 +91,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         if (savedInstanceState != null) {
             this.didEnableBluetooth = savedInstanceState.getBoolean("didEnableBluetooth", false);
+            this.factoryResetting = savedInstanceState.getBoolean("factoryResetting", false);
         } else {
             Analytics.trackEvent(Analytics.TopView.EVENT_SENSE_DETAIL, null);
         }
@@ -132,6 +138,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("didEnableBluetooth", didEnableBluetooth);
+        outState.putBoolean("factoryResetting", factoryResetting);
     }
 
     @Override
@@ -334,7 +341,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         showBlockingActivity(R.string.dialog_loading_message);
         showHardwareActivity(() -> {
             bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                             ignored -> hideAllActivityForSuccess(() -> getFragmentManager().popBackStackImmediate(), this::presentError),
+                             ignored -> hideBlockingActivity(true, () -> getFragmentManager().popBackStackImmediate()),
                              this::presentError);
         }, this::presentError);
     }
@@ -391,6 +398,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     private void completeFactoryReset() {
+        this.factoryResetting = true;
+
         bindAndSubscribe(hardwarePresenter.factoryReset(),
                          device -> {
                              hideBlockingActivity(true, () -> {

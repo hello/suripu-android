@@ -397,7 +397,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
             return noDeviceError();
         }
 
-        return peripheral.setPairingModeEnabled(true)
+        return peripheral.putIntoPairingMode()
                          .doOnError(this.respondToError)
                          .doOnCompleted(this::clearPeripheral);
     }
