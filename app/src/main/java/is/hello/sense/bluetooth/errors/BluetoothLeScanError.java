@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
 import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class BluetoothLeScanError extends BluetoothError implements Errors.Reporting {
@@ -46,7 +47,7 @@ public class BluetoothLeScanError extends BluetoothError implements Errors.Repor
 
     @NonNull
     @Override
-    public Errors.Message getDisplayMessage() {
-        return Errors.Message.from(R.string.error_peripheral_scan_failure);
+    public StringRef getDisplayMessage() {
+        return StringRef.from(R.string.error_peripheral_scan_failure);
     }
 }

@@ -92,6 +92,9 @@ public interface ApiService {
     @POST("/notifications/registration")
     Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration);
 
+    @GET("/timezone")
+    Observable<SenseTimeZone> currentTimeZone();
+
     @POST("/timezone")
     Observable<SenseTimeZone> updateTimeZone(@NonNull @Body SenseTimeZone senseTimeZone);
 

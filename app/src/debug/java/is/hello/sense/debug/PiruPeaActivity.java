@@ -196,11 +196,11 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     }
 
     public void putIntoPairingMode() {
-        runSimpleCommand(selectedPeripheral.setPairingModeEnabled(true));
+        runSimpleCommand(selectedPeripheral.putIntoPairingMode());
     }
 
     public void putIntoNormalMode() {
-        runSimpleCommand(selectedPeripheral.setPairingModeEnabled(false));
+        runSimpleCommand(selectedPeripheral.putIntoNormalMode());
     }
 
     public void clearPairedPhone() {

@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import is.hello.sense.R;
 import is.hello.sense.util.Errors;
+import is.hello.sense.util.StringRef;
 import retrofit.RetrofitError;
 
 public class ApiException extends Exception implements Errors.Reporting {
@@ -83,16 +84,16 @@ public class ApiException extends Exception implements Errors.Reporting {
 
     @NonNull
     @Override
-    public Errors.Message getDisplayMessage() {
+    public StringRef getDisplayMessage() {
         if (isNetworkError()) {
-            return Errors.Message.from(R.string.error_network_unavailable);
+            return StringRef.from(R.string.error_network_unavailable);
         } else if (getErrorResponse() != null) {
             RegistrationError registrationError = RegistrationError.fromString(getErrorResponse().getMessage());
             if (registrationError != RegistrationError.UNKNOWN) {
-                return Errors.Message.from(registrationError.messageRes);
+                return StringRef.from(registrationError.messageRes);
             }
         }
 
-        return Errors.Message.from(getMessage());
+        return StringRef.from(getMessage());
     }
 }

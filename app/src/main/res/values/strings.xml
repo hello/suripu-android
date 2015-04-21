@@ -147,11 +147,12 @@ so you can sleep better.</string>
     <string name="error_pill_already_paired">Your Sleep Pill is already paired to an account.</string>
     <string name="error_addendum_unstable_stack">\n\n<b>Please turn airplane mode on for a few seconds, turn it off, and then try again. If this problem persists, please visit our support site.</b></string>
     <string name="error_addendum_support">\n\nHaving trouble? <b><a href="#email">Email support</a></b></string>
+    <string name="destructive_action_addendum">\n\nNot sure? <b><a href="#email">Email support</a></b></string>
     <string name="label_firmware_version">Firmware</string>
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
-    <string name="action_factory_reset">Factory Reset</string>
-    <string name="dialog_title_factory_reset">Perform factory reset?</string>
-    <string name="dialog_messsage_factory_reset">Are you sure you want to restore Sense to factory settings? This will disconnect your account from Sense, as well as any Sleep Pills you\'ve paired. You will need to have a Sense paired to continue using the application.</string>
+    <string name="action_factory_reset">Factory reset</string>
+    <string name="dialog_title_factory_reset">Factory Reset</string>
+    <string name="dialog_message_factory_reset">This will disconnect your account from this Sense, as well as any Sleep Pills you have paired. You will need to pair with another Sense to continue using the application. You should only perform a factory reset if you are giving your Sense to someone else. This operation cannot be undone.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave Onboarding?</string>
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
     <string name="action_retry">Retry</string>
@@ -273,9 +274,9 @@ so you can sleep better.</string>
     <string name="error_smart_alarm_requires_device">You must have a Sense paired with your account to use Alarms.</string>
     <string name="action_replace_device">Replace</string>
     <string name="dialog_title_replace_sleep_pill">Replace Sleep Pill</string>
-    <string name="dialog_message_replace_sleep_pill">Are you sure you want to unpair your Sleep Pill? You will not be able to track your sleep until you pair another Sleep Pill.</string>
-    <string name="dialog_title_replace_sense">Replace Sense</string>
-    <string name="dialog_message_replace_sense">Are you sure you want to remove this Sense from your account? You will need to have a Sense paired to continue using the application.</string>
+    <string name="dialog_message_replace_sleep_pill">Are you sure you want to remove this Sleep Pill from your account? You will not be able to track your sleep until you pair another Sleep Pill.</string>
+    <string name="dialog_title_replace_sense">Replace this Sense</string>
+    <string name="dialog_message_replace_sense">Are you sure you want to remove this Sense from your account? Only do this if you are replacing it with a different Sense unit. You will need to pair with another Sense to continue using the application.</string>
     <string name="title_trends">Trends</string>
     <string name="title_current_conditions">Current Conditions</string>
     <string name="action_today">Today</string>
@@ -300,8 +301,8 @@ so you can sleep better.</string>
     <string name="label_color">Color</string>
     <string name="info_no_sense_connected">You don\'t currently have a Sense connected to your account.</string>
     <string name="info_no_sleep_pill_connected">You don\'t currently have a Sleep Pill connected to your account.</string>
-    <string name="action_replace_this_sense">Replace This Sense</string>
-    <string name="action_replace_sleep_pill">Replace This Sleep Pill</string>
+    <string name="action_replace_this_sense">Replace this Sense</string>
+    <string name="action_replace_sleep_pill">Replace this Sleep Pill</string>
     <string name="action_replace_battery">Replace Battery</string>
     <string name="action_replace">Replace</string>
     <string name="action_troubleshoot">Troubleshoot</string>
@@ -469,4 +470,10 @@ so you can sleep better.</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_email_support">Email Support</string>
     <string name="action_user_guide">User Guide</string>
+    <string name="title_advanced">Advanced</string>
+    <string name="description_replace_this_sense">If you have a new Sense you want to pair with this account.</string>
+    <string name="description_factory_reset">If you are going to give your Sense to someone else.</string>
+    <string name="description_replace_sleep_pill">If you have a new Sleep Pill you want to pair with this account.</string>
+    <string name="error_message_unexpected_response">Unexpected response received for command sent to Sense.</string>
+    <string name="error_link_account_failed_multiple_times">Your account could not be linked with Sense. You can try changing the WiFi Sense is configured to.</string>
 </resources>

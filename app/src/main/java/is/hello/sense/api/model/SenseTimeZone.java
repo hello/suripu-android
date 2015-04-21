@@ -1,6 +1,7 @@
 package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,6 +28,15 @@ public class SenseTimeZone extends ApiResponse {
                          @JsonProperty("timezone_id") final String timeZoneId){
         this.offsetMillis = offsetMillis;
         this.timeZoneId = timeZoneId;
+    }
+
+
+    public DateTimeZone toDateTimeZone() {
+        if (!TextUtils.isEmpty(timeZoneId)) {
+            return DateTimeZone.forID(timeZoneId);
+        } else {
+            return DateTimeZone.forOffsetMillis(offsetMillis);
+        }
     }
 
 
