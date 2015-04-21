@@ -38,6 +38,7 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
@@ -416,6 +417,10 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                          device -> {
                              hideBlockingActivity(true, () -> {
                                  Analytics.setSenseId("unpaired");
+
+                                 MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset, R.string.message_power_cycle_sense_factory_reset);
+                                 powerCycleDialog.show(getFragmentManager(), MessageDialogFragment.TAG);
+
                                  finishWithResult(RESULT_REPLACED_DEVICE, null);
                              });
                          },
