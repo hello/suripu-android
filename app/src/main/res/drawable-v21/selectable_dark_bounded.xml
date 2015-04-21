@@ -3,7 +3,7 @@
     android:color="@color/background_button_dark_pressed">
 
     <item>
-        <color android:color="@color/white" />
+        <color android:color="@color/background_light" />
     </item>
 
 </ripple>

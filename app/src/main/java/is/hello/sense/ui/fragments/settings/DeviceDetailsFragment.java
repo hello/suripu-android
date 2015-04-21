@@ -93,7 +93,7 @@ public abstract class DeviceDetailsFragment extends HardwareFragment {
         actionsContainer.setVisibility(View.VISIBLE);
     }
 
-    protected void addDeviceAction(@StringRes int titleRes, boolean wantsDivider, @NonNull Runnable onClick) {
+    protected View addDeviceAction(@StringRes int titleRes, boolean wantsDivider, @NonNull Runnable onClick) {
         View itemView = Styles.createItemView(getActivity(), titleRes, R.style.AppTheme_Text_Actionable, ignored -> onClick.run());
         actionsContainer.addView(itemView);
 
@@ -101,6 +101,8 @@ public abstract class DeviceDetailsFragment extends HardwareFragment {
             View dividerView = Styles.createHorizontalDivider(getActivity(), ViewGroup.LayoutParams.MATCH_PARENT);
             actionsContainer.addView(dividerView);
         }
+
+        return itemView;
     }
 
     protected void showSupportFor(@NonNull UserSupport.DeviceIssue deviceIssue) {
