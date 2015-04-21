@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.Layout;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.AlignmentSpan;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -19,6 +23,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
@@ -96,24 +101,29 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
     public void replaceDevice() {
         Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_PILL, null);
 
-        SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
-        alertDialog.setDestructive(true);
-        alertDialog.setTitle(R.string.dialog_title_replace_sleep_pill);
-        alertDialog.setMessage(R.string.dialog_message_replace_sleep_pill);
-        alertDialog.setNegativeButton(android.R.string.cancel, null);
-        alertDialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
+        SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+        dialog.setDestructive(true);
+        dialog.setTitle(R.string.dialog_title_replace_sleep_pill);
+
+        SpannableStringBuilder message = Styles.resolveSupportLinks(getActivity(), getText(R.string.destructive_action_addendum));
+        message.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, message.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        message.insert(0, getString(R.string.dialog_message_replace_sleep_pill));
+        dialog.setMessage(message);
+
+        dialog.setNegativeButton(android.R.string.cancel, null);
+        dialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
             LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
-                             ignored -> {
-                                 LoadingDialogFragment.close(getFragmentManager());
-                                 finishDeviceReplaced();
-                             },
-                             e -> {
-                                 LoadingDialogFragment.close(getFragmentManager());
-                                 ErrorDialogFragment.presentError(getFragmentManager(), e);
-                             });
+                    ignored -> {
+                        LoadingDialogFragment.close(getFragmentManager());
+                        finishDeviceReplaced();
+                    },
+                    e -> {
+                        LoadingDialogFragment.close(getFragmentManager());
+                        ErrorDialogFragment.presentError(getFragmentManager(), e);
+                    });
         });
-        alertDialog.show();
+        dialog.show();
     }
 
     public void replaceBattery() {

@@ -11,7 +11,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Layout;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.AlignmentSpan;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -37,6 +41,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
@@ -341,8 +346,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         showBlockingActivity(R.string.dialog_loading_message);
         showHardwareActivity(() -> {
             bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                             ignored -> hideBlockingActivity(true, () -> getFragmentManager().popBackStackImmediate()),
-                             this::presentError);
+                    ignored -> hideBlockingActivity(true, () -> getFragmentManager().popBackStackImmediate()),
+                    this::presentError);
         }, this::presentError);
     }
 
@@ -382,7 +387,12 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
         dialog.setDestructive(true);
         dialog.setTitle(R.string.dialog_title_factory_reset);
-        dialog.setMessage(R.string.dialog_messsage_factory_reset);
+
+        SpannableStringBuilder message = Styles.resolveSupportLinks(getActivity(), getText(R.string.destructive_action_addendum));
+        message.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, message.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        message.insert(0, getString(R.string.dialog_message_factory_reset));
+        dialog.setMessage(message);
+
         dialog.setNegativeButton(android.R.string.cancel, null);
         dialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> resetAllDevices());
         dialog.show();
@@ -413,20 +423,25 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void replaceDevice() {
         Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_SENSE, null);
 
-        SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
-        alertDialog.setDestructive(true);
-        alertDialog.setTitle(R.string.dialog_title_replace_sense);
-        alertDialog.setMessage(R.string.dialog_message_replace_sense);
-        alertDialog.setNegativeButton(android.R.string.cancel, null);
-        alertDialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
+        SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+        dialog.setDestructive(true);
+        dialog.setTitle(R.string.dialog_title_replace_sense);
+
+        SpannableStringBuilder message = Styles.resolveSupportLinks(getActivity(), getText(R.string.destructive_action_addendum));
+        message.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, message.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        message.insert(0, getString(R.string.dialog_message_replace_sense));
+        dialog.setMessage(message);
+
+        dialog.setNegativeButton(android.R.string.cancel, null);
+        dialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
-                             ignored -> {
-                                 Analytics.setSenseId("unpaired");
-                                 finishDeviceReplaced();
-                             },
-                             this::presentError);
+                    ignored -> {
+                        Analytics.setSenseId("unpaired");
+                        finishDeviceReplaced();
+                    },
+                    this::presentError);
         });
-        alertDialog.show();
+        dialog.show();
     }
 
     //endregion
