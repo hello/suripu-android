@@ -471,4 +471,6 @@ so you can sleep better.</string>
     <string name="description_replace_sleep_pill">If you have a new Sleep Pill you want to pair with this account.</string>
     <string name="error_message_unexpected_response">Unexpected response received for command sent to Sense.</string>
     <string name="error_link_account_failed_multiple_times">Your account could not be linked with Sense. You can try changing the WiFi Sense is configured to.</string>
+    <string name="title_power_cycle_sense_factory_reset">Power Cycle Sense</string>
+    <string name="message_power_cycle_sense_factory_reset">Sense has been successfully restored to factory settings. Please unplug Sense, wait a few seconds, and plug it back in before you continue.</string>
 </resources>
