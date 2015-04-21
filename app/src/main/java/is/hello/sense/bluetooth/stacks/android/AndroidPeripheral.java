@@ -35,7 +35,6 @@ import is.hello.sense.bluetooth.stacks.PeripheralService;
 import is.hello.sense.bluetooth.stacks.SchedulerOperationTimeout;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
-import is.hello.sense.bluetooth.stacks.util.Util;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
@@ -225,6 +224,7 @@ public class AndroidPeripheral implements Peripheral {
 
             Logger.info(LOG_TAG, "Connecting " + toString());
 
+            setPairingConfirmation(true);
             if (gatt != null) {
                 if (gatt.connect()) {
                     this.suspendDisconnectBroadcasts = true;
