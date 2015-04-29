@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/border" />
+        </shape>
+    </item>
+
+    <item>
+        <inset
+            android:insetTop="@dimen/divider_size">
+
+            <shape android:shape="rectangle">
+                <solid android:color="@color/white" />
+            </shape>
+
+        </inset>
+    </item>
+</layer-list>

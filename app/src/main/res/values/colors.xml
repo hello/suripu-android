@@ -60,6 +60,10 @@
     <color name="background_button_white_pressed">#28d5d5d5</color>
     <color name="background_button_dark_pressed">#EEdff2fe</color>
 
+    <color name="button_inline_background">#e0f2fe</color>
+    <color name="button_inline_background_pressed">#cce0ee</color>
+    <color name="button_inline_border">#9dd5fe</color>
+
     <color name="sensor_alert">#FF974C</color>
     <color name="sensor_warning">#FFBF00</color>
     <color name="sensor_ideal">#41D7AC</color>

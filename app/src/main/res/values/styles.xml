@@ -255,6 +255,16 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
+    <style name="AppTheme.Button.Inline">
+        <item name="android:minHeight">@dimen/button_inline_min_height</item>
+        <item name="android:background">@drawable/selector_button_inline</item>
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+        <item name="android:textSize">@dimen/text_size_button</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
     <style name="AppTheme.Button.Rounded">
         <item name="android:minHeight">@dimen/button_rounded_min_height</item>
         <item name="android:background">@drawable/selector_button_rounded</item>

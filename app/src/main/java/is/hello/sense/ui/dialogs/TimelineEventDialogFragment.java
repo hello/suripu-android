@@ -3,9 +3,7 @@ package is.hello.sense.ui.dialogs;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
@@ -14,15 +12,10 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
 
 import javax.inject.Inject;
 
@@ -32,19 +25,15 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SoundPlayer;
-import rx.functions.Action1;
-
-import static android.view.ViewGroup.MarginLayoutParams;
 
 public final class TimelineEventDialogFragment extends InjectionDialogFragment implements SeekBar.OnSeekBarChangeListener, SoundPlayer.OnEventListener {
     public static final String TAG = TimelineEventDialogFragment.class.getSimpleName();
 
     private static final String ARG_SEGMENT = TimelineEventDialogFragment.class.getSimpleName() + ".ARG_SEGMENT";
-    private static final int REQUEST_CODE_ADJUST_TIME = 0x12;
+
 
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
@@ -57,11 +46,6 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     private ValueAnimator soundPlayPulseAnimator;
     private TextView title;
     private TextView message;
-
-    private Button adjustTimeButton;
-    private ProgressBar adjustTimeActivity;
-
-    private boolean adjustingTime = false;
 
 
     public static TimelineEventDialogFragment newInstance(@NonNull TimelineSegment segment) {
@@ -81,7 +65,6 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         this.timelineSegment = (TimelineSegment) getArguments().getSerializable(ARG_SEGMENT);
 
         setCancelable(true);
-
         setRetainInstance(true);
     }
 
@@ -98,23 +81,6 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
 
         this.title = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_title);
         this.message = (TextView) dialog.findViewById(R.id.dialog_fragment_timeline_event_message);
-
-        if (timelineSegment.isTimeAdjustable()) {
-            ViewGroup adjustContainer = (ViewGroup) dialog.findViewById(R.id.dialog_fragment_timeline_event_adjust_time_container);
-            adjustContainer.setVisibility(View.VISIBLE);
-
-            this.adjustTimeActivity = (ProgressBar) adjustContainer.findViewById(R.id.dialog_fragment_timeline_event_adjust_time_activity);
-            this.adjustTimeButton = (Button) adjustContainer.findViewById(R.id.dialog_fragment_timeline_event_adjust_time_button);
-            Views.setSafeOnClickListener(adjustTimeButton, this::adjustSegmentTime);
-
-            if (adjustingTime) {
-                adjustTimeActivity.setVisibility(View.VISIBLE);
-                adjustTimeButton.setVisibility(View.INVISIBLE);
-            }
-
-            MarginLayoutParams layoutParams = (MarginLayoutParams) message.getLayoutParams();
-            layoutParams.bottomMargin = 0;
-        }
 
         if (timelineSegment.getSound() != null) {
             View soundControls = LayoutInflater.from(getActivity()).inflate(R.layout.sub_fragment_timeline_event_sound, container, false);
@@ -142,19 +108,6 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        // If the time picker survived a rotation, it's mysteriously
-        // behind the timeline event dialog. Just close it and let
-        // the user re-open it.
-        TimePickerDialogFragment timePicker = (TimePickerDialogFragment) getFragmentManager().findFragmentByTag(TimePickerDialogFragment.TAG);
-        if (timePicker != null) {
-            timePicker.dismiss();
-        }
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
 
@@ -174,13 +127,6 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
 
         title.setText(getString(R.string.title_timeline_event_fmt, eventName, formattedTime));
         markdown.renderInto(message, timelineSegment.getMessage());
-    }
-
-    private void setTimelineSegment(@NonNull TimelineSegment newSegment) {
-        this.timelineSegment = newSegment;
-        getArguments().putSerializable(ARG_SEGMENT, newSegment);
-
-        bindTimelineSegment();
     }
 
     //endregion
@@ -296,64 +242,4 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     }
 
     //endregion
-
-
-    //region Adjust Time
-
-    private AdjustTimeFragment getTimeAdjustFragment() {
-        return (AdjustTimeFragment) getTargetFragment();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_ADJUST_TIME && resultCode == Activity.RESULT_OK) {
-            int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 12);
-            int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 0);
-            DateTime newLocalTimestamp = timelineSegment.getShiftedTimestamp()
-                                                        .withHourOfDay(hour)
-                                                        .withMinuteOfHour(minute);
-            LocalTime newTime = newLocalTimestamp.toLocalTime();
-
-            this.adjustingTime = true;
-            adjustTimeActivity.setVisibility(View.VISIBLE);
-            adjustTimeButton.setVisibility(View.INVISIBLE);
-
-            getTimeAdjustFragment().onAdjustSegmentTime(timelineSegment, newTime, success -> {
-                coordinator.postOnResume(() -> {
-                    this.adjustingTime = false;
-
-                    adjustTimeActivity.setVisibility(View.GONE);
-                    adjustTimeButton.setVisibility(View.VISIBLE);
-                    if (success) {
-                        setTimelineSegment(timelineSegment.withTimestamp(newLocalTimestamp));
-                    }
-                });
-            });
-        }
-    }
-
-    public void adjustSegmentTime(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.Timeline.EVENT_ADJUST_TIME, null);
-
-        @TimePickerDialogFragment.Config int config = TimePickerDialogFragment.FLAG_ALWAYS_USE_SPINNER;
-        if (preferences.getUse24Time()) {
-            config |= TimePickerDialogFragment.FLAG_USE_24_TIME;
-        }
-
-        LocalTime eventTime = timelineSegment.getShiftedTimestamp().toLocalTime();
-        TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(eventTime, config);
-        dialogFragment.setTargetFragment(this, REQUEST_CODE_ADJUST_TIME);
-        dialogFragment.show(getFragmentManager(), TimePickerDialogFragment.TAG);
-    }
-
-    //endregion
-
-
-    public interface AdjustTimeFragment {
-        void onAdjustSegmentTime(@NonNull TimelineSegment segment,
-                                 @NonNull LocalTime newTime,
-                                 @NonNull Action1<Boolean> continuation);
-    }
 }

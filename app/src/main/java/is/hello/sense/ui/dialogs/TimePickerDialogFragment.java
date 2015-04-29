@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.widget.TimePicker;
 
 import org.joda.time.LocalTime;
@@ -26,11 +27,13 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
 
     private static final String ARG_DATE = TimePickerDialogFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CONFIG = TimePickerDialogFragment.class.getName() + ".ARG_CONFIG";
+    private static final String ARG_EXTRAS = TimePickerDialogFragment.class.getName() + ".ARG_EXTRAS";
 
     public static final String RESULT_HOUR = TimePickerDialogFragment.class.getName() + ".RESULT_HOUR";
     public static final String RESULT_MINUTE = TimePickerDialogFragment.class.getName() + ".RESULT_MINUTE";
+    public static final String RESULT_EXTRAS = TimePickerDialogFragment.class.getName() + ".RESULT_EXTRAS";
 
-    private LocalTime time;
+    private LocalTime initialTime;
     private boolean use24Time;
     private boolean alwaysUseSpinner;
 
@@ -49,7 +52,7 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.time = (LocalTime) getArguments().getSerializable(ARG_DATE);
+        this.initialTime = (LocalTime) getArguments().getSerializable(ARG_DATE);
 
         @Config int config = getArguments().getInt(ARG_CONFIG, 0);
         this.use24Time = ((config & FLAG_USE_24_TIME) == FLAG_USE_24_TIME);
@@ -62,9 +65,13 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
         return new TimePickerDialog(getActivity(),
                                     dialogTheme,
                                     this,
-                                    time.getHourOfDay(),
-                                    time.getMinuteOfHour(),
+                                    initialTime.getHourOfDay(),
+                                    initialTime.getMinuteOfHour(),
                                     use24Time);
+    }
+
+    public void putExtras(@Nullable Bundle extras) {
+        getArguments().putBundle(ARG_EXTRAS, extras);
     }
 
     @Override
@@ -73,6 +80,7 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
             Intent response = new Intent();
             response.putExtra(RESULT_HOUR, hour);
             response.putExtra(RESULT_MINUTE, minute);
+            response.putExtra(RESULT_EXTRAS, getArguments().getBundle(ARG_EXTRAS));
             getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, response);
         }
     }

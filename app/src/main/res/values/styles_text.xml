@@ -98,6 +98,17 @@
     </style>
 
 
+    <style name="AppTheme.Text.TimelineDate">
+        <item name="android:textSize">@dimen/text_size_timeline_date</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/text_dim</item>
+    </style>
+
+    <style name="AppTheme.Text.TimelineDate.Actionable">
+        <item name="android:textColor">@color/light_accent</item>
+    </style>
+
     <style name="AppTheme.Text.FieldLabel">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>

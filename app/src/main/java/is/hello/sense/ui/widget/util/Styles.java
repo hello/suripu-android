@@ -123,7 +123,7 @@ public final class Styles {
     }
 
 
-    public static @DrawableRes int getTimelineSegmentIconRes(@NonNull TimelineSegment segment) {
+    public static @DrawableRes int getTimelineEventIconRes(@NonNull TimelineSegment segment) {
         if (!segment.hasEventInfo()) {
             return 0;
         }

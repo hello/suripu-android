@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_timeline_event"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/timeline_event_item_min_height">
+
+    <ImageView
+        android:id="@+id/item_timeline_event_image"
+        android:layout_width="@dimen/timeline_event_item_image_width"
+        android:layout_height="wrap_content"
+        android:scaleType="centerInside"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/item_timeline_event_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_marginStart="@dimen/gap_small"
+        android:layout_marginEnd="@dimen/gap_small"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:drawablePadding="@dimen/gap_xsmall"
+        android:textAppearance="@style/AppTheme.Text.Body.Small"/>
+
+    <TextView
+        android:id="@+id/item_timeline_event_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/item_timeline_event_image"
+        android:layout_toStartOf="@id/item_timeline_event_date"
+        android:textAppearance="@style/AppTheme.Text.Body.Small"
+        android:lineSpacingMultiplier="@dimen/line_multiple_body_small"/>
+
+</RelativeLayout>
