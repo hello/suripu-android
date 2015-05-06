@@ -422,8 +422,9 @@ public class Analytics {
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
         if (provider != null) {
-            provider.alias(userId, null);
-            provider.getPeople().identify(userId);
+            String distinctId = provider.getDistinctId();
+            provider.alias(userId, distinctId);
+            provider.getPeople().identify(distinctId);
         }
 
         if (Crashlytics.getInstance().isInitialized()) {
