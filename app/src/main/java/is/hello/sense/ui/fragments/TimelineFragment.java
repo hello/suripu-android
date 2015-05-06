@@ -665,13 +665,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     @Override
-    public void onAdjustSegmentTime(@NonNull TimelineSegment segment,
+    public void onAdjustSegmentTime(@NonNull TimelineSegment.EventType eventType,
+                                    @NonNull DateTime shiftedTimestamp,
                                     @NonNull LocalTime newTime,
                                     @NonNull Action1<Boolean> continuation) {
         Feedback correction = new Feedback();
-        correction.setEventType(segment.getEventType());
+        correction.setEventType(eventType);
         correction.setNight(getDate().toLocalDate());
-        correction.setOldTime(segment.getShiftedTimestamp().toLocalTime());
+        correction.setOldTime(shiftedTimestamp.toLocalTime());
         correction.setNewTime(newTime);
         bindAndSubscribe(timelinePresenter.submitCorrection(correction),
                 ignored -> {

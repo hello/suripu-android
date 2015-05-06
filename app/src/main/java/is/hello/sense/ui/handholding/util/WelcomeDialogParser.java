@@ -10,7 +10,6 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 
@@ -86,8 +85,8 @@ public class WelcomeDialogParser {
         return new WelcomeDialogFragment.Item(diagramRes, titleRes, messageRes, scaleDiagram);
     }
 
-    private WelcomeDialogFragment.Item[] parseDialog(@NonNull XmlResourceParser document) throws XmlPullParserException, IOException {
-        List<WelcomeDialogFragment.Item> parsedItems = new ArrayList<>();
+    private ArrayList<WelcomeDialogFragment.Item> parseDialog(@NonNull XmlResourceParser document) throws XmlPullParserException, IOException {
+        ArrayList<WelcomeDialogFragment.Item> parsedItems = new ArrayList<>();
         boolean lookingForItems = false;
         for (int event = document.getEventType(); event != XmlPullParser.END_DOCUMENT; event = document.next()) {
             if (event == XmlPullParser.START_TAG) {
@@ -116,12 +115,10 @@ public class WelcomeDialogParser {
             }
         }
 
-        WelcomeDialogFragment.Item[] items = new WelcomeDialogFragment.Item[parsedItems.size()];
-        parsedItems.toArray(items);
-        return items;
+        return parsedItems;
     }
 
-    public WelcomeDialogFragment.Item[] parse() throws XmlPullParserException, IOException {
+    public ArrayList<WelcomeDialogFragment.Item> parse() throws XmlPullParserException, IOException {
         XmlResourceParser document = resources.getXml(xmlRes);
         return parseDialog(document);
     }

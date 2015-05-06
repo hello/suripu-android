@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
@@ -47,11 +48,14 @@ final class LegacyLePeripheralScanner implements Observable.OnSubscribe<List<Per
 
         this.subscriber = subscriber;
 
-        this.scanning = true;
-        stack.getAdapter().startLeScan(this);
-        this.timeout = stack.scheduler
-                            .createWorker()
-                            .schedule(this::onConcludeScan, peripheralCriteria.duration, TimeUnit.MILLISECONDS);
+        this.scanning = stack.getAdapter().startLeScan(this);
+        if (scanning) {
+            this.timeout = stack.scheduler
+                                .createWorker()
+                                .schedule(this::onConcludeScan, peripheralCriteria.duration, TimeUnit.MILLISECONDS);
+        } else {
+            subscriber.onError(new BluetoothDisabledError());
+        }
     }
 
     @Override
