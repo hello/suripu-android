@@ -8,8 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
-import java.io.IOException;
-
 public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener {
     private static final int CHANGING_TO_REMOTE_STREAM_ERROR = -38;
     private static final int TIMER_PULSE = 1000;
@@ -158,7 +156,7 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
                 mediaPlayer.setDataSource(context, source);
             }
             mediaPlayer.prepareAsync();
-        } catch (IOException e) {
+        } catch (Exception e) {
             onEventListener.onPlaybackError(this, e);
         }
     }
