@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.sense.bluetooth.errors.BluetoothDisabledError;
 import is.hello.sense.bluetooth.errors.BluetoothLeScanError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
@@ -30,7 +31,7 @@ import rx.Subscription;
 class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnSubscribe<List<Peripheral>> {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull PeripheralCriteria peripheralCriteria;
-    private final @NonNull BluetoothLeScanner scanner;
+    private final @Nullable BluetoothLeScanner scanner;
     private final @NonNull Map<String, ScannedPeripheral> results = new HashMap<>();
     private final boolean hasAddresses;
 
@@ -52,14 +53,18 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
 
         this.subscriber = subscriber;
 
-        this.scanning = true;
-        ScanSettings.Builder builder = new ScanSettings.Builder();
-        builder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);
-        scanner.startScan(null, builder.build(), this);
+        if (scanner != null) {
+            this.scanning = true;
+            ScanSettings.Builder builder = new ScanSettings.Builder();
+            builder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);
+            scanner.startScan(null, builder.build(), this);
 
-        this.timeout = stack.scheduler
-                            .createWorker()
-                            .schedule(this::onConcludeScan, peripheralCriteria.duration, TimeUnit.MILLISECONDS);
+            this.timeout = stack.scheduler
+                                .createWorker()
+                                .schedule(this::onConcludeScan, peripheralCriteria.duration, TimeUnit.MILLISECONDS);
+        } else {
+            subscriber.onError(new BluetoothDisabledError());
+        }
     }
 
     @Override
@@ -123,6 +128,10 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
     }
 
     public void onConcludeScan() {
+        if (scanner == null) {
+            throw new IllegalStateException("scanner is missing");
+        }
+
         if (!scanning) {
             return;
         }
