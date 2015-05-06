@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -25,6 +23,8 @@ import android.widget.TextView;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
@@ -41,7 +41,7 @@ public class WelcomeDialogFragment extends DialogFragment {
     private static final int REQUEST_CODE_DISMISS_ALL = 0x99;
     private static final String ARG_ITEMS = WelcomeDialogFragment.class.getName() + ".ARG_ITEMS";
 
-    private Item[] items;
+    private ArrayList<Item> items;
     private ItemAdapter adapter;
     private ViewPager viewPager;
 
@@ -83,7 +83,7 @@ public class WelcomeDialogFragment extends DialogFragment {
     public static boolean show(@NonNull Activity activity, @XmlRes int welcomeRes) {
         try {
             WelcomeDialogParser parser = new WelcomeDialogParser(activity.getResources(), welcomeRes);
-            WelcomeDialogFragment.Item[] items = parser.parse();
+            ArrayList<Item> items = parser.parse();
 
             WelcomeDialogFragment welcomeDialog = WelcomeDialogFragment.newInstance(items);
             welcomeDialog.show(activity.getFragmentManager(), WelcomeDialogFragment.TAG);
@@ -102,11 +102,11 @@ public class WelcomeDialogFragment extends DialogFragment {
                 show(activity, welcomeRes));
     }
 
-    public static WelcomeDialogFragment newInstance(@NonNull Item[] items) {
+    public static WelcomeDialogFragment newInstance(@NonNull ArrayList<Item> items) {
         WelcomeDialogFragment fragment = new WelcomeDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putParcelableArray(ARG_ITEMS, items);
+        arguments.putSerializable(ARG_ITEMS, items);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -117,7 +117,8 @@ public class WelcomeDialogFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.items = (Item[]) getArguments().getParcelableArray(ARG_ITEMS);
+        //noinspection unchecked
+        this.items = (ArrayList<Item>) getArguments().getSerializable(ARG_ITEMS);
     }
 
     @Override
@@ -142,7 +143,7 @@ public class WelcomeDialogFragment extends DialogFragment {
         this.adapter = new ItemAdapter();
         viewPager.setAdapter(adapter);
 
-        if (items.length > 1) {
+        if (items.size() > 1) {
             PageDots pageDots = (PageDots) dialog.findViewById(R.id.fragment_dialog_welcome_page_dots);
             pageDots.attach(viewPager);
         }
@@ -197,7 +198,7 @@ public class WelcomeDialogFragment extends DialogFragment {
 
         @Override
         public int getCount() {
-            return items.length;
+            return items.size();
         }
 
         @Override
@@ -208,7 +209,7 @@ public class WelcomeDialogFragment extends DialogFragment {
 
         @Override
         public void bindViewHolder(ViewHolder holder, int position) {
-            Item item = items[position];
+            Item item = items.get(position);
             holder.bindItem(item);
         }
 
@@ -271,7 +272,7 @@ public class WelcomeDialogFragment extends DialogFragment {
     }
 
 
-    public static class Item implements Parcelable {
+    public static class Item implements Serializable {
         public final @DrawableRes int diagramRes;
         public final @StringRes int titleRes;
         public final @StringRes int messageRes;
@@ -296,39 +297,5 @@ public class WelcomeDialogFragment extends DialogFragment {
                     ", scaleDiagram=" + scaleDiagram +
                     '}';
         }
-
-
-        //region Parcelable
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            out.writeInt(diagramRes);
-            out.writeInt(titleRes);
-            out.writeInt(messageRes);
-            out.writeInt(scaleDiagram ? 1 : 0);
-        }
-
-        private Item(@NonNull Parcel in) {
-            this(in.readInt(), in.readInt(), in.readInt(), in.readInt() == 1);
-        }
-
-        public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {
-            @Override
-            public Item createFromParcel(Parcel source) {
-                return new Item(source);
-            }
-
-            @Override
-            public Item[] newArray(int size) {
-                return new Item[size];
-            }
-        };
-
-        //endregion
     }
 }
