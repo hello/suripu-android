@@ -2,7 +2,6 @@ package is.hello.sense.ui.handholding;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,11 +22,12 @@ import android.widget.TextView;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
+import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.handholding.util.DismissTutorialsDialog;
 import is.hello.sense.ui.handholding.util.WelcomeDialogParser;
 import is.hello.sense.ui.widget.PageDots;
@@ -35,13 +35,13 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
-public class WelcomeDialogFragment extends DialogFragment {
+public class WelcomeDialogFragment extends SenseDialogFragment {
     public static final String TAG = WelcomeDialogFragment.class.getSimpleName();
 
     private static final int REQUEST_CODE_DISMISS_ALL = 0x99;
-    private static final String ARG_ITEMS = WelcomeDialogFragment.class.getName() + ".ARG_ITEMS";
+    private static final String ARG_WELCOME_RES = WelcomeDialogFragment.class.getName() + ".ARG_WELCOME_RES";
 
-    private ArrayList<Item> items;
+    private List<Item> items;
     private ItemAdapter adapter;
     private ViewPager viewPager;
 
@@ -80,33 +80,27 @@ public class WelcomeDialogFragment extends DialogFragment {
                    .apply();
     }
 
-    public static boolean show(@NonNull Activity activity, @XmlRes int welcomeRes) {
-        try {
-            WelcomeDialogParser parser = new WelcomeDialogParser(activity.getResources(), welcomeRes);
-            ArrayList<Item> items = parser.parse();
+    public static void show(@NonNull Activity activity, @XmlRes int welcomeRes) {
+        WelcomeDialogFragment welcomeDialog = WelcomeDialogFragment.newInstance(welcomeRes);
+        welcomeDialog.show(activity.getFragmentManager(), WelcomeDialogFragment.TAG);
 
-            WelcomeDialogFragment welcomeDialog = WelcomeDialogFragment.newInstance(items);
-            welcomeDialog.show(activity.getFragmentManager(), WelcomeDialogFragment.TAG);
-
-            markShown(activity, welcomeRes);
-        } catch (XmlPullParserException | IOException e) {
-            Logger.error(TAG, "Could not parse welcome document", e);
-            return false;
-        }
-
-        return true;
+        markShown(activity, welcomeRes);
     }
 
     public static boolean showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes) {
-        return (shouldShow(activity, welcomeRes) &&
-                show(activity, welcomeRes));
+        if (shouldShow(activity, welcomeRes)) {
+            show(activity, welcomeRes);
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public static WelcomeDialogFragment newInstance(@NonNull ArrayList<Item> items) {
+    public static WelcomeDialogFragment newInstance(@XmlRes int welcomeRes) {
         WelcomeDialogFragment fragment = new WelcomeDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_ITEMS, items);
+        arguments.putInt(ARG_WELCOME_RES, welcomeRes);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -117,8 +111,15 @@ public class WelcomeDialogFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection unchecked
-        this.items = (ArrayList<Item>) getArguments().getSerializable(ARG_ITEMS);
+        try {
+            int welcomeRes = getArguments().getInt(ARG_WELCOME_RES);
+            WelcomeDialogParser parser = new WelcomeDialogParser(getResources(), welcomeRes);
+            this.items = parser.parse();
+        } catch (XmlPullParserException | IOException e) {
+            this.items = Collections.emptyList();
+        }
+
+        setRetainInstance(true);
     }
 
     @Override
@@ -272,7 +273,7 @@ public class WelcomeDialogFragment extends DialogFragment {
     }
 
 
-    public static class Item implements Serializable {
+    public static class Item {
         public final @DrawableRes int diagramRes;
         public final @StringRes int titleRes;
         public final @StringRes int messageRes;

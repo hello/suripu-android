@@ -183,10 +183,8 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     public static class Option implements Serializable {
         private final int optionId;
         private @Nullable Integer titleColor;
-        private @Nullable
-        StringRef title;
-        private @Nullable
-        StringRef description;
+        private @Nullable StringRef title;
+        private @Nullable StringRef description;
 
         public Option(int optionId) {
             this.optionId = optionId;
