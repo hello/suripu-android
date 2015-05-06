@@ -302,6 +302,7 @@
     <style name="AppTheme.Button.Number" parent="AppTheme.Button.Dialog.Positive">
         <item name="android:minHeight">@dimen/button_rounded_min_height</item>
         <item name="android:background">@drawable/button_selector_number</item>
+        <item name="android:hapticFeedbackEnabled">true</item>
     </style>
 
     <style name="AppTheme.Button.Raised">

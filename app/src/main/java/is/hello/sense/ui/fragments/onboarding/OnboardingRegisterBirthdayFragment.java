@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -231,6 +232,8 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
 
 
     public void backspace(@NonNull View sender) {
+        sender.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+
         TextView field = fields[activeField];
         if (TextUtils.isEmpty(field.getText())) {
             if (activeField == 0) {
@@ -248,6 +251,8 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     }
 
     public void appendNumber(@NonNull View sender) {
+        sender.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+
         String numberValue = sender.getTag().toString();
         TextView field = fields[activeField];
 
@@ -279,6 +284,8 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     }
 
     public void skip(@NonNull View sender) {
+        sender.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+
         Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "birthday"));
         getContainer().onAccountUpdated(this);
     }
