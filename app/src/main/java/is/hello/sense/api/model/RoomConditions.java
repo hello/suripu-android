@@ -48,7 +48,12 @@ public class RoomConditions extends ApiResponse {
     }
 
     public List<SensorState> toList() {
-        // Always change order of RoomSensorHistory and RoomConditionsFragment too.
+        // This order applies to:
+        // - RoomSensorHistory
+        // - RoomConditions
+        // - RoomConditionsFragment
+        // - UnitSystem
+        // - OnboardingRoomCheckFragment
         return Lists.newArrayList(temperature, humidity, light, sound);
     }
 

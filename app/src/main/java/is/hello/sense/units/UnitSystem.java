@@ -159,7 +159,7 @@ public class UnitSystem implements Serializable {
         switch (sensor) {
             case ApiService.SENSOR_NAME_TEMPERATURE:
                 return this::formatTemperature;
-            
+
             case ApiService.SENSOR_NAME_HUMIDITY:
                 return this::formatHumidity;
 
@@ -178,11 +178,17 @@ public class UnitSystem implements Serializable {
     }
 
     public List<Unit> toUnitList() {
+        // This order applies to:
+        // - RoomSensorHistory
+        // - RoomConditions
+        // - RoomConditionsFragment
+        // - UnitSystem
+        // - OnboardingRoomCheckFragment
         return Arrays.asList(
             new Unit(this::formatTemperature, this::convertTemperature, getTemperatureUnit()),
-            new Unit(this::formatHumidity, Converter.IDENTITY, getHumidityUnit()),
-            new Unit(this::formatLight, Converter.IDENTITY, getLightUnit()),
-            new Unit(this::formatSound, Converter.IDENTITY, getSoundUnit())
+            new Unit(this::formatHumidity, IDENTITY_CONVERTER, getHumidityUnit()),
+            new Unit(this::formatLight, IDENTITY_CONVERTER, getLightUnit()),
+            new Unit(this::formatSound, IDENTITY_CONVERTER, getSoundUnit())
         );
     }
 
@@ -193,14 +199,14 @@ public class UnitSystem implements Serializable {
     }
 
     /**
+     * The identity converter. Returns a value unmodified.
+     */
+    public static final Converter IDENTITY_CONVERTER = v -> v;
+
+    /**
      * A functor that converts a raw value into the user's unit system.
      */
     public interface Converter {
-        /**
-         * The identity converter. Returns a value unmodified.
-         */
-        Converter IDENTITY = v -> v;
-
         long convert(long value);
     }
 
@@ -227,6 +233,11 @@ public class UnitSystem implements Serializable {
 
         public long convert(long value) {
             return converter.convert(value);
+        }
+
+        @Nullable
+        public Formatter getFormatter() {
+            return formatter;
         }
 
         @NonNull

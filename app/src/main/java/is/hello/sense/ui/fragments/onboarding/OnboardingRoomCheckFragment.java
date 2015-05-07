@@ -65,6 +65,12 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
     private final List<SensorState> sensors = new ArrayList<>();
     private final List<Unit> sensorUnits = new ArrayList<>();
+    // This order applies to:
+    // - RoomSensorHistory
+    // - RoomConditions
+    // - RoomConditionsFragment
+    // - UnitSystem
+    // - OnboardingRoomCheckFragment
     private final @StringRes int[] sensorStrings = {
         R.string.checking_condition_temperature,
         R.string.checking_condition_humidity,
