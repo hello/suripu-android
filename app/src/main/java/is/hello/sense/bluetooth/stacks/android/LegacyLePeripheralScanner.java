@@ -92,7 +92,17 @@ final class LegacyLePeripheralScanner implements Observable.OnSubscribe<List<Per
         }
 
         this.scanning = false;
-        stack.getAdapter().stopLeScan(this);
+
+        // Low energy scanning on Android <=4.4.4 is broken when
+        // a large number of unique peripherals have been scanned by
+        // the device. This manifests on the client as a NPE within the
+        // implementation of BluetoothAdapter#stopScan(LeScanCallback).
+        // See <https://code.google.com/p/android/issues/detail?id=67272>
+        try {
+            stack.getAdapter().stopLeScan(this);
+        } catch (Exception e) {
+            Logger.warn(BluetoothStack.LOG_TAG, "Could not stop le scan due to internal stack error.", e);
+        }
 
         if (timeout != null) {
             timeout.unsubscribe();
