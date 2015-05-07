@@ -13,21 +13,29 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
+import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Logger;
 
-public class OnboardingSenseColorsFragment extends SenseFragment implements ViewPager.OnPageChangeListener {
+public class OnboardingSenseColorsFragment extends InjectionFragment implements ViewPager.OnPageChangeListener {
+    @Inject RoomConditionsPresenter presenter;
+
     private ViewGroup bottomContainer;
     private Button nextButton;
 
     private int finalItem;
     private float nextButtonMaxY, nextButtonMinY;
+
+    private boolean hasCurrentConditions = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +44,9 @@ public class OnboardingSenseColorsFragment extends SenseFragment implements View
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_COLORS, null);
         }
+
+        presenter.update();
+        addPresenter(presenter);
 
         setRetainInstance(true);
     }
@@ -64,6 +75,7 @@ public class OnboardingSenseColorsFragment extends SenseFragment implements View
         pageDots.attach(viewPager);
 
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_sense_colors_continue);
+        nextButton.setEnabled(false);
         Views.setSafeOnClickListener(nextButton, this::next);
 
         this.bottomContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sense_colors_bottom);
@@ -77,9 +89,28 @@ public class OnboardingSenseColorsFragment extends SenseFragment implements View
         return view;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        bindAndSubscribe(presenter.currentConditions,
+                         conditions -> {
+                             this.hasCurrentConditions = true;
+                             nextButton.setEnabled(true);
+                         },
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Could not load conditions", e);
+                             this.hasCurrentConditions = false;
+                             nextButton.setEnabled(true);
+                         });
+    }
 
     public void next(@NonNull View sender) {
-        ((OnboardingActivity) getActivity()).showRoomCheckIntro();
+        if (hasCurrentConditions) {
+            ((OnboardingActivity) getActivity()).showRoomCheckIntro();
+        } else {
+            ((OnboardingActivity) getActivity()).showSmartAlarmInfo();
+        }
     }
 
 

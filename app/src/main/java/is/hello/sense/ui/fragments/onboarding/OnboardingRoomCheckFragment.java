@@ -86,7 +86,6 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         this.graySense = resources.getDrawable(R.drawable.room_check_sense_gray);
         this.startColor = resources.getColor(Condition.ALERT.colorRes);
 
-        presenter.update();
         addPresenter(presenter);
 
         setRetainInstance(true);
