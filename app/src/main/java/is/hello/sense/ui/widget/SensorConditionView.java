@@ -36,6 +36,7 @@ public class SensorConditionView extends View {
     private @Nullable Drawable icon;
 
     private @Nullable AnimatorContext animatorContext;
+    private @Nullable ValueAnimator crossFade;
 
 
     //region Lifecycle
@@ -239,7 +240,7 @@ public class SensorConditionView extends View {
         Drawables.setTintColor(newFill, tintColor);
         newFill.setAlpha(0);
 
-        ValueAnimator crossFade = ValueAnimator.ofFloat(0f, 1f);
+        this.crossFade = ValueAnimator.ofFloat(0f, 1f);
         crossFade.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
         crossFade.setDuration(Animation.DURATION_SLOW);
 
@@ -272,6 +273,7 @@ public class SensorConditionView extends View {
             public void onAnimationEnd(Animator animation) {
                 setFill(newFill);
                 SensorConditionView.this.transitionFill = null;
+                SensorConditionView.this.crossFade = null;
 
                 if (!rotate) {
                     stopRotation();
@@ -292,6 +294,14 @@ public class SensorConditionView extends View {
 
     public void crossFadeToFill(@DrawableRes int fillRes, boolean rotate, @Nullable Runnable onCompletion) {
         crossFadeToFill(resources.getDrawable(fillRes), rotate, onCompletion);
+    }
+
+    public void stopAnimating() {
+        stopRotation();
+
+        if (crossFade != null) {
+            crossFade.cancel();
+        }
     }
 
     //endregion
