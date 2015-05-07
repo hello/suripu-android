@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
@@ -7,101 +7,99 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true">
 
-    <FrameLayout
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_large"
-        android:layout_marginBottom="@dimen/gap_outer">
+        android:layout_alignBottom="@+id/fragment_onboarding_room_check_sense"
+        android:scaleType="fitXY"
+        android:src="@drawable/room_check_top_gradient"
+        android:importantForAccessibility="no"
+        tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:scaleType="fitXY"
-            android:src="@drawable/room_check_top_gradient"
-            android:importantForAccessibility="no"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/fragment_onboarding_room_check_sense"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/room_check_sense_gray"
-            android:contentDescription="@string/app_name"/>
-
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/fragment_onboarding_room_check_sense"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_xlarge"
+        android:layout_marginBottom="@dimen/gap_large"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:src="@drawable/room_check_sense_gray"
+        android:contentDescription="@string/app_name"/>
 
     <LinearLayout
         android:id="@+id/fragment_onboarding_room_check_sensors"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/gap_outer"
-        android:gravity="center">
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-
-        <is.hello.sense.ui.widget.SensorConditionView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:senseSensorIcon="@drawable/room_check_sensor_temperature" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-
-        <is.hello.sense.ui.widget.SensorConditionView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:senseSensorIcon="@drawable/room_check_sensor_humidity" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-
-        <is.hello.sense.ui.widget.SensorConditionView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:senseSensorIcon="@drawable/room_check_sensor_light" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-
-        <is.hello.sense.ui.widget.SensorConditionView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:senseSensorIcon="@drawable/room_check_sensor_sound" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/fragment_onboarding_room_check_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="@dimen/gap_large"
-        android:gravity="center_horizontal|top"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading"
-        android:text="@string/dialog_loading_message"/>
-
-    <is.hello.sense.ui.widget.SensorTickerView
-        android:id="@+id/fragment_onboarding_room_check_ticker"
+        android:layout_below="@id/fragment_onboarding_room_check_sense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginTop="@dimen/gap_xlarge" />
+        android:layout_marginBottom="@dimen/gap_outer"
+        android:orientation="horizontal"
+        android:gravity="center">
 
-</LinearLayout>
+        <is.hello.sense.ui.widget.SensorConditionView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:senseSensorIcon="@drawable/room_check_sensor_temperature" />
+
+        <is.hello.sense.ui.widget.SensorConditionView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:senseSensorIcon="@drawable/room_check_sensor_humidity" />
+
+        <is.hello.sense.ui.widget.SensorConditionView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:senseSensorIcon="@drawable/room_check_sensor_light" />
+
+        <is.hello.sense.ui.widget.SensorConditionView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:senseSensorIcon="@drawable/room_check_sensor_sound" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fragment_onboarding_room_check_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/fragment_onboarding_room_check_sensors"
+        android:layout_marginBottom="@dimen/gap_outer"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/fragment_onboarding_room_check_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/gap_large"
+            android:gravity="center_horizontal|top"
+            android:textAppearance="@style/AppTheme.Text.SectionHeading"
+            android:text="@string/dialog_loading_message"
+            android:maxLines="2"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <is.hello.sense.ui.widget.SensorTickerView
+            android:id="@+id/fragment_onboarding_room_check_ticker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/gap_outer"
+            android:layout_marginRight="@dimen/gap_outer" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</RelativeLayout>

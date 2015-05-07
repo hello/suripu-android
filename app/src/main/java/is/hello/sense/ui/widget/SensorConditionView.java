@@ -114,12 +114,14 @@ public class SensorConditionView extends View {
         }
 
         if (fill != null) {
-            fill.setBounds(0, 0, canvasWidth, canvasHeight);
+            int fillMidX = fill.getIntrinsicWidth() / 2;
+            fill.setBounds(canvasMidX - fillMidX, 0, canvasMidX + fillMidX, canvasHeight);
             fill.draw(canvas);
         }
 
         if (transitionFill != null) {
-            transitionFill.setBounds(0, 0, canvasWidth, canvasHeight);
+            int transitionFillMidX = transitionFill.getIntrinsicWidth() / 2;
+            transitionFill.setBounds(canvasMidX - transitionFillMidX, 0, canvasMidX + transitionFillMidX, canvasHeight);
             transitionFill.draw(canvas);
         }
 
@@ -220,6 +222,7 @@ public class SensorConditionView extends View {
 
         if (fill != null) {
             this.fill = fill.mutate();
+            setMinimumWidth(fill.getIntrinsicWidth());
             fill.setCallback(this);
             Drawables.setTintColor(fill, tintColor);
         }

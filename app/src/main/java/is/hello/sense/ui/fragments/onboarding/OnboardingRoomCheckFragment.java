@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -43,13 +44,13 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.stop;
 
 public class OnboardingRoomCheckFragment extends InjectionFragment {
     private static final long CONDITION_VISIBLE_MS = 2500;
-    private static final long END_CONTAINER_DELAY_MS = 50;
 
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
 
     private ImageView sense;
     private final List<SensorConditionView> sensorViews = new ArrayList<>();
+    private LinearLayout dynamicContent;
     private TextView status;
     private SensorTickerView scoreTicker;
 
@@ -87,12 +88,6 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_room_check, container, false);
 
         this.sense = (ImageView) view.findViewById(R.id.fragment_onboarding_room_check_sense);
-        this.status = (TextView) view.findViewById(R.id.fragment_onboarding_room_check_status);
-
-        AnimatorContext animatorContext = getAnimatorContext();
-        this.scoreTicker = (SensorTickerView) view.findViewById(R.id.fragment_onboarding_room_check_ticker);
-        scoreTicker.setAnimatorContext(animatorContext);
-
         ViewGroup sensors = (ViewGroup) view.findViewById(R.id.fragment_onboarding_room_check_sensors);
         for (int i = 0, count = sensors.getChildCount(); i < count; i++) {
             View sensorChild = sensors.getChildAt(i);
@@ -102,6 +97,13 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 sensorViews.add(conditionView);
             }
         }
+
+        this.dynamicContent = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_content);
+        this.status = (TextView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_status);
+
+        AnimatorContext animatorContext = getAnimatorContext();
+        this.scoreTicker = (SensorTickerView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_ticker);
+        scoreTicker.setAnimatorContext(animatorContext);
 
         this.startColor = getResources().getColor(Condition.ALERT.colorRes);
 
@@ -224,53 +226,35 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
     private void showCompletion() {
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        ViewGroup container = (ViewGroup) getView();
-        if (container == null) {
-            return;
-        }
-
-        getAnimatorContext().transaction(f -> {
-            f.animate(status)
-             .fadeOut(View.GONE);
-            f.animate(scoreTicker)
-             .fadeOut(View.GONE);
-        }, finishedFadeOut -> {
-            if (!finishedFadeOut) {
-                return;
-            }
-
-            container.removeView(status);
-            container.removeView(scoreTicker);
-
-            ViewGroup endContainer = (ViewGroup) inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, container, false);
-            endContainer.setVisibility(View.INVISIBLE);
-            container.addView(endContainer);
-
-            endContainer.post(() -> {
-                endContainer.setVisibility(View.VISIBLE);
-                getAnimatorContext().transaction(f -> {
-                    float slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_outer);
-                    for (int i = 0, count = endContainer.getChildCount(); i < count; i++) {
-                        View child = endContainer.getChildAt(i);
-                        f.animate(child)
-                         .setStartDelay(END_CONTAINER_DELAY_MS * i)
-                         .slideYAndFade(slideAmount, 0f, 0f, 1f);
-                    }
-                }, finishedTransitionIn -> {
-                    if (!finishedTransitionIn) {
+        animate(dynamicContent, getAnimatorContext())
+                .fadeOut(View.INVISIBLE)
+                .addOnAnimationCompleted(finishedFadeOut -> {
+                    if (!finishedFadeOut) {
                         return;
                     }
 
-                    Button continueButton = (Button) endContainer.findViewById(R.id.sub_fragment_room_check_end_continue);
-                    Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
-                });
-            });
-        });
+                    dynamicContent.removeAllViews();
+
+                    inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
+
+                    animate(dynamicContent, getAnimatorContext())
+                            .fadeIn()
+                            .addOnAnimationCompleted(finishedTransitionIn -> {
+                                if (!finishedTransitionIn) {
+                                    return;
+                                }
+
+                                Button continueButton = (Button) dynamicContent.findViewById(R.id.sub_fragment_room_check_end_continue);
+                                Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
+                            })
+                            .postStart();
+                })
+                .start();
     }
 
     private void stopAnimations() {
         scoreTicker.stopAnimating();
-        stop(status);
+        stop(status, dynamicContent);
     }
 
     private void animateSenseToGray() {
