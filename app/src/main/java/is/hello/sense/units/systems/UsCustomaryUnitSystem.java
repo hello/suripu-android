@@ -1,17 +1,13 @@
 package is.hello.sense.units.systems;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitOperations;
 import is.hello.sense.units.UnitSystem;
 
 public class UsCustomaryUnitSystem extends UnitSystem {
     public static final String NAME = "UsCustomary";
 
-    @Override
-    public String getApiTemperatureUnit() {
-        return ApiService.UNIT_TEMPERATURE_US_CUSTOMARY;
-    }
+    //region Mass
 
     @Override
     public String getMassUnit() {
@@ -19,14 +15,28 @@ public class UsCustomaryUnitSystem extends UnitSystem {
     }
 
     @Override
-    public CharSequence formatMass(long mass) {
-        return Styles.assembleReadingAndUnit(UnitOperations.gramsToPounds((int) mass), getMassUnit());
+    public long convertMass(long mass) {
+        return UnitOperations.gramsToPounds((int) mass);
     }
 
+    //endregion
+
+
+    //region Temperature
+
     @Override
-    public CharSequence formatTemperature(long temperature) {
-        return Styles.assembleReadingAndUnit(UnitOperations.celsiusToFahrenheit(temperature), getTemperatureUnit());
+    public String getApiTemperatureUnit() {
+        return ApiService.UNIT_TEMPERATURE_US_CUSTOMARY;
     }
+    @Override
+    public long convertTemperature(long temperature) {
+        return UnitOperations.celsiusToFahrenheit(temperature);
+    }
+
+    //endregion
+
+
+    //region Height
 
     @Override
     public String getHeightUnit() {
@@ -44,4 +54,6 @@ public class UsCustomaryUnitSystem extends UnitSystem {
             return feet + "'";
         }
     }
+
+    //endregion
 }

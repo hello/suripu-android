@@ -27,9 +27,9 @@ public class UnitSystemTests extends TestCase {
     }
 
     public void testFormatDecibels() throws Exception {
-        assertEquals("1 db", testSystem.formatDecibels(1).toString());
-        assertEquals("5 db", testSystem.formatDecibels(5).toString());
-        assertEquals("10 db", testSystem.formatDecibels(10).toString());
+        assertEquals("1 db", testSystem.formatSound(1).toString());
+        assertEquals("5 db", testSystem.formatSound(5).toString());
+        assertEquals("10 db", testSystem.formatSound(10).toString());
     }
 
     public void testFormatLight() throws Exception {

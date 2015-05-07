@@ -54,23 +54,41 @@ public class UnitSystem implements Serializable {
     }
 
 
-    //region Formatting
+    //region Mass
 
     public String getMassUnit() {
         return "g";
     }
 
-    public CharSequence formatMass(long mass) {
-        return Styles.assembleReadingAndUnit(mass, getMassUnit());
+    public long convertMass(long mass) {
+        return mass;
     }
+
+    public CharSequence formatMass(long mass) {
+        return Styles.assembleReadingAndUnit(convertMass(mass), getMassUnit());
+    }
+
+    //endregion
+
+
+    //region Temperature
 
     public String getTemperatureUnit() {
         return TEMP_SUFFIX;
     }
 
-    public CharSequence formatTemperature(long temperature) {
-        return Styles.assembleReadingAndUnit(temperature, getTemperatureUnit());
+    public long convertTemperature(long temperature) {
+        return temperature;
     }
+
+    public CharSequence formatTemperature(long temperature) {
+        return Styles.assembleReadingAndUnit(convertTemperature(temperature), getTemperatureUnit());
+    }
+
+    //endregion
+
+
+    //region Humidity
 
     public String getHumidityUnit() {
         return "%";
@@ -80,6 +98,11 @@ public class UnitSystem implements Serializable {
         return Styles.assembleReadingAndUnit(humidity, getHumidityUnit());
     }
 
+    //endregion
+
+
+    //region Height
+
     public String getHeightUnit() {
         return "cm";
     }
@@ -88,13 +111,23 @@ public class UnitSystem implements Serializable {
         return Styles.assembleReadingAndUnit(distance, getHeightUnit());
     }
 
+    //endregion
+
+
+    //region Sound
+
     public String getSoundUnit() {
         return "db";
     }
 
-    public CharSequence formatDecibels(long decibels) {
+    public CharSequence formatSound(long decibels) {
         return Styles.assembleReadingAndUnit(decibels, getSoundUnit());
     }
+
+    //endregion
+
+
+    //region Light
 
     public String getLightUnit() {
         return "lux";
@@ -104,6 +137,11 @@ public class UnitSystem implements Serializable {
         return Styles.assembleReadingAndUnit(lux, getLightUnit());
     }
 
+    //endregion
+
+
+    //region Particulates
+
     public String getParticulatesUnit() {
         return "";
     }
@@ -112,26 +150,88 @@ public class UnitSystem implements Serializable {
         return Long.toString(particulates);
     }
 
+    //endregion
+
+
+    //region Vendors
+
     public @Nullable Formatter getUnitFormatterForSensor(@NonNull String sensor) {
         switch (sensor) {
             case ApiService.SENSOR_NAME_TEMPERATURE:
                 return this::formatTemperature;
+            
+            case ApiService.SENSOR_NAME_HUMIDITY:
+                return this::formatHumidity;
 
             case ApiService.SENSOR_NAME_PARTICULATES:
                 return this::formatParticulates;
+
+            case ApiService.SENSOR_NAME_LIGHT:
+                return this::formatLight;
+
+            case ApiService.SENSOR_NAME_SOUND:
+                return this::formatSound;
 
             default:
                 return null;
         }
     }
 
-    public List<String> getUnitNamesAsList() {
-        return Arrays.asList(getTemperatureUnit(), getHumidityUnit(), getLightUnit(), getSoundUnit());
-    }
-
-    public interface Formatter {
-        @NonNull CharSequence format(Long value);
+    public List<Unit> toUnitList() {
+        return Arrays.asList(
+            new Unit(this::formatTemperature, this::convertTemperature, getTemperatureUnit()),
+            new Unit(this::formatHumidity, Converter.IDENTITY, getHumidityUnit()),
+            new Unit(this::formatLight, Converter.IDENTITY, getLightUnit()),
+            new Unit(this::formatSound, Converter.IDENTITY, getSoundUnit())
+        );
     }
 
     //endregion
+
+    public interface Formatter {
+        @NonNull CharSequence format(long value);
+    }
+
+    /**
+     * A functor that converts a raw value into the user's unit system.
+     */
+    public interface Converter {
+        /**
+         * The identity converter. Returns a value unmodified.
+         */
+        Converter IDENTITY = v -> v;
+
+        long convert(long value);
+    }
+
+    public static class Unit {
+        private final @Nullable Formatter formatter;
+        private final @NonNull Converter converter;
+        private final @NonNull String name;
+
+        public Unit(@Nullable Formatter formatter,
+                    @NonNull Converter converter,
+                    @NonNull String name) {
+            this.formatter = formatter;
+            this.converter = converter;
+            this.name = name;
+        }
+
+        public CharSequence format(long value) {
+            if (formatter != null) {
+                return formatter.format(value);
+            } else {
+                return Long.toString(value);
+            }
+        }
+
+        public long convert(long value) {
+            return converter.convert(value);
+        }
+
+        @NonNull
+        public String getName() {
+            return name;
+        }
+    }
 }

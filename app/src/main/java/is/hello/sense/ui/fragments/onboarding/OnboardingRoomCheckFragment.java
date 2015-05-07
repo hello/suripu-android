@@ -44,6 +44,7 @@ import rx.Scheduler;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.OnAnimationCompleted;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.stop;
+import static is.hello.sense.units.UnitSystem.Unit;
 
 public class OnboardingRoomCheckFragment extends InjectionFragment {
     private static final long CONDITION_VISIBLE_MS = 2500;
@@ -62,9 +63,9 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
     private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
 
-    private final List<SensorState> conditions = new ArrayList<>();
-    private final List<String> conditionUnits = new ArrayList<>();
-    private final @StringRes int[] conditionStrings = {
+    private final List<SensorState> sensors = new ArrayList<>();
+    private final List<Unit> sensorUnits = new ArrayList<>();
+    private final @StringRes int[] sensorStrings = {
         R.string.checking_condition_temperature,
         R.string.checking_condition_humidity,
         R.string.checking_condition_light,
@@ -148,7 +149,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     //region Scene Animation
 
     private void showConditionAt(int position) {
-        if (position >= conditions.size()) {
+        if (position >= sensors.size()) {
             jumpToEnd(true);
             return;
         }
@@ -157,14 +158,15 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
         SensorConditionView sensorView = sensorViews.get(position);
         status.setTextAppearance(status.getContext(), R.style.AppTheme_Text_SectionHeading);
-        status.setText(conditionStrings[position]);
+        status.setText(sensorStrings[position]);
         this.animatingSensorView = sensorView;
         sensorView.crossFadeToFill(R.drawable.room_check_sensor_border_loading, true, () -> {
-            SensorState sensor = conditions.get(position);
+            SensorState sensor = sensors.get(position);
+            Unit unit = sensorUnits.get(position);
 
-            int value = sensor.getValue() != null ? sensor.getValue().intValue() : 0;
-            String unit = conditionUnits.get(position);
-            long duration = scoreTicker.animateToValue(value, unit, finishedTicker -> {
+            long value = sensor.getValue() != null ? sensor.getValue() : 0L;
+            int convertedValue = (int) unit.convert(value);
+            long duration = scoreTicker.animateToValue(convertedValue, unit.getName(), finishedTicker -> {
                 if (!finishedTicker) {
                     return;
                 }
@@ -221,9 +223,9 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         deferWorker.unsubscribe();
         stopAnimations();
 
-        int conditionCount = conditions.size();
+        int conditionCount = sensors.size();
         if (conditionCount > 0) {
-            int conditionSum = Lists.sumInt(conditions, c -> c.getCondition().ordinal());
+            int conditionSum = Lists.sumInt(sensors, c -> c.getCondition().ordinal());
             int conditionAverage = (int) Math.ceil(conditionSum / (float) conditionCount);
             int conditionOrdinal = Math.min(Condition.IDEAL.ordinal(), conditionAverage);
             Condition averageCondition = Condition.values()[conditionOrdinal];
@@ -235,7 +237,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
             for (int i = 0; i < conditionCount; i++) {
                 SensorConditionView sensorView = sensorViews.get(i);
-                SensorState condition = conditions.get(i);
+                SensorState condition = sensors.get(i);
                 sensorView.setTint(resources.getColor(condition.getCondition().colorRes));
                 sensorView.setFill(R.drawable.room_check_sensor_border_filled);
             }
@@ -347,11 +349,11 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     //region Binding
 
     public void bindConditions(@NonNull RoomConditionsPresenter.Result current) {
-        conditions.clear();
-        conditions.addAll(current.conditions.toList());
+        sensors.clear();
+        sensors.addAll(current.conditions.toList());
 
-        conditionUnits.clear();
-        conditionUnits.addAll(current.units.getUnitNamesAsList());
+        sensorUnits.clear();
+        sensorUnits.addAll(current.units.toUnitList());
 
         showConditionAt(0);
     }
@@ -360,7 +362,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         Analytics.trackError(e, "Room check");
         Logger.error(getClass().getSimpleName(), "Could not load conditions for room check", e);
 
-        conditions.clear();
+        sensors.clear();
 
         jumpToEnd(true);
     }
