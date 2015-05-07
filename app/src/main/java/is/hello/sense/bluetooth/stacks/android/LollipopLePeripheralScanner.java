@@ -1,6 +1,7 @@
 package is.hello.sense.bluetooth.stacks.android;
 
 import android.annotation.TargetApi;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
@@ -31,6 +32,7 @@ import rx.Subscription;
 class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnSubscribe<List<Peripheral>> {
     private final @NonNull AndroidBluetoothStack stack;
     private final @NonNull PeripheralCriteria peripheralCriteria;
+    private final @NonNull BluetoothAdapter adapter;
     private final @Nullable BluetoothLeScanner scanner;
     private final @NonNull Map<String, ScannedPeripheral> results = new HashMap<>();
     private final boolean hasAddresses;
@@ -43,7 +45,8 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
         this.stack = stack;
         this.peripheralCriteria = peripheralCriteria;
         this.hasAddresses = !peripheralCriteria.peripheralAddresses.isEmpty();
-        this.scanner = stack.getAdapter().getBluetoothLeScanner();
+        this.adapter = stack.getAdapter();
+        this.scanner = adapter.getBluetoothLeScanner();
     }
 
 
@@ -137,7 +140,18 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
         }
 
         this.scanning = false;
-        scanner.stopScan(this);
+
+        // The BluetoothLeScanner#stopScan(ScanCallback) method requires
+        // that its associated BluetoothAdapter be in the on state to stop
+        // the scan (how does this make sense?)
+        if (adapter.getState() == BluetoothAdapter.STATE_ON) {
+            // State could conceivably change between getState and stopScan calls.
+            try {
+                scanner.stopScan(this);
+            } catch (IllegalStateException e) {
+                Logger.warn(BluetoothStack.LOG_TAG, "Adapter state changed between calls, ignoring.", e);
+            }
+        }
 
         if (timeout != null) {
             timeout.unsubscribe();
