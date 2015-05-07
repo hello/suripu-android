@@ -60,7 +60,18 @@ public class SensePeripheralError extends BluetoothError implements Errors.Repor
             case INTERNAL_DATA_ERROR:
             case DEVICE_NO_MEMORY:
             case INTERNAL_OPERATION_FAILED:
+            case PROTOBUF_ENCODE_FAILED:
+            case PROTOBUF_DECODE_FAILED:
                 return StringRef.from(R.string.error_generic_sense_failure);
+
+            case WLAN_ENDPOINT_DELETE_FAILED:
+                return StringRef.from(R.string.error_factory_reset_wlan_failure);
+
+            case INVALID_ACCOUNT_ID:
+                return StringRef.from(R.string.error_invalid_account_id);
+
+            case FORCE_DATA_PUSH_FAILED:
+                return StringRef.from(R.string.error_force_push_data);
 
             default:
                 return StringRef.from(errorType.toString());

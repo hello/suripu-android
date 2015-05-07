@@ -156,7 +156,7 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
-    <style name="AppTheme.Dialog.BottomSheet">
+    <style name="AppTheme.Dialog.BottomSheet" parent="Platform.Dialog.NoElevation">
         <item name="android:windowBackground">@color/background_light</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Slide</item>
@@ -302,6 +302,7 @@
     <style name="AppTheme.Button.Number" parent="AppTheme.Button.Dialog.Positive">
         <item name="android:minHeight">@dimen/button_rounded_min_height</item>
         <item name="android:background">@drawable/button_selector_number</item>
+        <item name="android:hapticFeedbackEnabled">true</item>
     </style>
 
     <style name="AppTheme.Button.Raised">

@@ -363,10 +363,12 @@ public class Analytics {
         String EVENT_PUT_INTO_PAIRING_MODE = "Put into Pairing Mode";
         String EVENT_FACTORY_RESET = "Factory Reset";
         String EVENT_EDIT_WIFI = "Edit WiFi";
+        String EVENT_SENSE_ADVANCED = "Sense advanced tapped";
 
         String EVENT_PILL_DETAIL = "Pill detail";
         String EVENT_REPLACE_PILL = "Replace Pill";
         String EVENT_REPLACE_BATTERY = "Replace Battery";
+        String EVENT_PILL_ADVANCED = "Pill advanced tapped";
 
         String EVENT_TROUBLESHOOTING_LINK = "Troubleshooting link";
         String PROP_TROUBLESHOOTING_ISSUE = "issue";
@@ -420,8 +422,9 @@ public class Analytics {
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
         if (provider != null) {
-            provider.alias(userId, null);
-            provider.getPeople().identify(userId);
+            String distinctId = provider.getDistinctId();
+            provider.alias(userId, distinctId);
+            provider.getPeople().identify(distinctId);
         }
 
         if (Crashlytics.getInstance().isInitialized()) {

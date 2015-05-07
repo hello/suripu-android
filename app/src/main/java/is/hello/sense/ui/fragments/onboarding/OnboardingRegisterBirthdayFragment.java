@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +23,7 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.DateFormatter;
 
 public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     private static final int NUM_FIELDS = 3;
@@ -58,7 +59,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
         LinearLayout fieldContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_birthday_fields);
         int hintColor = getResources().getColor(R.color.text_dim_placeholder);
 
-        char[] dateFormat = DateFormat.getDateFormatOrder(getActivity());
+        char[] dateFormat = DateFormatter.getDateFormatOrder(getActivity());
         int index = 0;
         for (char field : dateFormat) {
             TextView component = (TextView) inflater.inflate(R.layout.item_onboarding_birthday_field, fieldContainer, false);
@@ -231,6 +232,8 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
 
 
     public void backspace(@NonNull View sender) {
+        sender.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+
         TextView field = fields[activeField];
         if (TextUtils.isEmpty(field.getText())) {
             if (activeField == 0) {
@@ -248,6 +251,8 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     }
 
     public void appendNumber(@NonNull View sender) {
+        sender.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+
         String numberValue = sender.getTag().toString();
         TextView field = fields[activeField];
 
@@ -279,6 +284,8 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
     }
 
     public void skip(@NonNull View sender) {
+        sender.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+
         Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "birthday"));
         getContainer().onAccountUpdated(this);
     }
