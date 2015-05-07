@@ -200,7 +200,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             });
 
 
-            int endColor = getResources().getColor(sensor.getCondition().colorRes);
+            int endColor = resources.getColor(sensor.getCondition().colorRes);
             this.scoreAnimator = Animation.createColorAnimator(startColor, endColor);
             scoreAnimator.setDuration(duration);
             scoreAnimator.addUpdateListener(a -> {
@@ -229,33 +229,35 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         deferWorker.unsubscribe();
         stopAnimations();
 
-        int conditionCount = sensors.size();
-        if (conditionCount > 0) {
-            int conditionSum = Lists.sumInt(sensors, c -> c.getCondition().ordinal());
-            int conditionAverage = (int) Math.ceil(conditionSum / (float) conditionCount);
-            int conditionOrdinal = Math.min(Condition.IDEAL.ordinal(), conditionAverage);
-            Condition averageCondition = Condition.values()[conditionOrdinal];
-            if (animate) {
-                animateSenseCondition(averageCondition, true);
+        coordinator.postOnResume(() -> {
+            int conditionCount = sensors.size();
+            if (conditionCount > 0) {
+                int conditionSum = Lists.sumInt(sensors, c -> c.getCondition().ordinal());
+                int conditionAverage = (int) Math.ceil(conditionSum / (float) conditionCount);
+                int conditionOrdinal = Math.min(Condition.IDEAL.ordinal(), conditionAverage);
+                Condition averageCondition = Condition.values()[conditionOrdinal];
+                if (animate) {
+                    animateSenseCondition(averageCondition, true);
+                } else {
+                    sense.setImageDrawable(getConditionDrawable(averageCondition));
+                }
+
+                for (int i = 0; i < conditionCount; i++) {
+                    SensorConditionView sensorView = sensorViews.get(i);
+                    SensorState condition = sensors.get(i);
+                    sensorView.setTint(resources.getColor(condition.getCondition().colorRes));
+                    sensorView.setFill(R.drawable.room_check_sensor_border_filled);
+                }
             } else {
-                sense.setImageDrawable(getConditionDrawable(averageCondition));
+                int defaultTint = resources.getColor(R.color.light_accent);
+                for (SensorConditionView sensorView : sensorViews) {
+                    sensorView.setTint(defaultTint);
+                    sensorView.setFill(R.drawable.room_check_sensor_border_filled);
+                }
             }
 
-            for (int i = 0; i < conditionCount; i++) {
-                SensorConditionView sensorView = sensorViews.get(i);
-                SensorState condition = sensors.get(i);
-                sensorView.setTint(resources.getColor(condition.getCondition().colorRes));
-                sensorView.setFill(R.drawable.room_check_sensor_border_filled);
-            }
-        } else {
-            int defaultTint = resources.getColor(R.color.light_accent);
-            for (SensorConditionView sensorView : sensorViews) {
-                sensorView.setTint(defaultTint);
-                sensorView.setFill(R.drawable.room_check_sensor_border_filled);
-            }
-        }
-
-        showCompletion(animate);
+            showCompletion(animate);
+        });
     }
 
     private void showCompletion(boolean animate) {

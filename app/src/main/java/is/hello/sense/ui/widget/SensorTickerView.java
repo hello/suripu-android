@@ -37,9 +37,10 @@ public class SensorTickerView extends LinearLayout {
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER);
 
+        DigitRotaryView.RenderInfo renderInfo = new DigitRotaryView.RenderInfo(context);
         LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         for (int i = 0; i < NUMBER_DIGITS; i++) {
-            DigitRotaryView digit = new DigitRotaryView(context);
+            DigitRotaryView digit = new DigitRotaryView(context, renderInfo);
             digit.setVisibility(INVISIBLE);
             addView(digit, layoutParams);
             digits[i] = digit;
@@ -48,8 +49,11 @@ public class SensorTickerView extends LinearLayout {
         this.unitText = new TextView(context);
         unitText.setTextAppearance(context, DigitRotaryView.TEXT_APPEARANCE);
         unitText.setTextSize(TypedValue.COMPLEX_UNIT_PX, 0.4f * unitText.getTextSize());
+        unitText.setSingleLine(true);
         unitText.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
-        addView(unitText, layoutParams);
+        unitText.setIncludeFontPadding(false);
+        unitText.setPadding(0, renderInfo.textYFixUp, 0, 0);
+        addView(unitText, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
     }
 
     //endregion

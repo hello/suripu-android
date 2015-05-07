@@ -3,8 +3,10 @@ package is.hello.sense.ui.widget;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
@@ -12,13 +14,13 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.text.TextPaint;
 import android.text.style.TextAppearanceSpan;
-import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import is.hello.sense.R;
 import rx.functions.Action1;
 
+@SuppressLint("ViewConstructor")
 public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdateListener {
     //region Constants
 
@@ -30,17 +32,14 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
 
     //region Drawing
 
-    private final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-    private final int itemWidth;
-    private final int itemHeight;
-    private final int textYFixUp;
+    private final RenderInfo info;
+    private int textColor = Color.BLACK;
 
     //endregion
 
 
     //region Items
 
-    private final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
     private int onScreenDigit = 0;
     private int offScreenDigit = 1;
 
@@ -57,28 +56,10 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
 
     //region Lifecycle
 
-    public DigitRotaryView(@NonNull Context context) {
-        this(context, null);
-    }
+    public DigitRotaryView(@NonNull Context context, @NonNull RenderInfo info) {
+        super(context);
 
-    public DigitRotaryView(@NonNull Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public DigitRotaryView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-
-        TextAppearanceSpan textAppearance = new TextAppearanceSpan(context, TEXT_APPEARANCE);
-        textAppearance.updateMeasureState(textPaint);
-        textPaint.setTextAlign(Paint.Align.CENTER);
-
-        Rect textBounds = new Rect();
-        textPaint.getTextBounds(DIGITS, 4, 1, textBounds); // '4' is the widest number in Roboto
-        this.itemWidth = textBounds.width();
-
-        Paint.FontMetricsInt fontMetrics = textPaint.getFontMetricsInt();
-        this.itemHeight = Math.abs(fontMetrics.bottom - fontMetrics.top);
-        this.textYFixUp = fontMetrics.bottom;
+        this.info = info;
 
         this.offsetAnimator = ValueAnimator.ofFloat(0f, 1f);
         offsetAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -98,10 +79,12 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
         float midX = canvasWidth / 2f;
         float offsetY = (canvasHeight * digitsOffset);
 
-        canvas.drawText(DIGITS, onScreenDigit, 1, midX, canvasHeight - textYFixUp + offsetY, textPaint);
+        info.textPaint.setColor(textColor);
+
+        canvas.drawText(info.digits, onScreenDigit, 1, midX, canvasHeight - info.textYFixUp + offsetY, info.textPaint);
 
         if (digitsOffset > 0f) {
-            canvas.drawText(DIGITS, offScreenDigit, 1, midX, offsetY - textYFixUp, textPaint);
+            canvas.drawText(info.digits, offScreenDigit, 1, midX, offsetY - info.textYFixUp, info.textPaint);
         }
     }
 
@@ -116,7 +99,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
                 break;
             }
             case MeasureSpec.AT_MOST: {
-                measuredWidth = Math.min(itemWidth, suggestedWidth);
+                measuredWidth = Math.min(info.itemWidth, suggestedWidth);
                 break;
             }
             default:
@@ -135,7 +118,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
                 break;
             }
             case MeasureSpec.AT_MOST: {
-                measuredHeight = Math.min(itemHeight, suggestedHeight);
+                measuredHeight = Math.min(info.itemHeight, suggestedHeight);
                 break;
             }
             default:
@@ -157,7 +140,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
         this.digitsOffset = 0f;
         this.onScreenDigit = onScreenDigit;
 
-        if (onScreenDigit < DIGITS.length - 1) {
+        if (onScreenDigit < info.digits.length - 1) {
             this.offScreenDigit = onScreenDigit + 1;
         } else {
             this.offScreenDigit = 0;
@@ -175,7 +158,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
     }
 
     public void setTextColor(int textColor) {
-        textPaint.setColor(textColor);
+        this.textColor = textColor;
         invalidate();
     }
 
@@ -224,7 +207,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
     }
 
     public Spin createSpin(int targetDigit, int rotations, long targetDuration) {
-        return new Spin(DIGITS.length, targetDigit, rotations, targetDuration);
+        return new Spin(info.digits.length, targetDigit, rotations, targetDuration);
     }
 
     public void runSpin(@NonNull Spin spin,
@@ -232,7 +215,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
                         @NonNull Action1<Boolean> onCompletion) {
         setOnScreenDigit(0);
         spinToNextDigit(spin.singleSpinDuration, new Action1<Boolean>() {
-            final int repetitionRollover = DIGITS.length;
+            final int repetitionRollover = info.digits.length;
             int repetitions = 0, rotationCount = 0;
 
             @Override
@@ -265,6 +248,31 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
 
     //endregion
 
+
+    public static class RenderInfo {
+        public final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
+        public final int itemWidth;
+        public final int itemHeight;
+        public final int textYFixUp;
+
+        public final char[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+        public RenderInfo(@NonNull Context context) {
+            TextAppearanceSpan textAppearance = new TextAppearanceSpan(context, TEXT_APPEARANCE);
+            textAppearance.updateMeasureState(textPaint);
+            textPaint.setTextAlign(Paint.Align.CENTER);
+
+            Rect textBounds = new Rect();
+            textPaint.getTextBounds(digits, 4, 1, textBounds); // '4' is the widest number in Roboto
+
+            int extraSpacing = context.getResources().getDimensionPixelSize(R.dimen.gap_tiny);
+            this.itemWidth = textBounds.width() + extraSpacing;
+
+            Paint.FontMetricsInt fontMetrics = textPaint.getFontMetricsInt();
+            this.itemHeight = Math.abs(fontMetrics.bottom - fontMetrics.top);
+            this.textYFixUp = fontMetrics.bottom;
+        }
+    }
 
     public static class Spin {
         public final int targetDigit;
