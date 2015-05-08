@@ -9,10 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.text.Layout;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.AlignmentSpan;
 
 import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
@@ -123,7 +120,6 @@ public class ErrorDialogFragment extends DialogFragment {
 
         if (showSupportLink()) {
             SpannableStringBuilder footer = Styles.resolveSupportLinks(getActivity(), getText(R.string.error_addendum_support));
-            footer.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, footer.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             footer.insert(0, dialog.getMessage());
             dialog.setMessage(footer);
         }

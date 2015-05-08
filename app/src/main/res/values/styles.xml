@@ -306,7 +306,7 @@
     </style>
 
     <style name="AppTheme.Button.Raised">
-        <item name="android:minHeight">32dp</item>
+        <item name="android:minHeight">@dimen/button_min_size_small</item>
         <item name="android:paddingBottom">1dp</item>
         <item name="android:paddingLeft">@dimen/gap_small</item>
         <item name="android:paddingRight">@dimen/gap_small</item>
@@ -320,7 +320,15 @@
         <item name="android:textColor">@color/text_color_selector_light_accent</item>
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">marquee</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="AppTheme.Button.Dialog.Alert">
+        <item name="android:paddingLeft">@dimen/gap_small</item>
+        <item name="android:paddingRight">@dimen/gap_small</item>
+        <item name="android:paddingTop">@dimen/gap_small</item>
+        <item name="android:paddingBottom">@dimen/gap_small</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="AppTheme.Button.Dialog.SolidBlue">

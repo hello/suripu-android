@@ -4,10 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.Layout;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.AlignmentSpan;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -106,7 +103,6 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         dialog.setTitle(R.string.dialog_title_replace_sleep_pill);
 
         SpannableStringBuilder message = Styles.resolveSupportLinks(getActivity(), getText(R.string.destructive_action_addendum));
-        message.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, message.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         message.insert(0, getString(R.string.dialog_message_replace_sleep_pill));
         dialog.setMessage(message);
 
