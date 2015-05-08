@@ -145,7 +145,7 @@
         <item name="android:windowBackground">@drawable/raised_item_normal</item>
     </style>
 
-    <style name="AppTheme.Dialog.Selector">
+    <style name="AppTheme.Dialog.List">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/transparent</item>
     </style>
