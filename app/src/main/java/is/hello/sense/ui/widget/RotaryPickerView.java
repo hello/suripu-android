@@ -1,8 +1,10 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
@@ -16,8 +18,9 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 
-public class RotaryPickerView extends RecyclerView {
-    private static final int NUM_VISIBLE_ITEMS = 5;
+public class RotaryPickerView extends RecyclerView implements View.OnClickListener {
+    public static final int NUM_VISIBLE_ITEMS = 5;
+    public static final @StyleRes int DEFAULT_ITEM_TEXT_APPEARANCE = R.style.AppTheme_Text_Body;
 
     //region Internal
 
@@ -35,7 +38,10 @@ public class RotaryPickerView extends RecyclerView {
     private int maxValue = 100;
     private int value = 0;
     private boolean wrapsAround = false;
-    private @StyleRes int itemTextAppearance = R.style.AppTheme_Text_Body;
+
+    private @StyleRes int itemTextAppearance = DEFAULT_ITEM_TEXT_APPEARANCE;
+    private @Nullable Drawable itemBackground;
+
     private @Nullable String[] valueStrings;
     private @Nullable OnSelectionListener onSelectionListener;
 
@@ -69,6 +75,15 @@ public class RotaryPickerView extends RecyclerView {
         setOverScrollMode(OVER_SCROLL_NEVER);
         setVerticalFadingEdgeEnabled(true);
         setFadingEdgeLength(itemHeight);
+
+        if (attrs != null) {
+            TypedArray styles = context.obtainStyledAttributes(attrs, R.styleable.RotaryPickerView, defStyle, 0);
+
+            this.itemTextAppearance = styles.getResourceId(R.styleable.RotaryPickerView_senseTextAppearance, DEFAULT_ITEM_TEXT_APPEARANCE);
+            this.itemBackground = styles.getDrawable(R.styleable.RotaryPickerView_senseItemBackground);
+
+            styles.recycle();
+        }
     }
 
     //endregion
@@ -161,12 +176,26 @@ public class RotaryPickerView extends RecyclerView {
         adapter.notifyDataSetChanged();
     }
 
-    public void setValue(int value) {
-        this.value = constrainValue(value);
+    public void setValue(int newValue, boolean animate) {
+        int constrainedValue = constrainValue(newValue);
+        if (constrainedValue == this.value) {
+            return;
+        }
 
-        int offset = itemHeight * (NUM_VISIBLE_ITEMS / 2);
-        int position = adapter.getItemPosition(value);
-        layoutManager.scrollToPositionWithOffset(position, offset);
+        int unfocusedItems = (NUM_VISIBLE_ITEMS / 2);
+        int offset = itemHeight * unfocusedItems;
+        int position = adapter.getItemPosition(newValue);
+        if (animate) {
+            if (constrainedValue > this.value) {
+                smoothScrollToPosition(position + unfocusedItems);
+            } else {
+                smoothScrollToPosition(position - unfocusedItems);
+            }
+        } else {
+            layoutManager.scrollToPositionWithOffset(position, offset);
+        }
+
+        this.value = constrainedValue;
     }
 
     public int getValue() {
@@ -178,12 +207,17 @@ public class RotaryPickerView extends RecyclerView {
         adapter.notifyDataSetChanged();
     }
 
+    public void setItemBackground(@Nullable Drawable itemBackground) {
+        this.itemBackground = itemBackground;
+        adapter.notifyDataSetChanged();
+    }
+
     public void setWrapsAround(boolean wrapsAround) {
         this.wrapsAround = wrapsAround;
         adapter.notifyDataSetChanged();
 
         if (wrapsAround) {
-            setValue(adapter.getItemCount() / 2);
+            setValue(adapter.getItemCount() / 2, false);
         }
     }
 
@@ -200,6 +234,18 @@ public class RotaryPickerView extends RecyclerView {
 
 
     //region Data
+
+
+    @Override
+    public void onClick(View itemView) {
+        int position = getChildAdapterPosition(itemView);
+        int value = adapter.getItem(position);
+        setValue(value, true);
+
+        if (onSelectionListener != null) {
+            onSelectionListener.onSelectionChanged(this, value);
+        }
+    }
 
     class ScrollListener extends RecyclerView.OnScrollListener {
         private int previousState = RecyclerView.SCROLL_STATE_IDLE;
@@ -281,8 +327,10 @@ public class RotaryPickerView extends RecyclerView {
             Context context = getContext();
             TextView itemView = new TextView(context);
             itemView.setTextAppearance(context, itemTextAppearance);
+            itemView.setBackground(itemBackground);
             itemView.setGravity(Gravity.CENTER);
             itemView.setLayoutParams(new ViewGroup.LayoutParams(itemWidth, itemHeight));
+            itemView.setOnClickListener(RotaryPickerView.this);
             return new ItemViewHolder(itemView);
         }
 

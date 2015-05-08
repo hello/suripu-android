@@ -1,19 +1,25 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StyleRes;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 
 import org.joda.time.LocalTime;
 
+import java.text.DateFormatSymbols;
+import java.util.Calendar;
+
 import is.hello.sense.R;
 
 public class RotaryTimePickerView extends LinearLayout implements RotaryPickerView.OnSelectionListener {
-    private static final int PERIOD_AM = 0;
-    private static final int PERIOD_PM = 1;
+    private static final int PERIOD_AM = Calendar.AM;
+    private static final int PERIOD_PM = Calendar.PM;
 
     //region Pickers
 
@@ -54,6 +60,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         hourPicker.setOnSelectionListener(this);
         hourPicker.setMinValue(1);
         hourPicker.setMaxValue(12);
+        hourPicker.setWrapsAround(true);
         addView(hourPicker, pickerLayoutParams);
 
         LayoutParams minutePickerLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -70,8 +77,20 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         periodPicker.setOnSelectionListener(this);
         periodPicker.setMinValue(PERIOD_AM);
         periodPicker.setMaxValue(PERIOD_PM);
-        periodPicker.setValueStrings(new String[]{"am", "pm"});
+        periodPicker.setValueStrings(DateFormatSymbols.getInstance().getAmPmStrings());
         addView(periodPicker, pickerLayoutParams);
+
+        if (attrs != null) {
+            TypedArray styles = context.obtainStyledAttributes(attrs, R.styleable.RotaryPickerView, defStyleAttr, 0);
+
+            int itemTextAppearance = styles.getResourceId(R.styleable.RotaryPickerView_senseTextAppearance, RotaryPickerView.DEFAULT_ITEM_TEXT_APPEARANCE);
+            setItemTextAppearance(itemTextAppearance);
+
+            Drawable itemBackground = styles.getDrawable(R.styleable.RotaryPickerView_senseItemBackground);
+            setItemBackground(itemBackground);
+
+            styles.recycle();
+        }
 
         setTime(LocalTime.now());
     }
@@ -92,17 +111,17 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
             hourPicker.setMaxValue(24);
 
             if (periodPicker.getValue() == PERIOD_PM) {
-                hourPicker.setValue(hourPicker.getValue() + 12);
+                hourPicker.setValue(hourPicker.getValue() + 12, false);
             }
         } else {
             periodPicker.setVisibility(VISIBLE);
 
             int hour = hourPicker.getValue();
             if (hour > 12) {
-                periodPicker.setValue(PERIOD_PM);
-                hourPicker.setValue(hour - 12);
+                periodPicker.setValue(PERIOD_PM, false);
+                hourPicker.setValue(hour - 12, false);
             } else {
-                periodPicker.setValue(PERIOD_AM);
+                periodPicker.setValue(PERIOD_AM, false);
             }
 
             hourPicker.setMaxValue(12);
@@ -116,18 +135,18 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         int minute = time.getMinuteOfHour();
 
         if (use24Time) {
-            hourPicker.setValue(hour);
+            hourPicker.setValue(hour, false);
         } else {
             if (hour > 12) {
-                hourPicker.setValue(hour - 12);
-                periodPicker.setValue(PERIOD_PM);
+                hourPicker.setValue(hour - 12, false);
+                periodPicker.setValue(PERIOD_PM, false);
             } else {
-                hourPicker.setValue(hour);
-                periodPicker.setValue(PERIOD_AM);
+                hourPicker.setValue(hour, false);
+                periodPicker.setValue(PERIOD_AM, false);
             }
         }
 
-        minutePicker.setValue(minute);
+        minutePicker.setValue(minute, false);
     }
 
     public LocalTime getTime() {
@@ -142,6 +161,18 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         }
         int minute = minutePicker.getValue();
         return new LocalTime(hour, minute, 0);
+    }
+
+    public void setItemTextAppearance(@StyleRes int itemTextAppearance) {
+        hourPicker.setItemTextAppearance(itemTextAppearance);
+        minutePicker.setItemTextAppearance(itemTextAppearance);
+        periodPicker.setItemTextAppearance(itemTextAppearance);
+    }
+
+    public void setItemBackground(@Nullable Drawable itemBackground) {
+        hourPicker.setItemBackground(itemBackground);
+        minutePicker.setItemBackground(itemBackground);
+        periodPicker.setItemBackground(itemBackground);
     }
 
     public void setOnSelectionListener(@Nullable OnSelectionListener onSelectionListener) {
