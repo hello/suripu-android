@@ -90,12 +90,11 @@
                 android:layout_height="match_parent"
                 app:senseGridDrawable="@drawable/graph_grid_fill_top_down" />
 
-            <is.hello.sense.ui.widget.TintedProgressBar
+            <ProgressBar
                 android:id="@+id/fragment_sensor_history_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                style="@android:style/Widget.Holo.Light.ProgressBar"/>
+                android:layout_gravity="center" />
 
             <TextView
                 android:id="@+id/fragment_sensor_history_placeholder"

@@ -35,7 +35,7 @@
         android:divider="@color/border"
         android:dividerHeight="@dimen/divider_size"/>
 
-    <is.hello.sense.ui.widget.TintedProgressBar
+    <ProgressBar
         android:id="@+id/dialog_sense_selector_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

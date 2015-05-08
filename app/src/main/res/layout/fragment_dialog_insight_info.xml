@@ -56,7 +56,7 @@
                 android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
                 android:visibility="gone"/>
 
-            <is.hello.sense.ui.widget.TintedProgressBar
+            <ProgressBar
                 android:id="@+id/fragment_dialog_insight_info_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>

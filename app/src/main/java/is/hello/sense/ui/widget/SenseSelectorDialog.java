@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import is.hello.sense.R;
@@ -22,7 +23,7 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
     private Button doneButton;
     private TextView messageText;
     private ListView listView;
-    private TintedProgressBar activityIndicator;
+    private ProgressBar activityIndicator;
 
     public SenseSelectorDialog(Context context) {
         super(context, R.style.AppTheme_Dialog_Selector);
@@ -39,7 +40,7 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
         doneButton.setOnClickListener(this::onDone);
 
         this.messageText = (TextView) findViewById(R.id.dialog_sense_selector_message);
-        this.activityIndicator = (TintedProgressBar) findViewById(R.id.dialog_sense_selector_loading);
+        this.activityIndicator = (ProgressBar) findViewById(R.id.dialog_sense_selector_loading);
 
         setCancelable(true);
         setCanceledOnTouchOutside(true);

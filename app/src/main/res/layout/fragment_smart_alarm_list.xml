@@ -48,7 +48,7 @@
 
     </LinearLayout>
 
-    <is.hello.sense.ui.widget.TintedProgressBar
+    <ProgressBar
         android:id="@+id/fragment_smart_alarm_list_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

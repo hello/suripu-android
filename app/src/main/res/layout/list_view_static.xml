@@ -14,7 +14,7 @@
         android:listSelector="@color/transparent"
         android:background="@color/background_light"/>
 
-    <is.hello.sense.ui.widget.TintedProgressBar
+    <ProgressBar
         android:id="@+id/list_view_static_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

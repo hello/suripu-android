@@ -15,11 +15,10 @@
         android:background="@color/background_light_overlay"
         android:visibility="gone">
 
-        <is.hello.sense.ui.widget.TintedProgressBar
+        <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            style="@android:style/Widget.Holo.Light.ProgressBar"/>
+            android:layout_gravity="center"/>
 
     </FrameLayout>
 

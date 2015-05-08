@@ -26,6 +26,8 @@
         <item name="android:editTextStyle">@style/AppTheme.Text.EditText</item>
         <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
         <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Small</item>
         <item name="android:textColorLink">@color/text_link</item>
         <item name="android:checkboxStyle">@style/Platform.CheckBox</item>
 
@@ -133,7 +135,10 @@
 
     <!-- Dialogs -->
 
-    <style name="AppTheme.Dialog" parent="Platform.Dialog" />
+    <style name="AppTheme.Dialog" parent="Platform.Dialog">
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Small</item>
+    </style>
 
     <style name="AppTheme.Dialog.Simple" parent="Platform.Dialog.MinWidth">
         <item name="android:windowNoTitle">true</item>
@@ -463,6 +468,26 @@
         <item name="android:requiresFadingEdge">vertical</item>
         <item name="android:fadingEdgeLength">@dimen/shadow_size</item>
         <item name="android:background">@color/shadow_end</item>
+    </style>
+
+    <!-- Progress Bars -->
+
+    <style name="AppTheme.ProgressBar" parent="android:Widget.Holo.ProgressBar">
+        <item name="android:indeterminateOnly">true</item>
+        <item name="android:indeterminateDrawable">@drawable/animated_progress_bar</item>
+        <item name="android:indeterminateDuration">1000</item>
+        <item name="android:minWidth">55dp</item>
+        <item name="android:maxWidth">55dp</item>
+        <item name="android:minHeight">55dp</item>
+        <item name="android:maxHeight">55dp</item>
+    </style>
+
+    <style name="AppTheme.ProgressBar.Small">
+        <item name="android:indeterminateDrawable">@drawable/animated_progress_bar_small</item>
+        <item name="android:minWidth">20dp</item>
+        <item name="android:maxWidth">20dp</item>
+        <item name="android:minHeight">20dp</item>
+        <item name="android:maxHeight">20dp</item>
     </style>
 
 </resources>

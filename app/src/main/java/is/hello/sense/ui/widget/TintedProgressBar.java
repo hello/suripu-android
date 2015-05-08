@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 
 import is.hello.sense.R;
 
+@Deprecated
 public class TintedProgressBar extends ProgressBar {
     @SuppressWarnings("UnusedDeclaration")
     public TintedProgressBar(Context context) {

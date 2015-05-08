@@ -16,12 +16,11 @@
         android:contentDescription="@string/action_done"
         android:visibility="invisible"/>
 
-    <is.hello.sense.ui.widget.TintedProgressBar
+    <ProgressBar
         android:id="@+id/fragment_dialog_loading_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        style="@android:style/Widget.Holo.Light.ProgressBar.Large"/>
+        android:layout_centerInParent="true" />
 
     <TextView
         android:id="@+id/fragment_dialog_loading_title"
