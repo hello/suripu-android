@@ -22,6 +22,7 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
 
     private Button doneButton;
     private TextView messageText;
+    private View messageDivider;
     private ListView listView;
     private ProgressBar activityIndicator;
 
@@ -40,6 +41,7 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
         doneButton.setOnClickListener(this::onDone);
 
         this.messageText = (TextView) findViewById(R.id.dialog_sense_selector_message);
+        this.messageDivider = findViewById(R.id.dialog_sense_selector_message_divider);
         this.activityIndicator = (ProgressBar) findViewById(R.id.dialog_sense_selector_loading);
 
         setCancelable(true);
@@ -71,8 +73,10 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
     public void setMessage(@Nullable CharSequence message) {
         if (TextUtils.isEmpty(message)) {
             messageText.setVisibility(View.GONE);
+            messageDivider.setVisibility(View.GONE);
         } else {
             messageText.setVisibility(View.VISIBLE);
+            messageDivider.setVisibility(View.VISIBLE);
         }
         messageText.setText(message);
     }
@@ -80,8 +84,10 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
     public void setMessage(@StringRes int messageRes) {
         if (messageRes == 0) {
             messageText.setVisibility(View.GONE);
+            messageDivider.setVisibility(View.GONE);
         } else {
             messageText.setVisibility(View.VISIBLE);
+            messageDivider.setVisibility(View.VISIBLE);
         }
         messageText.setText(messageRes);
     }

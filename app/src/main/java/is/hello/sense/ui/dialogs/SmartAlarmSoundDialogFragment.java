@@ -62,6 +62,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
             adapter.setSelectedSoundId(selectedSound.id);
         }
 
+        dialog.setMessage(R.string.title_sound);
         dialog.setOnSelectionListener(this);
         dialog.setAdapter(adapter);
         dialog.setDoneButtonEnabled(selectedSound != null);
