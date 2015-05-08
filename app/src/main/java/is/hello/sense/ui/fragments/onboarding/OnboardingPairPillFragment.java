@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -126,7 +127,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             completeHardwareActivity(() -> finishedPairing(false), null);
         });
         confirmation.setNegativeButton(android.R.string.cancel, null);
-        confirmation.setDestructive(true);
+        confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         confirmation.show();
     }
 

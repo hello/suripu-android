@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -385,7 +386,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         Analytics.trackEvent(Analytics.TopView.EVENT_FACTORY_RESET, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
-        dialog.setDestructive(true);
+        dialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         dialog.setTitle(R.string.dialog_title_factory_reset);
 
         SpannableStringBuilder message = Styles.resolveSupportLinks(getActivity(), getText(R.string.destructive_action_addendum));
@@ -427,7 +428,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_SENSE, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
-        dialog.setDestructive(true);
+        dialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         dialog.setTitle(R.string.dialog_title_replace_sense);
 
         SpannableStringBuilder message = Styles.resolveSupportLinks(getActivity(), getText(R.string.destructive_action_addendum));

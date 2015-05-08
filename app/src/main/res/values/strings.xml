@@ -234,9 +234,12 @@ so you can sleep better.</string>
     <string name="error_sense_already_paired">Your Sense is already linked to this account.</string>
     <string name="error_sense_device_db_full">Your Sense cannot be paired to any more devices.</string>
     <string name="error_mismatching_new_passwords">The passwords you entered do not match.</string>
-    <string name="action_exit">Exit</string>
-    <string name="dialog_title_smart_alarm_edit_cancel">Do you really want to exit?</string>
-    <string name="dialog_message_smart_alarm_edit_cancel">There are unsaved changes to this alarm.</string>
+    <string name="dialog_title_smart_alarm_new_cancel">Cancel</string>
+    <string name="dialog_message_smart_alarm_new_cancel">Are you sure you want to discard this alarm?</string>
+    <string name="dialog_title_smart_alarm_edit_cancel">Cancel</string>
+    <string name="dialog_message_smart_alarm_edit_cancel">Are you sure you want to discard your changes to this alarm?</string>
+    <string name="action_discard">Discard</string>
+    <string name="action_keep_editing">Keep Editing</string>
     <string name="action_answer">Answer</string>
     <string name="video_playback_generic_error">Could not play video.</string>
     <string name="title_turning_on">Turning On</string>

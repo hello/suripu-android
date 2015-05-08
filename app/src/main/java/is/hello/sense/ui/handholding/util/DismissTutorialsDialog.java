@@ -2,6 +2,7 @@ package is.hello.sense.ui.handholding.util;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -34,7 +35,7 @@ public class DismissTutorialsDialog extends SenseDialogFragment {
                 getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_CANCELED, null);
             }
         });
-        dialog.setDestructive(true);
+        dialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
 
         return dialog;
     }

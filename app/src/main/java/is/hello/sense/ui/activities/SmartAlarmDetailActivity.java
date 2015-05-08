@@ -1,5 +1,6 @@
 package is.hello.sense.ui.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -114,11 +115,16 @@ public class SmartAlarmDetailActivity extends SenseActivity {
     public void onBackPressed() {
         if (detailFragment.isDirty()) {
             SenseAlertDialog backConfirmation = new SenseAlertDialog(this);
-            backConfirmation.setTitle(R.string.dialog_title_smart_alarm_edit_cancel);
-            backConfirmation.setMessage(R.string.dialog_message_smart_alarm_edit_cancel);
-            backConfirmation.setPositiveButton(R.string.action_exit, (dialog, which) -> super.onBackPressed());
-            backConfirmation.setNegativeButton(R.string.action_continue, null);
-            backConfirmation.setDestructive(true);
+            if (index == INDEX_NEW) {
+                backConfirmation.setTitle(R.string.dialog_title_smart_alarm_new_cancel);
+                backConfirmation.setMessage(R.string.dialog_message_smart_alarm_new_cancel);
+            } else {
+                backConfirmation.setTitle(R.string.dialog_title_smart_alarm_edit_cancel);
+                backConfirmation.setMessage(R.string.dialog_message_smart_alarm_edit_cancel);
+            }
+            backConfirmation.setNegativeButton(R.string.action_discard, (dialog, which) -> super.onBackPressed());
+            backConfirmation.setPositiveButton(R.string.action_keep_editing, null);
+            backConfirmation.setButtonDestructive(DialogInterface.BUTTON_NEGATIVE, true);
             backConfirmation.show();
         } else {
             super.onBackPressed();

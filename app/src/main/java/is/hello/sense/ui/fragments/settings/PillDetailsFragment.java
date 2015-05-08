@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -99,7 +100,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_PILL, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
-        dialog.setDestructive(true);
+        dialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         dialog.setTitle(R.string.dialog_title_replace_sleep_pill);
 
         SpannableStringBuilder message = Styles.resolveSupportLinks(getActivity(), getText(R.string.destructive_action_addendum));

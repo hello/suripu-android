@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Logger;
 
 public class SenseAlertDialog extends Dialog {
     private TextView titleText;
@@ -39,14 +41,28 @@ public class SenseAlertDialog extends Dialog {
     }
 
     @Override
-    public void setTitle(CharSequence title) {
+    public void setTitle(@Nullable CharSequence title) {
         super.setTitle(title);
+
+        if (TextUtils.isEmpty(title)) {
+            titleText.setVisibility(View.GONE);
+        } else {
+            titleText.setVisibility(View.VISIBLE);
+        }
+
         titleText.setText(title);
     }
 
     @Override
     public void setTitle(@StringRes int titleId) {
         super.setTitle(titleId);
+
+        if (titleId == 0) {
+            titleText.setVisibility(View.GONE);
+        } else {
+            titleText.setVisibility(View.VISIBLE);
+        }
+
         titleText.setText(titleId);
     }
 
@@ -54,12 +70,24 @@ public class SenseAlertDialog extends Dialog {
         titleText.setTextColor(color);
     }
 
-    public void setMessage(CharSequence message) {
+    public void setMessage(@Nullable CharSequence message) {
+        if (TextUtils.isEmpty(message)) {
+            messageText.setVisibility(View.GONE);
+        } else {
+            messageText.setVisibility(View.VISIBLE);
+        }
+
         messageText.setText(message);
     }
 
     public void setMessage(@StringRes int messageId) {
-        messageText.setText(messageId);
+        if (messageId == 0) {
+            messageText.setVisibility(View.GONE);
+            messageText.setText(null);
+        } else {
+            messageText.setVisibility(View.VISIBLE);
+            messageText.setText(messageId);
+        }
     }
 
     public CharSequence getMessage() {
@@ -117,11 +145,48 @@ public class SenseAlertDialog extends Dialog {
         setNegativeButton(getContext().getString(titleId), onClickListener);
     }
 
-    public void setDestructive(boolean isDestructive) {
-        if (isDestructive) {
-            positiveButton.setTextColor(getContext().getResources().getColor(R.color.destructive_accent));
+    /**
+     * @see android.content.DialogInterface#BUTTON_POSITIVE
+     * @see android.content.DialogInterface#BUTTON_NEGATIVE
+     */
+    protected @Nullable Button getButton(int which) {
+        switch (which) {
+            case DialogInterface.BUTTON_POSITIVE:
+                return positiveButton;
+
+            case DialogInterface.BUTTON_NEGATIVE:
+                return negativeButton;
+
+            default:
+                return null;
+        }
+    }
+
+    public void setButtonDestructive(int which, boolean flag) {
+        Button button = getButton(which);
+        if (button == null) {
+            Logger.error(getClass().getSimpleName(), "Unknown button #" + which + ", ignoring.");
+            return;
+        }
+
+        if (flag) {
+            button.setTextColor(getContext().getResources().getColor(R.color.destructive_accent));
         } else {
-            positiveButton.setTextColor(getContext().getResources().getColor(R.color.light_accent));
+            button.setTextColor(getContext().getResources().getColor(R.color.light_accent));
+        }
+    }
+
+    public void setButtonDeemphasized(int which, boolean flag) {
+        Button button = getButton(which);
+        if (button == null) {
+            Logger.error(getClass().getSimpleName(), "Unknown button #" + which + ", ignoring.");
+            return;
+        }
+
+        if (flag) {
+            button.setTextColor(getContext().getResources().getColor(R.color.text_dark));
+        } else {
+            button.setTextColor(getContext().getResources().getColor(R.color.light_accent));
         }
     }
 }
