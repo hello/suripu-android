@@ -53,8 +53,10 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER);
+        setDividerDrawable(getResources().getDrawable(R.drawable.divider_vertical));
+        setShowDividers(SHOW_DIVIDER_MIDDLE);
 
-        LayoutParams pickerLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        LayoutParams pickerLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1);
 
         this.hourPicker = new RotaryPickerView(context);
         hourPicker.setOnSelectionListener(this);
@@ -63,15 +65,12 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         hourPicker.setWrapsAround(true);
         addView(hourPicker, pickerLayoutParams);
 
-        LayoutParams minutePickerLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        int margin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
-        minutePickerLayoutParams.setMargins(margin, 0, margin, 0);
         this.minutePicker = new RotaryPickerView(context);
         minutePicker.setOnSelectionListener(this);
         minutePicker.setMinValue(0);
         minutePicker.setMaxValue(59);
         minutePicker.setWrapsAround(true);
-        addView(minutePicker, minutePickerLayoutParams);
+        addView(minutePicker, pickerLayoutParams);
 
         this.periodPicker = new RotaryPickerView(context);
         periodPicker.setOnSelectionListener(this);
@@ -184,6 +183,14 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
     //region Callbacks
 
+
+    @Override
+    public void onSelectionWillChange(@NonNull RotaryPickerView pickerView) {
+        if (onSelectionListener != null) {
+            onSelectionListener.onSelectionWillChange(this);
+        }
+    }
+
     @Override
     public void onSelectionChanged(@NonNull RotaryPickerView pickerView, int newValue) {
         if (onSelectionListener != null) {
@@ -195,6 +202,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
 
     public interface OnSelectionListener {
+        void onSelectionWillChange(@NonNull RotaryTimePickerView timePickerView);
         void onSelectionChanged(@NonNull RotaryTimePickerView timePickerView);
     }
 }
