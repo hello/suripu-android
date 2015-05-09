@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -15,12 +16,16 @@ import org.joda.time.LocalTime;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class TimePickerDialogFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+import is.hello.sense.ui.widget.RotaryTimePickerDialog;
+import is.hello.sense.ui.widget.RotaryTimePickerView;
+
+public class TimePickerDialogFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener, RotaryTimePickerDialog.OnTimeSetListener {
     public static final String TAG = TimePickerDialogFragment.class.getSimpleName();
 
     public static final int FLAG_USE_24_TIME = (1 << 1);
-    public static final int FLAG_ALWAYS_USE_SPINNER = (1 << 2);
-    @IntDef(value = {FLAG_USE_24_TIME, FLAG_ALWAYS_USE_SPINNER}, flag = true)
+    public static final int FLAG_USE_ROTARY_PICKER = (1 << 2);
+
+    @IntDef(value = {FLAG_USE_24_TIME, FLAG_USE_ROTARY_PICKER}, flag = true)
     @Retention(RetentionPolicy.SOURCE)
     public @interface Config {}
 
@@ -32,7 +37,7 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
 
     private LocalTime time;
     private boolean use24Time;
-    private boolean alwaysUseSpinner;
+    private boolean useRotaryPicker;
 
     public static TimePickerDialogFragment newInstance(@NonNull LocalTime date, @Config int config) {
         TimePickerDialogFragment dialog = new TimePickerDialogFragment();
@@ -53,22 +58,38 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
 
         @Config int config = getArguments().getInt(ARG_CONFIG, 0);
         this.use24Time = ((config & FLAG_USE_24_TIME) == FLAG_USE_24_TIME);
-        this.alwaysUseSpinner = ((config & FLAG_ALWAYS_USE_SPINNER) == FLAG_ALWAYS_USE_SPINNER);
+        this.useRotaryPicker = ((Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) ||
+                ((config & FLAG_USE_ROTARY_PICKER) == FLAG_USE_ROTARY_PICKER));
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        int dialogTheme = alwaysUseSpinner ? TimePickerDialog.THEME_HOLO_LIGHT : 0;
-        return new TimePickerDialog(getActivity(),
-                                    dialogTheme,
-                                    this,
-                                    time.getHourOfDay(),
-                                    time.getMinuteOfHour(),
-                                    use24Time);
+        if (useRotaryPicker) {
+            return new RotaryTimePickerDialog(getActivity(),
+                                              this,
+                                              time.getHourOfDay(),
+                                              time.getMinuteOfHour(),
+                                              use24Time);
+        } else {
+            return new TimePickerDialog(getActivity(),
+                                        this,
+                                        time.getHourOfDay(),
+                                        time.getMinuteOfHour(),
+                                        use24Time);
+        }
     }
 
     @Override
     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+        onTimeSet(hour, minute);
+    }
+
+    @Override
+    public void onTimeSet(RotaryTimePickerView view, int hour, int minute) {
+        onTimeSet(hour, minute);
+    }
+
+    private void onTimeSet(int hour, int minute) {
         if (getTargetFragment() != null) {
             Intent response = new Intent();
             response.putExtra(RESULT_HOUR, hour);

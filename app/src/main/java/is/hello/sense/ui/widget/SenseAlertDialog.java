@@ -3,6 +3,7 @@ package is.hello.sense.ui.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
@@ -31,7 +32,7 @@ public class SenseAlertDialog extends Dialog {
     private View view;
     private View topViewDivider, bottomViewDivider;
 
-    public SenseAlertDialog(Context context) {
+    public SenseAlertDialog(@NonNull Context context) {
         super(context, R.style.AppTheme_Dialog_Simple);
         initialize();
     }

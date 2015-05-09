@@ -148,10 +148,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         this.use24Time = use24Time;
     }
 
-    public void setTime(@NonNull LocalTime time) {
-        int hour = time.getHourOfDay();
-        int minute = time.getMinuteOfHour();
-
+    public void setTime(int hour, int minute) {
         if (use24Time) {
             hourPicker.setValue(hour, false);
         } else {
@@ -167,7 +164,17 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         minutePicker.setValue(minute, false);
     }
 
+    public void setTime(@NonNull LocalTime time) {
+        int hour = time.getHourOfDay();
+        int minute = time.getMinuteOfHour();
+        setTime(hour, minute);
+    }
+
     public LocalTime getTime() {
+        return new LocalTime(getHours(), getMinutes(), 0);
+    }
+
+    public int getHours() {
         int hour;
         if (use24Time) {
             hour = hourPicker.getValue();
@@ -177,8 +184,11 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
                 hour += 12;
             }
         }
-        int minute = minutePicker.getValue();
-        return new LocalTime(hour, minute, 0);
+        return hour;
+    }
+
+    public int getMinutes() {
+        return minutePicker.getValue();
     }
 
     public void setItemTextAppearance(@StyleRes int itemTextAppearance) {
