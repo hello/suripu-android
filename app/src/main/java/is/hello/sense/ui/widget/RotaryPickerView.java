@@ -1,6 +1,7 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -29,6 +30,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     private final int itemWidth;
     private final int itemHeight;
+    private int itemHorizontalPadding;
 
     //endregion
 
@@ -41,6 +43,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     private @StyleRes int itemTextAppearance = DEFAULT_ITEM_TEXT_APPEARANCE;
     private @Nullable Drawable itemBackground;
+    private boolean wantsLeadingZeros = true;
+    private int itemGravity = Gravity.CENTER;
 
     private @Nullable String[] valueStrings;
     private @Nullable OnSelectionListener onSelectionListener;
@@ -61,9 +65,12 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     public RotaryPickerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
+        Resources resources = getResources();
+
         this.layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-        this.itemWidth = getResources().getDimensionPixelSize(R.dimen.view_rotary_picker_width);
-        this.itemHeight = getResources().getDimensionPixelSize(R.dimen.view_rotary_picker_height);
+        this.itemWidth = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_width);
+        this.itemHeight = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_height);
+        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_small);
 
         setHasFixedSize(true);
         setLayoutManager(layoutManager);
@@ -81,6 +88,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
             this.itemTextAppearance = styles.getResourceId(R.styleable.RotaryPickerView_senseTextAppearance, DEFAULT_ITEM_TEXT_APPEARANCE);
             this.itemBackground = styles.getDrawable(R.styleable.RotaryPickerView_senseItemBackground);
+            this.wantsLeadingZeros = styles.getBoolean(R.styleable.RotaryPickerView_senseWantsLeadingZeros, true);
+            this.itemGravity = styles.getInt(R.styleable.RotaryPickerView_android_gravity, Gravity.CENTER);
 
             styles.recycle();
         }
@@ -212,6 +221,21 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         adapter.notifyDataSetChanged();
     }
 
+    public void setItemHorizontalPadding(int itemHorizontalPadding) {
+        this.itemHorizontalPadding = itemHorizontalPadding;
+        adapter.notifyDataSetChanged();
+    }
+
+    public void setItemGravity(int itemGravity) {
+        this.itemGravity = itemGravity;
+        adapter.notifyDataSetChanged();
+    }
+
+    public void setWantsLeadingZeros(boolean wantsLeadingZeros) {
+        this.wantsLeadingZeros = wantsLeadingZeros;
+        adapter.notifyDataSetChanged();
+    }
+
     public void setWrapsAround(boolean wrapsAround) {
         this.wrapsAround = wrapsAround;
         adapter.notifyDataSetChanged();
@@ -321,8 +345,10 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         public String getItemString(int position) {
             if (valueStrings != null) {
                 return valueStrings[position];
-            } else {
+            } else if (wantsLeadingZeros) {
                 return String.format("%02d", getItem(position));
+            } else {
+                return Integer.toString(getItem(position));
             }
         }
 
@@ -332,8 +358,9 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
             TextView itemView = new TextView(context);
             itemView.setTextAppearance(context, itemTextAppearance);
             itemView.setBackground(itemBackground);
-            itemView.setGravity(Gravity.CENTER);
+            itemView.setGravity(itemGravity);
             itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, itemHeight));
+            itemView.setPadding(itemHorizontalPadding, 0, itemHorizontalPadding, 0);
             itemView.setOnClickListener(RotaryPickerView.this);
             return new ItemViewHolder(itemView);
         }

@@ -8,20 +8,28 @@ import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
 
 public class SenseAlertDialog extends Dialog {
+    private LinearLayout container;
+
     private TextView titleText;
     private TextView messageText;
 
     private View buttonDivider;
     private Button negativeButton;
     private Button positiveButton;
+
+    private View view;
+    private View topViewDivider, bottomViewDivider;
 
     public SenseAlertDialog(Context context) {
         super(context, R.style.AppTheme_Dialog_Simple);
@@ -30,6 +38,8 @@ public class SenseAlertDialog extends Dialog {
 
     protected void initialize() {
         setContentView(R.layout.dialog_sense_alert);
+
+        this.container = (LinearLayout) findViewById(R.id.dialog_sense_alert_container);
 
         this.titleText = (TextView) findViewById(R.id.dialog_sense_alert_title);
         this.messageText = (TextView) findViewById(R.id.dialog_sense_alert_message);
@@ -187,6 +197,47 @@ public class SenseAlertDialog extends Dialog {
             button.setTextColor(getContext().getResources().getColor(R.color.text_dark));
         } else {
             button.setTextColor(getContext().getResources().getColor(R.color.light_accent));
+        }
+    }
+
+    public void setView(@Nullable View view) {
+        if (this.view == view) {
+            return;
+        }
+
+        if (this.view != null) {
+            container.removeView(this.view);
+        }
+
+        this.view = view;
+
+        if (view != null) {
+            int end = container.getChildCount() - 1;
+
+            if (bottomViewDivider == null) {
+                this.bottomViewDivider = Styles.createHorizontalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(bottomViewDivider.getLayoutParams());
+                layoutParams.bottomMargin = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
+                bottomViewDivider.setLayoutParams(layoutParams);
+                container.addView(bottomViewDivider, end);
+            }
+
+            container.addView(view, end);
+
+            if (topViewDivider == null) {
+                this.topViewDivider = Styles.createHorizontalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
+                container.addView(topViewDivider, end);
+            }
+        } else {
+            if (bottomViewDivider != null) {
+                container.removeView(bottomViewDivider);
+                this.bottomViewDivider = null;
+            }
+
+            if (topViewDivider != null) {
+                container.removeView(topViewDivider);
+                this.topViewDivider = null;
+            }
         }
     }
 }

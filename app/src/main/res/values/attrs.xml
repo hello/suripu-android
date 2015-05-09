@@ -43,5 +43,7 @@
     <declare-styleable name="RotaryPickerView">
         <attr name="senseTextAppearance" format="reference" />
         <attr name="senseItemBackground" format="reference" />
+        <attr name="senseWantsLeadingZeros" format="reference" />
+        <attr name="android:gravity" />
     </declare-styleable>
 </resources>
