@@ -46,18 +46,22 @@ public class UserSupport {
         from.startActivity(SupportActivity.getIntent(from, supportUrl));
     }
 
+    public static String getEmailBody(@NonNull Activity from) {
+        return from.getString(
+            R.string.support_email_body,
+            from.getString(R.string.app_name),
+            BuildConfig.VERSION_NAME,
+            Build.VERSION.RELEASE,
+            Build.MODEL
+        );
+    }
+
     public static void showEmailSupport(@NonNull Activity from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
 
         Share.email(SUPPORT_EMAIL)
              .withSubject(from.getString(R.string.support_email_subject))
-             .withBody(from.getString(
-                     R.string.support_email_body,
-                     from.getString(R.string.app_name),
-                     BuildConfig.VERSION_NAME,
-                     Build.VERSION.RELEASE,
-                     Build.MODEL
-             ))
+             .withBody(getEmailBody(from))
              .withAttachment(Uri.fromFile(new File(SessionLogger.getLogFilePath(from))))
              .send(from);
     }
@@ -67,6 +71,7 @@ public class UserSupport {
 
         Share.email(FEEDBACK_EMAIL)
              .withSubject(from.getString(R.string.feedback_email_subject_fmt, BuildConfig.VERSION_NAME))
+             .withBody(getEmailBody(from))
              .send(from);
     }
 
@@ -114,7 +119,7 @@ public class UserSupport {
                 .build();
     }
 
-    public static enum DeviceIssue {
+    public enum DeviceIssue {
         UNSTABLE_BLUETOOTH("android-bluetooth-problems"),
         SENSE_MISSING("sense-not-seen-in-days"),
         CANNOT_CONNECT_TO_SENSE("cannot-connect-sense-ble"),
@@ -123,7 +128,7 @@ public class UserSupport {
         PAIRING_2ND_PILL("setting-up-second-sleep-pill");
 
         private final String slug;
-        private DeviceIssue(@NonNull String slug) {
+        DeviceIssue(@NonNull String slug) {
             this.slug = slug;
         }
 
@@ -136,7 +141,7 @@ public class UserSupport {
         }
     }
 
-    public static enum OnboardingStep {
+    public enum OnboardingStep {
         INFO(""),
         DEMOGRAPHIC_QUESTIONS("demographic-questions"),
         BLUETOOTH("turning-on-bluetooth"),
@@ -151,7 +156,7 @@ public class UserSupport {
         ADD_2ND_PILL("setting-up-second-sleep-pill");
 
         private final String slug;
-        private OnboardingStep(@NonNull String slug) {
+        OnboardingStep(@NonNull String slug) {
             this.slug = slug;
         }
 
