@@ -331,11 +331,11 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     }
 
     private void saveAccount() {
-        coordinator.postOnResume(() -> {
+        stateSafeExecutor.execute(() -> {
             showLoadingIndicator();
             bindAndSubscribe(accountPresenter.saveAccount(currentAccount),
-                             ignored -> hideLoadingIndicator(),
-                             this::presentError);
+                    ignored -> hideLoadingIndicator(),
+                    this::presentError);
         });
     }
 

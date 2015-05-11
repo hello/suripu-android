@@ -174,7 +174,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         // Fixes issue #94011528. There appears to be a race condition on some devices where
         // OnClickListener callbacks can be invoked after an Activity has been paused. See
         // <http://stackoverflow.com/questions/14262312> for more details.
-        coordinator.postOnResume(() -> {
+        stateSafeExecutor.execute(() -> {
             if (!wantsBackStackEntry) {
                 getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
@@ -230,11 +230,11 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             SenseAlertDialog builder = new SenseAlertDialog(this);
             builder.setTitle(R.string.dialog_title_confirm_leave_onboarding);
             builder.setMessage(R.string.dialog_message_confirm_leave_onboarding);
-            builder.setPositiveButton(android.R.string.ok, (dialog, which) -> coordinator.postOnResume(super::onBackPressed));
+            builder.setPositiveButton(android.R.string.ok, (dialog, which) -> stateSafeExecutor.execute(super::onBackPressed));
             builder.setNegativeButton(android.R.string.cancel, null);
             builder.show();
         } else {
-            coordinator.postOnResume(super::onBackPressed);
+            stateSafeExecutor.execute(super::onBackPressed);
         }
     }
 

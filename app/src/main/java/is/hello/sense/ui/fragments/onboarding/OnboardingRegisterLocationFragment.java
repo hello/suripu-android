@@ -20,11 +20,11 @@ import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.ResumeScheduler;
+import is.hello.sense.util.StateSafeExecutor;
 
 public class OnboardingRegisterLocationFragment extends AccountEditingFragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int RESOLUTION_REQUEST_CODE = 0x99;
-    private final ResumeScheduler.Coordinator coordinator = new ResumeScheduler.Coordinator(this::isResumed);
+    private final StateSafeExecutor coordinator = new StateSafeExecutor(this::isResumed);
 
     private GoogleApiClient googleApiClient;
 
@@ -61,7 +61,7 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
     }
 
     public void optIn() {
-        coordinator.postOnResume(() -> {
+        coordinator.execute(() -> {
             LoadingDialogFragment.show(getFragmentManager());
             if (googleApiClient == null) {
                 this.googleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -76,7 +76,7 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
 
     @Override
     public void onConnected(Bundle bundle) {
-        coordinator.postOnResume(() -> {
+        coordinator.execute(() -> {
             Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             if (lastLocation != null) {
                 getContainer().getAccount().setLocation(lastLocation.getLatitude(), lastLocation.getLongitude());
@@ -87,14 +87,14 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
 
     @Override
     public void onConnectionSuspended(int cause) {
-        coordinator.postOnResume(() -> {
+        coordinator.execute(() -> {
             LoadingDialogFragment.close(getFragmentManager());
         });
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        coordinator.postOnResume(() -> {
+        coordinator.execute(() -> {
             LoadingDialogFragment.close(getFragmentManager());
             try {
                 connectionResult.startResolutionForResult(getActivity(), RESOLUTION_REQUEST_CODE);

@@ -4,15 +4,16 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.support.annotation.NonNull;
 
-import is.hello.sense.util.ResumeScheduler;
+import is.hello.sense.util.StateSafeExecutor;
+import is.hello.sense.util.StateSafeScheduler;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public class SenseDialogFragment extends DialogFragment implements ObservableContainer {
-    protected final ResumeScheduler.Coordinator coordinator = new ResumeScheduler.Coordinator(this::isResumed);
-    protected final ResumeScheduler observeScheduler = new ResumeScheduler(coordinator);
+public class SenseDialogFragment extends DialogFragment implements ObservableContainer, StateSafeExecutor.Resumes {
+    protected final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(this);
+    protected final StateSafeScheduler observeScheduler = new StateSafeScheduler(stateSafeExecutor);
 
     protected static final Func1<DialogFragment, Boolean> FRAGMENT_VALIDATOR = (fragment) -> fragment.isAdded() && !fragment.getActivity().isFinishing();
     protected final DelegateObservableContainer<DialogFragment> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, FRAGMENT_VALIDATOR);
@@ -22,7 +23,7 @@ public class SenseDialogFragment extends DialogFragment implements ObservableCon
     public void onResume() {
         super.onResume();
 
-        coordinator.resume();
+        stateSafeExecutor.executePendingForResume();
     }
 
     @Override
@@ -38,7 +39,7 @@ public class SenseDialogFragment extends DialogFragment implements ObservableCon
 
 
     public void dismissSafely() {
-        coordinator.postOnResume(() -> {
+        stateSafeExecutor.execute(() -> {
             if (isAdded()) {
                 dismiss();
             }

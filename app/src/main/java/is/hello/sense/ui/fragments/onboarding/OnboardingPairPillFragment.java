@@ -102,7 +102,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         LoadingDialogFragment.show(getFragmentManager(), null, true);
         getFragmentManager().executePendingTransactions();
         LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-            coordinator.postOnResume(() -> {
+            stateSafeExecutor.execute(() -> {
                 if (isPairOnlySession()) {
                     getOnboardingActivity().finish();
                 } else {

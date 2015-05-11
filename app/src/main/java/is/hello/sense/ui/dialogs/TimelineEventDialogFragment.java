@@ -332,7 +332,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
             adjustTimeButton.setVisibility(View.INVISIBLE);
 
             getTimeAdjustFragment().onAdjustSegmentTime(eventType, shiftedTimestamp, newTime, success -> {
-                coordinator.postOnResume(() -> {
+                stateSafeExecutor.execute(() -> {
                     this.adjustingTime = false;
 
                     adjustTimeActivity.setVisibility(View.GONE);

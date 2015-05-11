@@ -507,7 +507,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         if (homeActivity.getWillShowUnderside()) {
             WelcomeDialogFragment.markShown(homeActivity, R.xml.welcome_dialog_timeline);
         } else {
-            getAnimatorContext().runWhenIdle(coordinator.bind(() -> {
+            getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(() -> {
                 if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
                     WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
                 } else if (Tutorial.SLEEP_SCORE_BREAKDOWN.shouldShow(getActivity())) {

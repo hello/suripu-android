@@ -31,7 +31,7 @@ import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
 import is.hello.sense.util.Constants;
-import is.hello.sense.util.ResumeScheduler;
+import is.hello.sense.util.StateSafeExecutor;
 
 public final class FragmentPageView<TFragment extends Fragment> extends FrameLayout implements GestureInterceptingView {
     //region Property Fields
@@ -39,7 +39,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private Adapter<TFragment> adapter;
     private OnTransitionObserver<TFragment> onTransitionObserver;
     private FragmentManager fragmentManager;
-    private @Nullable ResumeScheduler.Coordinator resumeCoordinator;
+    private @Nullable StateSafeExecutor stateSafeExecutor;
     private final AnimatorConfig animationConfig = AnimatorConfig.create();
     private @Nullable AnimatorContext animatorContext;
 
@@ -180,12 +180,13 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         this.fragmentManager = fragmentManager;
     }
 
-    public @Nullable ResumeScheduler.Coordinator getResumeCoordinator() {
-        return resumeCoordinator;
+    public @Nullable
+    StateSafeExecutor getStateSafeExecutor() {
+        return stateSafeExecutor;
     }
 
-    public void setResumeCoordinator(@Nullable ResumeScheduler.Coordinator resumeCoordinator) {
-        this.resumeCoordinator = resumeCoordinator;
+    public void setStateSafeExecutor(@Nullable StateSafeExecutor stateSafeExecutor) {
+        this.stateSafeExecutor = stateSafeExecutor;
     }
 
     public TFragment getCurrentFragment() {
@@ -334,8 +335,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private void removeOffScreenFragment() {
         TFragment offScreen = getOffScreenFragment();
         if (offScreen != null) {
-            if (getResumeCoordinator() != null) {
-                getResumeCoordinator().postOnResume(() -> {
+            if (getStateSafeExecutor() != null) {
+                getStateSafeExecutor().execute(() -> {
                     getFragmentManager()
                             .beginTransaction()
                             .remove(offScreen)
@@ -414,8 +415,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
                 this.animating = false;
             };
-            if (resumeCoordinator != null) {
-                resumeCoordinator.postOnResume(finish);
+            if (stateSafeExecutor != null) {
+                stateSafeExecutor.execute(finish);
             } else {
                 finish.run();
             }
@@ -460,8 +461,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
                 this.animating = false;
             };
-            if (resumeCoordinator != null) {
-                resumeCoordinator.postOnResume(finish);
+            if (stateSafeExecutor != null) {
+                stateSafeExecutor.execute(finish);
             } else {
                 finish.run();
             }
@@ -791,7 +792,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         void onDidSnapBackToFragment(@NonNull TFragment fragment);
     }
 
-    public static enum Position {
+    public enum Position {
         BEFORE,
         AFTER,
     }

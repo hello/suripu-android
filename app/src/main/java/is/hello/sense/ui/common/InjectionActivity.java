@@ -2,12 +2,11 @@ package is.hello.sense.ui.common;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import is.hello.sense.SenseApplication;
 import is.hello.sense.ui.activities.SenseActivity;
-import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.util.ResumeScheduler;
+import is.hello.sense.util.StateSafeExecutor;
+import is.hello.sense.util.StateSafeScheduler;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -15,8 +14,8 @@ import rx.functions.Func1;
 
 public abstract class InjectionActivity extends SenseActivity implements ObservableContainer {
     protected boolean isResumed = false;
-    protected final ResumeScheduler.Coordinator coordinator = new ResumeScheduler.Coordinator(() -> isResumed);
-    protected final ResumeScheduler observeScheduler = new ResumeScheduler(coordinator);
+    protected final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(() -> isResumed);
+    protected final StateSafeScheduler observeScheduler = new StateSafeScheduler(stateSafeExecutor);
 
     protected static final Func1<Activity, Boolean> ACTIVITY_VALIDATOR = a -> !a.isFinishing();
     protected final DelegateObservableContainer<Activity> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, ACTIVITY_VALIDATOR);
@@ -44,7 +43,7 @@ public abstract class InjectionActivity extends SenseActivity implements Observa
         super.onResume();
 
         this.isResumed = true;
-        coordinator.resume();
+        stateSafeExecutor.executePendingForResume();
     }
 
 
