@@ -259,20 +259,33 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     //region Data
 
-
     @Override
     public void onClick(View itemView) {
         int position = getChildAdapterPosition(itemView);
         int value = adapter.getItem(position);
         setValue(value, true);
-
-        if (onSelectionListener != null) {
-            onSelectionListener.onSelectionChanged(this, value);
-        }
     }
 
     class ScrollListener extends RecyclerView.OnScrollListener {
-        private int previousState = RecyclerView.SCROLL_STATE_IDLE;
+        private int previousState = SCROLL_STATE_IDLE;
+
+        private View findCenterView() {
+            int containerMidY = (getMeasuredHeight() / 2);
+            return findChildViewUnder(0, containerMidY);
+        }
+
+        private int getValueForView(@NonNull View view) {
+            int adapterPosition = getChildAdapterPosition(view);
+            return adapter.getItem(adapterPosition);
+        }
+
+        private void updateValueFromView(@NonNull View view) {
+            int newValue = getValueForView(view);
+            RotaryPickerView.this.value = newValue;
+            if (onSelectionListener != null) {
+                onSelectionListener.onSelectionChanged(RotaryPickerView.this, newValue);
+            }
+        }
 
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -281,20 +294,18 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                     onSelectionListener.onSelectionWillChange(RotaryPickerView.this);
                 }
             } else if (previousState != SCROLL_STATE_IDLE && newState == SCROLL_STATE_IDLE) {
-                int containerMidY = recyclerView.getMeasuredHeight() / 2;
-                View centerView = recyclerView.findChildViewUnder(0, containerMidY);
+                View centerView = findCenterView();
+                int containerMidY = getMeasuredHeight() / 2;
                 int centerViewMidY = (centerView.getTop() + centerView.getBottom()) / 2;
                 int distanceToNotch = centerViewMidY - containerMidY;
                 if (distanceToNotch == 0) {
-                    int adapterPosition = recyclerView.getChildAdapterPosition(centerView);
-                    int newValue = adapter.getItem(adapterPosition);
-                    RotaryPickerView.this.value = newValue;
-                    if (onSelectionListener != null) {
-                        onSelectionListener.onSelectionChanged(RotaryPickerView.this, newValue);
-                    }
+                    updateValueFromView(centerView);
                 } else {
-                    recyclerView.smoothScrollBy(0, distanceToNotch);
+                    smoothScrollBy(0, distanceToNotch);
                 }
+            } else if (previousState == SCROLL_STATE_IDLE && newState == SCROLL_STATE_IDLE) {
+                View centerView = findCenterView();
+                updateValueFromView(centerView);
             }
 
             this.previousState = newState;
