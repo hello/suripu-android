@@ -25,6 +25,7 @@ public class RotaryTimePickerDialog extends SenseAlertDialog {
         this.onTimeSetListener = onTimeSetListener;
 
         setNegativeButton(android.R.string.cancel, null);
+        setButtonDeemphasized(BUTTON_NEGATIVE, true);
         setPositiveButton(android.R.string.ok, (dialog, which) -> onTimeSet());
     }
 
