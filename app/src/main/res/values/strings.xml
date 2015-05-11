@@ -479,4 +479,5 @@ so you can sleep better.</string>
     <string name="error_link_account_failed_multiple_times">Your account could not be linked with Sense. You can try changing the WiFi Sense is configured to.</string>
     <string name="title_power_cycle_sense_factory_reset">Power Cycle Sense</string>
     <string name="message_power_cycle_sense_factory_reset">Sense has been successfully restored to factory settings. Please unplug Sense, wait a few seconds, and plug it back in before you continue.</string>
+    <string name="title_time">Time</string>
 </resources>

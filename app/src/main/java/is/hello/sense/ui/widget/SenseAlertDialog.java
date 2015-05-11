@@ -51,6 +51,23 @@ public class SenseAlertDialog extends Dialog {
         this.positiveButton = (Button) findViewById(R.id.dialog_sense_alert_ok);
     }
 
+    private void updatePaddingAndDividers() {
+        boolean hasText = (titleText.getVisibility() == View.VISIBLE ||
+                messageText.getVisibility() == View.VISIBLE);
+        if (hasText) {
+            int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_outer);
+            container.setPadding(0, padding, 0, 0);
+            if (topViewDivider != null) {
+                topViewDivider.setVisibility(View.VISIBLE);
+            }
+        } else {
+            container.setPadding(0, 0, 0, 0);
+            if (topViewDivider != null) {
+                topViewDivider.setVisibility(View.GONE);
+            }
+        }
+    }
+
     @Override
     public void setTitle(@Nullable CharSequence title) {
         super.setTitle(title);
@@ -62,6 +79,7 @@ public class SenseAlertDialog extends Dialog {
         }
 
         titleText.setText(title);
+        updatePaddingAndDividers();
     }
 
     @Override
@@ -75,6 +93,7 @@ public class SenseAlertDialog extends Dialog {
         }
 
         titleText.setText(titleId);
+        updatePaddingAndDividers();
     }
 
     public void setTitleColor(int color) {
@@ -89,6 +108,7 @@ public class SenseAlertDialog extends Dialog {
         }
 
         messageText.setText(message);
+        updatePaddingAndDividers();
     }
 
     public void setMessage(@StringRes int messageId) {
@@ -99,6 +119,7 @@ public class SenseAlertDialog extends Dialog {
             messageText.setVisibility(View.VISIBLE);
             messageText.setText(messageId);
         }
+        updatePaddingAndDividers();
     }
 
     public CharSequence getMessage() {
@@ -240,5 +261,7 @@ public class SenseAlertDialog extends Dialog {
                 this.topViewDivider = null;
             }
         }
+
+        updatePaddingAndDividers();
     }
 }

@@ -1,7 +1,10 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+
+import org.joda.time.LocalTime;
 
 public class RotaryTimePickerDialog extends SenseAlertDialog {
     private final RotaryTimePickerView rotaryTimePickerView;
@@ -25,8 +28,22 @@ public class RotaryTimePickerDialog extends SenseAlertDialog {
         setPositiveButton(android.R.string.ok, (dialog, which) -> onTimeSet());
     }
 
+    @Override
+    public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        LocalTime selectedTime = (LocalTime) savedInstanceState.getSerializable("selectedTime");
+        rotaryTimePickerView.setTime(selectedTime);
 
+        savedInstanceState = savedInstanceState.getParcelable("savedState");
+        super.onRestoreInstanceState(savedInstanceState);
+    }
 
+    @Override
+    public Bundle onSaveInstanceState() {
+        Bundle savedState = new Bundle();
+        savedState.putSerializable("selectedTime", rotaryTimePickerView.getTime());
+        savedState.putParcelable("savedState", super.onSaveInstanceState());
+        return savedState;
+    }
 
     public void updateTime(int hourOfDay, int minute) {
         rotaryTimePickerView.setTime(hourOfDay, minute);

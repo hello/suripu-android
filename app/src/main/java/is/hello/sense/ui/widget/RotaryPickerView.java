@@ -6,6 +6,8 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
@@ -93,6 +95,24 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
             styles.recycle();
         }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        SavedState savedState = (SavedState) state;
+        super.onRestoreInstanceState(savedState.getSuperState());
+        setMinValue(savedState.minValue);
+        setMaxValue(savedState.maxValue);
+        setValue(savedState.value, false);
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        SavedState savedState = new SavedState(super.onSaveInstanceState());
+        savedState.minValue = minValue;
+        savedState.maxValue = maxValue;
+        savedState.value = value;
+        return savedState;
     }
 
     //endregion
@@ -394,6 +414,48 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                 text.setText(value);
             }
         }
+    }
+
+    //endregion
+
+
+    //region Saving
+
+    public static class SavedState extends BaseSavedState {
+        private int minValue, maxValue, value;
+
+        public SavedState(Parcel in) {
+            super(in);
+
+            this.minValue = in.readInt();
+            this.maxValue = in.readInt();
+            this.value = in.readInt();
+        }
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        @Override
+        public void writeToParcel(@NonNull Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+
+            out.writeInt(minValue);
+            out.writeInt(maxValue);
+            out.writeInt(value);
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR = new SavedState.Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel source) {
+                return new SavedState(source);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 
     //endregion
