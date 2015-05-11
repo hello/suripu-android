@@ -42,6 +42,7 @@ import is.hello.sense.ui.fragments.SensorHistoryFragment;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.fragments.TimelineFragment2;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
@@ -101,6 +102,7 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
         PillDetailsFragment.class,
 
         TimelineFragment.class,
+        TimelineFragment2.class,
         TimelinePresenter.class,
         TimelineEventDialogFragment.class,
         TimelineNavigatorFragment.class,
