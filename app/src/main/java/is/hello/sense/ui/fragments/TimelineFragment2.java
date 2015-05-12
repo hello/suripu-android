@@ -1,5 +1,9 @@
 package is.hello.sense.ui.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -23,14 +27,18 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Markdown;
 
 public class TimelineFragment2 extends InjectionFragment implements SlidingLayersView.OnInteractionListener {
     private static final String ARG_DATE = TimelineFragment2.class.getName() + ".ARG_DATE";
@@ -39,6 +47,7 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
 
     @Inject TimelinePresenter presenter;
     @Inject DateFormatter dateFormatter;
+    @Inject Markdown markdown;
 
     private HomeActivity homeActivity;
 
@@ -312,6 +321,11 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
         private final TextView scoreText;
         private final TextView messageText;
 
+        private @Nullable ValueAnimator colorAnimator;
+
+
+        //region Lifecycle
+
         public TimelineHeaderView(@NonNull Context context) {
             this(context, null);
         }
@@ -340,16 +354,112 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
             Views.makeTextViewLinksClickable(messageText);
         }
 
+        @Override
+        protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+            super.onVisibilityChanged(changedView, visibility);
+
+            if (visibility != VISIBLE && colorAnimator != null) {
+                colorAnimator.cancel();
+            }
+        }
+
+        @Override
+        protected void onWindowVisibilityChanged(int visibility) {
+            super.onWindowVisibilityChanged(visibility);
+
+            if (visibility != VISIBLE && colorAnimator != null) {
+                colorAnimator.cancel();
+            }
+        }
+
+        //endregion
+
+
+        //region Scores
+
+        public void setScore(int score) {
+            if (score < 0) {
+                scoreDrawable.setFillColor(getResources().getColor(R.color.sensor_unknown));
+                scoreDrawable.setValue(0);
+                scoreText.setText(R.string.missing_data_placeholder);
+            } else {
+                int scoreColor = Styles.getSleepScoreColor(getContext(), score);
+                scoreDrawable.setFillColor(scoreColor);
+                scoreDrawable.setValue(score);
+                scoreText.setText(Integer.toString(score));
+            }
+        }
+
+        public void animateScore(int score) {
+            if (score < 0) {
+                setScore(score);
+            } else {
+                if (colorAnimator != null) {
+                    colorAnimator.cancel();
+                }
+
+                this.colorAnimator = ValueAnimator.ofInt(scoreDrawable.getValue(), score);
+                colorAnimator.setStartDelay(250);
+                colorAnimator.setDuration(Animation.DURATION_SLOW);
+                colorAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
+
+                ArgbEvaluator colorEvaluator = new ArgbEvaluator();
+                int startColor = Styles.getSleepScoreColor(getContext(), scoreDrawable.getValue());
+                int endColor = Styles.getSleepScoreColor(getContext(), score);
+                colorAnimator.addUpdateListener(a -> {
+                    Integer newScore = (Integer) a.getAnimatedValue();
+                    int color = (int) colorEvaluator.evaluate(a.getAnimatedFraction(), startColor, endColor);
+
+                    scoreDrawable.setValue(newScore);
+                    scoreDrawable.setFillColor(color);
+
+                    scoreText.setText(newScore.toString());
+                    scoreText.setTextColor(color);
+                });
+                colorAnimator.addListener(getAnimatorContext());
+                colorAnimator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        scoreDrawable.setValue(score);
+                        scoreDrawable.setFillColor(endColor);
+
+                        scoreText.setText(Integer.toString(score));
+                        scoreText.setTextColor(endColor);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (colorAnimator == animation) {
+                            TimelineHeaderView.this.colorAnimator = null;
+                        }
+                    }
+                });
+
+                getAnimatorContext().runWhenIdle(colorAnimator::start);
+            }
+        }
+
+        //endregion
+
+
+        //region Binding
+
         public void bindTimeline(@NonNull Timeline timeline) {
-            int sleepScore = timeline.getScore();
-            scoreText.setText(Integer.toString(sleepScore));
+            if (Lists.isEmpty(timeline.getSegments())) {
+                animateScore(-1);
+            } else {
+                int sleepScore = timeline.getScore();
+                animateScore(sleepScore);
+            }
+
+            markdown.renderInto(messageText, timeline.getMessage());
         }
 
         public void timelineUnavailable(@NonNull Throwable e) {
-            scoreText.setText(R.string.missing_data_placeholder);
-            scoreText.setTextColor(getResources().getColor(R.color.text_dark));
-
+            setScore(-1);
             messageText.setText(getString(R.string.timeline_error_message, e.getMessage()));
         }
+
+        //endregion
     }
 }

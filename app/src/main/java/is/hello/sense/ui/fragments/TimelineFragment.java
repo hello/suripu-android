@@ -767,8 +767,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             } else {
                 sleepScoreContainer.setClickable(true);
 
+                ValueAnimator updateAnimation = ValueAnimator.ofInt(scoreGraph.getValue(), sleepScore);
                 if (sleepScore != scoreGraph.getValue()) {
-                    ValueAnimator updateAnimation = ValueAnimator.ofInt(scoreGraph.getValue(), sleepScore);
                     AnimatorConfig.createWithDelay(250).apply(updateAnimation);
 
                     ArgbEvaluator colorEvaluator = new ArgbEvaluator();

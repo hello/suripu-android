@@ -14,9 +14,13 @@ import android.support.annotation.NonNull;
 import is.hello.sense.R;
 
 public class SleepScoreDrawable extends Drawable {
+    private static final float ANGLE_START = -230f;
+    private static final float ANGLE_SWEEP = 275f;
+
     private static final int MAX_VALUE = 100;
 
     private final Path fillPath = new Path();
+    private final Path arcPath = new Path();
     private final RectF arcRect = new RectF();
     private final Paint paint = new Paint();
     private final float fillStrokeWidth;
@@ -38,6 +42,7 @@ public class SleepScoreDrawable extends Drawable {
 
     @Override
     public void draw(Canvas canvas) {
+        arcPath.reset();
         fillPath.reset();
 
         int width = canvas.getWidth(), height = canvas.getHeight();
@@ -49,22 +54,18 @@ public class SleepScoreDrawable extends Drawable {
         arcRect.set(left, top, size + left, size + top);
         arcRect.inset(fillStrokeWidth / 2f, fillStrokeWidth / 2f);
 
+        arcPath.arcTo(arcRect, ANGLE_START, ANGLE_SWEEP);
+
         float scale = ((float) value / (float) MAX_VALUE);
         if (scale > 0f) {
-            fillPath.moveTo(arcRect.centerX(), arcRect.top);
-            fillPath.arcTo(arcRect, -90f, scale * 360f);
+            fillPath.arcTo(arcRect, ANGLE_START, scale * ANGLE_SWEEP);
         }
 
-        canvas.save();
-        {
-            paint.setColor(trackColor);
-            canvas.drawOval(arcRect, paint);
+        paint.setColor(trackColor);
+        canvas.drawPath(arcPath, paint);
 
-            paint.setColor(fillColor);
-            canvas.drawPath(fillPath, paint);
-
-        }
-        canvas.restore();
+        paint.setColor(fillColor);
+        canvas.drawPath(fillPath, paint);
     }
 
 
