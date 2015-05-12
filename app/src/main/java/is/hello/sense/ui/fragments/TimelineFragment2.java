@@ -1,44 +1,40 @@
 package is.hello.sense.ui.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
-import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.SlidingLayersView;
-import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
+import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.Markdown;
 
 public class TimelineFragment2 extends InjectionFragment implements SlidingLayersView.OnInteractionListener {
     private static final String ARG_DATE = TimelineFragment2.class.getName() + ".ARG_DATE";
@@ -47,7 +43,6 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
 
     @Inject TimelinePresenter presenter;
     @Inject DateFormatter dateFormatter;
-    @Inject Markdown markdown;
 
     private HomeActivity homeActivity;
 
@@ -122,6 +117,8 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
         recyclerView.setLayoutManager(layoutManager);
 
         this.headerView = new TimelineHeaderView(getActivity());
+        headerView.setAnimatorContext(getAnimatorContext());
+
         this.adapter = new TimelineAdapter(getActivity(), headerView);
         recyclerView.setAdapter(adapter);
 
@@ -236,25 +233,75 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
     //endregion
 
 
-    static class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHolder> {
+    static class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseViewHolder> {
         private static final int VIEW_TYPE_HEADER = 0;
         private static final int VIEW_TYPE_SEGMENT = 1;
         private static final int VIEW_TYPE_EVENT = 2;
 
+        private static final int EXTRA_COUNT = 1;
+
         private final Context context;
+        private final Resources resources;
+        private final LayoutInflater inflater;
         private final View headerView;
+
+        private final int segmentHeight;
+
+        private final List<TimelineSegment> segments = new ArrayList<>();
+        private int[] segmentHeights;
+        private int totalSegmentHeight;
 
         public TimelineAdapter(@NonNull Context context, @NonNull View headerView) {
             this.context = context;
+            this.resources = context.getResources();
+            this.inflater = LayoutInflater.from(context);
             this.headerView = headerView;
+
+            this.segmentHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment2_item_height);
         }
 
+
+        //region Rendering Cache
+
+        private int calculateSegmentHeight(@NonNull TimelineSegment segment) {
+            return segmentHeight;
+        }
+
+        private void buildCache() {
+            int segmentCount = segments.size();
+
+            this.segmentHeights = new int[segmentCount];
+            this.totalSegmentHeight = 0;
+
+            for (int i = 0; i < segmentCount; i++) {
+                TimelineSegment segment = segments.get(i);
+
+                int segmentHeight = calculateSegmentHeight(segment);
+                this.segmentHeights[i] = segmentHeight;
+                this.totalSegmentHeight += segmentHeight;
+            }
+        }
+
+        private int getSegmentHeight(int adapterPosition) {
+            return segmentHeights[adapterPosition - EXTRA_COUNT];
+        }
+
+        private void clearCache() {
+            this.segmentHeights = null;
+            this.totalSegmentHeight = 0;
+        }
+
+        //endregion
 
         //region Data
 
         @Override
         public int getItemCount() {
-            return 1;
+            return EXTRA_COUNT + segments.size();
+        }
+
+        public TimelineSegment getSegment(int adapterPosition) {
+            return segments.get(adapterPosition - EXTRA_COUNT);
         }
 
         @Override
@@ -267,11 +314,23 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
         }
 
         public void bind(@NonNull Timeline timeline) {
+            segments.clear();
 
+            if (!Lists.isEmpty(timeline.getSegments())) {
+                segments.addAll(timeline.getSegments());
+                buildCache();
+            } else {
+                clearCache();
+            }
+
+
+            notifyDataSetChanged();
         }
 
         public void clear() {
-
+            segments.clear();
+            clearCache();
+            notifyDataSetChanged();
         }
 
         //endregion
@@ -280,14 +339,16 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
         //region Vending Views
 
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             switch (viewType) {
                 case VIEW_TYPE_HEADER: {
-                    return new ViewHolder(headerView);
+                    return new BaseViewHolder(headerView);
                 }
 
                 case VIEW_TYPE_SEGMENT: {
-                    return null;
+                    View view = new View(context);
+                    view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    return new SegmentViewHolder(view);
                 }
 
                 case VIEW_TYPE_EVENT: {
@@ -301,163 +362,40 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-
+        public void onBindViewHolder(BaseViewHolder holder, int position) {
+            holder.bind(position);
         }
 
-        class ViewHolder extends RecyclerView.ViewHolder {
-            public ViewHolder(View itemView) {
+        class BaseViewHolder extends RecyclerView.ViewHolder {
+            BaseViewHolder(@NonNull View itemView) {
                 super(itemView);
             }
-        }
 
-        //endregion
-    }
-
-    class TimelineHeaderView extends LinearLayout {
-        private final View scoreContainer;
-        private final SleepScoreDrawable scoreDrawable;
-        private final TextView scoreLabelText;
-        private final TextView scoreText;
-        private final TextView messageText;
-
-        private @Nullable ValueAnimator colorAnimator;
-
-
-        //region Lifecycle
-
-        public TimelineHeaderView(@NonNull Context context) {
-            this(context, null);
-        }
-
-        public TimelineHeaderView(@NonNull Context context, @Nullable AttributeSet attrs) {
-            this(context, attrs, 0);
-        }
-
-        public TimelineHeaderView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
-
-            setOrientation(VERTICAL);
-            setGravity(Gravity.CENTER);
-            setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-            LayoutInflater inflater = LayoutInflater.from(context);
-            inflater.inflate(R.layout.view_timeline_header, this, true);
-
-            this.scoreContainer = findViewById(R.id.view_timeline_header_chart);
-            this.scoreDrawable = new SleepScoreDrawable(getResources());
-            scoreContainer.setBackground(scoreDrawable);
-
-            this.scoreLabelText = (TextView) findViewById(R.id.view_timeline_header_chart_label);
-            this.scoreText = (TextView) findViewById(R.id.view_timeline_header_chart_score);
-            this.messageText = (TextView) findViewById(R.id.view_timeline_header_chart_message);
-            Views.makeTextViewLinksClickable(messageText);
-        }
-
-        @Override
-        protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
-            super.onVisibilityChanged(changedView, visibility);
-
-            if (visibility != VISIBLE && colorAnimator != null) {
-                colorAnimator.cancel();
+            void bind(int position) {
+                // Do nothing.
             }
         }
 
-        @Override
-        protected void onWindowVisibilityChanged(int visibility) {
-            super.onWindowVisibilityChanged(visibility);
+        class SegmentViewHolder extends BaseViewHolder {
+            final TimelineSegmentDrawable drawable;
 
-            if (visibility != VISIBLE && colorAnimator != null) {
-                colorAnimator.cancel();
-            }
-        }
+            SegmentViewHolder(@NonNull View itemView) {
+                super(itemView);
 
-        //endregion
-
-
-        //region Scores
-
-        public void setScore(int score) {
-            if (score < 0) {
-                scoreDrawable.setFillColor(getResources().getColor(R.color.sensor_unknown));
-                scoreDrawable.setValue(0);
-                scoreText.setText(R.string.missing_data_placeholder);
-            } else {
-                int scoreColor = Styles.getSleepScoreColor(getContext(), score);
-                scoreDrawable.setFillColor(scoreColor);
-                scoreDrawable.setValue(score);
-                scoreText.setText(Integer.toString(score));
-            }
-        }
-
-        public void animateScore(int score) {
-            if (score < 0) {
-                setScore(score);
-            } else {
-                if (colorAnimator != null) {
-                    colorAnimator.cancel();
-                }
-
-                this.colorAnimator = ValueAnimator.ofInt(scoreDrawable.getValue(), score);
-                colorAnimator.setStartDelay(250);
-                colorAnimator.setDuration(Animation.DURATION_SLOW);
-                colorAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
-
-                ArgbEvaluator colorEvaluator = new ArgbEvaluator();
-                int startColor = Styles.getSleepScoreColor(getContext(), scoreDrawable.getValue());
-                int endColor = Styles.getSleepScoreColor(getContext(), score);
-                colorAnimator.addUpdateListener(a -> {
-                    Integer newScore = (Integer) a.getAnimatedValue();
-                    int color = (int) colorEvaluator.evaluate(a.getAnimatedFraction(), startColor, endColor);
-
-                    scoreDrawable.setValue(newScore);
-                    scoreDrawable.setFillColor(color);
-
-                    scoreText.setText(newScore.toString());
-                    scoreText.setTextColor(color);
-                });
-                colorAnimator.addListener(getAnimatorContext());
-                colorAnimator.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                        scoreDrawable.setValue(score);
-                        scoreDrawable.setFillColor(endColor);
-
-                        scoreText.setText(Integer.toString(score));
-                        scoreText.setTextColor(endColor);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (colorAnimator == animation) {
-                            TimelineHeaderView.this.colorAnimator = null;
-                        }
-                    }
-                });
-
-                getAnimatorContext().runWhenIdle(colorAnimator::start);
-            }
-        }
-
-        //endregion
-
-
-        //region Binding
-
-        public void bindTimeline(@NonNull Timeline timeline) {
-            if (Lists.isEmpty(timeline.getSegments())) {
-                animateScore(-1);
-            } else {
-                int sleepScore = timeline.getScore();
-                animateScore(sleepScore);
+                this.drawable = new TimelineSegmentDrawable(itemView.getResources());
+                itemView.setBackground(drawable);
             }
 
-            markdown.renderInto(messageText, timeline.getMessage());
-        }
+            void applySizing(int position) {
+                itemView.getLayoutParams().height = getSegmentHeight(position);
+            }
 
-        public void timelineUnavailable(@NonNull Throwable e) {
-            setScore(-1);
-            messageText.setText(getString(R.string.timeline_error_message, e.getMessage()));
+            @Override
+            void bind(int position) {
+                TimelineSegment segment = getSegment(position);
+                drawable.setSleepDepth(segment.getSleepDepth());
+                applySizing(position);
+            }
         }
 
         //endregion

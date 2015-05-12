@@ -66,6 +66,7 @@ import is.hello.sense.ui.fragments.settings.NotificationsSettingsFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
 import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
+import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 
 @Module(
     includes = {ApiModule.class, BluetoothModule.class, DebugModule.class},
@@ -104,6 +105,7 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
         TimelineFragment.class,
         TimelineFragment2.class,
         TimelinePresenter.class,
+        TimelineHeaderView.class,
         TimelineEventDialogFragment.class,
         TimelineNavigatorFragment.class,
         TimelineNavigatorPresenter.class,

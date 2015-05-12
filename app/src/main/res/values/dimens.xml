@@ -91,6 +91,7 @@
     <dimen name="timeline_segment_min_height">9dp</dimen>
     <dimen name="timeline_segment_event_image_height">45dp</dimen>
     <dimen name="timeline_segment_event_image_shadow">3dp</dimen>
+    <dimen name="timeline_segment2_item_height">32dp</dimen>
 
     <dimen name="timeline_header_min_height">282dp</dimen>
 
