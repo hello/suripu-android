@@ -3,7 +3,10 @@ package is.hello.sense.util;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.format.DateFormat;
+import android.text.style.RelativeSizeSpan;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -114,6 +117,26 @@ import is.hello.sense.R;
                 return date.toString(context.getString(R.string.format_timeline_time_12_hr));
         }
         return context.getString(R.string.format_date_placeholder);
+    }
+
+    public @Nullable CharSequence formatAsTimelineTimestamp(@Nullable DateTime date, boolean use24Time) {
+        if (date != null) {
+            String firstPart, secondPart;
+            if (use24Time) {
+                firstPart = date.toString("H");
+                secondPart = ":00";
+            } else {
+                firstPart = date.toString("h");
+                secondPart = date.toString(" a");
+            }
+
+            SpannableStringBuilder spannable = new SpannableStringBuilder(secondPart);
+            spannable.setSpan(new RelativeSizeSpan(0.75f), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.insert(0, firstPart);
+            return spannable;
+        } else {
+            return null;
+        }
     }
 
     public @NonNull String formatAsTime(@Nullable LocalTime time, boolean use24Time) {

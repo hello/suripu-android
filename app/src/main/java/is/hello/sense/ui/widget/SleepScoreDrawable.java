@@ -14,15 +14,15 @@ import android.support.annotation.NonNull;
 import is.hello.sense.R;
 
 public class SleepScoreDrawable extends Drawable {
-    private static final float ANGLE_START = -230f;
-    private static final float ANGLE_SWEEP = 275f;
+    private static final float ANGLE_START = -225f;
+    private static final float ANGLE_SWEEP = 270f;
 
     private static final int MAX_VALUE = 100;
 
     private final Path fillPath = new Path();
     private final Path arcPath = new Path();
     private final RectF arcRect = new RectF();
-    private final Paint paint = new Paint();
+    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final float fillStrokeWidth;
 
     private int value = 0;
@@ -35,7 +35,6 @@ public class SleepScoreDrawable extends Drawable {
         this.fillColor = Color.TRANSPARENT;
         this.trackColor = resources.getColor(R.color.border);
 
-        paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(fillStrokeWidth);
     }

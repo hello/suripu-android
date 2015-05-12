@@ -65,10 +65,10 @@
     <color name="sensor_ideal">#41D7AC</color>
     <color name="sensor_unknown">#565961</color>
 
-    <color name="sleep_awake">#ffffff</color>
-    <color name="sleep_light">#ffccecff</color>
-    <color name="sleep_intermediate">#ffa6ddff</color>
-    <color name="sleep_deep">#ff7fceff</color>
+    <color name="sleep_awake">@color/transparent</color>
+    <color name="sleep_light">#71d8ff</color>
+    <color name="sleep_intermediate">#16c2ff</color>
+    <color name="sleep_deep">#00a0ff</color>
 
     <color name="sleep_awake_dimmed">#ffffff</color>
     <color name="sleep_light_dimmed">#fff7f7f7</color>

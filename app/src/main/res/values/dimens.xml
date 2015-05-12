@@ -29,7 +29,7 @@
     <dimen name="text_size_button">16sp</dimen>
     <dimen name="text_size_large_button">20sp</dimen>
     <dimen name="text_size_section_heading">11sp</dimen>
-    <dimen name="text_size_timeline_time">11sp</dimen>
+    <dimen name="text_size_timeline_time">12sp</dimen>
     <dimen name="text_size_subheading">16sp</dimen>
     <dimen name="text_size_question">24sp</dimen>
     <dimen name="text_size_heading">24sp</dimen>
@@ -91,7 +91,10 @@
     <dimen name="timeline_segment_min_height">9dp</dimen>
     <dimen name="timeline_segment_event_image_height">45dp</dimen>
     <dimen name="timeline_segment_event_image_shadow">3dp</dimen>
-    <dimen name="timeline_segment2_item_height">32dp</dimen>
+    <dimen name="timeline_segment2_min_height">16dp</dimen>
+    <dimen name="timeline_segment2_height_per_hour">192dp</dimen>
+    <dimen name="timeline_segment2_item_right_inset">40dp</dimen>
+    <dimen name="timeline_segment2_text_inset">6dp</dimen>
 
     <dimen name="timeline_header_min_height">282dp</dimen>
 

@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,9 @@ import org.joda.time.DateTime;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -119,7 +122,7 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
 
-        this.adapter = new TimelineAdapter(getActivity(), headerView);
+        this.adapter = new TimelineAdapter(getActivity(), headerView, dateFormatter);
         recyclerView.setAdapter(adapter);
 
         return view;
@@ -244,41 +247,58 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
         private final Resources resources;
         private final LayoutInflater inflater;
         private final View headerView;
+        private final DateFormatter dateFormatter;
 
-        private final int segmentHeight;
+        private final int segmentTimePadding;
+        private final int segmentMinHeight;
+        private final int segmentHeightPerHour;
 
         private final List<TimelineSegment> segments = new ArrayList<>();
+        private final Set<Integer> positionsWithTime = new HashSet<>();
         private int[] segmentHeights;
-        private int totalSegmentHeight;
 
-        public TimelineAdapter(@NonNull Context context, @NonNull View headerView) {
+        private boolean use24Time = false;
+
+        public TimelineAdapter(@NonNull Context context,
+                               @NonNull View headerView,
+                               @NonNull DateFormatter dateFormatter) {
             this.context = context;
             this.resources = context.getResources();
             this.inflater = LayoutInflater.from(context);
             this.headerView = headerView;
+            this.dateFormatter = dateFormatter;
 
-            this.segmentHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment2_item_height);
+            this.segmentTimePadding = resources.getDimensionPixelSize(R.dimen.timeline_segment2_text_inset);
+            this.segmentMinHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment2_min_height);
+            this.segmentHeightPerHour = resources.getDimensionPixelSize(R.dimen.timeline_segment2_height_per_hour);
         }
 
 
         //region Rendering Cache
 
         private int calculateSegmentHeight(@NonNull TimelineSegment segment) {
-            return segmentHeight;
+            float hours = segment.getDuration() / 3600f;
+            return Math.max(segmentMinHeight, Math.round(segmentHeightPerHour * hours));
         }
 
         private void buildCache() {
             int segmentCount = segments.size();
 
+            positionsWithTime.clear();
             this.segmentHeights = new int[segmentCount];
-            this.totalSegmentHeight = 0;
 
+            Set<Integer> hours = new HashSet<>();
             for (int i = 0; i < segmentCount; i++) {
                 TimelineSegment segment = segments.get(i);
 
                 int segmentHeight = calculateSegmentHeight(segment);
                 this.segmentHeights[i] = segmentHeight;
-                this.totalSegmentHeight += segmentHeight;
+
+                int hour = segment.getShiftedTimestamp().getHourOfDay();
+                if (!hours.contains(hour) && !positionsWithTime.contains(hour)) {
+                    positionsWithTime.add(i + EXTRA_COUNT);
+                    hours.add(hour);
+                }
             }
         }
 
@@ -288,10 +308,11 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
 
         private void clearCache() {
             this.segmentHeights = null;
-            this.totalSegmentHeight = 0;
+            positionsWithTime.clear();
         }
 
         //endregion
+
 
         //region Data
 
@@ -310,6 +331,14 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
                 return VIEW_TYPE_HEADER;
             } else {
                 return VIEW_TYPE_SEGMENT;
+            }
+        }
+
+        public void setUse24Time(boolean use24Time) {
+            this.use24Time = use24Time;
+
+            for (int positionWithTime : positionsWithTime) {
+                notifyItemChanged(positionWithTime);
             }
         }
 
@@ -346,9 +375,12 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
                 }
 
                 case VIEW_TYPE_SEGMENT: {
-                    View view = new View(context);
-                    view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                    return new SegmentViewHolder(view);
+                    TextView segmentView = new TextView(context);
+                    segmentView.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+                    segmentView.setPadding(segmentTimePadding, 0, segmentTimePadding, 0);
+                    segmentView.setTextAppearance(context, R.style.AppTheme_Text_Timeline_Timestamp);
+                    segmentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    return new SegmentViewHolder(segmentView);
                 }
 
                 case VIEW_TYPE_EVENT: {
@@ -377,12 +409,15 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
         }
 
         class SegmentViewHolder extends BaseViewHolder {
+            final TextView text;
             final TimelineSegmentDrawable drawable;
 
-            SegmentViewHolder(@NonNull View itemView) {
+            SegmentViewHolder(@NonNull TextView itemView) {
                 super(itemView);
 
-                this.drawable = new TimelineSegmentDrawable(itemView.getResources());
+                this.text = itemView;
+
+                this.drawable = new TimelineSegmentDrawable(context);
                 itemView.setBackground(drawable);
             }
 
@@ -395,6 +430,14 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
                 TimelineSegment segment = getSegment(position);
                 drawable.setSleepDepth(segment.getSleepDepth());
                 applySizing(position);
+
+                if (positionsWithTime.contains(position)) {
+                    text.setText(dateFormatter.formatAsTimelineTimestamp(segment.getShiftedTimestamp(), use24Time));
+                    drawable.setWantsDivider(true);
+                } else {
+                    drawable.setWantsDivider(false);
+                    text.setText(null);
+                }
             }
         }
 
