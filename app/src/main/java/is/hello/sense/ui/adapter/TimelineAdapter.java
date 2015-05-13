@@ -81,19 +81,21 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
         for (int i = 0; i < segmentCount; i++) {
             TimelineSegment segment = segments.get(i);
 
-            int segmentHeight = calculateSegmentHeight(segment);
-            this.segmentHeights[i] = segmentHeight;
+            if (segment.hasEventInfo()) {
+                int previousDepth = i > 0 ? segments.get(i - 1).getSleepDepth() : 0;
+                int nextDepth = i < (segmentCount - 1) ? segments.get(i + 1).getSleepDepth() : 0;
+                stolenSleepDepths.put(i + EXTRA_COUNT, Pair.create(previousDepth, nextDepth));
+
+                this.segmentHeights[i] = ViewGroup.LayoutParams.WRAP_CONTENT;
+            } else {
+                int segmentHeight = calculateSegmentHeight(segment);
+                this.segmentHeights[i] = segmentHeight;
+            }
 
             int hour = segment.getShiftedTimestamp().getHourOfDay();
             if (!hours.contains(hour) && !positionsWithTime.contains(hour)) {
                 positionsWithTime.add(i + EXTRA_COUNT);
                 hours.add(hour);
-            }
-
-            if (segment.hasEventInfo()) {
-                int previousDepth = i > 0 ? segments.get(i - 1).getSleepDepth() : 0;
-                int nextDepth = i < (segmentCount - 1) ? segments.get(i + 1).getSleepDepth() : 0;
-                stolenSleepDepths.put(i + EXTRA_COUNT, Pair.create(previousDepth, nextDepth));
             }
         }
     }
@@ -218,7 +220,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
         @Override
         final void bind(int position) {
-            itemView.getLayoutParams().height = getSegmentHeight(position);
+            itemView.getLayoutParams().height = TimelineAdapter.this.getSegmentHeight(position);
 
             TimelineSegment segment = getSegment(position);
             bindSegment(position, segment);
@@ -226,10 +228,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
         void prepareDrawable() {
             drawable.setOverlayDrawable(itemView.getBackground());
-        }
-
-        int getSegmentHeight(int position) {
-            return TimelineAdapter.this.getSegmentHeight(position);
         }
 
         void bindSegment(int position, @NonNull TimelineSegment segment) {
@@ -258,11 +256,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
             drawable.setOverlayInsets(0, eventVerticalInset, 0, eventVerticalInset);
 
             super.prepareDrawable();
-        }
-
-        @Override
-        int getSegmentHeight(int position) {
-            return ViewGroup.LayoutParams.WRAP_CONTENT;
         }
 
         @Override
