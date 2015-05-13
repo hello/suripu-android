@@ -6,10 +6,13 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.TextDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class TimelineSegmentDrawable extends Drawable {
@@ -21,6 +24,9 @@ public class TimelineSegmentDrawable extends Drawable {
     private final int rightInset;
     private final int dividerHeight;
 
+    private final TextDrawable timestampDrawable;
+
+    private @Nullable Drawable overlayDrawable;
     private boolean wantsDivider;
     private float sleepDepthFraction;
 
@@ -29,6 +35,8 @@ public class TimelineSegmentDrawable extends Drawable {
         this.backgroundFill = resources.getDrawable(R.drawable.background_timeline_segment2);
         this.rightInset = resources.getDimensionPixelSize(R.dimen.timeline_segment2_item_right_inset);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
+
+        this.timestampDrawable = new TextDrawable(context, R.style.AppTheme_Text_Timeline_Timestamp);
 
         stripePaint.setColor(resources.getColor(R.color.timeline_segment_stripe));
 
@@ -44,7 +52,7 @@ public class TimelineSegmentDrawable extends Drawable {
         backgroundFill.setBounds(0, 0, width, height);
         backgroundFill.draw(canvas);
 
-        float right = (width - rightInset);
+        int right = (width - rightInset);
 
         if (sleepDepthFraction > 0) {
             float fillRight = right * sleepDepthFraction;
@@ -58,8 +66,37 @@ public class TimelineSegmentDrawable extends Drawable {
                             right, middle + halfDividerHeight,
                             stripePaint);
         }
+
+        if (timestampDrawable.getText() != null) {
+            int textWidthHalf = timestampDrawable.getIntrinsicWidth() / 2,
+                textHeightHalf = timestampDrawable.getIntrinsicHeight() / 2;
+
+            int midX = (width + right) / 2;
+            int midY = height / 2;
+
+            timestampDrawable.setBounds(
+                midX - textWidthHalf, midY - textHeightHalf,
+                midX + textWidthHalf, midY + textHeightHalf
+            );
+            timestampDrawable.draw(canvas);
+        }
+
+        if (overlayDrawable != null) {
+            overlayDrawable.setBounds(0, 0, right, height);
+            overlayDrawable.draw(canvas);
+        }
     }
 
+    @Override
+    public boolean getPadding(Rect padding) {
+        if (overlayDrawable != null) {
+            overlayDrawable.getPadding(padding);
+        }
+
+        padding.right += rightInset;
+
+        return true;
+    }
 
     //region Attributes
 
@@ -89,6 +126,17 @@ public class TimelineSegmentDrawable extends Drawable {
         int color = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth, false));
         fillPaint.setColor(color);
 
+        invalidateSelf();
+    }
+
+    public void setOverlayDrawable(@Nullable Drawable overlayDrawable) {
+        this.overlayDrawable = overlayDrawable;
+
+        invalidateSelf();
+    }
+
+    public void setTimestamp(@Nullable CharSequence timestamp) {
+        timestampDrawable.setText(timestamp);
         invalidateSelf();
     }
 

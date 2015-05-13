@@ -1,14 +1,11 @@
 package is.hello.sense.ui.fragments;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,23 +15,16 @@ import android.widget.TextView;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Timeline;
-import is.hello.sense.api.model.TimelineSegment;
-import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.ui.adapter.TimelineAdapter2;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
-import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -56,7 +46,7 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private TimelineHeaderView headerView;
-    private TimelineAdapter adapter;
+    private TimelineAdapter2 adapter;
 
 
     //region Lifecycle
@@ -122,7 +112,7 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
 
-        this.adapter = new TimelineAdapter(getActivity(), headerView, dateFormatter);
+        this.adapter = new TimelineAdapter2(getActivity(), headerView);
         recyclerView.setAdapter(adapter);
 
         return view;
@@ -236,211 +226,4 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
     //endregion
 
 
-    static class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseViewHolder> {
-        private static final int VIEW_TYPE_HEADER = 0;
-        private static final int VIEW_TYPE_SEGMENT = 1;
-        private static final int VIEW_TYPE_EVENT = 2;
-
-        private static final int EXTRA_COUNT = 1;
-
-        private final Context context;
-        private final Resources resources;
-        private final LayoutInflater inflater;
-        private final View headerView;
-        private final DateFormatter dateFormatter;
-
-        private final int segmentTimePadding;
-        private final int segmentMinHeight;
-        private final int segmentHeightPerHour;
-
-        private final List<TimelineSegment> segments = new ArrayList<>();
-        private final Set<Integer> positionsWithTime = new HashSet<>();
-        private int[] segmentHeights;
-
-        private boolean use24Time = false;
-
-        public TimelineAdapter(@NonNull Context context,
-                               @NonNull View headerView,
-                               @NonNull DateFormatter dateFormatter) {
-            this.context = context;
-            this.resources = context.getResources();
-            this.inflater = LayoutInflater.from(context);
-            this.headerView = headerView;
-            this.dateFormatter = dateFormatter;
-
-            this.segmentTimePadding = resources.getDimensionPixelSize(R.dimen.timeline_segment2_text_inset);
-            this.segmentMinHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment2_min_height);
-            this.segmentHeightPerHour = resources.getDimensionPixelSize(R.dimen.timeline_segment2_height_per_hour);
-        }
-
-
-        //region Rendering Cache
-
-        private int calculateSegmentHeight(@NonNull TimelineSegment segment) {
-            float hours = segment.getDuration() / 3600f;
-            return Math.max(segmentMinHeight, Math.round(segmentHeightPerHour * hours));
-        }
-
-        private void buildCache() {
-            int segmentCount = segments.size();
-
-            positionsWithTime.clear();
-            this.segmentHeights = new int[segmentCount];
-
-            Set<Integer> hours = new HashSet<>();
-            for (int i = 0; i < segmentCount; i++) {
-                TimelineSegment segment = segments.get(i);
-
-                int segmentHeight = calculateSegmentHeight(segment);
-                this.segmentHeights[i] = segmentHeight;
-
-                int hour = segment.getShiftedTimestamp().getHourOfDay();
-                if (!hours.contains(hour) && !positionsWithTime.contains(hour)) {
-                    positionsWithTime.add(i + EXTRA_COUNT);
-                    hours.add(hour);
-                }
-            }
-        }
-
-        private int getSegmentHeight(int adapterPosition) {
-            return segmentHeights[adapterPosition - EXTRA_COUNT];
-        }
-
-        private void clearCache() {
-            this.segmentHeights = null;
-            positionsWithTime.clear();
-        }
-
-        //endregion
-
-
-        //region Data
-
-        @Override
-        public int getItemCount() {
-            return EXTRA_COUNT + segments.size();
-        }
-
-        public TimelineSegment getSegment(int adapterPosition) {
-            return segments.get(adapterPosition - EXTRA_COUNT);
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == 0) {
-                return VIEW_TYPE_HEADER;
-            } else {
-                return VIEW_TYPE_SEGMENT;
-            }
-        }
-
-        public void setUse24Time(boolean use24Time) {
-            this.use24Time = use24Time;
-
-            for (int positionWithTime : positionsWithTime) {
-                notifyItemChanged(positionWithTime);
-            }
-        }
-
-        public void bind(@NonNull Timeline timeline) {
-            segments.clear();
-
-            if (!Lists.isEmpty(timeline.getSegments())) {
-                segments.addAll(timeline.getSegments());
-                buildCache();
-            } else {
-                clearCache();
-            }
-
-
-            notifyDataSetChanged();
-        }
-
-        public void clear() {
-            segments.clear();
-            clearCache();
-            notifyDataSetChanged();
-        }
-
-        //endregion
-
-
-        //region Vending Views
-
-        @Override
-        public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            switch (viewType) {
-                case VIEW_TYPE_HEADER: {
-                    return new BaseViewHolder(headerView);
-                }
-
-                case VIEW_TYPE_SEGMENT: {
-                    TextView segmentView = new TextView(context);
-                    segmentView.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
-                    segmentView.setPadding(segmentTimePadding, 0, segmentTimePadding, 0);
-                    segmentView.setTextAppearance(context, R.style.AppTheme_Text_Timeline_Timestamp);
-                    segmentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                    return new SegmentViewHolder(segmentView);
-                }
-
-                case VIEW_TYPE_EVENT: {
-                    return null;
-                }
-
-                default: {
-                    throw new IllegalArgumentException();
-                }
-            }
-        }
-
-        @Override
-        public void onBindViewHolder(BaseViewHolder holder, int position) {
-            holder.bind(position);
-        }
-
-        class BaseViewHolder extends RecyclerView.ViewHolder {
-            BaseViewHolder(@NonNull View itemView) {
-                super(itemView);
-            }
-
-            void bind(int position) {
-                // Do nothing.
-            }
-        }
-
-        class SegmentViewHolder extends BaseViewHolder {
-            final TextView text;
-            final TimelineSegmentDrawable drawable;
-
-            SegmentViewHolder(@NonNull TextView itemView) {
-                super(itemView);
-
-                this.text = itemView;
-
-                this.drawable = new TimelineSegmentDrawable(context);
-                itemView.setBackground(drawable);
-            }
-
-            void applySizing(int position) {
-                itemView.getLayoutParams().height = getSegmentHeight(position);
-            }
-
-            @Override
-            void bind(int position) {
-                TimelineSegment segment = getSegment(position);
-                drawable.setSleepDepth(segment.getSleepDepth());
-                applySizing(position);
-
-                if (positionsWithTime.contains(position)) {
-                    text.setText(dateFormatter.formatAsTimelineTimestamp(segment.getShiftedTimestamp(), use24Time));
-                    drawable.setWantsDivider(true);
-                } else {
-                    drawable.setWantsDivider(false);
-                    text.setText(null);
-                }
-            }
-        }
-
-        //endregion
-    }
 }

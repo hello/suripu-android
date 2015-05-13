@@ -55,12 +55,18 @@
         <item name="android:textColor">@color/light_accent</item>
     </style>
 
-    <style name="AppTheme.Text.Timeline" />
+    <style name="AppTheme.Text.Timeline" parent="AppTheme.Text.Body.MidSized" />
 
     <style name="AppTheme.Text.Timeline.Timestamp">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textSize">@dimen/text_size_timeline_time</item>
         <item name="android:textColor">@color/light_accent</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="AppTheme.Text.Timeline.Timestamp.Event">
+        <item name="android:textColor">@color/text_dim</item>
     </style>
 
 
