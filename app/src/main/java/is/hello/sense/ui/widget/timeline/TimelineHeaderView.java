@@ -5,6 +5,9 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -30,9 +33,17 @@ import is.hello.sense.util.Markdown;
 public class TimelineHeaderView extends LinearLayout {
     @Inject Markdown markdown;
 
+    private final Paint dividerPaint = new Paint();
+    private final int dividerHeight;
+
+
     private final SleepScoreDrawable scoreDrawable;
     private final TextView scoreText;
     private final TextView messageText;
+
+    private final int backgroundColor;
+    private final int messageTextColor;
+    private final ArgbEvaluator colorEvaluator = new ArgbEvaluator();
 
     private @Nullable ValueAnimator colorAnimator;
     private @Nullable AnimatorContext animatorContext;
@@ -57,16 +68,27 @@ public class TimelineHeaderView extends LinearLayout {
         setGravity(Gravity.CENTER);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
+        Resources resources = getResources();
+        int dividerColor = resources.getColor(R.color.timeline_header_border);
+        dividerPaint.setColor(dividerColor);
+        this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
+
+
         LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(R.layout.view_timeline_header, this, true);
 
         View scoreContainer = findViewById(R.id.view_timeline_header_chart);
-        this.scoreDrawable = new SleepScoreDrawable(getResources());
+        this.scoreDrawable = new SleepScoreDrawable(getResources(), true);
         scoreContainer.setBackground(scoreDrawable);
 
         this.scoreText = (TextView) findViewById(R.id.view_timeline_header_chart_score);
         this.messageText = (TextView) findViewById(R.id.view_timeline_header_chart_message);
         Views.makeTextViewLinksClickable(messageText);
+
+        this.backgroundColor = resources.getColor(R.color.background_timeline);
+        this.messageTextColor = messageText.getCurrentTextColor();
+
+        setWillNotDraw(false);
     }
 
     @Override
@@ -78,6 +100,15 @@ public class TimelineHeaderView extends LinearLayout {
         }
     }
 
+    @Override
+    protected void onDraw(Canvas canvas) {
+        int right = canvas.getWidth(),
+            bottom = canvas.getHeight();
+
+        canvas.drawRect(0, bottom - dividerHeight,
+                right, bottom, dividerPaint);
+    }
+
     //endregion
 
 
@@ -85,6 +116,21 @@ public class TimelineHeaderView extends LinearLayout {
 
     public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
         this.animatorContext = animatorContext;
+    }
+
+    /**
+     * Built in alpha handling is too slow for use inside a scrolling recycler view.
+     */
+    public void setChildAlpha(float alpha) {
+        // SleepScoreDrawable#setAlpha(int) is cheaper
+        // than RelativeLayout#setAlpha(float).
+        scoreDrawable.setAlpha(Math.round(255f * alpha));
+
+        // TextView uses alpha-optimized rendering with plain text...
+        scoreText.setAlpha(alpha);
+
+        // ...unfortunately, messageText has rich text.
+        messageText.setTextColor((int) colorEvaluator.evaluate(alpha, backgroundColor, messageTextColor));
     }
 
     //endregion

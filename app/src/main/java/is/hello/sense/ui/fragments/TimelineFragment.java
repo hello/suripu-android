@@ -52,6 +52,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private ImageButton menuButton;
     private ImageButton shareButton;
     private TextView dateText;
+    private View contentShadow;
 
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
@@ -117,7 +118,9 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         Views.setSafeOnClickListener(shareButton, this::share);
 
 
-        this.recyclerView = (RecyclerView) view.findViewById(R.id.timeline_fragment_recycler);
+        this.contentShadow = view.findViewById(R.id.fragment_timeline_content_shadow);
+
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setOnScrollListener(new ScrollListener());
 
@@ -126,6 +129,17 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
+        headerView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View v) {
+                contentShadow.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+                contentShadow.setVisibility(View.VISIBLE);
+            }
+        });
 
         this.adapter = new TimelineAdapter(getActivity(), headerView, dateFormatter);
         recyclerView.setAdapter(adapter);
@@ -320,15 +334,21 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private class ScrollListener extends RecyclerView.OnScrollListener {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            if (!controlsAlarmShortcut) {
-                return;
+            if (headerView.getParent() != null) {
+                float bottom = headerView.getBottom();
+                float height = headerView.getMeasuredHeight();
+                float alpha = bottom / height;
+                headerView.setChildAlpha(alpha);
             }
 
-            if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
-                homeActivity.showAlarmShortcut();
-            } else {
-                homeActivity.hideAlarmShortcut();
+            if (controlsAlarmShortcut) {
+                if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
+                    homeActivity.showAlarmShortcut();
+                } else {
+                    homeActivity.hideAlarmShortcut();
+                }
             }
         }
     }
+
 }

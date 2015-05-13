@@ -39,6 +39,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
     private final int segmentMinHeight;
     private final int segmentHeightPerHour;
+    private final int eventVerticalInset;
 
     private final List<TimelineSegment> segments = new ArrayList<>();
     private final Set<Integer> positionsWithTime = new HashSet<>();
@@ -58,6 +59,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
         Resources resources = context.getResources();
         this.segmentMinHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
         this.segmentHeightPerHour = resources.getDimensionPixelSize(R.dimen.timeline_segment_height_per_hour);
+        this.eventVerticalInset = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_vertical_inset);
     }
 
 
@@ -210,7 +212,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
             super(itemView);
 
             this.drawable = new TimelineSegmentDrawable(context);
-            drawable.setOverlayDrawable(itemView.getBackground());
+            prepareDrawable();
             itemView.setBackground(drawable);
         }
 
@@ -220,6 +222,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
             TimelineSegment segment = getSegment(position);
             bindSegment(position, segment);
+        }
+
+        void prepareDrawable() {
+            drawable.setOverlayDrawable(itemView.getBackground());
         }
 
         int getSegmentHeight(int position) {
@@ -245,6 +251,13 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
             this.messageText = (TextView) itemView.findViewById(R.id.item_timeline_segment_message);
             this.dateText = (TextView) itemView.findViewById(R.id.item_timeline_segment_date);
+        }
+
+        @Override
+        void prepareDrawable() {
+            drawable.setOverlayInsets(0, eventVerticalInset, 0, eventVerticalInset);
+
+            super.prepareDrawable();
         }
 
         @Override

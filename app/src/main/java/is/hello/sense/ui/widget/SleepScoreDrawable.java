@@ -7,9 +7,11 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.text.TextPaint;
 
 import is.hello.sense.R;
 
@@ -19,24 +21,48 @@ public class SleepScoreDrawable extends Drawable {
 
     private static final int MAX_VALUE = 100;
 
+    private final Resources resources;
+
     private final Path fillPath = new Path();
     private final Path arcPath = new Path();
     private final RectF arcRect = new RectF();
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final float fillStrokeWidth;
 
+    private final TextPaint labelPaint;
+    private final String label;
+    private final int labelHeight;
+
     private int value = 0;
     private int fillColor;
     private int trackColor;
 
 
-    public SleepScoreDrawable(@NonNull Resources resources) {
+    public SleepScoreDrawable(@NonNull Resources resources, boolean wantsLabel) {
+        this.resources = resources;
         this.fillStrokeWidth = resources.getDimensionPixelSize(R.dimen.pie_graph_stroke_width);
         this.fillColor = Color.TRANSPARENT;
         this.trackColor = resources.getColor(R.color.border);
 
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(fillStrokeWidth);
+
+        if (wantsLabel) {
+            this.labelPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG | TextPaint.SUBPIXEL_TEXT_FLAG);
+            labelPaint.setTextSize(resources.getDimension(R.dimen.text_size_section_heading));
+            labelPaint.setColor(resources.getColor(R.color.text_section_header));
+            labelPaint.setTextAlign(Paint.Align.CENTER);
+
+            this.label = resources.getString(R.string.sleep_score).toUpperCase();
+
+            Rect bounds = new Rect();
+            labelPaint.getTextBounds(label, 0, label.length(), bounds);
+            this.labelHeight = bounds.height();
+        } else {
+            this.labelPaint = null;
+            this.label = null;
+            this.labelHeight = 0;
+        }
     }
 
     @Override
@@ -44,7 +70,8 @@ public class SleepScoreDrawable extends Drawable {
         arcPath.reset();
         fillPath.reset();
 
-        int width = canvas.getWidth(), height = canvas.getHeight();
+        int width = canvas.getWidth(),
+            height = canvas.getHeight();
         int size = Math.min(width, height);
 
         float left = width > height ? (width - height) / 2 : 0;
@@ -60,11 +87,18 @@ public class SleepScoreDrawable extends Drawable {
             fillPath.arcTo(arcRect, ANGLE_START, scale * ANGLE_SWEEP);
         }
 
+        int savedAlpha = paint.getAlpha();
         paint.setColor(trackColor);
+        paint.setAlpha(savedAlpha);
         canvas.drawPath(arcPath, paint);
 
         paint.setColor(fillColor);
+        paint.setAlpha(savedAlpha);
         canvas.drawPath(fillPath, paint);
+
+        if (labelPaint != null) {
+            canvas.drawText(label, 0, label.length(), width / 2f, height - labelHeight, labelPaint);
+        }
     }
 
 
@@ -72,13 +106,21 @@ public class SleepScoreDrawable extends Drawable {
 
     @Override
     public void setAlpha(int alpha) {
-        paint.setAlpha(alpha);
-        invalidateSelf();
+        if (alpha != paint.getAlpha()) {
+            paint.setAlpha(alpha);
+            if (labelPaint != null) {
+                labelPaint.setAlpha(alpha);
+            }
+            invalidateSelf();
+        }
     }
 
     @Override
     public void setColorFilter(ColorFilter colorFilter) {
         paint.setColorFilter(colorFilter);
+        if (labelPaint != null) {
+            labelPaint.setColorFilter(colorFilter);
+        }
         invalidateSelf();
     }
 
@@ -87,6 +129,15 @@ public class SleepScoreDrawable extends Drawable {
         return PixelFormat.TRANSPARENT;
     }
 
+    @Override
+    public int getIntrinsicWidth() {
+        return resources.getDimensionPixelSize(R.dimen.grand_sleep_summary_width);
+    }
+
+    @Override
+    public int getIntrinsicHeight() {
+        return resources.getDimensionPixelSize(R.dimen.grand_sleep_summary_height);
+    }
 
     public void setTrackColor(int trackColor) {
         this.trackColor = trackColor;

@@ -38,10 +38,19 @@
         android:background="@drawable/selectable_dark_bounded"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/timeline_fragment_recycler"
+        android:id="@+id/fragment_timeline_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/fragment_timeline_date"
         android:clipChildren="false" />
+
+    <ImageView
+        android:id="@+id/fragment_timeline_content_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_timeline_date"
+        android:scaleType="fitXY"
+        android:src="@drawable/timeline_top_shadow"
+        android:importantForAccessibility="no" />
 
 </RelativeLayout>

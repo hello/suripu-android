@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_timeline_event"
-    android:clipChildren="false">
+    android:background="@drawable/background_timeline_event">
 
     <TextView
         android:id="@+id/item_timeline_segment_date"

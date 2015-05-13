@@ -28,6 +28,7 @@ public class TimelineSegmentDrawable extends Drawable {
     private final TextDrawable timestampDrawable;
 
     private @Nullable Drawable overlayDrawable;
+    private final Rect overlayInsets = new Rect();
 
     private int sleepDepthColor;
     private float sleepDepthFraction;
@@ -40,7 +41,7 @@ public class TimelineSegmentDrawable extends Drawable {
 
     public TimelineSegmentDrawable(@NonNull Context context) {
         this.resources = context.getResources();
-        this.backgroundFill = resources.getDrawable(R.drawable.background_timeline_segment2);
+        this.backgroundFill = resources.getDrawable(R.drawable.background_timeline_segment);
         this.rightInset = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_right_inset);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
         this.stolenScoreHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_stolen_height);
@@ -122,7 +123,10 @@ public class TimelineSegmentDrawable extends Drawable {
 
 
         if (overlayDrawable != null) {
-            overlayDrawable.setBounds(0, 0, contentRight, canvasBottom);
+            overlayDrawable.setBounds(
+                overlayInsets.left, overlayInsets.top,
+                contentRight - overlayInsets.right, canvasBottom - overlayInsets.bottom
+            );
             overlayDrawable.draw(canvas);
         }
     }
@@ -133,7 +137,10 @@ public class TimelineSegmentDrawable extends Drawable {
             overlayDrawable.getPadding(padding);
         }
 
-        padding.right += rightInset;
+        padding.left += overlayInsets.left;
+        padding.top += overlayInsets.top;
+        padding.right += overlayInsets.right + rightInset;
+        padding.bottom += overlayInsets.bottom;
 
         return true;
     }
@@ -189,6 +196,12 @@ public class TimelineSegmentDrawable extends Drawable {
 
     public void setOverlayDrawable(@Nullable Drawable overlayDrawable) {
         this.overlayDrawable = overlayDrawable;
+
+        invalidateSelf();
+    }
+
+    public void setOverlayInsets(int left, int top, int right, int bottom) {
+        overlayInsets.set(left, top, right, bottom);
 
         invalidateSelf();
     }
