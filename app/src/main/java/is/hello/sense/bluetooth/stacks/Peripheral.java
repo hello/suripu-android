@@ -200,13 +200,6 @@ public interface Peripheral {
     //region Bonding
 
     /**
-     * Creates a bond to the peripheral from the current device.
-     * <p/>
-     * Does nothing if the device is already bonded.
-     */
-    @NonNull Observable<Peripheral> createBond();
-
-    /**
      * Returns the bond status of the peripheral.
      *
      * @see Peripheral#BOND_NONE
@@ -269,45 +262,6 @@ public interface Peripheral {
      * All characteristic data read by the Peripheral should be piped into the packet handler.
      */
     void setPacketHandler(@Nullable PacketHandler dataHandler);
-
-    //endregion
-
-
-    //region Configuration
-
-    /**
-     * Represents no config options specified.
-     */
-    int CONFIG_EMPTY = 0;
-
-    /**
-     * Whether or not the peripheral should clear bond information
-     * before connecting to a hardware device.
-     */
-    int CONFIG_FRAGILE_BONDS = (1 << 1);
-
-    /**
-     * Whether or not the peripheral should automatically
-     * activate compatibility shims in response to errors.
-     */
-    int CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS = (1 << 2);
-
-    /**
-     * Whether or not to add an artificial delay after
-     * service discovery to increase connection stability.
-     */
-    int CONFIG_WAIT_AFTER_SERVICE_DISCOVERY = (1 << 3);
-
-    void setConfig(@Config int newConfig);
-
-    @IntDef(value = {
-        CONFIG_EMPTY,
-        CONFIG_FRAGILE_BONDS,
-        CONFIG_AUTO_ACTIVATE_COMPATIBILITY_SHIMS,
-        CONFIG_WAIT_AFTER_SERVICE_DISCOVERY
-    }, flag = true)
-    @Retention(RetentionPolicy.SOURCE)
-    @interface Config {}
 
     //endregion
 

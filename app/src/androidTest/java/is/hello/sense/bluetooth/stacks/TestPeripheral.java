@@ -18,13 +18,11 @@ public class TestPeripheral implements Peripheral {
     final TestPeripheralBehavior behavior;
 
     PacketHandler dataHandler;
-    @Config int config;
 
     public TestPeripheral(@NonNull BluetoothStack stack,
                           @NonNull TestPeripheralBehavior peripheralBehavior) {
         this.stack = stack;
         this.behavior = peripheralBehavior;
-        this.config = stack.getDefaultConfig();
     }
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "UnusedParameters"})
@@ -65,11 +63,6 @@ public class TestPeripheral implements Peripheral {
         return stack;
     }
 
-    @Override
-    public void setConfig(@Config int newConfig) {
-        this.config = newConfig;
-    }
-
     @NonNull
     @Override
     public Observable<Peripheral> connect(@NonNull OperationTimeout timeout) {
@@ -87,13 +80,6 @@ public class TestPeripheral implements Peripheral {
     @Override
     public @ConnectivityStatus int getConnectionStatus() {
         return behavior.connectionStatus;
-    }
-
-    @NonNull
-    @Override
-    public Observable<Peripheral> createBond() {
-        behavior.trackMethodCall(TestPeripheralBehavior.Method.CREATE_BOND);
-        return createResponseWith(behavior.createBondResponse, null);
     }
 
     @Override

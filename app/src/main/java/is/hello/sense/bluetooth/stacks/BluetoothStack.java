@@ -73,11 +73,6 @@ public interface BluetoothStack {
      */
     boolean errorRequiresReconnect(@Nullable Throwable e);
 
-    /**
-     * Returns the default peripheral config for the stack.
-     */
-    @Peripheral.Config int getDefaultConfig();
-
 
     /**
      * Returns the level of support the stack has for the current device.
