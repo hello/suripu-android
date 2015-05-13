@@ -122,7 +122,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
         assertThrowsNoDeviceError(presenter.runLedAnimation(SensePeripheral.LedAnimation.STOP));
         assertThrowsNoDeviceError(presenter.scanForWifiNetworks());
         assertThrowsNoDeviceError(presenter.currentWifiNetwork());
-        assertThrowsNoDeviceError(presenter.sendWifiCredentials("1234", "1234", sec_type.SL_SCAN_SEC_TYPE_OPEN, ""));
+        assertThrowsNoDeviceError(presenter.sendWifiCredentials("1234", sec_type.SL_SCAN_SEC_TYPE_OPEN, ""));
         assertThrowsNoDeviceError(presenter.linkAccount());
         assertThrowsNoDeviceError(presenter.linkPill());
         assertThrowsNoDeviceError(presenter.pushData());

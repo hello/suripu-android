@@ -338,8 +338,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
                                                             .doOnError(this.respondToError));
     }
 
-    public Observable<Void> sendWifiCredentials(@NonNull String bssid,
-                                                @NonNull String ssid,
+    public Observable<Void> sendWifiCredentials(@NonNull String ssid,
                                                 @NonNull SenseCommandProtos.wifi_endpoint.sec_type securityType,
                                                 @NonNull String password) {
         logEvent("sendWifiCredentials()");
@@ -348,7 +347,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
             return noDeviceError();
         }
 
-        return peripheral.setWifiNetwork(bssid, ssid, securityType, password)
+        return peripheral.setWifiNetwork(ssid, securityType, password)
                          .subscribeOn(AndroidSchedulers.mainThread())
                          .doOnError(this.respondToError);
     }
