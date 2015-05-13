@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget;
+package is.hello.sense.ui.widget.timeline;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -10,18 +10,18 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-public class TimelineItemDecoration extends RecyclerView.ItemDecoration {
+public class TimelineNavigatorItemDecoration extends RecyclerView.ItemDecoration {
     private final Drawable drawable;
     private final int dividerWidth;
 
-    public TimelineItemDecoration(@NonNull Drawable drawable, int dividerWidth) {
+    public TimelineNavigatorItemDecoration(@NonNull Drawable drawable, int dividerWidth) {
         this.drawable = drawable;
         this.dividerWidth = dividerWidth;
     }
 
-    public TimelineItemDecoration(@NonNull Resources resources,
-                                  @DrawableRes int drawableRes,
-                                  @DimenRes int dividerWidthRes) {
+    public TimelineNavigatorItemDecoration(@NonNull Resources resources,
+                                           @DrawableRes int drawableRes,
+                                           @DimenRes int dividerWidthRes) {
         this(resources.getDrawable(drawableRes), resources.getDimensionPixelSize(dividerWidthRes));
     }
 

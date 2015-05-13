@@ -38,7 +38,6 @@ import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
 
 public final class Styles {
-    public static final int TIMELINE_HOURS_ON_SCREEN = 10;
     public static final boolean UNDERLINE_LINKS = false;
 
     public static final int CARD_SPACING_HEADER = (1 << 1);
@@ -60,51 +59,15 @@ public final class Styles {
     public @interface CardSpacing {}
 
 
-    public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth, boolean dimmed) {
-        if (dimmed) {
-            if (sleepDepth == 0) {
-                return R.color.sleep_awake_dimmed;
-            } else if (sleepDepth == 100) {
-                return R.color.sleep_deep_dimmed;
-            } else if (sleepDepth < 60) {
-                return R.color.sleep_light_dimmed;
-            } else {
-                return R.color.sleep_intermediate_dimmed;
-            }
-        } else {
-            if (sleepDepth == 0) {
-                return R.color.sleep_awake;
-            } else if (sleepDepth == 100) {
-                return R.color.sleep_deep;
-            } else if (sleepDepth < 60) {
-                return R.color.sleep_light;
-            } else {
-                return R.color.sleep_intermediate;
-            }
-        }
-    }
-
-    public static @StringRes int getSleepDepthStringRes(int sleepDepth) {
+    public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth) {
         if (sleepDepth == 0) {
-            return R.string.sleep_depth_awake;
+            return R.color.sleep_awake;
         } else if (sleepDepth == 100) {
-            return R.string.sleep_depth_deep;
+            return R.color.sleep_deep;
         } else if (sleepDepth < 60) {
-            return R.string.sleep_depth_light;
+            return R.color.sleep_light;
         } else {
-            return R.string.sleep_depth_intermediate;
-        }
-    }
-
-    public static @StringRes int getWakingDepthStringRes(int sleepDepth) {
-        if (sleepDepth == 0) {
-            return R.string.waking_depth_awake;
-        } else if (sleepDepth == 100) {
-            return R.string.waking_depth_deep;
-        } else if (sleepDepth < 60) {
-            return R.string.waking_depth_light;
-        } else {
-            return R.string.waking_depth_intermediate;
+            return R.color.sleep_intermediate;
         }
     }
 

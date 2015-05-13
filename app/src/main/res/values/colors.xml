@@ -35,10 +35,6 @@
     <color name="timeline_segment_underline_left">#26000000</color>
     <color name="timeline_segment_text_right">@color/light_accent</color>
     <color name="timeline_segment_underline_right">#62009cff</color>
-    <color name="timeline_tabs_border">#ededed</color>
-    <color name="timeline_tabs_gradient_start">#ffffff</color>
-    <color name="timeline_tabs_gradient_end">#f7f7f7</color>
-
 
     <color name="text_dark">#4D4D4D</color>
     <color name="text_medium">#878787</color>
@@ -70,11 +66,6 @@
     <color name="sleep_intermediate">#16c2ff</color>
     <color name="sleep_deep">#00a0ff</color>
 
-    <color name="sleep_awake_dimmed">#ffffff</color>
-    <color name="sleep_light_dimmed">#fff7f7f7</color>
-    <color name="sleep_intermediate_dimmed">#ffebebeb</color>
-    <color name="sleep_deep_dimmed">#ffe5e5e5</color>
-
     <color name="graph_stroke_color">#66000000</color>
     <color name="graph_fill_gradient_top">#22000000</color>
     <color name="graph_fill_gradient_bottom">#11000000</color>
@@ -82,7 +73,4 @@
 
     <color name="view_scale_tick_normal">#dfdfdf</color>
     <color name="view_scale_tick_emphasized">#c1c1c1</color>
-
-    <color name="share_image_shadow">#40009CFF</color>
-    <color name="share_image_tint">#13009CFF</color>
 </resources>

@@ -92,7 +92,7 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
     //endregion
 
 
-    public static enum Style {
+    public enum Style {
         UNDERSIDE(R.dimen.bottom_line, R.dimen.bottom_line, R.color.light_accent, R.color.border_underside_tabs),
         INLINE(R.dimen.bottom_line, R.dimen.divider_size, R.color.light_accent, R.color.border);
 
@@ -102,10 +102,10 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
         public final @ColorRes int selectionColorRes;
         public final @ColorRes int dividerColorRes;
 
-        private Style(@DimenRes int selectionHeightRes,
-                      @DimenRes int dividerHeightRes,
-                      @ColorRes int selectionColorRes,
-                      @ColorRes int dividerColorRes) {
+        Style(@DimenRes int selectionHeightRes,
+              @DimenRes int dividerHeightRes,
+              @ColorRes int selectionColorRes,
+              @ColorRes int dividerColorRes) {
             this.selectionHeightRes = selectionHeightRes;
             this.dividerHeightRes = dividerHeightRes;
             this.selectionColorRes = selectionColorRes;

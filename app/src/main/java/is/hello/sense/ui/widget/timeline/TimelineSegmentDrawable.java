@@ -33,7 +33,7 @@ public class TimelineSegmentDrawable extends Drawable {
     public TimelineSegmentDrawable(@NonNull Context context) {
         this.resources = context.getResources();
         this.backgroundFill = resources.getDrawable(R.drawable.background_timeline_segment2);
-        this.rightInset = resources.getDimensionPixelSize(R.dimen.timeline_segment2_item_right_inset);
+        this.rightInset = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_right_inset);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
 
         this.timestampDrawable = new TextDrawable(context, R.style.AppTheme_Text_Timeline_Timestamp);
@@ -123,7 +123,7 @@ public class TimelineSegmentDrawable extends Drawable {
     public void setSleepDepth(int sleepDepth) {
         this.sleepDepthFraction = Math.min(1f, sleepDepth / 100f);
 
-        int color = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth, false));
+        int color = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
         fillPaint.setColor(color);
 
         invalidateSelf();

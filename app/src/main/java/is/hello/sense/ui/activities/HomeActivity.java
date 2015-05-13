@@ -52,7 +52,7 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
-import is.hello.sense.ui.fragments.TimelineFragment2;
+import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
@@ -74,7 +74,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends ScopedInjectionActivity
-        implements FragmentPageView.Adapter<TimelineFragment2>, FragmentPageView.OnTransitionObserver<TimelineFragment2>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
+        implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
 {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
@@ -89,7 +89,7 @@ public class HomeActivity
     private RelativeLayout rootContainer;
     private FrameLayout undersideContainer;
     private SlidingLayersView slidingLayersView;
-    private FragmentPageView<TimelineFragment2> viewPager;
+    private FragmentPageView<TimelineFragment> viewPager;
     private ImageButton smartAlarmButton;
 
     private @Nullable View deviceAlert;
@@ -157,7 +157,7 @@ public class HomeActivity
         AnimatorContext animatorContext = getAnimatorContext();
 
         // noinspection unchecked
-        this.viewPager = (FragmentPageView<TimelineFragment2>) findViewById(R.id.activity_home_view_pager);
+        this.viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
         viewPager.setFragmentManager(getFragmentManager());
         viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
@@ -256,11 +256,11 @@ public class HomeActivity
         if ((System.currentTimeMillis() - lastUpdated) > Constants.STALE_INTERVAL_MS) {
             if (isCurrentFragmentLastNight()) {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, reloading.");
-                TimelineFragment2 fragment = viewPager.getCurrentFragment();
+                TimelineFragment fragment = viewPager.getCurrentFragment();
                 fragment.update();
             } else {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
-                TimelineFragment2 fragment = TimelineFragment2.newInstance(DateFormatter.lastNight(), null);
+                TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
                 viewPager.setCurrentFragment(fragment);
             }
 
@@ -320,7 +320,7 @@ public class HomeActivity
                     }
 
                     DateTime date = Notification.getDate(notification);
-                    TimelineFragment2 fragment = TimelineFragment2.newInstance(date, null);
+                    TimelineFragment fragment = TimelineFragment.newInstance(date, null);
                     viewPager.setCurrentFragment(fragment);
 
                     break;
@@ -387,12 +387,12 @@ public class HomeActivity
     }
 
     public boolean isCurrentFragmentLastNight() {
-        TimelineFragment2 currentFragment = viewPager.getCurrentFragment();
+        TimelineFragment currentFragment = viewPager.getCurrentFragment();
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
     }
 
     public void jumpToLastNight(boolean animate) {
-        TimelineFragment2 lastNight = TimelineFragment2.newInstance(DateFormatter.lastNight(), null);
+        TimelineFragment lastNight = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
         if (animate) {
             viewPager.animateToFragment(lastNight, FragmentPageView.Position.AFTER);
         } else {
@@ -422,31 +422,31 @@ public class HomeActivity
     //region Fragment Adapter
 
     @Override
-    public boolean hasFragmentBeforeFragment(@NonNull TimelineFragment2 fragment) {
+    public boolean hasFragmentBeforeFragment(@NonNull TimelineFragment fragment) {
         return true;
     }
 
     @Override
-    public TimelineFragment2 getFragmentBeforeFragment(@NonNull TimelineFragment2 fragment) {
-        return TimelineFragment2.newInstance(fragment.getDate().minusDays(1), null);
+    public TimelineFragment getFragmentBeforeFragment(@NonNull TimelineFragment fragment) {
+        return TimelineFragment.newInstance(fragment.getDate().minusDays(1), null);
     }
 
 
     @Override
-    public boolean hasFragmentAfterFragment(@NonNull TimelineFragment2 fragment) {
+    public boolean hasFragmentAfterFragment(@NonNull TimelineFragment fragment) {
         DateTime fragmentTime = fragment.getDate();
         return fragmentTime.isBefore(DateFormatter.lastNight().withTimeAtStartOfDay());
     }
 
     @Override
-    public TimelineFragment2 getFragmentAfterFragment(@NonNull TimelineFragment2 fragment) {
-        return TimelineFragment2.newInstance(fragment.getDate().plusDays(1), null);
+    public TimelineFragment getFragmentAfterFragment(@NonNull TimelineFragment fragment) {
+        return TimelineFragment.newInstance(fragment.getDate().plusDays(1), null);
     }
 
 
     @Override
-    public void onWillTransitionToFragment(@NonNull TimelineFragment2 fragment, boolean isInteractive) {
-        TimelineFragment2 currentFragment = viewPager.getCurrentFragment();
+    public void onWillTransitionToFragment(@NonNull TimelineFragment fragment, boolean isInteractive) {
+        TimelineFragment currentFragment = viewPager.getCurrentFragment();
         if (currentFragment != null) {
             currentFragment.setControlsAlarmShortcut(false);
         }
@@ -455,7 +455,7 @@ public class HomeActivity
     }
 
     @Override
-    public void onDidTransitionToFragment(@NonNull TimelineFragment2 fragment, boolean isInteractive) {
+    public void onDidTransitionToFragment(@NonNull TimelineFragment fragment, boolean isInteractive) {
         this.lastUpdated = System.currentTimeMillis();
 
         fragment.setControlsAlarmShortcut(true);
@@ -471,7 +471,7 @@ public class HomeActivity
     }
 
     @Override
-    public void onDidSnapBackToFragment(@NonNull TimelineFragment2 fragment) {
+    public void onDidSnapBackToFragment(@NonNull TimelineFragment fragment) {
         fragment.setControlsAlarmShortcut(true);
     }
 
@@ -842,9 +842,9 @@ public class HomeActivity
     public void onTimelineSelected(@NonNull DateTime date, @Nullable Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_OUT, null);
 
-        TimelineFragment2 currentFragment = viewPager.getCurrentFragment();
+        TimelineFragment currentFragment = viewPager.getCurrentFragment();
         if (!date.equals(currentFragment.getDate())) {
-            viewPager.setCurrentFragment(TimelineFragment2.newInstance(date, timeline));
+            viewPager.setCurrentFragment(TimelineFragment.newInstance(date, timeline));
         } else {
             currentFragment.scrollToTop();
         }

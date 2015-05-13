@@ -14,28 +14,25 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import is.hello.sense.R;
-import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
 import is.hello.sense.util.DateFormatter;
 
-public class TimelineAdapter2 extends RecyclerView.Adapter<TimelineAdapter2.BaseViewHolder> {
+public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseViewHolder> {
     private static final int VIEW_TYPE_HEADER = 0;
     private static final int VIEW_TYPE_SEGMENT = 1;
     private static final int VIEW_TYPE_EVENT = 2;
 
     private static final int EXTRA_COUNT = 1;
 
-    @Inject DateFormatter dateFormatter;
 
     private final Context context;
     private final LayoutInflater inflater;
     private final View headerView;
+    private final DateFormatter dateFormatter;
 
     private final int segmentMinHeight;
     private final int segmentHeightPerHour;
@@ -46,16 +43,17 @@ public class TimelineAdapter2 extends RecyclerView.Adapter<TimelineAdapter2.Base
 
     private boolean use24Time = false;
 
-    public TimelineAdapter2(@NonNull Context context, @NonNull View headerView) {
-        SenseApplication.getInstance().inject(this);
-
+    public TimelineAdapter(@NonNull Context context,
+                           @NonNull View headerView,
+                           @NonNull DateFormatter dateFormatter) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.headerView = headerView;
+        this.dateFormatter = dateFormatter;
 
         Resources resources = context.getResources();
-        this.segmentMinHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment2_min_height);
-        this.segmentHeightPerHour = resources.getDimensionPixelSize(R.dimen.timeline_segment2_height_per_hour);
+        this.segmentMinHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
+        this.segmentHeightPerHour = resources.getDimensionPixelSize(R.dimen.timeline_segment_height_per_hour);
     }
 
 
@@ -168,7 +166,7 @@ public class TimelineAdapter2 extends RecyclerView.Adapter<TimelineAdapter2.Base
             }
 
             case VIEW_TYPE_EVENT: {
-                View segmentView = inflater.inflate(R.layout.item_timeline_segment2, parent, false);
+                View segmentView = inflater.inflate(R.layout.item_timeline_segment, parent, false);
                 return new EventViewHolder(segmentView);
             }
 
@@ -213,7 +211,7 @@ public class TimelineAdapter2 extends RecyclerView.Adapter<TimelineAdapter2.Base
         }
 
         int getSegmentHeight(int position) {
-            return TimelineAdapter2.this.getSegmentHeight(position);
+            return TimelineAdapter.this.getSegmentHeight(position);
         }
 
         void bindSegment(int position, @NonNull TimelineSegment segment) {

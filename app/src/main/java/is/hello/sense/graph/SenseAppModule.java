@@ -32,18 +32,16 @@ import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.adapter.TimelineAdapter2;
+import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
-import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
 import is.hello.sense.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.ui.fragments.SensorHistoryFragment;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
-import is.hello.sense.ui.fragments.TimelineFragment2;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
@@ -104,11 +102,8 @@ import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
         PillDetailsFragment.class,
 
         TimelineFragment.class,
-        TimelineFragment2.class,
         TimelinePresenter.class,
         TimelineHeaderView.class,
-        TimelineAdapter2.class,
-        TimelineEventDialogFragment.class,
         TimelineNavigatorFragment.class,
         TimelineNavigatorPresenter.class,
 
