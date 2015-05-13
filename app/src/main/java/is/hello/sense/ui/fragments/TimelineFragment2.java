@@ -19,15 +19,22 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter2;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Logger;
+import is.hello.sense.util.Share;
+import rx.Observable;
 
 public class TimelineFragment2 extends InjectionFragment implements SlidingLayersView.OnInteractionListener {
     private static final String ARG_DATE = TimelineFragment2.class.getName() + ".ARG_DATE";
@@ -47,6 +54,10 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
     private LinearLayoutManager layoutManager;
     private TimelineHeaderView headerView;
     private TimelineAdapter2 adapter;
+
+    private boolean controlsAlarmShortcut = false;
+
+    private @Nullable TutorialOverlayView tutorialOverlay;
 
 
     //region Lifecycle
@@ -105,6 +116,7 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.timeline_fragment_recycler);
         recyclerView.setHasFixedSize(true);
+        recyclerView.setOnScrollListener(new ScrollListener());
 
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -139,6 +151,10 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
         this.recyclerView = null;
         this.layoutManager = null;
         this.adapter = null;
+
+        if (tutorialOverlay != null) {
+            tutorialOverlay.dismiss(false);
+        }
     }
 
     @Override
@@ -146,6 +162,13 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
         super.onDetach();
 
         this.homeActivity = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        dateText.setText(dateFormatter.formatAsTimelineDate(presenter.getDate()));
     }
 
     //endregion
@@ -159,7 +182,28 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
     }
 
     public void share(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
 
+        Observable<Timeline> currentTimeline = presenter.timeline.take(1);
+        bindAndSubscribe(currentTimeline,
+                         timeline -> {
+                             DateTime date = presenter.getDate();
+                             String score = Integer.toString(timeline.getScore());
+                             String shareCopy;
+                             if (DateFormatter.isLastNight(date)) {
+                                 shareCopy = getString(R.string.timeline_share_last_night_fmt, score);
+                             } else {
+                                 String dateString = dateFormatter.formatAsTimelineDate(date);
+                                 shareCopy = getString(R.string.timeline_share_other_days_fmt, score, dateString);
+                             }
+
+                             Share.text(shareCopy)
+                                  .withSubject(getString(R.string.app_name))
+                                  .send(getActivity());
+                         },
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
+                         });
     }
 
     public void showNavigator(@NonNull View sender) {
@@ -180,8 +224,8 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
         return (Timeline) getArguments().getSerializable(ARG_CACHED_TIMELINE);
     }
 
-    public void setControlsAlarmShortcut(boolean flag) {
-
+    public void setControlsAlarmShortcut(boolean controlsAlarmShortcut) {
+        this.controlsAlarmShortcut = controlsAlarmShortcut;
     }
 
     public void scrollToTop() {
@@ -211,11 +255,51 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
     //endregion
 
 
+    //region Handholding
+
+    private void showTutorial(@NonNull Tutorial tutorial) {
+        if (tutorialOverlay != null) {
+            return;
+        }
+
+        this.tutorialOverlay = new TutorialOverlayView(getActivity(), tutorial);
+        tutorialOverlay.setOnDismiss(() -> {
+            this.tutorialOverlay = null;
+        });
+        tutorialOverlay.setAnimatorContext(getAnimatorContext());
+        tutorialOverlay.show(R.id.activity_home_container);
+    }
+
+    private void showHandholdingIfAppropriate() {
+        if (homeActivity.getWillShowUnderside()) {
+            WelcomeDialogFragment.markShown(homeActivity, R.xml.welcome_dialog_timeline);
+        } else {
+            getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(() -> {
+                if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
+                    WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
+                } else if (Tutorial.SLEEP_SCORE_BREAKDOWN.shouldShow(getActivity())) {
+                    showTutorial(Tutorial.SLEEP_SCORE_BREAKDOWN);
+                } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
+                    showTutorial(Tutorial.SWIPE_TIMELINE);
+                }
+            }));
+        }
+    }
+
+    //endregion
+
+
     //region Binding
 
     public void bindTimeline(@NonNull Timeline timeline) {
         adapter.bind(timeline);
         headerView.bindTimeline(timeline);
+
+        if (Lists.isEmpty(timeline.getSegments())) {
+            shareButton.setVisibility(View.GONE);
+        } else if (!homeActivity.getSlidingLayersView().isOpen()) {
+            shareButton.setVisibility(View.VISIBLE);
+        }
     }
 
     public void timelineUnavailable(Throwable e) {
@@ -226,4 +310,18 @@ public class TimelineFragment2 extends InjectionFragment implements SlidingLayer
     //endregion
 
 
+    private class ScrollListener extends RecyclerView.OnScrollListener {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            if (!controlsAlarmShortcut) {
+                return;
+            }
+
+            if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
+                homeActivity.showAlarmShortcut();
+            } else {
+                homeActivity.hideAlarmShortcut();
+            }
+        }
+    }
 }
