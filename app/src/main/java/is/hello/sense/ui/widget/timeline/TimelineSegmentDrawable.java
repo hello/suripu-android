@@ -155,22 +155,33 @@ public class TimelineSegmentDrawable extends Drawable {
         return PixelFormat.OPAQUE;
     }
 
+    private static float calculateSleepDepthFraction(int sleepDepth) {
+        float fraction = Math.min(1f, sleepDepth / 100f);
+        if (sleepDepth <= 33) {
+            return Math.max(0.10f, fraction);
+        } else if (sleepDepth <= 66) {
+            return Math.max(0.4f, fraction);
+        } else {
+            return fraction;
+        }
+    }
+
     public void setSleepDepth(int sleepDepth) {
-        this.sleepDepthFraction = Math.min(1f, sleepDepth / 100f);
+        this.sleepDepthFraction = calculateSleepDepthFraction(sleepDepth);
         this.sleepDepthColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
 
         invalidateSelf();
     }
 
     public void setStolenTopSleepDepth(int sleepDepth) {
-        this.stolenTopSleepDepthFraction = Math.min(1f, sleepDepth / 100f);
+        this.stolenTopSleepDepthFraction = calculateSleepDepthFraction(sleepDepth);
         this.stolenTopSleepDepthColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
 
         invalidateSelf();
     }
 
     public void setStolenBottomSleepDepth(int sleepDepth) {
-        this.stolenBottomSleepDepthFraction = Math.min(1f, sleepDepth / 100f);
+        this.stolenBottomSleepDepthFraction = calculateSleepDepthFraction(sleepDepth);
         this.stolenBottomSleepDepthColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
 
         invalidateSelf();
