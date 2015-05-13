@@ -394,8 +394,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
 
-    public Observable<Void> setWifiNetwork(String bssid,
-                                           String ssid,
+    public Observable<Void> setWifiNetwork(String ssid,
                                            SenseCommandProtos.wifi_endpoint.sec_type securityType,
                                            String password) {
         Logger.info(Peripheral.LOG_TAG, "setWifiNetwork(" + ssid + ")");
@@ -413,7 +412,6 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand.Builder builder = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
                 .setVersion(version)
-                .setWifiName(bssid)
                 .setWifiSSID(ssid)
                 .setSecurityType(securityType);
         if (version == VERSION_PVT && securityType == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
@@ -612,7 +610,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         }
     }
 
-    public static enum LedAnimation {
+    public enum LedAnimation {
         BUSY(CommandType.MORPHEUS_COMMAND_LED_BUSY),
         TRIPPY(CommandType.MORPHEUS_COMMAND_LED_TRIPPY),
         FADE_OUT(CommandType.MORPHEUS_COMMAND_LED_OPERATION_SUCCESS),
