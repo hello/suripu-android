@@ -78,15 +78,6 @@ public class TimelineHeaderView extends LinearLayout {
         }
     }
 
-    @Override
-    protected void onWindowVisibilityChanged(int visibility) {
-        super.onWindowVisibilityChanged(visibility);
-
-        if (visibility != VISIBLE && colorAnimator != null) {
-            colorAnimator.cancel();
-        }
-    }
-
     //endregion
 
 
@@ -107,10 +98,7 @@ public class TimelineHeaderView extends LinearLayout {
             scoreDrawable.setValue(0);
             scoreText.setText(R.string.missing_data_placeholder);
         } else {
-            int scoreColor = Styles.getSleepScoreColor(getContext(), score);
-            scoreDrawable.setFillColor(scoreColor);
-            scoreDrawable.setValue(score);
-            scoreText.setText(Integer.toString(score));
+            animateToScore(score);
         }
     }
 
@@ -124,7 +112,7 @@ public class TimelineHeaderView extends LinearLayout {
 
             this.colorAnimator = ValueAnimator.ofInt(scoreDrawable.getValue(), score);
             colorAnimator.setStartDelay(250);
-            colorAnimator.setDuration(Animation.DURATION_SLOW);
+            colorAnimator.setDuration(Animation.DURATION_NORMAL);
             colorAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
 
             ArgbEvaluator colorEvaluator = new ArgbEvaluator();
@@ -174,7 +162,7 @@ public class TimelineHeaderView extends LinearLayout {
 
     public void bindTimeline(@NonNull Timeline timeline) {
         if (Lists.isEmpty(timeline.getSegments())) {
-            animateToScore(-1);
+            showScore(-1);
         } else {
             int sleepScore = timeline.getScore();
             animateToScore(sleepScore);

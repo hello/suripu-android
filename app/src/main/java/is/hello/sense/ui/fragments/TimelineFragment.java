@@ -102,7 +102,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_timeline2, container, false);
+        View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
 
         this.dateText = (TextView) view.findViewById(R.id.fragment_timeline_date);
