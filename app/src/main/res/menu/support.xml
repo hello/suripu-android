@@ -22,4 +22,9 @@
         android:title="@string/action_feedback"
         android:showAsAction="never" />
 
+    <item
+        android:id="@+id/support_acknowledgements"
+        android:title="@string/title_acknowledgements"
+        android:showAsAction="never" />
+
 </menu>
