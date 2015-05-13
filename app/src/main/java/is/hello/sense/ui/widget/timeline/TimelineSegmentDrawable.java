@@ -23,18 +23,27 @@ public class TimelineSegmentDrawable extends Drawable {
     private final Drawable backgroundFill;
     private final int rightInset;
     private final int dividerHeight;
+    private final int stolenScoreHeight;
 
     private final TextDrawable timestampDrawable;
 
     private @Nullable Drawable overlayDrawable;
-    private boolean wantsDivider;
+
+    private int sleepDepthColor;
     private float sleepDepthFraction;
+
+    private int stolenTopSleepDepthColor;
+    private float stolenTopSleepDepthFraction;
+
+    private int stolenBottomSleepDepthColor;
+    private float stolenBottomSleepDepthFraction;
 
     public TimelineSegmentDrawable(@NonNull Context context) {
         this.resources = context.getResources();
         this.backgroundFill = resources.getDrawable(R.drawable.background_timeline_segment2);
         this.rightInset = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_right_inset);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
+        this.stolenScoreHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_stolen_height);
 
         this.timestampDrawable = new TextDrawable(context, R.style.AppTheme_Text_Timeline_Timestamp);
 
@@ -46,33 +55,61 @@ public class TimelineSegmentDrawable extends Drawable {
 
     @Override
     public void draw(Canvas canvas) {
-        int width = canvas.getWidth(),
-            height = canvas.getHeight();
+        int canvasRight = canvas.getWidth(),
+            canvasBottom = canvas.getHeight();
 
-        backgroundFill.setBounds(0, 0, width, height);
+        int contentRight = (canvasRight - rightInset);
+
+        backgroundFill.setBounds(0, 0, canvasRight, canvasBottom);
         backgroundFill.draw(canvas);
 
-        int right = (width - rightInset);
+        //region Sleep depths
 
-        if (sleepDepthFraction > 0) {
-            float fillRight = right * sleepDepthFraction;
-            canvas.drawRect(0f, 0f, fillRight, height, fillPaint);
+        boolean hasStolenTopSleepDepth = (stolenBottomSleepDepthFraction > 0f);
+        boolean hasStolenBottomSleepDepth = (stolenBottomSleepDepthFraction > 0f);
+
+        if (sleepDepthFraction > 0f) {
+            fillPaint.setColor(sleepDepthColor);
+
+            float fillRight = contentRight * sleepDepthFraction;
+            float fillTop = hasStolenTopSleepDepth ? stolenScoreHeight : 0f;
+            float fillBottom = hasStolenBottomSleepDepth ? canvasBottom - stolenScoreHeight : canvasBottom;
+            canvas.drawRect(0f, fillTop, fillRight, fillBottom, fillPaint);
         }
 
-        if (wantsDivider) {
-            float middle = height / 2f;
-            float halfDividerHeight = dividerHeight / 2f;
-            canvas.drawRect(0f, middle - halfDividerHeight,
-                            right, middle + halfDividerHeight,
-                            stripePaint);
+        if (hasStolenTopSleepDepth) {
+            fillPaint.setColor(stolenTopSleepDepthColor);
+
+            float fillRight = contentRight * stolenTopSleepDepthFraction;
+            float fillBottom = stolenScoreHeight;
+            canvas.drawRect(0f, 0f, fillRight, fillBottom, fillPaint);
         }
+
+        if (hasStolenBottomSleepDepth) {
+            fillPaint.setColor(stolenBottomSleepDepthColor);
+
+            float fillRight = contentRight * stolenBottomSleepDepthFraction;
+            float fillTop = canvasBottom - stolenScoreHeight;
+            canvas.drawRect(0f, fillTop, fillRight, canvasBottom, fillPaint);
+        }
+
+        //endregion
+
+
+        //region Time stamps
 
         if (timestampDrawable.getText() != null) {
+            float middle = canvasBottom / 2f;
+            float halfDividerHeight = dividerHeight / 2f;
+            canvas.drawRect(0f, middle - halfDividerHeight,
+                            contentRight, middle + halfDividerHeight,
+                            stripePaint);
+
             int textWidthHalf = timestampDrawable.getIntrinsicWidth() / 2,
                 textHeightHalf = timestampDrawable.getIntrinsicHeight() / 2;
 
-            int midX = (width + right) / 2;
-            int midY = height / 2;
+            int midX = (canvasRight + contentRight) / 2;
+            int midY = canvasBottom / 2;
 
             timestampDrawable.setBounds(
                 midX - textWidthHalf, midY - textHeightHalf,
@@ -81,8 +118,11 @@ public class TimelineSegmentDrawable extends Drawable {
             timestampDrawable.draw(canvas);
         }
 
+        //endregion
+
+
         if (overlayDrawable != null) {
-            overlayDrawable.setBounds(0, 0, right, height);
+            overlayDrawable.setBounds(0, 0, contentRight, canvasBottom);
             overlayDrawable.draw(canvas);
         }
     }
@@ -115,16 +155,23 @@ public class TimelineSegmentDrawable extends Drawable {
         return PixelFormat.OPAQUE;
     }
 
-    public void setWantsDivider(boolean wantsDivider) {
-        this.wantsDivider = wantsDivider;
+    public void setSleepDepth(int sleepDepth) {
+        this.sleepDepthFraction = Math.min(1f, sleepDepth / 100f);
+        this.sleepDepthColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
+
         invalidateSelf();
     }
 
-    public void setSleepDepth(int sleepDepth) {
-        this.sleepDepthFraction = Math.min(1f, sleepDepth / 100f);
+    public void setStolenTopSleepDepth(int sleepDepth) {
+        this.stolenTopSleepDepthFraction = Math.min(1f, sleepDepth / 100f);
+        this.stolenTopSleepDepthColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
 
-        int color = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
-        fillPaint.setColor(color);
+        invalidateSelf();
+    }
+
+    public void setStolenBottomSleepDepth(int sleepDepth) {
+        this.stolenBottomSleepDepthFraction = Math.min(1f, sleepDepth / 100f);
+        this.stolenBottomSleepDepthColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
 
         invalidateSelf();
     }

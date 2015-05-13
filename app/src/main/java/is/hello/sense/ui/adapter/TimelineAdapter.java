@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
 
 public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseViewHolder> {
@@ -39,6 +42,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
     private final List<TimelineSegment> segments = new ArrayList<>();
     private final Set<Integer> positionsWithTime = new HashSet<>();
+    private final SparseArray<Pair<Integer, Integer>> stolenSleepDepths = new SparseArray<>();
     private int[] segmentHeights;
 
     private boolean use24Time = false;
@@ -68,6 +72,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
         int segmentCount = segments.size();
 
         positionsWithTime.clear();
+        stolenSleepDepths.clear();
         this.segmentHeights = new int[segmentCount];
 
         Set<Integer> hours = new HashSet<>();
@@ -82,6 +87,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
                 positionsWithTime.add(i + EXTRA_COUNT);
                 hours.add(hour);
             }
+
+            if (segment.hasEventInfo()) {
+                int previousDepth = i > 0 ? segments.get(i - 1).getSleepDepth() : 0;
+                int nextDepth = i < (segmentCount - 1) ? segments.get(i + 1).getSleepDepth() : 0;
+                stolenSleepDepths.put(i + EXTRA_COUNT, Pair.create(previousDepth, nextDepth));
+            }
         }
     }
 
@@ -91,6 +102,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
     private void clearCache() {
         this.segmentHeights = null;
+        stolenSleepDepths.clear();
         positionsWithTime.clear();
     }
 
@@ -217,11 +229,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
         void bindSegment(int position, @NonNull TimelineSegment segment) {
             drawable.setSleepDepth(segment.getSleepDepth());
             if (positionsWithTime.contains(position)) {
-                drawable.setTimestamp(dateFormatter.formatAsTimelineTimestamp(segment.getShiftedTimestamp(), use24Time));
-                drawable.setWantsDivider(true);
+                drawable.setTimestamp(dateFormatter.formatForTimelineSegment(segment.getShiftedTimestamp(), use24Time));
             } else {
                 drawable.setTimestamp(null);
-                drawable.setWantsDivider(false);
             }
         }
     }
@@ -246,8 +256,19 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
         void bindSegment(int position, @NonNull TimelineSegment segment) {
             super.bindSegment(position, segment);
 
+            Pair<Integer, Integer> stolenScores = stolenSleepDepths.get(position);
+            if (stolenScores != null) {
+                drawable.setStolenTopSleepDepth(stolenScores.first);
+                drawable.setStolenBottomSleepDepth(stolenScores.second);
+            } else {
+                drawable.setStolenBottomSleepDepth(0);
+                drawable.setStolenTopSleepDepth(0);
+            }
+
+            int iconRes = Styles.getTimelineSegmentIconRes(segment);
+            messageText.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
             messageText.setText(segment.getMessage());
-            dateText.setText(dateFormatter.formatAsTimelineStamp(segment.getShiftedTimestamp(), use24Time));
+            dateText.setText(dateFormatter.formatForTimelineEvent(segment.getShiftedTimestamp(), use24Time));
         }
     }
 

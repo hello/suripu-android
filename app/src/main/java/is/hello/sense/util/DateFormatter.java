@@ -109,31 +109,38 @@ import is.hello.sense.R;
         }
     }
 
-    public @NonNull String formatAsTimelineStamp(@Nullable DateTime date, boolean use24Time) {
+    public static @NonNull CharSequence assembleTimeAndPeriod(@NonNull CharSequence time, @NonNull CharSequence period) {
+        SpannableStringBuilder spannable = new SpannableStringBuilder(period);
+        spannable.setSpan(new RelativeSizeSpan(0.75f), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.insert(0, time);
+        return spannable;
+    }
+
+    public @NonNull CharSequence formatForTimelineEvent(@Nullable DateTime date, boolean use24Time) {
         if (date != null) {
-            if (use24Time)
-                return date.toString(context.getString(R.string.format_timeline_time_24_hr));
-            else
-                return date.toString(context.getString(R.string.format_timeline_time_12_hr));
+            if (use24Time) {
+                return date.toString(context.getString(R.string.format_timeline_event_time_24_hr));
+            } else {
+                String time = date.toString(context.getString(R.string.format_timeline_event_time_12_hr));
+                String period = date.toString(context.getString(R.string.format_timeline_12_hr_period));
+                return assembleTimeAndPeriod(time, period);
+            }
         }
         return context.getString(R.string.format_date_placeholder);
     }
 
-    public @Nullable CharSequence formatAsTimelineTimestamp(@Nullable DateTime date, boolean use24Time) {
+    public @Nullable CharSequence formatForTimelineSegment(@Nullable DateTime date, boolean use24Time) {
         if (date != null) {
-            String firstPart, secondPart;
+            String hour, period;
             if (use24Time) {
-                firstPart = date.toString("H");
-                secondPart = ":00";
+                hour = date.toString(context.getString(R.string.format_timeline_segment_time_24_hr));
+                period = context.getString(R.string.format_timeline_24_hr_period);
             } else {
-                firstPart = date.toString("h");
-                secondPart = date.toString(" a");
+                hour = date.toString(context.getString(R.string.format_timeline_segment_time_12_hr));
+                period = date.toString(context.getString(R.string.format_timeline_12_hr_period));
             }
 
-            SpannableStringBuilder spannable = new SpannableStringBuilder(secondPart);
-            spannable.setSpan(new RelativeSizeSpan(0.75f), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spannable.insert(0, firstPart);
-            return spannable;
+            return assembleTimeAndPeriod(hour, period);
         } else {
             return null;
         }

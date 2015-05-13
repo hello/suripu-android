@@ -41,6 +41,7 @@
         android:id="@+id/timeline_fragment_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/fragment_timeline_date" />
+        android:layout_below="@id/fragment_timeline_date"
+        android:clipChildren="false" />
 
 </RelativeLayout>

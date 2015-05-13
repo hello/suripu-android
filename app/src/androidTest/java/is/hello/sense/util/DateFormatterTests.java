@@ -77,10 +77,10 @@ public class DateFormatterTests extends InjectionTestCase {
     }
 
     public void testFormatAsTimelineStamp() {
-        assertEquals("2:30", formatter.formatAsTimelineStamp(new DateTime(2001, 2, 3, 14, 30), false));
-        assertEquals("14:30", formatter.formatAsTimelineStamp(new DateTime(2001, 2, 3, 14, 30), true));
-        assertEquals(placeholder, formatter.formatAsTimelineStamp(null, false));
-        assertEquals(placeholder, formatter.formatAsTimelineStamp(null, true));
+        assertEquals("2:30", formatter.formatForTimelineEvent(new DateTime(2001, 2, 3, 14, 30), false));
+        assertEquals("14:30", formatter.formatForTimelineEvent(new DateTime(2001, 2, 3, 14, 30), true));
+        assertEquals(placeholder, formatter.formatForTimelineEvent(null, false));
+        assertEquals(placeholder, formatter.formatForTimelineEvent(null, true));
     }
 
     public void testFormatAsTime() {
