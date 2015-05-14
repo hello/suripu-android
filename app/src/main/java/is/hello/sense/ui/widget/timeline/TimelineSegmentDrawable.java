@@ -20,7 +20,6 @@ public class TimelineSegmentDrawable extends Drawable {
     private final Paint fillPaint = new Paint();
     private final Paint stripePaint = new Paint();
 
-    private final Drawable backgroundFill;
     private final int rightInset;
     private final int dividerHeight;
     private final int stolenScoreHeight;
@@ -41,7 +40,6 @@ public class TimelineSegmentDrawable extends Drawable {
 
     public TimelineSegmentDrawable(@NonNull Context context) {
         this.resources = context.getResources();
-        this.backgroundFill = resources.getDrawable(R.drawable.background_timeline_segment);
         this.rightInset = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_right_inset);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
         this.stolenScoreHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_stolen_height);
@@ -60,9 +58,6 @@ public class TimelineSegmentDrawable extends Drawable {
             canvasBottom = canvas.getHeight();
 
         int contentRight = (canvasRight - rightInset);
-
-        backgroundFill.setBounds(0, 0, canvasRight, canvasBottom);
-        backgroundFill.draw(canvas);
 
         //region Sleep depths
 
@@ -159,7 +154,7 @@ public class TimelineSegmentDrawable extends Drawable {
 
     @Override
     public int getOpacity() {
-        return PixelFormat.OPAQUE;
+        return PixelFormat.TRANSPARENT;
     }
 
     private static float calculateSleepDepthFraction(int sleepDepth) {

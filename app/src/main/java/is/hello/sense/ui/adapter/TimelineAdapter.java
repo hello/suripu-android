@@ -3,6 +3,7 @@ package is.hello.sense.ui.adapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.util.SparseArray;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Set;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
@@ -140,11 +140,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
         }
     }
 
-    public void bind(@NonNull Timeline timeline) {
+    public void bindSegments(@Nullable List<TimelineSegment> newSegments) {
         clear();
 
-        if (!Lists.isEmpty(timeline.getSegments())) {
-            segments.addAll(timeline.getSegments());
+        if (!Lists.isEmpty(newSegments)) {
+            segments.addAll(newSegments);
             buildCache();
         }
 

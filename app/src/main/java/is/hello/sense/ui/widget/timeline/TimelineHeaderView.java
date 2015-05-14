@@ -17,12 +17,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import javax.inject.Inject;
-
 import is.hello.sense.R;
-import is.hello.sense.SenseApplication;
-import is.hello.sense.api.model.Timeline;
-import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
@@ -30,10 +25,10 @@ import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.util.Markdown;
 
 public class TimelineHeaderView extends LinearLayout implements TimelineSimpleItemAnimator.Listener {
-    @Inject Markdown markdown;
+    public static final int NULL_SCORE = -1;
+
 
     private final Paint dividerPaint = new Paint();
     private final int dividerHeight;
@@ -63,8 +58,6 @@ public class TimelineHeaderView extends LinearLayout implements TimelineSimpleIt
 
     public TimelineHeaderView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        SenseApplication.getInstance().inject(this);
 
         setOrientation(VERTICAL);
         setGravity(Gravity.CENTER);
@@ -138,20 +131,34 @@ public class TimelineHeaderView extends LinearLayout implements TimelineSimpleIt
 
     //region Scores
 
-    public void showScore(int score) {
+    private void setScore(int score) {
+        int color;
         if (score < 0) {
-            scoreDrawable.setFillColor(getResources().getColor(R.color.sensor_unknown));
+            color = getResources().getColor(R.color.sensor_unknown);
+
             scoreDrawable.setValue(0);
             scoreText.setText(R.string.missing_data_placeholder);
+
+            setWillNotDraw(true);
         } else {
-            animateToScore(score);
+            color = Styles.getSleepScoreColor(getContext(), score);
+
+            scoreDrawable.setValue(score);
+            scoreText.setText(Integer.toString(score));
+
+            setWillNotDraw(false);
         }
+
+        scoreDrawable.setFillColor(color);
+        scoreText.setTextColor(color);
     }
 
-    public void animateToScore(int score) {
+    private void animateToScore(int score) {
         if (score < 0) {
-            showScore(score);
+            setScore(score);
         } else {
+            setWillNotDraw(false);
+
             if (colorAnimator != null) {
                 colorAnimator.cancel();
             }
@@ -206,23 +213,17 @@ public class TimelineHeaderView extends LinearLayout implements TimelineSimpleIt
 
     //region Binding
 
-    public void bindTimeline(@NonNull Timeline timeline) {
-        if (Lists.isEmpty(timeline.getSegments())) {
-            showScore(-1);
-            setWillNotDraw(true);
-        } else {
-            int sleepScore = timeline.getScore();
-            animateToScore(sleepScore);
-            setWillNotDraw(false);
-        }
-
-        markdown.renderInto(messageText, timeline.getMessage());
+    public void bindMessage(@Nullable CharSequence message) {
+        messageText.setText(message);
     }
 
-    public void timelineUnavailable(@NonNull Throwable e) {
-        showScore(-1);
+    public void bindScore(int score) {
+        animateToScore(score);
+    }
+
+    public void bindError(@NonNull Throwable e) {
+        setScore(NULL_SCORE);
         messageText.setText(getResources().getString(R.string.timeline_error_message, e.getMessage()));
-        setWillNotDraw(true);
     }
 
     //endregion

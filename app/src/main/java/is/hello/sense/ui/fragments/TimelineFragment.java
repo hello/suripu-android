@@ -1,6 +1,9 @@
 package is.hello.sense.ui.fragments;
 
 import android.app.Activity;
+import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,6 +33,7 @@ import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.timeline.TimelineFirstItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineSimpleItemAnimator;
 import is.hello.sense.ui.widget.util.Views;
@@ -150,7 +154,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             }
         });
 
-        recyclerView.setItemAnimator(new TimelineSimpleItemAnimator(getAnimatorContext(), headerView));
+        if (firstTimeline) {
+            recyclerView.setItemAnimator(new TimelineFirstItemAnimator(getAnimatorContext(), headerView));
+        } else {
+            recyclerView.setItemAnimator(new TimelineSimpleItemAnimator(getAnimatorContext(), headerView));
+        }
+        recyclerView.addItemDecoration(new BackgroundDecoration(getResources()));
 
         this.adapter = new TimelineAdapter(getActivity(), headerView, dateFormatter);
         recyclerView.setAdapter(adapter);
@@ -163,8 +172,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         super.onViewCreated(view, savedInstanceState);
 
         bindAndSubscribe(presenter.timeline,
-                         this::bindTimeline,
-                         this::timelineUnavailable);
+                this::bindTimeline,
+                this::timelineUnavailable);
+
+        bindAndSubscribe(presenter.message,
+                         headerView::bindMessage,
+                         Functions.IGNORE_ERROR);
 
         bindAndSubscribe(preferences.observableUse24Time(),
                          adapter::setUse24Time,
@@ -324,19 +337,20 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     //region Binding
 
     public void bindTimeline(@NonNull Timeline timeline) {
-        adapter.bind(timeline);
-        headerView.bindTimeline(timeline);
+        adapter.bindSegments(timeline.getSegments());
 
         if (Lists.isEmpty(timeline.getSegments())) {
+            headerView.bindScore(TimelineHeaderView.NULL_SCORE);
             shareButton.setVisibility(View.GONE);
         } else if (!homeActivity.getSlidingLayersView().isOpen()) {
+            headerView.bindScore(timeline.getScore());
             shareButton.setVisibility(View.VISIBLE);
         }
     }
 
     public void timelineUnavailable(Throwable e) {
         adapter.clear();
-        headerView.timelineUnavailable(e);
+        headerView.bindError(e);
     }
 
     //endregion
@@ -362,4 +376,27 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
     }
 
+    static class BackgroundDecoration extends RecyclerView.ItemDecoration {
+        private final Drawable background;
+
+        public BackgroundDecoration(@NonNull Resources resources) {
+            this.background = resources.getDrawable(R.drawable.background_timeline_segment);
+        }
+
+        @Override
+        public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+            int left = 0,
+                top = 0,
+                right = canvas.getWidth(),
+                bottom = canvas.getHeight();
+
+            RecyclerView.ViewHolder headerView = parent.findViewHolderForAdapterPosition(0);
+            if (headerView != null) {
+                top = headerView.itemView.getBottom();
+            }
+
+            background.setBounds(left, top, right, bottom);
+            background.draw(canvas);
+        }
+    }
 }

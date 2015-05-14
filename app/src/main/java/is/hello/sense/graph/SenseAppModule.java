@@ -32,7 +32,6 @@ import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
@@ -65,7 +64,6 @@ import is.hello.sense.ui.fragments.settings.NotificationsSettingsFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
 import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
-import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 
 @Module(
     includes = {ApiModule.class, BluetoothModule.class, DebugModule.class},
@@ -103,7 +101,6 @@ import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 
         TimelineFragment.class,
         TimelinePresenter.class,
-        TimelineHeaderView.class,
         TimelineNavigatorFragment.class,
         TimelineNavigatorPresenter.class,
 
