@@ -76,15 +76,15 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_ADVANCED && resultCode == Activity.RESULT_OK) {
-            SenseBottomSheet.Option option = (SenseBottomSheet.Option) data.getSerializableExtra(BottomSheetDialogFragment.RESULT_OPTION);
-            switch (option.getOptionId()) {
+            int optionId = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, 0);
+            switch (optionId) {
                 case OPTION_ID_REPLACE_PILL: {
                     replaceDevice();
                     break;
                 }
 
                 default: {
-                    Logger.warn(getClass().getSimpleName(), "Unknown option " + option.getOptionId());
+                    Logger.warn(getClass().getSimpleName(), "Unknown option " + optionId);
                     break;
                 }
             }

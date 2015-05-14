@@ -23,6 +23,7 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.StateSafeExecutor;
 
 public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseViewHolder> {
     private static final int VIEW_TYPE_HEADER = 0;
@@ -47,6 +48,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
     private int[] segmentHeights;
 
     private boolean use24Time = false;
+    private @Nullable StateSafeExecutor onItemClickExecutor;
+    private @Nullable OnItemClickListener onItemClickListener;
 
     public TimelineAdapter(@NonNull Context context,
                            @NonNull View headerView,
@@ -161,6 +164,28 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
     //endregion
 
 
+    //region Click Support
+
+    public void setOnItemClickListener(@Nullable StateSafeExecutor onItemClickExecutor,
+                                       @Nullable OnItemClickListener onItemClickListener) {
+        this.onItemClickExecutor = onItemClickExecutor;
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    private void dispatchItemClick(@NonNull SegmentViewHolder holder) {
+        if (onItemClickExecutor != null && onItemClickListener != null) {
+            OnItemClickListener onItemClickListener = this.onItemClickListener;
+            onItemClickExecutor.execute(() -> {
+                int position = holder.getAdapterPosition();
+                TimelineSegment segment = getSegment(position);
+                onItemClickListener.onItemClicked(position, segment);
+            });
+        }
+    }
+
+    //endregion
+
+
     //region Vending Views
 
     @Override
@@ -202,16 +227,20 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
         }
     }
 
-    class SegmentViewHolder extends BaseViewHolder {
+    class SegmentViewHolder extends BaseViewHolder implements View.OnClickListener {
         final TimelineSegmentDrawable drawable;
 
         SegmentViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            itemView.setOnClickListener(this);
+
             this.drawable = new TimelineSegmentDrawable(context);
             prepareDrawable();
             itemView.setBackground(drawable);
         }
+
+        //region Binding
 
         @Override
         final void bind(int position) {
@@ -233,6 +262,17 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
                 drawable.setTimestamp(null);
             }
         }
+
+        //endregion
+
+        //region Click Support
+
+        @Override
+        public void onClick(View ignored) {
+            dispatchItemClick(this);
+        }
+
+        //endregion
     }
 
     class EventViewHolder extends SegmentViewHolder {
@@ -274,4 +314,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
     }
 
     //endregion
+
+
+    public interface OnItemClickListener {
+        void onItemClicked(int position, @NonNull TimelineSegment segment);
+    }
 }

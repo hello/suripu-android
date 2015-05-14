@@ -158,8 +158,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
             hardwarePresenter.setWantsHighPowerPreScan(true);
             connectToPeripheral();
         } else if (requestCode == REQUEST_CODE_ADVANCED && resultCode == Activity.RESULT_OK) {
-            SenseBottomSheet.Option option = (SenseBottomSheet.Option) data.getSerializableExtra(BottomSheetDialogFragment.RESULT_OPTION);
-            switch (option.getOptionId()) {
+            int optionId = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, 0);
+            switch (optionId) {
                 case OPTION_ID_REPLACE_SENSE: {
                     replaceDevice();
                     break;
@@ -171,7 +171,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                 }
 
                 default: {
-                    Logger.warn(getClass().getSimpleName(), "Unknown option " + option.getOptionId());
+                    Logger.warn(getClass().getSimpleName(), "Unknown option " + optionId);
                     break;
                 }
             }

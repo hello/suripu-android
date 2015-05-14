@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -18,10 +19,13 @@ import android.widget.TextView;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -29,9 +33,11 @@ import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
+import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.timeline.TimelineFirstItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
@@ -43,10 +49,15 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
 import rx.Observable;
 
-public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener {
+public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, TimelineAdapter.OnItemClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
     private static final String ARG_IS_FIRST_TIMELINE = TimelineFragment.class.getName() + ".ARG_IS_FIRST_TIMELINE";
+
+    private static final int REQUEST_CODE_ALTER_EVENT = 0xAE3;
+    private static final int ID_EVENT_CORRECT = 0;
+    private static final int ID_EVENT_ADJUST_TIME = 1;
+    private static final int ID_EVENT_REMOVE = 2;
 
 
     @Inject TimelinePresenter presenter;
@@ -162,6 +173,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         recyclerView.addItemDecoration(new BackgroundDecoration(getResources()));
 
         this.adapter = new TimelineAdapter(getActivity(), headerView, dateFormatter);
+        adapter.setOnItemClickListener(stateSafeExecutor, this);
         recyclerView.setAdapter(adapter);
 
         return view;
@@ -351,6 +363,75 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void timelineUnavailable(Throwable e) {
         adapter.clear();
         headerView.bindError(e);
+    }
+
+    //endregion
+
+
+    //region Acting on Items
+
+    @Override
+    public void onItemClicked(int position, @NonNull TimelineSegment segment) {
+        if (!segment.hasEventInfo()) {
+            return;
+        }
+
+        ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
+        options.add(
+                new SenseBottomSheet.Option(ID_EVENT_CORRECT)
+                        .setTitle(R.string.action_timeline_mark_event_correct)
+                        .setIcon(R.drawable.timeline_action_correct)
+        );
+        if (segment.isTimeAdjustable()) {
+            options.add(
+                    new SenseBottomSheet.Option(ID_EVENT_ADJUST_TIME)
+                            .setTitle(R.string.action_timeline_event_adjust_time)
+                            .setIcon(R.drawable.timeline_action_adjust)
+            );
+        }
+        options.add(
+                new SenseBottomSheet.Option(ID_EVENT_REMOVE)
+                        .setTitle(R.string.action_timeline_event_remove)
+                        .setIcon(R.drawable.timeline_action_remove)
+        );
+        BottomSheetDialogFragment actions = BottomSheetDialogFragment.newInstance(options);
+        actions.setWantsDividers(true);
+        actions.setAffectedPosition(position);
+        actions.setTargetFragment(this, REQUEST_CODE_ALTER_EVENT);
+        actions.show(getFragmentManager(), BottomSheetDialogFragment.TAG);
+    }
+
+    private void adjustTime(int position) {
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_ALTER_EVENT && resultCode == Activity.RESULT_OK) {
+            int optionId = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, 0);
+            int segmentPosition = data.getIntExtra(BottomSheetDialogFragment.RESULT_AFFECTED_POSITION, 0);
+            switch (optionId) {
+                case ID_EVENT_CORRECT: {
+                    break;
+                }
+
+                case ID_EVENT_ADJUST_TIME: {
+                    adjustTime(segmentPosition);
+                    break;
+                }
+
+                case ID_EVENT_REMOVE: {
+                    break;
+                }
+
+                default: {
+                    Logger.warn(getClass().getSimpleName(), "Unknown option #" + optionId);
+                    break;
+                }
+            }
+        }
     }
 
     //endregion
