@@ -101,6 +101,10 @@
         <item name="android:textColor">@color/text_footer</item>
     </style>
 
+    <style name="AppTheme.Text.RotaryPickerItem" parent="AppTheme.Text.Body">
+        <item name="android:textSize">@dimen/text_size_rotary_picker_item</item>
+    </style>
+
 
     <style name="AppTheme.Text.FieldLabel">
         <item name="android:fontFamily">sans-serif</item>

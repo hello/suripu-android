@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <is.hello.sense.ui.widget.RoundedLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialog_sense_alert_container"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/gap_outer"
     app:senseCornerRadius="@dimen/raised_item_corner_radius">
 
     <TextView

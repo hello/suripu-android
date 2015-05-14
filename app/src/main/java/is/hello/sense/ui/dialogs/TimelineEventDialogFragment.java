@@ -348,7 +348,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
     public void adjustSegmentTime(@NonNull View sender) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ADJUST_TIME, null);
 
-        @TimePickerDialogFragment.Config int config = TimePickerDialogFragment.FLAG_ALWAYS_USE_SPINNER;
+        @TimePickerDialogFragment.Config int config = TimePickerDialogFragment.FLAG_USE_ROTARY_PICKER;
         if (preferences.getUse24Time()) {
             config |= TimePickerDialogFragment.FLAG_USE_24_TIME;
         }
