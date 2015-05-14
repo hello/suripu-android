@@ -87,8 +87,6 @@ public class TimelineHeaderView extends LinearLayout {
 
         this.backgroundColor = resources.getColor(R.color.background_timeline);
         this.messageTextColor = messageText.getCurrentTextColor();
-
-        setWillNotDraw(false);
     }
 
     @Override
@@ -209,9 +207,11 @@ public class TimelineHeaderView extends LinearLayout {
     public void bindTimeline(@NonNull Timeline timeline) {
         if (Lists.isEmpty(timeline.getSegments())) {
             showScore(-1);
+            setWillNotDraw(true);
         } else {
             int sleepScore = timeline.getScore();
             animateToScore(sleepScore);
+            setWillNotDraw(false);
         }
 
         markdown.renderInto(messageText, timeline.getMessage());
@@ -220,6 +220,7 @@ public class TimelineHeaderView extends LinearLayout {
     public void timelineUnavailable(@NonNull Throwable e) {
         showScore(-1);
         messageText.setText(getResources().getString(R.string.timeline_error_message, e.getMessage()));
+        setWillNotDraw(true);
     }
 
     //endregion

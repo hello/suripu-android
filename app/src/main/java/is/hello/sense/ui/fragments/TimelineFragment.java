@@ -1,9 +1,12 @@
 package is.hello.sense.ui.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +18,9 @@ import android.widget.TextView;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -25,6 +31,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
@@ -123,6 +130,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setOnScrollListener(new ScrollListener());
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -351,4 +359,82 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
     }
 
+    private static class EntranceItemAnimator extends RecyclerView.ItemAnimator {
+        private final List<RecyclerView.ViewHolder> pending = new ArrayList<>();
+        private final List<RecyclerView.ViewHolder> running = new ArrayList<>();
+
+        @Override
+        public void runPendingAnimations() {
+            long delay = 0;
+            for (RecyclerView.ViewHolder viewHolder : pending) {
+                viewHolder.itemView
+                        .animate()
+                        .setDuration(Animation.DURATION_SLOW)
+                        .setInterpolator(Animation.INTERPOLATOR_DEFAULT)
+                        .setStartDelay(delay)
+                        .alpha(1f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationCancel(Animator animation) {
+                                viewHolder.itemView.setAlpha(1f);
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                running.remove(viewHolder);
+                            }
+                        });
+                running.add(viewHolder);
+
+                delay += 100;
+            }
+            pending.clear();
+        }
+
+        @Override
+        public boolean animateAdd(RecyclerView.ViewHolder holder) {
+            holder.itemView.setAlpha(0f);
+            pending.add(holder);
+            return true;
+        }
+
+        @Override
+        public boolean animateMove(RecyclerView.ViewHolder holder, int fromX, int fromY, int toX, int toY) {
+            dispatchMoveFinished(holder);
+            return false;
+        }
+
+        @Override
+        public boolean animateChange(RecyclerView.ViewHolder oldHolder, RecyclerView.ViewHolder newHolder, int fromLeft, int fromTop, int toLeft, int toTop) {
+            dispatchChangeFinished(newHolder, false);
+            return false;
+        }
+
+        @Override
+        public boolean animateRemove(RecyclerView.ViewHolder holder) {
+            dispatchRemoveFinished(holder);
+            return false;
+        }
+
+        @Override
+        public void endAnimation(RecyclerView.ViewHolder item) {
+            item.itemView
+                    .animate()
+                    .cancel();
+        }
+
+        @Override
+        public void endAnimations() {
+            for (RecyclerView.ViewHolder viewHolder : running) {
+                viewHolder.itemView
+                        .animate()
+                        .cancel();
+            }
+        }
+
+        @Override
+        public boolean isRunning() {
+            return !running.isEmpty();
+        }
+    }
 }

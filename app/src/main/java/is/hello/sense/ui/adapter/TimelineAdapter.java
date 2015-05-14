@@ -72,9 +72,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
     private void buildCache() {
         int segmentCount = segments.size();
-
-        positionsWithTime.clear();
-        stolenSleepDepths.clear();
         this.segmentHeights = new int[segmentCount];
 
         Set<Integer> hours = new HashSet<>();
@@ -144,23 +141,21 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
     }
 
     public void bind(@NonNull Timeline timeline) {
-        segments.clear();
+        clear();
 
         if (!Lists.isEmpty(timeline.getSegments())) {
             segments.addAll(timeline.getSegments());
             buildCache();
-        } else {
-            clearCache();
         }
 
-
-        notifyDataSetChanged();
+        notifyItemRangeInserted(EXTRA_COUNT, segments.size() + EXTRA_COUNT);
     }
 
     public void clear() {
+        int extent = segments.size();
         segments.clear();
         clearCache();
-        notifyDataSetChanged();
+        notifyItemRangeRemoved(EXTRA_COUNT, extent + EXTRA_COUNT);
     }
 
     //endregion
