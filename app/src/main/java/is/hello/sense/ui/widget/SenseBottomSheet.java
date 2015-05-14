@@ -117,7 +117,6 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         }
 
         View optionView = inflater.inflate(R.layout.item_bottom_sheet_option, optionsContainer, false);
-        optionView.setOnClickListener(this);
 
         TextView title = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_title);
         TextView description = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_description);
@@ -140,6 +139,18 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
             description.setText(itemDescription);
         } else {
             description.setVisibility(View.GONE);
+        }
+
+        if (option.enabled) {
+            optionView.setOnClickListener(this);
+        } else {
+            title.setEnabled(false);
+            description.setEnabled(false);
+
+            Drawable icon = title.getCompoundDrawablesRelative()[0];
+            if (icon != null) {
+                icon.setAlpha(0x77);
+            }
         }
 
         optionView.setTag(optionsContainer.getChildCount());
@@ -217,6 +228,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         private @Nullable StringRef title;
         private @Nullable StringRef description;
         private @DrawableRes int iconRes;
+        private boolean enabled = true;
 
         public Option(int optionId) {
             this.optionId = optionId;
@@ -287,6 +299,11 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
         public Option setIcon(@DrawableRes int iconRes) {
             this.iconRes = iconRes;
+            return this;
+        }
+
+        public Option setEnabled(boolean enabled) {
+            this.enabled = enabled;
             return this;
         }
 

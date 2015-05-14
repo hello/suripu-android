@@ -55,11 +55,11 @@ public class LoadingDialogFragment extends SenseDialogFragment {
         }
     }
 
-    public static void closeWithDoneTransition(@NonNull FragmentManager fm, @NonNull Runnable onCompletion) {
+    public static void closeWithDoneTransition(@NonNull FragmentManager fm, @Nullable Runnable onCompletion) {
         LoadingDialogFragment dialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
         if (dialog != null) {
             dialog.dismissWithDoneTransition(onCompletion);
-        } else {
+        } else if (onCompletion != null) {
             onCompletion.run();
         }
     }
@@ -117,7 +117,7 @@ public class LoadingDialogFragment extends SenseDialogFragment {
         }
     }
 
-    public void dismissWithDoneTransition(@NonNull Runnable onCompletion) {
+    public void dismissWithDoneTransition(@Nullable Runnable onCompletion) {
         if (titleText != null) {
             animate(titleText)
                     .setDuration(Animation.DURATION_FAST)
@@ -142,7 +142,9 @@ public class LoadingDialogFragment extends SenseDialogFragment {
                                         return;
 
                                     new Handler().postDelayed(() -> {
-                                        onCompletion.run();
+                                        if (onCompletion != null) {
+                                            onCompletion.run();
+                                        }
                                         dismissSafely();
                                     }, DURATION_DONE_MESSAGE);
                                 })

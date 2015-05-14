@@ -76,6 +76,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
     private void buildCache() {
         int segmentCount = segments.size();
         this.segmentHeights = new int[segmentCount];
+        stolenSleepDepths.clear();
+        positionsWithTime.clear();
 
         Set<Integer> hours = new HashSet<>();
         for (int i = 0; i < segmentCount; i++) {
@@ -144,21 +146,31 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
     }
 
     public void bindSegments(@Nullable List<TimelineSegment> newSegments) {
-        clear();
+        int oldSize = segments.size();
+        int newSize = newSegments != null ? newSegments.size() : 0;
 
+        segments.clear();
         if (!Lists.isEmpty(newSegments)) {
             segments.addAll(newSegments);
             buildCache();
         }
 
-        notifyItemRangeInserted(EXTRA_COUNT, segments.size() + EXTRA_COUNT);
+        if (oldSize > newSize) {
+            notifyItemRangeInserted(EXTRA_COUNT + oldSize, oldSize - newSize);
+            notifyItemRangeChanged(EXTRA_COUNT, oldSize);
+        } else if (oldSize < newSize) {
+            notifyItemRangeRemoved(EXTRA_COUNT + oldSize, newSize - oldSize);
+            notifyItemRangeChanged(EXTRA_COUNT, newSize);
+        } else {
+            notifyItemRangeChanged(EXTRA_COUNT, newSize);
+        }
     }
 
     public void clear() {
-        int extent = segments.size();
+        int oldSize = segments.size();
         segments.clear();
         clearCache();
-        notifyItemRangeRemoved(EXTRA_COUNT, extent + EXTRA_COUNT);
+        notifyItemRangeRemoved(EXTRA_COUNT, oldSize);
     }
 
     //endregion
@@ -178,7 +190,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
             onItemClickExecutor.execute(() -> {
                 int position = holder.getAdapterPosition();
                 TimelineSegment segment = getSegment(position);
-                onItemClickListener.onItemClicked(position, segment);
+                if (segment.hasEventInfo()) {
+                    onItemClickListener.onEventItemClicked(position, segment);
+                } else {
+                    onItemClickListener.onSegmentItemClicked(position, segment);
+                }
             });
         }
     }
@@ -317,6 +333,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
 
     public interface OnItemClickListener {
-        void onItemClicked(int position, @NonNull TimelineSegment segment);
+        void onSegmentItemClicked(int position, @NonNull TimelineSegment segment);
+        void onEventItemClicked(int position, @NonNull TimelineSegment segment);
     }
 }

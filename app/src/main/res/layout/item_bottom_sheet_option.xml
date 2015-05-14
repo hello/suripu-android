@@ -17,7 +17,8 @@
         android:layout_marginTop="@dimen/gap_tiny"
         android:drawablePadding="@dimen/gap_medium"
         android:gravity="center_vertical|start"
-        android:textAppearance="@style/AppTheme.Text.Body" />
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:textColor="@color/text_color_selector_dark" />
 
     <TextView
         android:id="@+id/item_bottom_sheet_option_description"

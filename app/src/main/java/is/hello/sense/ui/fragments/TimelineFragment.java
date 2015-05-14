@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Feedback;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Functions;
@@ -34,6 +36,9 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
@@ -55,6 +60,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private static final String ARG_IS_FIRST_TIMELINE = TimelineFragment.class.getName() + ".ARG_IS_FIRST_TIMELINE";
 
     private static final int REQUEST_CODE_ALTER_EVENT = 0xAE3;
+    private static final int REQUEST_CODE_ADJUST_TIME = 0xA1E;
+
     private static final int ID_EVENT_CORRECT = 0;
     private static final int ID_EVENT_ADJUST_TIME = 1;
     private static final int ID_EVENT_REMOVE = 2;
@@ -243,24 +250,24 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         Observable<Timeline> currentTimeline = presenter.timeline.take(1);
         bindAndSubscribe(currentTimeline,
-                         timeline -> {
-                             DateTime date = presenter.getDate();
-                             String score = Integer.toString(timeline.getScore());
-                             String shareCopy;
-                             if (DateFormatter.isLastNight(date)) {
-                                 shareCopy = getString(R.string.timeline_share_last_night_fmt, score);
-                             } else {
-                                 String dateString = dateFormatter.formatAsTimelineDate(date);
-                                 shareCopy = getString(R.string.timeline_share_other_days_fmt, score, dateString);
-                             }
+                timeline -> {
+                    DateTime date = presenter.getDate();
+                    String score = Integer.toString(timeline.getScore());
+                    String shareCopy;
+                    if (DateFormatter.isLastNight(date)) {
+                        shareCopy = getString(R.string.timeline_share_last_night_fmt, score);
+                    } else {
+                        String dateString = dateFormatter.formatAsTimelineDate(date);
+                        shareCopy = getString(R.string.timeline_share_other_days_fmt, score, dateString);
+                    }
 
-                             Share.text(shareCopy)
-                                  .withSubject(getString(R.string.app_name))
-                                  .send(getActivity());
-                         },
-                         e -> {
-                             Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
-                         });
+                    Share.text(shareCopy)
+                            .withSubject(getString(R.string.app_name))
+                            .send(getActivity());
+                },
+                e -> {
+                    Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
+                });
     }
 
     public void showNavigator(@NonNull View sender) {
@@ -371,16 +378,18 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     //region Acting on Items
 
     @Override
-    public void onItemClicked(int position, @NonNull TimelineSegment segment) {
-        if (!segment.hasEventInfo()) {
-            return;
-        }
+    public void onSegmentItemClicked(int position, @NonNull TimelineSegment segment) {
 
+    }
+
+    @Override
+    public void onEventItemClicked(int position, @NonNull TimelineSegment segment) {
         ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
         options.add(
                 new SenseBottomSheet.Option(ID_EVENT_CORRECT)
                         .setTitle(R.string.action_timeline_mark_event_correct)
                         .setIcon(R.drawable.timeline_action_correct)
+                        .setEnabled(false)
         );
         if (segment.isTimeAdjustable()) {
             options.add(
@@ -393,16 +402,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 new SenseBottomSheet.Option(ID_EVENT_REMOVE)
                         .setTitle(R.string.action_timeline_event_remove)
                         .setIcon(R.drawable.timeline_action_remove)
+                        .setEnabled(false)
         );
         BottomSheetDialogFragment actions = BottomSheetDialogFragment.newInstance(options);
         actions.setWantsDividers(true);
         actions.setAffectedPosition(position);
         actions.setTargetFragment(this, REQUEST_CODE_ALTER_EVENT);
         actions.show(getFragmentManager(), BottomSheetDialogFragment.TAG);
-    }
-
-    private void adjustTime(int position) {
-
     }
 
     @Override
@@ -414,6 +420,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             int segmentPosition = data.getIntExtra(BottomSheetDialogFragment.RESULT_AFFECTED_POSITION, 0);
             switch (optionId) {
                 case ID_EVENT_CORRECT: {
+                    markCorrect(segmentPosition);
                     break;
                 }
 
@@ -423,6 +430,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 }
 
                 case ID_EVENT_REMOVE: {
+                    removeEvent(segmentPosition);
                     break;
                 }
 
@@ -431,7 +439,54 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                     break;
                 }
             }
+        } else if (requestCode == REQUEST_CODE_ADJUST_TIME && resultCode == Activity.RESULT_OK) {
+            int segmentPosition = data.getIntExtra(TimePickerDialogFragment.RESULT_AFFECTED_POSITION, 0);
+            int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 11);
+            int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 30);
+            completeAdjustTime(segmentPosition, new LocalTime(hour, minute, 0));
         }
+    }
+
+    private void adjustTime(int position) {
+        TimelineSegment segment = adapter.getSegment(position);
+        LocalTime initialTime = segment.getShiftedTimestamp().toLocalTime();
+        int flags = TimePickerDialogFragment.FLAG_USE_ROTARY_PICKER;
+        if (preferences.getUse24Time()) {
+            flags |= TimePickerDialogFragment.FLAG_USE_24_TIME;
+        }
+        TimePickerDialogFragment adjustTimeDialog = TimePickerDialogFragment.newInstance(initialTime, flags);
+        adjustTimeDialog.setAffectedPosition(position);
+        adjustTimeDialog.setTargetFragment(this, REQUEST_CODE_ADJUST_TIME);
+        adjustTimeDialog.show(getFragmentManager(), TimePickerDialogFragment.TAG);
+    }
+
+    private void completeAdjustTime(int position, @NonNull LocalTime newTime) {
+        TimelineSegment segment = adapter.getSegment(position);
+        DateTime originalTime = segment.getShiftedTimestamp();
+
+        Feedback feedback = new Feedback();
+        feedback.setEventType(segment.getEventType());
+        feedback.setNight(originalTime.toLocalDate());
+        feedback.setOldTime(originalTime.toLocalTime());
+        feedback.setNewTime(newTime);
+
+        LoadingDialogFragment.show(getFragmentManager());
+        bindAndSubscribe(presenter.submitCorrection(feedback),
+                         ignored -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                         },
+                         e -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
+                         });
+    }
+
+    private void markCorrect(int segmentPosition) {
+
+    }
+
+    private void removeEvent(int segmentPosition) {
+
     }
 
     //endregion

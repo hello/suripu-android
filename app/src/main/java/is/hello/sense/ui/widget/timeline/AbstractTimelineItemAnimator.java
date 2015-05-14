@@ -62,6 +62,7 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
     }
 
     protected void dispatchAnimationDidEnd(boolean finished) {
+        dispatchAnimationsFinished();
         listener.onTimelineAnimationDidEnd(finished);
     }
 
