@@ -222,7 +222,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
         }
 
         void prepareDrawable() {
-            drawable.setOverlayDrawable(itemView.getBackground());
+            drawable.setChildDrawable(itemView.getBackground());
         }
 
         void bindSegment(int position, @NonNull TimelineSegment segment) {
@@ -248,7 +248,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
         @Override
         void prepareDrawable() {
-            drawable.setOverlayInsets(0, eventVerticalInset, 0, eventVerticalInset);
+            drawable.setChildDrawablePadding(0, eventVerticalInset, 0, eventVerticalInset);
 
             super.prepareDrawable();
         }

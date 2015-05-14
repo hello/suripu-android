@@ -15,7 +15,7 @@ import is.hello.sense.R;
 import is.hello.sense.ui.widget.TextDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 
-public class TimelineSegmentDrawable extends Drawable {
+public class TimelineSegmentDrawable extends Drawable implements Drawable.Callback {
     private final Resources resources;
     private final Paint fillPaint = new Paint();
     private final Paint stripePaint = new Paint();
@@ -26,8 +26,8 @@ public class TimelineSegmentDrawable extends Drawable {
 
     private final TextDrawable timestampDrawable;
 
-    private @Nullable Drawable overlayDrawable;
-    private final Rect overlayInsets = new Rect();
+    private @Nullable Drawable childDrawable;
+    private final Rect childDrawablePadding = new Rect();
 
     private int sleepDepthColor;
     private float sleepDepthFraction;
@@ -37,6 +37,8 @@ public class TimelineSegmentDrawable extends Drawable {
 
     private int stolenBottomSleepDepthColor;
     private float stolenBottomSleepDepthFraction;
+
+    //region Lifecycle
 
     public TimelineSegmentDrawable(@NonNull Context context) {
         this.resources = context.getResources();
@@ -50,7 +52,6 @@ public class TimelineSegmentDrawable extends Drawable {
 
         setSleepDepth(0);
     }
-
 
     @Override
     public void draw(Canvas canvas) {
@@ -117,45 +118,47 @@ public class TimelineSegmentDrawable extends Drawable {
         //endregion
 
 
-        if (overlayDrawable != null) {
-            overlayDrawable.setBounds(
-                overlayInsets.left, overlayInsets.top,
-                contentRight - overlayInsets.right, canvasBottom - overlayInsets.bottom
+        if (childDrawable != null) {
+            childDrawable.setBounds(
+                childDrawablePadding.left, childDrawablePadding.top,
+                contentRight - childDrawablePadding.right, canvasBottom - childDrawablePadding.bottom
             );
-            overlayDrawable.draw(canvas);
+            childDrawable.draw(canvas);
         }
     }
 
-    @Override
-    public boolean getPadding(Rect padding) {
-        if (overlayDrawable != null) {
-            overlayDrawable.getPadding(padding);
-        }
+    //endregion
 
-        padding.left += overlayInsets.left;
-        padding.top += overlayInsets.top;
-        padding.right += overlayInsets.right + rightInset;
-        padding.bottom += overlayInsets.bottom;
 
-        return true;
-    }
-
-    //region Attributes
+    //region Drawing Attributes
 
     @Override
     public void setAlpha(int alpha) {
+        if (childDrawable != null) {
+            childDrawable.setAlpha(alpha);
+        }
         fillPaint.setAlpha(alpha);
+        invalidateSelf();
     }
 
     @Override
     public void setColorFilter(ColorFilter cf) {
+        if (childDrawable != null) {
+            childDrawable.setColorFilter(cf);
+        }
         fillPaint.setColorFilter(cf);
+        invalidateSelf();
     }
 
     @Override
     public int getOpacity() {
         return PixelFormat.TRANSPARENT;
     }
+
+    //endregion
+
+
+    //region Sleep Depths
 
     private static float calculateSleepDepthFraction(int sleepDepth) {
         float fraction = Math.min(1f, sleepDepth / 100f);
@@ -189,21 +192,86 @@ public class TimelineSegmentDrawable extends Drawable {
         invalidateSelf();
     }
 
-    public void setOverlayDrawable(@Nullable Drawable overlayDrawable) {
-        this.overlayDrawable = overlayDrawable;
+    //endregion
+
+    //region Child Drawables
+
+    public void setChildDrawable(@Nullable Drawable childDrawable) {
+        if (this.childDrawable != null) {
+            this.childDrawable.setCallback(null);
+        }
+
+        this.childDrawable = childDrawable;
+
+        if (childDrawable != null) {
+            childDrawable.setCallback(this);
+
+            childDrawable.setAlpha(fillPaint.getAlpha());
+            childDrawable.setColorFilter(fillPaint.getColorFilter());
+            childDrawable.setState(getState());
+        }
 
         invalidateSelf();
     }
 
-    public void setOverlayInsets(int left, int top, int right, int bottom) {
-        overlayInsets.set(left, top, right, bottom);
+    public void setChildDrawablePadding(int left, int top, int right, int bottom) {
+        childDrawablePadding.set(left, top, right, bottom);
 
         invalidateSelf();
     }
+
+    //endregion
+
+
+    //region Timestamps
 
     public void setTimestamp(@Nullable CharSequence timestamp) {
         timestampDrawable.setText(timestamp);
         invalidateSelf();
+    }
+
+    //endregion
+
+
+    //region Forwarding
+
+    @Override
+    public boolean getPadding(Rect padding) {
+        if (childDrawable != null) {
+            childDrawable.getPadding(padding);
+        }
+
+        padding.left += childDrawablePadding.left;
+        padding.top += childDrawablePadding.top;
+        padding.right += childDrawablePadding.right + rightInset;
+        padding.bottom += childDrawablePadding.bottom;
+
+        return true;
+    }
+
+    @Override
+    protected boolean onStateChange(int[] state) {
+        return (childDrawable != null && childDrawable.setState(state));
+    }
+
+    @Override
+    public boolean isStateful() {
+        return (childDrawable != null && childDrawable.isStateful());
+    }
+
+    @Override
+    public void invalidateDrawable(Drawable who) {
+        invalidateSelf();
+    }
+
+    @Override
+    public void scheduleDrawable(Drawable who, Runnable what, long when) {
+        scheduleSelf(what, when);
+    }
+
+    @Override
+    public void unscheduleDrawable(Drawable who, Runnable what) {
+        unscheduleSelf(what);
     }
 
     //endregion
