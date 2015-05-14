@@ -24,13 +24,15 @@ import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
+import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Markdown;
 
-public class TimelineHeaderView extends LinearLayout {
+public class TimelineHeaderView extends LinearLayout implements TimelineSimpleItemAnimator.Listener {
     @Inject Markdown markdown;
 
     private final Paint dividerPaint = new Paint();
@@ -221,6 +223,31 @@ public class TimelineHeaderView extends LinearLayout {
         showScore(-1);
         messageText.setText(getResources().getString(R.string.timeline_error_message, e.getMessage()));
         setWillNotDraw(true);
+    }
+
+    //endregion
+
+
+    //region Timeline Animations
+
+    @Override
+    public void onTimelineAnimationWillStart(@NonNull AnimatorContext animatorContext, @NonNull AnimatorConfig animatorConfig) {
+        PropertyAnimatorProxy animator = PropertyAnimatorProxy.animate(messageText, animatorContext);
+        animatorConfig.apply(animator);
+        animator.fadeIn();
+        animator.addOnAnimationCompleted(finished -> {
+            if (!finished) {
+                messageText.setAlpha(1f);
+            }
+        });
+        animator.start();
+    }
+
+    @Override
+    public void onTimelineAnimationDidEnd(boolean finished) {
+        if (!finished) {
+            PropertyAnimatorProxy.stop(messageText);
+        }
     }
 
     //endregion

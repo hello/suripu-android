@@ -260,7 +260,7 @@ public class HomeActivity
                 fragment.update();
             } else {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
-                TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
+                TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null, true);
                 viewPager.setCurrentFragment(fragment);
             }
 
@@ -320,7 +320,7 @@ public class HomeActivity
                     }
 
                     DateTime date = Notification.getDate(notification);
-                    TimelineFragment fragment = TimelineFragment.newInstance(date, null);
+                    TimelineFragment fragment = TimelineFragment.newInstance(date, null, false);
                     viewPager.setCurrentFragment(fragment);
 
                     break;
@@ -392,7 +392,7 @@ public class HomeActivity
     }
 
     public void jumpToLastNight(boolean animate) {
-        TimelineFragment lastNight = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
+        TimelineFragment lastNight = TimelineFragment.newInstance(DateFormatter.lastNight(), null, !animate);
         if (animate) {
             viewPager.animateToFragment(lastNight, FragmentPageView.Position.AFTER);
         } else {
@@ -428,7 +428,7 @@ public class HomeActivity
 
     @Override
     public TimelineFragment getFragmentBeforeFragment(@NonNull TimelineFragment fragment) {
-        return TimelineFragment.newInstance(fragment.getDate().minusDays(1), null);
+        return TimelineFragment.newInstance(fragment.getDate().minusDays(1), null, false);
     }
 
 
@@ -440,7 +440,7 @@ public class HomeActivity
 
     @Override
     public TimelineFragment getFragmentAfterFragment(@NonNull TimelineFragment fragment) {
-        return TimelineFragment.newInstance(fragment.getDate().plusDays(1), null);
+        return TimelineFragment.newInstance(fragment.getDate().plusDays(1), null, false);
     }
 
 
@@ -844,7 +844,7 @@ public class HomeActivity
 
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
         if (!date.equals(currentFragment.getDate())) {
-            viewPager.setCurrentFragment(TimelineFragment.newInstance(date, timeline));
+            viewPager.setCurrentFragment(TimelineFragment.newInstance(date, timeline, false));
         } else {
             currentFragment.scrollToTop();
         }

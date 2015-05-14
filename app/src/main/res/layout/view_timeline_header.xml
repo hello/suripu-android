@@ -31,6 +31,6 @@
         android:gravity="center"
         android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
         android:minLines="2"
-        android:text="@string/dialog_loading_message"/>
+        android:visibility="invisible" />
 
 </merge>

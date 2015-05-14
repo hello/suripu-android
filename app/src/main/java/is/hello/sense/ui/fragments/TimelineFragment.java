@@ -1,12 +1,9 @@
 package is.hello.sense.ui.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,9 +15,6 @@ import android.widget.TextView;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -31,13 +25,13 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
-import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
+import is.hello.sense.ui.widget.timeline.TimelineSimpleItemAnimator;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -48,6 +42,7 @@ import rx.Observable;
 public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
+    private static final String ARG_IS_FIRST_TIMELINE = TimelineFragment.class.getName() + ".ARG_IS_FIRST_TIMELINE";
 
 
     @Inject TimelinePresenter presenter;
@@ -55,6 +50,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Inject PreferencesPresenter preferences;
 
     private HomeActivity homeActivity;
+
+    private boolean firstTimeline;
 
     private ImageButton menuButton;
     private ImageButton shareButton;
@@ -73,12 +70,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     //region Lifecycle
 
-    public static TimelineFragment newInstance(@NonNull DateTime date, @Nullable Timeline cachedTimeline) {
+    public static TimelineFragment newInstance(@NonNull DateTime date,
+                                               @Nullable Timeline cachedTimeline,
+                                               boolean isFirstTimeline) {
         TimelineFragment fragment = new TimelineFragment();
 
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_DATE, date.withTimeAtStartOfDay());
         arguments.putSerializable(ARG_CACHED_TIMELINE, cachedTimeline);
+        arguments.putBoolean(ARG_IS_FIRST_TIMELINE, isFirstTimeline);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -100,6 +100,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             Analytics.Timeline.PROP_DATE, date.toString()
         );
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE, properties);
+
+        this.firstTimeline = getArguments().getBoolean(ARG_IS_FIRST_TIMELINE, false);
 
         presenter.setDateWithTimeline(date, getCachedTimeline());
         addPresenter(presenter);
@@ -130,7 +132,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setOnScrollListener(new ScrollListener());
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -148,6 +149,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 contentShadow.setVisibility(View.VISIBLE);
             }
         });
+
+        recyclerView.setItemAnimator(new TimelineSimpleItemAnimator(getAnimatorContext(), headerView));
 
         this.adapter = new TimelineAdapter(getActivity(), headerView, dateFormatter);
         recyclerView.setAdapter(adapter);
@@ -359,82 +362,4 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         }
     }
 
-    private static class EntranceItemAnimator extends RecyclerView.ItemAnimator {
-        private final List<RecyclerView.ViewHolder> pending = new ArrayList<>();
-        private final List<RecyclerView.ViewHolder> running = new ArrayList<>();
-
-        @Override
-        public void runPendingAnimations() {
-            long delay = 0;
-            for (RecyclerView.ViewHolder viewHolder : pending) {
-                viewHolder.itemView
-                        .animate()
-                        .setDuration(Animation.DURATION_SLOW)
-                        .setInterpolator(Animation.INTERPOLATOR_DEFAULT)
-                        .setStartDelay(delay)
-                        .alpha(1f)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationCancel(Animator animation) {
-                                viewHolder.itemView.setAlpha(1f);
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                running.remove(viewHolder);
-                            }
-                        });
-                running.add(viewHolder);
-
-                delay += 100;
-            }
-            pending.clear();
-        }
-
-        @Override
-        public boolean animateAdd(RecyclerView.ViewHolder holder) {
-            holder.itemView.setAlpha(0f);
-            pending.add(holder);
-            return true;
-        }
-
-        @Override
-        public boolean animateMove(RecyclerView.ViewHolder holder, int fromX, int fromY, int toX, int toY) {
-            dispatchMoveFinished(holder);
-            return false;
-        }
-
-        @Override
-        public boolean animateChange(RecyclerView.ViewHolder oldHolder, RecyclerView.ViewHolder newHolder, int fromLeft, int fromTop, int toLeft, int toTop) {
-            dispatchChangeFinished(newHolder, false);
-            return false;
-        }
-
-        @Override
-        public boolean animateRemove(RecyclerView.ViewHolder holder) {
-            dispatchRemoveFinished(holder);
-            return false;
-        }
-
-        @Override
-        public void endAnimation(RecyclerView.ViewHolder item) {
-            item.itemView
-                    .animate()
-                    .cancel();
-        }
-
-        @Override
-        public void endAnimations() {
-            for (RecyclerView.ViewHolder viewHolder : running) {
-                viewHolder.itemView
-                        .animate()
-                        .cancel();
-            }
-        }
-
-        @Override
-        public boolean isRunning() {
-            return !running.isEmpty();
-        }
-    }
 }
