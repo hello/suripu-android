@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import is.hello.sense.functional.Function;
+import is.hello.sense.util.Logger;
 
 public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
     private static final Set<View> ANIMATING_VIEWS = new HashSet<>();
@@ -202,6 +203,14 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
             previousInChain.start();
         } else {
             buildAndStart();
+        }
+    }
+
+    public void startWhenIdle() {
+        if (system != null) {
+            system.runWhenIdle(this::start);
+        } else {
+            Logger.error(getClass().getSimpleName(), "startWhenIdle() called without animator context!");
         }
     }
 

@@ -24,7 +24,6 @@ public class TimelineSegmentDrawable extends Drawable implements Drawable.Callba
     private final int dividerHeight;
     private final int stolenScoreHeight;
 
-    private boolean timestampVisible = true;
     private final TextDrawable timestampDrawable;
 
     private @Nullable Drawable childDrawable;
@@ -32,8 +31,6 @@ public class TimelineSegmentDrawable extends Drawable implements Drawable.Callba
 
     private int sleepDepthColor;
     private float sleepDepthFraction;
-
-    private boolean stolenSleepDepthsVisible = true;
 
     private int stolenTopSleepDepthColor;
     private float stolenTopSleepDepthFraction;
@@ -65,8 +62,8 @@ public class TimelineSegmentDrawable extends Drawable implements Drawable.Callba
 
         //region Sleep depths
 
-        boolean hasStolenTopSleepDepth = (stolenSleepDepthsVisible && stolenBottomSleepDepthFraction > 0f);
-        boolean hasStolenBottomSleepDepth = (stolenSleepDepthsVisible && stolenBottomSleepDepthFraction > 0f);
+        boolean hasStolenTopSleepDepth = (stolenBottomSleepDepthFraction > 0f);
+        boolean hasStolenBottomSleepDepth = (stolenBottomSleepDepthFraction > 0f);
 
         if (sleepDepthFraction > 0f) {
             fillPaint.setColor(sleepDepthColor);
@@ -98,7 +95,7 @@ public class TimelineSegmentDrawable extends Drawable implements Drawable.Callba
 
         //region Time stamps
 
-        if (timestampVisible && timestampDrawable.getText() != null) {
+        if (timestampDrawable.getText() != null) {
             float middle = canvasBottom / 2f;
             float halfDividerHeight = dividerHeight / 2f;
             canvas.drawRect(0f, middle - halfDividerHeight,
@@ -181,11 +178,6 @@ public class TimelineSegmentDrawable extends Drawable implements Drawable.Callba
         invalidateSelf();
     }
 
-    public void setStolenSleepDepthsVisible(boolean stolenSleepDepthsVisible) {
-        this.stolenSleepDepthsVisible = stolenSleepDepthsVisible;
-        invalidateSelf();
-    }
-
     public void setStolenTopSleepDepth(int sleepDepth) {
         this.stolenTopSleepDepthFraction = calculateSleepDepthFraction(sleepDepth);
         this.stolenTopSleepDepthColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
@@ -232,13 +224,6 @@ public class TimelineSegmentDrawable extends Drawable implements Drawable.Callba
 
 
     //region Timestamps
-
-    public void setTimestampVisible(boolean timestampVisible) {
-        this.timestampVisible = timestampVisible;
-        if (timestampDrawable.getText() != null) {
-            invalidateSelf();
-        }
-    }
 
     public void setTimestamp(@Nullable CharSequence timestamp) {
         timestampDrawable.setText(timestamp);

@@ -20,8 +20,6 @@ import java.util.Set;
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
@@ -298,34 +296,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         }
 
         //endregion
-
-
-        //region Animation
-
-        @Override
-        public void prepareForRenderAnimation() {
-            drawable.setTimestampVisible(false);
-            itemView.setTranslationX(-Math.round(itemView.getMeasuredWidth() * 0.75f));
-        }
-
-        @Override
-        public void provideRenderAnimation(@NonNull AnimatorContext.TransactionFacade f) {
-            f.animate(itemView)
-             .translationX(0f);
-        }
-
-        @Override
-        public void cancelRenderAnimation() {
-            PropertyAnimatorProxy.stop(itemView);
-            itemView.setTranslationX(0f);
-        }
-
-        @Override
-        public void cleanUpAfterRenderAnimation() {
-            drawable.setTimestampVisible(true);
-        }
-
-        //endregion
     }
 
     class EventViewHolder extends SegmentViewHolder {
@@ -367,36 +337,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             messageText.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
             messageText.setText(segment.getMessage());
             dateText.setText(dateFormatter.formatForTimelineEvent(segment.getShiftedTimestamp(), use24Time));
-        }
-
-        //endregion
-
-
-        //region Animation
-
-        @Override
-        public void prepareForRenderAnimation() {
-            drawable.setStolenSleepDepthsVisible(false);
-            itemView.setScaleX(0f);
-            itemView.setScaleY(0f);
-        }
-
-        @Override
-        public void provideRenderAnimation(@NonNull AnimatorContext.TransactionFacade f) {
-            f.animate(itemView)
-             .scale(1f);
-        }
-
-        @Override
-        public void cancelRenderAnimation() {
-            PropertyAnimatorProxy.stop(itemView);
-            itemView.setScaleX(1f);
-            itemView.setScaleY(1f);
-        }
-
-        @Override
-        public void cleanUpAfterRenderAnimation() {
-            drawable.setStolenSleepDepthsVisible(true);
         }
 
         //endregion

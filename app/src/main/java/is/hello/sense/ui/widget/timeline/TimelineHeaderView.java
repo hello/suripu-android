@@ -25,7 +25,7 @@ import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
-public class TimelineHeaderView extends RelativeLayout implements TimelineSimpleItemAnimator.Listener {
+public class TimelineHeaderView extends RelativeLayout implements TimelineFadeItemAnimator.Listener {
     public static final int NULL_SCORE = -1;
 
 
@@ -33,7 +33,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
     private final int dividerHeight;
 
 
-    private final View fadeView;
+    private final View topFadeView;
+    private View scoreContainer;
     private final SleepScoreDrawable scoreDrawable;
     private final TextView scoreText;
     private final TextView messageText;
@@ -41,8 +42,9 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
     private final int backgroundColor;
     private final int messageTextColor;
 
+    private boolean firstTimeline;
+    private AnimatorContext animatorContext;
     private @Nullable ValueAnimator colorAnimator;
-    private @Nullable AnimatorContext animatorContext;
 
 
     //region Lifecycle
@@ -69,14 +71,15 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
         LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(R.layout.view_timeline_header, this, true);
 
-        this.fadeView = findViewById(R.id.view_timeline_header_fade);
+        this.topFadeView = findViewById(R.id.view_timeline_header_fade);
 
-        View scoreContainer = findViewById(R.id.view_timeline_header_chart);
+        this.scoreContainer = findViewById(R.id.view_timeline_header_chart);
         this.scoreDrawable = new SleepScoreDrawable(getResources(), true);
         scoreContainer.setBackground(scoreDrawable);
 
         this.scoreText = (TextView) findViewById(R.id.view_timeline_header_chart_score);
         this.messageText = (TextView) findViewById(R.id.view_timeline_header_chart_message);
+        messageText.setAlpha(0f);
         Views.makeTextViewLinksClickable(messageText);
 
         this.backgroundColor = resources.getColor(R.color.background_timeline);
@@ -106,7 +109,20 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
 
     //region Attributes
 
-    public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
+
+    public void setFirstTimeline(boolean firstTimeline) {
+        this.firstTimeline = firstTimeline;
+
+        if (firstTimeline) {
+            scoreContainer.setTranslationY(getResources().getDimensionPixelSize(R.dimen.gap_large));
+            scoreContainer.setAlpha(0f);
+        } else {
+            scoreContainer.setTranslationY(0f);
+            scoreContainer.setAlpha(1f);
+        }
+    }
+
+    public void setAnimatorContext(@NonNull AnimatorContext animatorContext) {
         this.animatorContext = animatorContext;
     }
 
@@ -119,7 +135,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
             messageText.setTextColor(messageTextColor);
         }
 
-        fadeView.setTranslationY(-getTop());
+        topFadeView.setTranslationY(-getTop());
     }
 
     //endregion
@@ -149,9 +165,22 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
         scoreText.setTextColor(color);
     }
 
-    private void animateToScore(int score) {
+    private void startFirstScoreAnimation(int score, @NonNull Runnable fireAdapterAnimations) {
+        PropertyAnimatorProxy.animate(scoreContainer, animatorContext)
+                .setDuration(Animation.DURATION_SLOW)
+                .fadeIn()
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        animateToScore(score, fireAdapterAnimations);
+                    }
+                })
+                .startWhenIdle();
+    }
+
+    private void animateToScore(int score, @NonNull Runnable fireAdapterAnimations) {
         if (score < 0) {
             setScore(score);
+            fireAdapterAnimations.run();
         } else {
             setWillNotDraw(false);
 
@@ -160,8 +189,11 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
             }
 
             this.colorAnimator = ValueAnimator.ofInt(scoreDrawable.getValue(), score);
-            colorAnimator.setStartDelay(250);
-            colorAnimator.setDuration(Animation.DURATION_NORMAL);
+            if (firstTimeline) {
+                colorAnimator.setDuration(Animation.DURATION_NORMAL);
+            } else {
+                colorAnimator.setDuration(Animation.DURATION_SLOW);
+            }
             colorAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
 
             int startColor = Styles.getSleepScoreColor(getContext(), scoreDrawable.getValue());
@@ -177,6 +209,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
                 scoreText.setTextColor(color);
             });
             colorAnimator.addListener(new AnimatorListenerAdapter() {
+                boolean wasCanceled = false;
+
                 @Override
                 public void onAnimationCancel(Animator animation) {
                     scoreDrawable.setValue(score);
@@ -184,23 +218,41 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
 
                     scoreText.setText(Integer.toString(score));
                     scoreText.setTextColor(endColor);
+
+                    setFirstTimeline(false);
+
+                    this.wasCanceled = true;
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     if (colorAnimator == animation) {
                         TimelineHeaderView.this.colorAnimator = null;
+
+                        if (!wasCanceled && firstTimeline) {
+                            completeFirstScoreAnimation(fireAdapterAnimations);
+                        }
                     }
                 }
             });
 
-            if (animatorContext != null) {
-                colorAnimator.addListener(animatorContext);
-                animatorContext.runWhenIdle(colorAnimator::start);
-            } else {
-                colorAnimator.start();
-            }
+            colorAnimator.addListener(animatorContext);
+            animatorContext.runWhenIdle(colorAnimator::start);
         }
+    }
+
+    private void completeFirstScoreAnimation(@NonNull Runnable fireAdapterAnimations) {
+        animatorContext.transaction(f -> {
+            f.animate(scoreContainer)
+             .translationY(0f);
+
+            f.animate(messageText)
+             .fadeIn();
+        }, finished -> {
+            if (finished) {
+                fireAdapterAnimations.run();
+            }
+        });
     }
 
     //endregion
@@ -212,8 +264,13 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
         messageText.setText(message);
     }
 
-    public void bindScore(int score) {
-        animateToScore(score);
+    public void bindScore(int score, @NonNull Runnable fireAdapterAnimations) {
+        if (firstTimeline) {
+            startFirstScoreAnimation(score, fireAdapterAnimations);
+        } else {
+            fireAdapterAnimations.run();
+            animateToScore(score, fireAdapterAnimations);
+        }
     }
 
     public void bindError(@NonNull Throwable e) {
@@ -228,6 +285,10 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
 
     @Override
     public void onTimelineAnimationWillStart(@NonNull AnimatorContext animatorContext, @NonNull AnimatorConfig animatorConfig) {
+        if (messageText.getAlpha() > 0f) {
+            return;
+        }
+
         PropertyAnimatorProxy animator = PropertyAnimatorProxy.animate(messageText, animatorContext);
         animatorConfig.apply(animator);
         animator.fadeIn();
@@ -236,7 +297,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
                 messageText.setAlpha(1f);
             }
         });
-        animator.start();
+        animator.startWhenIdle();
     }
 
     @Override

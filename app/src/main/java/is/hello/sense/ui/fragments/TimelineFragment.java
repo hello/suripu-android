@@ -45,9 +45,8 @@ import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.SlidingLayersView;
-import is.hello.sense.ui.widget.timeline.TimelineEntranceItemAnimator;
+import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
-import is.hello.sense.ui.widget.timeline.TimelineSimpleItemAnimator;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -161,6 +160,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
+        headerView.setFirstTimeline(firstTimeline);
         headerView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
@@ -173,11 +173,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             }
         });
 
-        if (firstTimeline) {
-            recyclerView.setItemAnimator(new TimelineEntranceItemAnimator(getAnimatorContext(), headerView));
-        } else {
-            recyclerView.setItemAnimator(new TimelineSimpleItemAnimator(getAnimatorContext(), headerView));
-        }
+        recyclerView.setItemAnimator(new TimelineFadeItemAnimator(getAnimatorContext(), headerView));
         recyclerView.addItemDecoration(new BackgroundDecoration(getResources()));
 
         this.adapter = new TimelineAdapter(getActivity(), headerView, dateFormatter);
@@ -357,13 +353,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     //region Binding
 
     public void bindTimeline(@NonNull Timeline timeline) {
-        adapter.bindSegments(timeline.getSegments());
-
+        Runnable continuation = stateSafeExecutor.bind(() -> adapter.bindSegments(timeline.getSegments()));
         if (Lists.isEmpty(timeline.getSegments())) {
-            headerView.bindScore(TimelineHeaderView.NULL_SCORE);
+            headerView.bindScore(TimelineHeaderView.NULL_SCORE, continuation);
             shareButton.setVisibility(View.GONE);
         } else if (!homeActivity.getSlidingLayersView().isOpen()) {
-            headerView.bindScore(timeline.getScore());
+            headerView.bindScore(timeline.getScore(), continuation);
             shareButton.setVisibility(View.VISIBLE);
         }
     }

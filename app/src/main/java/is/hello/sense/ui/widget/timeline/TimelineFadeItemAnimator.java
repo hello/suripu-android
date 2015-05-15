@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
@@ -16,15 +15,15 @@ import is.hello.sense.ui.animation.PropertyAnimatorProxy;
  * <p />
  * Each item faded-in has the delay <code>{@link #DELAY} * index</code>.
  */
-public class TimelineSimpleItemAnimator extends AbstractTimelineItemAnimator {
+public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
     public static final long DELAY = 20;
 
-    private final AnimatorConfig config = new AnimatorConfig(Animation.DURATION_FAST);
+    private final AnimatorConfig config = AnimatorConfig.DEFAULT;
 
     private final List<RecyclerView.ViewHolder> pending = new ArrayList<>();
     private final List<RecyclerView.ViewHolder> running = new ArrayList<>();
 
-    public TimelineSimpleItemAnimator(@NonNull AnimatorContext animatorContext, @NonNull Listener listener) {
+    public TimelineFadeItemAnimator(@NonNull AnimatorContext animatorContext, @NonNull Listener listener) {
         super(animatorContext, listener);
     }
 
@@ -32,7 +31,7 @@ public class TimelineSimpleItemAnimator extends AbstractTimelineItemAnimator {
     public void runPendingAnimations() {
         sortByPosition(pending);
         dispatchAnimationWillStart(config);
-        getAnimatorContext().transaction(config, f -> {
+        getAnimatorContext().transaction(config, AnimatorContext.OPTIONS_DEFAULT, f -> {
             long delay = DELAY;
             for (RecyclerView.ViewHolder item : pending) {
                 dispatchAddStarting(item);
