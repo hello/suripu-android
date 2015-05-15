@@ -7,13 +7,13 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.text.TextPaint;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Drawing;
 
 public class SleepScoreDrawable extends Drawable {
     private static final float ANGLE_START = -225f;
@@ -55,9 +55,7 @@ public class SleepScoreDrawable extends Drawable {
 
             this.label = resources.getString(R.string.sleep_score).toUpperCase();
 
-            Rect bounds = new Rect();
-            labelPaint.getTextBounds(label, 0, label.length(), bounds);
-            this.labelHeight = bounds.height();
+            this.labelHeight = Drawing.getEstimatedTextHeight(labelPaint);
         } else {
             this.labelPaint = null;
             this.label = null;

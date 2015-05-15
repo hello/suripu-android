@@ -258,6 +258,8 @@ public class HomeActivity
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, reloading.");
                 TimelineFragment fragment = viewPager.getCurrentFragment();
                 fragment.update();
+
+                this.lastUpdated = System.currentTimeMillis();
             } else {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
                 TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null, true);

@@ -14,6 +14,8 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
                                            @NonNull Listener listener) {
         this.animatorContext = animatorContext;
         this.listener = listener;
+
+        setSupportsChangeAnimations(false);
     }
 
     public AnimatorContext getAnimatorContext() {

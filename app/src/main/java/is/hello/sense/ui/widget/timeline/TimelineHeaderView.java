@@ -2,7 +2,6 @@ package is.hello.sense.ui.widget.timeline;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
@@ -22,6 +21,7 @@ import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
+import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
@@ -40,7 +40,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
 
     private final int backgroundColor;
     private final int messageTextColor;
-    private final ArgbEvaluator colorEvaluator = new ArgbEvaluator();
 
     private @Nullable ValueAnimator colorAnimator;
     private @Nullable AnimatorContext animatorContext;
@@ -112,17 +111,13 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
     }
 
     public void setChildFadeAmount(float amount) {
-        // Built in alpha handling is too slow for use inside a scrolling recycler view.
-
-        // SleepScoreDrawable#setAlpha(int) is cheaper
-        // than RelativeLayout#setAlpha(float).
-        scoreDrawable.setAlpha(Math.round(255f * amount));
-
-        // TextView uses alpha-optimized rendering with plain text...
-        scoreText.setAlpha(amount);
-
-        // ...unfortunately, messageText has rich text.
-        messageText.setTextColor((int) colorEvaluator.evaluate(amount, backgroundColor, messageTextColor));
+        if (amount <= 0.5f) {
+            // messageText has rich text, setAlpha is too expensive.
+            float messageFadeAmount = amount / 0.5f;
+            messageText.setTextColor(Drawing.interpolateColors(messageFadeAmount, backgroundColor, messageTextColor));
+        } else {
+            messageText.setTextColor(messageTextColor);
+        }
 
         fadeView.setTranslationY(-getTop());
     }
@@ -169,12 +164,11 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineSimple
             colorAnimator.setDuration(Animation.DURATION_NORMAL);
             colorAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
 
-            ArgbEvaluator colorEvaluator = new ArgbEvaluator();
             int startColor = Styles.getSleepScoreColor(getContext(), scoreDrawable.getValue());
             int endColor = Styles.getSleepScoreColor(getContext(), score);
             colorAnimator.addUpdateListener(a -> {
                 Integer newScore = (Integer) a.getAnimatedValue();
-                int color = (int) colorEvaluator.evaluate(a.getAnimatedFraction(), startColor, endColor);
+                int color = Drawing.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
 
                 scoreDrawable.setValue(newScore);
                 scoreDrawable.setFillColor(color);

@@ -16,7 +16,8 @@ import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.style.TextAppearanceSpan;
+
+import is.hello.sense.ui.widget.util.Drawing;
 
 public class TextDrawable extends Drawable {
     private final Context context;
@@ -167,9 +168,7 @@ public class TextDrawable extends Drawable {
     }
 
     public void setTextAppearance(@StyleRes int textAppearanceRes) {
-        TextAppearanceSpan textAppearance = new TextAppearanceSpan(context, textAppearanceRes);
-        textAppearance.updateMeasureState(textPaint);
-        textAppearance.updateDrawState(textPaint);
+        Drawing.updateTextPaintFromStyle(textPaint, context, textAppearanceRes);
         measure();
     }
 
