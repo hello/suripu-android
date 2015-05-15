@@ -357,9 +357,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         if (Lists.isEmpty(timeline.getSegments())) {
             headerView.bindScore(TimelineHeaderView.NULL_SCORE, continuation);
             shareButton.setVisibility(View.GONE);
-        } else if (!homeActivity.getSlidingLayersView().isOpen()) {
+        } else {
             headerView.bindScore(timeline.getScore(), continuation);
-            shareButton.setVisibility(View.VISIBLE);
+            if (!homeActivity.getSlidingLayersView().isOpen()) {
+                shareButton.setVisibility(View.VISIBLE);
+            }
         }
     }
 

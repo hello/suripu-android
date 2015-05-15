@@ -8,7 +8,6 @@ import java.util.List;
 
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.adapter.TimelineAdapter;
-import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
 
 public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnimator {
@@ -71,8 +70,8 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
 
     //region Listener
 
-    protected void dispatchAnimationWillStart(@NonNull AnimatorConfig animatorConfig) {
-        listener.onTimelineAnimationWillStart(animatorContext, animatorConfig);
+    protected void dispatchAnimationWillStart(@NonNull AnimatorContext.TransactionFacade transactionFacade) {
+        listener.onTimelineAnimationWillStart(animatorContext, transactionFacade);
     }
 
     protected void dispatchAnimationDidEnd(boolean finished) {
@@ -81,7 +80,7 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
     }
 
     public interface Listener {
-        void onTimelineAnimationWillStart(@NonNull AnimatorContext animatorContext, @NonNull AnimatorConfig animatorConfig);
+        void onTimelineAnimationWillStart(@NonNull AnimatorContext animatorContext, @NonNull AnimatorContext.TransactionFacade transactionFacade);
         void onTimelineAnimationDidEnd(boolean finished);
     }
 

@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
@@ -284,20 +283,13 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     //region Timeline Animations
 
     @Override
-    public void onTimelineAnimationWillStart(@NonNull AnimatorContext animatorContext, @NonNull AnimatorConfig animatorConfig) {
+    public void onTimelineAnimationWillStart(@NonNull AnimatorContext animatorContext, @NonNull AnimatorContext.TransactionFacade f) {
         if (messageText.getAlpha() > 0f) {
             return;
         }
 
-        PropertyAnimatorProxy animator = PropertyAnimatorProxy.animate(messageText, animatorContext);
-        animatorConfig.apply(animator);
-        animator.fadeIn();
-        animator.addOnAnimationCompleted(finished -> {
-            if (!finished) {
-                messageText.setAlpha(1f);
-            }
-        });
-        animator.startWhenIdle();
+        f.animate(messageText)
+         .fadeIn();
     }
 
     @Override

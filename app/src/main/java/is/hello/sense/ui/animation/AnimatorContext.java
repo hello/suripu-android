@@ -6,6 +6,8 @@ import android.os.Looper;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import java.lang.annotation.Retention;
@@ -16,6 +18,8 @@ import java.util.List;
 import rx.functions.Action1;
 
 public class AnimatorContext implements Animator.AnimatorListener {
+    private static final boolean DEBUG = false;
+
     private static final int MSG_IDLE = 0;
 
     private final String name;
@@ -49,6 +53,10 @@ public class AnimatorContext implements Animator.AnimatorListener {
      * the animation context is currently idle.
      */
     public void runWhenIdle(@NonNull Runnable runnable) {
+        if (DEBUG) {
+            printTrace("runWhenIdle");
+        }
+
         if (activeAnimationCount == 0) {
             runnable.run();
         } else {
@@ -80,13 +88,33 @@ public class AnimatorContext implements Animator.AnimatorListener {
 
     //region Active Animations
 
+    private void printTrace(@NonNull String traceName) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int size = Math.min(stackTrace.length - 3, 4);
+        String[] partialTraceComponents = new String[size];
+        for (int i = 0; i < size; i++) {
+            StackTraceElement stackTraceElement = stackTrace[i + 3];
+            partialTraceComponents[i] = stackTraceElement.getClassName() + "#" + stackTraceElement.getMethodName();
+        }
+        String partialTrace = TextUtils.join(" -> ", partialTraceComponents);
+        Log.i(getClass().getSimpleName(), traceName + ": " + partialTrace);
+    }
+
     public void beginAnimation() {
+        if (DEBUG) {
+            printTrace("beginAnimation");
+        }
+
         idleHandler.removeMessages(MSG_IDLE);
 
         this.activeAnimationCount++;
     }
 
     public void endAnimation() {
+        if (DEBUG) {
+            printTrace("endAnimation");
+        }
+
         if (activeAnimationCount == 0) {
             throw new IllegalStateException("No active animations to end in " + toString());
         }
