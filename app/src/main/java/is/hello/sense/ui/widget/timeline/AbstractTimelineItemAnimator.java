@@ -3,6 +3,11 @@ package is.hello.sense.ui.widget.timeline;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
+import java.util.Collections;
+import java.util.List;
+
+import is.hello.sense.functional.Functions;
+import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
 
@@ -22,6 +27,13 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
         return animatorContext;
     }
 
+    protected static void sortByPosition(@NonNull List<? extends RecyclerView.ViewHolder> viewHolders) {
+        Collections.sort(viewHolders, (l, r) -> Functions.compareInts(l.getLayoutPosition(), r.getLayoutPosition()));
+    }
+
+    protected static boolean isViewHolderAnimated(@NonNull RecyclerView.ViewHolder viewHolder) {
+        return (viewHolder.getAdapterPosition() >= TimelineAdapter.STATIC_ITEM_COUNT);
+    }
 
     //region Default Implementations
 

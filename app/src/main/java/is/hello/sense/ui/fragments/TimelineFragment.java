@@ -45,7 +45,7 @@ import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.SlidingLayersView;
-import is.hello.sense.ui.widget.timeline.TimelineFirstItemAnimator;
+import is.hello.sense.ui.widget.timeline.TimelineEntranceItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineSimpleItemAnimator;
 import is.hello.sense.ui.widget.util.Views;
@@ -174,7 +174,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         });
 
         if (firstTimeline) {
-            recyclerView.setItemAnimator(new TimelineFirstItemAnimator(getAnimatorContext(), headerView));
+            recyclerView.setItemAnimator(new TimelineEntranceItemAnimator(getAnimatorContext(), headerView));
         } else {
             recyclerView.setItemAnimator(new TimelineSimpleItemAnimator(getAnimatorContext(), headerView));
         }

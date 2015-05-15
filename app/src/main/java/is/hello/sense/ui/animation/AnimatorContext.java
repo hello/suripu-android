@@ -147,11 +147,11 @@ public class AnimatorContext implements Animator.AnimatorListener {
      * @param onCompleted   An optional listener to invoke when the longest animation completes.
      */
     public void transaction(@Nullable AnimatorConfig properties,
-                            @NonNull Action1<Facade> animations,
+                            @NonNull Action1<TransactionFacade> animations,
                             @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
         List<PropertyAnimatorProxy> animators = new ArrayList<>(2);
 
-        Facade facade = view -> {
+        TransactionFacade facade = view -> {
             PropertyAnimatorProxy animator = PropertyAnimatorProxy.animate(view, this);
             if (properties != null) {
                 properties.apply(animator);
@@ -180,7 +180,7 @@ public class AnimatorContext implements Animator.AnimatorListener {
      *
      * @see #transaction(AnimatorConfig, rx.functions.Action1, is.hello.sense.ui.animation.PropertyAnimatorProxy.OnAnimationCompleted)
      */
-    public void transaction(@NonNull Action1<Facade> animations,
+    public void transaction(@NonNull Action1<TransactionFacade> animations,
                             @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
         transaction(null, animations, onCompleted);
     }
@@ -208,7 +208,7 @@ public class AnimatorContext implements Animator.AnimatorListener {
      *
      * @see #transaction(AnimatorConfig, rx.functions.Action1, is.hello.sense.ui.animation.PropertyAnimatorProxy.OnAnimationCompleted)
      */
-    public interface Facade {
+    public interface TransactionFacade {
         /**
          * Create a property animator proxy for a given view,
          * applying any properties provided, and queuing it

@@ -4,10 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
@@ -32,8 +30,7 @@ public class TimelineSimpleItemAnimator extends AbstractTimelineItemAnimator {
 
     @Override
     public void runPendingAnimations() {
-        Collections.sort(pending, (l, r) -> Functions.compareInts(l.getLayoutPosition(), r.getLayoutPosition()));
-
+        sortByPosition(pending);
         dispatchAnimationWillStart(config);
         getAnimatorContext().transaction(config, f -> {
             long delay = DELAY;
@@ -66,6 +63,11 @@ public class TimelineSimpleItemAnimator extends AbstractTimelineItemAnimator {
 
     @Override
     public boolean animateAdd(RecyclerView.ViewHolder holder) {
+        if (!isViewHolderAnimated(holder)) {
+            dispatchAddFinished(holder);
+            return false;
+        }
+
         holder.itemView.setAlpha(0f);
         pending.add(holder);
         return true;

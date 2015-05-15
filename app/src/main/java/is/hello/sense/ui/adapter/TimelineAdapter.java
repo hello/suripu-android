@@ -20,17 +20,19 @@ import java.util.Set;
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.ui.animation.AnimatorContext;
+import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.StateSafeExecutor;
 
-public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseViewHolder> {
+public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder> {
     private static final int VIEW_TYPE_HEADER = 0;
     private static final int VIEW_TYPE_SEGMENT = 1;
     private static final int VIEW_TYPE_EVENT = 2;
 
-    private static final int EXTRA_COUNT = 1;
+    public static final int STATIC_ITEM_COUNT = 1;
 
 
     private final Context context;
@@ -86,7 +88,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
             if (segment.hasEventInfo()) {
                 int previousDepth = i > 0 ? segments.get(i - 1).getSleepDepth() : 0;
                 int nextDepth = i < (segmentCount - 1) ? segments.get(i + 1).getSleepDepth() : 0;
-                stolenSleepDepths.put(i + EXTRA_COUNT, Pair.create(previousDepth, nextDepth));
+                stolenSleepDepths.put(i + STATIC_ITEM_COUNT, Pair.create(previousDepth, nextDepth));
 
                 this.segmentHeights[i] = ViewGroup.LayoutParams.WRAP_CONTENT;
             } else {
@@ -96,14 +98,14 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
             int hour = segment.getShiftedTimestamp().getHourOfDay();
             if (!hours.contains(hour) && !positionsWithTime.contains(hour)) {
-                positionsWithTime.add(i + EXTRA_COUNT);
+                positionsWithTime.add(i + STATIC_ITEM_COUNT);
                 hours.add(hour);
             }
         }
     }
 
     private int getSegmentHeight(int adapterPosition) {
-        return segmentHeights[adapterPosition - EXTRA_COUNT];
+        return segmentHeights[adapterPosition - STATIC_ITEM_COUNT];
     }
 
     private void clearCache() {
@@ -119,11 +121,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
     @Override
     public int getItemCount() {
-        return EXTRA_COUNT + segments.size();
+        return STATIC_ITEM_COUNT + segments.size();
     }
 
     public TimelineSegment getSegment(int adapterPosition) {
-        return segments.get(adapterPosition - EXTRA_COUNT);
+        return segments.get(adapterPosition - STATIC_ITEM_COUNT);
     }
 
     @Override
@@ -156,13 +158,13 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
         }
 
         if (oldSize > newSize) {
-            notifyItemRangeInserted(EXTRA_COUNT + oldSize, oldSize - newSize);
-            notifyItemRangeChanged(EXTRA_COUNT, oldSize);
+            notifyItemRangeInserted(STATIC_ITEM_COUNT + oldSize, oldSize - newSize);
+            notifyItemRangeChanged(STATIC_ITEM_COUNT, oldSize);
         } else if (oldSize < newSize) {
-            notifyItemRangeRemoved(EXTRA_COUNT + oldSize, newSize - oldSize);
-            notifyItemRangeChanged(EXTRA_COUNT, newSize);
+            notifyItemRangeRemoved(STATIC_ITEM_COUNT + oldSize, newSize - oldSize);
+            notifyItemRangeChanged(STATIC_ITEM_COUNT, newSize);
         } else {
-            notifyItemRangeChanged(EXTRA_COUNT, newSize);
+            notifyItemRangeChanged(STATIC_ITEM_COUNT, newSize);
         }
     }
 
@@ -170,7 +172,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
         int oldSize = segments.size();
         segments.clear();
         clearCache();
-        notifyItemRangeRemoved(EXTRA_COUNT, oldSize);
+        notifyItemRangeRemoved(STATIC_ITEM_COUNT, oldSize);
     }
 
     //endregion
@@ -205,10 +207,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
     //region Vending Views
 
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TimelineBaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_TYPE_HEADER: {
-                return new BaseViewHolder(headerView);
+                return new StaticViewHolder(headerView);
             }
 
             case VIEW_TYPE_SEGMENT: {
@@ -229,21 +231,27 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
     }
 
     @Override
-    public void onBindViewHolder(BaseViewHolder holder, int position) {
+    public void onBindViewHolder(TimelineBaseViewHolder holder, int position) {
         holder.bind(position);
     }
 
-    class BaseViewHolder extends RecyclerView.ViewHolder {
-        BaseViewHolder(@NonNull View itemView) {
+    @Override
+    public void onViewRecycled(TimelineBaseViewHolder holder) {
+        holder.unbind();
+    }
+
+    static class StaticViewHolder extends TimelineBaseViewHolder {
+        StaticViewHolder(@NonNull View itemView) {
             super(itemView);
         }
 
-        void bind(int position) {
+        @Override
+        public void bind(int position) {
             // Do nothing.
         }
     }
 
-    class SegmentViewHolder extends BaseViewHolder implements View.OnClickListener {
+    class SegmentViewHolder extends TimelineBaseViewHolder implements View.OnClickListener {
         final TimelineSegmentDrawable drawable;
 
         SegmentViewHolder(@NonNull View itemView) {
@@ -259,7 +267,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
         //region Binding
 
         @Override
-        final void bind(int position) {
+        public final void bind(int position) {
             itemView.getLayoutParams().height = TimelineAdapter.this.getSegmentHeight(position);
 
             TimelineSegment segment = getSegment(position);
@@ -281,11 +289,40 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
 
         //endregion
 
+
         //region Click Support
 
         @Override
         public void onClick(View ignored) {
             dispatchItemClick(this);
+        }
+
+        //endregion
+
+
+        //region Animation
+
+        @Override
+        public void prepareForRenderAnimation() {
+            drawable.setTimestampVisible(false);
+            itemView.setTranslationX(-Math.round(itemView.getMeasuredWidth() * 0.75f));
+        }
+
+        @Override
+        public void provideRenderAnimation(@NonNull AnimatorContext.TransactionFacade f) {
+            f.animate(itemView)
+             .translationX(0f);
+        }
+
+        @Override
+        public void cancelRenderAnimation() {
+            PropertyAnimatorProxy.stop(itemView);
+            itemView.setTranslationX(0f);
+        }
+
+        @Override
+        public void cleanUpAfterRenderAnimation() {
+            drawable.setTimestampVisible(true);
         }
 
         //endregion
@@ -298,9 +335,13 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
         EventViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            itemView.setPivotX(0f);
+
             this.messageText = (TextView) itemView.findViewById(R.id.item_timeline_segment_message);
             this.dateText = (TextView) itemView.findViewById(R.id.item_timeline_segment_date);
         }
+
+        //region Binding
 
         @Override
         void prepareDrawable() {
@@ -327,6 +368,38 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.BaseVi
             messageText.setText(segment.getMessage());
             dateText.setText(dateFormatter.formatForTimelineEvent(segment.getShiftedTimestamp(), use24Time));
         }
+
+        //endregion
+
+
+        //region Animation
+
+        @Override
+        public void prepareForRenderAnimation() {
+            drawable.setStolenSleepDepthsVisible(false);
+            itemView.setScaleX(0f);
+            itemView.setScaleY(0f);
+        }
+
+        @Override
+        public void provideRenderAnimation(@NonNull AnimatorContext.TransactionFacade f) {
+            f.animate(itemView)
+             .scale(1f);
+        }
+
+        @Override
+        public void cancelRenderAnimation() {
+            PropertyAnimatorProxy.stop(itemView);
+            itemView.setScaleX(1f);
+            itemView.setScaleY(1f);
+        }
+
+        @Override
+        public void cleanUpAfterRenderAnimation() {
+            drawable.setStolenSleepDepthsVisible(true);
+        }
+
+        //endregion
     }
 
     //endregion

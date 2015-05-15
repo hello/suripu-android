@@ -21,7 +21,7 @@ import is.hello.sense.ui.widget.util.Drawing;
 
 public class TextDrawable extends Drawable {
     private final Context context;
-    private final TextPaint textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG | TextPaint.SUBPIXEL_TEXT_FLAG);
+    private final TextPaint textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
     private final Rect textBounds = new Rect();
 
     private float lineSpacingMultiple = 1f;
