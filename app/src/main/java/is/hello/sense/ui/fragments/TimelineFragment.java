@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -499,7 +500,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 float bottom = headerView.getBottom();
                 float height = headerView.getMeasuredHeight();
                 float alpha = bottom / height;
-                headerView.setChildAlpha(alpha);
+                headerView.setChildFadeAmount(alpha);
             }
 
             if (controlsAlarmShortcut) {
@@ -514,9 +515,11 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     static class BackgroundDecoration extends RecyclerView.ItemDecoration {
         private final Drawable background;
+        private final int bottomPadding;
 
         public BackgroundDecoration(@NonNull Resources resources) {
             this.background = resources.getDrawable(R.drawable.background_timeline_segment);
+            this.bottomPadding = resources.getDimensionPixelSize(R.dimen.timeline_gap_bottom);
         }
 
         @Override
@@ -533,6 +536,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
             background.setBounds(left, top, right, bottom);
             background.draw(canvas);
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view);
+            if (position > 0 && position == parent.getAdapter().getItemCount() - 1) {
+                outRect.bottom = bottomPadding;
+            }
         }
     }
 }

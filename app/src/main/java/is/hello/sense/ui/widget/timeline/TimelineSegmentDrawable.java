@@ -152,7 +152,7 @@ public class TimelineSegmentDrawable extends Drawable implements Drawable.Callba
 
     @Override
     public int getOpacity() {
-        return PixelFormat.TRANSPARENT;
+        return PixelFormat.TRANSLUCENT;
     }
 
     //endregion

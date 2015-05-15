@@ -11,10 +11,9 @@ import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import is.hello.sense.R;
@@ -26,7 +25,7 @@ import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
-public class TimelineHeaderView extends LinearLayout implements TimelineSimpleItemAnimator.Listener {
+public class TimelineHeaderView extends RelativeLayout implements TimelineSimpleItemAnimator.Listener {
     public static final int NULL_SCORE = -1;
 
 
@@ -34,6 +33,7 @@ public class TimelineHeaderView extends LinearLayout implements TimelineSimpleIt
     private final int dividerHeight;
 
 
+    private final View fadeView;
     private final SleepScoreDrawable scoreDrawable;
     private final TextView scoreText;
     private final TextView messageText;
@@ -59,8 +59,6 @@ public class TimelineHeaderView extends LinearLayout implements TimelineSimpleIt
     public TimelineHeaderView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        setOrientation(VERTICAL);
-        setGravity(Gravity.CENTER);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         Resources resources = getResources();
@@ -71,6 +69,8 @@ public class TimelineHeaderView extends LinearLayout implements TimelineSimpleIt
 
         LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(R.layout.view_timeline_header, this, true);
+
+        this.fadeView = findViewById(R.id.view_timeline_header_fade);
 
         View scoreContainer = findViewById(R.id.view_timeline_header_chart);
         this.scoreDrawable = new SleepScoreDrawable(getResources(), true);
@@ -111,19 +111,20 @@ public class TimelineHeaderView extends LinearLayout implements TimelineSimpleIt
         this.animatorContext = animatorContext;
     }
 
-    /**
-     * Built in alpha handling is too slow for use inside a scrolling recycler view.
-     */
-    public void setChildAlpha(float alpha) {
+    public void setChildFadeAmount(float amount) {
+        // Built in alpha handling is too slow for use inside a scrolling recycler view.
+
         // SleepScoreDrawable#setAlpha(int) is cheaper
         // than RelativeLayout#setAlpha(float).
-        scoreDrawable.setAlpha(Math.round(255f * alpha));
+        scoreDrawable.setAlpha(Math.round(255f * amount));
 
         // TextView uses alpha-optimized rendering with plain text...
-        scoreText.setAlpha(alpha);
+        scoreText.setAlpha(amount);
 
         // ...unfortunately, messageText has rich text.
-        messageText.setTextColor((int) colorEvaluator.evaluate(alpha, backgroundColor, messageTextColor));
+        messageText.setTextColor((int) colorEvaluator.evaluate(amount, backgroundColor, messageTextColor));
+
+        fadeView.setTranslationY(-getTop());
     }
 
     //endregion
