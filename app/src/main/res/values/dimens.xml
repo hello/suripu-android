@@ -90,7 +90,7 @@
     <dimen name="scale_view_segment">12dp</dimen>
 
     <dimen name="timeline_segment_min_height">16dp</dimen>
-    <dimen name="timeline_segment_height_per_hour">192dp</dimen>
+    <dimen name="timeline_segment_height_per_hour">96dp</dimen>
     <dimen name="timeline_segment_item_right_inset">40dp</dimen>
     <dimen name="timeline_segment_text_inset">6dp</dimen>
     <dimen name="timeline_segment_event_vertical_inset">4dp</dimen>

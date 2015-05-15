@@ -26,12 +26,8 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
 
     public final PresenterSubject<Timeline> timeline = subject;
     public final Observable<CharSequence> message = timeline.map(timeline -> {
-        if (timeline != null) {
-            String rawMessage = timeline.getMessage();
-            return markdown.toSpanned(rawMessage);
-        } else {
-            return "";
-        }
+        String rawMessage = timeline.getMessage();
+        return markdown.toSpanned(rawMessage);
     });
 
     @Override
@@ -49,11 +45,11 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
         Observable<ArrayList<Timeline>> update = service.timelineForDate(date.year().getAsString(),
                                                                          date.monthOfYear().getAsString(),
                                                                          date.dayOfMonth().getAsString());
-        return update.map(timelines -> {
+        return update.flatMap(timelines -> {
             if (Lists.isEmpty(timelines)) {
-                return null;
+                return Observable.error(new Throwable("No timelines found"));
             } else {
-                return timelines.get(0);
+                return Observable.just(timelines.get(0));
             }
         });
     }
