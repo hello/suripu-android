@@ -15,7 +15,7 @@ import is.hello.sense.R;
 import is.hello.sense.ui.widget.TextDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 
-public class TimelineSegmentDrawable extends Drawable implements Drawable.Callback {
+public class TimelineSegmentDrawable extends Drawable {
     private final Resources resources;
     private final Paint fillPaint = new Paint();
     private final Paint stripePaint = new Paint();
@@ -25,9 +25,6 @@ public class TimelineSegmentDrawable extends Drawable implements Drawable.Callba
     private final int stolenScoreHeight;
 
     private final TextDrawable timestampDrawable;
-
-    private @Nullable Drawable childDrawable;
-    private final Rect childDrawablePadding = new Rect();
 
     private int sleepDepthColor;
     private float sleepDepthFraction;
@@ -42,7 +39,7 @@ public class TimelineSegmentDrawable extends Drawable implements Drawable.Callba
 
     public TimelineSegmentDrawable(@NonNull Context context) {
         this.resources = context.getResources();
-        this.rightInset = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_right_inset);
+        this.rightInset = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_end_inset);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
         this.stolenScoreHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_stolen_height);
 
@@ -116,15 +113,13 @@ public class TimelineSegmentDrawable extends Drawable implements Drawable.Callba
         }
 
         //endregion
+    }
 
+    @Override
+    public boolean getPadding(Rect padding) {
+        padding.right += rightInset;
 
-        if (childDrawable != null) {
-            childDrawable.setBounds(
-                childDrawablePadding.left, childDrawablePadding.top,
-                contentRight - childDrawablePadding.right, canvasBottom - childDrawablePadding.bottom
-            );
-            childDrawable.draw(canvas);
-        }
+        return true;
     }
 
     //endregion
@@ -134,18 +129,12 @@ public class TimelineSegmentDrawable extends Drawable implements Drawable.Callba
 
     @Override
     public void setAlpha(int alpha) {
-        if (childDrawable != null) {
-            childDrawable.setAlpha(alpha);
-        }
         fillPaint.setAlpha(alpha);
         invalidateSelf();
     }
 
     @Override
     public void setColorFilter(ColorFilter cf) {
-        if (childDrawable != null) {
-            childDrawable.setColorFilter(cf);
-        }
         fillPaint.setColorFilter(cf);
         invalidateSelf();
     }
@@ -194,84 +183,12 @@ public class TimelineSegmentDrawable extends Drawable implements Drawable.Callba
 
     //endregion
 
-    //region Child Drawables
-
-    public void setChildDrawable(@Nullable Drawable childDrawable) {
-        if (this.childDrawable != null) {
-            this.childDrawable.setCallback(null);
-        }
-
-        this.childDrawable = childDrawable;
-
-        if (childDrawable != null) {
-            childDrawable.setCallback(this);
-
-            childDrawable.setAlpha(fillPaint.getAlpha());
-            childDrawable.setColorFilter(fillPaint.getColorFilter());
-            childDrawable.setState(getState());
-        }
-
-        invalidateSelf();
-    }
-
-    public void setChildDrawablePadding(int left, int top, int right, int bottom) {
-        childDrawablePadding.set(left, top, right, bottom);
-
-        invalidateSelf();
-    }
-
-    //endregion
-
 
     //region Timestamps
 
     public void setTimestamp(@Nullable CharSequence timestamp) {
         timestampDrawable.setText(timestamp);
         invalidateSelf();
-    }
-
-    //endregion
-
-
-    //region Forwarding
-
-    @Override
-    public boolean getPadding(Rect padding) {
-        if (childDrawable != null) {
-            childDrawable.getPadding(padding);
-        }
-
-        padding.left += childDrawablePadding.left;
-        padding.top += childDrawablePadding.top;
-        padding.right += childDrawablePadding.right + rightInset;
-        padding.bottom += childDrawablePadding.bottom;
-
-        return true;
-    }
-
-    @Override
-    protected boolean onStateChange(int[] state) {
-        return (childDrawable != null && childDrawable.setState(state));
-    }
-
-    @Override
-    public boolean isStateful() {
-        return (childDrawable != null && childDrawable.isStateful());
-    }
-
-    @Override
-    public void invalidateDrawable(Drawable who) {
-        invalidateSelf();
-    }
-
-    @Override
-    public void scheduleDrawable(Drawable who, Runnable what, long when) {
-        scheduleSelf(what, when);
-    }
-
-    @Override
-    public void unscheduleDrawable(Drawable who, Runnable what) {
-        unscheduleSelf(what);
     }
 
     //endregion

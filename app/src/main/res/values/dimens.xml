@@ -91,7 +91,7 @@
 
     <dimen name="timeline_segment_min_height">16dp</dimen>
     <dimen name="timeline_segment_height_per_hour">96dp</dimen>
-    <dimen name="timeline_segment_item_right_inset">40dp</dimen>
+    <dimen name="timeline_segment_item_end_inset">40dp</dimen>
     <dimen name="timeline_segment_text_inset">6dp</dimen>
     <dimen name="timeline_segment_event_vertical_inset">4dp</dimen>
     <dimen name="timeline_segment_stolen_height">16dp</dimen>

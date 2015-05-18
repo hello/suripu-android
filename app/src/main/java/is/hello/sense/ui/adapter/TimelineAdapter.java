@@ -21,6 +21,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
+import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.StateSafeExecutor;
@@ -32,6 +33,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
     public static final int STATIC_ITEM_COUNT = 1;
 
+    private static final float EVENT_SCALE_MIN = 0.9f;
+    private static final float EVENT_SCALE_MAX = 1.0f;
+
 
     private final Context context;
     private final LayoutInflater inflater;
@@ -40,7 +44,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
     private final int segmentMinHeight;
     private final int segmentHeightPerHour;
-    private final int eventVerticalInset;
 
     private final List<TimelineSegment> segments = new ArrayList<>();
     private final Set<Integer> positionsWithTime = new HashSet<>();
@@ -62,7 +65,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         Resources resources = context.getResources();
         this.segmentMinHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
         this.segmentHeightPerHour = resources.getDimensionPixelSize(R.dimen.timeline_segment_height_per_hour);
-        this.eventVerticalInset = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_vertical_inset);
     }
 
 
@@ -258,7 +260,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             itemView.setOnClickListener(this);
 
             this.drawable = new TimelineSegmentDrawable(context);
-            prepareDrawable();
             itemView.setBackground(drawable);
         }
 
@@ -270,10 +271,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
             TimelineSegment segment = getSegment(position);
             bindSegment(position, segment);
-        }
-
-        void prepareDrawable() {
-            drawable.setChildDrawable(itemView.getBackground());
         }
 
         void bindSegment(int position, @NonNull TimelineSegment segment) {
@@ -298,27 +295,24 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         //endregion
     }
 
-    class EventViewHolder extends SegmentViewHolder {
+    public class EventViewHolder extends SegmentViewHolder {
+        final ViewGroup container;
         final TextView messageText;
         final TextView dateText;
+
+        private float onScreenAmount = 1f;
 
         EventViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            itemView.setPivotX(0f);
-
+            this.container = (ViewGroup) itemView.findViewById(R.id.item_timeline_segment_container);
             this.messageText = (TextView) itemView.findViewById(R.id.item_timeline_segment_message);
             this.dateText = (TextView) itemView.findViewById(R.id.item_timeline_segment_date);
+
+            container.setPivotX(0f);
         }
 
         //region Binding
-
-        @Override
-        void prepareDrawable() {
-            drawable.setChildDrawablePadding(0, eventVerticalInset, 0, eventVerticalInset);
-
-            super.prepareDrawable();
-        }
 
         @Override
         void bindSegment(int position, @NonNull TimelineSegment segment) {
@@ -337,6 +331,21 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             messageText.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
             messageText.setText(segment.getMessage());
             dateText.setText(dateFormatter.formatForTimelineEvent(segment.getShiftedTimestamp(), use24Time));
+        }
+
+        //endregion
+
+        //region Scroll Effect
+
+        public void setOnScreenAmount(float amount) {
+            if (onScreenAmount != amount) {
+                float scale = Drawing.interpolateFloats(amount, EVENT_SCALE_MIN, EVENT_SCALE_MAX);
+                container.setScaleX(scale);
+                container.setScaleY(scale);
+                container.setAlpha(amount);
+
+                this.onScreenAmount = amount;
+            }
         }
 
         //endregion

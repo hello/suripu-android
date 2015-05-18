@@ -58,4 +58,12 @@ public class Drawing {
                 (startG + (int)(fraction * (endG - startG))) << 8 |
                 (startB + (int)(fraction * (endB - startB)));
     }
+
+    /**
+     * {@link android.animation.FloatEvaluator#evaluate(float, Number, Number)}
+     * without the costs of auto-boxing associated with it.
+     */
+    public static float interpolateFloats(float fraction, float start, float end) {
+        return (start + fraction * (end - start));
+    }
 }

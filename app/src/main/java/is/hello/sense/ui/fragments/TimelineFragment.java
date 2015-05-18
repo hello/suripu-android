@@ -84,6 +84,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     private LinearLayoutManager layoutManager;
     private TimelineHeaderView headerView;
     private TimelineAdapter adapter;
+    private TimelineFadeItemAnimator itemAnimator;
 
     private boolean controlsAlarmShortcut = false;
 
@@ -173,7 +174,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             }
         });
 
-        recyclerView.setItemAnimator(new TimelineFadeItemAnimator(getAnimatorContext(), headerView));
+        this.itemAnimator = new TimelineFadeItemAnimator(getAnimatorContext(), headerView);
+        recyclerView.setItemAnimator(itemAnimator);
         recyclerView.addItemDecoration(new BackgroundDecoration(getResources()));
 
         this.adapter = new TimelineAdapter(getActivity(), headerView, dateFormatter);
@@ -212,6 +214,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         this.recyclerView = null;
         this.layoutManager = null;
         this.adapter = null;
+        this.itemAnimator = null;
 
         if (tutorialOverlay != null) {
             tutorialOverlay.dismiss(false);
@@ -498,6 +501,25 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 float height = headerView.getMeasuredHeight();
                 float alpha = bottom / height;
                 headerView.setChildFadeAmount(alpha);
+            }
+
+            if (!itemAnimator.isRunning()) {
+                int recyclerBottom = recyclerView.getMeasuredHeight();
+                for (int i = recyclerView.getChildCount() - 1; i >= 0; i--) {
+                    View view = recyclerView.getChildAt(i);
+                    RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
+                    if (viewHolder instanceof TimelineAdapter.EventViewHolder) {
+                        TimelineAdapter.EventViewHolder eventViewHolder = (TimelineAdapter.EventViewHolder) viewHolder;
+                        int bottom = view.getBottom();
+                        if (bottom < recyclerBottom) {
+                            eventViewHolder.setOnScreenAmount(1f);
+                        } else {
+                            float offScreen = bottom - recyclerBottom;
+                            float amount = 1f - (offScreen / view.getMeasuredHeight());
+                            eventViewHolder.setOnScreenAmount(amount);
+                        }
+                    }
+                }
             }
 
             if (controlsAlarmShortcut) {
