@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -44,6 +45,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     private boolean firstTimeline;
     private AnimatorContext animatorContext;
     private @Nullable ValueAnimator colorAnimator;
+
+    private @Nullable ValueAnimator pulseAnimator;
 
 
     //region Lifecycle
@@ -89,8 +92,14 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
 
-        if (visibility != VISIBLE && colorAnimator != null) {
-            colorAnimator.cancel();
+        if (visibility != VISIBLE) {
+            if (colorAnimator != null) {
+                colorAnimator.cancel();
+            }
+
+            if (pulseAnimator != null) {
+                pulseAnimator.cancel();
+            }
         }
     }
 
@@ -108,16 +117,13 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
     //region Attributes
 
-
     public void setFirstTimeline(boolean firstTimeline) {
         this.firstTimeline = firstTimeline;
 
         if (firstTimeline) {
             scoreContainer.setTranslationY(getResources().getDimensionPixelSize(R.dimen.gap_large));
-            scoreContainer.setAlpha(0f);
         } else {
             scoreContainer.setTranslationY(0f);
-            scoreContainer.setAlpha(1f);
         }
     }
 
@@ -137,12 +143,49 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         topFadeView.setTranslationY(-getTop());
     }
 
+    public void startPulsing() {
+        if (pulseAnimator != null) {
+            return;
+        }
+
+        this.pulseAnimator = ValueAnimator.ofFloat(0f, 1f);
+        pulseAnimator.setDuration(1000);
+        pulseAnimator.setInterpolator(new LinearInterpolator());
+        pulseAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        pulseAnimator.setRepeatMode(ValueAnimator.REVERSE);
+
+        int startColor = getResources().getColor(R.color.light_accent);
+        int endColor = getResources().getColor(R.color.border);
+        pulseAnimator.addUpdateListener(a -> {
+            int color = Drawing.interpolateColors(a.getAnimatedFraction(), endColor, startColor);
+            scoreDrawable.setTrackColor(color);
+        });
+        pulseAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                scoreDrawable.setTrackColor(endColor);
+                TimelineHeaderView.this.pulseAnimator = null;
+            }
+        });
+
+        pulseAnimator.addListener(animatorContext);
+        pulseAnimator.start();
+    }
+
+    public void stopPulsing() {
+        if (pulseAnimator != null) {
+            pulseAnimator.cancel();
+        }
+    }
+
     //endregion
 
 
     //region Scores
 
     private void setScore(int score) {
+        stopPulsing();
+
         int color;
         if (score < 0) {
             color = getResources().getColor(R.color.sensor_unknown);
@@ -164,23 +207,13 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         scoreText.setTextColor(color);
     }
 
-    private void startFirstScoreAnimation(int score, @NonNull Runnable fireAdapterAnimations) {
-        PropertyAnimatorProxy.animate(scoreContainer, animatorContext)
-                .setDuration(Animation.DURATION_SLOW)
-                .fadeIn()
-                .addOnAnimationCompleted(finished -> {
-                    if (finished) {
-                        animateToScore(score, fireAdapterAnimations);
-                    }
-                })
-                .startWhenIdle();
-    }
-
     private void animateToScore(int score, @NonNull Runnable fireAdapterAnimations) {
         if (score < 0) {
             setScore(score);
             fireAdapterAnimations.run();
         } else {
+            stopPulsing();
+
             setWillNotDraw(false);
 
             if (colorAnimator != null) {
@@ -264,12 +297,11 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     }
 
     public void bindScore(int score, @NonNull Runnable fireAdapterAnimations) {
-        if (firstTimeline) {
-            startFirstScoreAnimation(score, fireAdapterAnimations);
-        } else {
+        if (!firstTimeline) {
             fireAdapterAnimations.run();
-            animateToScore(score, fireAdapterAnimations);
         }
+
+        animateToScore(score, fireAdapterAnimations);
     }
 
     public void bindError(@NonNull Throwable e) {

@@ -189,6 +189,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        stateSafeExecutor.execute(headerView::startPulsing);
+
         bindAndSubscribe(presenter.timeline,
                 this::bindTimeline,
                 this::timelineUnavailable);
@@ -356,15 +358,22 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     //region Binding
 
     public void bindTimeline(@NonNull Timeline timeline) {
-        Runnable continuation = stateSafeExecutor.bind(() -> adapter.bindSegments(timeline.getSegments()));
-        if (Lists.isEmpty(timeline.getSegments())) {
-            headerView.bindScore(TimelineHeaderView.NULL_SCORE, continuation);
-            shareButton.setVisibility(View.GONE);
-        } else {
-            headerView.bindScore(timeline.getScore(), continuation);
-            if (!homeActivity.getSlidingLayersView().isOpen()) {
+        boolean hasSegments = Lists.isEmpty(timeline.getSegments());
+        Runnable continuation = stateSafeExecutor.bind(() -> {
+            adapter.bindSegments(timeline.getSegments());
+
+            if (hasSegments) {
+                shareButton.setVisibility(View.GONE);
+            } else if (!homeActivity.getSlidingLayersView().isOpen()) {
                 shareButton.setVisibility(View.VISIBLE);
             }
+        });
+        if (hasSegments) {
+            headerView.bindScore(TimelineHeaderView.NULL_SCORE, continuation);
+
+        } else {
+            headerView.bindScore(timeline.getScore(), continuation);
+
         }
     }
 
