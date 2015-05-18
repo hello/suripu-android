@@ -44,6 +44,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
     private final int segmentMinHeight;
     private final int segmentHeightPerHour;
+    private final int segmentEventOffsetMax;
+    private final int segmentEventStolenHeight;
 
     private final List<TimelineSegment> segments = new ArrayList<>();
     private final Set<Integer> positionsWithTime = new HashSet<>();
@@ -65,14 +67,20 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         Resources resources = context.getResources();
         this.segmentMinHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
         this.segmentHeightPerHour = resources.getDimensionPixelSize(R.dimen.timeline_segment_height_per_hour);
+        this.segmentEventOffsetMax = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_offset_max);
+        this.segmentEventStolenHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_stolen_height);
     }
 
 
     //region Rendering Cache
 
-    private int calculateSegmentHeight(@NonNull TimelineSegment segment) {
+    private int calculateSegmentHeight(@NonNull TimelineSegment segment, boolean previousSegmentWasEvent) {
         float hours = segment.getDuration() / 3600f;
-        return Math.max(segmentMinHeight, Math.round(segmentHeightPerHour * hours));
+        int rawHeight = Math.round(segmentHeightPerHour * hours);
+        if (previousSegmentWasEvent) {
+            rawHeight -= segmentEventOffsetMax + segmentEventStolenHeight;
+        }
+        return Math.max(segmentMinHeight, rawHeight);
     }
 
     private void buildCache() {
@@ -82,6 +90,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         positionsWithTime.clear();
 
         Set<Integer> hours = new HashSet<>();
+        boolean previousSegmentWasEvent = false;
         for (int i = 0; i < segmentCount; i++) {
             TimelineSegment segment = segments.get(i);
 
@@ -91,9 +100,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
                 stolenSleepDepths.put(i + STATIC_ITEM_COUNT, Pair.create(previousDepth, nextDepth));
 
                 this.segmentHeights[i] = ViewGroup.LayoutParams.WRAP_CONTENT;
+                previousSegmentWasEvent = true;
             } else {
-                int segmentHeight = calculateSegmentHeight(segment);
+                int segmentHeight = calculateSegmentHeight(segment, previousSegmentWasEvent);
                 this.segmentHeights[i] = segmentHeight;
+                previousSegmentWasEvent = false;
             }
 
             int hour = segment.getShiftedTimestamp().getHourOfDay();
@@ -300,7 +311,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         final TextView messageText;
         final TextView dateText;
 
-        private float onScreenAmount = 1f;
+        private float centerDistanceAmount = 0f;
+        private float bottomDistanceAmount = 1f;
 
         EventViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -335,16 +347,24 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
         //endregion
 
+
         //region Scroll Effect
 
-        public void setOnScreenAmount(float amount) {
-            if (onScreenAmount != amount) {
-                float scale = Drawing.interpolateFloats(amount, EVENT_SCALE_MIN, EVENT_SCALE_MAX);
+        public void setDistanceAmounts(float bottomDistanceAmount, float centerDistanceAmount) {
+            if (this.bottomDistanceAmount != bottomDistanceAmount) {
+                float scale = Drawing.interpolateFloats(bottomDistanceAmount, EVENT_SCALE_MIN, EVENT_SCALE_MAX);
                 container.setScaleX(scale);
                 container.setScaleY(scale);
-                container.setAlpha(amount);
+                container.setAlpha(bottomDistanceAmount);
 
-                this.onScreenAmount = amount;
+                this.bottomDistanceAmount = bottomDistanceAmount;
+            }
+
+            if (this.centerDistanceAmount != centerDistanceAmount) {
+                float translation = Drawing.interpolateFloats(centerDistanceAmount, 0f, segmentEventOffsetMax);
+                container.setTranslationY(translation);
+
+                this.centerDistanceAmount = centerDistanceAmount;
             }
         }
 

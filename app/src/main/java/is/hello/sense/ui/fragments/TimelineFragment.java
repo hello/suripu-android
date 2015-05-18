@@ -194,8 +194,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 this::timelineUnavailable);
 
         bindAndSubscribe(presenter.message,
-                         headerView::bindMessage,
-                         Functions.IGNORE_ERROR);
+                headerView::bindMessage,
+                Functions.IGNORE_ERROR);
 
         bindAndSubscribe(preferences.observableUse24Time(),
                          adapter::setUse24Time,
@@ -497,27 +497,34 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             if (headerView.getParent() != null) {
-                float bottom = headerView.getBottom();
-                float height = headerView.getMeasuredHeight();
-                float alpha = bottom / height;
-                headerView.setChildFadeAmount(alpha);
+                float headerBottom = headerView.getBottom();
+                float headerHeight = headerView.getMeasuredHeight();
+                float headerFadeAmount = headerBottom / headerHeight;
+                headerView.setChildFadeAmount(headerFadeAmount);
             }
 
             if (!itemAnimator.isRunning()) {
-                int recyclerBottom = recyclerView.getMeasuredHeight();
+                int recyclerHeight = recyclerView.getMeasuredHeight(),
+                    recyclerCenter = recyclerHeight / 2;
                 for (int i = recyclerView.getChildCount() - 1; i >= 0; i--) {
                     View view = recyclerView.getChildAt(i);
                     RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
                     if (viewHolder instanceof TimelineAdapter.EventViewHolder) {
                         TimelineAdapter.EventViewHolder eventViewHolder = (TimelineAdapter.EventViewHolder) viewHolder;
-                        int bottom = view.getBottom();
-                        if (bottom < recyclerBottom) {
-                            eventViewHolder.setOnScreenAmount(1f);
+                        int viewTop = view.getTop(),
+                            viewBottom = view.getBottom(),
+                            viewHeight = viewBottom - viewTop,
+                            viewCenter = (viewTop + viewBottom) / 2;
+
+                        float centerDistanceAmount = (viewCenter - recyclerCenter) / (float) recyclerCenter;
+                        float bottomDistanceAmount;
+                        if (viewBottom < recyclerHeight) {
+                            bottomDistanceAmount = 1f;
                         } else {
-                            float offScreen = bottom - recyclerBottom;
-                            float amount = 1f - (offScreen / view.getMeasuredHeight());
-                            eventViewHolder.setOnScreenAmount(amount);
+                            float offScreen = viewBottom - recyclerHeight;
+                            bottomDistanceAmount = 1f - (offScreen / viewHeight);
                         }
+                        eventViewHolder.setDistanceAmounts(bottomDistanceAmount, centerDistanceAmount);
                     }
                 }
             }
