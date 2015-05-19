@@ -140,6 +140,9 @@ so you can sleep better.</string>
     <string name="error_network_failure_pair_pill">Your Sleep Pill could not be Paired due to connectivity issues. Please try again.</string>
     <string name="error_generic_sense_failure">The operation could not be completed due to an internal error. Please try again.</string>
     <string name="error_pill_already_paired">Your Sleep Pill is already paired to an account.</string>
+    <string name="error_force_push_data">Sense could not immediately upload available sensor data.</string>
+    <string name="error_invalid_account_id">Your account could not be linked with Sense.</string>
+    <string name="error_factory_reset_wlan_failure">Sense could not be factory reset.</string>
     <string name="error_addendum_unstable_stack">\n\n<b>Please turn airplane mode on for a few seconds, turn it off, and then try again. If this problem persists, please visit our support site.</b></string>
     <string name="error_addendum_support">\n\nHaving trouble? <b><a href="#email">Email support</a></b></string>
     <string name="destructive_action_addendum">\n\nNot sure? <b><a href="#email">Email support</a></b></string>
@@ -231,9 +234,12 @@ so you can sleep better.</string>
     <string name="error_sense_already_paired">Your Sense is already linked to this account.</string>
     <string name="error_sense_device_db_full">Your Sense cannot be paired to any more devices.</string>
     <string name="error_mismatching_new_passwords">The passwords you entered do not match.</string>
-    <string name="action_exit">Exit</string>
-    <string name="dialog_title_smart_alarm_edit_cancel">Do you really want to exit?</string>
-    <string name="dialog_message_smart_alarm_edit_cancel">There are unsaved changes to this alarm.</string>
+    <string name="dialog_title_smart_alarm_new_cancel">Cancel</string>
+    <string name="dialog_message_smart_alarm_new_cancel">Are you sure you want to discard this alarm?</string>
+    <string name="dialog_title_smart_alarm_edit_cancel">Cancel</string>
+    <string name="dialog_message_smart_alarm_edit_cancel">Are you sure you want to discard your changes to this alarm?</string>
+    <string name="action_discard">Discard</string>
+    <string name="action_keep_editing">Keep Editing</string>
     <string name="action_answer">Answer</string>
     <string name="video_playback_generic_error">Could not play video.</string>
     <string name="title_turning_on">Turning On</string>
@@ -473,4 +479,6 @@ so you can sleep better.</string>
     <string name="error_link_account_failed_multiple_times">Your account could not be linked with Sense. You can try changing the WiFi Sense is configured to.</string>
     <string name="title_power_cycle_sense_factory_reset">Power Cycle Sense</string>
     <string name="message_power_cycle_sense_factory_reset">Sense has been successfully restored to factory settings. Please unplug Sense, wait a few seconds, and plug it back in before you continue.</string>
+    <string name="title_time">Time</string>
+    <string name="title_acknowledgements">Acknowledgements</string>
 </resources>

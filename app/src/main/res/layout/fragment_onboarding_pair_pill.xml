@@ -46,12 +46,11 @@
             android:src="@drawable/onboarding_shake_pill"
             android:contentDescription="@string/info_pair_pill"/>
 
-        <is.hello.sense.ui.widget.TintedProgressBar
+        <ProgressBar
             android:id="@+id/fragment_onboarding_pair_pill_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            style="@android:style/Widget.Holo.ProgressBar"/>
+            android:layout_gravity="center" />
 
         <TextView
             android:id="@+id/fragment_onboarding_pair_pill_status"

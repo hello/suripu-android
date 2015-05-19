@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -223,19 +224,19 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         FragmentNavigation navigation = (FragmentNavigation) getActivity();
         ChangeNameFragment fragment = new ChangeNameFragment();
         fragment.setTargetFragment(this, 0x00);
-        navigation.pushFragment(fragment, getString(R.string.action_change_name), true);
+        navigation.pushFragmentAllowingStateLoss(fragment, getString(R.string.action_change_name), true);
     }
 
     public void changeEmail() {
         FragmentNavigation navigation = (FragmentNavigation) getActivity();
         ChangeEmailFragment fragment = new ChangeEmailFragment();
         fragment.setTargetFragment(this, REQUEST_CODE_PASSWORD);
-        navigation.pushFragment(fragment, getString(R.string.title_change_email), true);
+        navigation.pushFragmentAllowingStateLoss(fragment, getString(R.string.title_change_email), true);
     }
 
     public void changePassword() {
         FragmentNavigation navigation = (FragmentNavigation) getActivity();
-        navigation.pushFragment(ChangePasswordFragment.newInstance(currentAccount.getEmail()), getString(R.string.title_change_password), true);
+        navigation.pushFragmentAllowingStateLoss(ChangePasswordFragment.newInstance(currentAccount.getEmail()), getString(R.string.title_change_password), true);
     }
 
     //endregion
@@ -247,28 +248,28 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().pushFragment(fragment, getString(R.string.label_dob), true);
+        getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.label_dob), true);
     }
 
     public void changeGender() {
         OnboardingRegisterGenderFragment fragment = new OnboardingRegisterGenderFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().pushFragment(fragment, getString(R.string.label_gender), true);
+        getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.label_gender), true);
     }
 
     public void changeHeight() {
         OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().pushFragment(fragment, getString(R.string.label_height), true);
+        getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.label_height), true);
     }
 
     public void changeWeight() {
         OnboardingRegisterWeightFragment fragment = new OnboardingRegisterWeightFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().pushFragment(fragment, getString(R.string.label_weight), true);
+        getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.label_weight), true);
     }
 
     //endregion
@@ -308,7 +309,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
             Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_OUT, null);
             getActivity().finish();
         });
-        builder.setDestructive(true);
+        builder.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         builder.show();
     }
 
@@ -330,11 +331,11 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     }
 
     private void saveAccount() {
-        coordinator.postOnResume(() -> {
+        stateSafeExecutor.execute(() -> {
             showLoadingIndicator();
             bindAndSubscribe(accountPresenter.saveAccount(currentAccount),
-                             ignored -> hideLoadingIndicator(),
-                             this::presentError);
+                    ignored -> hideLoadingIndicator(),
+                    this::presentError);
         });
     }
 

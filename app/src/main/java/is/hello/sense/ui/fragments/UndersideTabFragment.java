@@ -15,7 +15,7 @@ public abstract class UndersideTabFragment extends InjectionFragment {
      * Notifies the fragment that it is on screen, and may perform an update.
      */
     public final void tabSelected() {
-        coordinator.postOnResume(() -> {
+        stateSafeExecutor.execute(() -> {
             onUpdate();
             onSwipeInteractionDidFinish();
         });

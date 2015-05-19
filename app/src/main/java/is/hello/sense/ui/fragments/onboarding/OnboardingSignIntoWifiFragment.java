@@ -271,7 +271,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED, properties);
             }
 
-            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, networkName, securityType, password), ignored -> {
+            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), ignored -> {
                 this.hasConnectedToNetwork = true;
                 preferences.edit()
                         .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)

@@ -232,7 +232,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
                 .fadeIn()
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
-                        superContainer.postDelayed(() -> coordinator.postOnResume(onCompletion),
+                        superContainer.postDelayed(() -> stateSafeExecutor.execute(onCompletion),
                                 THANK_YOU_DURATION_MS);
                     }
                 })

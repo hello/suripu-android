@@ -1,6 +1,7 @@
 package is.hello.sense.debug;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -213,7 +214,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         alertDialog.setMessage("This is a device only factory reset, all paired accounts in API will persist. Use the ‘Devices’ screen to perform a full factory reset.");
         alertDialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> runSimpleCommand(selectedPeripheral.factoryReset()));
         alertDialog.setNegativeButton(android.R.string.cancel, null);
-        alertDialog.setDestructive(true);
+        alertDialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         alertDialog.show();
     }
 

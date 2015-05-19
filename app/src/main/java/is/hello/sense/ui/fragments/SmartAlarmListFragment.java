@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -292,7 +293,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
                 }
             });
             dialog.setNegativeButton(android.R.string.cancel, null);
-            dialog.setDestructive(true);
+            dialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
 
             return dialog;
         }

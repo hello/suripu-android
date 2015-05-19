@@ -35,13 +35,12 @@
                 android:src="@drawable/icon_warning"
                 tools:ignore="ContentDescription" />
 
-            <is.hello.sense.ui.widget.TintedProgressBar
+            <ProgressBar
                 android:id="@+id/fragment_device_details_alert_busy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:visibility="gone"
-                style="@android:style/Widget.Holo.ProgressBar" />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/fragment_device_details_alert_text"

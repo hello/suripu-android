@@ -96,10 +96,9 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
         super.onBackPressed();
     }
 
-    @Override
-    public void pushFragment(@NonNull Fragment fragment,
-                             @Nullable String title,
-                             boolean wantsBackStackEntry) {
+    protected FragmentTransaction createTransaction(@NonNull Fragment fragment,
+                                                    @Nullable String title,
+                                                    boolean wantsBackStackEntry) {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         String tag = fragment.getClass().getSimpleName();
         if (getTopFragment() == null) {
@@ -113,8 +112,23 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
             transaction.setBreadCrumbTitle(title);
             transaction.addToBackStack(fragment.getClass().getSimpleName());
         }
+        return transaction;
+    }
 
+    @Override
+    public void pushFragment(@NonNull Fragment fragment,
+                             @Nullable String title,
+                             boolean wantsBackStackEntry) {
+        FragmentTransaction transaction = createTransaction(fragment, title, wantsBackStackEntry);
         transaction.commit();
+    }
+
+    @Override
+    public void pushFragmentAllowingStateLoss(@NonNull Fragment fragment,
+                                              @Nullable String title,
+                                              boolean wantsBackStackEntry) {
+        FragmentTransaction transaction = createTransaction(fragment, title, wantsBackStackEntry);
+        transaction.commitAllowingStateLoss();
     }
 
     @Override

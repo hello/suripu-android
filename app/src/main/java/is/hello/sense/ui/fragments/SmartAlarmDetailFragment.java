@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -279,14 +280,13 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     public void deleteAlarm(@NonNull View sender) {
         SenseAlertDialog confirmDelete = new SenseAlertDialog(getActivity());
-        confirmDelete.setTitle(R.string.label_delete_alarm);
         confirmDelete.setMessage(R.string.dialog_message_confirm_delete_alarm);
         confirmDelete.setPositiveButton(R.string.action_delete, (dialog, which) -> {
             LoadingDialogFragment.show(getFragmentManager(), null, false);
             bindAndSubscribe(smartAlarmPresenter.deleteSmartAlarm(index), ignored -> finish(), this::presentError);
         });
         confirmDelete.setNegativeButton(android.R.string.cancel, null);
-        confirmDelete.setDestructive(true);
+        confirmDelete.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         confirmDelete.show();
     }
 

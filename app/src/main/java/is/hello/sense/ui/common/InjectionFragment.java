@@ -11,15 +11,16 @@ import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.ResumeScheduler;
+import is.hello.sense.util.StateSafeExecutor;
+import is.hello.sense.util.StateSafeScheduler;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public class InjectionFragment extends SenseFragment implements ObservableContainer {
-    protected final ResumeScheduler.Coordinator coordinator = new ResumeScheduler.Coordinator(this::isResumed);
-    protected final ResumeScheduler observeScheduler = new ResumeScheduler(coordinator);
+public class InjectionFragment extends SenseFragment implements ObservableContainer, StateSafeExecutor.Resumes {
+    protected final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(this);
+    protected final StateSafeScheduler observeScheduler = new StateSafeScheduler(stateSafeExecutor);
 
     protected static final Func1<Fragment, Boolean> FRAGMENT_VALIDATOR = f -> f.isAdded() && !f.getActivity().isFinishing();
     protected final DelegateObservableContainer<Fragment> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, FRAGMENT_VALIDATOR);
@@ -72,7 +73,7 @@ public class InjectionFragment extends SenseFragment implements ObservableContai
     public void onResume() {
         super.onResume();
 
-        coordinator.resume();
+        stateSafeExecutor.executePendingForResume();
         presenterContainer.onContainerResumed();
     }
 

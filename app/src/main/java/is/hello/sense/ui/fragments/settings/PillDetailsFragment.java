@@ -1,13 +1,11 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.Layout;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.AlignmentSpan;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -102,11 +100,10 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_PILL, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
-        dialog.setDestructive(true);
+        dialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         dialog.setTitle(R.string.dialog_title_replace_sleep_pill);
 
         SpannableStringBuilder message = Styles.resolveSupportLinks(getActivity(), getText(R.string.destructive_action_addendum));
-        message.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, message.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         message.insert(0, getString(R.string.dialog_message_replace_sleep_pill));
         dialog.setMessage(message);
 
@@ -144,7 +141,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         );
         BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);
         advancedOptions.setTargetFragment(this, REQUEST_CODE_ADVANCED);
-        advancedOptions.show(getFragmentManager(), BottomSheetDialogFragment.TAG);
+        advancedOptions.showAllowingStateLoss(getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
     //endregion

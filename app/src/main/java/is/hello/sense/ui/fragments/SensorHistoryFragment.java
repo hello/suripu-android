@@ -350,7 +350,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         @Override
         public void onGraphHighlightEnd() {
-            coordinator.postOnResume(() -> {
+            stateSafeExecutor.execute(() -> {
                 readingText.setText(savedReading);
                 this.savedReading = null;
 

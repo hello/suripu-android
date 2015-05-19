@@ -131,7 +131,7 @@ public class HomeActivity
         }
 
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
-            coordinator.postOnResume(() -> showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false));
+            stateSafeExecutor.execute(() -> showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false));
         }
 
         devicesPresenter.update();
@@ -161,7 +161,7 @@ public class HomeActivity
         viewPager.setFragmentManager(getFragmentManager());
         viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
-        viewPager.setResumeCoordinator(coordinator);
+        viewPager.setStateSafeExecutor(stateSafeExecutor);
         viewPager.setAnimatorContext(animatorContext);
         if (viewPager.getCurrentFragment() == null) {
             jumpToLastNight(false);
@@ -309,7 +309,7 @@ public class HomeActivity
     //region Notifications
 
     private void dispatchNotification(@NonNull Bundle notification, boolean animate) {
-        coordinator.postOnResume(() -> {
+        stateSafeExecutor.execute(() -> {
             Logger.info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
 
             Notification target = Notification.fromBundle(notification);
@@ -647,7 +647,7 @@ public class HomeActivity
             return;
         }
 
-        coordinator.postOnResume(() -> {
+        stateSafeExecutor.execute(() -> {
             int alertViewHeight = deviceAlert.getMeasuredHeight();
             int alertViewY = (int) deviceAlert.getY();
             animate(deviceAlert, animatorContext)
@@ -695,7 +695,7 @@ public class HomeActivity
 
         UndersideFragment underside = getUndersideFragment();
         if (underside != null) {
-            coordinator.postOnResume(() -> {
+            stateSafeExecutor.execute(() -> {
                 getFragmentManager()
                         .beginTransaction()
                         .remove(underside)

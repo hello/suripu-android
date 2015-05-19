@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<is.hello.sense.ui.widget.RoundedRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/gap_xlarge"
+    android:layout_marginBottom="@dimen/gap_xlarge"
+    android:layout_marginLeft="@dimen/gap_small"
+    android:layout_marginRight="@dimen/gap_small"
+    android:paddingBottom="@dimen/gap_medium"
+    style="@style/AppTheme.Card">
+
+    <TextView
+        android:id="@+id/dialog_sense_list_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/gap_outer"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:textAppearance="@style/AppTheme.Text.Heading.Strong"
+        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+        android:visibility="gone" />
+
+    <View
+        android:id="@+id/dialog_sense_list_message_divider"
+        android:layout_below="@id/dialog_sense_list_message"
+        android:visibility="gone"
+        style="@style/Divider.Horizontal" />
+
+    <Button
+        android:id="@+id/dialog_sense_list_done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/gap_outer_dialog_buttons"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:text="@string/action_done"
+        style="@style/AppTheme.Button.Dialog.Alert"/>
+
+    <Button
+        android:id="@+id/dialog_sense_list_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/gap_outer_dialog_buttons"
+        android:layout_marginEnd="@dimen/gap_small"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@id/dialog_sense_list_done"
+        android:text="@android:string/cancel"
+        style="@style/AppTheme.Button.Dialog.Alert"/>
+
+    <View
+        android:id="@+id/dialog_sense_list_button_divider"
+        android:layout_above="@id/dialog_sense_list_done"
+        style="@style/Divider.Horizontal" />
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/dialog_sense_list_message_divider"
+        android:layout_above="@id/dialog_sense_list_button_divider"
+        android:divider="@null" />
+
+    <ProgressBar
+        android:id="@+id/dialog_sense_list_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        style="?android:attr/progressBarStyle" />
+
+</is.hello.sense.ui.widget.RoundedRelativeLayout>

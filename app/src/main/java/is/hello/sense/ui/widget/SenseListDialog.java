@@ -12,34 +12,42 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Views;
 
-public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItemClickListener {
-    private OnSelectionListener<T> onSelectionListener;
+public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClickListener {
+    private Listener<T> listener;
 
     private Button doneButton;
+    private Button cancelButton;
     private TextView messageText;
+    private View messageDivider;
     private ListView listView;
-    private TintedProgressBar activityIndicator;
+    private ProgressBar activityIndicator;
 
-    public SenseSelectorDialog(Context context) {
-        super(context, R.style.AppTheme_Dialog_Selector);
+    public SenseListDialog(Context context) {
+        super(context, R.style.AppTheme_Dialog_List);
         initialize();
     }
 
     protected void initialize() {
-        setContentView(R.layout.dialog_sense_selector);
+        setContentView(R.layout.dialog_sense_list);
 
         this.listView = (ListView) findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        this.doneButton = (Button) findViewById(R.id.dialog_sense_selector_done);
-        doneButton.setOnClickListener(this::onDone);
+        this.doneButton = (Button) findViewById(R.id.dialog_sense_list_done);
+        Views.setSafeOnClickListener(doneButton, this::onDone);
 
-        this.messageText = (TextView) findViewById(R.id.dialog_sense_selector_message);
-        this.activityIndicator = (TintedProgressBar) findViewById(R.id.dialog_sense_selector_loading);
+        this.cancelButton = (Button) findViewById(R.id.dialog_sense_list_cancel);
+        Views.setSafeOnClickListener(cancelButton, ignored -> cancel());
+
+        this.messageText = (TextView) findViewById(R.id.dialog_sense_list_message);
+        this.messageDivider = findViewById(R.id.dialog_sense_list_message_divider);
+        this.activityIndicator = (ProgressBar) findViewById(R.id.dialog_sense_list_loading);
 
         setCancelable(true);
         setCanceledOnTouchOutside(true);
@@ -63,15 +71,17 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
     }
 
 
-    public void setOnSelectionListener(@Nullable OnSelectionListener<T> onSelectionListener) {
-        this.onSelectionListener = onSelectionListener;
+    public void setListener(@Nullable Listener<T> listener) {
+        this.listener = listener;
     }
 
     public void setMessage(@Nullable CharSequence message) {
         if (TextUtils.isEmpty(message)) {
             messageText.setVisibility(View.GONE);
+            messageDivider.setVisibility(View.GONE);
         } else {
             messageText.setVisibility(View.VISIBLE);
+            messageDivider.setVisibility(View.VISIBLE);
         }
         messageText.setText(message);
     }
@@ -79,8 +89,10 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
     public void setMessage(@StringRes int messageRes) {
         if (messageRes == 0) {
             messageText.setVisibility(View.GONE);
+            messageDivider.setVisibility(View.GONE);
         } else {
             messageText.setVisibility(View.VISIBLE);
+            messageDivider.setVisibility(View.VISIBLE);
         }
         messageText.setText(messageRes);
     }
@@ -93,6 +105,17 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
         doneButton.setEnabled(enabled);
     }
 
+    @Override
+    public void setCancelable(boolean flag) {
+        super.setCancelable(flag);
+
+        if (flag) {
+            cancelButton.setVisibility(View.VISIBLE);
+        } else {
+            cancelButton.setVisibility(View.GONE);
+        }
+    }
+
     public void setActivityIndicatorVisible(boolean visible) {
         if (visible) {
             activityIndicator.setVisibility(View.VISIBLE);
@@ -103,24 +126,25 @@ public class SenseSelectorDialog<T> extends Dialog implements AdapterView.OnItem
 
 
     public void onDone(@NonNull View sender) {
-        if (onSelectionListener != null) {
-            onSelectionListener.onSelectionCompleted(this);
+        if (listener != null) {
+            listener.onDoneClicked(this);
         }
 
         dismiss();
     }
 
+
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        if (onSelectionListener != null) {
+        if (listener != null) {
             //noinspection unchecked
-            onSelectionListener.onItemSelected(this, position, (T) adapterView.getItemAtPosition(position));
+            listener.onItemClicked(this, position, (T) adapterView.getItemAtPosition(position));
         }
     }
 
 
-    public interface OnSelectionListener<T> {
-        void onItemSelected(@NonNull SenseSelectorDialog<T> dialog, int position, @NonNull T item);
-        void onSelectionCompleted(@NonNull SenseSelectorDialog<T> dialog);
+    public interface Listener<T> {
+        void onItemClicked(@NonNull SenseListDialog<T> dialog, int position, @NonNull T item);
+        void onDoneClicked(@NonNull SenseListDialog<T> dialog);
     }
 }

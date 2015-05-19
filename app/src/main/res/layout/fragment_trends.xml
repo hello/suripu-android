@@ -27,7 +27,7 @@
         android:text="@string/message_not_enough_data"
         android:visibility="gone"/>
 
-    <is.hello.sense.ui.widget.TintedProgressBar
+    <ProgressBar
         android:id="@+id/fragment_trends_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

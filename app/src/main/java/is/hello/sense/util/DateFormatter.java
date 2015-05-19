@@ -31,6 +31,20 @@ import is.hello.sense.R;
     }
 
 
+    //region Date Format Order
+
+    public static char[] getDateFormatOrder(@NonNull Context context) {
+        // Works around <https://code.google.com/p/android/issues/detail?id=82144>
+        try {
+            return DateFormat.getDateFormatOrder(context);
+        } catch (IllegalArgumentException e) {
+            Logger.warn(DateFormatter.class.getSimpleName(), "Device's DateFormat#getDateFormatOrder(Context) is faulty", e);
+            return new char[] {'y', 'M', 'd'};
+        }
+    }
+
+    //endregion
+
     //region Last Night
 
     /**

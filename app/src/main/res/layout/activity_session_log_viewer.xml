@@ -8,12 +8,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <is.hello.sense.ui.widget.TintedProgressBar
+    <ProgressBar
         android:id="@+id/activity_session_log_viewer_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone"
-        style="@android:style/Widget.Holo.Light.ProgressBar"/>
+        android:visibility="gone" />
 
 </merge>

@@ -4,12 +4,9 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener {
     private static final int CHANGING_TO_REMOTE_STREAM_ERROR = -38;
@@ -19,8 +16,9 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     private final OnEventListener onEventListener;
 
     private final MediaPlayer mediaPlayer;
-    private final Timer timePulse;
-    private @Nullable TimerTask timePulseTask;
+    private final Handler timerHandler = new Handler(Looper.getMainLooper());
+    private final Runnable timerPulse;
+    private boolean timerRunning = false;
 
     private boolean isPaused = false;
     private boolean recycled = false;
@@ -38,7 +36,15 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnSeekCompleteListener(this);
 
-        this.timePulse = new Timer();
+        this.timerPulse = new Runnable() {
+            @Override
+            public void run() {
+                if (timerRunning) {
+                    onEventListener.onPlaybackPulse(SoundPlayer.this, mediaPlayer.getCurrentPosition());
+                    timerHandler.postDelayed(this, TIMER_PULSE);
+                }
+            }
+        };
 
         setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
@@ -69,22 +75,13 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     //region Time Pulse
 
     private void scheduleTimePulse() {
-        this.timePulseTask = new TimerTask() {
-            @Override
-            public void run() {
-                onEventListener.onPlaybackPulse(SoundPlayer.this, mediaPlayer.getCurrentPosition());
-            }
-        };
-        timePulse.scheduleAtFixedRate(timePulseTask, 0, TIMER_PULSE);
+        this.timerRunning = true;
+        timerHandler.postDelayed(timerPulse, TIMER_PULSE);
     }
 
     private void unscheduleTimePulse() {
-        if (timePulseTask != null) {
-            timePulseTask.cancel();
-            this.timePulseTask = null;
-
-            timePulse.purge();
-        }
+        this.timerRunning = false;
+        timerHandler.removeCallbacks(timerPulse);
     }
 
     //endregion
@@ -121,9 +118,8 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     @Override
     public void onSeekComplete(MediaPlayer mp) {
-        if (timePulseTask != null) {
-            timePulseTask.run();
-        }
+        timerHandler.removeCallbacks(timerPulse);
+        timerPulse.run();
     }
 
     //endregion
@@ -160,7 +156,7 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
                 mediaPlayer.setDataSource(context, source);
             }
             mediaPlayer.prepareAsync();
-        } catch (IOException e) {
+        } catch (Exception e) {
             onEventListener.onPlaybackError(this, e);
         }
     }

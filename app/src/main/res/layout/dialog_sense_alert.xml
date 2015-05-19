@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <is.hello.sense.ui.widget.RoundedLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialog_sense_alert_container"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,9 +13,11 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginTop="@dimen/gap_outer"
+        android:layout_marginBottom="@dimen/gap_medium"
         android:drawablePadding="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.ScreenTitle"/>
+        android:textAppearance="@style/AppTheme.Text.Heading.Strong"
+        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+        android:visibility="gone" />
 
     <!-- Lollipop 5.0 doesn't honor textColorLink in styles,
          it has to be included here to render correctly. -->
@@ -24,47 +27,42 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginTop="@dimen/gap_medium"
         android:layout_marginBottom="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:textColorLink="@color/text_link"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
-
-    <View style="@style/Divider.Horizontal" />
+        android:lineSpacingMultiplier="@dimen/line_multiple_body"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/gap_outer_dialog_buttons"
+        android:layout_marginRight="@dimen/gap_outer_dialog_buttons"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:gravity="end|center_vertical"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/dialog_sense_alert_cancel"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:padding="@dimen/gap_medium"
             android:text="@android:string/cancel"
             android:visibility="gone"
-            style="@style/AppTheme.Button.Dialog"/>
+            style="@style/AppTheme.Button.Dialog.Alert" />
 
         <View
             android:id="@+id/dialog_sense_alert_button_divider"
-            android:layout_marginTop="@dimen/gap_medium"
-            android:layout_marginBottom="@dimen/gap_medium"
-            style="@style/Divider.Vertical"
-            android:visibility="gone"/>
+            android:layout_width="@dimen/gap_small"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/dialog_sense_alert_ok"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:padding="@dimen/gap_medium"
             android:text="@android:string/ok"
             android:visibility="gone"
-            style="@style/AppTheme.Button.Dialog.Positive"/>
+            style="@style/AppTheme.Button.Dialog.Alert" />
 
     </LinearLayout>
 

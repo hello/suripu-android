@@ -171,25 +171,35 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
     @Override
     public void pushFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
-        if (!wantsBackStackEntry) {
-            getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        }
+        // Fixes issue #94011528. There appears to be a race condition on some devices where
+        // OnClickListener callbacks can be invoked after an Activity has been paused. See
+        // <http://stackoverflow.com/questions/14262312> for more details.
+        stateSafeExecutor.execute(() -> {
+            if (!wantsBackStackEntry) {
+                getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
 
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
-            transaction.add(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
-        } else {
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            transaction.replace(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
-        }
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
+                transaction.add(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
+            } else {
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                transaction.replace(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
+            }
 
-        if (wantsBackStackEntry) {
-            transaction.setBreadCrumbTitle(title);
-            transaction.addToBackStack(fragment.getClass().getSimpleName());
-        }
+            if (wantsBackStackEntry) {
+                transaction.setBreadCrumbTitle(title);
+                transaction.addToBackStack(fragment.getClass().getSimpleName());
+            }
 
-        transaction.commit();
-        getFragmentManager().executePendingTransactions();
+            transaction.commit();
+            getFragmentManager().executePendingTransactions();
+        });
+    }
+
+    @Override
+    public void pushFragmentAllowingStateLoss(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
+        throw new AbstractMethodError("not implemented by " + getClass().getSimpleName());
     }
 
     @Override
@@ -225,11 +235,11 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             SenseAlertDialog builder = new SenseAlertDialog(this);
             builder.setTitle(R.string.dialog_title_confirm_leave_onboarding);
             builder.setMessage(R.string.dialog_message_confirm_leave_onboarding);
-            builder.setPositiveButton(android.R.string.ok, (dialog, which) -> coordinator.postOnResume(super::onBackPressed));
+            builder.setPositiveButton(android.R.string.ok, (dialog, which) -> stateSafeExecutor.execute(super::onBackPressed));
             builder.setNegativeButton(android.R.string.cancel, null);
             builder.show();
         } else {
-            coordinator.postOnResume(super::onBackPressed);
+            stateSafeExecutor.execute(super::onBackPressed);
         }
     }
 

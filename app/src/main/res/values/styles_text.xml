@@ -14,6 +14,10 @@
         <item name="android:textColor">@color/text_dark</item>
     </style>
 
+    <style name="AppTheme.Text.Heading.Strong">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
     <style name="AppTheme.Text.Subheading">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">@dimen/text_size_subheading</item>
@@ -95,6 +99,10 @@
 
     <style name="AppTheme.Text.Body.Footer" parent="AppTheme.Text.Body.Small">
         <item name="android:textColor">@color/text_footer</item>
+    </style>
+
+    <style name="AppTheme.Text.RotaryPickerItem" parent="AppTheme.Text.Body">
+        <item name="android:textSize">@dimen/text_size_rotary_picker_item</item>
     </style>
 
 

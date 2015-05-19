@@ -8,14 +8,14 @@ import rx.Scheduler;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
-public class ResumeSchedulerTests extends TestCase {
+public class StateSafeSchedulerTests extends TestCase {
     private boolean isResumed = false;
-    private final ResumeScheduler.Coordinator coordinator = new ResumeScheduler.Coordinator(() -> isResumed);
-    private final ResumeScheduler scheduler = new ResumeScheduler(coordinator, Schedulers.immediate());
+    private final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(() -> isResumed);
+    private final StateSafeScheduler scheduler = new StateSafeScheduler(stateSafeExecutor, Schedulers.immediate());
 
     public void testResumedBehavior() throws Exception {
         this.isResumed = true;
-        coordinator.resume();
+        stateSafeExecutor.executePendingForResume();
 
         AtomicBoolean called = new AtomicBoolean(false);
         Action0 action = () -> called.set(true);
@@ -36,7 +36,7 @@ public class ResumeSchedulerTests extends TestCase {
         assertFalse(called.get());
 
         this.isResumed = true;
-        coordinator.resume();
+        stateSafeExecutor.executePendingForResume();
 
         assertTrue(called.get());
     }

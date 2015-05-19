@@ -301,6 +301,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 }
                 break;
             case 1:
+                Analytics.trackEvent(Analytics.Timeline.EVENT_BEFORE_SLEEP_TAPPED, null);
                 setHeaderMode(beforeSleep, Animation::crossFade);
                 this.breakdownHeaderMode = null;
                 break;
@@ -318,8 +319,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             throw new IllegalArgumentException();
         }
 
-        breakdownHeaderMode.leftItems.setAlpha(0f);
-        breakdownHeaderMode.rightItems.setAlpha(0f);
+        View leftItemsView = breakdownHeaderMode.leftItems,
+             rightItemsView = breakdownHeaderMode.rightItems,
+             smallScore = breakdownHeaderMode.score;
+
+        leftItemsView.setAlpha(0f);
+        rightItemsView.setAlpha(0f);
         newView.setAlpha(0f);
         container.addView(newView, 0, layoutParams);
 
@@ -341,7 +346,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             bigScore.setPivotX(bigWidth / 2f);
             bigScore.setPivotY(0.0f);
 
-            View smallScore = breakdownHeaderMode.score;
             smallScore.setPivotX(smallWidth / 2f);
             smallScore.setPivotY(0.0f);
 
@@ -369,8 +373,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
                 float delta = resources.getDimension(R.dimen.gap_tiny);
                 getAnimatorContext().transaction(f -> {
-                    f.animate(breakdownHeaderMode.leftItems).slideXAndFade(delta, 0f, 0f, 1f);
-                    f.animate(breakdownHeaderMode.rightItems).slideXAndFade(-delta, 0f, 0f, 1f);
+                    f.animate(leftItemsView).slideXAndFade(delta, 0f, 0f, 1f);
+                    f.animate(rightItemsView).slideXAndFade(-delta, 0f, 0f, 1f);
                 }, finishedLast -> {
                     if (finishedLast && onCompletion != null) {
                         onCompletion.run();
@@ -387,6 +391,8 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         if (newView == null || breakdownHeaderMode == null) {
             throw new IllegalArgumentException();
         }
+
+        View breakdownModeView = breakdownHeaderMode.view;
 
         newView.setAlpha(0f);
         container.addView(newView, 0, layoutParams);
@@ -414,14 +420,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         getAnimatorContext().transaction(config, f -> {
             f.animate(bigScore).scale(1f);
             f.animate(smallScore).scale(bigWidth / smallWidth);
-            f.animate(breakdownHeaderMode.view).fadeOut(View.VISIBLE);
+            f.animate(breakdownModeView).fadeOut(View.VISIBLE);
             f.animate(newView).fadeIn();
         }, finished -> {
             if (!finished) {
                 return;
             }
 
-            container.removeView(breakdownHeaderMode.view);
+            container.removeView(breakdownModeView);
             this.breakdownHeaderMode = null;
 
             getAnimatorContext().transaction(f -> {
@@ -502,7 +508,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         if (homeActivity.getWillShowUnderside()) {
             WelcomeDialogFragment.markShown(homeActivity, R.xml.welcome_dialog_timeline);
         } else {
-            getAnimatorContext().runWhenIdle(coordinator.bind(() -> {
+            getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(() -> {
                 if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
                     WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
                 } else if (Tutorial.SLEEP_SCORE_BREAKDOWN.shouldShow(getActivity())) {
@@ -591,7 +597,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
             TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment);
             dialogFragment.setTargetFragment(this, 0x00);
-            dialogFragment.show(getFragmentManager(), TimelineEventDialogFragment.TAG);
+            dialogFragment.showAllowingStateLoss(getFragmentManager(), TimelineEventDialogFragment.TAG);
         }
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
@@ -665,13 +671,14 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     @Override
-    public void onAdjustSegmentTime(@NonNull TimelineSegment segment,
+    public void onAdjustSegmentTime(@NonNull TimelineSegment.EventType eventType,
+                                    @NonNull DateTime shiftedTimestamp,
                                     @NonNull LocalTime newTime,
                                     @NonNull Action1<Boolean> continuation) {
         Feedback correction = new Feedback();
-        correction.setEventType(segment.getEventType());
+        correction.setEventType(eventType);
         correction.setNight(getDate().toLocalDate());
-        correction.setOldTime(segment.getShiftedTimestamp().toLocalTime());
+        correction.setOldTime(shiftedTimestamp.toLocalTime());
         correction.setNewTime(newTime);
         bindAndSubscribe(timelinePresenter.submitCorrection(correction),
                 ignored -> {

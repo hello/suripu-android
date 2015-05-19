@@ -26,6 +26,8 @@
         <item name="android:editTextStyle">@style/AppTheme.Text.EditText</item>
         <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
         <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Small</item>
         <item name="android:textColorLink">@color/text_link</item>
         <item name="android:checkboxStyle">@style/Platform.CheckBox</item>
 
@@ -133,14 +135,17 @@
 
     <!-- Dialogs -->
 
-    <style name="AppTheme.Dialog" parent="Platform.Dialog" />
+    <style name="AppTheme.Dialog" parent="Platform.Dialog">
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Small</item>
+    </style>
 
     <style name="AppTheme.Dialog.Simple" parent="Platform.Dialog.MinWidth">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@drawable/raised_item_normal</item>
     </style>
 
-    <style name="AppTheme.Dialog.Selector">
+    <style name="AppTheme.Dialog.List">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/transparent</item>
     </style>
@@ -302,10 +307,11 @@
     <style name="AppTheme.Button.Number" parent="AppTheme.Button.Dialog.Positive">
         <item name="android:minHeight">@dimen/button_rounded_min_height</item>
         <item name="android:background">@drawable/button_selector_number</item>
+        <item name="android:hapticFeedbackEnabled">true</item>
     </style>
 
     <style name="AppTheme.Button.Raised">
-        <item name="android:minHeight">32dp</item>
+        <item name="android:minHeight">@dimen/button_min_size_small</item>
         <item name="android:paddingBottom">1dp</item>
         <item name="android:paddingLeft">@dimen/gap_small</item>
         <item name="android:paddingRight">@dimen/gap_small</item>
@@ -319,7 +325,15 @@
         <item name="android:textColor">@color/text_color_selector_light_accent</item>
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">marquee</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="AppTheme.Button.Dialog.Alert">
+        <item name="android:paddingLeft">@dimen/gap_small</item>
+        <item name="android:paddingRight">@dimen/gap_small</item>
+        <item name="android:paddingTop">@dimen/gap_small</item>
+        <item name="android:paddingBottom">@dimen/gap_small</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="AppTheme.Button.Dialog.SolidBlue">
@@ -454,6 +468,26 @@
         <item name="android:requiresFadingEdge">vertical</item>
         <item name="android:fadingEdgeLength">@dimen/shadow_size</item>
         <item name="android:background">@color/shadow_end</item>
+    </style>
+
+    <!-- Progress Bars -->
+
+    <style name="AppTheme.ProgressBar" parent="android:Widget.Holo.ProgressBar">
+        <item name="android:indeterminateOnly">true</item>
+        <item name="android:indeterminateDrawable">@drawable/animated_progress_bar</item>
+        <item name="android:indeterminateDuration">1000</item>
+        <item name="android:minWidth">55dp</item>
+        <item name="android:maxWidth">55dp</item>
+        <item name="android:minHeight">55dp</item>
+        <item name="android:maxHeight">55dp</item>
+    </style>
+
+    <style name="AppTheme.ProgressBar.Small">
+        <item name="android:indeterminateDrawable">@drawable/animated_progress_bar_small</item>
+        <item name="android:minWidth">20dp</item>
+        <item name="android:maxWidth">20dp</item>
+        <item name="android:minHeight">20dp</item>
+        <item name="android:maxHeight">20dp</item>
     </style>
 
 </resources>

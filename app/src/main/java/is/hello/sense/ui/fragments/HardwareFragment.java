@@ -33,7 +33,7 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     protected void showBlockingActivity(@StringRes int titleRes) {
         if (loadingDialogFragment == null) {
-            coordinator.postOnResume(() -> {
+            stateSafeExecutor.execute(() -> {
                 this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(titleRes), true);
             });
         } else {
@@ -42,11 +42,11 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
     protected void hideBlockingActivity(boolean success, @NonNull Runnable onCompletion) {
-        coordinator.postOnResume(() -> {
+        stateSafeExecutor.execute(() -> {
             if (success) {
                 LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
                     this.loadingDialogFragment = null;
-                    coordinator.postOnResume(onCompletion);
+                    stateSafeExecutor.execute(onCompletion);
                 });
             } else {
                 LoadingDialogFragment.close(getFragmentManager());
@@ -81,7 +81,7 @@ public abstract class HardwareFragment extends InjectionFragment {
                                  }
                              });
         } else {
-            coordinator.postOnResume(onCompletion);
+            stateSafeExecutor.execute(onCompletion);
         }
     }
 

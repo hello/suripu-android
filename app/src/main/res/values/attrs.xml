@@ -39,4 +39,11 @@
     <declare-styleable name="RoundedLayout">
         <attr name="senseCornerRadius" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="RotaryPickerView">
+        <attr name="senseTextAppearance" format="reference" />
+        <attr name="senseItemBackground" format="reference" />
+        <attr name="senseWantsLeadingZeros" format="reference" />
+        <attr name="android:gravity" />
+    </declare-styleable>
 </resources>

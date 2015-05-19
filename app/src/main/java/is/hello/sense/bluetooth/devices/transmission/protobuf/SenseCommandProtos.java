@@ -77,6 +77,26 @@ public final class SenseCommandProtos {
      * <code>FAIL_TO_OBTAIN_IP = 9;</code>
      */
     FAIL_TO_OBTAIN_IP(9, 9),
+    /**
+     * <code>WLAN_ENDPOINT_DELETE_FAILED = 10;</code>
+     */
+    WLAN_ENDPOINT_DELETE_FAILED(10, 10),
+    /**
+     * <code>INVALID_ACCOUNT_ID = 11;</code>
+     */
+    INVALID_ACCOUNT_ID(11, 11),
+    /**
+     * <code>FORCE_DATA_PUSH_FAILED = 12;</code>
+     */
+    FORCE_DATA_PUSH_FAILED(12, 12),
+    /**
+     * <code>PROTOBUF_ENCODE_FAILED = 13;</code>
+     */
+    PROTOBUF_ENCODE_FAILED(13, 13),
+    /**
+     * <code>PROTOBUF_DECODE_FAILED = 14;</code>
+     */
+    PROTOBUF_DECODE_FAILED(14, 14),
     ;
 
     /**
@@ -143,6 +163,26 @@ public final class SenseCommandProtos {
      * <code>FAIL_TO_OBTAIN_IP = 9;</code>
      */
     public static final int FAIL_TO_OBTAIN_IP_VALUE = 9;
+    /**
+     * <code>WLAN_ENDPOINT_DELETE_FAILED = 10;</code>
+     */
+    public static final int WLAN_ENDPOINT_DELETE_FAILED_VALUE = 10;
+    /**
+     * <code>INVALID_ACCOUNT_ID = 11;</code>
+     */
+    public static final int INVALID_ACCOUNT_ID_VALUE = 11;
+    /**
+     * <code>FORCE_DATA_PUSH_FAILED = 12;</code>
+     */
+    public static final int FORCE_DATA_PUSH_FAILED_VALUE = 12;
+    /**
+     * <code>PROTOBUF_ENCODE_FAILED = 13;</code>
+     */
+    public static final int PROTOBUF_ENCODE_FAILED_VALUE = 13;
+    /**
+     * <code>PROTOBUF_DECODE_FAILED = 14;</code>
+     */
+    public static final int PROTOBUF_DECODE_FAILED_VALUE = 14;
 
 
     public final int getNumber() { return value; }
@@ -159,6 +199,11 @@ public final class SenseCommandProtos {
         case 7: return NO_ENDPOINT_IN_RANGE;
         case 8: return WLAN_CONNECTION_ERROR;
         case 9: return FAIL_TO_OBTAIN_IP;
+        case 10: return WLAN_ENDPOINT_DELETE_FAILED;
+        case 11: return INVALID_ACCOUNT_ID;
+        case 12: return FORCE_DATA_PUSH_FAILED;
+        case 13: return PROTOBUF_ENCODE_FAILED;
+        case 14: return PROTOBUF_DECODE_FAILED;
         default: return null;
       }
     }
@@ -2171,27 +2216,11 @@ public final class SenseCommandProtos {
         getWifiPasswordBytes();
 
     /**
-     * <code>optional int32 batteryLevel = 9;</code>
-     */
-    boolean hasBatteryLevel();
-    /**
-     * <code>optional int32 batteryLevel = 9;</code>
-     */
-    int getBatteryLevel();
-
-    /**
-     * <code>optional int32 uptime = 10;</code>
-     */
-    boolean hasUptime();
-    /**
-     * <code>optional int32 uptime = 10;</code>
-     */
-    int getUptime();
-
-    /**
      * <code>optional int32 firmwareVersion = 13;</code>
      *
      * <pre>
+     * optional int32 batteryLevel = 9;  // Removed field, dont reuse
+     * optional int32 uptime = 10;       // Removed field, dont reuse
      * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
      * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
      * </pre>
@@ -2201,6 +2230,8 @@ public final class SenseCommandProtos {
      * <code>optional int32 firmwareVersion = 13;</code>
      *
      * <pre>
+     * optional int32 batteryLevel = 9;  // Removed field, dont reuse
+     * optional int32 uptime = 10;       // Removed field, dont reuse
      * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
      * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
      * </pre>
@@ -2261,6 +2292,38 @@ public final class SenseCommandProtos {
      * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
      */
     is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state getWifiConnectionState();
+
+    /**
+     * <code>optional int32 ble_bond_count = 18;</code>
+     */
+    boolean hasBleBondCount();
+    /**
+     * <code>optional int32 ble_bond_count = 18;</code>
+     */
+    int getBleBondCount();
+
+    /**
+     * <code>optional string country_code = 19;</code>
+     */
+    boolean hasCountryCode();
+    /**
+     * <code>optional string country_code = 19;</code>
+     */
+    java.lang.String getCountryCode();
+    /**
+     * <code>optional string country_code = 19;</code>
+     */
+    com.google.protobuf.ByteString
+        getCountryCodeBytes();
+
+    /**
+     * <code>optional bytes aes_key = 20;</code>
+     */
+    boolean hasAesKey();
+    /**
+     * <code>optional bytes aes_key = 20;</code>
+     */
+    com.google.protobuf.ByteString getAesKey();
   }
   /**
    * Protobuf type {@code MorpheusCommand}
@@ -2371,25 +2434,15 @@ public final class SenseCommandProtos {
               wifiPassword_ = bs;
               break;
             }
-            case 72: {
-              bitField0_ |= 0x00000100;
-              batteryLevel_ = input.readInt32();
-              break;
-            }
-            case 80: {
-              bitField0_ |= 0x00000200;
-              uptime_ = input.readInt32();
-              break;
-            }
             case 104: {
-              bitField0_ |= 0x00000400;
+              bitField0_ |= 0x00000100;
               firmwareVersion_ = input.readInt32();
               break;
             }
             case 114: {
-              if (!((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
+              if (!((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
                 wifiScanResult_ = new java.util.ArrayList<is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint>();
-                mutable_bitField0_ |= 0x00000800;
+                mutable_bitField0_ |= 0x00000200;
               }
               wifiScanResult_.add(input.readMessage(is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.PARSER, extensionRegistry));
               break;
@@ -2400,14 +2453,14 @@ public final class SenseCommandProtos {
               if (value == null) {
                 unknownFields.mergeVarintField(15, rawValue);
               } else {
-                bitField0_ |= 0x00000800;
+                bitField0_ |= 0x00000200;
                 securityType_ = value;
               }
               break;
             }
             case 130: {
               is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.Builder subBuilder = null;
-              if (((bitField0_ & 0x00001000) == 0x00001000)) {
+              if (((bitField0_ & 0x00000400) == 0x00000400)) {
                 subBuilder = pillData_.toBuilder();
               }
               pillData_ = input.readMessage(is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.PARSER, extensionRegistry);
@@ -2415,7 +2468,7 @@ public final class SenseCommandProtos {
                 subBuilder.mergeFrom(pillData_);
                 pillData_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00001000;
+              bitField0_ |= 0x00000400;
               break;
             }
             case 136: {
@@ -2424,9 +2477,25 @@ public final class SenseCommandProtos {
               if (value == null) {
                 unknownFields.mergeVarintField(17, rawValue);
               } else {
-                bitField0_ |= 0x00002000;
+                bitField0_ |= 0x00000800;
                 wifiConnectionState_ = value;
               }
+              break;
+            }
+            case 144: {
+              bitField0_ |= 0x00001000;
+              bleBondCount_ = input.readInt32();
+              break;
+            }
+            case 154: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00002000;
+              countryCode_ = bs;
+              break;
+            }
+            case 162: {
+              bitField0_ |= 0x00004000;
+              aesKey_ = input.readBytes();
               break;
             }
           }
@@ -2437,7 +2506,7 @@ public final class SenseCommandProtos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
+        if (((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
           wifiScanResult_ = java.util.Collections.unmodifiableList(wifiScanResult_);
         }
         this.unknownFields = unknownFields.build();
@@ -2608,6 +2677,10 @@ public final class SenseCommandProtos {
        * <code>MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE = 31;</code>
        */
       MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE(31, 31),
+      /**
+       * <code>MORPHEUS_COMMAND_SET_COUNTRY_CODE = 32;</code>
+       */
+      MORPHEUS_COMMAND_SET_COUNTRY_CODE(32, 32),
       ;
 
       /**
@@ -2742,6 +2815,10 @@ public final class SenseCommandProtos {
        * <code>MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE = 31;</code>
        */
       public static final int MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE_VALUE = 31;
+      /**
+       * <code>MORPHEUS_COMMAND_SET_COUNTRY_CODE = 32;</code>
+       */
+      public static final int MORPHEUS_COMMAND_SET_COUNTRY_CODE_VALUE = 32;
 
 
       public final int getNumber() { return value; }
@@ -2780,6 +2857,7 @@ public final class SenseCommandProtos {
           case 29: return MORPHEUS_COMMAND_GET_NEXT_WIFI_AP;
           case 30: return MORPHEUS_COMMAND_LED_OPERATION_SUCCESS;
           case 31: return MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE;
+          case 32: return MORPHEUS_COMMAND_SET_COUNTRY_CODE;
           default: return null;
         }
       }
@@ -3107,53 +3185,27 @@ public final class SenseCommandProtos {
       }
     }
 
-    public static final int BATTERYLEVEL_FIELD_NUMBER = 9;
-    private int batteryLevel_;
-    /**
-     * <code>optional int32 batteryLevel = 9;</code>
-     */
-    public boolean hasBatteryLevel() {
-      return ((bitField0_ & 0x00000100) == 0x00000100);
-    }
-    /**
-     * <code>optional int32 batteryLevel = 9;</code>
-     */
-    public int getBatteryLevel() {
-      return batteryLevel_;
-    }
-
-    public static final int UPTIME_FIELD_NUMBER = 10;
-    private int uptime_;
-    /**
-     * <code>optional int32 uptime = 10;</code>
-     */
-    public boolean hasUptime() {
-      return ((bitField0_ & 0x00000200) == 0x00000200);
-    }
-    /**
-     * <code>optional int32 uptime = 10;</code>
-     */
-    public int getUptime() {
-      return uptime_;
-    }
-
     public static final int FIRMWAREVERSION_FIELD_NUMBER = 13;
     private int firmwareVersion_;
     /**
      * <code>optional int32 firmwareVersion = 13;</code>
      *
      * <pre>
+     * optional int32 batteryLevel = 9;  // Removed field, dont reuse
+     * optional int32 uptime = 10;       // Removed field, dont reuse
      * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
      * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
      * </pre>
      */
     public boolean hasFirmwareVersion() {
-      return ((bitField0_ & 0x00000400) == 0x00000400);
+      return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
      * <code>optional int32 firmwareVersion = 13;</code>
      *
      * <pre>
+     * optional int32 batteryLevel = 9;  // Removed field, dont reuse
+     * optional int32 uptime = 10;       // Removed field, dont reuse
      * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
      * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
      * </pre>
@@ -3203,7 +3255,7 @@ public final class SenseCommandProtos {
      * <code>optional .wifi_endpoint.sec_type security_type = 15;</code>
      */
     public boolean hasSecurityType() {
-      return ((bitField0_ & 0x00000800) == 0x00000800);
+      return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     /**
      * <code>optional .wifi_endpoint.sec_type security_type = 15;</code>
@@ -3218,7 +3270,7 @@ public final class SenseCommandProtos {
      * <code>optional .pill_data pill_data = 16;</code>
      */
     public boolean hasPillData() {
-      return ((bitField0_ & 0x00001000) == 0x00001000);
+      return ((bitField0_ & 0x00000400) == 0x00000400);
     }
     /**
      * <code>optional .pill_data pill_data = 16;</code>
@@ -3239,13 +3291,85 @@ public final class SenseCommandProtos {
      * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
      */
     public boolean hasWifiConnectionState() {
-      return ((bitField0_ & 0x00002000) == 0x00002000);
+      return ((bitField0_ & 0x00000800) == 0x00000800);
     }
     /**
      * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
      */
     public is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state getWifiConnectionState() {
       return wifiConnectionState_;
+    }
+
+    public static final int BLE_BOND_COUNT_FIELD_NUMBER = 18;
+    private int bleBondCount_;
+    /**
+     * <code>optional int32 ble_bond_count = 18;</code>
+     */
+    public boolean hasBleBondCount() {
+      return ((bitField0_ & 0x00001000) == 0x00001000);
+    }
+    /**
+     * <code>optional int32 ble_bond_count = 18;</code>
+     */
+    public int getBleBondCount() {
+      return bleBondCount_;
+    }
+
+    public static final int COUNTRY_CODE_FIELD_NUMBER = 19;
+    private java.lang.Object countryCode_;
+    /**
+     * <code>optional string country_code = 19;</code>
+     */
+    public boolean hasCountryCode() {
+      return ((bitField0_ & 0x00002000) == 0x00002000);
+    }
+    /**
+     * <code>optional string country_code = 19;</code>
+     */
+    public java.lang.String getCountryCode() {
+      java.lang.Object ref = countryCode_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          countryCode_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string country_code = 19;</code>
+     */
+    public com.google.protobuf.ByteString
+        getCountryCodeBytes() {
+      java.lang.Object ref = countryCode_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        countryCode_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int AES_KEY_FIELD_NUMBER = 20;
+    private com.google.protobuf.ByteString aesKey_;
+    /**
+     * <code>optional bytes aes_key = 20;</code>
+     */
+    public boolean hasAesKey() {
+      return ((bitField0_ & 0x00004000) == 0x00004000);
+    }
+    /**
+     * <code>optional bytes aes_key = 20;</code>
+     */
+    public com.google.protobuf.ByteString getAesKey() {
+      return aesKey_;
     }
 
     private void initFields() {
@@ -3257,13 +3381,14 @@ public final class SenseCommandProtos {
       wifiName_ = "";
       wifiSSID_ = "";
       wifiPassword_ = "";
-      batteryLevel_ = 0;
-      uptime_ = 0;
       firmwareVersion_ = 0;
       wifiScanResult_ = java.util.Collections.emptyList();
       securityType_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN;
       pillData_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.getDefaultInstance();
       wifiConnectionState_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state.NO_WLAN_CONNECTED;
+      bleBondCount_ = 0;
+      countryCode_ = "";
+      aesKey_ = com.google.protobuf.ByteString.EMPTY;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3323,25 +3448,28 @@ public final class SenseCommandProtos {
         output.writeBytes(8, getWifiPasswordBytes());
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeInt32(9, batteryLevel_);
-      }
-      if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        output.writeInt32(10, uptime_);
-      }
-      if (((bitField0_ & 0x00000400) == 0x00000400)) {
         output.writeInt32(13, firmwareVersion_);
       }
       for (int i = 0; i < wifiScanResult_.size(); i++) {
         output.writeMessage(14, wifiScanResult_.get(i));
       }
-      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
         output.writeEnum(15, securityType_.getNumber());
       }
-      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
         output.writeMessage(16, pillData_);
       }
-      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
         output.writeEnum(17, wifiConnectionState_.getNumber());
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        output.writeInt32(18, bleBondCount_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        output.writeBytes(19, getCountryCodeBytes());
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        output.writeBytes(20, aesKey_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -3386,31 +3514,35 @@ public final class SenseCommandProtos {
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(9, batteryLevel_);
-      }
-      if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(10, uptime_);
-      }
-      if (((bitField0_ & 0x00000400) == 0x00000400)) {
-        size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(13, firmwareVersion_);
       }
       for (int i = 0; i < wifiScanResult_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(14, wifiScanResult_.get(i));
       }
-      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(15, securityType_.getNumber());
       }
-      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(16, pillData_);
       }
-      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(17, wifiConnectionState_.getNumber());
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(18, bleBondCount_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(19, getCountryCodeBytes());
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(20, aesKey_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3547,28 +3679,30 @@ public final class SenseCommandProtos {
         bitField0_ = (bitField0_ & ~0x00000040);
         wifiPassword_ = "";
         bitField0_ = (bitField0_ & ~0x00000080);
-        batteryLevel_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000100);
-        uptime_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000200);
         firmwareVersion_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000100);
         if (wifiScanResultBuilder_ == null) {
           wifiScanResult_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000800);
+          bitField0_ = (bitField0_ & ~0x00000200);
         } else {
           wifiScanResultBuilder_.clear();
         }
         securityType_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN;
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00000400);
         if (pillDataBuilder_ == null) {
           pillData_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.getDefaultInstance();
         } else {
           pillDataBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00002000);
+        bitField0_ = (bitField0_ & ~0x00000800);
         wifiConnectionState_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state.NO_WLAN_CONNECTED;
+        bitField0_ = (bitField0_ & ~0x00001000);
+        bleBondCount_ = 0;
+        bitField0_ = (bitField0_ & ~0x00002000);
+        countryCode_ = "";
         bitField0_ = (bitField0_ & ~0x00004000);
+        aesKey_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00008000);
         return this;
       }
 
@@ -3632,40 +3766,44 @@ public final class SenseCommandProtos {
         if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
           to_bitField0_ |= 0x00000100;
         }
-        result.batteryLevel_ = batteryLevel_;
-        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
-          to_bitField0_ |= 0x00000200;
-        }
-        result.uptime_ = uptime_;
-        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
-          to_bitField0_ |= 0x00000400;
-        }
         result.firmwareVersion_ = firmwareVersion_;
         if (wifiScanResultBuilder_ == null) {
-          if (((bitField0_ & 0x00000800) == 0x00000800)) {
+          if (((bitField0_ & 0x00000200) == 0x00000200)) {
             wifiScanResult_ = java.util.Collections.unmodifiableList(wifiScanResult_);
-            bitField0_ = (bitField0_ & ~0x00000800);
+            bitField0_ = (bitField0_ & ~0x00000200);
           }
           result.wifiScanResult_ = wifiScanResult_;
         } else {
           result.wifiScanResult_ = wifiScanResultBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
-          to_bitField0_ |= 0x00000800;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000200;
         }
         result.securityType_ = securityType_;
-        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
-          to_bitField0_ |= 0x00001000;
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000400;
         }
         if (pillDataBuilder_ == null) {
           result.pillData_ = pillData_;
         } else {
           result.pillData_ = pillDataBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00000800;
+        }
+        result.wifiConnectionState_ = wifiConnectionState_;
+        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+          to_bitField0_ |= 0x00001000;
+        }
+        result.bleBondCount_ = bleBondCount_;
         if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
           to_bitField0_ |= 0x00002000;
         }
-        result.wifiConnectionState_ = wifiConnectionState_;
+        result.countryCode_ = countryCode_;
+        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
+          to_bitField0_ |= 0x00004000;
+        }
+        result.aesKey_ = aesKey_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3716,12 +3854,6 @@ public final class SenseCommandProtos {
           wifiPassword_ = other.wifiPassword_;
           onChanged();
         }
-        if (other.hasBatteryLevel()) {
-          setBatteryLevel(other.getBatteryLevel());
-        }
-        if (other.hasUptime()) {
-          setUptime(other.getUptime());
-        }
         if (other.hasFirmwareVersion()) {
           setFirmwareVersion(other.getFirmwareVersion());
         }
@@ -3729,7 +3861,7 @@ public final class SenseCommandProtos {
           if (!other.wifiScanResult_.isEmpty()) {
             if (wifiScanResult_.isEmpty()) {
               wifiScanResult_ = other.wifiScanResult_;
-              bitField0_ = (bitField0_ & ~0x00000800);
+              bitField0_ = (bitField0_ & ~0x00000200);
             } else {
               ensureWifiScanResultIsMutable();
               wifiScanResult_.addAll(other.wifiScanResult_);
@@ -3742,7 +3874,7 @@ public final class SenseCommandProtos {
               wifiScanResultBuilder_.dispose();
               wifiScanResultBuilder_ = null;
               wifiScanResult_ = other.wifiScanResult_;
-              bitField0_ = (bitField0_ & ~0x00000800);
+              bitField0_ = (bitField0_ & ~0x00000200);
               wifiScanResultBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getWifiScanResultFieldBuilder() : null;
@@ -3759,6 +3891,17 @@ public final class SenseCommandProtos {
         }
         if (other.hasWifiConnectionState()) {
           setWifiConnectionState(other.getWifiConnectionState());
+        }
+        if (other.hasBleBondCount()) {
+          setBleBondCount(other.getBleBondCount());
+        }
+        if (other.hasCountryCode()) {
+          bitField0_ |= 0x00004000;
+          countryCode_ = other.countryCode_;
+          onChanged();
+        }
+        if (other.hasAesKey()) {
+          setAesKey(other.getAesKey());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -4329,86 +4472,26 @@ public final class SenseCommandProtos {
         return this;
       }
 
-      private int batteryLevel_ ;
-      /**
-       * <code>optional int32 batteryLevel = 9;</code>
-       */
-      public boolean hasBatteryLevel() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
-      }
-      /**
-       * <code>optional int32 batteryLevel = 9;</code>
-       */
-      public int getBatteryLevel() {
-        return batteryLevel_;
-      }
-      /**
-       * <code>optional int32 batteryLevel = 9;</code>
-       */
-      public Builder setBatteryLevel(int value) {
-        bitField0_ |= 0x00000100;
-        batteryLevel_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int32 batteryLevel = 9;</code>
-       */
-      public Builder clearBatteryLevel() {
-        bitField0_ = (bitField0_ & ~0x00000100);
-        batteryLevel_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private int uptime_ ;
-      /**
-       * <code>optional int32 uptime = 10;</code>
-       */
-      public boolean hasUptime() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
-      }
-      /**
-       * <code>optional int32 uptime = 10;</code>
-       */
-      public int getUptime() {
-        return uptime_;
-      }
-      /**
-       * <code>optional int32 uptime = 10;</code>
-       */
-      public Builder setUptime(int value) {
-        bitField0_ |= 0x00000200;
-        uptime_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int32 uptime = 10;</code>
-       */
-      public Builder clearUptime() {
-        bitField0_ = (bitField0_ & ~0x00000200);
-        uptime_ = 0;
-        onChanged();
-        return this;
-      }
-
       private int firmwareVersion_ ;
       /**
        * <code>optional int32 firmwareVersion = 13;</code>
        *
        * <pre>
+       * optional int32 batteryLevel = 9;  // Removed field, dont reuse
+       * optional int32 uptime = 10;       // Removed field, dont reuse
        * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
        * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
        * </pre>
        */
       public boolean hasFirmwareVersion() {
-        return ((bitField0_ & 0x00000400) == 0x00000400);
+        return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
        * <code>optional int32 firmwareVersion = 13;</code>
        *
        * <pre>
+       * optional int32 batteryLevel = 9;  // Removed field, dont reuse
+       * optional int32 uptime = 10;       // Removed field, dont reuse
        * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
        * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
        * </pre>
@@ -4420,12 +4503,14 @@ public final class SenseCommandProtos {
        * <code>optional int32 firmwareVersion = 13;</code>
        *
        * <pre>
+       * optional int32 batteryLevel = 9;  // Removed field, dont reuse
+       * optional int32 uptime = 10;       // Removed field, dont reuse
        * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
        * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
        * </pre>
        */
       public Builder setFirmwareVersion(int value) {
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00000100;
         firmwareVersion_ = value;
         onChanged();
         return this;
@@ -4434,12 +4519,14 @@ public final class SenseCommandProtos {
        * <code>optional int32 firmwareVersion = 13;</code>
        *
        * <pre>
+       * optional int32 batteryLevel = 9;  // Removed field, dont reuse
+       * optional int32 uptime = 10;       // Removed field, dont reuse
        * optional int32 motionData = 11;   // This field is removed, to make thing explicit, please DONOT remove the line
        * optional bytes motionDataEntrypted = 12;   // This field is removed, to make thing explicit, please DONOT remove the line
        * </pre>
        */
       public Builder clearFirmwareVersion() {
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000100);
         firmwareVersion_ = 0;
         onChanged();
         return this;
@@ -4448,9 +4535,9 @@ public final class SenseCommandProtos {
       private java.util.List<is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint> wifiScanResult_ =
         java.util.Collections.emptyList();
       private void ensureWifiScanResultIsMutable() {
-        if (!((bitField0_ & 0x00000800) == 0x00000800)) {
+        if (!((bitField0_ & 0x00000200) == 0x00000200)) {
           wifiScanResult_ = new java.util.ArrayList<is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint>(wifiScanResult_);
-          bitField0_ |= 0x00000800;
+          bitField0_ |= 0x00000200;
          }
       }
 
@@ -4600,7 +4687,7 @@ public final class SenseCommandProtos {
       public Builder clearWifiScanResult() {
         if (wifiScanResultBuilder_ == null) {
           wifiScanResult_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000800);
+          bitField0_ = (bitField0_ & ~0x00000200);
           onChanged();
         } else {
           wifiScanResultBuilder_.clear();
@@ -4677,7 +4764,7 @@ public final class SenseCommandProtos {
           wifiScanResultBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint, is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.Builder, is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpointOrBuilder>(
                   wifiScanResult_,
-                  ((bitField0_ & 0x00000800) == 0x00000800),
+                  ((bitField0_ & 0x00000200) == 0x00000200),
                   getParentForChildren(),
                   isClean());
           wifiScanResult_ = null;
@@ -4690,7 +4777,7 @@ public final class SenseCommandProtos {
        * <code>optional .wifi_endpoint.sec_type security_type = 15;</code>
        */
       public boolean hasSecurityType() {
-        return ((bitField0_ & 0x00001000) == 0x00001000);
+        return ((bitField0_ & 0x00000400) == 0x00000400);
       }
       /**
        * <code>optional .wifi_endpoint.sec_type security_type = 15;</code>
@@ -4705,7 +4792,7 @@ public final class SenseCommandProtos {
         if (value == null) {
           throw new NullPointerException();
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00000400;
         securityType_ = value;
         onChanged();
         return this;
@@ -4714,7 +4801,7 @@ public final class SenseCommandProtos {
        * <code>optional .wifi_endpoint.sec_type security_type = 15;</code>
        */
       public Builder clearSecurityType() {
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00000400);
         securityType_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN;
         onChanged();
         return this;
@@ -4727,7 +4814,7 @@ public final class SenseCommandProtos {
        * <code>optional .pill_data pill_data = 16;</code>
        */
       public boolean hasPillData() {
-        return ((bitField0_ & 0x00002000) == 0x00002000);
+        return ((bitField0_ & 0x00000800) == 0x00000800);
       }
       /**
        * <code>optional .pill_data pill_data = 16;</code>
@@ -4752,7 +4839,7 @@ public final class SenseCommandProtos {
         } else {
           pillDataBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00000800;
         return this;
       }
       /**
@@ -4766,7 +4853,7 @@ public final class SenseCommandProtos {
         } else {
           pillDataBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00000800;
         return this;
       }
       /**
@@ -4774,7 +4861,7 @@ public final class SenseCommandProtos {
        */
       public Builder mergePillData(is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data value) {
         if (pillDataBuilder_ == null) {
-          if (((bitField0_ & 0x00002000) == 0x00002000) &&
+          if (((bitField0_ & 0x00000800) == 0x00000800) &&
               pillData_ != is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.getDefaultInstance()) {
             pillData_ =
               is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.newBuilder(pillData_).mergeFrom(value).buildPartial();
@@ -4785,7 +4872,7 @@ public final class SenseCommandProtos {
         } else {
           pillDataBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00000800;
         return this;
       }
       /**
@@ -4798,14 +4885,14 @@ public final class SenseCommandProtos {
         } else {
           pillDataBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00002000);
+        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
       /**
        * <code>optional .pill_data pill_data = 16;</code>
        */
       public is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.Builder getPillDataBuilder() {
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00000800;
         onChanged();
         return getPillDataFieldBuilder().getBuilder();
       }
@@ -4841,7 +4928,7 @@ public final class SenseCommandProtos {
        * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
        */
       public boolean hasWifiConnectionState() {
-        return ((bitField0_ & 0x00004000) == 0x00004000);
+        return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       /**
        * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
@@ -4856,7 +4943,7 @@ public final class SenseCommandProtos {
         if (value == null) {
           throw new NullPointerException();
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00001000;
         wifiConnectionState_ = value;
         onChanged();
         return this;
@@ -4865,8 +4952,151 @@ public final class SenseCommandProtos {
        * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
        */
       public Builder clearWifiConnectionState() {
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00001000);
         wifiConnectionState_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state.NO_WLAN_CONNECTED;
+        onChanged();
+        return this;
+      }
+
+      private int bleBondCount_ ;
+      /**
+       * <code>optional int32 ble_bond_count = 18;</code>
+       */
+      public boolean hasBleBondCount() {
+        return ((bitField0_ & 0x00002000) == 0x00002000);
+      }
+      /**
+       * <code>optional int32 ble_bond_count = 18;</code>
+       */
+      public int getBleBondCount() {
+        return bleBondCount_;
+      }
+      /**
+       * <code>optional int32 ble_bond_count = 18;</code>
+       */
+      public Builder setBleBondCount(int value) {
+        bitField0_ |= 0x00002000;
+        bleBondCount_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 ble_bond_count = 18;</code>
+       */
+      public Builder clearBleBondCount() {
+        bitField0_ = (bitField0_ & ~0x00002000);
+        bleBondCount_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object countryCode_ = "";
+      /**
+       * <code>optional string country_code = 19;</code>
+       */
+      public boolean hasCountryCode() {
+        return ((bitField0_ & 0x00004000) == 0x00004000);
+      }
+      /**
+       * <code>optional string country_code = 19;</code>
+       */
+      public java.lang.String getCountryCode() {
+        java.lang.Object ref = countryCode_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            countryCode_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string country_code = 19;</code>
+       */
+      public com.google.protobuf.ByteString
+          getCountryCodeBytes() {
+        java.lang.Object ref = countryCode_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          countryCode_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string country_code = 19;</code>
+       */
+      public Builder setCountryCode(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00004000;
+        countryCode_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string country_code = 19;</code>
+       */
+      public Builder clearCountryCode() {
+        bitField0_ = (bitField0_ & ~0x00004000);
+        countryCode_ = getDefaultInstance().getCountryCode();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string country_code = 19;</code>
+       */
+      public Builder setCountryCodeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00004000;
+        countryCode_ = value;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString aesKey_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes aes_key = 20;</code>
+       */
+      public boolean hasAesKey() {
+        return ((bitField0_ & 0x00008000) == 0x00008000);
+      }
+      /**
+       * <code>optional bytes aes_key = 20;</code>
+       */
+      public com.google.protobuf.ByteString getAesKey() {
+        return aesKey_;
+      }
+      /**
+       * <code>optional bytes aes_key = 20;</code>
+       */
+      public Builder setAesKey(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00008000;
+        aesKey_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes aes_key = 20;</code>
+       */
+      public Builder clearAesKey() {
+        bitField0_ = (bitField0_ & ~0x00008000);
+        aesKey_ = getDefaultInstance().getAesKey();
         onChanged();
         return this;
       }
@@ -5776,61 +6006,65 @@ public final class SenseCommandProtos {
       "_WPA2\020\003\"\221\001\n\tpill_data\022\021\n\tdevice_id\030\001 \002(\t" +
       "\022\025\n\rbattery_level\030\002 \001(\005\022\016\n\006uptime\030\003 \001(\005\022" +
       "\035\n\025motion_data_entrypted\030\004 \001(\014\022\030\n\020firmwa" +
-      "re_version\030\005 \001(\005\022\021\n\ttimestamp\030\006 \002(\004\"\345\014\n\017",
+      "re_version\030\005 \001(\005\022\021\n\ttimestamp\030\006 \002(\004\"\245\r\n\017",
       "MorpheusCommand\022\017\n\007version\030\001 \002(\005\022*\n\004type" +
       "\030\002 \002(\0162\034.MorpheusCommand.CommandType\022\020\n\010" +
       "deviceId\030\003 \001(\t\022\021\n\taccountId\030\004 \001(\t\022\031\n\005err" +
       "or\030\005 \001(\0162\n.ErrorType\022\020\n\010wifiName\030\006 \001(\t\022\020" +
-      "\n\010wifiSSID\030\007 \001(\t\022\024\n\014wifiPassword\030\010 \001(\t\022\024" +
-      "\n\014batteryLevel\030\t \001(\005\022\016\n\006uptime\030\n \001(\005\022\027\n\017" +
-      "firmwareVersion\030\r \001(\005\022(\n\020wifi_scan_resul" +
-      "t\030\016 \003(\0132\016.wifi_endpoint\022.\n\rsecurity_type" +
-      "\030\017 \001(\0162\027.wifi_endpoint.sec_type\022\035\n\tpill_" +
-      "data\030\020 \001(\0132\n.pill_data\0225\n\025wifi_connectio",
-      "n_state\030\021 \001(\0162\026.wifi_connection_state\"\253\t" +
-      "\n\013CommandType\022\035\n\031MORPHEUS_COMMAND_SET_TI" +
-      "ME\020\000\022\035\n\031MORPHEUS_COMMAND_GET_TIME\020\001\022&\n\"M" +
-      "ORPHEUS_COMMAND_SET_WIFI_ENDPOINT\020\002\022&\n\"M" +
-      "ORPHEUS_COMMAND_GET_WIFI_ENDPOINT\020\003\022\037\n\033M" +
-      "ORPHEUS_COMMAND_SET_ALARMS\020\004\022\037\n\033MORPHEUS" +
-      "_COMMAND_GET_ALARMS\020\005\022+\n\'MORPHEUS_COMMAN" +
-      "D_SWITCH_TO_PAIRING_MODE\020\006\022*\n&MORPHEUS_C" +
-      "OMMAND_SWITCH_TO_NORMAL_MODE\020\007\022#\n\037MORPHE" +
-      "US_COMMAND_START_WIFISCAN\020\010\022\"\n\036MORPHEUS_",
-      "COMMAND_STOP_WIFISCAN\020\t\022\"\n\036MORPHEUS_COMM" +
-      "AND_GET_DEVICE_ID\020\n\022\'\n#MORPHEUS_COMMAND_" +
-      "ERASE_PAIRED_PHONE\020\013\022\036\n\032MORPHEUS_COMMAND" +
-      "_PAIR_PILL\020\014\022\032\n\026MORPHEUS_COMMAND_ERROR\020\r" +
-      "\022\037\n\033MORPHEUS_COMMAND_PAIR_SENSE\020\016\022 \n\034MOR" +
-      "PHEUS_COMMAND_UNPAIR_PILL\020\017\022\'\n#MORPHEUS_" +
-      "COMMAND_MORPHEUS_DFU_BEGIN\020\020\022\036\n\032MORPHEUS" +
-      "_COMMAND_PILL_DATA\020\021\022#\n\037MORPHEUS_COMMAND" +
-      "_PILL_HEARTBEAT\020\022\022#\n\037MORPHEUS_COMMAND_PI" +
-      "LL_DFU_BEGIN\020\023\022\"\n\036MORPHEUS_COMMAND_FACTO",
-      "RY_RESET\020\024\022 \n\034MORPHEUS_COMMAND_PILL_SHAK" +
-      "ES\020\025\022#\n\037MORPHEUS_COMMAND_SYNC_DEVICE_ID\020" +
-      "\026\022(\n$MORPHEUS_COMMAND_PHONE_BLE_CONNECTE" +
-      "D\020\027\022%\n!MORPHEUS_COMMAND_PHONE_BLE_BONDED" +
-      "\020\030\022\035\n\031MORPHEUS_COMMAND_LED_BUSY\020\031\022\037\n\033MOR" +
-      "PHEUS_COMMAND_LED_TRIPPY\020\032\022)\n%MORPHEUS_C" +
-      "OMMAND_LED_OPERATION_FAILED\020\033\022\036\n\032MORPHEU" +
-      "S_COMMAND_SCAN_WIFI\020\034\022%\n!MORPHEUS_COMMAN" +
-      "D_GET_NEXT_WIFI_AP\020\035\022*\n&MORPHEUS_COMMAND" +
-      "_LED_OPERATION_SUCCESS\020\036\0221\n-MORPHEUS_COM",
-      "MAND_PUSH_DATA_AFTER_SET_TIMEZONE\020\037\"A\n\021b" +
-      "atched_pill_data\022\031\n\005pills\030\001 \003(\0132\n.pill_d" +
-      "ata\022\021\n\tdevice_id\030\002 \002(\t*\373\001\n\tErrorType\022\014\n\010" +
-      "TIME_OUT\020\000\022\021\n\rNETWORK_ERROR\020\001\022\031\n\025DEVICE_" +
-      "ALREADY_PAIRED\020\002\022\027\n\023INTERNAL_DATA_ERROR\020" +
-      "\003\022\030\n\024DEVICE_DATABASE_FULL\020\004\022\024\n\020DEVICE_NO" +
-      "_MEMORY\020\005\022\035\n\031INTERNAL_OPERATION_FAILED\020\006" +
-      "\022\030\n\024NO_ENDPOINT_IN_RANGE\020\007\022\031\n\025WLAN_CONNE" +
-      "CTION_ERROR\020\010\022\025\n\021FAIL_TO_OBTAIN_IP\020\t*i\n\025" +
-      "wifi_connection_state\022\025\n\021NO_WLAN_CONNECT",
-      "ED\020\000\022\023\n\017WLAN_CONNECTING\020\001\022\022\n\016WLAN_CONNEC" +
-      "TED\020\002\022\020\n\014IP_RETRIEVED\020\003BL\n6is.hello.sens" +
-      "e.bluetooth.devices.transmission.protobu" +
-      "fB\022SenseCommandProtos"
+      "\n\010wifiSSID\030\007 \001(\t\022\024\n\014wifiPassword\030\010 \001(\t\022\027" +
+      "\n\017firmwareVersion\030\r \001(\005\022(\n\020wifi_scan_res" +
+      "ult\030\016 \003(\0132\016.wifi_endpoint\022.\n\rsecurity_ty" +
+      "pe\030\017 \001(\0162\027.wifi_endpoint.sec_type\022\035\n\tpil" +
+      "l_data\030\020 \001(\0132\n.pill_data\0225\n\025wifi_connect" +
+      "ion_state\030\021 \001(\0162\026.wifi_connection_state\022",
+      "\026\n\016ble_bond_count\030\022 \001(\005\022\024\n\014country_code\030" +
+      "\023 \001(\t\022\017\n\007aes_key\030\024 \001(\014\"\322\t\n\013CommandType\022\035" +
+      "\n\031MORPHEUS_COMMAND_SET_TIME\020\000\022\035\n\031MORPHEU" +
+      "S_COMMAND_GET_TIME\020\001\022&\n\"MORPHEUS_COMMAND" +
+      "_SET_WIFI_ENDPOINT\020\002\022&\n\"MORPHEUS_COMMAND" +
+      "_GET_WIFI_ENDPOINT\020\003\022\037\n\033MORPHEUS_COMMAND" +
+      "_SET_ALARMS\020\004\022\037\n\033MORPHEUS_COMMAND_GET_AL" +
+      "ARMS\020\005\022+\n\'MORPHEUS_COMMAND_SWITCH_TO_PAI" +
+      "RING_MODE\020\006\022*\n&MORPHEUS_COMMAND_SWITCH_T" +
+      "O_NORMAL_MODE\020\007\022#\n\037MORPHEUS_COMMAND_STAR",
+      "T_WIFISCAN\020\010\022\"\n\036MORPHEUS_COMMAND_STOP_WI" +
+      "FISCAN\020\t\022\"\n\036MORPHEUS_COMMAND_GET_DEVICE_" +
+      "ID\020\n\022\'\n#MORPHEUS_COMMAND_ERASE_PAIRED_PH" +
+      "ONE\020\013\022\036\n\032MORPHEUS_COMMAND_PAIR_PILL\020\014\022\032\n" +
+      "\026MORPHEUS_COMMAND_ERROR\020\r\022\037\n\033MORPHEUS_CO" +
+      "MMAND_PAIR_SENSE\020\016\022 \n\034MORPHEUS_COMMAND_U" +
+      "NPAIR_PILL\020\017\022\'\n#MORPHEUS_COMMAND_MORPHEU" +
+      "S_DFU_BEGIN\020\020\022\036\n\032MORPHEUS_COMMAND_PILL_D" +
+      "ATA\020\021\022#\n\037MORPHEUS_COMMAND_PILL_HEARTBEAT" +
+      "\020\022\022#\n\037MORPHEUS_COMMAND_PILL_DFU_BEGIN\020\023\022",
+      "\"\n\036MORPHEUS_COMMAND_FACTORY_RESET\020\024\022 \n\034M" +
+      "ORPHEUS_COMMAND_PILL_SHAKES\020\025\022#\n\037MORPHEU" +
+      "S_COMMAND_SYNC_DEVICE_ID\020\026\022(\n$MORPHEUS_C" +
+      "OMMAND_PHONE_BLE_CONNECTED\020\027\022%\n!MORPHEUS" +
+      "_COMMAND_PHONE_BLE_BONDED\020\030\022\035\n\031MORPHEUS_" +
+      "COMMAND_LED_BUSY\020\031\022\037\n\033MORPHEUS_COMMAND_L" +
+      "ED_TRIPPY\020\032\022)\n%MORPHEUS_COMMAND_LED_OPER" +
+      "ATION_FAILED\020\033\022\036\n\032MORPHEUS_COMMAND_SCAN_" +
+      "WIFI\020\034\022%\n!MORPHEUS_COMMAND_GET_NEXT_WIFI" +
+      "_AP\020\035\022*\n&MORPHEUS_COMMAND_LED_OPERATION_",
+      "SUCCESS\020\036\0221\n-MORPHEUS_COMMAND_PUSH_DATA_" +
+      "AFTER_SET_TIMEZONE\020\037\022%\n!MORPHEUS_COMMAND" +
+      "_SET_COUNTRY_CODE\020 \"A\n\021batched_pill_data" +
+      "\022\031\n\005pills\030\001 \003(\0132\n.pill_data\022\021\n\tdevice_id" +
+      "\030\002 \002(\t*\210\003\n\tErrorType\022\014\n\010TIME_OUT\020\000\022\021\n\rNE" +
+      "TWORK_ERROR\020\001\022\031\n\025DEVICE_ALREADY_PAIRED\020\002" +
+      "\022\027\n\023INTERNAL_DATA_ERROR\020\003\022\030\n\024DEVICE_DATA" +
+      "BASE_FULL\020\004\022\024\n\020DEVICE_NO_MEMORY\020\005\022\035\n\031INT" +
+      "ERNAL_OPERATION_FAILED\020\006\022\030\n\024NO_ENDPOINT_" +
+      "IN_RANGE\020\007\022\031\n\025WLAN_CONNECTION_ERROR\020\010\022\025\n",
+      "\021FAIL_TO_OBTAIN_IP\020\t\022\037\n\033WLAN_ENDPOINT_DE" +
+      "LETE_FAILED\020\n\022\026\n\022INVALID_ACCOUNT_ID\020\013\022\032\n" +
+      "\026FORCE_DATA_PUSH_FAILED\020\014\022\032\n\026PROTOBUF_EN" +
+      "CODE_FAILED\020\r\022\032\n\026PROTOBUF_DECODE_FAILED\020" +
+      "\016*i\n\025wifi_connection_state\022\025\n\021NO_WLAN_CO" +
+      "NNECTED\020\000\022\023\n\017WLAN_CONNECTING\020\001\022\022\n\016WLAN_C" +
+      "ONNECTED\020\002\022\020\n\014IP_RETRIEVED\020\003B.\n\030com.hell" +
+      "o.suripu.api.bleB\022SenseCommandProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -5861,7 +6095,7 @@ public final class SenseCommandProtos {
     internal_static_MorpheusCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_MorpheusCommand_descriptor,
-        new java.lang.String[] { "Version", "Type", "DeviceId", "AccountId", "Error", "WifiName", "WifiSSID", "WifiPassword", "BatteryLevel", "Uptime", "FirmwareVersion", "WifiScanResult", "SecurityType", "PillData", "WifiConnectionState", });
+        new java.lang.String[] { "Version", "Type", "DeviceId", "AccountId", "Error", "WifiName", "WifiSSID", "WifiPassword", "FirmwareVersion", "WifiScanResult", "SecurityType", "PillData", "WifiConnectionState", "BleBondCount", "CountryCode", "AesKey", });
     internal_static_batched_pill_data_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_batched_pill_data_fieldAccessorTable = new

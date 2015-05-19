@@ -74,7 +74,7 @@ public class SupportActivity extends SenseActivity {
         webView.setWebViewClient(new Client());
 
         WebSettings settings = webView.getSettings();
-        settings.setAllowContentAccess(false);
+        settings.setAllowContentAccess(true);
         settings.setAllowFileAccess(false);
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
@@ -146,6 +146,11 @@ public class SupportActivity extends SenseActivity {
                 return true;
             }
 
+            case R.id.support_acknowledgements: {
+                showAcknowledgements();
+                return true;
+            }
+
             case android.R.id.home: {
                 super.onBackPressed();
                 return true;
@@ -159,6 +164,10 @@ public class SupportActivity extends SenseActivity {
 
     //endregion
 
+
+    private void showAcknowledgements() {
+        webView.loadUrl("file:///android_asset/ACKNOWLEDGEMENTS.txt");
+    }
 
     private void setPageTitle(@Nullable CharSequence title) {
         //noinspection ConstantConditions
