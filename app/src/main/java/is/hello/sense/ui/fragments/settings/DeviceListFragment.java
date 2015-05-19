@@ -118,7 +118,7 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
                 return;
             }
             fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
-            ((FragmentNavigation) getActivity()).pushFragment(fragment, getString(device.getType().nameRes), true);
+            ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(fragment, getString(device.getType().nameRes), true);
         }
     }
 

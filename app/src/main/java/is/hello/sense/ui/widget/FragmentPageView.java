@@ -61,7 +61,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     //region Event Handling
 
     private int touchSlop;
-    private VelocityTracker velocityTracker;
+    private @Nullable VelocityTracker velocityTracker;
     private EdgeEffect leftEdgeEffect;
     private EdgeEffect rightEdgeEffect;
 
@@ -320,8 +320,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     private boolean shouldCompleteTransition(float rawViewX, float rawVelocity) {
-        if (rawViewX == 0f)
+        if (rawViewX == 0f) {
             return false;
+        }
 
         if (rawViewX < 0f) {
             return (Math.abs(rawViewX) > viewWidth / 4 || rawVelocity < -Constants.OPEN_VELOCITY_THRESHOLD);
@@ -409,10 +410,6 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             }
 
             this.currentPosition = null;
-            if (velocityTracker != null) {
-                velocityTracker.recycle();
-                this.velocityTracker = null;
-            }
 
             Runnable finish = () -> {
                 exchangeOnAndOffScreen();
@@ -458,10 +455,6 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             }
 
             this.currentPosition = null;
-            if (velocityTracker != null) {
-                velocityTracker.recycle();
-                this.velocityTracker = null;
-            }
 
             Runnable finish = () -> {
                 getOnScreenView().setX(0f);
@@ -495,6 +488,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                           y = event.getRawY();
                     float deltaX = x - lastEventX;
 
+                    if (velocityTracker == null) {
+                        this.velocityTracker = VelocityTracker.obtain();
+                    }
                     velocityTracker.addMovement(event);
 
                     if (Math.abs(y - lastEventY) < touchSlop) {
@@ -545,12 +541,20 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
                 if (trackingTouchEvents) {
-                    velocityTracker.computeCurrentVelocity(1000);
-                    float rawVelocity = velocityTracker.getXVelocity();
-                    float velocity = Math.abs(rawVelocity);
-                    long duration = Animation.calculateDuration(velocity, getMeasuredWidth());
+                    float velocity = 0f;
+                    long duration = 0;
+                    if (velocityTracker != null) {
+                        velocityTracker.computeCurrentVelocity(1000);
 
-                    if (shouldCompleteTransition(viewX, rawVelocity)) {
+                        velocity = velocityTracker.getXVelocity();
+                        duration = Animation.calculateDuration(Math.abs(velocity), getMeasuredWidth());
+
+                        velocityTracker.recycle();
+                        this.velocityTracker = null;
+                    }
+
+
+                    if (shouldCompleteTransition(viewX, velocity)) {
                         completeTransition(currentPosition, false, duration);
                     } else {
                         snapBack(currentPosition, duration);
@@ -626,7 +630,6 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 float deltaX = x - lastEventX;
                 float deltaY = y - lastEventY;
                 if (!trackingTouchEvents && Math.abs(deltaX) > touchSlop && Math.abs(deltaX) > Math.abs(deltaY)) {
-                    this.velocityTracker = VelocityTracker.obtain();
                     this.trackingTouchEvents = true;
 
                     if (interactiveAnimator != null) {

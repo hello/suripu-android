@@ -198,6 +198,11 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     @Override
+    public void pushFragmentAllowingStateLoss(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
+        throw new AbstractMethodError("not implemented by " + getClass().getSimpleName());
+    }
+
+    @Override
     public void popFragment(@NonNull Fragment fragment,
                             boolean immediate) {
         throw new AbstractMethodError("not implemented by " + getClass().getSimpleName());
