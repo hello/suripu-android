@@ -306,6 +306,7 @@ public class Analytics {
         String EVENT_ZOOMED_OUT = "Timeline zoomed out";
         String EVENT_ZOOMED_IN = "Timeline zoomed in";
 
+        String EVENT_BEFORE_SLEEP_TAPPED = "Timeline before sleep tab tapped";
 
         String EVENT_TAP = "Timeline tap";
         String EVENT_TIMELINE_EVENT_TAPPED = "Timeline Event tapped";

@@ -301,6 +301,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 }
                 break;
             case 1:
+                Analytics.trackEvent(Analytics.Timeline.EVENT_BEFORE_SLEEP_TAPPED, null);
                 setHeaderMode(beforeSleep, Animation::crossFade);
                 this.breakdownHeaderMode = null;
                 break;
