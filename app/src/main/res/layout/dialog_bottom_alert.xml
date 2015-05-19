@@ -17,16 +17,15 @@
         android:background="@color/background_light">
 
         <TextView
-            android:id="@+id/item_bottom_alert_title"
+            android:id="@+id/dialog_bottom_alert"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/gap_outer"
             android:gravity="center"
-            android:textAppearance="@style/AppTheme.Text.SectionHeading"
-            android:text="@string/app_name"/>
+            android:textAppearance="@style/AppTheme.Text.SectionHeading" />
 
         <TextView
-            android:id="@+id/item_bottom_alert_message"
+            android:id="@+id/dialog_bottom_alert_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/gap_outer"
@@ -34,8 +33,7 @@
             android:layout_marginBottom="@dimen/gap_xsmall"
             android:gravity="center"
             android:textAppearance="@style/AppTheme.Text.Body"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body"
-            android:text="@string/app_name"/>
+            android:lineSpacingMultiplier="@dimen/line_multiple_body" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,11 +42,10 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/item_bottom_alert_later"
+                android:id="@+id/dialog_bottom_alert_neutral"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/action_fix_later"
                 android:textColor="@color/text_dim"
                 style="@style/AppTheme.Button.Dialog.Positive"/>
 
@@ -58,11 +55,10 @@
                 style="@style/Divider.Vertical" />
 
             <Button
-                android:id="@+id/item_bottom_alert_fix_now"
+                android:id="@+id/dialog_bottom_alert_positive"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/action_fix_now"
                 style="@style/AppTheme.Button.Dialog.Positive"/>
 
         </LinearLayout>

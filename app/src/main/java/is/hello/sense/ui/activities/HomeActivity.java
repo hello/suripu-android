@@ -11,31 +11,23 @@ import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.squareup.seismic.ShakeDetector;
 
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.sessions.ApiSessionManager;
@@ -44,18 +36,17 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
+import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
-import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
+import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
-import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
@@ -74,7 +65,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends ScopedInjectionActivity
-        implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
+        implements FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
 {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
@@ -91,8 +82,6 @@ public class HomeActivity
     private SlidingLayersView slidingLayersView;
     private FragmentPageView<TimelineFragment> viewPager;
     private ImageButton smartAlarmButton;
-
-    private @Nullable View deviceAlert;
 
     private boolean isFirstActivityRun;
     private boolean showUnderside;
@@ -159,7 +148,7 @@ public class HomeActivity
         // noinspection unchecked
         this.viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
         viewPager.setFragmentManager(getFragmentManager());
-        viewPager.setAdapter(this);
+        viewPager.setAdapter(new TimelineFragmentAdapter());
         viewPager.setOnTransitionObserver(this);
         viewPager.setInteractiveAnimator(new PageHeaderAnimator());
         viewPager.setStateSafeExecutor(stateSafeExecutor);
@@ -212,9 +201,9 @@ public class HomeActivity
                          Functions.LOG_ERROR);
 
         if (isFirstActivityRun && !getWillShowUnderside()) {
-            bindAndSubscribe(devicesPresenter.devices.take(1),
-                             this::bindDevices,
-                             this::devicesUnavailable);
+            bindAndSubscribe(devicesPresenter.topIssue(),
+                             this::bindDeviceIssue,
+                             Functions.LOG_ERROR);
         }
 
         UndersideFragment underside = getUndersideFragment();
@@ -425,29 +414,6 @@ public class HomeActivity
     //region Fragment Adapter
 
     @Override
-    public boolean hasFragmentBeforeFragment(@NonNull TimelineFragment fragment) {
-        return true;
-    }
-
-    @Override
-    public TimelineFragment getFragmentBeforeFragment(@NonNull TimelineFragment fragment) {
-        return TimelineFragment.newInstance(fragment.getDate().minusDays(1), null, false);
-    }
-
-
-    @Override
-    public boolean hasFragmentAfterFragment(@NonNull TimelineFragment fragment) {
-        DateTime fragmentTime = fragment.getDate();
-        return fragmentTime.isBefore(DateFormatter.lastNight().withTimeAtStartOfDay());
-    }
-
-    @Override
-    public TimelineFragment getFragmentAfterFragment(@NonNull TimelineFragment fragment) {
-        return TimelineFragment.newInstance(fragment.getDate().plusDays(1), null, false);
-    }
-
-
-    @Override
     public void onWillTransitionToFragment(@NonNull TimelineFragment fragment, boolean isInteractive) {
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
         if (currentFragment != null) {
@@ -533,156 +499,16 @@ public class HomeActivity
     //endregion
 
 
-    //region Alerts
+    //region Device Issues
 
-    public void showDevices() {
-        Bundle intentArguments = FragmentNavigationActivity.getArguments(getString(R.string.label_devices), DeviceListFragment.class, null);
-        Intent intent = new Intent(this, FragmentNavigationActivity.class);
-        intent.putExtras(intentArguments);
-        startActivity(intent);
-    }
-
-    public void bindDevices(@NonNull ArrayList<Device> devices) {
-        Map<Device.Type, Device> devicesMap = Device.getDevicesMap(devices);
-        Device sense = devicesMap.get(Device.Type.SENSE);
-        Device pill = devicesMap.get(Device.Type.PILL);
-
-        if (sense != null) {
-            Analytics.setSenseId(sense.getDeviceId());
-        }
-
-        if (sense == null) {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_PAIRED
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
-
-            showDeviceAlert(R.string.alert_title_no_sense,
-                            R.string.alert_message_no_sense,
-                            R.string.action_fix_now,
-                            this::showDevices);
-        } else if (sense.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_SEEN
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
-
-            showDeviceAlert(R.string.alert_title_missing_sense,
-                            R.string.alert_message_missing_sense,
-                            R.string.action_fix_now,
-                            this::showDevices);
-        } else if (pill == null) {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_PAIRED
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
-
-            showDeviceAlert(R.string.alert_title_no_pill,
-                            R.string.alert_message_no_pill,
-                            R.string.action_fix_now,
-                            this::showDevices);
-        } else if (pill.getState() == Device.State.LOW_BATTERY) {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_LOW_BATTERY
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
-
-            showDeviceAlert(R.string.alert_title_low_battery,
-                            R.string.alert_message_low_battery,
-                            R.string.action_replace,
-                            () -> UserSupport.showReplaceBattery(this));
-        } else if (pill.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_SEEN
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
-
-            showDeviceAlert(R.string.alert_title_missing_pill,
-                            R.string.alert_message_missing_pill,
-                            R.string.action_fix_now,
-                            this::showDevices);
-        } else {
-            hideDeviceAlert();
-        }
-    }
-
-    public void devicesUnavailable(Throwable e) {
-        Logger.error(getClass().getSimpleName(), "Devices list was unavailable.", e);
-        hideDeviceAlert();
-    }
-
-    public void showDeviceAlert(@StringRes int titleRes,
-                                @StringRes int messageRes,
-                                @StringRes int actionTitleRes,
-                                @NonNull Runnable action) {
-        if (deviceAlert != null) {
+    public void bindDeviceIssue(@NonNull DevicesPresenter.Issue issue) {
+        if (issue == DevicesPresenter.Issue.NONE ||
+                getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null) {
             return;
         }
 
-        LayoutInflater inflater = getLayoutInflater();
-        this.deviceAlert = inflater.inflate(R.layout.item_bottom_alert, rootContainer, false);
-
-        TextView title = (TextView) deviceAlert.findViewById(R.id.item_bottom_alert_title);
-        title.setText(titleRes);
-
-        TextView message = (TextView) deviceAlert.findViewById(R.id.item_bottom_alert_message);
-        message.setText(messageRes);
-
-        Button later = (Button) deviceAlert.findViewById(R.id.item_bottom_alert_later);
-        Views.setSafeOnClickListener(later, ignored -> {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_LATER
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
-            hideDeviceAlert();
-        });
-
-        Button fixNow = (Button) deviceAlert.findViewById(R.id.item_bottom_alert_fix_now);
-        fixNow.setText(actionTitleRes);
-        Views.setSafeOnClickListener(fixNow, ignored -> {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_NOW
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
-
-            hideDeviceAlert();
-            action.run();
-        });
-
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) deviceAlert.getLayoutParams();
-        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        deviceAlert.setVisibility(View.INVISIBLE);
-
-        Views.observeNextLayout(deviceAlert).subscribe(container -> {
-            int alertViewHeight = deviceAlert.getMeasuredHeight();
-            int alertViewY = (int) deviceAlert.getY();
-
-            deviceAlert.setY(alertViewY + alertViewHeight);
-            deviceAlert.setVisibility(View.VISIBLE);
-
-            animate(deviceAlert, animatorContext)
-                    .y(alertViewY)
-                    .start();
-        });
-        rootContainer.post(() -> rootContainer.addView(deviceAlert));
-    }
-
-    public void hideDeviceAlert() {
-        if (deviceAlert == null) {
-            return;
-        }
-
-        stateSafeExecutor.execute(() -> {
-            int alertViewHeight = deviceAlert.getMeasuredHeight();
-            int alertViewY = (int) deviceAlert.getY();
-            animate(deviceAlert, animatorContext)
-                    .y(alertViewY + alertViewHeight)
-                    .addOnAnimationCompleted(finished -> {
-                        rootContainer.removeView(deviceAlert);
-                        this.deviceAlert = null;
-                    })
-                    .start();
-        });
+        DeviceIssueDialogFragment deviceIssueDialogFragment = DeviceIssueDialogFragment.newInstance(issue);
+        deviceIssueDialogFragment.show(getFragmentManager(), DeviceIssueDialogFragment.TAG);
     }
 
     //endregion

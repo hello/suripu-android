@@ -58,7 +58,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         addDeviceAction(R.string.title_advanced, false, this::showAdvancedOptions);
 
         if (device.getState() == Device.State.LOW_BATTERY) {
-            showTroubleshootingAlert(R.string.alert_message_low_battery,
+            showTroubleshootingAlert(R.string.issue_message_low_battery,
                                      R.string.action_replace_battery,
                                      this::replaceBattery);
         } else if (device.isMissing()) {
