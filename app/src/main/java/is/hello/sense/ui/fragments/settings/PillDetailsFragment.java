@@ -141,7 +141,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         );
         BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);
         advancedOptions.setTargetFragment(this, REQUEST_CODE_ADVANCED);
-        advancedOptions.show(getFragmentManager(), BottomSheetDialogFragment.TAG);
+        advancedOptions.showAllowingStateLoss(getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
     //endregion

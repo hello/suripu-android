@@ -9,6 +9,10 @@ public interface FragmentNavigation {
                       @Nullable String title,
                       boolean wantsBackStackEntry);
 
+    void pushFragmentAllowingStateLoss(@NonNull Fragment fragment,
+                                       @Nullable String title,
+                                       boolean wantsBackStackEntry);
+
     void popFragment(@NonNull Fragment fragment,
                      boolean immediate);
 

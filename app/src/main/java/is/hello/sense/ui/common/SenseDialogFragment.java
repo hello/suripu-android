@@ -2,6 +2,7 @@ package is.hello.sense.ui.common;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.util.StateSafeExecutor;
@@ -37,6 +38,12 @@ public class SenseDialogFragment extends DialogFragment implements ObservableCon
         super.onDestroyView();
     }
 
+
+    public int showAllowingStateLoss(@NonNull FragmentManager fm, @NonNull String tag) {
+        return fm.beginTransaction()
+                .add(this, tag)
+                .commitAllowingStateLoss();
+    }
 
     public void dismissSafely() {
         stateSafeExecutor.execute(() -> {
