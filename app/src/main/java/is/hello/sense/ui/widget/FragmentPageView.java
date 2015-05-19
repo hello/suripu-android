@@ -28,6 +28,7 @@ import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
+import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
 import is.hello.sense.util.Constants;
@@ -42,6 +43,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private @Nullable StateSafeExecutor stateSafeExecutor;
     private final AnimatorConfig animationConfig = new AnimatorConfig(new DecelerateInterpolator());
     private @Nullable AnimatorContext animatorContext;
+    private @Nullable InteractiveAnimator interactiveAnimator;
 
     //endregion
 
@@ -178,8 +180,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         this.fragmentManager = fragmentManager;
     }
 
-    public @Nullable
-    StateSafeExecutor getStateSafeExecutor() {
+    public @Nullable StateSafeExecutor getStateSafeExecutor() {
         return stateSafeExecutor;
     }
 
@@ -232,6 +233,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
     public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
         this.animatorContext = animatorContext;
+    }
+
+    public void setInteractiveAnimator(@Nullable InteractiveAnimator interactiveAnimator) {
+        this.interactiveAnimator = interactiveAnimator;
     }
 
     @Override
@@ -389,6 +394,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             onScreenViewAnimator.alpha(0f);
         }
 
+        if (interactiveAnimator != null) {
+            float finalValue = Math.abs(viewX / viewWidth);
+            interactiveAnimator.finish(finalValue, duration, animationConfig.interpolator, animatorContext);
+        }
+
         onScreenViewAnimator.addOnAnimationCompleted(finished -> {
             if (fadeOutOnScreen) {
                 getOnScreenView().setAlpha(1f);
@@ -435,6 +445,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         animationConfig.apply(onScreenViewAnimator).setDuration(duration);
         PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView(), animatorContext);
         animationConfig.apply(offScreenViewAnimator).setDuration(duration);
+
+        if (interactiveAnimator != null) {
+            interactiveAnimator.finish(0f, duration, animationConfig.interpolator, animatorContext);
+        }
 
         offScreenViewAnimator.x(position == Position.BEFORE ? -viewWidth : viewWidth);
         onScreenViewAnimator.x(0f);
@@ -499,6 +513,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                         if (isPositionValid(position)) {
                             getOffScreenView().setX(position == Position.BEFORE ? newX - viewWidth : newX + viewWidth);
                             getOnScreenView().setX(newX);
+
+                            if (interactiveAnimator != null) {
+                                float frameValue = Math.abs(newX / viewWidth);
+                                interactiveAnimator.frame(frameValue);
+                            }
 
                             this.viewX = newX;
                         } else {
@@ -580,6 +599,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     }
 
                     PropertyAnimatorProxy.stop(getOnScreenView(), getOffScreenView());
+                    if (interactiveAnimator != null) {
+                        interactiveAnimator.cancel();
+                    }
                     this.trackingTouchEvents = true;
                 } else {
                     this.lastEventX = event.getRawX();
@@ -606,6 +628,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 if (!trackingTouchEvents && Math.abs(deltaX) > touchSlop && Math.abs(deltaX) > Math.abs(deltaY)) {
                     this.velocityTracker = VelocityTracker.obtain();
                     this.trackingTouchEvents = true;
+
+                    if (interactiveAnimator != null) {
+                        interactiveAnimator.prepare();
+                    }
 
                     if (animatorContext != null) {
                         animatorContext.beginAnimation();

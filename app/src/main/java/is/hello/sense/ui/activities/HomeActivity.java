@@ -161,6 +161,7 @@ public class HomeActivity
         viewPager.setFragmentManager(getFragmentManager());
         viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
+        viewPager.setInteractiveAnimator(new PageHeaderAnimator());
         viewPager.setStateSafeExecutor(stateSafeExecutor);
         viewPager.setAnimatorContext(animatorContext);
         if (viewPager.getCurrentFragment() == null) {
@@ -475,6 +476,28 @@ public class HomeActivity
     @Override
     public void onDidSnapBackToFragment(@NonNull TimelineFragment fragment) {
         fragment.setControlsAlarmShortcut(true);
+    }
+
+    private class PageHeaderAnimator implements InteractiveAnimator {
+        @Override
+        public void prepare() {
+
+        }
+
+        @Override
+        public void frame(float frameValue) {
+
+        }
+
+        @Override
+        public void finish(float finalFrameValue, long duration, @NonNull Interpolator interpolator, @Nullable AnimatorContext animatorContext) {
+
+        }
+
+        @Override
+        public void cancel() {
+
+        }
     }
 
     //endregion
