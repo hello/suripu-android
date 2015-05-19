@@ -37,7 +37,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     private float topViewY;
     private ListView listView;
 
-    private VelocityTracker velocityTracker;
+    private @Nullable VelocityTracker velocityTracker;
     private boolean trackingTouchEvents = false;
     private boolean animating = false;
 
