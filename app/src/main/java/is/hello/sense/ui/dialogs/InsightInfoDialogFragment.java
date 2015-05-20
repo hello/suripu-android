@@ -21,9 +21,11 @@ import is.hello.sense.api.model.InsightInfo;
 import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Errors;
 import is.hello.sense.util.ImageLoader;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
+import is.hello.sense.util.StringRef;
 
 public class InsightInfoDialogFragment extends InjectionDialogFragment {
     public static final String TAG = InsightInfoDialogFragment.class.getSimpleName();
@@ -133,7 +135,13 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
     public void insightInfoUnavailable(Throwable e) {
         illustrationImage.setImageDrawable(null);
         titleText.setText(R.string.dialog_error_title);
-        messageText.setText(e.getMessage());
+
+        StringRef message = Errors.getDisplayMessage(e);
+        if (message != null) {
+            messageText.setText(message.resolve(getActivity()));
+        } else {
+            messageText.setText(R.string.dialog_error_generic_message);
+        }
 
         showContent();
     }
