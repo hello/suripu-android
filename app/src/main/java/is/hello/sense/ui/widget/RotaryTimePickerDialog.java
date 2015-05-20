@@ -3,12 +3,18 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.View;
+import android.widget.Button;
 
 import org.joda.time.LocalTime;
 
-public class RotaryTimePickerDialog extends SenseAlertDialog {
+public class RotaryTimePickerDialog extends SenseAlertDialog implements RotaryTimePickerView.OnSelectionListener {
     private final RotaryTimePickerView rotaryTimePickerView;
     private final OnTimeSetListener onTimeSetListener;
+
+    private boolean waitingForSelectionChange = false;
+    private @Nullable Runnable afterSelectionChange;
 
     public RotaryTimePickerDialog(@NonNull Context context,
                                   @NonNull OnTimeSetListener onTimeSetListener,
@@ -18,15 +24,28 @@ public class RotaryTimePickerDialog extends SenseAlertDialog {
         super(context);
 
         this.rotaryTimePickerView = new RotaryTimePickerView(context);
-        rotaryTimePickerView.setTime(hourOfDay, minute);
         rotaryTimePickerView.setUse24Time(is24HourView);
+        rotaryTimePickerView.setTime(hourOfDay, minute);
+        rotaryTimePickerView.setOnSelectionListener(this);
         setView(rotaryTimePickerView);
 
         this.onTimeSetListener = onTimeSetListener;
 
         setNegativeButton(android.R.string.cancel, null);
         setButtonDeemphasized(BUTTON_NEGATIVE, true);
-        setPositiveButton(android.R.string.ok, (dialog, which) -> onTimeSet());
+
+        Button positiveButton = getButton(BUTTON_POSITIVE);
+        positiveButton.setVisibility(View.VISIBLE);
+        positiveButton.setText(android.R.string.ok);
+        positiveButton.setOnClickListener(ignored -> {
+            if (waitingForSelectionChange) {
+                setButtonEnabled(BUTTON_POSITIVE, false);
+                this.afterSelectionChange = this::onTimeSet;
+            } else {
+                onTimeSet();
+            }
+        });
+        updateButtonDivider();
     }
 
     @Override
@@ -52,6 +71,21 @@ public class RotaryTimePickerDialog extends SenseAlertDialog {
 
     private void onTimeSet() {
         onTimeSetListener.onTimeSet(rotaryTimePickerView, rotaryTimePickerView.getHours(), rotaryTimePickerView.getMinutes());
+        dismiss();
+    }
+
+
+    @Override
+    public void onSelectionWillChange(@NonNull RotaryTimePickerView timePickerView) {
+        this.waitingForSelectionChange = true;
+    }
+
+    @Override
+    public void onSelectionChanged(@NonNull RotaryTimePickerView timePickerView) {
+        this.waitingForSelectionChange = false;
+        if (afterSelectionChange != null) {
+            afterSelectionChange.run();
+        }
     }
 
 

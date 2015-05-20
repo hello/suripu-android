@@ -20,6 +20,10 @@ public class UnitSystemTests extends TestCase {
         assertEquals(MetricUnitSystem.NAME, UnitSystem.getLocaleUnitSystemName(Locale.FRANCE));
     }
 
+    public void testFormatMass() throws Exception {
+        assertEquals("72 kg", testSystem.formatMass(72000).toString());
+    }
+
     public void testFormatHumidity() throws Exception {
         assertEquals("50 %", testSystem.formatHumidity(50).toString());
         assertEquals("75 %", testSystem.formatHumidity(75).toString());
