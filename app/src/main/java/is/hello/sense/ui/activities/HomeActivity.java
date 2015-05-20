@@ -17,7 +17,6 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.squareup.seismic.ShakeDetector;
 
@@ -49,6 +48,7 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.widget.FragmentPageTitleStrip;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.util.Views;
@@ -81,9 +81,10 @@ public class HomeActivity
     private RelativeLayout rootContainer;
     private FrameLayout undersideContainer;
     private SlidingLayersView slidingLayersView;
+
     private ImageButton overflowButton;
     private ImageButton shareButton;
-    private TextView dateText;
+    private FragmentPageTitleStrip pagerTitleStrip;
     private FragmentPageView<TimelineFragment> viewPager;
     private ImageButton smartAlarmButton;
 
@@ -156,8 +157,8 @@ public class HomeActivity
             currentTimeline.share();
         });
 
-        this.dateText = (TextView) findViewById(R.id.activity_home_timeline_date);
-        Views.setSafeOnClickListener(dateText, ignored -> {
+        this.pagerTitleStrip = (FragmentPageTitleStrip) findViewById(R.id.activity_home_timeline_date);
+        Views.setSafeOnClickListener(pagerTitleStrip, ignored -> {
             TimelineFragment currentTimeline = viewPager.getCurrentFragment();
             if (currentTimeline == null) {
                 return;
@@ -178,6 +179,7 @@ public class HomeActivity
         viewPager.setFragmentManager(getFragmentManager());
         viewPager.setAdapter(new TimelineFragmentAdapter());
         viewPager.setOnTransitionObserver(this);
+        viewPager.setDecor(pagerTitleStrip);
         viewPager.setStateSafeExecutor(stateSafeExecutor);
         viewPager.setAnimatorContext(animatorContext);
         if (viewPager.getCurrentFragment() == null) {
@@ -452,7 +454,6 @@ public class HomeActivity
 
         fragment.setControlsSharedChrome(true);
 
-        dateText.setText(fragment.getTitle());
         setShareButtonVisible(fragment.getWantsShareButton());
 
         if (isInteractive) {
@@ -546,7 +547,7 @@ public class HomeActivity
 
         setShareButtonVisible(false);
         overflowButton.setImageResource(R.drawable.icon_menu_open);
-        dateText.setTextColor(getResources().getColor(R.color.text_dim));
+        pagerTitleStrip.setDimmed(true);
 
         this.isFirstActivityRun = false;
     }
@@ -568,7 +569,7 @@ public class HomeActivity
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
         setShareButtonVisible(currentFragment != null && currentFragment.getWantsShareButton());
         overflowButton.setImageResource(R.drawable.icon_menu_closed);
-        dateText.setTextColor(getResources().getColor(R.color.text_dark));
+        pagerTitleStrip.setDimmed(false);
     }
 
     public void showUndersideWithItem(int item, boolean animate) {

@@ -41,16 +41,12 @@
                 android:scaleType="center"
                 android:contentDescription="@string/action_share" />
 
-            <TextView
+            <is.hello.sense.ui.widget.FragmentPageTitleStrip
                 android:id="@+id/activity_home_timeline_date"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/action_bar_height"
                 android:layout_toEndOf="@id/activity_home_timeline_header_overflow"
                 android:layout_toStartOf="@id/activity_home_timeline_header_share"
-                android:gravity="center"
-                android:textAppearance="@style/AppTheme.Text.ScreenTitle"
-                android:singleLine="true"
-                android:ellipsize="end"
                 android:background="@drawable/selectable_dark_bounded"/>
 
             <is.hello.sense.ui.widget.FragmentPageView

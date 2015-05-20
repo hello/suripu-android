@@ -28,7 +28,6 @@ import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
 import is.hello.sense.util.Constants;
@@ -43,7 +42,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private @Nullable StateSafeExecutor stateSafeExecutor;
     private final AnimatorConfig animationConfig = new AnimatorConfig(new DecelerateInterpolator());
     private @Nullable AnimatorContext animatorContext;
-    private @Nullable InteractiveAnimator interactiveAnimator;
+    private @Nullable Decor decor;
 
     //endregion
 
@@ -235,8 +234,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         this.animatorContext = animatorContext;
     }
 
-    public void setInteractiveAnimator(@Nullable InteractiveAnimator interactiveAnimator) {
-        this.interactiveAnimator = interactiveAnimator;
+    public void setDecor(@Nullable Decor decor) {
+        this.decor = decor;
     }
 
     @Override
@@ -395,9 +394,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             onScreenViewAnimator.alpha(0f);
         }
 
-        if (interactiveAnimator != null) {
-            float finalValue = Math.abs(viewX / viewWidth);
-            interactiveAnimator.finish(finalValue, duration, animationConfig.interpolator, animatorContext);
+        if (decor != null) {
+            float finalValue = viewX / viewWidth;
+            decor.onInteractionConcluded(duration, animationConfig, animatorContext);
         }
 
         onScreenViewAnimator.addOnAnimationCompleted(finished -> {
@@ -443,8 +442,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView(), animatorContext);
         animationConfig.apply(offScreenViewAnimator).setDuration(duration);
 
-        if (interactiveAnimator != null) {
-            interactiveAnimator.finish(0f, duration, animationConfig.interpolator, animatorContext);
+        if (decor != null) {
+            float finalValue = viewX / viewWidth;
+            decor.onInteractionSnapBack(duration, animationConfig, animatorContext);
         }
 
         offScreenViewAnimator.x(position == Position.BEFORE ? -viewWidth : viewWidth);
@@ -510,9 +510,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                             getOffScreenView().setX(position == Position.BEFORE ? newX - viewWidth : newX + viewWidth);
                             getOnScreenView().setX(newX);
 
-                            if (interactiveAnimator != null) {
-                                float frameValue = Math.abs(newX / viewWidth);
-                                interactiveAnimator.frame(frameValue);
+                            if (decor != null) {
+                                float frameValue = newX / viewWidth;
+                                decor.onInteractionUpdated(frameValue);
                             }
 
                             this.viewX = newX;
@@ -603,8 +603,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     }
 
                     PropertyAnimatorProxy.stop(getOnScreenView(), getOffScreenView());
-                    if (interactiveAnimator != null) {
-                        interactiveAnimator.cancel();
+                    if (decor != null) {
+                        decor.onInteractionConclusionInterrupted();
                     }
                     this.trackingTouchEvents = true;
                 } else {
@@ -632,8 +632,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 if (!trackingTouchEvents && Math.abs(deltaX) > touchSlop && Math.abs(deltaX) > Math.abs(deltaY)) {
                     this.trackingTouchEvents = true;
 
-                    if (interactiveAnimator != null) {
-                        interactiveAnimator.prepare();
+                    if (decor != null) {
+                        decor.onInteractionBegan();
                     }
 
                     if (animatorContext != null) {
@@ -817,6 +817,18 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         void onWillTransitionToFragment(@NonNull TFragment fragment, boolean isInteractive);
         void onDidTransitionToFragment(@NonNull TFragment fragment, boolean isInteractive);
         void onDidSnapBackToFragment(@NonNull TFragment fragment);
+    }
+
+    public interface Decor {
+        void onInteractionBegan();
+        void onInteractionUpdated(float amount);
+        void onInteractionSnapBack(long duration,
+                                   @NonNull AnimatorConfig animatorConfig,
+                                   @Nullable AnimatorContext animatorContext);
+        void onInteractionConcluded(long duration,
+                                    @NonNull AnimatorConfig animatorConfig,
+                                    @Nullable AnimatorContext animatorContext);
+        void onInteractionConclusionInterrupted();
     }
 
     public enum Position {

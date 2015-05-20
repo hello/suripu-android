@@ -38,6 +38,15 @@ public final class AnimatorConfig {
     //endregion
 
 
+    //region Updating
+
+    public AnimatorConfig withDuration(long newDuration) {
+        return new AnimatorConfig(newDuration, interpolator);
+    }
+
+    //endregion
+
+
     //region Applying
 
     public <T extends Animator> T apply(@NonNull T animator) {
