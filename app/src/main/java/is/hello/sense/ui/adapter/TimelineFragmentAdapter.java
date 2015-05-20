@@ -1,6 +1,7 @@
 package is.hello.sense.ui.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.joda.time.DateTime;
 
@@ -29,5 +30,12 @@ public class TimelineFragmentAdapter implements FragmentPageView.Adapter<Timelin
     @Override
     public TimelineFragment getFragmentAfterFragment(@NonNull TimelineFragment fragment) {
         return TimelineFragment.newInstance(fragment.getDate().plusDays(1), null, false);
+    }
+
+
+    @Nullable
+    @Override
+    public CharSequence getFragmentTitle(@NonNull TimelineFragment fragment) {
+        return fragment.getTitle();
     }
 }

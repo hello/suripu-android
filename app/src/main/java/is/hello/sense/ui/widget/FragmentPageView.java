@@ -211,6 +211,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                         .add(getOnScreenView().getId(), newFragment)
                         .commit();
             }
+
+            if (decor != null) {
+                CharSequence title = adapter.getFragmentTitle(newFragment);
+                decor.onSetOnScreenTitle(title);
+            }
         } else if (currentFragment != null) {
             getFragmentManager().beginTransaction()
                     .remove(currentFragment)
@@ -236,6 +241,14 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
     public void setDecor(@Nullable Decor decor) {
         this.decor = decor;
+
+        if (decor != null && adapter != null) {
+            TFragment currentFragment = getCurrentFragment();
+            if (currentFragment != null) {
+                CharSequence title = adapter.getFragmentTitle(currentFragment);
+                decor.onSetOnScreenTitle(title);
+            }
+        }
     }
 
     @Override
@@ -356,7 +369,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         getOffScreenView().setVisibility(INVISIBLE);
     }
 
-    private void addOffScreenFragment(Position position) {
+    private TFragment addOffScreenFragment(Position position) {
         TFragment newFragment = null;
         switch (position) {
             case BEFORE:
@@ -373,6 +386,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 .commit();
 
         getOffScreenView().setVisibility(VISIBLE);
+
+        return newFragment;
     }
 
     private void exchangeOnAndOffScreen() {
@@ -395,8 +410,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         }
 
         if (decor != null) {
-            float finalValue = viewX / viewWidth;
-            decor.onInteractionConcluded(duration, animationConfig, animatorContext);
+            decor.onSwipeCompleted(duration, animationConfig, animatorContext);
         }
 
         onScreenViewAnimator.addOnAnimationCompleted(finished -> {
@@ -443,8 +457,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         animationConfig.apply(offScreenViewAnimator).setDuration(duration);
 
         if (decor != null) {
-            float finalValue = viewX / viewWidth;
-            decor.onInteractionSnapBack(duration, animationConfig, animatorContext);
+            decor.onSwipeSnappedBack(duration, animationConfig, animatorContext);
         }
 
         offScreenViewAnimator.x(position == Position.BEFORE ? -viewWidth : viewWidth);
@@ -500,7 +513,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                             removeOffScreenFragment();
 
                             if (isPositionValid(position)) {
-                                addOffScreenFragment(position);
+                                TFragment newFragment = addOffScreenFragment(position);
+                                if (decor != null) {
+                                    CharSequence title = adapter.getFragmentTitle(newFragment);
+                                    decor.onSetOffScreenTitle(title);
+                                }
                             }
 
                             this.currentPosition = position;
@@ -512,7 +529,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
                             if (decor != null) {
                                 float frameValue = newX / viewWidth;
-                                decor.onInteractionUpdated(frameValue);
+                                decor.onSwipeMoved(frameValue);
                             }
 
                             this.viewX = newX;
@@ -604,7 +621,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
                     PropertyAnimatorProxy.stop(getOnScreenView(), getOffScreenView());
                     if (decor != null) {
-                        decor.onInteractionConclusionInterrupted();
+                        decor.onSwipeConclusionInterrupted();
                     }
                     this.trackingTouchEvents = true;
                 } else {
@@ -633,7 +650,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     this.trackingTouchEvents = true;
 
                     if (decor != null) {
-                        decor.onInteractionBegan();
+                        decor.onSwipeBegan();
                     }
 
                     if (animatorContext != null) {
@@ -811,6 +828,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
         boolean hasFragmentAfterFragment(@NonNull TFragment fragment);
         TFragment getFragmentAfterFragment(@NonNull TFragment fragment);
+
+        @Nullable CharSequence getFragmentTitle(@NonNull TFragment fragment);
     }
 
     public interface OnTransitionObserver<TFragment extends Fragment> {
@@ -820,15 +839,18 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     public interface Decor {
-        void onInteractionBegan();
-        void onInteractionUpdated(float amount);
-        void onInteractionSnapBack(long duration,
-                                   @NonNull AnimatorConfig animatorConfig,
-                                   @Nullable AnimatorContext animatorContext);
-        void onInteractionConcluded(long duration,
-                                    @NonNull AnimatorConfig animatorConfig,
-                                    @Nullable AnimatorContext animatorContext);
-        void onInteractionConclusionInterrupted();
+        void onSetOnScreenTitle(@Nullable CharSequence title);
+        void onSetOffScreenTitle(@Nullable CharSequence title);
+
+        void onSwipeBegan();
+        void onSwipeMoved(float newAmount);
+        void onSwipeSnappedBack(long duration,
+                                @NonNull AnimatorConfig animatorConfig,
+                                @Nullable AnimatorContext animatorContext);
+        void onSwipeCompleted(long duration,
+                              @NonNull AnimatorConfig animatorConfig,
+                              @Nullable AnimatorContext animatorContext);
+        void onSwipeConclusionInterrupted();
     }
 
     public enum Position {
