@@ -111,16 +111,17 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
                 getString(R.string.unit_system_us_customary),
                 getString(R.string.unit_system_metric),
         };
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, unitSystemNames);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.item_simple_text, unitSystemNames);
         builder.setAdapter(adapter, (dialog, position) -> {
             preferencesPresenter.edit()
-                                .putString(PreferencesPresenter.UNIT_SYSTEM, unitSystemIds[position])
-                                .apply();
+                    .putString(PreferencesPresenter.UNIT_SYSTEM, unitSystemIds[position])
+                    .commit();
             preferencesPresenter.pushAccountPreferences().subscribe();
         });
 
         AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(true);
+        dialog.getListView().setDivider(null);
         dialog.show();
     }
 
