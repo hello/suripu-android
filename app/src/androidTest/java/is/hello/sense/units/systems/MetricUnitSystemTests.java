@@ -6,7 +6,7 @@ public class MetricUnitSystemTests extends TestCase {
     private final MetricUnitSystem unitSystem = new MetricUnitSystem();
 
     public void testFormatMass() throws Exception {
-        assertEquals("200 g", unitSystem.formatMass(200).toString());
+        assertEquals("72 kg", unitSystem.formatMass(72000).toString());
     }
 
     public void testFormatTemperature() throws Exception {

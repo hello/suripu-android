@@ -137,7 +137,7 @@ public class SenseAlertDialog extends Dialog {
         }
     }
 
-    private void updateButtonDivider() {
+    protected void updateButtonDivider() {
         if (positiveButton.getVisibility() == View.VISIBLE && negativeButton.getVisibility() == View.VISIBLE) {
             buttonDivider.setVisibility(View.VISIBLE);
         } else {
@@ -181,7 +181,7 @@ public class SenseAlertDialog extends Dialog {
      * @see android.content.DialogInterface#BUTTON_POSITIVE
      * @see android.content.DialogInterface#BUTTON_NEGATIVE
      */
-    protected @Nullable Button getButton(int which) {
+    protected Button getButton(int which) {
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
                 return positiveButton;
@@ -220,6 +220,16 @@ public class SenseAlertDialog extends Dialog {
         } else {
             button.setTextColor(getContext().getResources().getColor(R.color.light_accent));
         }
+    }
+
+    public void setButtonEnabled(int which, boolean enabled) {
+        Button button = getButton(which);
+        if (button == null) {
+            Logger.error(getClass().getSimpleName(), "Unknown button #" + which + ", ignoring.");
+            return;
+        }
+
+        button.setEnabled(enabled);
     }
 
     public void setView(@Nullable View view) {

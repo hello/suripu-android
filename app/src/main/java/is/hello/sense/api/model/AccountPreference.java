@@ -44,9 +44,9 @@ public class AccountPreference extends ApiResponse {
                 '}';
     }
 
-    public static enum Key {
+    public enum Key {
         ENHANCED_AUDIO,
-        TEMP_CELCIUS,
+        TEMP_CELSIUS,
         TIME_TWENTY_FOUR_HOUR,
         PUSH_ALERT_CONDITIONS,
         PUSH_SCORE,

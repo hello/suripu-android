@@ -55,7 +55,7 @@ public class UnitSystem implements Serializable {
     //region Formatting
 
     public CharSequence formatMass(long mass) {
-        return Styles.assembleReadingAndUnit(mass, "g");
+        return Styles.assembleReadingAndUnit(mass / 1000, "kg");
     }
 
     public CharSequence formatTemperature(long temperature) {

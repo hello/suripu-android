@@ -85,7 +85,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         minutePicker.setOnSelectionListener(this);
         minutePicker.setMinValue(0);
         minutePicker.setMaxValue(59);
-        minutePicker.setWrapsAround(true);
+        minutePicker.setWrapsAround(false);
         minutePicker.setItemGravity(Gravity.START | Gravity.CENTER_VERTICAL);
         minutePicker.setItemHorizontalPadding(hourMinutePadding);
         addView(minutePicker, pickerLayoutParams);
@@ -126,11 +126,10 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         if (use24Time) {
             periodPicker.setVisibility(GONE);
 
-            hourPicker.setMaxValue(24);
-
-            if (periodPicker.getValue() == PERIOD_PM) {
-                hourPicker.setValue(hourPicker.getValue() + 12, false);
-            }
+            int hour = getHours();
+            hourPicker.setMinValue(0);
+            hourPicker.setMaxValue(23);
+            hourPicker.setValue(hour, false);
         } else {
             periodPicker.setVisibility(VISIBLE);
 
@@ -142,6 +141,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
                 periodPicker.setValue(PERIOD_AM, false);
             }
 
+            hourPicker.setMinValue(1);
             hourPicker.setMaxValue(12);
         }
 
@@ -152,9 +152,15 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         if (use24Time) {
             hourPicker.setValue(hour, false);
         } else {
-            if (hour > 12) {
+            if (hour == 12) {
+                hourPicker.setValue(12, false);
+                periodPicker.setValue(PERIOD_PM, false);
+            } else if (hour > 12) {
                 hourPicker.setValue(hour - 12, false);
                 periodPicker.setValue(PERIOD_PM, false);
+            } else if (hour == 0) {
+                hourPicker.setValue(12, false);
+                periodPicker.setValue(PERIOD_AM, false);
             } else {
                 hourPicker.setValue(hour, false);
                 periodPicker.setValue(PERIOD_AM, false);
@@ -180,8 +186,11 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
             hour = hourPicker.getValue();
         } else {
             hour = hourPicker.getValue();
-            if (periodPicker.getValue() == PERIOD_PM) {
+            int period = periodPicker.getValue();
+            if (period == PERIOD_PM && hour < 12) {
                 hour += 12;
+            } else if (period == PERIOD_AM && hour == 12) {
+                hour = 0;
             }
         }
         return hour;

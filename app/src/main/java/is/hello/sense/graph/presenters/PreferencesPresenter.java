@@ -90,7 +90,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
             accountPresenter.preferences()
                             .subscribe(prefs -> {
                                 Boolean use24Time = (Boolean) prefs.get(AccountPreference.Key.TIME_TWENTY_FOUR_HOUR);
-                                Boolean useMetric = (Boolean) prefs.get(AccountPreference.Key.TEMP_CELCIUS);
+                                Boolean useMetric = (Boolean) prefs.get(AccountPreference.Key.TEMP_CELSIUS);
 
                                 String unitSystemName;
                                 if (useMetric != null && useMetric) {
@@ -120,8 +120,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
         AccountPreference use24Time = new AccountPreference(AccountPreference.Key.TIME_TWENTY_FOUR_HOUR);
         use24Time.setEnabled(getUse24Time());
-
-        AccountPreference useMetric = new AccountPreference(AccountPreference.Key.TEMP_CELCIUS);
+        AccountPreference useMetric = new AccountPreference(AccountPreference.Key.TEMP_CELSIUS);
         useMetric.setEnabled(MetricUnitSystem.NAME.equals(getString(UNIT_SYSTEM, UsCustomaryUnitSystem.NAME)));
 
         return Observable.combineLatest(accountPresenter.updatePreference(use24Time),
