@@ -207,10 +207,6 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     public void setValue(int newValue, boolean animate) {
         int constrainedValue = constrainValue(newValue);
-        if (constrainedValue == this.value) {
-            return;
-        }
-
         int unfocusedItems = (NUM_VISIBLE_ITEMS / 2);
         int offset = itemHeight * unfocusedItems;
         int position = adapter.getItemPosition(newValue);
@@ -366,8 +362,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         public int getItemPosition(int value) {
             int position = value - minValue;
             if (wrapsAround) {
-                int count = getItemCount() / 2;
-                int centerStartPosition = count - (count % getBoundedItemCount());
+                int centerPosition = getItemCount() / 2;
+                int centerStartPosition = centerPosition - (centerPosition % getBoundedItemCount());
                 position += centerStartPosition;
             }
             return position;
