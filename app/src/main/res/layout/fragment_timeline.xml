@@ -1,53 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_timeline">
 
-    <ImageButton
-        android:id="@+id/fragment_timeline_header_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/action_bar_height"
-        android:layout_alignParentStart="true"
-        android:src="@drawable/icon_menu_closed"
-        android:scaleType="center"
-        tools:ignore="ContentDescription" />
-
-    <ImageButton
-        android:id="@+id/fragment_timeline_header_share"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/action_bar_height"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/icon_share_enabled"
-        android:scaleType="center"
-        android:contentDescription="@string/action_share" />
-
-    <TextView
-        android:id="@+id/fragment_timeline_date"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/action_bar_height"
-        android:layout_toEndOf="@id/fragment_timeline_header_menu"
-        android:layout_toStartOf="@id/fragment_timeline_header_share"
-        android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.ScreenTitle"
-        android:text="@string/format_date_last_night"
-        android:singleLine="true"
-        android:ellipsize="end"
-        android:background="@drawable/selectable_dark_bounded"/>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/fragment_timeline_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/fragment_timeline_date" />
+        android:layout_height="match_parent" />
 
     <ImageView
         android:id="@+id/fragment_timeline_content_shadow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/fragment_timeline_date"
         android:scaleType="fitXY"
         android:src="@drawable/timeline_top_shadow"
         android:importantForAccessibility="no" />

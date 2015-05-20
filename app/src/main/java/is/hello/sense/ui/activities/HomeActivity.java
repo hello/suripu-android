@@ -17,6 +17,7 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.squareup.seismic.ShakeDetector;
 
@@ -80,6 +81,9 @@ public class HomeActivity
     private RelativeLayout rootContainer;
     private FrameLayout undersideContainer;
     private SlidingLayersView slidingLayersView;
+    private ImageButton overflowButton;
+    private ImageButton shareButton;
+    private TextView dateText;
     private FragmentPageView<TimelineFragment> viewPager;
     private ImageButton smartAlarmButton;
 
@@ -138,6 +142,30 @@ public class HomeActivity
         this.rootContainer = (RelativeLayout) findViewById(R.id.activity_home_container);
 
 
+        this.overflowButton = (ImageButton) findViewById(R.id.activity_home_timeline_header_overflow);
+        Views.setSafeOnClickListener(overflowButton, ignored -> slidingLayersView.toggle());
+
+        this.shareButton = (ImageButton) findViewById(R.id.activity_home_timeline_header_share);
+        shareButton.setVisibility(View.INVISIBLE);
+        Views.setSafeOnClickListener(shareButton, ignored -> {
+            TimelineFragment currentTimeline = viewPager.getCurrentFragment();
+            if (currentTimeline == null) {
+                return;
+            }
+
+            currentTimeline.share();
+        });
+
+        this.dateText = (TextView) findViewById(R.id.activity_home_timeline_date);
+        Views.setSafeOnClickListener(dateText, ignored -> {
+            TimelineFragment currentTimeline = viewPager.getCurrentFragment();
+            if (currentTimeline == null) {
+                return;
+            }
+
+            showTimelineNavigator(currentTimeline.getDate(), currentTimeline.getCachedTimeline());
+        });
+
         this.smartAlarmButton = (ImageButton) findViewById(R.id.fragment_timeline_smart_alarm);
         Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
             showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, true);
@@ -150,7 +178,6 @@ public class HomeActivity
         viewPager.setFragmentManager(getFragmentManager());
         viewPager.setAdapter(new TimelineFragmentAdapter());
         viewPager.setOnTransitionObserver(this);
-        viewPager.setInteractiveAnimator(new PageHeaderAnimator());
         viewPager.setStateSafeExecutor(stateSafeExecutor);
         viewPager.setAnimatorContext(animatorContext);
         if (viewPager.getCurrentFragment() == null) {
@@ -317,7 +344,6 @@ public class HomeActivity
 
                     break;
                 }
-
                 case SENSOR: {
                     showUndersideWithItem(UndersideFragment.ITEM_ROOM_CONDITIONS, animate);
 
@@ -328,22 +354,18 @@ public class HomeActivity
 
                     break;
                 }
-
                 case TRENDS: {
                     showUndersideWithItem(UndersideFragment.ITEM_TRENDS, animate);
                     break;
                 }
-
                 case ALARM: {
                     showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, animate);
                     break;
                 }
-
                 case SETTINGS: {
                     showUndersideWithItem(UndersideFragment.ITEM_APP_SETTINGS, animate);
                     break;
                 }
-
                 case INSIGHTS: {
                     showUndersideWithItem(UndersideFragment.ITEM_INSIGHTS, animate);
                     break;
@@ -401,13 +423,13 @@ public class HomeActivity
 
     public void checkInForUpdates() {
         bindAndSubscribe(apiService.checkInForUpdates(new UpdateCheckIn()),
-                         response -> {
-                             if (response.isNewVersion()) {
-                                 AppUpdateDialogFragment dialogFragment = AppUpdateDialogFragment.newInstance(response);
-                                 dialogFragment.show(getFragmentManager(), AppUpdateDialogFragment.TAG);
-                             }
-                         },
-                         e -> Logger.error(HomeActivity.class.getSimpleName(), "Could not run update check in", e));
+                response -> {
+                    if (response.isNewVersion()) {
+                        AppUpdateDialogFragment dialogFragment = AppUpdateDialogFragment.newInstance(response);
+                        dialogFragment.show(getFragmentManager(), AppUpdateDialogFragment.TAG);
+                    }
+                },
+                e -> Logger.error(HomeActivity.class.getSimpleName(), "Could not run update check in", e));
     }
 
 
@@ -417,8 +439,9 @@ public class HomeActivity
     public void onWillTransitionToFragment(@NonNull TimelineFragment fragment, boolean isInteractive) {
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
         if (currentFragment != null) {
-            currentFragment.setControlsAlarmShortcut(false);
+            currentFragment.setControlsSharedChrome(false);
         }
+        setShareButtonVisible(false);
 
         showAlarmShortcut();
     }
@@ -427,13 +450,16 @@ public class HomeActivity
     public void onDidTransitionToFragment(@NonNull TimelineFragment fragment, boolean isInteractive) {
         this.lastUpdated = System.currentTimeMillis();
 
-        fragment.setControlsAlarmShortcut(true);
+        fragment.setControlsSharedChrome(true);
+
+        dateText.setText(fragment.getTitle());
+        setShareButtonVisible(fragment.getWantsShareButton());
 
         if (isInteractive) {
             Tutorial.SWIPE_TIMELINE.markShown(this);
 
             JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_DATE, fragment.getDate().toString()
+                    Analytics.Timeline.PROP_DATE, fragment.getDate().toString()
             );
             Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_SWIPE, properties);
         }
@@ -441,35 +467,14 @@ public class HomeActivity
 
     @Override
     public void onDidSnapBackToFragment(@NonNull TimelineFragment fragment) {
-        fragment.setControlsAlarmShortcut(true);
-    }
-
-    private class PageHeaderAnimator implements InteractiveAnimator {
-        @Override
-        public void prepare() {
-
-        }
-
-        @Override
-        public void frame(float frameValue) {
-
-        }
-
-        @Override
-        public void finish(float finalFrameValue, long duration, @NonNull Interpolator interpolator, @Nullable AnimatorContext animatorContext) {
-
-        }
-
-        @Override
-        public void cancel() {
-
-        }
+        setShareButtonVisible(fragment.getWantsShareButton());
+        fragment.setControlsSharedChrome(true);
     }
 
     //endregion
 
 
-    //region Smart Alarm Button
+    //region Shared Chrome
 
     public void hideAlarmShortcut() {
         if (smartAlarmButton.getVisibility() == View.VISIBLE && !isAnimating(smartAlarmButton)) {
@@ -496,6 +501,14 @@ public class HomeActivity
         }
     }
 
+    public void setShareButtonVisible(boolean visible) {
+        if (visible && !slidingLayersView.isOpen()) {
+            shareButton.setVisibility(View.VISIBLE);
+        } else {
+            shareButton.setVisibility(View.INVISIBLE);
+        }
+    }
+
     //endregion
 
 
@@ -516,10 +529,6 @@ public class HomeActivity
 
     //region Sliding Layers
 
-    public SlidingLayersView getSlidingLayersView() {
-        return slidingLayersView;
-    }
-
     private @Nullable UndersideFragment getUndersideFragment() {
         return (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
     }
@@ -535,7 +544,9 @@ public class HomeActivity
                     .commit();
         }
 
-        viewPager.getCurrentFragment().onUserWillPullDownTopView();
+        setShareButtonVisible(false);
+        overflowButton.setImageResource(R.drawable.icon_menu_open);
+        dateText.setTextColor(getResources().getColor(R.color.text_dim));
 
         this.isFirstActivityRun = false;
     }
@@ -554,7 +565,10 @@ public class HomeActivity
             });
         }
 
-        viewPager.getCurrentFragment().onUserDidPushUpTopView();
+        TimelineFragment currentFragment = viewPager.getCurrentFragment();
+        setShareButtonVisible(currentFragment != null && currentFragment.getWantsShareButton());
+        overflowButton.setImageResource(R.drawable.icon_menu_closed);
+        dateText.setTextColor(getResources().getColor(R.color.text_dark));
     }
 
     public void showUndersideWithItem(int item, boolean animate) {

@@ -14,8 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
@@ -44,17 +42,15 @@ import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
-import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
 import rx.Observable;
 
-public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, TimelineAdapter.OnItemClickListener {
+public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
     private static final String ARG_IS_FIRST_TIMELINE = TimelineFragment.class.getName() + ".ARG_IS_FIRST_TIMELINE";
@@ -75,18 +71,16 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     private boolean firstTimeline;
 
-    private ImageButton menuButton;
-    private ImageButton shareButton;
-    private TextView dateText;
     private View contentShadow;
-
     private RecyclerView recyclerView;
+
     private LinearLayoutManager layoutManager;
     private TimelineHeaderView headerView;
     private TimelineAdapter adapter;
     private TimelineFadeItemAnimator itemAnimator;
 
-    private boolean controlsAlarmShortcut = false;
+    private boolean wantsShareButton = false;
+    private boolean controlsSharedChrome = false;
 
     private @Nullable TutorialOverlayView tutorialOverlay;
 
@@ -136,19 +130,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
-
-
-        this.dateText = (TextView) view.findViewById(R.id.fragment_timeline_date);
-        dateText.setText(dateFormatter.formatAsTimelineDate(presenter.getDate()));
-        Views.setSafeOnClickListener(dateText, this::showNavigator);
-
-        this.menuButton = (ImageButton) view.findViewById(R.id.fragment_timeline_header_menu);
-        Views.setSafeOnClickListener(menuButton, this::showUnderside);
-
-        this.shareButton = (ImageButton) view.findViewById(R.id.fragment_timeline_header_share);
-        shareButton.setVisibility(View.INVISIBLE);
-        Views.setSafeOnClickListener(shareButton, this::share);
-
 
         this.contentShadow = view.findViewById(R.id.fragment_timeline_content_shadow);
 
@@ -208,10 +189,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     public void onDestroyView() {
         super.onDestroyView();
 
-        this.menuButton = null;
-        this.shareButton = null;
-        this.dateText = null;
-
         this.headerView = null;
         this.recyclerView = null;
         this.layoutManager = null;
@@ -230,24 +207,12 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         this.homeActivity = null;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        dateText.setText(dateFormatter.formatAsTimelineDate(presenter.getDate()));
-    }
-
     //endregion
 
 
     //region Actions
 
-    public void showUnderside(@NonNull View sender) {
-        homeActivity.getSlidingLayersView().toggle();
-        scrollToTop();
-    }
-
-    public void share(@NonNull View sender) {
+    public void share() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
 
         Observable<Timeline> currentTimeline = presenter.timeline.take(1);
@@ -272,11 +237,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 });
     }
 
-    public void showNavigator(@NonNull View sender) {
-        Timeline timeline = (Timeline) dateText.getTag();
-        homeActivity.showTimelineNavigator(getDate(), timeline);
-    }
-
     //endregion
 
 
@@ -290,8 +250,16 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         return (Timeline) getArguments().getSerializable(ARG_CACHED_TIMELINE);
     }
 
-    public void setControlsAlarmShortcut(boolean controlsAlarmShortcut) {
-        this.controlsAlarmShortcut = controlsAlarmShortcut;
+    public @NonNull String getTitle() {
+        return dateFormatter.formatAsTimelineDate(getDate());
+    }
+
+    public boolean getWantsShareButton() {
+        return wantsShareButton;
+    }
+
+    public void setControlsSharedChrome(boolean controlsSharedChrome) {
+        this.controlsSharedChrome = controlsSharedChrome;
     }
 
     public void scrollToTop() {
@@ -300,22 +268,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
     public void update() {
         presenter.update();
-    }
-
-    @Override
-    public void onUserWillPullDownTopView() {
-        menuButton.setImageResource(R.drawable.icon_menu_open);
-        dateText.setTextColor(getResources().getColor(R.color.text_dim));
-        shareButton.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void onUserDidPushUpTopView() {
-        menuButton.setImageResource(R.drawable.icon_menu_closed);
-        dateText.setTextColor(getResources().getColor(R.color.text_dark));
-        if (adapter.getItemCount() > 0) {
-            shareButton.setVisibility(View.VISIBLE);
-        }
     }
 
     //endregion
@@ -358,22 +310,20 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     //region Binding
 
     public void bindTimeline(@NonNull Timeline timeline) {
-        boolean hasSegments = Lists.isEmpty(timeline.getSegments());
+        boolean hasSegments = !Lists.isEmpty(timeline.getSegments());
         Runnable continuation = stateSafeExecutor.bind(() -> {
             adapter.bindSegments(timeline.getSegments());
 
-            if (hasSegments) {
-                shareButton.setVisibility(View.GONE);
-            } else if (!homeActivity.getSlidingLayersView().isOpen()) {
-                shareButton.setVisibility(View.VISIBLE);
+            if (controlsSharedChrome) {
+                homeActivity.setShareButtonVisible(wantsShareButton);
             }
         });
+
+        this.wantsShareButton = hasSegments;
         if (hasSegments) {
-            headerView.bindScore(TimelineHeaderView.NULL_SCORE, continuation);
-
-        } else {
             headerView.bindScore(timeline.getScore(), continuation);
-
+        } else {
+            headerView.bindScore(TimelineHeaderView.NULL_SCORE, continuation);
         }
     }
 
@@ -482,13 +432,13 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
 
         LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(presenter.submitCorrection(feedback),
-                         ignored -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                         },
-                         e -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                             ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
-                         });
+                ignored -> {
+                    LoadingDialogFragment.close(getFragmentManager());
+                },
+                e -> {
+                    LoadingDialogFragment.close(getFragmentManager());
+                    ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
+                });
     }
 
     private void markCorrect(int segmentPosition) {
@@ -538,7 +488,7 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 }
             }
 
-            if (controlsAlarmShortcut) {
+            if (controlsSharedChrome) {
                 if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                     homeActivity.showAlarmShortcut();
                 } else {
