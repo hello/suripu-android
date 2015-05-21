@@ -101,25 +101,25 @@ public class AnimatorContext implements Animator.AnimatorListener {
     }
 
     public void beginAnimation() {
-        if (DEBUG) {
-            printTrace("beginAnimation");
-        }
-
         idleHandler.removeMessages(MSG_IDLE);
 
         this.activeAnimationCount++;
+
+        if (DEBUG) {
+            printTrace("beginAnimation [" + activeAnimationCount + "]");
+        }
     }
 
     public void endAnimation() {
-        if (DEBUG) {
-            printTrace("endAnimation");
-        }
-
         if (activeAnimationCount == 0) {
             throw new IllegalStateException("No active animations to end in " + toString());
         }
 
         this.activeAnimationCount--;
+
+        if (DEBUG) {
+            printTrace("endAnimation [" + activeAnimationCount + "]");
+        }
 
         if (activeAnimationCount == 0) {
             idleHandler.removeMessages(MSG_IDLE);

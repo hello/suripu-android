@@ -30,8 +30,7 @@
         android:textAppearance="@style/AppTheme.Text.Body.MidSized"
         android:gravity="center"
         android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
-        android:minLines="2"
-        android:visibility="invisible" />
+        android:minLines="2" />
 
     <View
         android:id="@+id/view_timeline_header_fade"

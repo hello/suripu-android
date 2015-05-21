@@ -27,6 +27,7 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
     private final GradientDrawable fadeGradient;
     private final int fadeGradientWidth;
 
+    private boolean drawFade = false;
     private boolean textViewsSwapped = false;
     private Position swipeDirection;
 
@@ -71,16 +72,18 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
     public void draw(@NonNull Canvas canvas) {
         super.draw(canvas);
 
-        int width = canvas.getWidth(),
-            height = canvas.getHeight();
+        if (drawFade) {
+            int width = canvas.getWidth(),
+                height = canvas.getHeight();
 
-        fadeGradient.setBounds(0, 0, fadeGradientWidth, height);
-        fadeGradient.setOrientation(GradientDrawable.Orientation.LEFT_RIGHT);
-        fadeGradient.draw(canvas);
+            fadeGradient.setBounds(0, 0, fadeGradientWidth, height);
+            fadeGradient.setOrientation(GradientDrawable.Orientation.LEFT_RIGHT);
+            fadeGradient.draw(canvas);
 
-        fadeGradient.setBounds(width - fadeGradientWidth, 0, width, height);
-        fadeGradient.setOrientation(GradientDrawable.Orientation.RIGHT_LEFT);
-        fadeGradient.draw(canvas);
+            fadeGradient.setBounds(width - fadeGradientWidth, 0, width, height);
+            fadeGradient.setOrientation(GradientDrawable.Orientation.RIGHT_LEFT);
+            fadeGradient.draw(canvas);
+        }
     }
 
 
@@ -159,6 +162,9 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
     @Override
     public void onSwipeBegan() {
         this.swipeDirection = null;
+
+        this.drawFade = true;
+        invalidate();
     }
 
     @Override
@@ -204,6 +210,8 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
             }
 
             this.swipeDirection = null;
+            this.drawFade = false;
+            invalidate();
         });
     }
 
@@ -227,6 +235,8 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
 
             swapTextViews();
             this.swipeDirection = null;
+            this.drawFade = true;
+            invalidate();
         });
     }
 

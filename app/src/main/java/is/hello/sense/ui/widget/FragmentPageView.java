@@ -232,6 +232,17 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
         getOffScreenView().setVisibility(VISIBLE);
 
+        if (decor != null) {
+            decor.onSwipeBegan();
+
+            CharSequence title = adapter.getFragmentTitle(newFragment);
+            decor.onSetOffScreenTitle(title);
+
+            // Emulate the very beginning of a swipe so
+            // the decor knows what direction to animate
+            decor.onSwipeMoved(position == Position.BEFORE ? 0.01f : -0f);
+        }
+
         completeTransition(position, true, Animation.DURATION_FAST);
     }
 

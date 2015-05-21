@@ -44,8 +44,9 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
     private boolean firstTimeline;
     private AnimatorContext animatorContext;
-    private @Nullable ValueAnimator colorAnimator;
 
+
+    private @Nullable ValueAnimator colorAnimator;
     private @Nullable ValueAnimator pulseAnimator;
 
 
@@ -93,13 +94,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         super.onVisibilityChanged(changedView, visibility);
 
         if (visibility != VISIBLE) {
-            if (colorAnimator != null) {
-                colorAnimator.cancel();
-            }
-
-            if (pulseAnimator != null) {
-                pulseAnimator.cancel();
-            }
+            clearAnimation();
         }
     }
 
@@ -139,6 +134,26 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         messageText.setTextColor(Drawing.interpolateColors(amount, backgroundColor, messageTextColor));
 
         topFadeView.setTranslationY(-getTop());
+    }
+
+    //endregion
+
+    //region Animation
+
+
+    @Override
+    public void clearAnimation() {
+        super.clearAnimation();
+
+        if (pulseAnimator != null) {
+            pulseAnimator.cancel();
+        }
+
+        if (colorAnimator != null) {
+            colorAnimator.cancel();
+        }
+
+        PropertyAnimatorProxy.stop(scoreContainer, messageText);
     }
 
     public void startPulsing() {
@@ -182,7 +197,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     //region Scores
 
     private void setScore(int score) {
-        stopPulsing();
+        clearAnimation();
 
         int color;
         if (score < 0) {
@@ -203,10 +218,13 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
         scoreDrawable.setFillColor(color);
         scoreText.setTextColor(color);
+
+        scoreContainer.setTranslationY(0f);
+        messageText.setAlpha(1f);
     }
 
     private void animateToScore(int score, @NonNull Runnable fireAdapterAnimations) {
-        if (score < 0) {
+        if (score < 0 || getVisibility() != VISIBLE) {
             setScore(score);
             fireAdapterAnimations.run();
         } else {
@@ -279,9 +297,12 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             f.animate(messageText)
              .fadeIn();
         }, finished -> {
-            if (finished) {
-                fireAdapterAnimations.run();
+            if (!finished) {
+                scoreContainer.setTranslationY(0f);
+                messageText.setAlpha(1f);
             }
+
+            fireAdapterAnimations.run();
         });
     }
 
@@ -326,6 +347,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     public void onTimelineAnimationDidEnd(boolean finished) {
         if (!finished) {
             PropertyAnimatorProxy.stop(messageText);
+            messageText.setAlpha(1f);
         }
     }
 
