@@ -132,13 +132,11 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     }
 
     public void setChildFadeAmount(float amount) {
-        if (amount <= 0.5f) {
-            // messageText has rich text, setAlpha is too expensive.
-            float messageFadeAmount = amount / 0.5f;
-            messageText.setTextColor(Drawing.interpolateColors(messageFadeAmount, backgroundColor, messageTextColor));
-        } else {
-            messageText.setTextColor(messageTextColor);
-        }
+        scoreDrawable.setAlpha(Math.round(255f * amount));
+        scoreText.setAlpha(amount);
+
+        // messageText has rich text, setAlpha is too expensive.
+        messageText.setTextColor(Drawing.interpolateColors(amount, backgroundColor, messageTextColor));
 
         topFadeView.setTranslationY(-getTop());
     }
