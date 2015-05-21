@@ -19,7 +19,7 @@ public class SleepScoreDrawable extends Drawable {
     private static final float ANGLE_START = -225f;
     private static final float ANGLE_SWEEP = 270f;
 
-    private static final int MAX_VALUE = 100;
+    private static final float MAX_VALUE = 100;
 
     private final Resources resources;
 
@@ -33,7 +33,8 @@ public class SleepScoreDrawable extends Drawable {
     private final String label;
     private final int labelHeight;
 
-    private int value = 0;
+    private float value = 0f;
+    private int alpha = 255;
     private int fillColor;
     private int trackColor;
 
@@ -78,20 +79,19 @@ public class SleepScoreDrawable extends Drawable {
         arcRect.set(left, top, size + left, size + top);
         arcRect.inset(fillStrokeWidth / 2f, fillStrokeWidth / 2f);
 
-        arcPath.arcTo(arcRect, ANGLE_START, ANGLE_SWEEP);
-
-        float scale = ((float) value / (float) MAX_VALUE);
+        float scale = (value / MAX_VALUE);
         if (scale > 0f) {
-            fillPath.arcTo(arcRect, ANGLE_START, scale * ANGLE_SWEEP);
+            float fillSweep = scale * ANGLE_SWEEP;
+            fillPath.arcTo(arcRect, ANGLE_START, fillSweep);
+            arcPath.arcTo(arcRect, ANGLE_START + fillSweep, ANGLE_SWEEP - fillSweep);
+        } else {
+            arcPath.arcTo(arcRect, ANGLE_START, ANGLE_SWEEP);
         }
 
-        int savedAlpha = paint.getAlpha();
         paint.setColor(trackColor);
-        paint.setAlpha(savedAlpha);
         canvas.drawPath(arcPath, paint);
 
         paint.setColor(fillColor);
-        paint.setAlpha(savedAlpha);
         canvas.drawPath(fillPath, paint);
 
         if (labelPaint != null) {
@@ -104,13 +104,22 @@ public class SleepScoreDrawable extends Drawable {
 
     @Override
     public void setAlpha(int alpha) {
-        if (alpha != paint.getAlpha()) {
-            paint.setAlpha(alpha);
+        if (alpha != this.alpha) {
+            this.alpha = alpha;
+            this.fillColor = Drawing.colorWithAlpha(fillColor, alpha);
+            this.trackColor = Drawing.colorWithAlpha(trackColor, alpha);
+
             if (labelPaint != null) {
                 labelPaint.setAlpha(alpha);
             }
+
             invalidateSelf();
         }
+    }
+
+    @Override
+    public int getAlpha() {
+        return alpha;
     }
 
     @Override
@@ -138,21 +147,21 @@ public class SleepScoreDrawable extends Drawable {
     }
 
     public void setTrackColor(int trackColor) {
-        this.trackColor = trackColor;
+        this.trackColor = Drawing.colorWithAlpha(trackColor, alpha);
         invalidateSelf();
     }
 
     public void setValue(int value) {
-        this.value = value;
+        this.value = (float) value;
         invalidateSelf();
     }
 
     public int getValue() {
-        return value;
+        return (int) value;
     }
 
     public void setFillColor(int fillColor) {
-        this.fillColor = fillColor;
+        this.fillColor = Drawing.colorWithAlpha(fillColor, alpha);
         invalidateSelf();
     }
 

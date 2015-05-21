@@ -1,6 +1,7 @@
 package is.hello.sense.ui.widget.util;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
@@ -36,6 +37,10 @@ public class Drawing {
     public static int getEstimatedTextHeight(@NonNull Paint paint) {
         Paint.FontMetricsInt fontMetrics = paint.getFontMetricsInt();
         return Math.abs(fontMetrics.bottom - fontMetrics.top);
+    }
+
+    public static int colorWithAlpha(int color, int newAlpha) {
+        return Color.argb(newAlpha, Color.red(color), Color.green(color), Color.blue(color));
     }
 
     /**
