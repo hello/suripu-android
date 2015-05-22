@@ -21,6 +21,7 @@ import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Errors;
 import is.hello.sense.util.Logger;
@@ -62,6 +63,7 @@ public class InsightsAdapter extends BaseAdapter {
     }
 
     public void insightsUnavailable(Throwable e) {
+        Analytics.trackError(e, "Loading Insights");
         Logger.error(getClass().getSimpleName(), "Could not load insights", e);
 
         listener.onDismissLoadingIndicator();
@@ -84,7 +86,9 @@ public class InsightsAdapter extends BaseAdapter {
     }
 
     public void currentQuestionUnavailable(Throwable e) {
+        Analytics.trackError(e, "Loading Question");
         Logger.error(getClass().getSimpleName(), "Could not load question", e);
+
         this.currentQuestion = null;
         notifyDataSetChanged();
     }

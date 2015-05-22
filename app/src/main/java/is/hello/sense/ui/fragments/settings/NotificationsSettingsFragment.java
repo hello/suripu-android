@@ -1,5 +1,7 @@
 package is.hello.sense.ui.fragments.settings;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,6 +25,8 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 
 public class NotificationsSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+    private static final int REQUEST_CODE_ERROR = 0xE3;
+
     @Inject AccountPresenter accountPresenter;
 
     private StaticItemAdapter.CheckItem scoreItem;
@@ -66,8 +70,17 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
 
         showLoading();
         bindAndSubscribe(accountPresenter.preferences(),
-                         this::bindPreferences,
-                         this::preferencesUnavailable);
+                this::bindPreferences,
+                this::preferencesUnavailable);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_ERROR && resultCode == Activity.RESULT_OK) {
+            getActivity().finish();
+        }
     }
 
 
@@ -101,8 +114,11 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     }
 
     public void preferencesUnavailable(@NonNull Throwable e) {
-        hideLoading();
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        loadingIndicator.setVisibility(View.GONE);
+
+        ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(e);
+        errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
+        errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     //endregion
