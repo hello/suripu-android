@@ -10,9 +10,9 @@ import is.hello.sense.R;
 
 public enum Condition {
     UNKNOWN(R.color.sensor_unknown),
-    IDEAL(R.color.sensor_ideal),
+    ALERT(R.color.sensor_alert),
     WARNING(R.color.sensor_warning),
-    ALERT(R.color.sensor_alert);
+    IDEAL(R.color.sensor_ideal);
 
     public final @ColorRes @DrawableRes int colorRes;
 

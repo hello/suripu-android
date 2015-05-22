@@ -73,7 +73,12 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        // Always change order of RoomSensorHistory and RoomConditions too.
+        // This order applies to:
+        // - RoomSensorHistory
+        // - RoomConditions
+        // - RoomConditionsFragment
+        // - UnitSystem
+        // - OnboardingRoomCheckFragment
         this.adapter = new Adapter(getActivity(), new SensorEntry[] {
                 new SensorEntry(ApiService.SENSOR_NAME_TEMPERATURE),
                 new SensorEntry(ApiService.SENSOR_NAME_HUMIDITY),
@@ -133,11 +138,12 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
         List<ArrayList<SensorGraphSample>> histories = result.roomSensorHistory.toList();
         List<SensorState> sensors = result.conditions.toList();
 
+        List<UnitSystem.Unit> units = result.units.toUnitList();
         for (int i = 0, count = adapter.getCount(); i < count; i++) {
             SensorEntry sensorInfo = adapter.getItem(i);
 
             SensorState sensor = sensors.get(i);
-            sensorInfo.formatter = result.units.getUnitFormatterForSensor(sensorInfo.sensorName);
+            sensorInfo.formatter = units.get(i).getFormatter();
             sensorInfo.sensorState = sensor;
             sensorInfo.errorMessage = null;
 
@@ -187,8 +193,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
         final SensorHistoryAdapter graphAdapter = new SensorHistoryAdapter();
         final @NonNull String sensorName;
 
-        @Nullable
-        UnitSystem.Formatter formatter;
+        @Nullable UnitSystem.Formatter formatter;
         @Nullable SensorState sensorState;
         @Nullable String errorMessage;
 

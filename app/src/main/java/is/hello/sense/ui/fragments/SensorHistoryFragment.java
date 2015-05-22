@@ -263,7 +263,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                     return unitSystem.formatParticulates(Math.round(value));
 
                 case ApiService.SENSOR_NAME_SOUND:
-                    return unitSystem.formatDecibels(Math.round(value));
+                    return unitSystem.formatSound(Math.round(value));
 
                 case ApiService.SENSOR_NAME_LIGHT:
                     return unitSystem.formatLight(Math.round(value));
