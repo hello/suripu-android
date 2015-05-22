@@ -11,21 +11,29 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
+import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Errors;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
+import is.hello.sense.util.StringRef;
 
 public class InsightsAdapter extends BaseAdapter {
     private static final int TYPE_QUESTION = 0;
     private static final int TYPE_INSIGHT = 1;
     private static final int TYPE_COUNT = 2;
 
+    private final Context context;
     private final LayoutInflater inflater;
     private final Markdown markdown;
     private final DateFormatter dateFormatter;
@@ -38,6 +46,7 @@ public class InsightsAdapter extends BaseAdapter {
                            @NonNull Markdown markdown,
                            @NonNull DateFormatter dateFormatter,
                            @NonNull Listener listener) {
+        this.context = context;
         this.dateFormatter = dateFormatter;
         this.inflater = LayoutInflater.from(context);
         this.markdown = markdown;
@@ -54,9 +63,19 @@ public class InsightsAdapter extends BaseAdapter {
     }
 
     public void insightsUnavailable(Throwable e) {
+        Analytics.trackError(e, "Loading Insights");
         Logger.error(getClass().getSimpleName(), "Could not load insights", e);
+
         listener.onDismissLoadingIndicator();
-        this.insights = null;
+        this.insights = new ArrayList<>();
+
+        StringRef messageRef = Errors.getDisplayMessage(e);
+        String message = messageRef != null
+                ? messageRef.resolve(context)
+                : context.getString(R.string.dialog_error_generic_message);
+        Insight errorInsight = Insight.createError(message);
+        insights.add(errorInsight);
+
         notifyDataSetChanged();
     }
 
@@ -67,7 +86,9 @@ public class InsightsAdapter extends BaseAdapter {
     }
 
     public void currentQuestionUnavailable(Throwable e) {
+        Analytics.trackError(e, "Loading Question");
         Logger.error(getClass().getSimpleName(), "Could not load question", e);
+
         this.currentQuestion = null;
         notifyDataSetChanged();
     }
@@ -205,8 +226,13 @@ public class InsightsAdapter extends BaseAdapter {
 
         markdown.renderInto(holder.body, insight.getMessage());
 
-        CharSequence insightDate = dateFormatter.formatAsRelativeTime(insight.getCreated());
-        holder.date.setText(insightDate);
+        DateTime insightCreated = insight.getCreated();
+        if (insightCreated == null && insight.getCategory() == InsightCategory.IN_APP_ERROR) {
+            holder.date.setText(R.string.dialog_error_title);
+        } else {
+            CharSequence insightDate = dateFormatter.formatAsRelativeTime(insightCreated);
+            holder.date.setText(insightDate);
+        }
 
         if (!TextUtils.isEmpty(insight.getInfoPreview())) {
             holder.previewDivider.setVisibility(View.VISIBLE);

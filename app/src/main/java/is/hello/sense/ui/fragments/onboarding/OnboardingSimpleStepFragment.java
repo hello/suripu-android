@@ -103,7 +103,7 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
 
             boolean wantsBackStackEntry = getArguments().getBoolean(ARG_NEXT_WANTS_BACK_STACK, true);
             ((OnboardingActivity) getActivity()).pushFragment(fragment, null, wantsBackStackEntry);
-        } catch (ClassNotFoundException | java.lang.InstantiationException | IllegalAccessException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Could not resolve next step fragment class", e);
         }
     }

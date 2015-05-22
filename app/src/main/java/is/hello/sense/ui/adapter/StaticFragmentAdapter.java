@@ -45,7 +45,7 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
         public @NonNull Fragment newInstance() {
             try {
                 return fragmentClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }

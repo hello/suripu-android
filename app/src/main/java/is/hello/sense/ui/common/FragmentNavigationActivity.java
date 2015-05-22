@@ -48,7 +48,7 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
                     Fragment fragment = fragmentClass.newInstance();
                     fragment.setArguments(getIntent().getParcelableExtra(EXTRA_FRAGMENT_ARGUMENTS));
                     pushFragment(fragment, getDefaultTitle(), false);
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                } catch (Exception e) {
                     Logger.warn(getClass().getSimpleName(), "Could not create fragment", e);
                 }
             }

@@ -13,6 +13,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
+import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.adapter.InsightsAdapter;
@@ -105,9 +106,13 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Insight insight = (Insight) adapterView.getItemAtPosition(position);
+        if (insight.getCategory() == InsightCategory.IN_APP_ERROR) {
+            return;
+        }
+
         Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
 
-        Insight insight = (Insight) adapterView.getItemAtPosition(position);
         InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight);
         dialogFragment.show(getFragmentManager(), InsightInfoDialogFragment.TAG);
     }

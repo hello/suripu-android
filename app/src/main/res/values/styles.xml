@@ -193,8 +193,8 @@
     </style>
 
     <style name="WindowAnimations.Slide">
-        <item name="android:windowEnterAnimation">@anim/slide_up</item>
-        <item name="android:windowExitAnimation">@anim/slide_down</item>
+        <item name="android:windowEnterAnimation">@anim/bottom_slide_up</item>
+        <item name="android:windowExitAnimation">@anim/bottom_slide_down</item>
     </style>
 
     <style name="WindowAnimations.PopSlideAndFade">

@@ -214,6 +214,10 @@ public final class PropertyAnimatorProxy implements Animator.AnimatorListener {
         }
     }
 
+    public void postStart() {
+        view.post(this::start);
+    }
+
     public void cancel() {
         view.animate().cancel();
     }

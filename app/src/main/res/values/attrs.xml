@@ -35,6 +35,10 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="SensorConditionView">
+        <attr name="senseSensorIcon" format="reference" />
+    </declare-styleable>
+
     <!-- Used by RoundedLinearLayout and RoundedRelativeLayout -->
     <declare-styleable name="RoundedLayout">
         <attr name="senseCornerRadius" format="dimension" />

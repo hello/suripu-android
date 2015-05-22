@@ -125,10 +125,12 @@ public class ErrorDialogFragment extends DialogFragment {
         }
 
         if (getTargetFragment() != null) {
-            dialog.setNegativeButton(R.string.action_retry, (button, which) -> getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null));
+            dialog.setNegativeButton(android.R.string.ok, (ignored, which) -> {
+                getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null);
+            });
+        } else {
+            dialog.setPositiveButton(android.R.string.ok, null);
         }
-
-        dialog.setPositiveButton(android.R.string.ok, null);
 
         if (getArguments().containsKey(ARG_ACTION_TITLE_RES)) {
             int titleRes = getArguments().getInt(ARG_ACTION_TITLE_RES);
@@ -177,8 +179,7 @@ public class ErrorDialogFragment extends DialogFragment {
         getArguments().putInt(ARG_FATAL_MESSAGE_RES, messageRes);
     }
 
-    private @Nullable
-    StringRef getErrorMessage() {
+    private @Nullable StringRef getErrorMessage() {
         return getArguments().getParcelable(ARG_ERROR_MESSAGE);
     }
 

@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import is.hello.sense.api.ApiService;
@@ -52,54 +54,195 @@ public class UnitSystem implements Serializable {
     }
 
 
-    //region Formatting
+    //region Mass
+
+    public String getMassUnit() {
+        return "kg";
+    }
+
+    public long convertMass(long mass) {
+        return mass / 1000;
+    }
 
     public CharSequence formatMass(long mass) {
-        return Styles.assembleReadingAndUnit(mass / 1000, "kg");
+        return Styles.assembleReadingAndUnit(convertMass(mass), getMassUnit());
+    }
+
+    //endregion
+
+
+    //region Temperature
+
+    public String getTemperatureUnit() {
+        return TEMP_SUFFIX;
+    }
+
+    public long convertTemperature(long temperature) {
+        return temperature;
     }
 
     public CharSequence formatTemperature(long temperature) {
-        return Styles.assembleReadingAndUnit(temperature, TEMP_SUFFIX);
+        return Styles.assembleReadingAndUnit(convertTemperature(temperature), getTemperatureUnit());
+    }
+
+    //endregion
+
+
+    //region Humidity
+
+    public String getHumidityUnit() {
+        return "%";
     }
 
     public CharSequence formatHumidity(long humidity) {
-        return Styles.assembleReadingAndUnit(humidity, "%");
+        return Styles.assembleReadingAndUnit(humidity, getHumidityUnit());
+    }
+
+    //endregion
+
+
+    //region Height
+
+    public String getHeightUnit() {
+        return "cm";
     }
 
     public CharSequence formatHeight(long distance) {
-        return Styles.assembleReadingAndUnit(distance, "cm");
+        return Styles.assembleReadingAndUnit(distance, getHeightUnit());
     }
 
-    public CharSequence formatDecibels(long decibels) {
-        return Styles.assembleReadingAndUnit(decibels, "db");
+    //endregion
+
+
+    //region Sound
+
+    public String getSoundUnit() {
+        return "db";
+    }
+
+    public CharSequence formatSound(long decibels) {
+        return Styles.assembleReadingAndUnit(decibels, getSoundUnit());
+    }
+
+    //endregion
+
+
+    //region Light
+
+    public String getLightUnit() {
+        return "lux";
     }
 
     public CharSequence formatLight(long lux) {
-        return Styles.assembleReadingAndUnit(lux, "lux");
+        return Styles.assembleReadingAndUnit(lux, getLightUnit());
     }
 
-    @Deprecated
+    //endregion
+
+
+    //region Particulates
+
+    public String getParticulatesUnit() {
+        return "";
+    }
+
     public CharSequence formatParticulates(long particulates) {
         return Long.toString(particulates);
     }
 
-    public @Nullable
-    Formatter getUnitFormatterForSensor(@NonNull String sensor) {
+    //endregion
+
+
+    //region Vendors
+
+    public @Nullable Formatter getUnitFormatterForSensor(@NonNull String sensor) {
         switch (sensor) {
             case ApiService.SENSOR_NAME_TEMPERATURE:
                 return this::formatTemperature;
 
+            case ApiService.SENSOR_NAME_HUMIDITY:
+                return this::formatHumidity;
+
             case ApiService.SENSOR_NAME_PARTICULATES:
                 return this::formatParticulates;
+
+            case ApiService.SENSOR_NAME_LIGHT:
+                return this::formatLight;
+
+            case ApiService.SENSOR_NAME_SOUND:
+                return this::formatSound;
 
             default:
                 return null;
         }
     }
 
-    public interface Formatter {
-        @NonNull CharSequence format(Long value);
+    public List<Unit> toUnitList() {
+        // This order applies to:
+        // - RoomSensorHistory
+        // - RoomConditions
+        // - RoomConditionsFragment
+        // - UnitSystem
+        // - OnboardingRoomCheckFragment
+        return Arrays.asList(
+            new Unit(this::formatTemperature, this::convertTemperature, getTemperatureUnit()),
+            new Unit(this::formatHumidity, IDENTITY_CONVERTER, getHumidityUnit()),
+            new Unit(this::formatLight, IDENTITY_CONVERTER, getLightUnit()),
+            new Unit(this::formatSound, IDENTITY_CONVERTER, getSoundUnit())
+        );
     }
 
     //endregion
+
+    public interface Formatter {
+        @NonNull CharSequence format(long value);
+    }
+
+    /**
+     * The identity converter. Returns a value unmodified.
+     */
+    public static final Converter IDENTITY_CONVERTER = v -> v;
+
+    /**
+     * A functor that converts a raw value into the user's unit system.
+     */
+    public interface Converter {
+        long convert(long value);
+    }
+
+    public static class Unit {
+        private final @Nullable Formatter formatter;
+        private final @NonNull Converter converter;
+        private final @NonNull String name;
+
+        public Unit(@Nullable Formatter formatter,
+                    @NonNull Converter converter,
+                    @NonNull String name) {
+            this.formatter = formatter;
+            this.converter = converter;
+            this.name = name;
+        }
+
+        public CharSequence format(long value) {
+            if (formatter != null) {
+                return formatter.format(value);
+            } else {
+                return Long.toString(value);
+            }
+        }
+
+        public long convert(long value) {
+            return converter.convert(value);
+        }
+
+        @Nullable
+        public Formatter getFormatter() {
+            return formatter;
+        }
+
+        @NonNull
+        public String getName() {
+            return name;
+        }
+    }
 }

@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.AccountPreference;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
@@ -42,6 +43,7 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class AccountSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
+    private static final int REQUEST_CODE_ERROR = 0xE3;
 
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
@@ -113,6 +115,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
         listView.setAdapter(adapter);
 
+        loadingIndicator.setVisibility(View.VISIBLE);
+        listView.setVisibility(View.INVISIBLE);
+
         return view;
     }
 
@@ -123,11 +128,11 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         Observable<Pair<Account, UnitSystem>> forAccount = Observable.combineLatest(accountPresenter.account,
                                                                                     preferences.observableUnitSystem(),
                                                                                     Pair::new);
-        bindAndSubscribe(forAccount, this::bindAccount, this::presentError);
+        bindAndSubscribe(forAccount, this::bindAccount, this::accountUnavailable);
 
         bindAndSubscribe(accountPresenter.preferences(),
                          this::bindAccountPreferences,
-                         this::presentError);
+                         Functions.LOG_ERROR);
     }
 
     @Override
@@ -143,6 +148,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
         if (requestCode == REQUEST_CODE_PASSWORD && resultCode == Activity.RESULT_OK) {
             accountPresenter.update();
+        } else if (requestCode == REQUEST_CODE_ERROR && resultCode == Activity.RESULT_OK) {
+            getActivity().finish();
         }
     }
 
@@ -203,16 +210,20 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         weightItem.setDetail(unitSystem.formatMass(account.getWeight()).toString());
 
         this.currentAccount = account;
+
+        hideLoadingIndicator();
+    }
+
+    public void accountUnavailable(Throwable e) {
+        loadingIndicator.setVisibility(View.GONE);
+        ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(e);
+        errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
+        errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     public void bindAccountPreferences(@NonNull HashMap<AccountPreference.Key, Object> settings) {
         boolean enhancedAudio = (boolean) settings.get(AccountPreference.Key.ENHANCED_AUDIO);
         enhancedAudioItem.setChecked(enhancedAudio);
-    }
-
-    public void presentError(Throwable e) {
-        hideLoadingIndicator();
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
     }
 
     //endregion
@@ -221,21 +232,21 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     //region Basic Info
 
     public void changeName() {
-        FragmentNavigation navigation = (FragmentNavigation) getActivity();
+        FragmentNavigation navigation = getNavigationContainer();
         ChangeNameFragment fragment = new ChangeNameFragment();
         fragment.setTargetFragment(this, 0x00);
         navigation.pushFragmentAllowingStateLoss(fragment, getString(R.string.action_change_name), true);
     }
 
     public void changeEmail() {
-        FragmentNavigation navigation = (FragmentNavigation) getActivity();
+        FragmentNavigation navigation = getNavigationContainer();
         ChangeEmailFragment fragment = new ChangeEmailFragment();
         fragment.setTargetFragment(this, REQUEST_CODE_PASSWORD);
         navigation.pushFragmentAllowingStateLoss(fragment, getString(R.string.title_change_email), true);
     }
 
     public void changePassword() {
-        FragmentNavigation navigation = (FragmentNavigation) getActivity();
+        FragmentNavigation navigation = getNavigationContainer();
         navigation.pushFragmentAllowingStateLoss(ChangePasswordFragment.newInstance(currentAccount.getEmail()), getString(R.string.title_change_password), true);
     }
 
@@ -288,7 +299,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
                          ignored -> hideLoadingIndicator(),
                          e -> {
                              enhancedAudioItem.setChecked(!newSetting);
-                             presentError(e);
+                             accountUnavailable(e);
                          });
     }
 
@@ -335,7 +346,10 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
             showLoadingIndicator();
             bindAndSubscribe(accountPresenter.saveAccount(currentAccount),
                     ignored -> hideLoadingIndicator(),
-                    this::presentError);
+                    e -> {
+                        hideLoadingIndicator();
+                        ErrorDialogFragment.presentError(getFragmentManager(), e);
+                    });
         });
     }
 

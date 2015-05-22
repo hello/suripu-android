@@ -7,11 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import is.hello.sense.ui.widget.graphing.Extremes;
 
 public class Lists {
     @SafeVarargs
@@ -73,6 +70,14 @@ public class Lists {
                 results.add(value);
         }
         return results;
+    }
+
+    public static <T> int sumInt(@NonNull Iterable<T> toSum, @NonNull Function<T, Integer> converter) {
+        int sum = 0;
+        for (T value : toSum) {
+            sum += converter.apply(value);
+        }
+        return sum;
     }
 
     public static @Nullable <T> T findFirst(@NonNull Iterable<T> haystack, @NonNull Function<T, Boolean> needle) {

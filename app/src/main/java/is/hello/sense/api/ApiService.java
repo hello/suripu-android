@@ -48,7 +48,6 @@ public interface ApiService {
 
     String SENSOR_NAME_TEMPERATURE = "temperature";
     String SENSOR_NAME_HUMIDITY = "humidity";
-    @Deprecated
     String SENSOR_NAME_PARTICULATES = "particulates";
     String SENSOR_NAME_LIGHT = "light";
     String SENSOR_NAME_SOUND = "sound";
