@@ -36,7 +36,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 21
         versionCode generateVersionCode()
-        versionName "1.0.9"
+        versionName "1.1.0"
 
         testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
@@ -102,7 +102,7 @@ android {
             buildConfigField TYPE_STRING, CLIENT_ID, '"' + "8d3c1664-05ae-47e4-bcdb-477489590aa4" + '"'
             buildConfigField TYPE_STRING, CLIENT_SECRET, '"' + "4f771f6f-5c10-4104-bbc6-3333f5b11bf9" + '"'
             buildConfigField TYPE_STRING, BASE_URL, '"' + "https://api.hello.is/v1" + '"'
-            buildConfigField TYPE_STRING, SUPPORT_AUTHORITY, '"' + "staging-user.hello.is" + '"'
+            buildConfigField TYPE_STRING, SUPPORT_AUTHORITY, '"' + "guide.hello.is" + '"'
             buildConfigField TYPE_STRING, MP_API_KEY, '"' + "d62a169fe4856dea26f3a322750613a8" + '"'
             buildConfigField TYPE_STRING, HOCKEY_API_KEY, '"' + "43c61cc553f0ccf2b3e1f73bc30bbfb4" + '"'
 

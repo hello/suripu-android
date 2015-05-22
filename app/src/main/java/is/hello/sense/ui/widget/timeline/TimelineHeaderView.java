@@ -181,6 +181,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             }
         });
 
+        scoreDrawable.setValue(0);
+
         pulseAnimator.addListener(animatorContext);
         pulseAnimator.start();
     }

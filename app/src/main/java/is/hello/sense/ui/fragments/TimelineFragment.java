@@ -426,7 +426,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         Feedback feedback = new Feedback();
         feedback.setEventType(segment.getEventType());
-        feedback.setNight(originalTime.toLocalDate());
+        feedback.setNight(getDate().toLocalDate());
         feedback.setOldTime(originalTime.toLocalTime());
         feedback.setNewTime(newTime);
 
@@ -434,6 +434,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         bindAndSubscribe(presenter.submitCorrection(feedback),
                 ignored -> {
                     LoadingDialogFragment.close(getFragmentManager());
+                    presenter.update();
                 },
                 e -> {
                     LoadingDialogFragment.close(getFragmentManager());
