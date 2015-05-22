@@ -23,7 +23,8 @@ public enum InsightCategory {
     DAYTIME_SLEEPINESS,
     DAYTIME_ACTIVITIES,
     SLEEP_SCORE,
-    SLEEP_QUALITY;
+    SLEEP_QUALITY,
+    IN_APP_ERROR;
 
     @JsonCreator
     @SuppressWarnings("UnusedDeclaration")

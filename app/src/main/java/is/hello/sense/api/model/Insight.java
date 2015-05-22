@@ -1,5 +1,7 @@
 package is.hello.sense.api.model;
 
+import android.support.annotation.NonNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
@@ -22,6 +24,14 @@ public class Insight extends ApiResponse {
 
     @JsonProperty("info_preview")
     private String infoPreview;
+
+
+    public static Insight createError(@NonNull String message) {
+        Insight insight = new Insight();
+        insight.message = message;
+        insight.category = InsightCategory.IN_APP_ERROR;
+        return insight;
+    }
 
 
     public long getAccountId() {
