@@ -14,12 +14,18 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
     private final AnimatorContext animatorContext;
     private final Listener listener;
 
+    protected boolean enabled = true;
+
     protected AbstractTimelineItemAnimator(@NonNull AnimatorContext animatorContext,
                                            @NonNull Listener listener) {
         this.animatorContext = animatorContext;
         this.listener = listener;
 
         setSupportsChangeAnimations(false);
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public AnimatorContext getAnimatorContext() {
@@ -30,8 +36,8 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
         Collections.sort(viewHolders, (l, r) -> Functions.compareInts(l.getLayoutPosition(), r.getLayoutPosition()));
     }
 
-    protected static boolean isViewHolderAnimated(@NonNull RecyclerView.ViewHolder viewHolder) {
-        return (viewHolder.getAdapterPosition() >= TimelineAdapter.STATIC_ITEM_COUNT);
+    protected boolean isViewHolderAnimated(@NonNull RecyclerView.ViewHolder viewHolder) {
+        return (enabled && viewHolder.getAdapterPosition() >= TimelineAdapter.STATIC_ITEM_COUNT);
     }
 
     //region Default Implementations

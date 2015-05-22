@@ -42,7 +42,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     private final int backgroundColor;
     private final int messageTextColor;
 
-    private boolean firstTimeline;
+    private boolean animationEnabled = true;
+    private boolean firstTimeline = false;
     private AnimatorContext animatorContext;
 
 
@@ -112,6 +113,14 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
     //region Attributes
 
+    public void setAnimationEnabled(boolean animationEnabled) {
+        if (!animationEnabled) {
+            clearAnimation();
+        }
+
+        this.animationEnabled = animationEnabled;
+    }
+
     public void setFirstTimeline(boolean firstTimeline) {
         this.firstTimeline = firstTimeline;
 
@@ -157,7 +166,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     }
 
     public void startPulsing() {
-        if (pulseAnimator != null) {
+        if (pulseAnimator != null || !animationEnabled) {
             return;
         }
 
@@ -226,7 +235,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     }
 
     private void animateToScore(int score, @NonNull Runnable fireAdapterAnimations) {
-        if (score < 0 || getVisibility() != VISIBLE) {
+        if (score < 0 || !animationEnabled || getVisibility() != VISIBLE) {
             setScore(score);
             fireAdapterAnimations.run();
         } else {

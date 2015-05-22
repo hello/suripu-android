@@ -140,9 +140,12 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
+        boolean animationEnabled = !(firstTimeline && homeActivity.getWillShowUnderside());
+
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
         headerView.setFirstTimeline(firstTimeline);
+        headerView.setAnimationEnabled(animationEnabled);
         headerView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
@@ -156,6 +159,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         });
 
         this.itemAnimator = new TimelineFadeItemAnimator(getAnimatorContext(), headerView);
+        itemAnimator.setEnabled(animationEnabled);
         recyclerView.setItemAnimator(itemAnimator);
         recyclerView.addItemDecoration(new BackgroundDecoration(getResources()));
 
