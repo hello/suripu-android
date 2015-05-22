@@ -57,11 +57,11 @@ public class UnitSystem implements Serializable {
     //region Mass
 
     public String getMassUnit() {
-        return "g";
+        return "kg";
     }
 
     public long convertMass(long mass) {
-        return mass;
+        return mass / 1000;
     }
 
     public CharSequence formatMass(long mass) {

@@ -78,8 +78,8 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         R.string.checking_condition_sound,
     };
 
-    private @NonNull Resources resources;
-    private @NonNull Drawable graySense;
+    private Resources resources;
+    private Drawable graySense;
     private @Nullable SensorConditionView animatingSensorView;
     private @Nullable ValueAnimator scoreAnimator;
 
@@ -229,7 +229,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         deferWorker.unsubscribe();
         stopAnimations();
 
-        coordinator.postOnResume(() -> {
+        stateSafeExecutor.execute(() -> {
             int conditionCount = sensors.size();
             if (conditionCount > 0) {
                 int conditionSum = Lists.sumInt(sensors, c -> c.getCondition().ordinal());
