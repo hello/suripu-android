@@ -157,6 +157,14 @@
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
     </style>
 
+    <style name="AppTheme.Dialog.TimelineDetails" parent="Platform.Dialog.NoElevation">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowAnimationStyle">@style/WindowAnimations.TopSlide</item>
+    </style>
+
     <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
         <item name="android:textColor">@color/black</item>
     </style>
@@ -164,7 +172,7 @@
     <style name="AppTheme.Dialog.BottomSheet" parent="Platform.Dialog.NoElevation">
         <item name="android:windowBackground">@color/background_light</item>
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowAnimationStyle">@style/WindowAnimations.Slide</item>
+        <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
         <item name="android:padding">0dp</item>
     </style>
 
@@ -172,7 +180,7 @@
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowBackground">@color/transparent</item>
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowAnimationStyle">@style/WindowAnimations.Slide</item>
+        <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
         <item name="android:padding">0dp</item>
     </style>
     
@@ -192,9 +200,14 @@
         <item name="android:windowExitAnimation">@anim/fade_out</item>
     </style>
 
-    <style name="WindowAnimations.Slide">
+    <style name="WindowAnimations.BottomSlide">
         <item name="android:windowEnterAnimation">@anim/bottom_slide_up</item>
         <item name="android:windowExitAnimation">@anim/bottom_slide_down</item>
+    </style>
+
+    <style name="WindowAnimations.TopSlide">
+        <item name="android:windowEnterAnimation">@anim/top_slide_down</item>
+        <item name="android:windowExitAnimation">@anim/top_slide_up</item>
     </style>
 
     <style name="WindowAnimations.PopSlideAndFade">
@@ -202,12 +215,12 @@
         <item name="android:windowExitAnimation">@anim/fade_and_slide_out</item>
     </style>
     
-    <style name="WindowAnimations.SlideUpAndFade">
+    <style name="WindowAnimations.BottomSlideUpAndFade">
         <item name="android:windowEnterAnimation">@anim/fade_and_slide_up</item>
         <item name="android:windowExitAnimation">@anim/fade_out</item>
     </style>
 
-    <style name="WindowAnimations.SlideDownAndFade">
+    <style name="WindowAnimations.BottomSlideDownAndFade">
         <item name="android:windowEnterAnimation">@anim/fade_and_slide_down</item>
         <item name="android:windowExitAnimation">@anim/fade_out</item>
     </style>
@@ -496,6 +509,15 @@
         <item name="android:maxWidth">20dp</item>
         <item name="android:minHeight">20dp</item>
         <item name="android:maxHeight">20dp</item>
+    </style>
+
+    <style name="AppTheme.ProgressBar.TimelineInfo" parent="android:style/Widget.Holo.ProgressBar.Horizontal">
+        <item name="android:minHeight">@dimen/timeline_detail_reading_height</item>
+        <item name="android:progressDrawable">@drawable/progress_timeline_detail</item>
+    </style>
+
+    <style name="AppTheme.ProgressBar.TimelineInfo.Large">
+        <item name="android:minHeight">@dimen/timeline_detail_reading_height_large</item>
     </style>
 
 </resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/fragment_dialog_timeline_info_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_height"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.ScreenTitle"
+        android:text="@string/title_sleep_summary"
+        android:background="@color/background_timeline" />
+
+    <ProgressBar
+        android:id="@+id/fragment_dialog_timeline_info_score"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_dialog_timeline_info_title"
+        android:max="100"
+        android:progress="50"
+        style="@style/AppTheme.ProgressBar.TimelineInfo.Large"/>
+
+    <ImageButton
+        android:id="@+id/fragment_dialog_timeline_info_close"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_height"
+        android:layout_alignParentBottom="true"
+        android:visibility="invisible"
+        android:scaleType="center"
+        android:src="@drawable/timeline_detail_close"
+        android:contentDescription="@android:string/ok"
+        style="@style/AppTheme.Button.Borderless.White" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fragment_dialog_timeline_info_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/fragment_dialog_timeline_info_close"
+        android:layout_below="@id/fragment_dialog_timeline_info_score"
+        android:background="@color/background_timeline" />
+
+</RelativeLayout>

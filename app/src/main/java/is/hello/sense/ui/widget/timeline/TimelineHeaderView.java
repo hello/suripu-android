@@ -135,6 +135,14 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         this.animatorContext = animatorContext;
     }
 
+    public void setOnScoreClickListener(@Nullable View.OnClickListener listener) {
+        if (listener != null) {
+            Views.setSafeOnClickListener(scoreContainer, listener);
+        } else {
+            scoreContainer.setOnClickListener(null);
+        }
+    }
+
     public void setChildFadeAmount(float amount) {
         scoreDrawable.setAlpha(Math.round(255f * amount));
         scoreText.setAlpha(amount);

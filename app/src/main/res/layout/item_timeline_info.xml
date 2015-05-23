@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/gap_outer">
+
+    <TextView
+        android:id="@+id/item_timeline_info_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:textAppearance="@style/AppTheme.Text.TinyScore"
+        android:textColor="@color/sensor_ideal"
+        android:text="@string/missing_data_placeholder"/>
+
+    <TextView
+        android:id="@+id/item_timeline_info_average"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:textAppearance="@style/AppTheme.Text.TinyScore"
+        android:textColor="@color/text_dim"
+        android:text="@string/missing_data_placeholder"/>
+
+    <TextView
+        android:id="@+id/item_timeline_info_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/gap_small"
+        android:layout_marginEnd="@dimen/gap_small"
+        android:layout_toEndOf="@id/item_timeline_info_value"
+        android:layout_toStartOf="@id/item_timeline_info_average"
+        android:layout_alignBaseline="@id/item_timeline_info_value"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:textColor="@color/text_dim"/>
+
+    <ProgressBar
+        android:id="@+id/item_timeline_info_reading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_timeline_info_value"
+        android:layout_marginTop="@dimen/gap_small"
+        android:max="100"
+        android:progress="100"
+        style="@style/AppTheme.ProgressBar.TimelineInfo"/>
+
+</RelativeLayout>

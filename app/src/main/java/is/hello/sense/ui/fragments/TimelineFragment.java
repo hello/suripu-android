@@ -38,6 +38,7 @@ import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
+import is.hello.sense.ui.dialogs.TimelineInfoDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
@@ -146,6 +147,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         headerView.setAnimatorContext(getAnimatorContext());
         headerView.setFirstTimeline(firstTimeline);
         headerView.setAnimationEnabled(animationEnabled);
+        headerView.setOnScoreClickListener(this::showBreakdown);
         headerView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
@@ -239,6 +241,15 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 e -> {
                     Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
                 });
+    }
+
+    public void showBreakdown(@NonNull View sender) {
+        bindAndSubscribe(presenter.timeline.take(1),
+                         timeline -> {
+                             TimelineInfoDialogFragment dialogFragment = TimelineInfoDialogFragment.newInstance(timeline);
+                             dialogFragment.show(getFragmentManager(), TimelineInfoDialogFragment.TAG);
+                         },
+                         Functions.LOG_ERROR);
     }
 
     //endregion
