@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import java.util.UUID;
 
+import is.hello.sense.bluetooth.errors.BluetoothConnectionLostError;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 
@@ -15,6 +16,7 @@ public abstract class PacketDataHandler<T> {
 
     public abstract boolean shouldProcessCharacteristic(@NonNull UUID charUUID);
     public abstract void processPacket(final @NonNull SequencedPacket blePacket);
+    protected abstract void cleanUp();
 
     //endregion
 
@@ -40,6 +42,11 @@ public abstract class PacketDataHandler<T> {
         if (this.onResponse != null) {
             this.onResponse.call(data);
         }
+    }
+
+    protected void onTransportDisconnected() {
+        cleanUp();
+        onError(new BluetoothConnectionLostError());
     }
 
     public void clearListeners() {

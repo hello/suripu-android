@@ -117,8 +117,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         super(peripheral);
 
         this.dataHandler = new SensePacketDataHandler();
-        this.packetHandler = new SensePacketHandler();
-        packetHandler.setPacketDataHandler(dataHandler);
+        this.packetHandler = new SensePacketHandler(dataHandler);
         peripheral.setPacketHandler(packetHandler);
     }
 

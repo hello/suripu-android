@@ -19,10 +19,10 @@ public class SensePacketDataHandler extends PacketDataHandler<SenseCommandProtos
     private int totalPackets = 0;
     private int packetsProcessed = 0;
     private int expectedIndex = 0;
-    private byte[] buffer;
+
+    private byte[] buffer = null;
     private int bufferOffset = 0;
     private int bufferDataLength = 0;
-
 
 
     @Override
@@ -33,10 +33,10 @@ public class SensePacketDataHandler extends PacketDataHandler<SenseCommandProtos
     @Override
     public void processPacket(final @NonNull SequencedPacket blePacket) {
         if (this.expectedIndex != blePacket.sequenceNumber) {
-            this.packetsProcessed = 0;
-            this.expectedIndex = 0;
-            this.buffer = null;
+            cleanUp();
+
             onError(new ProtobufProcessingError(ProtobufProcessingError.Reason.DATA_LOST_OR_OUT_OF_ORDER));
+
             return;
         } else {
             this.expectedIndex = blePacket.sequenceNumber + 1;
@@ -77,16 +77,26 @@ public class SensePacketDataHandler extends PacketDataHandler<SenseCommandProtos
         if (this.packetsProcessed == this.totalPackets) {
             final SenseCommandProtos.MorpheusCommand data;
             try {
-                data = SenseCommandProtos.MorpheusCommand.parseFrom(Arrays.copyOfRange(this.buffer, 0, bufferDataLength));
+                // This particular Parser#parseFrom variant is not delegated in the generated MorpheusCommand.
+                data = SenseCommandProtos.MorpheusCommand.PARSER.parseFrom(this.buffer, 0, bufferDataLength);
                 this.onResponse(data);
             } catch (InvalidProtocolBufferException e) {
                 Logger.error(SensePacketDataHandler.class.getSimpleName(), "Could not parse command.", e);
                 onError(new ProtobufProcessingError(ProtobufProcessingError.Reason.INVALID_PROTOBUF));
             }
 
-            this.expectedIndex = 0;
-            this.buffer = null;
-            this.packetsProcessed = 0;
+            cleanUp();
         }
+    }
+
+    @Override
+    protected void cleanUp() {
+        this.totalPackets = 0;
+        this.packetsProcessed = 0;
+        this.expectedIndex = 0;
+
+        this.buffer = null;
+        this.bufferOffset = 0;
+        this.bufferDataLength = 0;
     }
 }

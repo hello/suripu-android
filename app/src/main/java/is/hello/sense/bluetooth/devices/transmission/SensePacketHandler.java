@@ -8,10 +8,16 @@ import java.util.List;
 import java.util.UUID;
 
 import is.hello.sense.bluetooth.devices.SenseIdentifiers;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
 import is.hello.sense.bluetooth.stacks.transmission.SequencedPacket;
 
 public class SensePacketHandler extends PacketHandler {
+    public SensePacketHandler(@NonNull PacketDataHandler<SenseCommandProtos.MorpheusCommand> dataHandler) {
+        super(dataHandler);
+    }
+
     @Override
     public SequencedPacket createSequencedPacket(final @NonNull UUID characteristicIdentifier, final @NonNull byte[] payload) {
         if (SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE.equals(characteristicIdentifier)) {

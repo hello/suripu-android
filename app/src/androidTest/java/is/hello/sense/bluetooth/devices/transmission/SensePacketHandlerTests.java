@@ -11,7 +11,8 @@ import is.hello.sense.bluetooth.stacks.transmission.SequencedPacket;
 import is.hello.sense.bluetooth.stacks.util.Bytes;
 
 public class SensePacketHandlerTests extends TestCase {
-    private final SensePacketHandler packetHandler = new SensePacketHandler();
+    private final SensePacketDataHandler packetDataHandler = new SensePacketDataHandler();
+    private final SensePacketHandler packetHandler = new SensePacketHandler(packetDataHandler);
 
     private static final byte[] LONG_SEQUENCE = {
             0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x07, 0x08, 0x09,

@@ -74,7 +74,7 @@ class GattDispatcher extends BluetoothGattCallback {
             disconnectListeners.clear();
 
             if (packetHandler != null) {
-                packetHandler.onTransportDisconnected();
+                packetHandler.transportDisconnected();
             }
         });
     }

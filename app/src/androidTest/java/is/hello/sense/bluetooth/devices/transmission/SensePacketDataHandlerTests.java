@@ -14,9 +14,17 @@ import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseComman
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint;
 
 public class SensePacketDataHandlerTests extends TestCase {
-    private final SensePacketDataHandler packetDataHandler = new SensePacketDataHandler();
-    private final SensePacketHandler packetHandler = new SensePacketHandler();
-    
+    private SensePacketDataHandler packetDataHandler;
+    private SensePacketHandler packetHandler;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        this.packetDataHandler = new SensePacketDataHandler();
+        this.packetHandler = new SensePacketHandler(packetDataHandler);
+    }
+
     public void testShouldProcessCharacteristic() throws Exception {
         assertTrue(packetDataHandler.shouldProcessCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE));
         assertFalse(packetDataHandler.shouldProcessCharacteristic(UUID.fromString("D1700CFA-A6F8-47FC-92F5-9905D15F261C")));
@@ -34,6 +42,34 @@ public class SensePacketDataHandlerTests extends TestCase {
 
         assertNull(response.get());
         assertNotNull(error.get());
+    }
+
+    public void testStateCleanUp() throws Exception {
+        SequencedPacket testPacket = new SequencedPacket(0, new byte[] { /* packetCount */ 2, 0x00 });
+
+        LambdaVar<MorpheusCommand> response = LambdaVar.empty();
+        packetDataHandler.onResponse = response::set;
+        LambdaVar<Throwable> error = LambdaVar.empty();
+        packetDataHandler.onError = error::set;
+
+        packetDataHandler.processPacket(testPacket);
+
+        assertNull(response.get());
+        assertNull(error.get());
+
+
+        packetHandler.transportDisconnected();
+
+
+        response.clear();
+        packetDataHandler.onResponse = response::set;
+        error.clear();
+        packetDataHandler.onError = error::set;
+
+        packetDataHandler.processPacket(testPacket);
+
+        assertNull(response.get());
+        assertNull(error.get());
     }
 
     public void testProcessPacketInOrder() throws Exception {
