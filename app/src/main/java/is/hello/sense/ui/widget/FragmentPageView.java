@@ -1,7 +1,9 @@
 package is.hello.sense.ui.widget;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -335,19 +337,14 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
     private void removeOffScreenFragment() {
         TFragment offScreen = getOffScreenFragment();
+
         if (offScreen != null) {
+            @SuppressLint("CommitTransaction")
+            FragmentTransaction transaction = getFragmentManager().beginTransaction().remove(offScreen);
             if (getStateSafeExecutor() != null) {
-                getStateSafeExecutor().execute(() -> {
-                    getFragmentManager()
-                            .beginTransaction()
-                            .remove(offScreen)
-                            .commit();
-                });
+                getStateSafeExecutor().execute(transaction::commit);
             } else {
-                getFragmentManager()
-                        .beginTransaction()
-                        .remove(offScreen)
-                        .commit();
+                transaction.commit();
             }
         }
 
@@ -355,7 +352,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     private void addOffScreenFragment(Position position) {
-        TFragment newFragment = null;
+        TFragment newFragment;
         switch (position) {
             case BEFORE:
                 newFragment = adapter.getFragmentBeforeFragment(getCurrentFragment());
@@ -364,11 +361,20 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             case AFTER:
                 newFragment = adapter.getFragmentAfterFragment(getCurrentFragment());
                 break;
+
+            default:
+                throw new IllegalArgumentException("Unknown position " + position);
         }
 
-        getFragmentManager().beginTransaction()
-                .add(getOffScreenView().getId(), newFragment)
-                .commit();
+
+        @SuppressLint("CommitTransaction")
+        FragmentTransaction transaction = getFragmentManager().beginTransaction()
+                .add(getOffScreenView().getId(), newFragment);
+        if (getStateSafeExecutor() != null) {
+            getStateSafeExecutor().execute(transaction::commit);
+        } else {
+            transaction.commit();
+        }
 
         getOffScreenView().setVisibility(VISIBLE);
     }
