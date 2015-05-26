@@ -6,53 +6,49 @@ import java.util.List;
 import java.util.UUID;
 
 import is.hello.sense.bluetooth.devices.SenseIdentifiers;
-import is.hello.sense.bluetooth.stacks.transmission.SequencedPacket;
-import is.hello.sense.functional.Lists;
 import is.hello.sense.util.LambdaVar;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand;
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint;
 
-public class SensePacketDataHandlerTests extends TestCase {
-    private SensePacketDataHandler packetDataHandler;
+public class SensePacketParserTests extends TestCase {
+    private SensePacketParser packetParser;
     private SensePacketHandler packetHandler;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        this.packetDataHandler = new SensePacketDataHandler();
-        this.packetHandler = new SensePacketHandler(packetDataHandler);
+        this.packetParser = new SensePacketParser();
+        this.packetHandler = new SensePacketHandler(packetParser);
     }
 
     public void testShouldProcessCharacteristic() throws Exception {
-        assertTrue(packetDataHandler.shouldProcessCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE));
-        assertFalse(packetDataHandler.shouldProcessCharacteristic(UUID.fromString("D1700CFA-A6F8-47FC-92F5-9905D15F261C")));
+        assertTrue(packetParser.shouldProcessCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE));
+        assertFalse(packetParser.shouldProcessCharacteristic(UUID.fromString("D1700CFA-A6F8-47FC-92F5-9905D15F261C")));
     }
 
     public void testProcessPacketOutOfOrder() throws Exception {
-        SequencedPacket testPacket = new SequencedPacket(99, new byte[] {});
-
         LambdaVar<MorpheusCommand> response = LambdaVar.empty();
         LambdaVar<Throwable> error = LambdaVar.empty();
-        packetDataHandler.onResponse = response::set;
-        packetDataHandler.onError = error::set;
+        packetParser.onResponse = response::set;
+        packetParser.onError = error::set;
 
-        packetDataHandler.processPacket(testPacket);
+        packetParser.processPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, new byte[] { 99 });
 
         assertNull(response.get());
         assertNotNull(error.get());
     }
 
     public void testStateCleanUp() throws Exception {
-        SequencedPacket testPacket = new SequencedPacket(0, new byte[] { /* packetCount */ 2, 0x00 });
+        byte[] testPacket = { 0, /* packetCount */ 2, 0x00 };
 
         LambdaVar<MorpheusCommand> response = LambdaVar.empty();
-        packetDataHandler.onResponse = response::set;
+        packetParser.onResponse = response::set;
         LambdaVar<Throwable> error = LambdaVar.empty();
-        packetDataHandler.onError = error::set;
+        packetParser.onError = error::set;
 
-        packetDataHandler.processPacket(testPacket);
+        packetParser.processPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, testPacket);
 
         assertNull(response.get());
         assertNull(error.get());
@@ -62,11 +58,11 @@ public class SensePacketDataHandlerTests extends TestCase {
 
 
         response.clear();
-        packetDataHandler.onResponse = response::set;
+        packetParser.onResponse = response::set;
         error.clear();
-        packetDataHandler.onError = error::set;
+        packetParser.onError = error::set;
 
-        packetDataHandler.processPacket(testPacket);
+        packetParser.processPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, testPacket);
 
         assertNull(response.get());
         assertNull(error.get());
@@ -80,20 +76,16 @@ public class SensePacketDataHandlerTests extends TestCase {
                 .setVersion(0)
                 .build();
 
-        List<byte[]> rawPackets = packetHandler.createPackets(morpheusCommand.toByteArray());
-
-        List<SequencedPacket> packets = Lists.map(rawPackets, payload ->
-                packetHandler.createSequencedPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, payload));
-
+        List<byte[]> rawPackets = packetHandler.createRawPackets(morpheusCommand.toByteArray());
 
         LambdaVar<MorpheusCommand> response = LambdaVar.empty();
-        packetDataHandler.onResponse = response::set;
+        packetParser.onResponse = response::set;
 
         LambdaVar<Throwable> error = LambdaVar.empty();
-        packetDataHandler.onError = error::set;
+        packetParser.onError = error::set;
 
-        for (SequencedPacket packet : packets) {
-            packetDataHandler.processPacket(packet);
+        for (byte[] packet : rawPackets) {
+            packetParser.processPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, packet);
         }
 
         assertNull(error.get());

@@ -9,13 +9,13 @@ import is.hello.sense.bluetooth.errors.BluetoothConnectionLostError;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 
-public abstract class PacketDataHandler<T> {
-    public static final String LOG_TAG = "Bluetooth/" + PacketDataHandler.class.getSimpleName();
+public abstract class PacketParser<T> {
+    public static final String LOG_TAG = "Bluetooth/" + PacketParser.class.getSimpleName();
 
     //region Primitive Methods
 
-    public abstract boolean shouldProcessCharacteristic(@NonNull UUID charUUID);
-    public abstract void processPacket(final @NonNull SequencedPacket blePacket);
+    public abstract boolean shouldProcessCharacteristic(@NonNull UUID characteristicUUID);
+    public abstract void processPacket(@NonNull UUID characteristicUUID, @NonNull byte[] packet);
     protected abstract void cleanUp();
 
     //endregion

@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import is.hello.sense.bluetooth.devices.transmission.SensePacketDataHandler;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
+import is.hello.sense.bluetooth.devices.transmission.SensePacketParser;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.errors.BluetoothConnectionLostError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
@@ -28,8 +28,8 @@ import is.hello.sense.bluetooth.errors.PeripheralUnexpectedResponseError;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.OperationTimeout;
 import is.hello.sense.bluetooth.stacks.Peripheral;
-import is.hello.sense.bluetooth.stacks.transmission.PacketDataHandler;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
+import is.hello.sense.bluetooth.stacks.transmission.PacketParser;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import is.hello.sense.bluetooth.stacks.util.Bytes;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
@@ -77,8 +77,8 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     private static final long SET_WIFI_TIMEOUT_S = 90;
     private static final long WIFI_SCAN_TIMEOUT_S = 30;
 
-    private final PacketDataHandler<MorpheusCommand> dataHandler;
-    private final PacketHandler packetHandler;
+    private final PacketParser<MorpheusCommand> dataHandler;
+    private final PacketHandler<MorpheusCommand> packetHandler;
 
     private @Version int version = VERSION_UNKNOWN;
 
@@ -116,7 +116,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     public SensePeripheral(@NonNull Peripheral peripheral) {
         super(peripheral);
 
-        this.dataHandler = new SensePacketDataHandler();
+        this.dataHandler = new SensePacketParser();
         this.packetHandler = new SensePacketHandler(dataHandler);
         peripheral.setPacketHandler(packetHandler);
     }
@@ -317,7 +317,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     //region Operations
 
     Observable<Void> writeLargeCommand(@NonNull UUID commandUUID, @NonNull byte[] commandData) {
-        List<byte[]> blePackets = packetHandler.createPackets(commandData);
+        List<byte[]> blePackets = packetHandler.createRawPackets(commandData);
         LinkedList<byte[]> remainingPackets = new LinkedList<>(blePackets);
 
         return Observable.create((Observable.OnSubscribe<Void>) s -> {
