@@ -13,12 +13,6 @@ import is.hello.sense.bluetooth.stacks.transmission.PacketParser;
 import is.hello.sense.util.Logger;
 
 public class SensePacketParser extends PacketParser<SenseCommandProtos.MorpheusCommand> {
-    //region Constants
-
-
-    //endregion
-
-
     private int totalPackets = 0;
     private int packetsProcessed = 0;
     private int expectedIndex = 0;
