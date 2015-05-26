@@ -593,8 +593,14 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     this.viewX = getOnScreenView().getX();
                     this.viewWidth = getOnScreenView().getMeasuredWidth();
 
-                    this.hasBeforeView = adapter.hasFragmentBeforeFragment(getCurrentFragment());
-                    this.hasAfterView = adapter.hasFragmentAfterFragment(getCurrentFragment());
+                    TFragment currentFragment = getCurrentFragment();
+                    if (currentFragment != null) {
+                        this.hasBeforeView = adapter.hasFragmentBeforeFragment(currentFragment);
+                        this.hasAfterView = adapter.hasFragmentAfterFragment(currentFragment);
+                    } else {
+                        this.hasBeforeView = false;
+                        this.hasAfterView = false;
+                    }
                 }
 
                 break;
