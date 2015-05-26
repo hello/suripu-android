@@ -24,15 +24,15 @@ public class SensePacketParserTests extends TestCase {
     }
 
     public void testShouldProcessCharacteristic() throws Exception {
-        assertTrue(packetParser.shouldProcessCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE));
-        assertFalse(packetParser.shouldProcessCharacteristic(UUID.fromString("D1700CFA-A6F8-47FC-92F5-9905D15F261C")));
+        assertTrue(packetParser.canProcessPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE));
+        assertFalse(packetParser.canProcessPacket(UUID.fromString("D1700CFA-A6F8-47FC-92F5-9905D15F261C")));
     }
 
     public void testProcessPacketOutOfOrder() throws Exception {
         LambdaVar<MorpheusCommand> response = LambdaVar.empty();
         LambdaVar<Throwable> error = LambdaVar.empty();
-        packetParser.onResponse = response::set;
-        packetParser.onError = error::set;
+        packetParser.responseListener = response::set;
+        packetParser.errorListener = error::set;
 
         packetParser.processPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, new byte[] { 99 });
 
@@ -44,9 +44,9 @@ public class SensePacketParserTests extends TestCase {
         byte[] testPacket = { 0, /* packetCount */ 2, 0x00 };
 
         LambdaVar<MorpheusCommand> response = LambdaVar.empty();
-        packetParser.onResponse = response::set;
+        packetParser.responseListener = response::set;
         LambdaVar<Throwable> error = LambdaVar.empty();
-        packetParser.onError = error::set;
+        packetParser.errorListener = error::set;
 
         packetParser.processPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, testPacket);
 
@@ -58,9 +58,9 @@ public class SensePacketParserTests extends TestCase {
 
 
         response.clear();
-        packetParser.onResponse = response::set;
+        packetParser.responseListener = response::set;
         error.clear();
-        packetParser.onError = error::set;
+        packetParser.errorListener = error::set;
 
         packetParser.processPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, testPacket);
 
@@ -76,13 +76,13 @@ public class SensePacketParserTests extends TestCase {
                 .setVersion(0)
                 .build();
 
-        List<byte[]> rawPackets = packetHandler.createRawPackets(morpheusCommand.toByteArray());
+        List<byte[]> rawPackets = packetHandler.createOutgoingPackets(morpheusCommand.toByteArray());
 
         LambdaVar<MorpheusCommand> response = LambdaVar.empty();
-        packetParser.onResponse = response::set;
+        packetParser.responseListener = response::set;
 
         LambdaVar<Throwable> error = LambdaVar.empty();
-        packetParser.onError = error::set;
+        packetParser.errorListener = error::set;
 
         for (byte[] packet : rawPackets) {
             packetParser.processPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, packet);

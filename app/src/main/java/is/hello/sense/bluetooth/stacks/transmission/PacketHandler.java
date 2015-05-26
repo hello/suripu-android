@@ -9,10 +9,15 @@ import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.util.Logger;
 
 /**
- * This is the actual transmission layer wrap on BLE.
+ * Responsible for encoding and decoding packets for the Bluetooth stack.
+ *
+ * @param <T> The type of value produced by the packet handler.
  */
 public abstract class PacketHandler<T> {
-    public static final int BLE_PACKET_LEN = 20;
+    /**
+     * The size of a standard Bluetooth packet.
+     */
+    public static final int BLE_PACKET_LENGTH = 20;
 
     private final PacketParser<T> packetParser;
 
@@ -20,14 +25,23 @@ public abstract class PacketHandler<T> {
         this.packetParser = packetParser;
     }
 
-    public abstract List<byte[]> createRawPackets(final @NonNull byte[] applicationData);
+    /**
+     * Divides a raw payload into packets suitable for transmission over BLE.
+     */
+    public abstract List<byte[]> createOutgoingPackets(final @NonNull byte[] payload);
 
-    public final void process(final @NonNull UUID characteristicIdentifier, final @NonNull byte[] payload) {
-        if (packetParser.shouldProcessCharacteristic(characteristicIdentifier)) {
-            packetParser.processPacket(characteristicIdentifier, payload);
+    /**
+     * Attempt to process an incoming packet from a characteristic.
+     */
+    public final void processIncomingPacket(final @NonNull UUID characteristicIdentifier, final @NonNull byte[] packet) {
+        if (packetParser.canProcessPacket(characteristicIdentifier)) {
+            packetParser.processPacket(characteristicIdentifier, packet);
         }
     }
 
+    /**
+     * Informs the packet handler and its parser that the Bluetooth transport has disconnected.
+     */
     public final void transportDisconnected() {
         Logger.info(Peripheral.LOG_TAG, "onTransportDisconnected()");
         packetParser.onTransportDisconnected();

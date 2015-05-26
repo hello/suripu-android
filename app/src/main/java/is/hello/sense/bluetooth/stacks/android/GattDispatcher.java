@@ -120,7 +120,7 @@ class GattDispatcher extends BluetoothGattCallback {
 
         dispatcher.post(() -> {
             if (packetHandler != null) {
-                packetHandler.process(characteristic.getUuid(), characteristic.getValue());
+                packetHandler.processIncomingPacket(characteristic.getUuid(), characteristic.getValue());
             }
         });
     }
@@ -148,7 +148,7 @@ class GattDispatcher extends BluetoothGattCallback {
 
         dispatcher.post(() -> {
             if (packetHandler != null) {
-                packetHandler.process(characteristic.getUuid(), characteristic.getValue());
+                packetHandler.processIncomingPacket(characteristic.getUuid(), characteristic.getValue());
             }
         });
     }

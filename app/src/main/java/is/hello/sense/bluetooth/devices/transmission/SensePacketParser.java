@@ -29,7 +29,7 @@ public class SensePacketParser extends PacketParser<SenseCommandProtos.MorpheusC
 
 
     @Override
-    public boolean shouldProcessCharacteristic(final @NonNull UUID characteristicUUID) {
+    public boolean canProcessPacket(final @NonNull UUID characteristicUUID) {
         return SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE.equals(characteristicUUID);
     }
 
@@ -39,7 +39,7 @@ public class SensePacketParser extends PacketParser<SenseCommandProtos.MorpheusC
         if (this.expectedIndex != sequenceNumber) {
             cleanUp();
 
-            onError(new ProtobufProcessingError(ProtobufProcessingError.Reason.DATA_LOST_OR_OUT_OF_ORDER));
+            dispatchError(new ProtobufProcessingError(ProtobufProcessingError.Reason.DATA_LOST_OR_OUT_OF_ORDER));
 
             return;
         } else {
@@ -85,10 +85,10 @@ public class SensePacketParser extends PacketParser<SenseCommandProtos.MorpheusC
             try {
                 // This particular Parser#parseFrom variant is not delegated in the generated MorpheusCommand.
                 data = SenseCommandProtos.MorpheusCommand.PARSER.parseFrom(this.buffer, 0, bufferDataLength);
-                this.onResponse(data);
+                this.dispatchResponse(data);
             } catch (InvalidProtocolBufferException e) {
                 Logger.error(SensePacketParser.class.getSimpleName(), "Could not parse command.", e);
-                onError(new ProtobufProcessingError(ProtobufProcessingError.Reason.INVALID_PROTOBUF));
+                dispatchError(new ProtobufProcessingError(ProtobufProcessingError.Reason.INVALID_PROTOBUF));
             }
 
             cleanUp();

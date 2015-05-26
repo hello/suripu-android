@@ -229,12 +229,12 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
             };
             Observable<UUID> subscribe = subscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Subscribe"));
             subscribe.subscribe(subscribedCharacteristic -> {
-                dataHandler.onResponse = response -> {
+                dataHandler.responseListener = response -> {
                     Logger.info(Peripheral.LOG_TAG, "Got response to command " + command + ": " + response);
                     setFirmwareVersion(response.getVersion());
                     onCommandResponse.onResponse(response, s, timeout);
                 };
-                dataHandler.onError = dataError -> {
+                dataHandler.errorListener = dataError -> {
                     timeout.unschedule();
 
                     if (dataError instanceof BluetoothConnectionLostError || !isConnected()) {
@@ -317,7 +317,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     //region Operations
 
     Observable<Void> writeLargeCommand(@NonNull UUID commandUUID, @NonNull byte[] commandData) {
-        List<byte[]> blePackets = packetHandler.createRawPackets(commandData);
+        List<byte[]> blePackets = packetHandler.createOutgoingPackets(commandData);
         LinkedList<byte[]> remainingPackets = new LinkedList<>(blePackets);
 
         return Observable.create((Observable.OnSubscribe<Void>) s -> {

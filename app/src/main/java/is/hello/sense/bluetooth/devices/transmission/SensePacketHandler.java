@@ -45,32 +45,32 @@ public class SensePacketHandler extends PacketHandler<SenseCommandProtos.Morpheu
     }
 
     @Override
-    public List<byte[]> createRawPackets(final @NonNull byte[] applicationData) {
+    public List<byte[]> createOutgoingPackets(final @NonNull byte[] payload) {
         final ArrayList<byte[]> packets = new ArrayList<>();
-        if (applicationData.length <= HEADER_PACKET_PAYLOAD_LENGTH) {
-            final byte[] headPacket = new byte[2 + applicationData.length];
+        if (payload.length <= HEADER_PACKET_PAYLOAD_LENGTH) {
+            final byte[] headPacket = new byte[2 + payload.length];
             headPacket[1] = 1;
             System.arraycopy(
-                /* src */ applicationData,
+                /* src */ payload,
                 /* srcStart */ 0,
                 /* dest */ headPacket,
                 /* destStart */ 2,
-                /* length */ applicationData.length
+                /* length */ payload.length
             );
             packets.add(headPacket);
         } else {
-            int lengthNoHeader = (applicationData.length - HEADER_PACKET_PAYLOAD_LENGTH);
+            int lengthNoHeader = (payload.length - HEADER_PACKET_PAYLOAD_LENGTH);
             int packetCount = (int) Math.ceil(1f + lengthNoHeader / (float) BODY_PACKET_PAYLOAD_LENGTH);
 
-            int bytesRemaining = applicationData.length;
+            int bytesRemaining = payload.length;
             for (int packetIndex = 0; packetIndex < packetCount; packetIndex++) {
                 if (packetIndex == 0) {
-                    final byte[] headerPacket = new byte[PacketHandler.BLE_PACKET_LEN];
+                    final byte[] headerPacket = new byte[PacketHandler.BLE_PACKET_LENGTH];
                     headerPacket[0] = (byte) packetIndex;
                     headerPacket[1] = (byte) packetCount;
 
                     System.arraycopy(
-                        /* src */ applicationData,
+                        /* src */ payload,
                         /* srcStart */ 0,
                         /* dest */ headerPacket,
                         /* destStart */ 2,
@@ -80,14 +80,14 @@ public class SensePacketHandler extends PacketHandler<SenseCommandProtos.Morpheu
 
                     packets.add(headerPacket);
                 } else {
-                    final int packetLength = (packetIndex == packetCount - 1) ? (bytesRemaining + 1) : PacketHandler.BLE_PACKET_LEN;
+                    final int packetLength = (packetIndex == packetCount - 1) ? (bytesRemaining + 1) : PacketHandler.BLE_PACKET_LENGTH;
                     final byte[] packet = new byte[packetLength];
                     packet[0] = (byte) packetIndex;
 
                     int dataStart = HEADER_PACKET_PAYLOAD_LENGTH + (packetIndex - 1) * BODY_PACKET_PAYLOAD_LENGTH;
                     int dataAmount = packetLength - 1;
                     System.arraycopy(
-                        /* src */ applicationData,
+                        /* src */ payload,
                         /* srcStart */ dataStart,
                         /* dest */ packet,
                         /* destStart */ 1,
