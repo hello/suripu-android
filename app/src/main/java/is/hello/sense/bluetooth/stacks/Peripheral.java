@@ -28,7 +28,7 @@ public interface Peripheral {
     /**
      * The logging tag that should be used by implementations of the Peripheral interface.
      */
-    public static final String LOG_TAG = "Bluetooth." + Peripheral.class.getSimpleName();
+    String LOG_TAG = "Bluetooth." + Peripheral.class.getSimpleName();
 
 
     //region Local Broadcasts
@@ -39,21 +39,21 @@ public interface Peripheral {
      * @see #EXTRA_NAME
      * @see #EXTRA_ADDRESS
      */
-    public static final String ACTION_DISCONNECTED = Peripheral.class.getName() + ".ACTION_DISCONNECTED";
+    String ACTION_DISCONNECTED = Peripheral.class.getName() + ".ACTION_DISCONNECTED";
 
     /**
      * The name of the affected Peripheral.
      *
      * @see #ACTION_DISCONNECTED
      */
-    public static final String EXTRA_NAME = Peripheral.class.getName() + ".EXTRA_NAME";
+    String EXTRA_NAME = Peripheral.class.getName() + ".EXTRA_NAME";
 
     /**
      * The address of the affected Peripheral.
      *
      * @see #ACTION_DISCONNECTED
      */
-    public static final String EXTRA_ADDRESS = Peripheral.class.getName() + ".EXTRA_ADDRESS";
+    String EXTRA_ADDRESS = Peripheral.class.getName() + ".EXTRA_ADDRESS";
 
     //endregion
 
@@ -63,17 +63,17 @@ public interface Peripheral {
     /**
      * Indicates the peripheral is not bonded.
      */
-    public static final int BOND_NONE = BluetoothDevice.BOND_NONE;
+    int BOND_NONE = BluetoothDevice.BOND_NONE;
 
     /**
      * Indicates the peripheral is in the process of being bonded.
      */
-    public static final int BOND_BONDING = BluetoothDevice.BOND_BONDING;
+    int BOND_BONDING = BluetoothDevice.BOND_BONDING;
 
     /**
      * Indicates the peripheral is bonded.
      */
-    public static final int BOND_BONDED = BluetoothDevice.BOND_BONDED;
+    int BOND_BONDED = BluetoothDevice.BOND_BONDED;
 
     @IntDef({BOND_NONE, BOND_BONDING, BOND_BONDED})
     @Retention(RetentionPolicy.SOURCE)
@@ -87,22 +87,22 @@ public interface Peripheral {
     /**
      * Indicates the Peripheral is not connected.
      */
-    public static final int STATUS_DISCONNECTED = BluetoothProfile.STATE_DISCONNECTED;
+    int STATUS_DISCONNECTED = BluetoothProfile.STATE_DISCONNECTED;
 
     /**
      * Indicates the Peripheral is in the process of connecting.
      */
-    public static final int STATUS_CONNECTING = BluetoothProfile.STATE_CONNECTING;
+    int STATUS_CONNECTING = BluetoothProfile.STATE_CONNECTING;
 
     /**
      * Indicates the Peripheral is connected.
      */
-    public static final int STATUS_CONNECTED = BluetoothProfile.STATE_CONNECTED;
+    int STATUS_CONNECTED = BluetoothProfile.STATE_CONNECTED;
 
     /**
      * Indicates the Peripheral is in the process of disconnecting.
      */
-    public static final int STATUS_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING;
+    int STATUS_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING;
 
     @IntDef({STATUS_DISCONNECTED, STATUS_DISCONNECTING, STATUS_CONNECTED, STATUS_CONNECTING})
     @Retention(RetentionPolicy.SOURCE)
@@ -268,7 +268,7 @@ public interface Peripheral {
      * <p/>
      * All characteristic data read by the Peripheral should be piped into the packet handler.
      */
-    void setPacketHandler(@Nullable PacketHandler dataHandler);
+    void setPacketHandler(@Nullable PacketHandler<?> dataHandler);
 
     //endregion
 
@@ -315,7 +315,7 @@ public interface Peripheral {
     /**
      * Determines how a command will be written to a peripheral.
      */
-    public static enum WriteType {
+    enum WriteType {
         /**
          * Write characteristic, requesting acknowledgement by the remote device.
          */
@@ -336,7 +336,7 @@ public interface Peripheral {
          */
         public final int value;
 
-        private WriteType(int value) {
+        WriteType(int value) {
             this.value = value;
         }
     }

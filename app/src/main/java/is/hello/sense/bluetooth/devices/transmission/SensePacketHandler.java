@@ -3,69 +3,91 @@ package is.hello.sense.bluetooth.devices.transmission;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
-import is.hello.sense.bluetooth.devices.SenseIdentifiers;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.bluetooth.stacks.transmission.PacketHandler;
-import is.hello.sense.bluetooth.stacks.transmission.SequencedPacket;
+import is.hello.sense.bluetooth.stacks.transmission.PacketParser;
 
-public class SensePacketHandler extends PacketHandler {
-    @Override
-    public SequencedPacket createSequencedPacket(final @NonNull UUID characteristicIdentifier, final @NonNull byte[] payload) {
-        if (SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE.equals(characteristicIdentifier)) {
-            int sequenceNumber = payload[0];
-            return new SequencedPacket(sequenceNumber, Arrays.copyOfRange(payload, 1, payload.length));
-        } else {
-            return new SequencedPacket(-1, Arrays.copyOf(payload, payload.length));
-        }
+public class SensePacketHandler extends PacketHandler<SenseCommandProtos.MorpheusCommand> {
+    /**
+     * The length of the first packet's header.
+     *
+     * <ol>
+     *  <li><code>[0]: Packet sequence number</code></li>
+     *  <li><code>[1]: Total packet count</code></li>
+     * </ol>
+     */
+    public static final int HEADER_PACKET_HEADER_LENGTH = 2;
+
+    /**
+     * The length of the payload portion of the first packet.
+     */
+    public static final int HEADER_PACKET_PAYLOAD_LENGTH = 18;
+
+    /**
+     * The length of a body packet's header.
+     *
+     * <ol>
+     *  <li><code>[0]: Packet sequence number</code></li>
+     * </ol>
+     */
+    public static final int BODY_PACKET_HEADER_LENGTH = 1;
+
+    /**
+     * The length of the payload portion of a body packet.
+     */
+    public static final int BODY_PACKET_PAYLOAD_LENGTH = 19;
+
+
+    public SensePacketHandler(@NonNull PacketParser<SenseCommandProtos.MorpheusCommand> dataHandler) {
+        super(dataHandler);
     }
 
     @Override
-    public List<byte[]> createPackets(final @NonNull byte[] applicationData) {
+    public List<byte[]> createOutgoingPackets(final @NonNull byte[] payload) {
         final ArrayList<byte[]> packets = new ArrayList<>();
-        if (applicationData.length <= PacketHandler.HEADER_PACKET_PAYLOAD_LEN) {
-            final byte[] headPacket = new byte[2 + applicationData.length];
+        if (payload.length <= HEADER_PACKET_PAYLOAD_LENGTH) {
+            final byte[] headPacket = new byte[2 + payload.length];
             headPacket[1] = 1;
             System.arraycopy(
-                    /* src */ applicationData,
-                    /* srcStart */ 0,
-                    /* dest */ headPacket,
-                    /* destStart */ 2,
-                    /* length */ applicationData.length
+                /* src */ payload,
+                /* srcStart */ 0,
+                /* dest */ headPacket,
+                /* destStart */ 2,
+                /* length */ payload.length
             );
             packets.add(headPacket);
         } else {
-            int lengthNoHeader = (applicationData.length - PacketHandler.HEADER_PACKET_PAYLOAD_LEN);
-            int packetCount = (int) Math.ceil(1f + lengthNoHeader / (float) PacketHandler.PACKET_PAYLOAD_LEN);
+            int lengthNoHeader = (payload.length - HEADER_PACKET_PAYLOAD_LENGTH);
+            int packetCount = (int) Math.ceil(1f + lengthNoHeader / (float) BODY_PACKET_PAYLOAD_LENGTH);
 
-            int bytesRemaining = applicationData.length;
+            int bytesRemaining = payload.length;
             for (int packetIndex = 0; packetIndex < packetCount; packetIndex++) {
                 if (packetIndex == 0) {
-                    final byte[] headerPacket = new byte[PacketHandler.BLE_PACKET_LEN];
+                    final byte[] headerPacket = new byte[PacketHandler.BLE_PACKET_LENGTH];
                     headerPacket[0] = (byte) packetIndex;
                     headerPacket[1] = (byte) packetCount;
 
                     System.arraycopy(
-                        /* src */ applicationData,
+                        /* src */ payload,
                         /* srcStart */ 0,
                         /* dest */ headerPacket,
                         /* destStart */ 2,
-                        /* length */ PacketHandler.HEADER_PACKET_PAYLOAD_LEN
+                        /* length */ HEADER_PACKET_PAYLOAD_LENGTH
                     );
-                    bytesRemaining -= PacketHandler.HEADER_PACKET_PAYLOAD_LEN;
+                    bytesRemaining -= HEADER_PACKET_PAYLOAD_LENGTH;
 
                     packets.add(headerPacket);
                 } else {
-                    final int packetLength = (packetIndex == packetCount - 1) ? (bytesRemaining + 1) : PacketHandler.BLE_PACKET_LEN;
+                    final int packetLength = (packetIndex == packetCount - 1) ? (bytesRemaining + 1) : PacketHandler.BLE_PACKET_LENGTH;
                     final byte[] packet = new byte[packetLength];
                     packet[0] = (byte) packetIndex;
 
-                    int dataStart = PacketHandler.HEADER_PACKET_PAYLOAD_LEN + (packetIndex - 1) * PacketHandler.PACKET_PAYLOAD_LEN;
+                    int dataStart = HEADER_PACKET_PAYLOAD_LENGTH + (packetIndex - 1) * BODY_PACKET_PAYLOAD_LENGTH;
                     int dataAmount = packetLength - 1;
                     System.arraycopy(
-                        /* src */ applicationData,
+                        /* src */ payload,
                         /* srcStart */ dataStart,
                         /* dest */ packet,
                         /* destStart */ 1,

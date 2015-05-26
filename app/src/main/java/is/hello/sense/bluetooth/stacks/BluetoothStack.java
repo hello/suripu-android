@@ -19,7 +19,7 @@ public interface BluetoothStack {
     /**
      * The logging tag that implementations of BluetoothStack should use.
      */
-    public static final String LOG_TAG = "Bluetooth." + BluetoothStack.class.getSimpleName();
+    String LOG_TAG = "Bluetooth." + BluetoothStack.class.getSimpleName();
 
 
     /**
@@ -87,7 +87,7 @@ public interface BluetoothStack {
     /**
      * Describes the level of support the current device has in the implementation.
      */
-    public enum SupportLevel {
+    enum SupportLevel {
         /**
          * The device is unsupported, one or more core operations are known to fail.
          */
