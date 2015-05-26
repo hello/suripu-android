@@ -5,15 +5,18 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
@@ -66,6 +69,19 @@ public class OnboardingSignInFragment extends InjectionFragment {
                 .setWantsBackButton(true)
                 .setWantsHelpButton(true)
                 .replaceHelpButton(forgotPassword);
+
+        if (BuildConfig.DEBUG) {
+            LinearLayout content = (LinearLayout) view.findViewById(R.id.fragment_onboarding_sign_in_content);
+
+            TextView hostView = new TextView(getActivity());
+            hostView.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_Dimmed);
+            hostView.setGravity(Gravity.CENTER);
+            hostView.setText(BuildConfig.BASE_URL);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            content.addView(hostView, layoutParams);
+        }
 
         return view;
     }
