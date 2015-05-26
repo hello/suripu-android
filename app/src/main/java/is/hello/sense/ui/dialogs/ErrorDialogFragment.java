@@ -2,7 +2,6 @@ package is.hello.sense.ui.dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +14,7 @@ import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.ui.activities.SupportActivity;
+import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
@@ -22,7 +22,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Errors;
 import is.hello.sense.util.StringRef;
 
-public class ErrorDialogFragment extends DialogFragment {
+public class ErrorDialogFragment extends SenseDialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();
 
     private static final String ARG_ERROR_MESSAGE = ErrorDialogFragment.class.getName() + ".ARG_ERROR_MESSAGE";
@@ -42,7 +42,7 @@ public class ErrorDialogFragment extends DialogFragment {
 
     public static ErrorDialogFragment presentError(@NonNull FragmentManager fm, @Nullable Throwable e) {
         ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(e);
-        fragment.show(fm, TAG);
+        fragment.showAllowingStateLoss(fm, TAG);
         return fragment;
     }
 
@@ -55,7 +55,7 @@ public class ErrorDialogFragment extends DialogFragment {
             dialogFragment.setAddendum(R.string.error_addendum_unstable_stack);
         }
         dialogFragment.setShowSupportLink(true);
-        dialogFragment.show(fm, TAG);
+        dialogFragment.showAllowingStateLoss(fm, TAG);
 
         return dialogFragment;
     }
