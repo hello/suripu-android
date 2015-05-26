@@ -2,54 +2,48 @@ package is.hello.sense.bluetooth.stacks.transmission;
 
 import android.support.annotation.NonNull;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
-import is.hello.sense.bluetooth.errors.BluetoothConnectionLostError;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.util.Logger;
 
 /**
- * This is the actual transmission layer wrap on BLE.
+ * Responsible for encoding and decoding packets for the Bluetooth stack.
+ *
+ * @param <T> The type of value produced by the packet handler.
  */
-public abstract class PacketHandler {
-    public static final int HEADER_PACKET_PAYLOAD_LEN = 18;
-    public static final int PACKET_PAYLOAD_LEN = 19;
-    public static final int BLE_PACKET_LEN = 20;
+public abstract class PacketHandler<T> {
+    /**
+     * The size of a standard Bluetooth packet.
+     */
+    public static final int BLE_PACKET_LENGTH = 20;
 
-    private final Set<PacketDataHandler> dataHandlers = new HashSet<>();
+    private final PacketParser<T> packetParser;
 
-    protected abstract SequencedPacket createSequencedPacket(final @NonNull UUID characteristicIdentifier, final @NonNull byte[] payload);
-    public abstract List<byte[]> createPackets(final @NonNull byte[] applicationData);
+    protected PacketHandler(@NonNull PacketParser<T> packetParser) {
+        this.packetParser = packetParser;
+    }
 
-    public final void process(final @NonNull UUID characteristicIdentifier, final @NonNull byte[] payload) {
-        final SequencedPacket sequencedPacket = createSequencedPacket(characteristicIdentifier, payload);
-        for (final PacketDataHandler handler : this.dataHandlers) {
-            if (!handler.shouldProcessCharacteristic(characteristicIdentifier)) {
-                continue;
-            }
+    /**
+     * Divides a raw payload into packets suitable for transmission over BLE.
+     */
+    public abstract List<byte[]> createOutgoingPackets(final @NonNull byte[] payload);
 
-            handler.processPacket(sequencedPacket);
+    /**
+     * Attempt to process an incoming packet from a characteristic.
+     */
+    public final void processIncomingPacket(final @NonNull UUID characteristicIdentifier, final @NonNull byte[] packet) {
+        if (packetParser.canProcessPacket(characteristicIdentifier)) {
+            packetParser.processPacket(characteristicIdentifier, packet);
         }
     }
 
-    public final void onTransportDisconnected() {
+    /**
+     * Informs the packet handler and its parser that the Bluetooth transport has disconnected.
+     */
+    public final void transportDisconnected() {
         Logger.info(Peripheral.LOG_TAG, "onTransportDisconnected()");
-
-        BluetoothConnectionLostError error = new BluetoothConnectionLostError();
-        for (PacketDataHandler<?> handler : dataHandlers) {
-            handler.onError(error);
-        }
+        packetParser.onTransportDisconnected();
     }
-
-    public final void setPacketDataHandler(final PacketDataHandler handler) {
-        this.dataHandlers.add(handler);
-    }
-
-    public final void unregisterDataHandler(final PacketDataHandler handler) {
-        this.dataHandlers.remove(handler);
-    }
-
 }

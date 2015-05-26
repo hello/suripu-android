@@ -106,15 +106,18 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Insight insight = (Insight) adapterView.getItemAtPosition(position);
-        if (insight.getCategory() == InsightCategory.IN_APP_ERROR) {
+        Object item = adapterView.getItemAtPosition(position);
+        if (!(item instanceof Insight)) {
             return;
         }
 
-        Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
+        Insight insight = (Insight) item;
+        if (insight.getCategory() != InsightCategory.IN_APP_ERROR) {
+            Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
 
-        InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight);
-        dialogFragment.show(getFragmentManager(), InsightInfoDialogFragment.TAG);
+            InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight);
+            dialogFragment.show(getFragmentManager(), InsightInfoDialogFragment.TAG);
+        }
     }
 
     @Override

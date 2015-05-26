@@ -28,7 +28,7 @@ class GattDispatcher extends BluetoothGattCallback {
     private final List<Action0> disconnectListeners = new ArrayList<>();
     private final Handler dispatcher = new Handler(Looper.getMainLooper());
 
-    @Nullable PacketHandler packetHandler;
+    @Nullable PacketHandler<?> packetHandler;
     @Nullable Action2<BluetoothGatt, Integer> onServicesDiscovered;
     @Nullable Action3<BluetoothGatt, BluetoothGattCharacteristic, Integer> onCharacteristicWrite;
     @Nullable Action3<BluetoothGatt, BluetoothGattDescriptor, Integer> onDescriptorWrite;
@@ -74,7 +74,7 @@ class GattDispatcher extends BluetoothGattCallback {
             disconnectListeners.clear();
 
             if (packetHandler != null) {
-                packetHandler.onTransportDisconnected();
+                packetHandler.transportDisconnected();
             }
         });
     }
@@ -120,7 +120,7 @@ class GattDispatcher extends BluetoothGattCallback {
 
         dispatcher.post(() -> {
             if (packetHandler != null) {
-                packetHandler.process(characteristic.getUuid(), characteristic.getValue());
+                packetHandler.processIncomingPacket(characteristic.getUuid(), characteristic.getValue());
             }
         });
     }
@@ -148,7 +148,7 @@ class GattDispatcher extends BluetoothGattCallback {
 
         dispatcher.post(() -> {
             if (packetHandler != null) {
-                packetHandler.process(characteristic.getUuid(), characteristic.getValue());
+                packetHandler.processIncomingPacket(characteristic.getUuid(), characteristic.getValue());
             }
         });
     }

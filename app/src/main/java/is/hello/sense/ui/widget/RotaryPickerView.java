@@ -214,7 +214,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
             if (constrainedValue > this.value) {
                 smoothScrollToPosition(position + unfocusedItems);
             } else {
-                smoothScrollToPosition(position - unfocusedItems);
+                smoothScrollToPosition(Math.max(0, position - unfocusedItems));
             }
         } else {
             layoutManager.scrollToPositionWithOffset(position, offset);
@@ -275,8 +275,18 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     //region Data
 
+    private boolean isCenterView(View itemView) {
+        int containerMidY = (getMeasuredHeight() / 2);
+        View centerView = findChildViewUnder(0, containerMidY);
+        return (centerView == itemView);
+    }
+
     @Override
     public void onClick(View itemView) {
+        if (isCenterView(itemView)) {
+            return;
+        }
+
         int position = getChildAdapterPosition(itemView);
         int value = adapter.getItem(position);
         setValue(value, true);

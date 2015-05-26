@@ -787,7 +787,7 @@ public class AndroidPeripheral implements Peripheral {
     }
 
     @Override
-    public void setPacketHandler(@Nullable PacketHandler dataHandler) {
+    public void setPacketHandler(@Nullable PacketHandler<?> dataHandler) {
         gattDispatcher.packetHandler = dataHandler;
     }
 

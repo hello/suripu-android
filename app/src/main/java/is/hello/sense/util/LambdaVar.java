@@ -27,6 +27,11 @@ public final class LambdaVar<T> {
 
     //region Mutation
 
+    public LambdaVar<T> clear() {
+        this.value = null;
+        return this;
+    }
+
     public LambdaVar<T> set(T value) {
         this.value = value;
         return this;
