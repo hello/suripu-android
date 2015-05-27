@@ -151,7 +151,6 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
         this.enhancedAudioItem = null;
 
-        this.currentAccount = null;
         this.listView = null;
     }
 
