@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
@@ -78,6 +80,17 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         Views.setSafeOnClickListener(register, ignored -> register());
 
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
+
+        if (BuildConfig.DEBUG) {
+            TextView hostView = new TextView(getActivity());
+            hostView.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_Dimmed);
+            hostView.setGravity(Gravity.CENTER);
+            hostView.setText(BuildConfig.BASE_URL);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            credentialsContainer.addView(hostView, layoutParams);
+        }
 
         return view;
     }
