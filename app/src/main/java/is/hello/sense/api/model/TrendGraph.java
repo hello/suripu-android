@@ -81,13 +81,13 @@ public class TrendGraph extends ApiResponse {
                 return dateTime.toString("MMM d");
             }
 
-            case TIME_PERIOD_OVER_TIME_1M:
-            case TIME_PERIOD_OVER_TIME_3M: {
+            case TIME_PERIOD_OVER_TIME_1M: {
                 return dateTime.toString("M/d");
             }
 
             default:
-            case TIME_PERIOD_OVER_TIME_ALL: {
+            case TIME_PERIOD_OVER_TIME_ALL:
+            case TIME_PERIOD_OVER_TIME_3M: {
                 return dateTime.toString("MMM");
             }
         }
@@ -173,7 +173,7 @@ public class TrendGraph extends ApiResponse {
         }
     }
 
-    public static enum DataLabel {
+    public enum DataLabel {
         BAD(R.color.sensor_alert),
         OK(R.color.sensor_warning),
         GOOD(R.color.sensor_ideal);
