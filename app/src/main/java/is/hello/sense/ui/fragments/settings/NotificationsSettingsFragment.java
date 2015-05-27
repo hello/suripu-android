@@ -75,6 +75,17 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.scoreItem = null;
+        this.alertConditionsItem = null;
+
+        this.loadingIndicator = null;
+        this.listView = null;
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 

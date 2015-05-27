@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Account;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.EditorActionHandler;
@@ -36,6 +35,12 @@ public class ChangeNameFragment extends AccountEditingFragment {
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.nameText = null;
+    }
 
     public void submit(@NonNull View sender) {
         if (TextUtils.isEmpty(nameText.getText())) {

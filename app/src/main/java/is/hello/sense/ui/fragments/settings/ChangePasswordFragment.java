@@ -81,6 +81,16 @@ public class ChangePasswordFragment extends InjectionFragment {
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.email = null;
+
+        this.currentPassword = null;
+        this.newPassword = null;
+        this.confirmNewPassword = null;
+    }
 
     private boolean popIfEmpty(EditText... editTexts) {
         for (EditText editText : editTexts) {
