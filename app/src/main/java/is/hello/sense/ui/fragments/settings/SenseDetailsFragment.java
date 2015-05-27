@@ -133,6 +133,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void onDestroyView() {
         super.onDestroyView();
 
+        this.pairingMode = null;
+        this.changeWiFi = null;
+
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(PERIPHERAL_CLEARED);
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
