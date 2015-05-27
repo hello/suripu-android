@@ -254,8 +254,9 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        if (isOpen && getChildAt(1).getY() < topViewOpenHeight) {
-            getChildAt(1).setY(getMeasuredHeight() - topViewOpenHeight);
+        int intendedY = MeasureSpec.getSize(heightMeasureSpec) - topViewOpenHeight;
+        if (!animating && isOpen && getChildAt(1).getY() != intendedY) {
+            getChildAt(1).setY(intendedY);
         }
     }
 
