@@ -47,6 +47,13 @@ public class RoomConditions extends ApiResponse {
         return sound;
     }
 
+    public boolean isEmpty() {
+        return ((temperature == null || temperature.getValue() == null) &&
+                (humidity == null || humidity.getValue() == null) &&
+                (light == null || light.getValue() == null) &&
+                (sound == null || sound.getValue() == null));
+    }
+
     public List<SensorState> toList() {
         // This order applies to:
         // - RoomSensorHistory

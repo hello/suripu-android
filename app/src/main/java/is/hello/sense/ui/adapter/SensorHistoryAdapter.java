@@ -3,8 +3,6 @@ package is.hello.sense.ui.adapter;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,20 +10,17 @@ import java.util.List;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorGraphSample;
-import is.hello.sense.functional.Function;
-import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.widget.graphing.Extremes;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static is.hello.sense.functional.Lists.map;
-import static is.hello.sense.functional.Lists.segment;
-
 public class SensorHistoryAdapter implements GraphAdapter {
+    private static final int MAX_SECTIONS_COUNT = 7; // like iOS
+
     private final List<ChangeObserver> observers = new ArrayList<>();
 
-    private List<Section> sections = Collections.emptyList();
+    private List<List<SensorGraphSample>> sections = Collections.emptyList();
     private float baseMagnitude = 0f;
     private float peakMagnitude = 0f;
 
@@ -35,12 +30,12 @@ public class SensorHistoryAdapter implements GraphAdapter {
         setSections(update.sections);
     }
 
-    public void setSections(@NonNull List<Section> sections) {
+    public void setSections(@NonNull List<List<SensorGraphSample>> sections) {
         this.sections = sections;
         notifyDataChanged();
     }
 
-    public @NonNull Section getSection(int position) {
+    public @NonNull List<SensorGraphSample> getSection(int position) {
         return sections.get(position);
     }
 
@@ -101,11 +96,11 @@ public class SensorHistoryAdapter implements GraphAdapter {
 
 
     public static class Update {
-        final @NonNull List<Section> sections;
+        final @NonNull List<List<SensorGraphSample>> sections;
         final float peak;
         final float base;
 
-        private Update(@NonNull List<Section> sections, float peak, float base) {
+        private Update(@NonNull List<List<SensorGraphSample>> sections, float peak, float base) {
             this.sections = sections;
             this.peak = peak;
             this.base = base;
@@ -139,26 +134,30 @@ public class SensorHistoryAdapter implements GraphAdapter {
             return history;
         }
 
-        public static Observable<Update> forHistorySeries(@Nullable List<SensorGraphSample> history,
-                                                          @NonNull SensorHistoryPresenter.Mode mode,
-                                                          boolean normalize) {
+        public static Observable<Update> forHistorySeries(@Nullable List<SensorGraphSample> history, boolean normalize) {
             Observable<Update> operation = Observable.create(s -> {
                 if (history == null || history.isEmpty()) {
                     s.onNext(Update.empty());
                     s.onCompleted();
                 } else {
-                    Function<SensorGraphSample, Integer> segmentKeyProducer;
-                    if (mode == SensorHistoryPresenter.Mode.WEEK) {
-                        segmentKeyProducer = sensorHistory -> sensorHistory.getShiftedTime().getDayOfMonth();
-                    } else {
-                        segmentKeyProducer = sensorHistory -> {
-                            DateTime shiftedTime = sensorHistory.getShiftedTime();
-                            return (shiftedTime.getDayOfMonth() * 100) + (shiftedTime.getHourOfDay() / 6);
-                        };
-                    }
                     List<SensorGraphSample> normalizedHistory = normalize ? normalizeDataSeries(history) : history;
-                    List<List<SensorGraphSample>> segments = segment(segmentKeyProducer, normalizedHistory);
-                    List<Section> sections = map(segments, Section::new);
+                    int numberOfSections = Math.min(MAX_SECTIONS_COUNT, normalizedHistory.size());
+                    int sampleCount = normalizedHistory.size();
+                    int sectionSize = sampleCount / numberOfSections;
+
+                    List<List<SensorGraphSample>> sections = new ArrayList<>(numberOfSections);
+                    for (int i = 0; i < numberOfSections; i++) {
+                        int start = sectionSize * i;
+                        int end;
+                        if (i == (numberOfSections - 1)) {
+                            end = sampleCount;
+                        } else {
+                            end = start + sectionSize;
+                        }
+
+                        List<SensorGraphSample> sectionSamples = normalizedHistory.subList(start, end);
+                        sections.add(sectionSamples);
+                    }
 
                     Comparator<SensorGraphSample> comparator = (l, r) -> Float.compare(l.getNormalizedValue(), r.getNormalizedValue());
                     Extremes<SensorGraphSample> extremes = Extremes.of(normalizedHistory, comparator);
@@ -169,45 +168,7 @@ public class SensorHistoryAdapter implements GraphAdapter {
                     s.onCompleted();
                 }
             });
-            operation.subscribeOn(Schedulers.computation());
-            return operation;
-        }
-    }
-
-    public static class Section {
-        private final List<SensorGraphSample> instants;
-        private final long average;
-
-        public Section(@NonNull List<SensorGraphSample> instants) {
-            this.instants = instants;
-            double average = 0f;
-            int placeholderCount = 0;
-            for (SensorGraphSample instant : instants) {
-                if (instant.isValuePlaceholder()) {
-                    placeholderCount++;
-                }
-
-                average += instant.getNormalizedValue();
-            }
-            if (placeholderCount == instants.size() / 2) {
-                average = ApiService.PLACEHOLDER_VALUE;
-            } else {
-                average /= instants.size();
-            }
-
-            this.average = Math.round(average);
-        }
-
-        public SensorGraphSample get(int i) {
-            return instants.get(i);
-        }
-
-        public int size() {
-            return instants.size();
-        }
-
-        public long getAverage() {
-            return average;
+            return operation.subscribeOn(Schedulers.computation());
         }
     }
 }

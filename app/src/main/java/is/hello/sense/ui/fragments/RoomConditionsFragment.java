@@ -27,7 +27,6 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
-import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
@@ -148,7 +147,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
             sensorInfo.errorMessage = null;
 
             ArrayList<SensorGraphSample> sensorDataRun = histories.get(i);
-            Observable<Update> update = Update.forHistorySeries(sensorDataRun, SensorHistoryPresenter.Mode.DAY, true);
+            Observable<Update> update = Update.forHistorySeries(sensorDataRun, true);
             bindAndSubscribe(update,
                              sensorInfo.graphAdapter::update,
                              e -> {

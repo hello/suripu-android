@@ -94,7 +94,7 @@ public class SensorHistoryPresenter extends ValuePresenter<SensorHistoryPresente
         }
     }
 
-    public static enum Mode {
+    public enum Mode {
         WEEK,
         DAY,
     }

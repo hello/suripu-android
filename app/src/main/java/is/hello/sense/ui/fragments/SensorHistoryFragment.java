@@ -223,7 +223,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 return;
             }
 
-            Observable<Update> update = Update.forHistorySeries(history, sensorHistoryPresenter.getMode(), false);
+            Observable<Update> update = Update.forHistorySeries(history, false);
             bindAndSubscribe(update, this::update, this::historyUnavailable);
 
             this.unitSystem = historyAndUnits.unitSystem;
@@ -301,7 +301,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @NonNull
         @Override
         public String getSectionFooter(int section) {
-            long value = getSection(section).getAverage();
+            float value = getSection(section).get(0).getValue();
             if (value == ApiService.PLACEHOLDER_VALUE) {
                 return getString(R.string.missing_data_placeholder);
             } else {

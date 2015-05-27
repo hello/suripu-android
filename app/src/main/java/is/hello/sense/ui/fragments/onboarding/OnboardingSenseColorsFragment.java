@@ -75,7 +75,6 @@ public class OnboardingSenseColorsFragment extends InjectionFragment implements 
         pageDots.attach(viewPager);
 
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_sense_colors_continue);
-        nextButton.setEnabled(false);
         Views.setSafeOnClickListener(nextButton, this::next);
 
         this.bottomContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sense_colors_bottom);
@@ -95,13 +94,11 @@ public class OnboardingSenseColorsFragment extends InjectionFragment implements 
 
         bindAndSubscribe(presenter.currentConditions,
                          conditions -> {
-                             this.hasCurrentConditions = true;
-                             nextButton.setEnabled(true);
+                             this.hasCurrentConditions = !conditions.conditions.isEmpty();
                          },
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Could not load conditions", e);
                              this.hasCurrentConditions = false;
-                             nextButton.setEnabled(true);
                          });
     }
 
