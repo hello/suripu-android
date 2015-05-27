@@ -287,7 +287,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
             this.rotations = rotations;
 
             int digitsShown = (totalDigits * rotations) + targetDigit;
-            this.singleSpinDuration = Math.max(MIN_SPIN_DURATION_MS, targetDuration / digitsShown);
+            this.singleSpinDuration = digitsShown == 0 ? 0 : Math.max(MIN_SPIN_DURATION_MS, targetDuration / digitsShown);
             this.adjacentDuration = singleSpinDuration * totalDigits;
             this.totalDuration = singleSpinDuration * digitsShown;
         }
