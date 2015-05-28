@@ -1,6 +1,7 @@
 package is.hello.sense.ui.dialogs;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -15,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -139,6 +141,39 @@ public class TimelineInfoDialogFragment extends SenseDialogFragment {
                     .setStartDelay(Animation.DURATION_SLOW)
                     .fadeIn()
                     .postStart();
+
+            View activityContent = getActivity().findViewById(android.R.id.content);
+            Window activityWindow = getActivity().getWindow();
+            if (activityContent != null && activityWindow != null) {
+                animate(activityContent)
+                        .setOnAnimationWillStart(() -> {
+                            activityWindow.setBackgroundDrawableResource(R.color.black);
+                        })
+                        .scale(0.95f)
+                        .start();
+            }
+        }
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        if (closeButton.getVisibility() == View.VISIBLE) {
+            animate(closeButton)
+                    .fadeOut(View.INVISIBLE)
+                    .start();
+
+            View activityContent = getActivity().findViewById(android.R.id.content);
+            Window activityWindow = getActivity().getWindow();
+            if (activityContent != null && activityWindow != null) {
+                animate(activityContent)
+                        .scale(1f)
+                        .addOnAnimationCompleted(finished -> {
+                            activityWindow.setBackgroundDrawableResource(R.color.background);
+                        })
+                        .start();
+            }
         }
     }
 
