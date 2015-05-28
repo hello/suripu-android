@@ -85,8 +85,6 @@ public class ChangePasswordFragment extends InjectionFragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        this.email = null;
-
         this.currentPassword = null;
         this.newPassword = null;
         this.confirmNewPassword = null;
