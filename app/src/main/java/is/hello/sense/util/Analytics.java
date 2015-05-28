@@ -365,6 +365,9 @@ public class Analytics {
         String EVENT_FACTORY_RESET = "Factory Reset";
         String EVENT_EDIT_WIFI = "Edit WiFi";
         String EVENT_SENSE_ADVANCED = "Sense advanced tapped";
+        String EVENT_TIME_ZONE = "Time Zone";
+        String EVENT_TIME_ZONE_CHANGED = "Time Zone Changed";
+        String PROP_TIME_ZONE = "tz";
 
         String EVENT_PILL_DETAIL = "Pill detail";
         String EVENT_REPLACE_PILL = "Replace Pill";

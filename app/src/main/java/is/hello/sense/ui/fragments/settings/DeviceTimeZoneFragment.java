@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.joda.time.DateTimeZone;
+import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -29,6 +30,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class DeviceTimeZoneFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
@@ -46,6 +48,9 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
 
         accountPresenter.update();
         addPresenter(accountPresenter);
+
+        Analytics.trackEvent(Analytics.TopView.EVENT_TIME_ZONE, null);
+
         setRetainInstance(true);
     }
 
@@ -125,6 +130,12 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         bindAndSubscribe(accountPresenter.updateTimeZone(senseTimeZone),
                          ignored -> {
                              Logger.info(getClass().getSimpleName(), "Updated time zone");
+
+                             JSONObject properties = Analytics.createProperties(
+                                 Analytics.TopView.PROP_TIME_ZONE, senseTimeZone.timeZoneId
+                             );
+                             Analytics.trackEvent(Analytics.TopView.EVENT_TIME_ZONE_CHANGED, properties);
+
                              LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
                                  FragmentNavigation navigation = (FragmentNavigation) getActivity();
                                  navigation.popFragment(this, true);
