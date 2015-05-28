@@ -81,6 +81,18 @@ public final class Styles {
         }
     }
 
+    public static @StringRes int getSleepDepthStringRes(int sleepDepth) {
+        if (sleepDepth == 0) {
+            return R.string.sleep_depth_awake;
+        } else if (sleepDepth == 100) {
+            return R.string.sleep_depth_deep;
+        } else if (sleepDepth < 60) {
+            return R.string.sleep_depth_light;
+        } else {
+            return R.string.sleep_depth_intermediate;
+        }
+    }
+
     public static int getSleepScoreColor(@NonNull Context context, int sleepScore) {
         return context.getResources().getColor(getSleepScoreColorRes(sleepScore));
     }

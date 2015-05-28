@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,8 @@ import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
+import is.hello.sense.ui.widget.timeline.TimelineInfoPopup;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
@@ -52,6 +55,8 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 
 public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener {
+    private static final long INFO_POPUP_DURATION = 1000;
+
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
     private static final String ARG_IS_FIRST_TIMELINE = TimelineFragment.class.getName() + ".ARG_IS_FIRST_TIMELINE";
@@ -84,6 +89,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     private boolean controlsSharedChrome = false;
 
     private @Nullable TutorialOverlayView tutorialOverlay;
+
+    private TimelineInfoPopup infoPopup;
 
 
     //region Lifecycle
@@ -200,6 +207,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         this.layoutManager = null;
         this.adapter = null;
         this.itemAnimator = null;
+
+        if (infoPopup != null) {
+            infoPopup.dismiss();
+            this.infoPopup = null;
+        }
 
         if (tutorialOverlay != null) {
             tutorialOverlay.dismiss(false);
@@ -353,12 +365,26 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     //region Acting on Items
 
     @Override
-    public void onSegmentItemClicked(int position, @NonNull TimelineSegment segment) {
+    public void onSegmentItemClicked(int position, View view, @NonNull TimelineSegment segment) {
+        if (infoPopup != null) {
+            infoPopup.dismiss();
+        }
 
+        this.infoPopup = new TimelineInfoPopup(getActivity());
+        String sleepDepthSummary = getString(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
+        String tooltipHtml = getString(R.string.tooltip_timeline_html_fmt, sleepDepthSummary);
+        infoPopup.setText(Html.fromHtml(tooltipHtml));
+        infoPopup.show(view, INFO_POPUP_DURATION);
+
+        Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
     }
 
     @Override
     public void onEventItemClicked(int position, @NonNull TimelineSegment segment) {
+        if (infoPopup != null) {
+            infoPopup.dismiss();
+        }
+
         ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
         options.add(
                 new SenseBottomSheet.Option(ID_EVENT_CORRECT)

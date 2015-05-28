@@ -206,7 +206,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
                 if (segment.hasEventInfo()) {
                     onItemClickListener.onEventItemClicked(position, segment);
                 } else {
-                    onItemClickListener.onSegmentItemClicked(position, segment);
+                    onItemClickListener.onSegmentItemClicked(position, holder.itemView, segment);
                 }
             });
         }
@@ -375,7 +375,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
 
     public interface OnItemClickListener {
-        void onSegmentItemClicked(int position, @NonNull TimelineSegment segment);
+        void onSegmentItemClicked(int position, View view, @NonNull TimelineSegment segment);
         void onEventItemClicked(int position, @NonNull TimelineSegment segment);
     }
 }
