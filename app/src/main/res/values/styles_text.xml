@@ -55,20 +55,6 @@
         <item name="android:textColor">@color/light_accent</item>
     </style>
 
-    <style name="AppTheme.Text.Timeline" parent="AppTheme.Text.Body.MidSized" />
-
-    <style name="AppTheme.Text.Timeline.Timestamp">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">@dimen/text_size_timeline_time</item>
-        <item name="android:textColor">@color/light_accent</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">end</item>
-    </style>
-
-    <style name="AppTheme.Text.Timeline.Timestamp.Event">
-        <item name="android:textColor">@color/text_dim</item>
-    </style>
-
 
     <style name="AppTheme.Text.ScreenTitle">
         <item name="android:textSize">@dimen/action_bar_title_text_size</item>
@@ -155,15 +141,6 @@
         <item name="android:textSize">@dimen/text_size_big_score</item>
     </style>
 
-    <style name="AppTheme.Text.Timestamp">
-        <item name="android:paddingTop">@dimen/gap_xsmall</item>
-        <item name="android:paddingBottom">@dimen/gap_xsmall</item>
-        <item name="android:paddingLeft">@dimen/gap_small</item>
-        <item name="android:paddingRight">@dimen/gap_small</item>
-        <item name="android:textColor">@color/text_section_header</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
-    </style>
-
     <style name="AppTheme.Text.SmartAlarm" />
 
     <style name="AppTheme.Text.SmartAlarm.Time">
@@ -205,6 +182,25 @@
 
         <item name="android:textSize">@dimen/text_size_heading</item>
         <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="AppTheme.Text.Timeline" parent="AppTheme.Text.Body.MidSized" />
+
+    <style name="AppTheme.Text.Timeline.Timestamp">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">@dimen/text_size_timeline_time</item>
+        <item name="android:textColor">@color/light_accent</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="AppTheme.Text.Timeline.Timestamp.Event">
+        <item name="android:textColor">@color/text_dim</item>
+    </style>
+
+    <style name="AppTheme.Text.Timeline.Popup">
+        <item name="android:textColor">@color/text_dim</item>
+        <item name="android:textSize">@dimen/text_size_section_heading</item>
     </style>
 
 </resources>

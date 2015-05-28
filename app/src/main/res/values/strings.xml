@@ -433,11 +433,11 @@ so you can sleep better.</string>
     <string name="action_more_info">More info</string>
     <string name="action_adjust_time">Adjust Time</string>
     <string name="action_submit">Submit</string>
-    <string name="sleep_depth_awake">awake</string>
-    <string name="sleep_depth_deep">in deep sleep</string>
-    <string name="sleep_depth_light">in light sleep</string>
-    <string name="sleep_depth_intermediate">in medium sleep</string>
-    <string name="tooltip_timeline_html_fmt"><![CDATA[You were <b>%1$s</b>.]]></string>
+    <string name="sleep_depth_awake">AWAKE</string>
+    <string name="sleep_depth_deep">IN DEEP SLEEP</string>
+    <string name="sleep_depth_light">IN LIGHT SLEEP</string>
+    <string name="sleep_depth_intermediate">IN MEDIUM SLEEP</string>
+    <string name="timeline_popup_info_prefix">"YOU WERE "</string>
     <string name="debug_action_scan">Scan</string>
     <string name="device_color_red">Red</string>
     <string name="device_color_blue">Blue</string>

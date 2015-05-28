@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +46,6 @@ import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineInfoPopup;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
@@ -55,8 +53,6 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 
 public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener {
-    private static final long INFO_POPUP_DURATION = 1000;
-
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
     private static final String ARG_IS_FIRST_TIMELINE = TimelineFragment.class.getName() + ".ARG_IS_FIRST_TIMELINE";
@@ -371,10 +367,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         }
 
         this.infoPopup = new TimelineInfoPopup(getActivity());
-        String sleepDepthSummary = getString(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
-        String tooltipHtml = getString(R.string.tooltip_timeline_html_fmt, sleepDepthSummary);
-        infoPopup.setText(Html.fromHtml(tooltipHtml));
-        infoPopup.show(view, INFO_POPUP_DURATION);
+        infoPopup.bindSegment(segment);
+        infoPopup.show(view);
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
     }
