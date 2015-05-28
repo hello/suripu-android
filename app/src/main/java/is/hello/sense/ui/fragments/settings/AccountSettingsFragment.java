@@ -136,6 +136,25 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.loadingIndicator = null;
+
+        this.nameItem = null;
+        this.emailItem = null;
+
+        this.birthdayItem = null;
+        this.genderItem = null;
+        this.heightItem = null;
+        this.weightItem = null;
+
+        this.enhancedAudioItem = null;
+
+        this.listView = null;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 

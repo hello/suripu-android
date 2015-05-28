@@ -70,6 +70,14 @@ public class ChangeEmailFragment extends InjectionFragment {
         bindAndSubscribe(accountPresenter.account, this::bindAccount, this::presentError);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.email = null;
+        this.submitButton = null;
+    }
+
     public void save() {
         String newEmail = email.getText().toString();
         if (TextUtils.isEmpty(newEmail)) {

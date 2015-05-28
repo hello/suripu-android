@@ -90,6 +90,15 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.loadingIndicator = null;
+        this.adapter = null;
+        this.supportInfoFooter = null;
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 

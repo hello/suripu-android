@@ -87,6 +87,15 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         bindAndSubscribe(accountPresenter.currentTimeZone(), this::bindTimeZone, this::presentError);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.listView = null;
+        this.activityIndicator = null;
+        this.headerDetail = null;
+    }
+
     //endregion
 
 

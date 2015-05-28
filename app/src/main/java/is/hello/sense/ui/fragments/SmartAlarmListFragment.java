@@ -116,6 +116,15 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        this.listView = null;
+        this.activityIndicator = null;
+        this.emptyPrompt = null;
+        this.emptyView = null;
+        this.emptyTitle = null;
+        this.emptyMessage = null;
+        this.emptyRetry = null;
+
         this.adapter = null;
     }
 

@@ -82,8 +82,10 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
         insightsPresenter.unbindScope();
         this.insightsAdapter = null;
+        this.swipeRefreshLayout = null;
     }
 
     @Override
