@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Styles;
+import rx.functions.Action2;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
@@ -46,6 +48,9 @@ public class TimelineInfoDialogFragment extends SenseDialogFragment {
     private ImageButton closeButton;
     private RecyclerView recycler;
     private Adapter adapter;
+
+    private boolean hasAnimated = false;
+    private boolean hasTransformedActivity = false;
 
     //region Lifecycle
 
@@ -101,7 +106,13 @@ public class TimelineInfoDialogFragment extends SenseDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_TimelineDetails);
+        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_TimelineDetails) {
+            @Override
+            public void onBackPressed() {
+                // key listener doesn't work
+                close();
+            }
+        };
         dialog.setContentView(R.layout.fragment_dialog_timeline_info);
         dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
@@ -111,7 +122,7 @@ public class TimelineInfoDialogFragment extends SenseDialogFragment {
         setProgressTint(scoreBar, scoreColor);
 
         this.closeButton = (ImageButton) dialog.findViewById(R.id.fragment_dialog_timeline_info_close);
-        closeButton.setOnClickListener(ignored -> dismissSafely());
+        closeButton.setOnClickListener(ignored -> close());
 
         this.recycler = (RecyclerView) dialog.findViewById(R.id.fragment_dialog_timeline_info_recycler);
         recycler.setHasFixedSize(true);
@@ -136,22 +147,39 @@ public class TimelineInfoDialogFragment extends SenseDialogFragment {
     public void onResume() {
         super.onResume();
 
-        if (closeButton.getVisibility() != View.VISIBLE) {
+        if (hasAnimated) {
+            closeButton.setTranslationY(0f);
+            closeButton.setVisibility(View.VISIBLE);
+
+            withActivityChrome((activityContent, activityWindow) -> {
+                activityContent.setScaleX(0.95f);
+                activityContent.setScaleY(0.95f);
+                activityWindow.setBackgroundDrawableResource(R.color.black);
+            });
+        } else {
             animate(closeButton)
                     .setStartDelay(Animation.DURATION_SLOW)
-                    .fadeIn()
+                    .setInterpolator(new OvershootInterpolator(1f))
+                    .setOnAnimationWillStart(() -> {
+                        int height = closeButton.getMeasuredHeight();
+                        closeButton.setTranslationY(height);
+                        closeButton.setVisibility(View.VISIBLE);
+                    })
+                    .translationY(0f)
                     .postStart();
 
-            View activityContent = getActivity().findViewById(android.R.id.content);
-            Window activityWindow = getActivity().getWindow();
-            if (activityContent != null && activityWindow != null) {
+            withActivityChrome((activityContent, activityWindow) -> {
                 animate(activityContent)
                         .setOnAnimationWillStart(() -> {
                             activityWindow.setBackgroundDrawableResource(R.color.black);
                         })
                         .scale(0.95f)
                         .start();
-            }
+
+                this.hasTransformedActivity = true;
+            });
+
+            this.hasAnimated = true;
         }
     }
 
@@ -159,26 +187,30 @@ public class TimelineInfoDialogFragment extends SenseDialogFragment {
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 
-        if (closeButton.getVisibility() == View.VISIBLE) {
-            animate(closeButton)
-                    .fadeOut(View.INVISIBLE)
-                    .start();
+        closeButton.setVisibility(View.GONE);
 
-            View activityContent = getActivity().findViewById(android.R.id.content);
-            Window activityWindow = getActivity().getWindow();
-            if (activityContent != null && activityWindow != null) {
+        if (hasTransformedActivity) {
+            withActivityChrome((activityContent, activityWindow) -> {
                 animate(activityContent)
                         .scale(1f)
                         .addOnAnimationCompleted(finished -> {
                             activityWindow.setBackgroundDrawableResource(R.color.background);
                         })
                         .start();
-            }
+            });
         }
     }
 
     //endregion
 
+
+    private void withActivityChrome(@NonNull Action2<View, Window> consumer) {
+        View activityContent = getActivity().findViewById(android.R.id.content);
+        Window activityWindow = getActivity().getWindow();
+        if (activityContent != null && activityWindow != null) {
+            consumer.call(activityContent, activityWindow);
+        }
+    }
 
     private static void setProgressTint(@NonNull ProgressBar tint, int tintColor) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -192,6 +224,17 @@ public class TimelineInfoDialogFragment extends SenseDialogFragment {
                 }
             }
         }
+    }
+
+    public void close() {
+        animate(closeButton)
+                .translationY(closeButton.getMeasuredHeight())
+                .alpha(0f)
+                .addOnAnimationCompleted(finished -> {
+                    closeButton.setVisibility(View.INVISIBLE);
+                    dismissSafely();
+                })
+                .start();
     }
 
 
