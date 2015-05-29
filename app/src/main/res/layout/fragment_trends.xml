@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <is.hello.sense.ui.widget.FixedSwipeRefreshLayout
         android:id="@+id/fragment_trends_refresh_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -14,7 +14,7 @@
             android:layout_height="match_parent"
             style="@style/AppTheme.ListView.Cards" />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </is.hello.sense.ui.widget.FixedSwipeRefreshLayout>
 
     <TextView
         android:id="@+id/fragment_trends_placeholder"
