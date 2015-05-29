@@ -124,6 +124,12 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         bindAndSubscribe(this.hardwarePresenter.bluetoothEnabled, this::onBluetoothStateChanged, Functions.LOG_ERROR);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
         if (bluetoothAdapter.isEnabled()) {
             connectToPeripheral();
         }
