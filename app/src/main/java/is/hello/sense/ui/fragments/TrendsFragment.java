@@ -78,8 +78,13 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
         trendsPresenter.unbindScope();
         this.trendsAdapter = null;
+
+        this.initialActivityIndicator = null;
+        this.swipeRefreshLayout = null;
+        this.noDataPlaceholder = null;
     }
 
     @Override

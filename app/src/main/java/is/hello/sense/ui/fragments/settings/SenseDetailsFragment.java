@@ -124,6 +124,12 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         bindAndSubscribe(this.hardwarePresenter.bluetoothEnabled, this::onBluetoothStateChanged, Functions.LOG_ERROR);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
         if (bluetoothAdapter.isEnabled()) {
             connectToPeripheral();
         }
@@ -132,6 +138,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        this.pairingMode = null;
+        this.changeWiFi = null;
 
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(PERIPHERAL_CLEARED);
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

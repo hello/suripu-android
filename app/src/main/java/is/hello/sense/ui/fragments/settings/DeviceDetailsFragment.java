@@ -75,6 +75,19 @@ public abstract class DeviceDetailsFragment extends HardwareFragment {
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.alertContainer = null;
+        this.alertIcon = null;
+        this.alertBusy = null;
+        this.alertText = null;
+        this.alertAction = null;
+
+        this.actionsContainer = null;
+    }
+
     protected void finishDeviceReplaced() {
         finishWithResult(RESULT_REPLACED_DEVICE, null);
     }

@@ -92,6 +92,17 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        this.unitSystemItem = null;
+        this.use24TimeItem = null;
+
+        this.loadingIndicator = null;
+        this.listView = null;
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
