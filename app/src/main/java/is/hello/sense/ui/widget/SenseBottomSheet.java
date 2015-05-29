@@ -157,6 +157,11 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         optionsContainer.addView(optionView);
     }
 
+    public void addOption(@NonNull Option option) {
+        this.options.add(option);
+        addViewForOption(option);
+    }
+
     public void addOptions(@NonNull Collection<Option> options) {
         this.options.addAll(options);
         for (Option option : options) {
@@ -308,5 +313,15 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         }
 
         //endregion
+
+
+        @Override
+        public String toString() {
+            return "Option{" +
+                    "optionId=" + optionId +
+                    ", title=" + title +
+                    ", enabled=" + enabled +
+                    '}';
+        }
     }
 }

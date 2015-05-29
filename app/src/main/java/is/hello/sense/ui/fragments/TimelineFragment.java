@@ -1,7 +1,7 @@
 package is.hello.sense.ui.fragments;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.app.Dialog;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -19,7 +19,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.lang.ref.WeakReference;
 
 import javax.inject.Inject;
 
@@ -34,14 +34,13 @@ import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.dialogs.TimelineInfoDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
+import is.hello.sense.ui.widget.RotaryTimePickerDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
@@ -53,12 +52,12 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 
 public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener {
+    // !! Important: Do not use setTargetFragment on TimelineFragment.
+    // It is not guaranteed to exist at the time of state restoration.
+
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
     private static final String ARG_IS_FIRST_TIMELINE = TimelineFragment.class.getName() + ".ARG_IS_FIRST_TIMELINE";
-
-    private static final int REQUEST_CODE_ALTER_EVENT = 0xAE3;
-    private static final int REQUEST_CODE_ADJUST_TIME = 0xA1E;
 
     private static final int ID_EVENT_CORRECT = 0;
     private static final int ID_EVENT_ADJUST_TIME = 1;
@@ -85,6 +84,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     private boolean controlsSharedChrome = false;
 
     private @Nullable TutorialOverlayView tutorialOverlay;
+    private @Nullable WeakReference<Dialog> activeDialog;
 
     private TimelineInfoPopup infoPopup;
 
@@ -211,6 +211,13 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         if (tutorialOverlay != null) {
             tutorialOverlay.dismiss(false);
+        }
+
+        if (activeDialog != null) {
+            Dialog dialog = activeDialog.get();
+            if (dialog != null) {
+                dialog.dismiss();
+            }
         }
     }
 
@@ -374,46 +381,36 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     @Override
-    public void onEventItemClicked(int position, @NonNull TimelineSegment segment) {
+    public void onEventItemClicked(int segmentPosition, @NonNull TimelineSegment segment) {
         if (infoPopup != null) {
             infoPopup.dismiss();
         }
 
-        ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
-        options.add(
+        SenseBottomSheet actions = new SenseBottomSheet(getActivity());
+
+        actions.addOption(
                 new SenseBottomSheet.Option(ID_EVENT_CORRECT)
                         .setTitle(R.string.action_timeline_mark_event_correct)
                         .setIcon(R.drawable.timeline_action_correct)
                         .setEnabled(false)
         );
         if (segment.isTimeAdjustable()) {
-            options.add(
+            actions.addOption(
                     new SenseBottomSheet.Option(ID_EVENT_ADJUST_TIME)
                             .setTitle(R.string.action_timeline_event_adjust_time)
                             .setIcon(R.drawable.timeline_action_adjust)
             );
         }
-        options.add(
+        actions.addOption(
                 new SenseBottomSheet.Option(ID_EVENT_REMOVE)
                         .setTitle(R.string.action_timeline_event_remove)
                         .setIcon(R.drawable.timeline_action_remove)
                         .setEnabled(false)
         );
-        BottomSheetDialogFragment actions = BottomSheetDialogFragment.newInstance(options);
+
         actions.setWantsDividers(true);
-        actions.setAffectedPosition(position);
-        actions.setTargetFragment(this, REQUEST_CODE_ALTER_EVENT);
-        actions.show(getFragmentManager(), BottomSheetDialogFragment.TAG);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_ALTER_EVENT && resultCode == Activity.RESULT_OK) {
-            int optionId = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, 0);
-            int segmentPosition = data.getIntExtra(BottomSheetDialogFragment.RESULT_AFFECTED_POSITION, 0);
-            switch (optionId) {
+        actions.setOnOptionSelectedListener((optionPosition, option) -> {
+            switch (option.getOptionId()) {
                 case ID_EVENT_CORRECT: {
                     markCorrect(segmentPosition);
                     break;
@@ -430,29 +427,33 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 }
 
                 default: {
-                    Logger.warn(getClass().getSimpleName(), "Unknown option #" + optionId);
+                    Logger.warn(getClass().getSimpleName(), "Unknown option " + option);
                     break;
                 }
             }
-        } else if (requestCode == REQUEST_CODE_ADJUST_TIME && resultCode == Activity.RESULT_OK) {
-            int segmentPosition = data.getIntExtra(TimePickerDialogFragment.RESULT_AFFECTED_POSITION, 0);
-            int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 11);
-            int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 30);
-            completeAdjustTime(segmentPosition, new LocalTime(hour, minute, 0));
-        }
+        });
+        actions.show();
+
+        this.activeDialog = new WeakReference<>(actions);
     }
 
     private void adjustTime(int position) {
         TimelineSegment segment = adapter.getSegment(position);
-        LocalTime initialTime = segment.getShiftedTimestamp().toLocalTime();
-        int flags = TimePickerDialogFragment.FLAG_USE_ROTARY_PICKER;
-        if (preferences.getUse24Time()) {
-            flags |= TimePickerDialogFragment.FLAG_USE_24_TIME;
-        }
-        TimePickerDialogFragment adjustTimeDialog = TimePickerDialogFragment.newInstance(initialTime, flags);
-        adjustTimeDialog.setAffectedPosition(position);
-        adjustTimeDialog.setTargetFragment(this, REQUEST_CODE_ADJUST_TIME);
-        adjustTimeDialog.show(getFragmentManager(), TimePickerDialogFragment.TAG);
+        DateTime initialTime = segment.getShiftedTimestamp();
+        RotaryTimePickerDialog.OnTimeSetListener listener = (pickerView, hourOfDay, minuteOfHour) -> {
+            LocalTime newTime = new LocalTime(hourOfDay, minuteOfHour, 0);
+            completeAdjustTime(position, newTime);
+        };
+        RotaryTimePickerDialog timePicker = new RotaryTimePickerDialog(
+                getActivity(),
+                listener,
+                initialTime.getHourOfDay(),
+                initialTime.getMinuteOfHour(),
+                preferences.getUse24Time()
+        );
+        timePicker.show();
+
+        this.activeDialog = new WeakReference<>(timePicker);
     }
 
     private void completeAdjustTime(int position, @NonNull LocalTime newTime) {
