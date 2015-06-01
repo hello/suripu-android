@@ -43,6 +43,14 @@ public class Drawing {
         return Color.argb(newAlpha, Color.red(color), Color.green(color), Color.blue(color));
     }
 
+    public static int darkenColorBy(int color, float delta) {
+        int alpha = Color.alpha(color);
+        float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+        hsv[2] *= (1f - delta);
+        return Color.HSVToColor(alpha, hsv);
+    }
+
     /**
      * {@link android.animation.ArgbEvaluator#evaluate(float, Object, Object)}
      * without the costs of auto-boxing associated with it.

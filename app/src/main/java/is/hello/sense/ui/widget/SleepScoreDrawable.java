@@ -165,5 +165,9 @@ public class SleepScoreDrawable extends Drawable {
         invalidateSelf();
     }
 
+    public int getFillColor() {
+        return fillColor;
+    }
+
     //endregion
 }

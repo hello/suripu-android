@@ -157,14 +157,6 @@
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
     </style>
 
-    <style name="AppTheme.Dialog.TimelineDetails" parent="Platform.Dialog.NoElevation">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@color/transparent</item>
-        <item name="android:windowAnimationStyle">@style/WindowAnimations.TopSlide</item>
-    </style>
-
     <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
         <item name="android:textColor">@color/black</item>
     </style>

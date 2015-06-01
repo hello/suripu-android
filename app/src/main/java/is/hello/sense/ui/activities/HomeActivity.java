@@ -422,6 +422,9 @@ public class HomeActivity
         return animatorContext;
     }
 
+    public RelativeLayout getRootContainer() {
+        return rootContainer;
+    }
 
     public void checkInForUpdates() {
         bindAndSubscribe(apiService.checkInForUpdates(new UpdateCheckIn()),
