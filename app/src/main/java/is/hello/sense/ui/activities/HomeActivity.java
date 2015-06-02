@@ -381,20 +381,26 @@ public class HomeActivity
 
     @Override
     public void onBackPressed() {
-        if (slidingLayersView.isOpen()) {
-            if (!slidingLayersView.isAnimating() && !slidingLayersView.hasActiveGesture()) {
-                UndersideFragment undersideFragment = getUndersideFragment();
-                if (undersideFragment == null || !undersideFragment.onBackPressed()) {
-                    slidingLayersView.close();
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
+            if (slidingLayersView.isOpen()) {
+                if (!slidingLayersView.isAnimating() && !slidingLayersView.hasActiveGesture()) {
+                    UndersideFragment undersideFragment = getUndersideFragment();
+                    if (undersideFragment == null || !undersideFragment.onBackPressed()) {
+                        slidingLayersView.close();
+                    }
                 }
+
+                return;
+            } else if (!isCurrentFragmentLastNight()) {
+                if (!viewPager.isAnimating() && !viewPager.hasActiveGesture()) {
+                    jumpToLastNight(true);
+                }
+
+                return;
             }
-        } else if (!isCurrentFragmentLastNight()) {
-            if (!viewPager.isAnimating() && !viewPager.hasActiveGesture()) {
-                jumpToLastNight(true);
-            }
-        } else {
-            super.onBackPressed();
         }
+
+        super.onBackPressed();
     }
 
 

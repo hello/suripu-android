@@ -28,10 +28,14 @@ public class SleepScoreDrawable extends Drawable {
     private final RectF arcRect = new RectF();
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final float fillStrokeWidth;
+    private final int pressedColor;
 
     private final TextPaint labelPaint;
     private final String label;
     private final int labelHeight;
+
+    private boolean stateful = false;
+    private boolean pressed = false;
 
     private float value = 0f;
     private int alpha = 255;
@@ -44,6 +48,7 @@ public class SleepScoreDrawable extends Drawable {
         this.fillStrokeWidth = resources.getDimensionPixelSize(R.dimen.pie_graph_stroke_width);
         this.fillColor = Color.TRANSPARENT;
         this.trackColor = resources.getColor(R.color.border);
+        this.pressedColor = resources.getColor(R.color.border);
 
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(fillStrokeWidth);
@@ -88,6 +93,15 @@ public class SleepScoreDrawable extends Drawable {
             arcPath.arcTo(arcRect, ANGLE_START, ANGLE_SWEEP);
         }
 
+        if (pressed) {
+            paint.setColor(pressedColor);
+            paint.setStyle(Paint.Style.FILL);
+            arcRect.set(0, 0, width, height);
+            canvas.drawOval(arcRect, paint);
+
+            paint.setStyle(Paint.Style.STROKE);
+        }
+
         paint.setColor(trackColor);
         canvas.drawPath(arcPath, paint);
 
@@ -97,6 +111,24 @@ public class SleepScoreDrawable extends Drawable {
         if (labelPaint != null) {
             canvas.drawText(label, 0, label.length(), width / 2f, height - labelHeight, labelPaint);
         }
+    }
+
+    @Override
+    protected boolean onStateChange(int[] stateSet) {
+        boolean pressed = false;
+        for (int state : stateSet) {
+            if (state == android.R.attr.state_pressed) {
+                pressed = true;
+            }
+        }
+
+        if (pressed != this.pressed) {
+            this.pressed = pressed;
+            invalidateSelf();
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -144,6 +176,19 @@ public class SleepScoreDrawable extends Drawable {
     @Override
     public int getIntrinsicHeight() {
         return resources.getDimensionPixelSize(R.dimen.grand_sleep_summary_height);
+    }
+
+    @Override
+    public boolean isStateful() {
+        return stateful;
+    }
+
+    public void setStateful(boolean stateful) {
+        this.stateful = stateful;
+    }
+
+    public int getPressedColor() {
+        return pressedColor;
     }
 
     public void setTrackColor(int trackColor) {

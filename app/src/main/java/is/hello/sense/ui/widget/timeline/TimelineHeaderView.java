@@ -4,9 +4,14 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -79,7 +84,15 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
         this.scoreContainer = findViewById(R.id.view_timeline_header_chart);
         this.scoreDrawable = new SleepScoreDrawable(getResources(), true);
-        scoreContainer.setBackground(scoreDrawable);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int rippleColor = scoreDrawable.getPressedColor();
+            ShapeDrawable mask = new ShapeDrawable(new OvalShape());
+            RippleDrawable ripple = new RippleDrawable(ColorStateList.valueOf(rippleColor), scoreDrawable, mask);
+            scoreContainer.setBackground(ripple);
+        } else {
+            scoreDrawable.setStateful(true);
+            scoreContainer.setBackground(scoreDrawable);
+        }
 
         this.scoreText = (TextView) findViewById(R.id.view_timeline_header_chart_score);
         this.messageText = (TextView) findViewById(R.id.view_timeline_header_chart_message);
@@ -311,10 +324,10 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     private void completeFirstScoreAnimation(@NonNull Runnable fireAdapterAnimations) {
         animatorContext.transaction(f -> {
             f.animate(scoreContainer)
-             .translationY(0f);
+                    .translationY(0f);
 
             f.animate(messageText)
-             .fadeIn();
+                    .fadeIn();
         }, finished -> {
             if (!finished) {
                 scoreContainer.setTranslationY(0f);
