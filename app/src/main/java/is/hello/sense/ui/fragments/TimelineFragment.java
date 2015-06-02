@@ -138,7 +138,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_recycler);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setOnScrollListener(new ScrollListener());
+        recyclerView.addOnScrollListener(new ScrollListener());
 
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -147,7 +147,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
-        headerView.setFirstTimeline(firstTimeline);
         headerView.setAnimationEnabled(animationEnabled);
         headerView.setOnScoreClickListener(this::showBreakdown);
         headerView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {

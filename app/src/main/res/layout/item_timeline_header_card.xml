@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/gap_medium"
+    android:paddingBottom="@dimen/gap_medium"
+    android:background="@drawable/background_timeline_header_card">
+
+    <TextView
+        android:id="@+id/item_timeline_header_card_cta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/gap_medium"
+        android:drawableEnd="@drawable/disclosure_chevron"
+        android:drawablePadding="@dimen/gap_xsmall"
+        android:textAppearance="@style/AppTheme.Text.SectionHeading.Accent"
+        android:text="@string/action_more_info" />
+
+    <TextView
+        android:id="@+id/item_timeline_header_card_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@id/item_timeline_header_card_cta"
+        android:layout_marginStart="@dimen/gap_medium"
+        android:layout_marginEnd="@dimen/gap_small"
+        android:drawablePadding="@dimen/gap_medium"
+        android:drawableStart="@drawable/before_sleep_insight_temperature"
+        android:gravity="center_vertical|start"
+        android:textAppearance="@style/AppTheme.Text.SectionHeading"
+        android:text="Bedroom Environment"/>
+
+    <View
+        android:id="@+id/item_timeline_header_card_divider"
+        android:layout_below="@id/item_timeline_header_card_title"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginBottom="@dimen/gap_small"
+        style="@style/Divider.Horizontal" />
+    
+    <TextView
+        android:id="@+id/item_timeline_header_card_contents"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_timeline_header_card_divider"
+        android:layout_marginStart="@dimen/gap_medium"
+        android:layout_marginEnd="@dimen/gap_medium"
+        android:drawablePadding="@dimen/gap_medium"
+        android:drawableStart="@drawable/before_sleep_insight_noise"
+        android:lines="2"
+        android:ellipsize="end"
+        android:gravity="start|center_horizontal"
+        android:textAppearance="@style/AppTheme.Text.Body.MidSized"
+        android:lineSpacingMultiplier="@dimen/line_multiple_body_small"
+        android:text="Your bedroom was too damn loud.\nEverything else was fine."/>
+
+</RelativeLayout>

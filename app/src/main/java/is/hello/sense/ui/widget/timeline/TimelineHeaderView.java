@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,16 +40,20 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
 
     private final View topFadeView;
-    private View scoreContainer;
+    private final View scoreContainer;
     private final SleepScoreDrawable scoreDrawable;
     private final TextView scoreText;
     private final TextView messageText;
+
+    private final ViewGroup card;
+    private final TextView cardTitle;
+    private final TextView cardContents;
+    private final TextView cardCallToAction;
 
     private final int backgroundColor;
     private final int messageTextColor;
 
     private boolean animationEnabled = true;
-    private boolean firstTimeline = false;
     private AnimatorContext animatorContext;
 
 
@@ -75,6 +80,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         int dividerColor = resources.getColor(R.color.timeline_header_border);
         dividerPaint.setColor(dividerColor);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
+        this.backgroundColor = resources.getColor(R.color.background_timeline);
 
 
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -83,6 +89,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         this.topFadeView = findViewById(R.id.view_timeline_header_fade);
 
         this.scoreContainer = findViewById(R.id.view_timeline_header_chart);
+        scoreContainer.setTranslationY(resources.getDimensionPixelSize(R.dimen.gap_xlarge));
+
         this.scoreDrawable = new SleepScoreDrawable(getResources(), true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             int rippleColor = scoreDrawable.getPressedColor();
@@ -99,8 +107,15 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         messageText.setAlpha(0f);
         Views.makeTextViewLinksClickable(messageText);
 
-        this.backgroundColor = resources.getColor(R.color.background_timeline);
         this.messageTextColor = messageText.getCurrentTextColor();
+
+
+        this.card = (ViewGroup) findViewById(R.id.view_timeline_header_card);
+        card.setVisibility(INVISIBLE);
+
+        this.cardTitle = (TextView) card.findViewById(R.id.item_timeline_header_card_title);
+        this.cardContents = (TextView) card.findViewById(R.id.item_timeline_header_card_contents);
+        this.cardCallToAction = (TextView) card.findViewById(R.id.item_timeline_header_card_cta);
     }
 
     @Override
@@ -132,16 +147,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         }
 
         this.animationEnabled = animationEnabled;
-    }
-
-    public void setFirstTimeline(boolean firstTimeline) {
-        this.firstTimeline = firstTimeline;
-
-        if (firstTimeline) {
-            scoreContainer.setTranslationY(getResources().getDimensionPixelSize(R.dimen.gap_large));
-        } else {
-            scoreContainer.setTranslationY(0f);
-        }
     }
 
     public void setAnimatorContext(@NonNull AnimatorContext animatorContext) {
@@ -269,11 +274,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             }
 
             this.colorAnimator = ValueAnimator.ofInt(scoreDrawable.getValue(), score);
-            if (firstTimeline) {
-                colorAnimator.setDuration(Animation.DURATION_NORMAL);
-            } else {
-                colorAnimator.setDuration(Animation.DURATION_SLOW);
-            }
+            colorAnimator.setDuration(Animation.DURATION_NORMAL);
             colorAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
 
             int startColor = Styles.getSleepScoreColor(getContext(), scoreDrawable.getValue());
@@ -299,8 +300,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
                     scoreText.setText(Integer.toString(score));
                     scoreText.setTextColor(endColor);
 
-                    setFirstTimeline(false);
-
                     this.wasCanceled = true;
                 }
 
@@ -309,7 +308,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
                     if (colorAnimator == animation) {
                         TimelineHeaderView.this.colorAnimator = null;
 
-                        if (!wasCanceled && firstTimeline) {
+                        if (!wasCanceled) {
                             completeFirstScoreAnimation(fireAdapterAnimations);
                         }
                     }
@@ -324,10 +323,11 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     private void completeFirstScoreAnimation(@NonNull Runnable fireAdapterAnimations) {
         animatorContext.transaction(f -> {
             f.animate(scoreContainer)
-                    .translationY(0f);
+             .translationY(0f);
 
             f.animate(messageText)
-                    .fadeIn();
+             .setStartDelay(Animation.DURATION_NORMAL / 2)
+             .fadeIn();
         }, finished -> {
             if (!finished) {
                 scoreContainer.setTranslationY(0f);
@@ -348,10 +348,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     }
 
     public void bindScore(int score, @NonNull Runnable fireAdapterAnimations) {
-        if (!firstTimeline) {
-            fireAdapterAnimations.run();
-        }
-
         animateToScore(score, fireAdapterAnimations);
     }
 
