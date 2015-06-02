@@ -69,6 +69,8 @@ public class SupportActivity extends SenseActivity {
         setContentView(R.layout.activity_help);
 
         this.webView = (WebView) findViewById(R.id.activity_help_web_view);
+        webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
         this.progress = findViewById(R.id.activity_help_progress);
 
         webView.setWebViewClient(new Client());
