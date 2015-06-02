@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.json.JSONObject;
+
 import is.hello.sense.BuildConfig;
 import retrofit.RestAdapter;
 
@@ -74,6 +76,15 @@ public class Logger {
 
     public static void error(@NonNull String tag, @NonNull String message) {
         error(tag, message, null);
+    }
+
+    public static void analytic(@NonNull String event, @Nullable JSONObject properties) {
+        //noinspection ConstantConditions
+        if (MIN_LOGGING_LEVEL <= Log.INFO) {
+            Logger.info(Analytics.LOG_TAG, event + ": " + properties);
+        } else if (Crashlytics.getInstance().isInitialized()) {
+            Crashlytics.log(Log.INFO, Analytics.LOG_TAG, event);
+        }
     }
 
     //endregion

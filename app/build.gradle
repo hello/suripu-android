@@ -112,7 +112,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
         store {
-            buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.ERROR"
+            buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.WARN"
             buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, FALSE
             buildConfigField TYPE_BOOLEAN, CLEAR_LOG_ON_START, TRUE
             buildConfigField TYPE_STRING, CLIENT_ID, '"' + "8d3c1664-05ae-47e4-bcdb-477489590aa4" + '"'
