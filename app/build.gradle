@@ -178,11 +178,11 @@ dependencies {
     compile "com.mixpanel.android:mixpanel-android:4.5.3"
     compile 'com.google.protobuf:protobuf-java:2.5.0'
 
-    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.android.support:support-v4:22.2.0'
     compile 'com.android.support:support-v13:22.0.0'
-    compile 'com.android.support:recyclerview-v7:22.0.0'
-    compile 'com.google.android.gms:play-services-gcm:7.0.0'
-    compile 'com.google.android.gms:play-services-location:7.0.0'
+    compile 'com.android.support:recyclerview-v7:22.1.0'
+    compile 'com.google.android.gms:play-services-gcm:7.5.0'
+    compile 'com.google.android.gms:play-services-location:7.5.0'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 

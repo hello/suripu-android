@@ -129,7 +129,7 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
 
     //region Properties
 
-    public void setSelectedDrawable(@NonNull Drawable selectedDrawable) {
+    public void setSelectedDrawable(Drawable selectedDrawable) {
         this.selectedDrawable = selectedDrawable;
         syncSelection();
     }
@@ -138,7 +138,7 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
         setSelectedDrawable(getResources().getDrawable(activeRes));
     }
 
-    public void setUnselectedDrawable(@NonNull Drawable unselectedDrawable) {
+    public void setUnselectedDrawable(Drawable unselectedDrawable) {
         this.unselectedDrawable = unselectedDrawable;
         syncSelection();
     }
@@ -180,12 +180,8 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
         syncSelection();
     }
 
-    public void setOnPageChangeListener(@Nullable ViewPager.OnPageChangeListener onPageChangeListener) {
-        this.onPageChangeListener = onPageChangeListener;
-    }
-
     public void attach(@NonNull ViewPager viewPager) {
-        viewPager.setOnPageChangeListener(this);
+        viewPager.addOnPageChangeListener(this);
         PagerAdapter adapter = viewPager.getAdapter();
         if (adapter != null) {
             setCount(adapter.getCount());

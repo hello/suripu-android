@@ -29,6 +29,7 @@ import is.hello.sense.util.Logger;
 public class OnboardingSenseColorsFragment extends InjectionFragment implements ViewPager.OnPageChangeListener {
     @Inject RoomConditionsPresenter presenter;
 
+    private ViewPager viewPager;
     private ViewGroup bottomContainer;
     private Button nextButton;
 
@@ -56,7 +57,8 @@ public class OnboardingSenseColorsFragment extends InjectionFragment implements 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_sense_colors, container, false);
 
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_sense_colors_pager);
+        this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_sense_colors_pager);
+        viewPager.addOnPageChangeListener(this);
 
         ColorsAdapter adapter = new ColorsAdapter(
             new SenseColor(R.string.title_sense_colors_1, R.string.info_sense_colors_1, R.drawable.onboarding_sense_colors_1),
@@ -71,7 +73,6 @@ public class OnboardingSenseColorsFragment extends InjectionFragment implements 
         this.finalItem = adapter.getCount() - 1;
 
         PageDots pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_sense_colors_dots);
-        pageDots.setOnPageChangeListener(this);
         pageDots.attach(viewPager);
 
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_sense_colors_continue);
@@ -100,6 +101,13 @@ public class OnboardingSenseColorsFragment extends InjectionFragment implements 
                              Logger.error(getClass().getSimpleName(), "Could not load conditions", e);
                              this.hasCurrentConditions = false;
                          });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        viewPager.clearOnPageChangeListeners();
     }
 
     public void next(@NonNull View sender) {

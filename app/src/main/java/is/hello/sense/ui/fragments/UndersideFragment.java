@@ -113,7 +113,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
             setCurrentItem(DEFAULT_START_ITEM, OPTION_NONE);
         }
 
-        pager.setOnPageChangeListener(this);
+        pager.addOnPageChangeListener(this);
 
         this.tabs = (SelectorView) view.findViewById(R.id.fragment_underside_tabs);
         for (int i = 0; i < tabs.getButtonCount(); i++) {
@@ -135,6 +135,13 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         tabs.setBackground(tabLine);
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        pager.clearOnPageChangeListeners();
     }
 
     @Override
