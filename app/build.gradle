@@ -112,7 +112,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
         store {
-            buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.ERROR"
+            buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.WARN"
             buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, FALSE
             buildConfigField TYPE_BOOLEAN, CLEAR_LOG_ON_START, TRUE
             buildConfigField TYPE_STRING, CLIENT_ID, '"' + "8d3c1664-05ae-47e4-bcdb-477489590aa4" + '"'
@@ -178,11 +178,11 @@ dependencies {
     compile "com.mixpanel.android:mixpanel-android:4.5.3"
     compile 'com.google.protobuf:protobuf-java:2.5.0'
 
-    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.android.support:support-v4:22.2.0'
     compile 'com.android.support:support-v13:22.0.0'
-    compile 'com.android.support:recyclerview-v7:22.0.0'
-    compile 'com.google.android.gms:play-services-gcm:7.0.0'
-    compile 'com.google.android.gms:play-services-location:7.0.0'
+    compile 'com.android.support:recyclerview-v7:22.1.0'
+    compile 'com.google.android.gms:play-services-gcm:7.5.0'
+    compile 'com.google.android.gms:play-services-location:7.5.0'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 

@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.KeyEvent;
@@ -47,7 +48,6 @@ public class TutorialOverlayView extends RelativeLayout {
     private float interactionStartX = 0f, interactionStartY = 0f;
     private boolean trackingInteraction = false;
     private boolean dispatchedLastEvent = false;
-    private boolean attachedToWindow = false; // For API level 18
 
     private @Nullable ViewGroup container;
     private @Nullable Runnable onDismiss;
@@ -85,15 +85,13 @@ public class TutorialOverlayView extends RelativeLayout {
     private <T> Subscription bindAndSubscribe(@NonNull Observable<T> observable,
                                               @NonNull Action1<T> onNext,
                                               @NonNull Action1<Throwable> onError) {
-        return observable.lift(new OperatorConditionalBinding<>(this, t -> t.attachedToWindow))
+        return observable.lift(new OperatorConditionalBinding<>(this, ViewCompat::isAttachedToWindow))
                          .subscribe(onNext, onError);
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-
-        this.attachedToWindow = true;
 
         Window window = getWindow();
         if (window != null && !(window.getCallback() instanceof EventInterceptor)) {
@@ -118,8 +116,6 @@ public class TutorialOverlayView extends RelativeLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-
-        this.attachedToWindow = false;
 
         Window window = getWindow();
         if (window != null && (window.getCallback() instanceof EventInterceptor)) {
@@ -346,7 +342,7 @@ public class TutorialOverlayView extends RelativeLayout {
 
         @Override
         public boolean dispatchTouchEvent(MotionEvent event) {
-            return ((attachedToWindow && interceptTouchEvent(event)) ||
+            return ((ViewCompat.isAttachedToWindow(TutorialOverlayView.this) && interceptTouchEvent(event)) ||
                     target.dispatchTouchEvent(event));
         }
 

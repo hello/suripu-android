@@ -422,6 +422,14 @@ public class Analytics {
 
     //region User Identity
 
+    public static void trackUserIdentifier(@NonNull String userId) {
+        Logger.info(Analytics.LOG_TAG, "Began session for " + userId);
+
+        if (Crashlytics.getInstance().isInitialized()) {
+            Crashlytics.setUserIdentifier(userId);
+        }
+    }
+
     public static void trackRegistration(@NonNull String userId) {
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
@@ -431,9 +439,7 @@ public class Analytics {
             provider.getPeople().identify(distinctId);
         }
 
-        if (Crashlytics.getInstance().isInitialized()) {
-            Crashlytics.setUserIdentifier(userId);
-        }
+        trackUserIdentifier(userId);
     }
 
     public static void trackSignIn(@NonNull String userId) {
@@ -444,9 +450,7 @@ public class Analytics {
             provider.getPeople().identify(userId);
         }
 
-        if (Crashlytics.getInstance().isInitialized()) {
-            Crashlytics.setUserIdentifier(userId);
-        }
+        trackUserIdentifier(userId);
     }
 
     public static void trackUserSignUp(@Nullable String accountId, @Nullable String name, @NonNull DateTime created) {
@@ -506,7 +510,7 @@ public class Analytics {
             provider.track(event, properties);
         }
 
-        Logger.info(LOG_TAG, event + ": " + properties);
+        Logger.analytic(event, properties);
     }
 
     public static void trackError(@NonNull String message,

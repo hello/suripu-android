@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.squareup.okhttp.Cache;
 
 import java.io.File;
@@ -33,6 +34,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
@@ -107,6 +109,10 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         debugActionItems.addTextItem("Forget welcome dialogs", null, this::clearHandholdingSettings);
         debugActionItems.addTextItem("Clear Http Cache", null, this::clearHttpCache);
         debugActionItems.addTextItem("Clear OAuth Session", null, this::clearOAuthSession);
+
+        if (Crashlytics.getInstance().isInitialized()) {
+            debugActionItems.addTextItem("Crash", null, this::crash);
+        }
     }
 
 
@@ -123,11 +129,11 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     public void clearLog() {
         LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(SessionLogger.clearLog(),
-                         ignored -> LoadingDialogFragment.close(getFragmentManager()),
-                         e -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                             ErrorDialogFragment.presentError(getFragmentManager(), e);
-                         });
+                ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                e -> {
+                    LoadingDialogFragment.close(getFragmentManager());
+                    ErrorDialogFragment.presentError(getFragmentManager(), e);
+                });
     }
 
     public void sendLog() {
@@ -155,6 +161,19 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
 
     public void clearOAuthSession() {
         sessionManager.setSession(null);
+    }
+
+    public void crash() {
+        SenseAlertDialog confirm = new SenseAlertDialog(this);
+        confirm.setTitle("Are you sure?");
+        confirm.setMessage("A report of this crash will be uploaded to Crashlytics.");
+        confirm.setPositiveButton("Crash", (dialog, which) -> {
+            Crashlytics.log("Simulating crash");
+            throw new RuntimeException("Simulated crash");
+        });
+        confirm.setNegativeButton(android.R.string.cancel, null);
+        confirm.setButtonDestructive(SenseAlertDialog.BUTTON_POSITIVE, true);
+        confirm.show();
     }
 
 

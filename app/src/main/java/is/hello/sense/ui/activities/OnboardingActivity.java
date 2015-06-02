@@ -450,6 +450,8 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void showPillInstructions() {
+        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
+
         OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
         builder.setHeadingText(R.string.title_intro_sleep_pill);
         builder.setSubheadingText(R.string.info_intro_sleep_pill);

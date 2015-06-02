@@ -15,7 +15,6 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
-import is.hello.sense.util.Logger;
 
 
 public class LaunchActivity extends InjectionActivity {
@@ -32,12 +31,12 @@ public class LaunchActivity extends InjectionActivity {
 
         if (!BuildConfig.DEBUG) {
             Crashlytics.start(this);
-            Crashlytics.setString("BuildValues_type", BuildConfig.FLAVOR);
+            Crashlytics.setString("BuildValues_type", BuildConfig.BUILD_TYPE);
         }
 
         if (sessionManager.getSession() != null) {
             String accountId = sessionManager.getSession().getAccountId();
-            Logger.info(Analytics.LOG_TAG, "Began session for " + accountId);
+            Analytics.trackUserIdentifier(accountId);
         }
     }
 
