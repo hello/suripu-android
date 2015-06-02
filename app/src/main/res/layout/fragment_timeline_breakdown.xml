@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/view_timeline_info_overlay_header"
+        android:id="@+id/fragment_timeline_breakdown_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/gap_outer"
         android:background="@color/sensor_ideal">
 
         <TextView
-            android:id="@+id/view_timeline_info_overlay_title"
+            android:id="@+id/fragment_timeline_breakdown_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/AppTheme.Text.Heading"
@@ -21,12 +21,12 @@
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/view_timeline_info_overlay_recycler"
+        android:id="@+id/fragment_timeline_breakdown_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/view_timeline_info_overlay_header"
+        android:layout_below="@id/fragment_timeline_breakdown_header"
         android:layout_margin="@dimen/gap_xsmall"
         android:overScrollMode="never"
         android:background="@drawable/raised_item_normal" />
 
-</merge>
+</RelativeLayout>

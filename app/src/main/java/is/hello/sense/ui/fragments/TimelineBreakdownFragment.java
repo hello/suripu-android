@@ -1,4 +1,4 @@
-package is.hello.sense.ui.dialogs;
+package is.hello.sense.ui.fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -6,12 +6,12 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -20,7 +20,6 @@ import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -35,114 +34,47 @@ import java.util.ArrayList;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.common.SenseAnimatedFragment;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 
-public class TimelineInfoOverlay extends RelativeLayout {
-    private int score;
+public class TimelineBreakdownFragment extends SenseAnimatedFragment {
+    public static final String TAG = TimelineBreakdownFragment.class.getSimpleName();
+
+    private static final String ARG_SCORE = TimelineBreakdownFragment.class.getName() + ".ARG_SCORE";
+    private static final String ARG_ITEMS = TimelineBreakdownFragment.class.getName() + ".ARG_ITEMS";
+
     private int scoreColor;
-    private final ArrayList<Item> items = new ArrayList<>();
+    private ArrayList<Item> items;
 
-    private final View header;
-    private final RecyclerView recycler;
-    private final Adapter adapter;
-    private final LayoutInflater inflater;
+    private RelativeLayout rootView;
+    private View header;
+    private RecyclerView recycler;
 
-    private final int overlayColor;
-    private final int headerOverlap;
+    private int overlayColor;
+    private int headerOverlap;
 
     private @Nullable Window window;
     private int oldStatusBarColor;
 
     //region Lifecycle
 
-    public TimelineInfoOverlay(@NonNull Context context) {
-        super(context);
+    public static TimelineBreakdownFragment newInstance(int score, @NonNull ArrayList<Item> items) {
+        TimelineBreakdownFragment fragment = new TimelineBreakdownFragment();
 
-        this.inflater = LayoutInflater.from(context);
-        inflater.inflate(R.layout.view_timeline_info_overlay, this, true);
+        Bundle arguments = new Bundle();
+        arguments.putInt(ARG_SCORE, score);
+        arguments.putParcelableArrayList(ARG_ITEMS, items);
+        fragment.setArguments(arguments);
 
-        setClickable(true);
-
-        this.overlayColor = getResources().getColor(R.color.background_dark_overlay);
-        this.headerOverlap = getResources().getDimensionPixelSize(R.dimen.gap_medium);
-
-        this.header = findViewById(R.id.view_timeline_info_overlay_header);
-
-        this.recycler = (RecyclerView) findViewById(R.id.view_timeline_info_overlay_recycler);
-        recycler.setHasFixedSize(true);
-        recycler.setLayoutManager(new LinearLayoutManager(context));
-        recycler.setVisibility(View.INVISIBLE);
-
-        this.adapter = new Adapter();
-        recycler.setAdapter(adapter);
+        return fragment;
     }
 
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
-        this.window = ((Activity) getContext()).getWindow();
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
-            window.setStatusBarColor(oldStatusBarColor);
-        }
-
-        this.window = null;
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
-
-        int headerBottom = header.getBottom();
-        headerBottom += headerOverlap;
-        header.setBottom(headerBottom);
-    }
-
-    //endregion
-
-
-    private static void setProgressTint(@NonNull ProgressBar tint, int tintColor) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            tint.setProgressTintList(ColorStateList.valueOf(tintColor));
-        } else {
-            Drawable drawable = tint.getProgressDrawable();
-            if (drawable instanceof LayerDrawable) {
-                Drawable fillDrawable = ((LayerDrawable) drawable).findDrawableByLayerId(android.R.id.progress);
-                if (fillDrawable != null) {
-                    Drawables.setTintColor(fillDrawable, tintColor);
-                }
-            }
-        }
-    }
-
-
-    //region Attributes
-
-    public void setScore(int score) {
-        this.score = score;
-        setScoreColor(Styles.getSleepScoreColor(getContext(), score));
-    }
-
-    public void setScoreColor(int scoreColor) {
-        this.scoreColor = scoreColor;
-
-        header.setBackgroundColor(scoreColor);
-    }
-
-    public void setTimeline(@NonNull Timeline timeline) {
+    public static TimelineBreakdownFragment newInstance(@NonNull Timeline timeline) {
         Timeline.Statistics statistics = timeline.getStatistics();
 
-        items.clear();
-
+        ArrayList<Item> items = new ArrayList<>();
         if (statistics.getTotalSleep() != null) {
             int totalSleep = statistics.getTotalSleep();
             items.add(new Item(R.string.timeline_breakdown_label_total_sleep, Item.Type.DURATION, totalSleep));
@@ -163,19 +95,136 @@ public class TimelineInfoOverlay extends RelativeLayout {
             items.add(new Item(R.string.timeline_breakdown_label_times_awake, Item.Type.COUNT, timesAwake));
         }
 
-        setScore(timeline.getScore());
+        return newInstance(timeline.getScore(), items);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        int score = getArguments().getInt(ARG_SCORE);
+        this.scoreColor = Styles.getSleepScoreColor(getActivity(), score);
+        this.items = getArguments().getParcelableArrayList(ARG_ITEMS);
+
+        this.overlayColor = getResources().getColor(R.color.background_dark_overlay);
+        this.headerOverlap = getResources().getDimensionPixelSize(R.dimen.gap_medium);
+
+        setRetainInstance(true);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        this.window = activity.getWindow();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.rootView = (RelativeLayout) inflater.inflate(R.layout.fragment_timeline_breakdown, container, false);
+        rootView.setOnClickListener(ignored -> getFragmentManager().popBackStack());
+
+        this.header = rootView.findViewById(R.id.fragment_timeline_breakdown_header);
+        header.setBackgroundColor(scoreColor);
+
+        rootView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            int headerBottom = header.getBottom();
+            headerBottom += headerOverlap;
+            header.setBottom(headerBottom);
+        });
+
+        this.recycler = (RecyclerView) rootView.findViewById(R.id.fragment_timeline_breakdown_recycler);
+        recycler.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
+        recycler.setVisibility(View.INVISIBLE);
+
+        Adapter adapter = new Adapter();
+        recycler.setAdapter(adapter);
+
+        return rootView;
+    }
+
+    @Override
+    protected Animator onProvideEnterAnimator() {
+        AnimatorSet compound = new AnimatorSet();
+
+        compound.play(createFadeIn())
+                .with(createHeaderReveal())
+                .with(createRecyclerReveal());
+
+        compound.setInterpolator(new AccelerateDecelerateInterpolator());
+        compound.setDuration(Animation.DURATION_NORMAL);
+
+        return compound;
+    }
+
+    @Override
+    protected void onSkipEnterAnimator() {
+        rootView.setBackgroundColor(overlayColor);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
+            this.oldStatusBarColor = window.getStatusBarColor();
+            int newStatusBarColor = Drawing.darkenColorBy(scoreColor, 0.2f);
+            window.setStatusBarColor(newStatusBarColor);
+        }
+
+        header.setVisibility(View.VISIBLE);
+        header.setAlpha(1f);
+
+        recycler.setTranslationY(0f);
+        recycler.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected Animator onProvideExitAnimator() {
+        AnimatorSet compound = new AnimatorSet();
+
+        Animator recyclerDismissal = createRecyclerDismissal();
+        compound.play(recyclerDismissal)
+                .with(createHeaderDismissal());
+        compound.play(createFadeOut())
+                .after(recyclerDismissal);
+
+        compound.setInterpolator(new AccelerateDecelerateInterpolator());
+        compound.setDuration(Animation.DURATION_NORMAL);
+
+        return compound;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // Don't clear any of the view fields, we need
+        // them around for the dismissal animator.
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        this.window = null;
     }
 
     //endregion
 
 
-    //region Showing
-
-    private void prepareForShowing() {
-        setBackground(null);
-        header.setVisibility(INVISIBLE);
-        recycler.setVisibility(INVISIBLE);
+    private static void setProgressTint(@NonNull ProgressBar tint, int tintColor) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            tint.setProgressTintList(ColorStateList.valueOf(tintColor));
+        } else {
+            Drawable drawable = tint.getProgressDrawable();
+            if (drawable instanceof LayerDrawable) {
+                Drawable fillDrawable = ((LayerDrawable) drawable).findDrawableByLayerId(android.R.id.progress);
+                if (fillDrawable != null) {
+                    Drawables.setTintColor(fillDrawable, tintColor);
+                }
+            }
+        }
     }
+
+
+    //region Showing
 
     private Animator createFadeIn() {
         ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
@@ -186,7 +235,7 @@ public class TimelineInfoOverlay extends RelativeLayout {
                 float fraction = animator.getAnimatedFraction();
 
                 int background = Drawing.interpolateColors(fraction, Color.TRANSPARENT, overlayColor);
-                setBackgroundColor(background);
+                rootView.setBackgroundColor(background);
 
                 int statusBar = Drawing.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
                 window.setStatusBarColor(statusBar);
@@ -195,8 +244,8 @@ public class TimelineInfoOverlay extends RelativeLayout {
             fadeIn.addUpdateListener(animator -> {
                 float fraction = animator.getAnimatedFraction();
 
-                int background = Drawing.interpolateColors(fraction, Color.TRANSPARENT, Color.BLACK);
-                setBackgroundColor(background);
+                int background = Drawing.interpolateColors(fraction, Color.TRANSPARENT, overlayColor);
+                rootView.setBackgroundColor(background);
             });
         }
         return fadeIn;
@@ -216,7 +265,7 @@ public class TimelineInfoOverlay extends RelativeLayout {
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                header.setVisibility(VISIBLE);
+                header.setVisibility(View.VISIBLE);
             }
         });
         return animator;
@@ -228,34 +277,10 @@ public class TimelineInfoOverlay extends RelativeLayout {
         slideUp.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                recycler.setVisibility(VISIBLE);
+                recycler.setVisibility(View.VISIBLE);
             }
         });
         return slideUp;
-    }
-
-    private Animator createRevealAnimator() {
-        AnimatorSet compound = new AnimatorSet();
-
-        compound.play(createFadeIn())
-                .with(createHeaderReveal())
-                .with(createRecyclerReveal());
-
-        compound.setInterpolator(new AccelerateDecelerateInterpolator());
-        compound.setDuration(Animation.DURATION_NORMAL);
-
-        return compound;
-    }
-
-    public void showIn(@NonNull ViewGroup parent) {
-        prepareForShowing();
-
-        parent.addView(this, new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-
-        post(() -> {
-            Animator reveal = createRevealAnimator();
-            reveal.start();
-        });
     }
 
     //endregion
@@ -264,12 +289,12 @@ public class TimelineInfoOverlay extends RelativeLayout {
     //region Hiding
 
     private Animator createRecyclerDismissal() {
-        MarginLayoutParams layoutParams = (MarginLayoutParams) recycler.getLayoutParams();
-        Animator slideDown = ObjectAnimator.ofFloat(recycler, "translationY", 0f, recycler.getMeasuredHeight() + layoutParams.topMargin);
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) recycler.getLayoutParams();
+        ObjectAnimator slideDown = ObjectAnimator.ofFloat(recycler, "translationY", 0f, recycler.getMeasuredHeight() + layoutParams.topMargin);
         slideDown.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                recycler.setVisibility(INVISIBLE);
+                recycler.setVisibility(View.INVISIBLE);
                 recycler.setTranslationY(0f);
             }
         });
@@ -291,7 +316,7 @@ public class TimelineInfoOverlay extends RelativeLayout {
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                header.setVisibility(INVISIBLE);
+                header.setVisibility(View.INVISIBLE);
                 header.setAlpha(1f);
             }
         });
@@ -307,7 +332,7 @@ public class TimelineInfoOverlay extends RelativeLayout {
                 float fraction = animator.getAnimatedFraction();
 
                 int background = Drawing.interpolateColors(fraction, overlayColor, Color.TRANSPARENT);
-                setBackgroundColor(background);
+                rootView.setBackgroundColor(background);
 
                 int statusBar = Drawing.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
                 window.setStatusBarColor(statusBar);
@@ -317,65 +342,18 @@ public class TimelineInfoOverlay extends RelativeLayout {
                 float fraction = animator.getAnimatedFraction();
 
                 int background = Drawing.interpolateColors(fraction, overlayColor, Color.TRANSPARENT);
-                setBackgroundColor(background);
+                rootView.setBackgroundColor(background);
             });
         }
         return fadeIn;
-    }
-
-    private Animator createDismissalAnimator() {
-        AnimatorSet compound = new AnimatorSet();
-
-        Animator recyclerDismissal = createRecyclerDismissal();
-        compound.play(recyclerDismissal)
-                .with(createHeaderDismissal());
-        compound.play(createFadeOut())
-                .after(recyclerDismissal);
-
-        compound.setInterpolator(new AccelerateDecelerateInterpolator());
-        compound.setDuration(Animation.DURATION_NORMAL);
-
-        return compound;
-    }
-
-    public void removeFromParent() {
-        ViewGroup parent = (ViewGroup) getParent();
-        parent.removeView(this);
-    }
-
-    public void dismiss() {
-        Animator dismissal = createDismissalAnimator();
-        dismissal.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                removeFromParent();
-            }
-        });
-        dismissal.start();
-    }
-
-    //endregion
-
-
-    //region Events
-
-    @Override
-    public boolean onTouchEvent(@NonNull MotionEvent event) {
-        switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_UP: {
-                dismiss();
-
-                break;
-            }
-        }
-
-        return true;
     }
 
     //endregion
 
 
     public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
+        private final LayoutInflater inflater = LayoutInflater.from(getActivity());
+
         @Override
         public int getItemCount() {
             return items.size();

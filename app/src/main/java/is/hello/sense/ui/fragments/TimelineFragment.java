@@ -36,7 +36,6 @@ import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.dialogs.TimelineInfoOverlay;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
@@ -261,9 +260,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     public void showBreakdown(@NonNull View sender) {
         bindAndSubscribe(presenter.timeline.take(1),
                          timeline -> {
-                             TimelineInfoOverlay infoOverlay = new TimelineInfoOverlay(getActivity());
-                             infoOverlay.setTimeline(timeline);
-                             infoOverlay.showIn(homeActivity.getRootContainer());
+                             TimelineBreakdownFragment infoOverlay = TimelineBreakdownFragment.newInstance(timeline);
+                             infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineBreakdownFragment.TAG);
                          },
                          Functions.LOG_ERROR);
     }
