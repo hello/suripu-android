@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -25,10 +26,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.ConditionSummary;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
+import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -361,6 +364,22 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
     public void bindMessage(@Nullable CharSequence message) {
         messageText.setText(message);
+    }
+
+    public void bindConditionSummary(@NonNull ConditionSummary summary) {
+        Resources resources = getResources();
+        int averageColor = resources.getColor(summary.getAverageCondition().colorRes);
+
+        cardCallToAction.setTextColor(averageColor);
+        Drawables.setTintColor(cardCallToAction.getCompoundDrawablesRelative()[2].mutate(), averageColor);
+        Drawables.setTintColor(cardTitle.getCompoundDrawablesRelative()[0].mutate(), averageColor);
+
+        //noinspection ConstantConditions
+        Drawable sensorIcon = resources.getDrawable(summary.getBadSensor().iconRes).mutate();
+        int badSensorColor = resources.getColor(summary.getBadSensorCondition().colorRes);
+        Drawables.setTintColor(sensorIcon, badSensorColor);
+        cardContents.setCompoundDrawablesRelativeWithIntrinsicBounds(sensorIcon, null, null, null);
+        cardContents.setText(summary.getMessage());
     }
 
     public void bindScore(int score, @NonNull Runnable fireAdapterAnimations) {
