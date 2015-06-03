@@ -302,33 +302,34 @@ public class TimelineBreakdownFragment extends SenseAnimatedFragment {
     }
 
     private Animator createHeaderDismissal() {
-        Animator animator;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             int centerX = header.getMeasuredWidth() / 2,
                 centerY = 0;
             float startRadius = Math.max(header.getMeasuredWidth(), header.getMeasuredHeight()),
                     endRadius = 0f;
-            animator = ViewAnimationUtils.createCircularReveal(header, centerX, centerY, startRadius, endRadius);
+            Animator revealAnimator = ViewAnimationUtils.createCircularReveal(header, centerX, centerY, startRadius, endRadius);
+            revealAnimator.setStartDelay(Animation.DURATION_NORMAL / 2);
+            revealAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    header.setVisibility(View.INVISIBLE);
+                    header.setAlpha(1f);
+                }
+            });
+            return revealAnimator;
         } else {
-            animator = ObjectAnimator.ofFloat(header, "alpha", 1f, 0f);
+            // We fade the whole view out on KitKat and below.
+            return Animation.createEmptyAnimator();
         }
-        animator.setStartDelay(Animation.DURATION_NORMAL / 2);
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                header.setVisibility(View.INVISIBLE);
-                header.setAlpha(1f);
-            }
-        });
-        return animator;
     }
 
     private Animator createFadeOut() {
-        ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
+            ValueAnimator fadeOut = ValueAnimator.ofFloat(0f, 1f);
+
             int oldStatusBarColor = window.getStatusBarColor();
             int newStatusBarColor = this.oldStatusBarColor;
-            fadeIn.addUpdateListener(animator -> {
+            fadeOut.addUpdateListener(animator -> {
                 float fraction = animator.getAnimatedFraction();
 
                 int background = Drawing.interpolateColors(fraction, overlayColor, Color.TRANSPARENT);
@@ -337,15 +338,11 @@ public class TimelineBreakdownFragment extends SenseAnimatedFragment {
                 int statusBar = Drawing.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
                 window.setStatusBarColor(statusBar);
             });
-        } else {
-            fadeIn.addUpdateListener(animator -> {
-                float fraction = animator.getAnimatedFraction();
 
-                int background = Drawing.interpolateColors(fraction, overlayColor, Color.TRANSPARENT);
-                rootView.setBackgroundColor(background);
-            });
+            return fadeOut;
+        } else {
+            return ObjectAnimator.ofFloat(rootView, "alpha", 1f, 0f);
         }
-        return fadeIn;
     }
 
     //endregion

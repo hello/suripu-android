@@ -1,5 +1,7 @@
 package is.hello.sense.ui.animation;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.support.annotation.NonNull;
@@ -109,5 +111,12 @@ public class Animation {
         colorAnimator.setInterpolator(INTERPOLATOR_DEFAULT);
         colorAnimator.setDuration(DURATION_NORMAL);
         return colorAnimator;
+    }
+
+    /**
+     * Creates and returns an animator that does nothing.
+     */
+    public static Animator createEmptyAnimator() {
+        return new AnimatorSet();
     }
 }
