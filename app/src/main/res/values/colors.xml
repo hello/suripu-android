@@ -30,6 +30,7 @@
     <color name="shadow_end">#18000000</color>
 
     <color name="timeline_header_border">#C5E7FF</color>
+    <color name="timeline_header_gradient_end">#ffF0F3F7</color>
     <color name="timeline_segment_stripe">#40009cff</color>
     <color name="timeline_segment_stripe_dimmed">#40a2a2a2</color>
     <color name="timeline_segment_text_left">@color/text_dim</color>

@@ -73,6 +73,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     private HomeActivity homeActivity;
 
     private boolean firstTimeline;
+    private boolean hasCreatedView = false;
 
     private View contentShadow;
     private RecyclerView recyclerView;
@@ -146,7 +147,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        boolean animationEnabled = !(firstTimeline && homeActivity.getWillShowUnderside());
+        boolean animationEnabled = !hasCreatedView && !(firstTimeline && homeActivity.getWillShowUnderside());
 
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
@@ -172,6 +173,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         this.adapter = new TimelineAdapter(getActivity(), headerView, dateFormatter);
         adapter.setOnItemClickListener(stateSafeExecutor, this);
         recyclerView.setAdapter(adapter);
+
+        this.hasCreatedView = true;
 
         return view;
     }

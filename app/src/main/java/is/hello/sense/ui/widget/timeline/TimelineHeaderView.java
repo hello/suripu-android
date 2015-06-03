@@ -58,6 +58,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     private final int backgroundColor;
     private final int messageTextColor;
 
+    private boolean hasAnimated = false;
     private boolean animationEnabled = true;
     private AnimatorContext animatorContext;
 
@@ -88,9 +89,9 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         this.backgroundColor = resources.getColor(R.color.background_timeline);
 
         GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
-                backgroundColor,
-                backgroundColor,
-                0xffF0F3F7
+            backgroundColor,
+            backgroundColor,
+            resources.getColor(R.color.timeline_header_gradient_end),
         });
         setBackground(gradient);
 
@@ -124,7 +125,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
 
         this.card = (ViewGroup) findViewById(R.id.view_timeline_header_card);
-        card.setVisibility(INVISIBLE);
+        card.setAlpha(0f);
 
         this.cardTitle = (TextView) card.findViewById(R.id.item_timeline_header_card_title);
         this.cardContents = (TextView) card.findViewById(R.id.item_timeline_header_card_contents);
@@ -271,10 +272,11 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
         scoreContainer.setTranslationY(0f);
         messageText.setAlpha(1f);
+        card.setAlpha(1f);
     }
 
     private void animateToScore(int score, @NonNull Runnable fireAdapterAnimations) {
-        if (score < 0 || !animationEnabled || getVisibility() != VISIBLE) {
+        if (score < 0 || !animationEnabled || hasAnimated || getVisibility() != VISIBLE) {
             setScore(score);
             fireAdapterAnimations.run();
         } else {
@@ -285,6 +287,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             if (colorAnimator != null) {
                 colorAnimator.cancel();
             }
+
+            this.hasAnimated = true;
 
             this.colorAnimator = ValueAnimator.ofInt(scoreDrawable.getValue(), score);
             colorAnimator.setDuration(Animation.DURATION_NORMAL);
