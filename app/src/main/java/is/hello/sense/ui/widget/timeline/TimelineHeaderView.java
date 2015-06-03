@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
@@ -18,6 +19,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -82,6 +84,13 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
         this.backgroundColor = resources.getColor(R.color.background_timeline);
 
+        GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
+                backgroundColor,
+                backgroundColor,
+                0xffF0F3F7
+        });
+        setBackground(gradient);
+
 
         LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(R.layout.view_timeline_header, this, true);
@@ -89,7 +98,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         this.topFadeView = findViewById(R.id.view_timeline_header_fade);
 
         this.scoreContainer = findViewById(R.id.view_timeline_header_chart);
-        scoreContainer.setTranslationY(resources.getDimensionPixelSize(R.dimen.gap_xlarge));
+        int scoreTranslation = resources.getDimensionPixelSize(R.dimen.grand_sleep_summary_height) / 2;
+        scoreContainer.setTranslationY(scoreTranslation);
 
         this.scoreDrawable = new SleepScoreDrawable(getResources(), true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -323,15 +333,21 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     private void completeFirstScoreAnimation(@NonNull Runnable fireAdapterAnimations) {
         animatorContext.transaction(f -> {
             f.animate(scoreContainer)
+             .setInterpolator(new AccelerateDecelerateInterpolator())
              .translationY(0f);
 
             f.animate(messageText)
              .setStartDelay(Animation.DURATION_NORMAL / 2)
              .fadeIn();
+
+            f.animate(card)
+             .setStartDelay(Animation.DURATION_NORMAL)
+             .fadeIn();
         }, finished -> {
             if (!finished) {
                 scoreContainer.setTranslationY(0f);
                 messageText.setAlpha(1f);
+                card.setAlpha(1f);
             }
 
             fireAdapterAnimations.run();

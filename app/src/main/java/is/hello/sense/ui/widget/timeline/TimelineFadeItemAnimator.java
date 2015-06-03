@@ -33,7 +33,7 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
         getAnimatorContext().transaction(config, AnimatorContext.OPTIONS_DEFAULT, f -> {
             dispatchAnimationWillStart(f);
 
-            long delay = DELAY;
+            long delay = 0;
             for (RecyclerView.ViewHolder item : pending) {
                 dispatchAddStarting(item);
 

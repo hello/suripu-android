@@ -207,7 +207,7 @@ public class AnimatorContext implements Animator.AnimatorListener {
                                   @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
         PropertyAnimatorProxy longestAnimator = null;
         for (PropertyAnimatorProxy animator : animators) {
-            if (longestAnimator == null || animator.getDuration() >= longestAnimator.getDuration()) {
+            if (longestAnimator == null || animator.getTotalDuration() >= longestAnimator.getTotalDuration()) {
                 longestAnimator = animator;
             }
 

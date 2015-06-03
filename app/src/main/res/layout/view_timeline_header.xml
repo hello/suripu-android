@@ -7,8 +7,9 @@
         android:id="@+id/view_timeline_header_chart"
         android:layout_width="@dimen/grand_sleep_summary_width"
         android:layout_height="@dimen/grand_sleep_summary_height"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/view_timeline_header_fade"
         android:contentDescription="@string/sleep_score">
 
         <TextView
@@ -26,9 +27,9 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/view_timeline_header_chart"
+        android:layout_marginTop="@dimen/gap_medium"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_tiny"
         android:textAppearance="@style/AppTheme.Text.Body.MidSized"
         android:gravity="center"
         android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
@@ -42,13 +43,13 @@
         android:layout_below="@id/view_timeline_header_chart_message"
         android:layout_marginLeft="@dimen/timeline_segment_event_vertical_inset"
         android:layout_marginRight="@dimen/timeline_segment_event_vertical_inset"
-        android:layout_marginTop="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/gap_medium"
         android:layout_marginBottom="@dimen/timeline_segment_event_vertical_inset" />
 
     <View
         android:id="@+id/view_timeline_header_fade"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/gap_medium"
+        android:layout_height="@dimen/gap_tiny"
         android:layout_alignParentTop="true"
         android:background="@drawable/timeline_top_fade"
         android:importantForAccessibility="no" />
