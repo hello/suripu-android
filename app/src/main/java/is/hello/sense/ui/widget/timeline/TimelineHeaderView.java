@@ -127,9 +127,9 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         this.card = (ViewGroup) findViewById(R.id.view_timeline_header_card);
         card.setAlpha(0f);
 
-        this.cardTitle = (TextView) card.findViewById(R.id.item_timeline_header_card_title);
-        this.cardContents = (TextView) card.findViewById(R.id.item_timeline_header_card_contents);
-        this.cardCallToAction = (TextView) card.findViewById(R.id.item_timeline_header_card_cta);
+        this.cardTitle = (TextView) card.findViewById(R.id.view_timeline_header_card_title);
+        this.cardContents = (TextView) card.findViewById(R.id.view_timeline_header_card_contents);
+        this.cardCallToAction = (TextView) card.findViewById(R.id.view_timeline_header_card_cta);
     }
 
     @Override
@@ -185,10 +185,16 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         topFadeView.setTranslationY(-getTop());
     }
 
+    private void setCardTitleTint(int color) {
+        cardCallToAction.setTextColor(color);
+        Drawables.setTintColor(cardCallToAction.getCompoundDrawablesRelative()[2].mutate(), color);
+        Drawables.setTintColor(cardTitle.getCompoundDrawablesRelative()[0].mutate(), color);
+    }
+
     //endregion
 
-    //region Animation
 
+    //region Animation
 
     @Override
     public void clearAnimation() {
@@ -374,9 +380,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         Resources resources = getResources();
         int averageColor = resources.getColor(summary.getAverageCondition().colorRes);
 
-        cardCallToAction.setTextColor(averageColor);
-        Drawables.setTintColor(cardCallToAction.getCompoundDrawablesRelative()[2].mutate(), averageColor);
-        Drawables.setTintColor(cardTitle.getCompoundDrawablesRelative()[0].mutate(), averageColor);
+        cardTitle.setText(R.string.title_bedroom_environment);
+        setCardTitleTint(averageColor);
 
         //noinspection ConstantConditions
         Drawable sensorIcon = resources.getDrawable(summary.getBadSensor().iconRes).mutate();
@@ -391,8 +396,16 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     }
 
     public void bindError(@NonNull Throwable e) {
+        messageText.setText(R.string.missing_data_placeholder);
+
+        cardTitle.setText(R.string.dialog_error_title);
+        cardCallToAction.setVisibility(INVISIBLE);
+        setCardTitleTint(getResources().getColor(R.color.sensor_unknown));
+
+        cardContents.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+        cardContents.setText(getResources().getString(R.string.timeline_error_message, e.getMessage()));
+
         setScore(NULL_SCORE);
-        messageText.setText(getResources().getString(R.string.timeline_error_message, e.getMessage()));
     }
 
     //endregion

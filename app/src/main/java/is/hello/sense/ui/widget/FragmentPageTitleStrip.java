@@ -3,14 +3,18 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.DynamicDrawableSpan;
+import android.text.style.ImageSpan;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -26,6 +30,8 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
 
     private final GradientDrawable fadeGradient;
     private final int fadeGradientWidth;
+    private final Drawable icon;
+    private final CharSequence iconDescription;
 
     private boolean drawFade = false;
     private boolean textViewsSwapped = false;
@@ -61,6 +67,12 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
             Color.TRANSPARENT,
         });
         this.fadeGradientWidth = getResources().getDimensionPixelSize(R.dimen.gap_medium);
+
+        //noinspection ConstantConditions
+        this.icon = getResources().getDrawable(R.drawable.action_expand_timeline).mutate();
+        icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
+
+        this.iconDescription = "(Select Date)";
     }
 
     //endregion
@@ -134,14 +146,17 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
     //region Attributes
 
     public void setDimmed(boolean dimmed) {
-        int textColor;
+        int color;
         if (dimmed) {
-            textColor = getResources().getColor(R.color.text_dim);
+            color = getResources().getColor(R.color.text_dim);
         } else {
-            textColor = getResources().getColor(R.color.text_dark);
+            color = getResources().getColor(R.color.text_dark);
         }
-        textView1.setTextColor(textColor);
-        textView2.setTextColor(textColor);
+
+        icon.setAlpha(Color.alpha(color));
+
+        textView1.setTextColor(color);
+        textView2.setTextColor(color);
     }
 
     //endregion
@@ -149,14 +164,27 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
 
     //region Decor
 
+    private CharSequence constructTitle(@Nullable CharSequence title) {
+        SpannableStringBuilder finalTitle = new SpannableStringBuilder(iconDescription);
+
+        ImageSpan imageSpan = new ImageSpan(icon, DynamicDrawableSpan.ALIGN_BASELINE);
+        finalTitle.setSpan(imageSpan, 0, finalTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        if (title != null) {
+            finalTitle.insert(0, "  ");
+            finalTitle.insert(0, title);
+        }
+        return finalTitle;
+    }
+
     @Override
     public void onSetOnScreenTitle(@Nullable CharSequence title) {
-        getForegroundTextView().setText(title);
+        getForegroundTextView().setText(constructTitle(title));
     }
 
     @Override
     public void onSetOffScreenTitle(@Nullable CharSequence title) {
-        getBackgroundTextView().setText(title);
+        getBackgroundTextView().setText(constructTitle(title));
     }
 
     @Override
@@ -169,8 +197,8 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
 
     @Override
     public void onSwipeMoved(float newAmount) {
-        View background = getBackgroundTextView(),
-             foreground = getForegroundTextView();
+        TextView background = getBackgroundTextView(),
+                 foreground = getForegroundTextView();
 
         if (swipeDirection == null) {
             background.setVisibility(VISIBLE);

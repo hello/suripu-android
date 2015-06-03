@@ -17,6 +17,8 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -152,7 +154,6 @@ public class TimelineBreakdownFragment extends SenseAnimatedFragment {
                 .with(createHeaderReveal())
                 .with(createRecyclerReveal());
 
-        compound.setInterpolator(new AccelerateDecelerateInterpolator());
         compound.setDuration(Animation.DURATION_NORMAL);
 
         return compound;
@@ -273,6 +274,7 @@ public class TimelineBreakdownFragment extends SenseAnimatedFragment {
 
     private Animator createRecyclerReveal() {
         ObjectAnimator slideUp = ObjectAnimator.ofFloat(recycler, "translationY", recycler.getMeasuredHeight(), 0f);
+        slideUp.setInterpolator(new FastOutSlowInInterpolator());
         slideUp.setStartDelay(Animation.DURATION_NORMAL / 2);
         slideUp.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -291,6 +293,7 @@ public class TimelineBreakdownFragment extends SenseAnimatedFragment {
     private Animator createRecyclerDismissal() {
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) recycler.getLayoutParams();
         ObjectAnimator slideDown = ObjectAnimator.ofFloat(recycler, "translationY", 0f, recycler.getMeasuredHeight() + layoutParams.topMargin);
+        slideDown.setInterpolator(new FastOutLinearInInterpolator());
         slideDown.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {

@@ -37,14 +37,14 @@
 
     <include
         android:id="@+id/view_timeline_header_card"
-        layout="@layout/item_timeline_header_card"
+        layout="@layout/sub_view_timeline_header_card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/view_timeline_header_chart_message"
-        android:layout_marginLeft="@dimen/timeline_segment_event_vertical_inset"
-        android:layout_marginRight="@dimen/timeline_segment_event_vertical_inset"
+        android:layout_marginLeft="@dimen/gap_xsmall"
+        android:layout_marginRight="@dimen/gap_xsmall"
         android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginBottom="@dimen/timeline_segment_event_vertical_inset" />
+        android:layout_marginBottom="@dimen/gap_xsmall" />
 
     <View
         android:id="@+id/view_timeline_header_fade"
