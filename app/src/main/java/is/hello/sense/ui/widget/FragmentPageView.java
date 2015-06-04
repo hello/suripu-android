@@ -73,7 +73,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private boolean hasBeforeView = false, hasAfterView = false;
     private boolean trackingTouchEvents = false;
 
-    private boolean animating = false;
+    private @NonNull RunningAnimation runningAnimation = RunningAnimation.NONE;
 
     //endregion
 
@@ -245,7 +245,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             decor.onSwipeMoved(position == Position.BEFORE ? 0.01f : -0f);
         }
 
-        completeTransition(position, true, Animation.DURATION_FAST);
+        finishSwipe(position, true, Animation.DURATION_FAST);
     }
 
     public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
@@ -270,7 +270,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     public boolean isAnimating() {
-        return animating;
+        return (runningAnimation != RunningAnimation.NONE);
     }
 
     //endregion
@@ -378,7 +378,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     private TFragment addOffScreenFragment(Position position) {
-        TFragment newFragment = null;
+        TFragment newFragment;
         switch (position) {
             case BEFORE:
                 newFragment = adapter.getFragmentBeforeFragment(getCurrentFragment());
@@ -414,7 +414,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         getOnScreenView().setX(0f);
     }
 
-    private void completeTransition(Position position, boolean fadeOutOnScreen, long duration) {
+    private void finishSwipe(Position position, boolean fadeOutOnScreen, long duration) {
         PropertyAnimatorProxy onScreenViewAnimator = PropertyAnimatorProxy.animate(getOnScreenView(), animatorContext);
         animationConfig.apply(onScreenViewAnimator).setDuration(duration);
         PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView(), animatorContext);
@@ -439,8 +439,6 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 return;
             }
 
-            this.currentPosition = null;
-
             Runnable finish = () -> {
                 exchangeOnAndOffScreen();
 
@@ -448,7 +446,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     getOnTransitionObserver().onDidTransitionToFragment(getCurrentFragment(), true);
                 }
 
-                this.animating = false;
+                this.runningAnimation = RunningAnimation.NONE;
             };
             if (stateSafeExecutor != null) {
                 stateSafeExecutor.execute(finish);
@@ -464,7 +462,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         onScreenViewAnimator.start();
         offScreenViewAnimator.start();
 
-        this.animating = true;
+        this.runningAnimation = RunningAnimation.FINISH_SWIPE;
     }
 
     private void snapBack(Position position, long duration) {
@@ -484,8 +482,6 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 return;
             }
 
-            this.currentPosition = null;
-
             Runnable finish = () -> {
                 getOnScreenView().setX(0f);
                 removeOffScreenFragment();
@@ -494,7 +490,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     getOnTransitionObserver().onDidSnapBackToFragment(getCurrentFragment());
                 }
 
-                this.animating = false;
+                this.runningAnimation = RunningAnimation.NONE;
             };
             if (stateSafeExecutor != null) {
                 stateSafeExecutor.execute(finish);
@@ -506,7 +502,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         onScreenViewAnimator.start();
         offScreenViewAnimator.start();
 
-        this.animating = true;
+        this.runningAnimation = RunningAnimation.SNAP_BACK;
     }
 
     @Override
@@ -589,7 +585,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
 
                     if (shouldCompleteTransition(viewX, velocity)) {
-                        completeTransition(currentPosition, false, duration);
+                        finishSwipe(currentPosition, false, duration);
                     } else {
                         snapBack(currentPosition, duration);
                     }
@@ -631,7 +627,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     public boolean onInterceptTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (animating) {
+                if (runningAnimation != RunningAnimation.NONE) {
                     if (animatorContext != null) {
                         animatorContext.beginAnimation();
                     }
@@ -660,8 +656,8 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                if (animating && trackingTouchEvents) {
-                    this.animating = false;
+                if (runningAnimation != RunningAnimation.NONE && trackingTouchEvents) {
+                    this.runningAnimation = RunningAnimation.NONE;
 
                     return true;
                 }
@@ -671,6 +667,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 float deltaY = y - lastEventY;
                 if (!trackingTouchEvents && Math.abs(deltaX) > touchSlop && Math.abs(deltaX) > Math.abs(deltaY)) {
                     this.trackingTouchEvents = true;
+                    this.currentPosition = null;
 
                     if (decor != null) {
                         decor.onSwipeBegan();
@@ -686,9 +683,22 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                 break;
 
             case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_UP: {
+                if (runningAnimation != RunningAnimation.NONE) {
+                    if (runningAnimation == RunningAnimation.FINISH_SWIPE) {
+                        finishSwipe(currentPosition, false, Animation.DURATION_FAST);
+                    } else if (runningAnimation == RunningAnimation.SNAP_BACK) {
+                        snapBack(currentPosition, Animation.DURATION_FAST);
+                    }
+
+                    if (animatorContext != null) {
+                        animatorContext.endAnimation();
+                    }
+                }
+
                 this.trackingTouchEvents = false;
                 break;
+            }
         }
 
         return false;
@@ -879,5 +889,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     public enum Position {
         BEFORE,
         AFTER,
+    }
+
+    private enum RunningAnimation {
+        NONE,
+        FINISH_SWIPE,
+        SNAP_BACK
     }
 }
