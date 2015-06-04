@@ -40,7 +40,8 @@ public class TimelineSegmentDrawable extends Drawable {
     public TimelineSegmentDrawable(@NonNull Context context) {
         this.resources = context.getResources();
         this.rightInset = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_end_inset);
-        this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
+        this.dividerHeight = resources.getDimensionPixelSize(R.dimen.bottom_line);
+
         this.stolenScoreHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_stolen_height);
 
         this.timestampDrawable = new TextDrawable(context, R.style.AppTheme_Text_Timeline_Timestamp);

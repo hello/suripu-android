@@ -10,6 +10,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -308,6 +309,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
     public class EventViewHolder extends SegmentViewHolder {
         final ViewGroup container;
+        final ImageView iconImage;
         final TextView messageText;
         final TextView dateText;
 
@@ -318,6 +320,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             super(itemView);
 
             this.container = (ViewGroup) itemView.findViewById(R.id.item_timeline_segment_container);
+            this.iconImage = (ImageView) itemView.findViewById(R.id.item_timeline_segment_icon);
             this.messageText = (TextView) itemView.findViewById(R.id.item_timeline_segment_message);
             this.dateText = (TextView) itemView.findViewById(R.id.item_timeline_segment_date);
 
@@ -340,7 +343,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             }
 
             int iconRes = Styles.getTimelineSegmentIconRes(segment);
-            messageText.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
+            iconImage.setImageResource(iconRes);
             messageText.setText(segment.getMessage());
             dateText.setText(dateFormatter.formatForTimelineEvent(segment.getShiftedTimestamp(), use24Time));
         }
