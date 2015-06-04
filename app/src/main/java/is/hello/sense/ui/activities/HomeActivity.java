@@ -2,6 +2,7 @@ package is.hello.sense.ui.activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -12,7 +13,6 @@ import android.provider.AlarmClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -672,45 +672,13 @@ public class HomeActivity
     public void showTimelineNavigator(@NonNull DateTime startDate, @Nullable Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
 
-        ViewGroup undersideContainer = (ViewGroup) findViewById(R.id.activity_home_content_container);
-
         TimelineNavigatorFragment navigatorFragment = TimelineNavigatorFragment.newInstance(startDate, timeline);
-        navigatorFragment.show(getFragmentManager(), 0, TimelineNavigatorFragment.TAG);
-
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.executePendingTransactions();
-
-        View view = navigatorFragment.getView();
-        if (view == null) {
-            throw new IllegalStateException();
-        }
-
-        this.navigatorStackListener = () -> {
-            if (!navigatorFragment.isAdded() && !isDestroyed()) {
-                showAlarmShortcut();
-                animate(viewPager, animatorContext)
-                        .zoomInFrom(0.7f)
-                        .addOnAnimationCompleted(finished -> {
-                            if (finished) {
-                                undersideContainer.removeView(view);
-                                slidingLayersView.setEnabled(true);
-                            }
-                        })
-                        .start();
-
-                fragmentManager.removeOnBackStackChangedListener(navigatorStackListener);
-                this.navigatorStackListener = null;
-            }
-        };
-        fragmentManager.addOnBackStackChangedListener(navigatorStackListener);
-
-        slidingLayersView.setEnabled(false);
-        undersideContainer.addView(view, 0);
-
-        hideAlarmShortcut();
-        animate(viewPager, animatorContext)
-                .zoomOutTo(View.GONE, 0.7f)
-                .start();
+        getFragmentManager()
+                .beginTransaction()
+                .add(R.id.activity_home_container, navigatorFragment, TimelineNavigatorFragment.TAG)
+                .addToBackStack(TimelineNavigatorFragment.TAG)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
     }
 
     @Override

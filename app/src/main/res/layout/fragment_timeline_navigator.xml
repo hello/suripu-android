@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_timeline">
 
     <TextView
         android:id="@+id/fragment_timeline_navigator_month"
@@ -12,7 +13,8 @@
         android:textAppearance="@style/AppTheme.Text.ScreenTitle"
         android:text="@string/format_date_last_night"
         android:singleLine="true"
-        android:ellipsize="end" />
+        android:ellipsize="end"
+        android:background="@drawable/selectable_dark_bounded" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/fragment_timeline_navigator_recycler_view"
