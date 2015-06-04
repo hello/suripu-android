@@ -69,7 +69,6 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
     }
 
     public Observable<VoidResponse> submitCorrection(@NonNull Feedback correction) {
-        return service.submitCorrect(correction)
-                      .doOnCompleted(this::update);
+        return service.submitCorrect(correction);
     }
 }

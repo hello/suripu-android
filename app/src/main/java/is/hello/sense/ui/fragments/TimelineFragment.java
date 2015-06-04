@@ -348,6 +348,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     //region Binding
 
     public void bindTimeline(@NonNull Timeline timeline) {
+        // For timeline corrections
+        LoadingDialogFragment.close(getFragmentManager());
+
         boolean hasSegments = !Lists.isEmpty(timeline.getSegments());
         Runnable continuation = stateSafeExecutor.bind(() -> {
             adapter.bindSegments(timeline.getSegments());
@@ -366,6 +369,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     public void timelineUnavailable(Throwable e) {
+        // For timeline corrections
+        LoadingDialogFragment.close(getFragmentManager());
+
         adapter.clear();
         headerView.bindError(e);
     }
@@ -477,7 +483,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(presenter.submitCorrection(feedback),
                 ignored -> {
-                    LoadingDialogFragment.close(getFragmentManager());
+                    // Loading dialog is dismissed in #bindTimeline
                     presenter.update();
                 },
                 e -> {

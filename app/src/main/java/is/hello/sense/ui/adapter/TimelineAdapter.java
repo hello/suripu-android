@@ -170,11 +170,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         }
 
         if (oldSize > newSize) {
-            notifyItemRangeInserted(STATIC_ITEM_COUNT + oldSize, oldSize - newSize);
-            notifyItemRangeChanged(STATIC_ITEM_COUNT, oldSize);
-        } else if (oldSize < newSize) {
-            notifyItemRangeRemoved(STATIC_ITEM_COUNT + oldSize, newSize - oldSize);
+            notifyItemRangeRemoved(STATIC_ITEM_COUNT + newSize, oldSize - newSize);
             notifyItemRangeChanged(STATIC_ITEM_COUNT, newSize);
+        } else if (newSize > oldSize) {
+            notifyItemRangeInserted(STATIC_ITEM_COUNT + oldSize, newSize - oldSize);
+            notifyItemRangeChanged(STATIC_ITEM_COUNT, oldSize);
         } else {
             notifyItemRangeChanged(STATIC_ITEM_COUNT, newSize);
         }
