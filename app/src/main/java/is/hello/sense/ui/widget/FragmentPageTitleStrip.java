@@ -221,7 +221,7 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
 
     @Override
     public void onSwipeSnappedBack(long duration, @NonNull AnimatorConfig animatorConfig, @Nullable AnimatorContext animatorContext) {
-        if (animatorContext == null) {
+        if (animatorContext == null || swipeDirection == null) {
             return;
         }
 
@@ -245,7 +245,7 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
 
     @Override
     public void onSwipeCompleted(long duration, @NonNull AnimatorConfig animatorConfig, @Nullable AnimatorContext animatorContext) {
-        if (animatorContext == null) {
+        if (animatorContext == null || swipeDirection == null) {
             return;
         }
 
