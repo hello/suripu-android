@@ -10,11 +10,12 @@ Prerequisites
 - [Android Studio](http://developer.android.com/sdk/index.html).
 - The [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) for lambda support.
 - The correct SDK and build tools (now automatically installed by Android Studio.)
-- The [Crashlytics Android Studio plugin](https://www.crashlytics.com/downloads/android-studio) for pushing builds.
 - The key stores `Hello-Android-Internal.keystore` and `Hello-Android-Release.keystore`. Acquire these from another team member.
 
 Building
 ========
+
+Place the `.keystore` files into the same directory as your local copy of the `suripu-android` repository. 
 
 Once all of the above prerequisites have been fulfilled, it should be possible to build Sense for Android by pressing the Run button in Android Studio.
 
