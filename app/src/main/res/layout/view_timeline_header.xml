@@ -21,26 +21,12 @@
 
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/view_timeline_header_chart_message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/view_timeline_header_chart"
-        android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:textAppearance="@style/AppTheme.Text.Body.MidSized"
-        android:gravity="center"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
-        android:minLines="2" />
-
     <include
         android:id="@+id/view_timeline_header_card"
         layout="@layout/sub_view_timeline_header_card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/view_timeline_header_chart_message"
+        android:layout_below="@id/view_timeline_header_chart"
         android:layout_marginLeft="@dimen/gap_xsmall"
         android:layout_marginRight="@dimen/gap_xsmall"
         android:layout_marginTop="@dimen/gap_medium"

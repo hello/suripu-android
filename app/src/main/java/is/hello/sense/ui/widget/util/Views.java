@@ -85,6 +85,17 @@ public final class Views {
         outRect.bottom = outRect.top + view.getMeasuredHeight();
     }
 
+    public static void setFrame(@NonNull View view, @NonNull Rect rect) {
+        view.setLeft(rect.left);
+        view.setTop(rect.top);
+        view.setRight(rect.right);
+        view.setBottom(rect.bottom);
+    }
+
+    public static Rect copyFrame(@NonNull View view) {
+        return new Rect(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
+    }
+
     /**
      * Searches the children of a given view group for a child that contains a given y
      * coordinate; returns null if no matching child could be found.

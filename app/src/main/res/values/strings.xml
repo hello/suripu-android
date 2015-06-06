@@ -485,6 +485,4 @@ so you can sleep better.</string>
     <string name="action_timeline_mark_event_correct">This is correct – Coming soon</string>
     <string name="action_timeline_event_adjust_time">Adjust the time</string>
     <string name="action_timeline_event_remove">Remove this event – Coming soon</string>
-    <string name="title_sleep_summary">Sleep Summary</string>
-    <string name="title_bedroom_environment">Bedroom Environment</string>
 </resources>

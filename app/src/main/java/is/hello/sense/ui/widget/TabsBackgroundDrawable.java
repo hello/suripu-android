@@ -2,7 +2,6 @@ package is.hello.sense.ui.widget;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
@@ -25,14 +24,29 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
 
     private float positionOffset = 0f;
 
+
+    //region Creation
+
+    public TabsBackgroundDrawable(int selectionHeight, int dividerHeight,
+                                  int backgroundColor, int selectionColor, int dividerColor) {
+        this.selectionHeight = selectionHeight;
+        this.dividerHeight = dividerHeight;
+
+        this.backgroundColor = backgroundColor;
+        this.selectionColor = selectionColor;
+        this.dividerColor = dividerColor;
+    }
+
     public TabsBackgroundDrawable(@NonNull Resources resources, @NonNull Style style) {
         this.selectionHeight = resources.getDimensionPixelSize(style.selectionHeightRes);
         this.dividerHeight = resources.getDimensionPixelSize(style.dividerHeightRes);
 
-        this.backgroundColor = Color.WHITE;
+        this.backgroundColor = resources.getColor(style.backgroundColor);
         this.selectionColor = resources.getColor(style.selectionColorRes);
         this.dividerColor = resources.getColor(style.dividerColorRes);
     }
+
+    //endregion
 
 
     //region Drawing
@@ -93,8 +107,8 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
 
 
     public enum Style {
-        UNDERSIDE(R.dimen.bottom_line, R.dimen.bottom_line, R.color.light_accent, R.color.border_underside_tabs),
-        INLINE(R.dimen.bottom_line, R.dimen.divider_size, R.color.light_accent, R.color.border);
+        UNDERSIDE(R.dimen.bottom_line, R.dimen.bottom_line, R.color.light_accent, R.color.border_underside_tabs, R.color.background_light),
+        INLINE(R.dimen.bottom_line, R.dimen.divider_size, R.color.light_accent, R.color.border, R.color.background_light);
 
         public final @DimenRes int selectionHeightRes;
         public final @DimenRes int dividerHeightRes;
@@ -102,14 +116,18 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
         public final @ColorRes int selectionColorRes;
         public final @ColorRes int dividerColorRes;
 
+        public final @ColorRes int backgroundColor;
+
         Style(@DimenRes int selectionHeightRes,
               @DimenRes int dividerHeightRes,
               @ColorRes int selectionColorRes,
-              @ColorRes int dividerColorRes) {
+              @ColorRes int dividerColorRes,
+              @ColorRes int backgroundColor) {
             this.selectionHeightRes = selectionHeightRes;
             this.dividerHeightRes = dividerHeightRes;
             this.selectionColorRes = selectionColorRes;
             this.dividerColorRes = dividerColorRes;
+            this.backgroundColor = backgroundColor;
         }
     }
 }

@@ -296,10 +296,8 @@
     </style>
 
     <style name="AppTheme.Button.ModeSelector.Timeline">
-        <item name="android:textAppearance">@style/AppTheme.Text.Body.Small</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:drawablePadding">@dimen/gap_small</item>
+        <item name="android:background">@drawable/selectable_light</item>
+        <item name="android:textColor">@color/text_color_selector_white</item>
     </style>
 
     <style name="AppTheme.Button.SmartAlarmDay">

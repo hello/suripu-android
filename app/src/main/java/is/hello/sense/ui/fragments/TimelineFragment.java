@@ -24,7 +24,6 @@ import java.lang.ref.WeakReference;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.ConditionSummary;
 import is.hello.sense.api.model.Feedback;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
@@ -48,7 +47,6 @@ import is.hello.sense.ui.widget.timeline.TimelineInfoPopup;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.Markdown;
 import is.hello.sense.util.Share;
 import rx.Observable;
 
@@ -68,7 +66,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     @Inject TimelinePresenter presenter;
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
-    @Inject Markdown markdown;
 
     private HomeActivity homeActivity;
 
@@ -193,10 +190,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 headerView::bindMessage,
                 Functions.IGNORE_ERROR);
 
-        bindAndSubscribe(presenter.timeline.map(t -> ConditionSummary.calculateSummary(markdown, t.getPreSleepInsights())),
-                headerView::bindConditionSummary,
-                Functions.IGNORE_ERROR);
-
         bindAndSubscribe(preferences.observableUse24Time(),
                 adapter::setUse24Time,
                 Functions.LOG_ERROR);
@@ -269,8 +262,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     public void showBreakdown(@NonNull View sender) {
         bindAndSubscribe(presenter.timeline.take(1),
                          timeline -> {
-                             TimelineBreakdownFragment infoOverlay = TimelineBreakdownFragment.newInstance(timeline);
-                             infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineBreakdownFragment.TAG);
+                             TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timeline, headerView.copyCardWindowRect());
+                             infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);
                          },
                          Functions.LOG_ERROR);
     }
