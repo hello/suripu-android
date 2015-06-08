@@ -5,6 +5,7 @@
 
     <LinearLayout
         android:id="@+id/fragment_timeline_info_header"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/gap_outer"
@@ -14,9 +15,18 @@
             android:id="@+id/fragment_timeline_info_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/AppTheme.Text.Heading"
+            android:layout_marginBottom="@dimen/gap_xsmall"
+            android:textAppearance="@style/AppTheme.Text.Heading.Strong"
             android:textColor="@color/white"
             android:text="@string/label_sleep_summary" />
+
+        <TextView
+            android:id="@+id/fragment_timeline_info_summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/AppTheme.Text.Body.MidSized"
+            android:lineSpacingMultiplier="@dimen/line_multiple_body"
+            android:textColor="@color/text_dim_light"/>
 
     </LinearLayout>
 

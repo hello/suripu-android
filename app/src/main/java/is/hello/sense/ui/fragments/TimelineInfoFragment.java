@@ -4,9 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.RectEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,11 +16,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.ColorRes;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -30,10 +33,17 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+
 import java.util.ArrayList;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Condition;
+import is.hello.sense.api.model.PreSleepInsight;
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.TimelineSegment;
+import is.hello.sense.ui.adapter.EmptyRecyclerAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.SenseAnimatedFragment;
 import is.hello.sense.ui.widget.util.Drawing;
@@ -43,17 +53,20 @@ import is.hello.sense.ui.widget.util.Views;
 public class TimelineInfoFragment extends SenseAnimatedFragment {
     public static final String TAG = TimelineInfoFragment.class.getSimpleName();
 
+    private static final String ARG_SUMMARY = TimelineInfoFragment.class.getName() + ".ARG_SUMMARY";
     private static final String ARG_SCORE = TimelineInfoFragment.class.getName() + ".ARG_SCORE";
     private static final String ARG_ITEMS = TimelineInfoFragment.class.getName() + ".ARG_ITEMS";
-    private static final String ARG_FROM_RECT = TimelineInfoFragment.class.getName() + ".ARG_FROM_RECT";
+    private static final String ARG_SOURCE_VIEW_ID = TimelineInfoFragment.class.getName() + ".ARG_SOURCE_VIEW_ID";
 
+    private @Nullable CharSequence summary;
     private int scoreColor;
     private ArrayList<Item> items;
-    private Rect fromRect;
+    private @IdRes int sourceViewId;
 
     private RelativeLayout rootView;
     private View header;
     private RecyclerView recycler;
+    private @Nullable ViewGroup.LayoutParams finalRecyclerLayoutParams;
 
     private int overlayColor;
 
@@ -62,19 +75,33 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
 
     //region Lifecycle
 
-    public static TimelineInfoFragment newInstance(int score, @NonNull ArrayList<Item> items, @Nullable Rect fromRect) {
+    public static TimelineInfoFragment newInstance(@Nullable CharSequence message,
+                                                   int score,
+                                                   @NonNull ArrayList<Item> items,
+                                                   @IdRes int sourceViewId) {
         TimelineInfoFragment fragment = new TimelineInfoFragment();
 
         Bundle arguments = new Bundle();
+        if (!TextUtils.isEmpty(message)) {
+            Parcel messageParcel = Parcel.obtain();
+            try {
+                TextUtils.writeToParcel(message, messageParcel, 0);
+                arguments.putByteArray(ARG_SUMMARY, messageParcel.marshall());
+            } finally {
+                messageParcel.recycle();
+            }
+        }
         arguments.putInt(ARG_SCORE, score);
         arguments.putParcelableArrayList(ARG_ITEMS, items);
-        arguments.putParcelable(ARG_FROM_RECT, fromRect);
+        arguments.putInt(ARG_SOURCE_VIEW_ID, sourceViewId);
         fragment.setArguments(arguments);
 
         return fragment;
     }
 
-    public static TimelineInfoFragment newInstance(@NonNull Timeline timeline, @Nullable Rect fromRect) {
+    public static TimelineInfoFragment newInstance(@NonNull Timeline timeline,
+                                                   @Nullable CharSequence message,
+                                                   @IdRes int sourceViewId) {
         Timeline.Statistics statistics = timeline.getStatistics();
 
         ArrayList<Item> items = new ArrayList<>();
@@ -98,17 +125,56 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
             items.add(new Item(R.string.timeline_breakdown_label_times_awake, Item.Type.COUNT, timesAwake));
         }
 
-        return newInstance(timeline.getScore(), items, fromRect);
+        DateTime fellAsleepTime = null,
+                 wakeUpTime = null;
+        for (TimelineSegment segment : timeline.getSegments()) {
+            TimelineSegment.EventType eventType = segment.getEventType();
+            if (fellAsleepTime == null && eventType == TimelineSegment.EventType.SLEEP) {
+                fellAsleepTime = segment.getShiftedTimestamp();
+            }
+
+            if (eventType == TimelineSegment.EventType.WAKE_UP) {
+                wakeUpTime = segment.getShiftedTimestamp();
+            }
+        }
+
+        if (fellAsleepTime != null) {
+            items.add(new Item(R.string.timeline_breakdown_label_sleep_time, Item.Type.TIME, fellAsleepTime.getMillis()));
+        }
+
+        if (wakeUpTime != null) {
+            items.add(new Item(R.string.timeline_breakdown_label_wake_up_time, Item.Type.TIME, wakeUpTime.getMillis()));
+        }
+
+        for (PreSleepInsight insight : timeline.getPreSleepInsights()) {
+            items.add(new Item(insight.getSensor().titleRes, Item.Type.SENSOR, insight.getCondition().ordinal()));
+        }
+
+        return newInstance(message, timeline.getScore(), items, sourceViewId);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        int score = getArguments().getInt(ARG_SCORE);
+        Bundle arguments = getArguments();
+
+        int score = arguments.getInt(ARG_SCORE);
         this.scoreColor = Styles.getSleepScoreColor(getActivity(), score);
-        this.items = getArguments().getParcelableArrayList(ARG_ITEMS);
-        this.fromRect = getArguments().getParcelable(ARG_FROM_RECT);
+        this.items = arguments.getParcelableArrayList(ARG_ITEMS);
+        this.sourceViewId = arguments.getInt(ARG_SOURCE_VIEW_ID);
+
+        byte[] summaryBytes = arguments.getByteArray(ARG_SUMMARY);
+        if (summaryBytes != null) {
+            Parcel messageParcel = Parcel.obtain();
+            try {
+                messageParcel.unmarshall(summaryBytes, 0, summaryBytes.length);
+                messageParcel.setDataPosition(0);
+                this.summary = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(messageParcel);
+            } finally {
+                messageParcel.recycle();
+            }
+        }
 
         this.overlayColor = getResources().getColor(R.color.background_dark_overlay);
 
@@ -131,10 +197,14 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
         this.header = rootView.findViewById(R.id.fragment_timeline_info_header);
         header.setBackgroundColor(scoreColor);
 
+        TextView summaryText = (TextView) header.findViewById(R.id.fragment_timeline_info_summary);
+        summaryText.setText(summary);
+
         this.recycler = (RecyclerView) rootView.findViewById(R.id.fragment_timeline_info_recycler);
         recycler.setVisibility(View.INVISIBLE);
         recycler.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         recycler.addItemDecoration(new ItemDecoration(getResources()));
+        recycler.setAdapter(new EmptyRecyclerAdapter());
 
         return rootView;
     }
@@ -250,15 +320,27 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
     }
 
     private Animator createRecyclerReveal() {
-        ValueAnimator animator = ValueAnimator.ofObject(new RectEvaluator(), fromRect, Views.copyFrame(recycler));
-        animator.addUpdateListener(a -> {
-            Rect current = (Rect) a.getAnimatedValue();
-            Views.setFrame(recycler, current);
-        });
+        ValueAnimator animator;
+
+        View fromView = findSourceView();
+        if (fromView != null) {
+            Rect fromRect = new Rect();
+            Views.getFrameInWindow(fromView, fromRect);
+
+            animator = Animation.createViewFrameAnimator(recycler, fromRect, Views.copyFrame(recycler));
+
+            this.finalRecyclerLayoutParams = recycler.getLayoutParams();
+
+            RelativeLayout.LayoutParams initialLayoutParams = new RelativeLayout.LayoutParams(fromRect.width(), fromRect.height());
+            initialLayoutParams.leftMargin = fromRect.left;
+            initialLayoutParams.topMargin = fromRect.top;
+            recycler.setLayoutParams(initialLayoutParams);
+        } else {
+            animator = ObjectAnimator.ofFloat(recycler, "alpha", 0f, 1f);
+        }
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                Views.setFrame(recycler, fromRect);
                 recycler.setVisibility(View.VISIBLE);
             }
 
@@ -276,12 +358,20 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
     //region Hiding
 
     private Animator createRecyclerDismissal() {
-        ValueAnimator animator = ValueAnimator.ofObject(new RectEvaluator(), Views.copyFrame(recycler), fromRect);
+        ValueAnimator animator;
+
+        View fromView = findSourceView();
+        if (fromView != null) {
+            Rect fromRect = new Rect();
+            Views.getFrameInWindow(fromView, fromRect);
+
+            animator = Animation.createViewFrameAnimator(recycler, Views.copyFrame(recycler), fromRect);
+        } else {
+            animator = ObjectAnimator.ofFloat(recycler, "alpha", 1f, 0f);
+        }
+
         tearDownRecycler();
-        animator.addUpdateListener(a -> {
-            Rect current = (Rect) a.getAnimatedValue();
-            Views.setFrame(recycler, current);
-        });
+
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -340,12 +430,28 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
 
     //region Recycler
 
+    private @Nullable View findSourceView() {
+        Activity activity = getActivity();
+        if (activity != null) {
+            return activity.findViewById(sourceViewId);
+        } else {
+            return null;
+        }
+    }
+
     private void setUpRecycler() {
-        recycler.setAdapter(new Adapter());
+        if (finalRecyclerLayoutParams != null) {
+            recycler.setLayoutParams(finalRecyclerLayoutParams);
+            this.finalRecyclerLayoutParams = null;
+        }
+        recycler.setAdapter(new ItemAdapter());
     }
 
     private void tearDownRecycler() {
-        recycler.setAdapter(null);
+        // Clearing the adapter through the notifyItem* APIs
+        // causes a large number of frames to be dropped in
+        // the out animation. Swapping the adapter fixes it.
+        recycler.setAdapter(new EmptyRecyclerAdapter());
     }
 
     //endregion
@@ -354,11 +460,11 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
     public static class ItemDecoration extends RecyclerView.ItemDecoration {
         private final Rect lineRect = new Rect();
         private final Paint linePaint = new Paint();
-        private final int dividerHeight;
+        private final int dividerSize;
         private final int verticalDividerInset;
 
         public ItemDecoration(@NonNull Resources resources) {
-            this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
+            this.dividerSize = resources.getDimensionPixelSize(R.dimen.divider_size);
             this.verticalDividerInset = resources.getDimensionPixelSize(R.dimen.gap_medium);
 
             int lineColor = resources.getColor(R.color.border);
@@ -367,7 +473,11 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
 
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            outRect.bottom += dividerHeight;
+            if ((parent.getChildAdapterPosition(view) % 2) == 0) {
+                outRect.right += dividerSize;
+            }
+
+            outRect.bottom += dividerSize;
         }
 
         @Override
@@ -375,19 +485,19 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
             for (int i = 0, size = parent.getChildCount(); i < size; i++) {
                 View child = parent.getChildAt(i);
                 if ((i % 2) == 0) {
-                    lineRect.set(child.getLeft() - dividerHeight, child.getTop() + verticalDividerInset,
-                            child.getLeft(), child.getBottom() - verticalDividerInset);
+                    lineRect.set(child.getRight() - dividerSize, child.getTop() + verticalDividerInset,
+                            child.getRight(), child.getBottom() - verticalDividerInset);
                     c.drawRect(lineRect, linePaint);
                 }
 
-                lineRect.set(child.getLeft(), child.getBottom() - dividerHeight,
+                lineRect.set(child.getLeft(), child.getBottom() - dividerSize,
                         child.getRight(), child.getBottom());
                 c.drawRect(lineRect, linePaint);
             }
         }
     }
 
-    public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
+    public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         private final LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         @Override
@@ -406,8 +516,14 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
             Item item = items.get(position);
 
             holder.titleText.setText(item.titleRes);
-            holder.readingText.setText(item.getFormattedValue());
-            holder.readingText.setTextColor(scoreColor);
+            holder.readingText.setText(item.getFormattedValue(getActivity()));
+
+            int valueColorRes = item.getValueColorRes();
+            if (valueColorRes == 0) {
+                holder.readingText.setTextColor(scoreColor);
+            } else {
+                holder.readingText.setTextColor(getResources().getColor(valueColorRes));
+            }
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
@@ -426,24 +542,28 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
     public static class Item implements Parcelable {
         public final @StringRes int titleRes;
         public final Type type;
-        public final int value;
+        public final long value;
 
         public Item(@StringRes int titleRes,
                     @NonNull Type type,
-                    int value) {
+                    long value) {
             this.titleRes = titleRes;
             this.type = type;
             this.value = value;
         }
 
-        public String getFormattedValue() {
-            return type.format(value);
+        public String getFormattedValue(@NonNull Context context) {
+            return type.format(context, value);
+        }
+
+        public @ColorRes int getValueColorRes() {
+            return type.getValueColor(value);
         }
 
         //region Serialization
 
         public Item(@NonNull Parcel in) {
-            this(in.readInt(), Type.values()[in.readInt()], in.readInt());
+            this(in.readInt(), Type.values()[in.readInt()], in.readLong());
         }
 
         @Override
@@ -455,7 +575,7 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
         public void writeToParcel(Parcel out, int flags) {
             out.writeInt(titleRes);
             out.writeInt(type.ordinal());
-            out.writeInt(value);
+            out.writeLong(value);
         }
 
         public static final Parcelable.Creator<Item> CREATOR = new Creator<Item>() {
@@ -475,14 +595,14 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
         public enum Type {
             DURATION {
                 @Override
-                public String format(int value) {
+                public String format(@NonNull Context context, long value) {
                     if (value < 60) {
                         return value + "m";
                     } else {
-                        int hours = value / 60;
-                        int minutes = value % 60;
+                        long hours = value / 60;
+                        long minutes = value % 60;
 
-                        String reading = Integer.toString(hours);
+                        String reading = Long.toString(hours);
                         if (minutes >= 30) {
                             reading += "." + minutes;
                         }
@@ -495,12 +615,65 @@ public class TimelineInfoFragment extends SenseAnimatedFragment {
             },
             COUNT {
                 @Override
-                public String format(int value) {
-                    return Integer.toString(value);
+                public String format(@NonNull Context context, long value) {
+                    return Long.toString(value);
+                }
+            },
+            TIME {
+                @Override
+                public String format(@NonNull Context context, long value) {
+                    return new DateTime(value).toString(DateTimeFormat.shortTime());
+                }
+            },
+            SENSOR {
+                @Override
+                public String format(@NonNull Context context, long value) {
+                    Condition condition = Condition.values()[(int) value];
+                    switch (condition) {
+                        case UNKNOWN:
+                            return context.getString(R.string.missing_data_placeholder);
+
+                        case ALERT:
+                            return "was bad";
+
+                        case WARNING:
+                            return "a bit too high";
+
+                        case IDEAL:
+                            return "was ideal";
+
+                        default:
+                            throw new IllegalStateException("Unknown condition '" + condition + "'");
+                    }
+                }
+
+                @Override
+                public int getValueColor(long value) {
+                    Condition condition = Condition.values()[(int) value];
+                    switch (condition) {
+                        case UNKNOWN:
+                            return R.color.sensor_unknown;
+
+                        case ALERT:
+                            return R.color.sensor_alert;
+
+                        case WARNING:
+                            return R.color.sensor_warning;
+
+                        case IDEAL:
+                            return R.color.sensor_ideal;
+
+                        default:
+                            throw new IllegalStateException("Unknown condition '" + condition + "'");
+                    }
                 }
             };
 
-            public abstract String format(int value);
+            public abstract String format(@NonNull Context context, long value);
+
+            public @ColorRes int getValueColor(long value) {
+                return 0;
+            }
         }
     }
 }

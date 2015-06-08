@@ -18,6 +18,10 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
+    <style name="AppTheme.Text.Heading.Card">
+        <item name="android:textSize">@dimen/text_size_heading_card</item>
+    </style>
+
     <style name="AppTheme.Text.Subheading">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">@dimen/text_size_subheading</item>

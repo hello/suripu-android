@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -260,9 +261,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     public void showBreakdown(@NonNull View sender) {
-        bindAndSubscribe(presenter.timeline.take(1),
-                         timeline -> {
-                             TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timeline, headerView.copyCardWindowRect());
+        Observable<Pair<Timeline, CharSequence>> compound = Observable.combineLatest(presenter.timeline, presenter.message, Pair::new);
+        bindAndSubscribe(compound,
+                         timelineAndMessage -> {
+                             TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timelineAndMessage.first,
+                                     timelineAndMessage.second, headerView.getCardViewId());
                              infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);
                          },
                          Functions.LOG_ERROR);

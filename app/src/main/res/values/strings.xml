@@ -36,7 +36,7 @@
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>
     <string name="condition_humidity">Humidity</string>
-    <string name="condition_particulates">AQI</string>
+    <string name="condition_particulates">Air Quality</string>
 
     <string name="missing_data_placeholder">--</string>
 
@@ -407,9 +407,11 @@ so you can sleep better.</string>
     <string name="onboarding_title_sleep_pill_intro">Sleep Pill</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>
     <string name="timeline_breakdown_label_total_sleep">Total sleep</string>
-    <string name="timeline_breakdown_label_times_awake">Times Awake</string>
-    <string name="timeline_breakdown_label_sound_sleep">Deep Sleep</string>
+    <string name="timeline_breakdown_label_times_awake">Times awake</string>
+    <string name="timeline_breakdown_label_sound_sleep">Deep sleep</string>
     <string name="timeline_breakdown_label_time_to_sleep">Time to sleep</string>
+    <string name="timeline_breakdown_label_sleep_time">Fell asleep</string>
+    <string name="timeline_breakdown_label_wake_up_time">Woke up</string>
     <string name="notification_setting_alert_conditions">Alert Conditions</string>
     <string name="notification_setting_sleep_score">Daily Sleep Score</string>
     <string name="onboarding_room_check_info_failure">Could not complete room check. Go ahead and set up your first Smart Alarm.</string>

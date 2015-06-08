@@ -8,12 +8,12 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Build;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -33,7 +33,6 @@ import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.SafeOnClickListener;
 
 public class TimelineHeaderView extends RelativeLayout implements TimelineFadeItemAnimator.Listener {
@@ -119,7 +118,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
         this.cardTitle = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_title);
         this.cardContents = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_contents);
-        Views.makeTextViewLinksClickable(cardContents);
     }
 
     @Override
@@ -180,10 +178,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         Drawables.setTintColor(cardTitle.getCompoundDrawablesRelative()[2].mutate(), color);
     }
 
-    public Rect copyCardWindowRect() {
-        Rect rect = new Rect();
-        Views.getFrameInWindow(cardContainer, rect);
-        return rect;
+    public @IdRes int getCardViewId() {
+        return cardContainer.getId();
     }
 
     //endregion
