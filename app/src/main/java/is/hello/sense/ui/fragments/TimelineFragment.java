@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +63,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     private static final int ID_EVENT_REMOVE = 2;
 
 
-    @Inject TimelinePresenter presenter;
+    @Inject TimelinePresenter timelinePresenter;
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
 
@@ -125,8 +124,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         this.firstTimeline = getArguments().getBoolean(ARG_IS_FIRST_TIMELINE, false);
 
-        presenter.setDateWithTimeline(date, getCachedTimeline());
-        addPresenter(presenter);
+        timelinePresenter.setDateWithTimeline(date, getCachedTimeline());
+        addPresenter(timelinePresenter);
 
         setRetainInstance(true);
     }
@@ -183,13 +182,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         stateSafeExecutor.execute(headerView::startPulsing);
 
-        bindAndSubscribe(presenter.timeline,
-                this::bindTimeline,
+        bindAndSubscribe(timelinePresenter.rendered,
+                this::bindRenderedTimeline,
                 this::timelineUnavailable);
-
-        bindAndSubscribe(presenter.message,
-                headerView::bindMessage,
-                Functions.IGNORE_ERROR);
 
         bindAndSubscribe(preferences.observableUse24Time(),
                 adapter::setUse24Time,
@@ -238,10 +233,10 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     public void share() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
 
-        Observable<Timeline> currentTimeline = presenter.timeline.take(1);
+        Observable<Timeline> currentTimeline = timelinePresenter.timeline.take(1);
         bindAndSubscribe(currentTimeline,
                 timeline -> {
-                    DateTime date = presenter.getDate();
+                    DateTime date = timelinePresenter.getDate();
                     String score = Integer.toString(timeline.getScore());
                     String shareCopy;
                     if (DateFormatter.isLastNight(date)) {
@@ -261,11 +256,10 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     public void showBreakdown(@NonNull View sender) {
-        Observable<Pair<Timeline, CharSequence>> compound = Observable.combineLatest(presenter.timeline, presenter.message, Pair::new);
-        bindAndSubscribe(compound,
-                         timelineAndMessage -> {
-                             TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timelineAndMessage.first,
-                                     timelineAndMessage.second, headerView.getCardViewId());
+        bindAndSubscribe(timelinePresenter.rendered,
+                         rendered -> {
+                             TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(rendered.timeline,
+                                     rendered.message, headerView.getCardViewId());
                              infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);
                          },
                          Functions.LOG_ERROR);
@@ -301,7 +295,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     public void update() {
-        presenter.update();
+        timelinePresenter.update();
     }
 
     //endregion
@@ -343,9 +337,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     //region Binding
 
-    public void bindTimeline(@NonNull Timeline timeline) {
+    public void bindRenderedTimeline(@NonNull TimelinePresenter.Rendered rendered) {
         // For timeline corrections
         LoadingDialogFragment.close(getFragmentManager());
+
+        Timeline timeline = rendered.timeline;
 
         boolean hasSegments = !Lists.isEmpty(timeline.getSegments());
         Runnable continuation = stateSafeExecutor.bind(() -> {
@@ -362,6 +358,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         } else {
             headerView.bindScore(TimelineHeaderView.NULL_SCORE, continuation);
         }
+
+        CharSequence message = rendered.message;
+        headerView.bindMessage(message);
     }
 
     public void timelineUnavailable(Throwable e) {
@@ -477,10 +476,10 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         feedback.setNewTime(newTime);
 
         LoadingDialogFragment.show(getFragmentManager());
-        bindAndSubscribe(presenter.submitCorrection(feedback),
+        bindAndSubscribe(timelinePresenter.submitCorrection(feedback),
                 ignored -> {
-                    // Loading dialog is dismissed in #bindTimeline
-                    presenter.update();
+                    // Loading dialog is dismissed in #bindRenderedTimeline
+                    timelinePresenter.update();
                 },
                 e -> {
                     LoadingDialogFragment.close(getFragmentManager());

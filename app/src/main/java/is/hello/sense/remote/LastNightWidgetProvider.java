@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.annotation.Nullable;
-import android.util.Pair;
 import android.widget.RemoteViews;
 
 import javax.inject.Inject;
@@ -21,7 +20,6 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
-import rx.Observable;
 
 public class LastNightWidgetProvider extends AppWidgetProvider {
     private static final String WIDGET_NAME = "Last Night";
@@ -48,34 +46,33 @@ public class LastNightWidgetProvider extends AppWidgetProvider {
     }
 
     public static class LastNightService extends WidgetService {
-        @Inject TimelinePresenter presenter;
+        @Inject TimelinePresenter timelinePresenter;
 
         public LastNightService() {
-            presenter.setDateWithTimeline(DateFormatter.lastNight(), null);
-            addPresenter(presenter);
+            timelinePresenter.setDateWithTimeline(DateFormatter.lastNight(), null);
+            addPresenter(timelinePresenter);
         }
 
         @Override
         protected void startUpdate(int widgetIds[]) {
-            Observable<Pair<Timeline, CharSequence>> update = Observable.combineLatest(presenter.timeline.take(1), presenter.message.take(1), Pair::new);
-            bindAndSubscribe(update,
-                             r -> bindConditions(widgetIds, r),
+            bindAndSubscribe(timelinePresenter.rendered,
+                             rendered -> bindConditions(widgetIds, rendered),
                              e -> {
                                  Logger.error(LastNightWidgetProvider.class.getSimpleName(), "Could not fetch last night's timeline", e);
                                  bindConditions(widgetIds, null);
                              });
         }
 
-        private void bindConditions(int widgetIds[], @Nullable Pair<Timeline, CharSequence> result) {
+        private void bindConditions(int widgetIds[], @Nullable TimelinePresenter.Rendered rendered) {
             Resources resources = getResources();
             RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.widget_last_night);
-            if (result != null) {
-                Timeline timeline = result.first;
+            if (rendered != null) {
+                Timeline timeline = rendered.timeline;
                 int sleepScore = timeline.getScore();
                 remoteViews.setTextViewText(R.id.widget_last_night_score, Integer.toString(sleepScore));
                 remoteViews.setTextColor(R.id.widget_last_night_score, resources.getColor(Styles.getSleepScoreColorRes(sleepScore)));
 
-                CharSequence message = result.second;
+                CharSequence message = rendered.message;
                 remoteViews.setTextViewText(R.id.widget_last_night_message, message);
             } else {
                 remoteViews.setTextViewText(R.id.widget_last_night_score, getString(R.string.missing_data_placeholder));

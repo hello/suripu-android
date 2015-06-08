@@ -80,6 +80,10 @@
         <item name="android:textSize">@dimen/text_size_body_mid_sized</item>
     </style>
 
+    <style name="AppTheme.Text.Body.MidSized.Neutral">
+        <item name="android:textColor">@color/text_neutral</item>
+    </style>
+
     <style name="AppTheme.Text.Body.Small">
         <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
@@ -123,17 +127,21 @@
 
     <!-- Non-generic -->
 
-    <style name="AppTheme.Text.BigScore">
+    <style name="AppTheme.Text.Score" />
+
+    <style name="AppTheme.Text.Score.Big">
         <item name="android:textSize">@dimen/text_size_big_score</item>
         <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
-    <style name="AppTheme.Text.SmallScore" parent="AppTheme.Text.BigScore">
+    <style name="AppTheme.Text.Score.Small">
         <item name="android:textSize">@dimen/text_size_small_score</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
-    <style name="AppTheme.Text.TinyScore" parent="AppTheme.Text.BigScore">
+    <style name="AppTheme.Text.Score.Tiny">
         <item name="android:textSize">@dimen/text_size_tiny_score</item>
+        <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
     <style name="AppTheme.Text.Condition">

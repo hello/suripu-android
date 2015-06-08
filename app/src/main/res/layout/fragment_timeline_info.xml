@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_dark_overlay">
 
     <LinearLayout
         android:id="@+id/fragment_timeline_info_header"
@@ -35,6 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/fragment_timeline_info_header"
+        android:overScrollMode="never"
         android:background="@color/background_timeline" />
 
 </RelativeLayout>

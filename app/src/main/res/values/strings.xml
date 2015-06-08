@@ -487,4 +487,13 @@ so you can sleep better.</string>
     <string name="action_timeline_mark_event_correct">This is correct – Coming soon</string>
     <string name="action_timeline_event_adjust_time">Adjust the time</string>
     <string name="action_timeline_event_remove">Remove this event – Coming soon</string>
+
+    <string name="condition_short_hand_alert_generic">was bad</string>
+    <string name="condition_short_hand_alert_temperature">was a bit hot</string>
+    <string name="condition_short_hand_alert_humidity">was a bit humid</string>
+    <string name="condition_short_hand_alert_particulates">was very poor</string>
+    <string name="condition_short_hand_alert_sound">a little loud</string>
+    <string name="condition_short_hand_alert_light">a little bright</string>
+    <string name="condition_short_hand_warning">a bit too high</string>
+    <string name="condition_short_hand_ideal">was ideal</string>
 </resources>

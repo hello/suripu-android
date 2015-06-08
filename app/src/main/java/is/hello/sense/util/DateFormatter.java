@@ -21,10 +21,13 @@ import org.joda.time.Seconds;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Styles;
 
 @Singleton public class DateFormatter {
     private final Context context;
@@ -146,6 +149,19 @@ import is.hello.sense.R;
         }
     }
 
+    public @NonNull CharSequence formatForTimelineInfo(@Nullable DateTime date, boolean use24Time) {
+        if (date != null) {
+            if (use24Time) {
+                return date.toString(context.getString(R.string.format_timeline_event_time_24_hr));
+            } else {
+                String time = date.toString(context.getString(R.string.format_timeline_event_time_12_hr));
+                String period = date.toString(context.getString(R.string.format_timeline_12_hr_period));
+                return Styles.assembleReadingAndUnit(time, period, Styles.UNIT_STYLE_SUBSCRIPT);
+            }
+        }
+        return context.getString(R.string.format_date_placeholder);
+    }
+
     public @NonNull String formatAsTime(@Nullable LocalTime time, boolean use24Time) {
         if (time != null) {
             if (use24Time)
@@ -221,6 +237,23 @@ import is.hello.sense.R;
             return context.getResources().getQuantityString(pluralRes, count, count);
         } else {
             return context.getString(R.string.format_date_placeholder);
+        }
+    }
+
+    public @NonNull CharSequence formatDuration(@NonNull Context context, long duration, @NonNull TimeUnit unit) {
+        long totalMinutes = unit.toMinutes(duration);
+        if (totalMinutes < 60) {
+            return Styles.assembleReadingAndUnit(totalMinutes, context.getString(R.string.format_duration_abbrev_minutes));
+        } else {
+            long hours = totalMinutes / 60;
+            long leftOverMinutes = totalMinutes % 60;
+
+            String reading = Long.toString(hours);
+            if (leftOverMinutes >= 30) {
+                reading += context.getString(R.string.format_duration_divider) + leftOverMinutes;
+            }
+
+            return Styles.assembleReadingAndUnit(reading, context.getString(R.string.format_duration_abbrev_hours), Styles.UNIT_STYLE_SUBSCRIPT);
         }
     }
 

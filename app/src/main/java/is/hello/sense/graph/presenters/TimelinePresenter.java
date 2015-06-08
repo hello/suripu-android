@@ -25,9 +25,10 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
     private DateTime date;
 
     public final PresenterSubject<Timeline> timeline = subject;
-    public final Observable<CharSequence> message = timeline.map(timeline -> {
+    public final Observable<Rendered> rendered = timeline.map(timeline -> {
         String rawMessage = timeline.getMessage();
-        return markdown.toSpanned(rawMessage);
+        CharSequence renderedMessage = markdown.toSpanned(rawMessage);
+        return new Rendered(timeline, renderedMessage);
     });
 
     @Override
@@ -70,5 +71,17 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
 
     public Observable<VoidResponse> submitCorrection(@NonNull Feedback correction) {
         return service.submitCorrect(correction);
+    }
+
+
+    public static class Rendered {
+        public final @NonNull Timeline timeline;
+        public final @NonNull CharSequence message;
+
+        public Rendered(@NonNull Timeline timeline,
+                        @NonNull CharSequence message) {
+            this.timeline = timeline;
+            this.message = message;
+        }
     }
 }

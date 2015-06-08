@@ -59,6 +59,16 @@ public final class Styles {
     public @interface CardSpacing {}
 
 
+    public static final int UNIT_STYLE_SUPERSCRIPT = (1 << 1);
+    public static final int UNIT_STYLE_SUBSCRIPT = (1 << 2);
+    @IntDef({
+        UNIT_STYLE_SUPERSCRIPT,
+        UNIT_STYLE_SUBSCRIPT,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface UnitStyle {}
+
+
     public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth) {
         if (sleepDepth == 0) {
             return R.color.sleep_awake;
@@ -172,7 +182,7 @@ public final class Styles {
     }
 
 
-    public static CharSequence createUnitSuffixSpan(@NonNull String suffix) {
+    public static @NonNull CharSequence createUnitSuperscriptSpan(@NonNull String suffix) {
         SpannableString spannableSuffix = new SpannableString(' ' + suffix);
         if (UnitSystem.TEMP_SUFFIX.equals(suffix)) {
             spannableSuffix.setSpan(new RelativeSizeSpan(0.6f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
@@ -185,11 +195,35 @@ public final class Styles {
         return spannableSuffix;
     }
 
-    public static CharSequence assembleReadingAndUnit(long value, @NonNull String suffix) {
+    public static @NonNull CharSequence createUnitSubscriptSpan(@NonNull String suffix) {
+        SpannableString spannableSuffix = new SpannableString(' ' + suffix);
+        spannableSuffix.setSpan(new RelativeSizeSpan(0.6f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        spannableSuffix.setSpan(new SuperscriptSpanAdjuster(-0.05f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        spannableSuffix.setSpan(new TypefaceSpan("sans-serif-light"), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        return spannableSuffix;
+    }
+
+    public static @NonNull CharSequence assembleReadingAndUnit(@NonNull CharSequence value,
+                                                               @NonNull String suffix,
+                                                               @UnitStyle int unitStyle) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        builder.append(Long.toString(value));
-        builder.append(createUnitSuffixSpan(suffix));
+        builder.append(value);
+
+        switch (unitStyle) {
+            case UNIT_STYLE_SUPERSCRIPT:
+                builder.append(createUnitSuperscriptSpan(suffix));
+                break;
+
+            case UNIT_STYLE_SUBSCRIPT:
+                builder.append(createUnitSubscriptSpan(suffix));
+                break;
+        }
+
         return builder;
+    }
+
+    public static @NonNull CharSequence assembleReadingAndUnit(long value, @NonNull String suffix) {
+        return assembleReadingAndUnit(Long.toString(value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }
 
     public static @NonNull GradientDrawable createGraphFillGradientDrawable(@NonNull Resources resources) {
