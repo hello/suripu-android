@@ -582,7 +582,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         @Override
         public CharSequence getDisplayString(@NonNull TimelineInfoFragment parent) {
-            return parent.dateFormatter.formatDuration(parent.getActivity(), minutes, TimeUnit.MINUTES);
+            return parent.dateFormatter.formatDuration(minutes, TimeUnit.MINUTES);
         }
 
 

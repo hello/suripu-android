@@ -9,6 +9,7 @@ import org.joda.time.LocalDate;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.R;
 import is.hello.sense.graph.InjectionTestCase;
@@ -76,11 +77,26 @@ public class DateFormatterTests extends InjectionTestCase {
         assertEquals(placeholder, formatter.formatAsLocalizedDate(null));
     }
 
-    public void testFormatAsTimelineStamp() {
-        assertEquals("2:30", formatter.formatForTimelineEvent(new DateTime(2001, 2, 3, 14, 30), false));
-        assertEquals("14:30", formatter.formatForTimelineEvent(new DateTime(2001, 2, 3, 14, 30), true));
+    public void testFormatForTimelineEvent() {
+        assertEquals("2:30 PM", formatter.formatForTimelineEvent(new DateTime(2001, 2, 3, 14, 30), false).toString());
+        assertEquals("14:30", formatter.formatForTimelineEvent(new DateTime(2001, 2, 3, 14, 30), true).toString());
         assertEquals(placeholder, formatter.formatForTimelineEvent(null, false));
         assertEquals(placeholder, formatter.formatForTimelineEvent(null, true));
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public void testFormatForTimelineSegment() {
+        assertEquals("2 PM", formatter.formatForTimelineSegment(new DateTime(2001, 2, 3, 14, 30), false).toString());
+        assertEquals("14:00", formatter.formatForTimelineSegment(new DateTime(2001, 2, 3, 14, 30), true).toString());
+        assertNull(formatter.formatForTimelineSegment(null, false));
+        assertNull(formatter.formatForTimelineSegment(null, true));
+    }
+
+    public void testFormatForTimelineInfo() {
+        assertEquals("2:30 PM", formatter.formatForTimelineInfo(new DateTime(2001, 2, 3, 14, 30), false).toString());
+        assertEquals("14:30", formatter.formatForTimelineInfo(new DateTime(2001, 2, 3, 14, 30), true).toString());
+        assertEquals(placeholder, formatter.formatForTimelineInfo(null, false));
+        assertEquals(placeholder, formatter.formatForTimelineInfo(null, true));
     }
 
     public void testFormatAsTime() {
@@ -107,5 +123,15 @@ public class DateFormatterTests extends InjectionTestCase {
 
         DateTime twoYearsAgo = DateTime.now().minusYears(2);
         assertEquals(formatter.formatAsLocalizedDate(twoYearsAgo.toLocalDate()), formatter.formatAsRelativeTime(twoYearsAgo));
+    }
+
+    public void testFormatDuration() {
+        assertEquals("0 min", formatter.formatDuration(30, TimeUnit.SECONDS).toString());
+        assertEquals("1 min", formatter.formatDuration(60, TimeUnit.SECONDS).toString());
+        assertEquals("5 min", formatter.formatDuration(5, TimeUnit.MINUTES).toString());
+        assertEquals("1 hr", formatter.formatDuration(60, TimeUnit.MINUTES).toString());
+        assertEquals("1.5 hr", formatter.formatDuration(90, TimeUnit.MINUTES).toString());
+        assertEquals("1.5 hr", formatter.formatDuration(100, TimeUnit.MINUTES).toString());
+        assertEquals("2 hr", formatter.formatDuration(120, TimeUnit.MINUTES).toString());
     }
 }

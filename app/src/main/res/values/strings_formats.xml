@@ -19,10 +19,11 @@
     <string name="format_timeline_event_time_24_hr">H:mm</string>
     <string name="format_timeline_event_time_12_hr">h:mm</string>
     <string name="format_timeline_24_hr_period">:00</string>
-    <string name="format_timeline_12_hr_period">" a"</string>
+    <string name="format_timeline_12_hr_period">a</string>
+    <string name="format_timeline_12_hr_period_padded">" a"</string>
 
-    <string name="format_duration_abbrev_minutes">m</string>
-    <string name="format_duration_abbrev_hours">h</string>
+    <string name="format_duration_abbrev_minutes">min</string>
+    <string name="format_duration_abbrev_hours">hr</string>
     <string name="format_duration_divider">.</string>
 
     <plurals name="format_relative_time_seconds">

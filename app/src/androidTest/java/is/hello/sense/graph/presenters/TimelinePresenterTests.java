@@ -21,8 +21,9 @@ public class TimelinePresenterTests extends InjectionTestCase {
         Sync.wrap(presenter.timeline)
             .assertNotNull();
 
-        Sync.wrap(presenter.message.take(1))
-            .assertFalse(TextUtils::isEmpty);
+        TimelinePresenter.Rendered rendered = Sync.wrap(presenter.rendered.take(1)).last();
+        assertNotNull(rendered);
+        assertFalse(TextUtils.isEmpty(rendered.message));
     }
 
     public void testCache() throws Exception {
@@ -35,7 +36,8 @@ public class TimelinePresenterTests extends InjectionTestCase {
         Sync.wrap(presenter.timeline)
             .assertNotNull();
 
-        Sync.wrap(presenter.message.take(1))
-            .assertFalse(TextUtils::isEmpty);
+        TimelinePresenter.Rendered rendered = Sync.wrap(presenter.rendered.take(1)).last();
+        assertNotNull(rendered);
+        assertFalse(TextUtils.isEmpty(rendered.message));
     }
 }

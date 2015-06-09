@@ -125,7 +125,7 @@ import is.hello.sense.ui.widget.util.Styles;
                 return date.toString(context.getString(R.string.format_timeline_event_time_24_hr));
             } else {
                 String time = date.toString(context.getString(R.string.format_timeline_event_time_12_hr));
-                String period = date.toString(context.getString(R.string.format_timeline_12_hr_period));
+                String period = date.toString(context.getString(R.string.format_timeline_12_hr_period_padded));
                 return assembleTimeAndPeriod(time, period);
             }
         }
@@ -140,7 +140,7 @@ import is.hello.sense.ui.widget.util.Styles;
                 period = context.getString(R.string.format_timeline_24_hr_period);
             } else {
                 hour = date.toString(context.getString(R.string.format_timeline_segment_time_12_hr));
-                period = date.toString(context.getString(R.string.format_timeline_12_hr_period));
+                period = date.toString(context.getString(R.string.format_timeline_12_hr_period_padded));
             }
 
             return assembleTimeAndPeriod(hour, period);
@@ -240,7 +240,7 @@ import is.hello.sense.ui.widget.util.Styles;
         }
     }
 
-    public @NonNull CharSequence formatDuration(@NonNull Context context, long duration, @NonNull TimeUnit unit) {
+    public @NonNull CharSequence formatDuration(long duration, @NonNull TimeUnit unit) {
         long totalMinutes = unit.toMinutes(duration);
         if (totalMinutes < 60) {
             return Styles.assembleReadingAndUnit(totalMinutes, context.getString(R.string.format_duration_abbrev_minutes));
