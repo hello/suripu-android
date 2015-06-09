@@ -131,7 +131,7 @@ public class DateFormatterTests extends InjectionTestCase {
         assertEquals("5 min", formatter.formatDuration(5, TimeUnit.MINUTES).toString());
         assertEquals("1 hr", formatter.formatDuration(60, TimeUnit.MINUTES).toString());
         assertEquals("1.5 hr", formatter.formatDuration(90, TimeUnit.MINUTES).toString());
-        assertEquals("1.5 hr", formatter.formatDuration(100, TimeUnit.MINUTES).toString());
+        assertEquals("1.7 hr", formatter.formatDuration(100, TimeUnit.MINUTES).toString());
         assertEquals("2 hr", formatter.formatDuration(120, TimeUnit.MINUTES).toString());
     }
 }

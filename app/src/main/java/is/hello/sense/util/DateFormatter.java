@@ -245,12 +245,14 @@ import is.hello.sense.ui.widget.util.Styles;
         if (totalMinutes < 60) {
             return Styles.assembleReadingAndUnit(totalMinutes, context.getString(R.string.format_duration_abbrev_minutes));
         } else {
-            long hours = totalMinutes / 60;
+            float hours = totalMinutes / 60f;
             long leftOverMinutes = totalMinutes % 60;
 
-            String reading = Long.toString(hours);
-            if (leftOverMinutes >= 30) {
-                reading += context.getString(R.string.format_duration_divider) + leftOverMinutes;
+            String reading;
+            if (leftOverMinutes == 0) {
+                reading = String.format("%.0f", hours);
+            } else {
+                reading = String.format("%.1f", hours);
             }
 
             return Styles.assembleReadingAndUnit(reading, context.getString(R.string.format_duration_abbrev_hours), Styles.UNIT_STYLE_SUBSCRIPT);
