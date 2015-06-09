@@ -34,6 +34,7 @@ package is.hello.sense.util.markup;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.text.Spanned;
+import android.util.Log;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,11 +56,11 @@ public class MarkupProcessor {
     //region Public Interface
 
     public @NonNull CharSequence render(@NonNull String source) {
-        RenderState state = new RenderState(source);
+        RenderStringBuilder string = new RenderStringBuilder(source);
 
-        renderEmphasis(state);
+        doEmphasis(string);
 
-        return state.getStorage();
+        return string.build();
     }
 
     //endregion
@@ -67,47 +68,54 @@ public class MarkupProcessor {
 
     //region Rendering
 
-    protected void renderPattern(@NonNull Pattern pattern,
-                                 @NonNull RenderState state,
-                                 @NonNull Action1<Matcher> visitor) {
-        state.prepare();
+    protected void doPattern(@NonNull Pattern pattern,
+                             @NonNull RenderStringBuilder string,
+                             @NonNull Action1<Matcher> visitor) {
+        string.prepare();
 
-        Matcher matcher = pattern.matcher(state.getStorage());
+        Matcher matcher = pattern.matcher(string.getStorage());
         while (matcher.find()) {
             visitor.call(matcher);
         }
     }
 
+    protected void debugPrint(@NonNull RenderStringBuilder string) {
+        Log.d(getClass().getSimpleName(), string.toString());
+    }
 
-    private void renderBolds(@NonNull RenderState state) {
-        renderPattern(PATTERN_BOLD, state, matcher -> {
-            state.replace(matcher.start(), matcher.end(),
+
+    private void doBold(@NonNull RenderStringBuilder string) {
+        doPattern(PATTERN_BOLD, string, matcher -> {
+            string.replaceWithStyle(matcher.start(), matcher.end(),
                     matcher.group(2),
                     new SerializableStyleSpan(Typeface.BOLD));
         });
     }
 
-    private void renderItalics(@NonNull RenderState state) {
-        renderPattern(PATTERN_ITALIC, state, matcher -> {
-            state.replace(matcher.start(), matcher.end(),
+    private void doItalic(@NonNull RenderStringBuilder string) {
+        doPattern(PATTERN_ITALIC, string, matcher -> {
+            string.replaceWithStyle(matcher.start(), matcher.end(),
                     matcher.group(2),
                     new SerializableStyleSpan(Typeface.ITALIC));
         });
     }
 
-    protected void renderEmphasis(@NonNull RenderState state) {
-        renderBolds(state);
-        renderItalics(state);
+    protected void doEmphasis(@NonNull RenderStringBuilder string) {
+        debugPrint(string);
+        doBold(string);
+        debugPrint(string);
+        doItalic(string);
+        debugPrint(string);
     }
 
     //endregion
 
 
-    protected final class RenderState {
+    protected final class RenderStringBuilder {
         private final MarkupString storage;
         private int offset = 0;
 
-        public RenderState(@NonNull String source) {
+        public RenderStringBuilder(@NonNull String source) {
             this.storage = new MarkupString(source);
         }
 
@@ -115,21 +123,29 @@ public class MarkupProcessor {
             this.offset = 0;
         }
 
-        public MarkupString getStorage() {
+        public CharSequence getStorage() {
             return storage;
         }
 
-        public void replace(int start, int end,
-                            @NonNull String value,
-                            @NonNull SerializableSpan span) {
+        public MarkupString build() {
+            return storage;
+        }
+
+        @Override
+        public String toString() {
+            return storage.toString();
+        }
+
+        public void replaceWithStyle(int start, int end,
+                                     @NonNull String replacement,
+                                     @NonNull SerializableSpan style) {
             int adjustedStart = start - offset;
             int adjustedEnd = end - offset;
-            storage.replace(adjustedStart, adjustedEnd, value);
 
-            int spanEnd = adjustedStart + value.length();
-            storage.setSpan(span, adjustedStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            storage.setSpan(style, adjustedStart, adjustedEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            storage.replace(adjustedStart, adjustedEnd, replacement);
 
-            int offsetDelta = (start - end) - value.length();
+            int offsetDelta = (end - start) - replacement.length();
             offset += offsetDelta;
         }
     }

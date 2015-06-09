@@ -24,7 +24,8 @@ public class TestActivity extends SenseActivity {
 
 
         MarkupProcessor processor = new MarkupProcessor();
-        CharSequence result = processor.render("This is *italic* text.\n\nThis is **very important** text.");
+        CharSequence result = processor.render("This is _italic_ text. This text is also *italic*.\n\n" +
+                "This is __very important__ text. _**This**_ may crash your **phone**.");
         textView.setText(result);
     }
 }
