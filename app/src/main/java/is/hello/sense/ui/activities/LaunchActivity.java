@@ -63,6 +63,11 @@ public class LaunchActivity extends InjectionActivity {
     }
 
     private void bounce() {
+        if (0==0) {
+            startActivity(new Intent(this, TestActivity.class));
+            return;
+        }
+
         if (sessionManager.hasSession() && preferences.getBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)) {
             showHomeActivity();
         } else {
