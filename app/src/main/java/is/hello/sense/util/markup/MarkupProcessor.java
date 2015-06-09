@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 import is.hello.sense.util.markup.text.MarkupString;
 import is.hello.sense.util.markup.text.SerializableSpan;
 import is.hello.sense.util.markup.text.SerializableStyleSpan;
+import is.hello.sense.util.markup.text.SerializableURLSpan;
 import rx.functions.Action1;
 
 public class MarkupProcessor {
@@ -49,6 +50,16 @@ public class MarkupProcessor {
 
     private final Pattern PATTERN_BOLD = Pattern.compile("(\\*\\*|__)(?=\\S)(.+?[*_]*)(?<=\\S)\\1");
     private final Pattern PATTERN_ITALIC = Pattern.compile("(\\*|_)(?=\\S)(.+?)(?<=\\S)\\1");
+
+    private final Pattern PATTERN_LINK = Pattern.compile(
+            "(" +
+            "\\[(.+?)\\]" + // title – group 2
+            "\\(" +
+            "([^)\\s]+?)" + // href – group 3
+            "([\\s]+\"([^\"]+)\")?" + // title – group 5
+            "\\)" +
+            ")"
+    );
 
     //endregion
 
@@ -59,6 +70,7 @@ public class MarkupProcessor {
         RenderStringBuilder string = new RenderStringBuilder(source);
 
         doEmphasis(string);
+        doLinks(string);
 
         return string.build();
     }
@@ -101,11 +113,19 @@ public class MarkupProcessor {
     }
 
     protected void doEmphasis(@NonNull RenderStringBuilder string) {
-        debugPrint(string);
         doBold(string);
-        debugPrint(string);
         doItalic(string);
-        debugPrint(string);
+    }
+
+    protected void doLinks(@NonNull RenderStringBuilder string) {
+        doPattern(PATTERN_LINK, string, matcher -> {
+            String linkText = matcher.group(2);
+            String linkUrl = matcher.group(3);
+            String linkTitle = matcher.group(5);
+            string.replaceWithStyle(matcher.start(), matcher.end(),
+                    linkText,
+                    new SerializableURLSpan(linkUrl, linkTitle));
+        });
     }
 
     //endregion
