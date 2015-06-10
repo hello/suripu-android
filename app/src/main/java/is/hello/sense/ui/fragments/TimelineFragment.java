@@ -42,7 +42,6 @@ import is.hello.sense.api.model.Feedback;
 import is.hello.sense.api.model.PreSleepInsight;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
@@ -224,10 +223,6 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
             }
         });
         subscribe(segments, segmentAdapter::bindSegments, segmentAdapter::handleError);
-
-        bindAndSubscribe(timelinePresenter.message,
-                         timelineScore.messageText::setText,
-                         Functions.LOG_ERROR);
     }
 
     @Override
@@ -539,11 +534,15 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
                 timelineEventsHeader.setVisibility(View.INVISIBLE);
                 shareButton.setVisibility(View.INVISIBLE);
             }
+
+            timelineScore.messageText.setText(timeline.getMessage());
         } else {
             timelineScore.showSleepScore(-1);
             timelineEventsHeader.setVisibility(View.INVISIBLE);
             shareButton.setVisibility(View.INVISIBLE);
+            timelineScore.messageText.setText(R.string.missing_data_placeholder);
         }
+
 
         beforeSleep.bindTimeline(timeline);
         dateText.setTag(timeline);

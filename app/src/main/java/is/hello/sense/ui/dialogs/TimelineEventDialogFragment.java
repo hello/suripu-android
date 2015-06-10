@@ -34,8 +34,8 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.Markdown;
 import is.hello.sense.util.SoundPlayer;
+import is.hello.sense.util.markup.text.MarkupString;
 import rx.functions.Action1;
 
 import static android.view.ViewGroup.MarginLayoutParams;
@@ -52,12 +52,11 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
 
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
-    @Inject Markdown markdown;
 
     private DateTime shiftedTimestamp;
     private boolean timeAdjustable;
     private TimelineSegment.EventType eventType;
-    private String message;
+    private MarkupString message;
     private String soundUrl;
 
     private SoundPlayer soundPlayer;
@@ -80,7 +79,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         arguments.putLong(ARG_SHIFTED_TIMESTAMP, segment.getShiftedTimestamp().getMillis());
         arguments.putString(ARG_EVENT_TYPE, segment.getEventType().toString());
         arguments.putBoolean(ARG_IS_TIME_ADJUSTABLE, segment.isTimeAdjustable());
-        arguments.putString(ARG_MESSAGE, segment.getMessage());
+        arguments.putParcelable(ARG_MESSAGE, segment.getMessage());
         if (segment.getSound() != null) {
             arguments.putString(ARG_SOUND_URL, segment.getSound().getUrl());
         }
@@ -96,7 +95,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         this.shiftedTimestamp = new DateTime(getArguments().getLong(ARG_SHIFTED_TIMESTAMP));
         this.timeAdjustable = getArguments().getBoolean(ARG_IS_TIME_ADJUSTABLE);
         this.eventType = TimelineSegment.EventType.fromString(getArguments().getString(ARG_EVENT_TYPE));
-        this.message = getArguments().getString(ARG_MESSAGE);
+        this.message = getArguments().getParcelable(ARG_MESSAGE);
         this.soundUrl = getArguments().getString(ARG_SOUND_URL);
 
         setCancelable(true);
@@ -192,7 +191,7 @@ public final class TimelineEventDialogFragment extends InjectionDialogFragment i
         String formattedTime = dateFormatter.formatAsTime(shiftedTimestamp, use24Time);
 
         titleText.setText(getString(R.string.title_timeline_event_fmt, eventName, formattedTime));
-        markdown.renderInto(messageText, message);
+        messageText.setText(message);
     }
 
     //endregion

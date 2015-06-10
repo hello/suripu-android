@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.annotation.Nullable;
-import android.util.Pair;
 import android.widget.RemoteViews;
 
 import javax.inject.Inject;
@@ -21,7 +20,6 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
-import rx.Observable;
 
 public class LastNightWidgetProvider extends AppWidgetProvider {
     private static final String WIDGET_NAME = "Last Night";
@@ -57,26 +55,23 @@ public class LastNightWidgetProvider extends AppWidgetProvider {
 
         @Override
         protected void startUpdate(int widgetIds[]) {
-            Observable<Pair<Timeline, CharSequence>> update = Observable.combineLatest(presenter.timeline.take(1), presenter.message.take(1), Pair::new);
-            bindAndSubscribe(update,
-                             r -> bindConditions(widgetIds, r),
+            bindAndSubscribe(presenter.timeline.take(1),
+                             timeline -> bindConditions(widgetIds, timeline),
                              e -> {
                                  Logger.error(LastNightWidgetProvider.class.getSimpleName(), "Could not fetch last night's timeline", e);
                                  bindConditions(widgetIds, null);
                              });
         }
 
-        private void bindConditions(int widgetIds[], @Nullable Pair<Timeline, CharSequence> result) {
+        private void bindConditions(int widgetIds[], @Nullable Timeline timeline) {
             Resources resources = getResources();
             RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.widget_last_night);
-            if (result != null) {
-                Timeline timeline = result.first;
+            if (timeline != null) {
                 int sleepScore = timeline.getScore();
                 remoteViews.setTextViewText(R.id.widget_last_night_score, Integer.toString(sleepScore));
                 remoteViews.setTextColor(R.id.widget_last_night_score, resources.getColor(Styles.getSleepScoreColorRes(sleepScore)));
 
-                CharSequence message = result.second;
-                remoteViews.setTextViewText(R.id.widget_last_night_message, message);
+                remoteViews.setTextViewText(R.id.widget_last_night_message, timeline.getMessage());
             } else {
                 remoteViews.setTextViewText(R.id.widget_last_night_score, getString(R.string.missing_data_placeholder));
                 remoteViews.setTextViewText(R.id.widget_last_night_message, getString(R.string.missing_data_placeholder));
