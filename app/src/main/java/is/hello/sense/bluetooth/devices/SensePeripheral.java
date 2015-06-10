@@ -58,6 +58,11 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     public static final int VERSION_PVT = 0;
 
     /**
+     * The command version used by the app.
+     */
+    public static final int VERSION_APP = -1;
+
+    /**
      * The command version used by the firmware that
      * is able to parse WEP keys from ASCII strings.
      */
@@ -217,6 +222,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
                 MorpheusCommand timeoutResponse = MorpheusCommand.newBuilder()
                         .setVersion(getCommandVersion())
+                        .setAppVersion(VERSION_APP)
                         .setType(CommandType.MORPHEUS_COMMAND_ERROR)
                         .setError(SenseCommandProtos.ErrorType.TIME_OUT)
                         .build();
@@ -361,6 +367,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SWITCH_TO_NORMAL_MODE)
                 .setVersion(getCommandVersion())
+                .setAppVersion(VERSION_APP)
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
@@ -375,6 +382,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SWITCH_TO_PAIRING_MODE)
                 .setVersion(getCommandVersion())
+                .setAppVersion(VERSION_APP)
                 .build();
         return performDisconnectingCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
@@ -389,6 +397,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_ERASE_PAIRED_PHONE)
                 .setVersion(getCommandVersion())
+                .setAppVersion(VERSION_APP)
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
@@ -411,6 +420,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand.Builder builder = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
                 .setVersion(version)
+                .setAppVersion(VERSION_APP)
                 .setWifiSSID(ssid)
                 .setSecurityType(securityType);
         if (version == VERSION_PVT && securityType == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
@@ -440,6 +450,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_GET_WIFI_ENDPOINT)
                 .setVersion(getCommandVersion())
+                .setAppVersion(VERSION_APP)
                 .build();
 
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(response ->
@@ -456,6 +467,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_PAIR_PILL)
                 .setVersion(getCommandVersion())
+                .setAppVersion(VERSION_APP)
                 .setAccountId(accountToken)
                 .build();
         return performSimpleCommand(morpheusCommand, createPairPillTimeout()).map(MorpheusCommand::getDeviceId);
@@ -471,6 +483,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
                 .setVersion(getCommandVersion())
+                .setAppVersion(VERSION_APP)
                 .setAccountId(accountToken)
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
@@ -486,6 +499,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_FACTORY_RESET)
                 .setVersion(getCommandVersion())
+                .setAppVersion(VERSION_APP)
                 .build();
         return performDisconnectingCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
@@ -500,6 +514,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE)
                 .setVersion(getCommandVersion())
+                .setAppVersion(VERSION_APP)
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
@@ -514,6 +529,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(animationType.commandType)
                 .setVersion(getCommandVersion())
+                .setAppVersion(VERSION_APP)
                 .build();
         return performSimpleCommand(morpheusCommand, createAnimationTimeout()).map(Functions.TO_VOID);
     }
@@ -528,6 +544,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_START_WIFISCAN)
                 .setVersion(getCommandVersion())
+                .setAppVersion(VERSION_APP)
                 .build();
 
         //noinspection MismatchedQueryAndUpdateOfCollection
