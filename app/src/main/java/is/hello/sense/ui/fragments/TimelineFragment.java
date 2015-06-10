@@ -361,6 +361,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         CharSequence message = rendered.message;
         headerView.bindMessage(message);
+
+        headerView.setScoreClickEnabled(timeline.getStatistics() != null && hasSegments);
     }
 
     public void timelineUnavailable(Throwable e) {

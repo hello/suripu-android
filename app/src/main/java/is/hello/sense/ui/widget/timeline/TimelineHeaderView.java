@@ -118,6 +118,9 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
         this.cardTitle = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_title);
         this.cardContents = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_contents);
+
+
+        setScoreClickEnabled(false);
     }
 
     @Override
@@ -158,12 +161,24 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     public void setOnScoreClickListener(@Nullable View.OnClickListener listener) {
         if (listener != null) {
             SafeOnClickListener wrapper = new SafeOnClickListener(listener);
+            boolean clickEnabled = isScoreClickEnabled();
             scoreContainer.setOnClickListener(wrapper);
             cardContainer.setOnClickListener(wrapper);
+            setScoreClickEnabled(clickEnabled);
         } else {
             scoreContainer.setOnClickListener(null);
             cardContainer.setOnClickListener(null);
+            setScoreClickEnabled(false);
         }
+    }
+
+    public void setScoreClickEnabled(boolean enabled) {
+        scoreContainer.setClickable(enabled);
+        cardContainer.setClickable(enabled);
+    }
+
+    public boolean isScoreClickEnabled() {
+        return scoreContainer.isClickable() && cardContainer.isClickable();
     }
 
     public void setChildFadeAmount(float amount) {
@@ -376,6 +391,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         cardContents.setText(getResources().getString(R.string.timeline_error_message, e.getMessage()));
 
         setScore(NULL_SCORE);
+
+        setScoreClickEnabled(false);
     }
 
     //endregion
