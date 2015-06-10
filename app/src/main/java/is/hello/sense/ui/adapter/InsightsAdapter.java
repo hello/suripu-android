@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,18 +53,22 @@ public class InsightsAdapter extends BaseAdapter {
 
     //region Bindings
 
-    public void bindInsights(@NonNull List<Insight> insights) {
+    public void bindData(@NonNull Pair<List<Insight>, Question> data) {
         listener.onDismissLoadingIndicator();
-        this.insights = insights;
+
+        this.insights = data.first;
+        this.currentQuestion = data.second;
+
         notifyDataSetChanged();
     }
 
-    public void insightsUnavailable(Throwable e) {
+    public void dataUnavailable(Throwable e) {
         Analytics.trackError(e, "Loading Insights");
         Logger.error(getClass().getSimpleName(), "Could not load insights", e);
 
         listener.onDismissLoadingIndicator();
         this.insights = new ArrayList<>();
+        this.currentQuestion = null;
 
         StringRef messageRef = Errors.getDisplayMessage(e);
         String message = messageRef != null
@@ -75,19 +80,6 @@ public class InsightsAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-
-    public void bindCurrentQuestion(@Nullable Question currentQuestion) {
-        this.currentQuestion = currentQuestion;
-        notifyDataSetChanged();
-    }
-
-    public void currentQuestionUnavailable(Throwable e) {
-        Analytics.trackError(e, "Loading Question");
-        Logger.error(getClass().getSimpleName(), "Could not load question", e);
-
-        this.currentQuestion = null;
-        notifyDataSetChanged();
-    }
 
     public void clearCurrentQuestion() {
         this.currentQuestion = null;
