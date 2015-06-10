@@ -60,7 +60,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     /**
      * The command version used by the app.
      */
-    public static final int VERSION_APP = -1;
+    public static final int VERSION_APP = 0;
 
     /**
      * The command version used by the firmware that
@@ -437,7 +437,54 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         }
 
         MorpheusCommand morpheusCommand = builder.build();
-        return performSimpleCommand(morpheusCommand, peripheral.createOperationTimeout("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS)).map(Functions.TO_VOID);
+
+        return performCommand(morpheusCommand, peripheral.createOperationTimeout("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS), (response, subscriber, timeout) -> {
+            Action1<Throwable> onError = subscriber::onError;
+
+            if (response.getType() == CommandType.MORPHEUS_COMMAND_CONNECTION_STATE) {
+                timeout.reschedule();
+                Logger.info(Peripheral.LOG_TAG, "connection state update " + response.getWifiConnectionState().toString());
+
+                if( response.getWifiConnectionState() ==  wifi_connection_state.CONNECTED ) {
+                    timeout.unschedule();
+
+                    Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+                    unsubscribe.subscribe(ignored -> {
+                        subscriber.onNext(response);
+                        subscriber.onCompleted();
+                    }, onError);
+
+                    dataHandler.clearListeners();
+                }
+            } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
+                timeout.unschedule();
+
+                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+                unsubscribe.subscribe(ignored -> {
+                    if (response.getError() == SenseCommandProtos.ErrorType.TIME_OUT) {
+                        onError.call(new OperationTimeoutError(OperationTimeoutError.Operation.COMMAND_RESPONSE));
+                    } else {
+                        onError.call(new SensePeripheralError(response.getError()));
+                    }
+                }, e -> {
+                    if (response.getError() == SenseCommandProtos.ErrorType.TIME_OUT) {
+                        onError.call(new OperationTimeoutError(OperationTimeoutError.Operation.COMMAND_RESPONSE, e));
+                    } else {
+                        onError.call(new SensePeripheralError(response.getError(), e));
+                    }
+                });
+
+                dataHandler.clearListeners();
+            } else {
+                timeout.unschedule();
+
+                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+                unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(SenseCommandProtos.ErrorType.INTERNAL_DATA_ERROR)), onError);
+
+                dataHandler.clearListeners();
+            }
+        }).map(Functions.TO_VOID);
+
     }
 
     public Observable<SenseWifiNetwork> getWifiNetwork() {
