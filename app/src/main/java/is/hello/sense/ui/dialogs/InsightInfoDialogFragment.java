@@ -24,8 +24,8 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Errors;
 import is.hello.sense.util.ImageLoader;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.Markdown;
 import is.hello.sense.util.StringRef;
+import is.hello.sense.util.markup.text.MarkupString;
 
 public class InsightInfoDialogFragment extends InjectionDialogFragment {
     public static final String TAG = InsightInfoDialogFragment.class.getSimpleName();
@@ -35,7 +35,6 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
     private static final String ARG_INSIGHT_MESSAGE = InsightInfoDialogFragment.class.getName() + ".ARG_INSIGHT_MESSAGE";
 
     @Inject InsightInfoPresenter presenter;
-    @Inject Markdown markdown;
 
     private boolean hasCategory;
 
@@ -53,7 +52,7 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
             arguments.putString(ARG_INSIGHT_CATEGORY, insight.getCategory().toString());
         } else {
             arguments.putString(ARG_INSIGHT_TITLE, insight.getTitle());
-            arguments.putString(ARG_INSIGHT_MESSAGE, insight.getMessage());
+            arguments.putParcelable(ARG_INSIGHT_MESSAGE, insight.getMessage());
         }
         dialogFragment.setArguments(arguments);
 
@@ -91,10 +90,10 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
             bindAndSubscribe(presenter.insightInfo, this::bindInsightInfo, this::insightInfoUnavailable);
         } else {
             String title = getArguments().getString(ARG_INSIGHT_TITLE);
-            String message = getArguments().getString(ARG_INSIGHT_MESSAGE);
+            MarkupString message = getArguments().getParcelable(ARG_INSIGHT_MESSAGE);
 
             titleText.setText(title);
-            markdown.renderInto(messageText, message);
+            messageText.setText(message);
 
             showContent();
         }
@@ -112,7 +111,7 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
 
     public void bindInsightInfo(@NonNull InsightInfo insightInfo) {
         titleText.setText(insightInfo.getTitle());
-        markdown.renderInto(messageText, insightInfo.getText());
+        messageText.setText(insightInfo.getText());
 
         illustrationImage.setImageDrawable(null);
         String imageUrl = insightInfo.getImageUrl();

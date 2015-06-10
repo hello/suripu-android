@@ -68,7 +68,7 @@ public final class MarkupProcessor {
     /**
      * The default list deliminator to use during rendering.
      */
-    public static final String DEFAULT_LIST_DELIMINATOR = " • ";
+    public static final String DEFAULT_LIST_DELIMINATOR = "• ";
 
     //region Patterns
 
@@ -156,6 +156,11 @@ public final class MarkupProcessor {
                     ")",
             Pattern.MULTILINE);
 
+    /**
+     * Captures any trailing whitespace
+     */
+    private final Pattern PATTERN_TRIM = Pattern.compile("\\s+\\Z", Pattern.MULTILINE);
+
     //endregion
 
 
@@ -179,7 +184,7 @@ public final class MarkupProcessor {
     //endregion
 
 
-    //region Public Interface
+    //region Rendering
 
     /**
      * Render a string containing the supported subset of
@@ -198,8 +203,20 @@ public final class MarkupProcessor {
         doUnorderedLists(state);
         doOrderedLists(state);
         doEscapeRender(state);
+        doTailTrim(state);
 
         return state.build();
+    }
+
+    private void doPattern(@NonNull Pattern pattern,
+                           @NonNull RenderState state,
+                           @NonNull Action1<Matcher> visitor) {
+        state.prepareForPass();
+
+        Matcher matcher = pattern.matcher(state.getStorage());
+        while (matcher.find()) {
+            visitor.call(matcher);
+        }
     }
 
     //endregion
@@ -226,18 +243,18 @@ public final class MarkupProcessor {
     //endregion
 
 
-    //region Rendering
+    //region Trimming
 
-    private void doPattern(@NonNull Pattern pattern,
-                           @NonNull RenderState state,
-                           @NonNull Action1<Matcher> visitor) {
-        state.prepareForPass();
-
-        Matcher matcher = pattern.matcher(state.getStorage());
-        while (matcher.find()) {
-            visitor.call(matcher);
-        }
+    private void doTailTrim(@NonNull RenderState state) {
+        doPattern(PATTERN_TRIM, state, matcher -> {
+            state.delete(matcher.start(), matcher.end());
+        });
     }
+
+    //endregion
+
+
+    //region Emphasis
 
     private void doBold(@NonNull RenderState state) {
         doPattern(PATTERN_BOLD, state, matcher -> {
@@ -255,6 +272,11 @@ public final class MarkupProcessor {
         });
     }
 
+    //endregion
+
+
+    //region Items
+
     private void doLinks(@NonNull RenderState state) {
         doPattern(PATTERN_LINK, state, matcher -> {
             String linkText = matcher.group(2);
@@ -265,6 +287,11 @@ public final class MarkupProcessor {
                     new MarkupURLSpan(linkUrl, linkTitle));
         });
     }
+
+    //endregion
+
+
+    //region Lists
 
     private String renderListItem(@Nullable String indentation, @NonNull String state) {
         if (indentation != null) {
@@ -336,6 +363,16 @@ public final class MarkupProcessor {
             storage.replace(adjustedStart, adjustedEnd, replacement);
 
             int offsetDelta = (end - start) - replacement.length();
+            offset += offsetDelta;
+        }
+
+        private void delete(int start, int end) {
+            int adjustedStart = start - offset;
+            int adjustedEnd = end - offset;
+
+            storage.delete(adjustedStart, adjustedEnd);
+
+            int offsetDelta = (end - start);
             offset += offsetDelta;
         }
     }

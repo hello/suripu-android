@@ -1,53 +1,37 @@
 package is.hello.sense.util;
 
-import android.content.res.ColorStateList;
-import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Html;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.MetricAffectingSpan;
-import android.text.style.StyleSpan;
-import android.text.style.TextAppearanceSpan;
 import android.widget.TextView;
-
-import org.markdownj.MarkdownProcessor;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import is.hello.sense.ui.common.ListTagHandler;
+import is.hello.sense.util.markup.MarkupProcessor;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+/**
+ * Legacy markup rendering class. Prefer MarkupString inline for all new code.
+ */
 @Singleton public final class Markdown {
-    private final MarkdownProcessor processor = new MarkdownProcessor();
-    private final ListTagHandler listTagHandler = new ListTagHandler();
+    private final MarkupProcessor processor;
 
-    @Inject public Markdown() {
-
+    @Inject public Markdown(@NonNull MarkupProcessor processor) {
+        this.processor = processor;
     }
 
-    public @NonNull String toHtml(@Nullable String markdown) {
-        if (TextUtils.isEmpty(markdown))
+    public @NonNull CharSequence toSpanned(@Nullable String markup) {
+        if (TextUtils.isEmpty(markup)) {
             return "";
-
-        return processor.markdown(markdown);
+        } else {
+            return processor.render(markup);
+        }
     }
 
-    public @NonNull CharSequence toSpanned(@Nullable String markdown) {
-        String html = toHtml(markdown);
-        if (TextUtils.isEmpty(html))
-            return "";
-
-        Spanned renderedHtml = Html.fromHtml(html, null, listTagHandler);
-        return renderedHtml.subSequence(0, TextUtils.getTrimmedLength(renderedHtml));
-    }
-
+    @Deprecated
     public @NonNull Observable<CharSequence> render(@Nullable String markdown) {
         if (TextUtils.isEmpty(markdown)) {
             return Observable.just((CharSequence) "")
@@ -67,56 +51,9 @@ import rx.schedulers.Schedulers;
                          .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @Deprecated
     public void renderInto(@NonNull TextView textView, @Nullable String markdown) {
         render(markdown)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(textView::setText, e -> {
-                    Logger.error(getClass().getSimpleName(), "Could not render markdown", e);
-                    textView.setText(markdown);
-                });
-    }
-
-    public @NonNull Observable<CharSequence> renderWithEmphasisColor(int color, @Nullable String markdown) {
-        return render(markdown).map(maybeSpanned -> {
-            if (maybeSpanned instanceof Spanned) {
-                Spanned spanned = (Spanned) maybeSpanned;
-                SpannableString result = new SpannableString(spanned.toString());
-
-                MetricAffectingSpan[] spans = spanned.getSpans(0, spanned.length(), MetricAffectingSpan.class);
-                ColorStateList colors = ColorStateList.valueOf(color);
-                for (MetricAffectingSpan span : spans) {
-                    int spanStart = spanned.getSpanStart(span);
-                    int spanEnd = spanned.getSpanEnd(span);
-                    int spanFlags = spanned.getSpanFlags(span);
-
-                    if (span instanceof TextAppearanceSpan) {
-                        TextAppearanceSpan appearanceSpan = (TextAppearanceSpan) span;
-                        if (appearanceSpan.getTextStyle() != Typeface.NORMAL) {
-                            TextAppearanceSpan updatedSpan = new TextAppearanceSpan(appearanceSpan.getFamily(), appearanceSpan.getTextStyle(), appearanceSpan.getTextSize(), colors, colors);
-                            result.setSpan(updatedSpan, spanStart, spanEnd, spanFlags);
-
-                            continue;
-                        }
-                    } else if (span instanceof StyleSpan) {
-                        StyleSpan styleSpan = (StyleSpan) span;
-                        result.setSpan(styleSpan, spanStart, spanEnd, spanFlags);
-                        result.setSpan(new ForegroundColorSpan(color), spanStart, spanEnd, spanFlags);
-
-                        continue;
-                    }
-
-                    result.setSpan(span, spanned.getSpanStart(span), spanned.getSpanEnd(span), spanned.getSpanFlags(span));
-                }
-
-                return result;
-            } else {
-                return maybeSpanned;
-            }
-        });
-    }
-
-    public void renderEmphasisInto(@NonNull TextView textView, int color, @Nullable String markdown) {
-        renderWithEmphasisColor(color, markdown)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(textView::setText, e -> {
                     Logger.error(getClass().getSimpleName(), "Could not render markdown", e);

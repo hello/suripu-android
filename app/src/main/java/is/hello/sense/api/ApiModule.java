@@ -20,12 +20,15 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.BuildConfig;
+import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.PersistentApiSessionManager;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.markup.MarkupJacksonModule;
+import is.hello.sense.util.markup.MarkupProcessor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
@@ -37,12 +40,13 @@ import retrofit.client.OkClient;
 public class ApiModule {
     private final Context applicationContext;
 
-    public static ObjectMapper createConfiguredObjectMapper() {
+    public static ObjectMapper createConfiguredObjectMapper(@NonNull MarkupProcessor markupProcessor) {
         ObjectMapper mapper = new ObjectMapper();
         if (!BuildConfig.DEBUG) {
             mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         }
         mapper.registerModule(new JodaModule());
+        mapper.registerModule(new MarkupJacksonModule(markupProcessor));
         return mapper;
     }
 
@@ -59,8 +63,12 @@ public class ApiModule {
         return new PersistentApiSessionManager(context, mapper);
     }
 
-    @Singleton @Provides ObjectMapper provideObjectMapper() {
-        return createConfiguredObjectMapper();
+    @Singleton @Provides MarkupProcessor provideMarkupProcessor() {
+        return new MarkupProcessor(applicationContext.getString(R.string.format_markup_list_deliminator));
+    }
+
+    @Singleton @Provides ObjectMapper provideObjectMapper(@NonNull MarkupProcessor markupProcessor) {
+        return createConfiguredObjectMapper(markupProcessor);
     }
 
     @Singleton @Provides Cache provideCache(@NonNull @ApiAppContext Context context) {

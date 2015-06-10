@@ -25,7 +25,6 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Errors;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.Markdown;
 import is.hello.sense.util.StringRef;
 
 public class InsightsAdapter extends BaseAdapter {
@@ -35,7 +34,6 @@ public class InsightsAdapter extends BaseAdapter {
 
     private final Context context;
     private final LayoutInflater inflater;
-    private final Markdown markdown;
     private final DateFormatter dateFormatter;
     private final Listener listener;
 
@@ -43,13 +41,11 @@ public class InsightsAdapter extends BaseAdapter {
     private Question currentQuestion;
 
     public InsightsAdapter(@NonNull Context context,
-                           @NonNull Markdown markdown,
                            @NonNull DateFormatter dateFormatter,
                            @NonNull Listener listener) {
         this.context = context;
         this.dateFormatter = dateFormatter;
         this.inflater = LayoutInflater.from(context);
-        this.markdown = markdown;
         this.listener = listener;
     }
 
@@ -224,8 +220,6 @@ public class InsightsAdapter extends BaseAdapter {
         Insight insight = getInsightItem(position);
         InsightViewHolder holder = (InsightViewHolder) view.getTag();
 
-        markdown.renderInto(holder.body, insight.getMessage());
-
         DateTime insightCreated = insight.getCreated();
         if (insightCreated == null && insight.getCategory() == InsightCategory.IN_APP_ERROR) {
             holder.date.setText(R.string.dialog_error_title);
@@ -242,6 +236,8 @@ public class InsightsAdapter extends BaseAdapter {
             holder.previewDivider.setVisibility(View.GONE);
             holder.preview.setVisibility(View.GONE);
         }
+
+        holder.body.setText(insight.getMessage());
 
         return view;
     }

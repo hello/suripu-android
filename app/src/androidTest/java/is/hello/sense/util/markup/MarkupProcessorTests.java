@@ -80,7 +80,7 @@ public class MarkupProcessorTests extends TestCase {
         MarkupString literalList = processor.render("\\- Item one\n" +
                 "\\- Item two\n");
         assertEquals("- Item one\n" +
-                "- Item two\n", literalList.toString());
+                "- Item two", literalList.toString());
 
         MarkupString literalEmphasis = processor.render("\\*Stars\\* \\_Underscores\\_");
         assertEquals("*Stars* _Underscores_", literalEmphasis.toString());
@@ -107,21 +107,21 @@ public class MarkupProcessorTests extends TestCase {
                 "- Item Three\n");
         assertEquals(" • Item one\n" +
                 " • Item Two\n" +
-                " • Item Three\n", noIndentationDash.toString());
+                " • Item Three", noIndentationDash.toString());
 
         MarkupString noIndentationStar = processor.render("* Item one\n" +
                 "* Item Two\n" +
                 "* Item Three\n");
         assertEquals(" • Item one\n" +
                 " • Item Two\n" +
-                " • Item Three\n", noIndentationStar.toString());
+                " • Item Three", noIndentationStar.toString());
 
         MarkupString noIndentationPlus = processor.render("+ Item one\n" +
                 "+ Item Two\n" +
                 "+ Item Three\n");
         assertEquals(" • Item one\n" +
                 " • Item Two\n" +
-                " • Item Three\n", noIndentationPlus.toString());
+                " • Item Three", noIndentationPlus.toString());
 
 
         MarkupString indentationStar = processor.render("* Item one\n" +
@@ -129,7 +129,7 @@ public class MarkupProcessorTests extends TestCase {
                 "* Item Two\n");
         assertEquals(" • Item one\n" +
                 "\t • Nested Item One\n" +
-                " • Item Two\n", indentationStar.toString());
+                " • Item Two", indentationStar.toString());
     }
 
     public void testOrderedList() throws Exception {
@@ -138,13 +138,13 @@ public class MarkupProcessorTests extends TestCase {
                 "3. Item three\n");
         assertEquals(" • Item one\n" +
                 " • Item two\n" +
-                " • Item three\n", ordered.toString());
+                " • Item three", ordered.toString());
 
         MarkupString unordered = processor.render("8. Item one\n" +
                 "1. Item two\n" +
                 "84. Item three\n");
         assertEquals(" • Item one\n" +
                 " • Item two\n" +
-                " • Item three\n", unordered.toString());
+                " • Item three", unordered.toString());
     }
 }

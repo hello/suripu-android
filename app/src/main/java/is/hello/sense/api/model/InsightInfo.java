@@ -2,6 +2,8 @@ package is.hello.sense.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import is.hello.sense.util.markup.text.MarkupString;
+
 public class InsightInfo extends ApiResponse {
     @JsonProperty("id")
     private long id;
@@ -13,7 +15,7 @@ public class InsightInfo extends ApiResponse {
     private String title;
 
     @JsonProperty("text")
-    private String text;
+    private MarkupString text;
 
     @JsonProperty("image_url")
     private String imageUrl;
@@ -31,7 +33,7 @@ public class InsightInfo extends ApiResponse {
         return title;
     }
 
-    public String getText() {
+    public MarkupString getText() {
         return text;
     }
 

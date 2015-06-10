@@ -7,8 +7,6 @@
 
     <application>
 
-        <activity android:name="is.hello.sense.ui.activities.TestActivity" />
-
         <activity
             android:name="net.hockeyapp.android.UpdateActivity" />
 

@@ -77,6 +77,12 @@ public class MarkupString implements CharSequence, GetChars, Spanned, Serializab
         this(text, 0, text.length());
     }
 
+    public MarkupString(@NonNull String text) {
+        this.storage = text;
+        this.spans = new MarkupSpan[0];
+        this.spanData = new int[0];
+    }
+
     //endregion
 
 
