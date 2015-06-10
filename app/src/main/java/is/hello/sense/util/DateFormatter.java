@@ -104,6 +104,14 @@ import is.hello.sense.ui.widget.util.Styles;
         }
     }
 
+    public @NonNull String formatAsTimelineNavigatorDate(@Nullable DateTime date) {
+        if (date != null) {
+            return date.toString(context.getString(R.string.format_date_month));
+        } else {
+            return context.getString(R.string.format_date_placeholder);
+        }
+    }
+
     public @NonNull String formatAsLocalizedDate(@Nullable LocalDate date) {
         if (date != null) {
             return DateFormat.getDateFormat(context).format(date.toDate());

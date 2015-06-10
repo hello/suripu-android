@@ -31,6 +31,7 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
     private static final String ARG_FIRST_TIMELINE = TimelineNavigatorFragment.class.getName() + ".ARG_FIRST_TIMELINE";
 
     @Inject TimelineNavigatorPresenter presenter;
+    @Inject DateFormatter dateFormatter;
 
     private TextView monthText;
     private RecyclerView recyclerView;
@@ -73,6 +74,7 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
         view.setClickable(true);
 
         this.monthText = (TextView) view.findViewById(R.id.fragment_timeline_navigator_month);
+        monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(startDate));
         Views.setSafeOnClickListener(monthText, ignored -> getFragmentManager().popBackStack());
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_navigator_recycler_view);
@@ -181,11 +183,7 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
             }
 
             TimelineNavigatorAdapter.ItemViewHolder holder = (TimelineNavigatorAdapter.ItemViewHolder) recyclerView.findViewHolderForLayoutPosition(layoutManager.findLastVisibleItemPosition());
-            if (holder.date != null) {
-                monthText.setText(holder.date.toString("MMMM"));
-            } else {
-                monthText.setText(null);
-            }
+            monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(holder.date));
         }
 
         @Override

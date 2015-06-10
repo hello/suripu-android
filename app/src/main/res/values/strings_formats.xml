@@ -7,6 +7,7 @@
     <string name="format_date">MMMM d</string>
     <string name="format_date_last_night">Last Night</string>
     <string name="format_date_weekday">EEEE</string>
+    <string name="format_date_month">MMMM</string>
 
     <string name="format_time_12_hr">h:mm a</string>
     <string name="format_time_24_hr">H:mm</string>
