@@ -10,7 +10,7 @@ import android.text.style.MetricAffectingSpan;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarkupStyleSpan extends MetricAffectingSpan implements MarkupSpan {
+public final class MarkupStyleSpan extends MetricAffectingSpan implements MarkupSpan {
     private final int style;
 
     public static String styleToString(int style) {
@@ -102,6 +102,30 @@ public class MarkupStyleSpan extends MetricAffectingSpan implements MarkupSpan {
 
     //endregion
 
+
+    public int getStyle() {
+        return style;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        MarkupStyleSpan that = (MarkupStyleSpan) o;
+
+        return style == that.style;
+    }
+
+    @Override
+    public int hashCode() {
+        return style;
+    }
 
     @Override
     public String toString() {

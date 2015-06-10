@@ -33,7 +33,7 @@ package is.hello.sense.util.markup;
 
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
-import android.text.SpannableStringBuilder;
+import android.support.annotation.Nullable;
 import android.text.Spanned;
 import android.util.Log;
 
@@ -47,6 +47,8 @@ import is.hello.sense.util.markup.text.MarkupURLSpan;
 import rx.functions.Action1;
 
 public class MarkupProcessor {
+    public static final String DEFAULT_LIST_DELIMINATOR = " • ";
+
     //region Patterns
 
     private final Pattern PATTERN_BOLD = Pattern.compile("(\\*\\*|__)(?=\\S)(.+?[*_]*)(?<=\\S)\\1");
@@ -61,19 +63,34 @@ public class MarkupProcessor {
             ")");
 
     private final Pattern PATTERN_UNORDERED_LIST = Pattern.compile("(" +
-            "^([ \\t]+)?" +
+            "^([ \\t]+)?" + // list item indentation – group 2
             "[-*+]" +
-            "([ \\t]+)?" +
+            "([ \\t]+)" +
             "(.+)$" + // list item content – group 4
             ")",
             Pattern.MULTILINE);
     private final Pattern PATTERN_ORDERED_LIST = Pattern.compile("(" +
-            "^([ \\t]+)?" +
-            "\\d\\." +
-            "([ \\t]+)?" +
+            "^([ \\t]+)?" + // list item indentation – group 2
+            "\\d+\\." +
+            "([ \\t]+)" +
             "(.+)$" + // list item content – group 4
             ")",
             Pattern.MULTILINE);
+
+    //endregion
+
+
+    //region Creation
+
+    private final String listDeliminator;
+
+    public MarkupProcessor(String listDeliminator) {
+        this.listDeliminator = listDeliminator;
+    }
+
+    public MarkupProcessor() {
+        this(DEFAULT_LIST_DELIMINATOR);
+    }
 
     //endregion
 
@@ -83,7 +100,8 @@ public class MarkupProcessor {
     public @NonNull MarkupString render(@NonNull String source) {
         Builder string = new Builder(source);
 
-        doEmphasis(string);
+        doBold(string);
+        doItalic(string);
         doLinks(string);
         doUnorderedLists(string);
         doOrderedLists(string);
@@ -128,11 +146,6 @@ public class MarkupProcessor {
         });
     }
 
-    protected void doEmphasis(@NonNull Builder string) {
-        doBold(string);
-        doItalic(string);
-    }
-
     protected void doLinks(@NonNull Builder string) {
         doPattern(PATTERN_LINK, string, matcher -> {
             String linkText = matcher.group(2);
@@ -144,23 +157,29 @@ public class MarkupProcessor {
         });
     }
 
-    protected String renderListItem(@NonNull String contents) {
-        return " • " + contents;
+    protected String renderListItem(@Nullable String indentation, @NonNull String contents) {
+        if (indentation != null) {
+            return indentation + listDeliminator + contents;
+        } else {
+            return listDeliminator + contents;
+        }
     }
 
     protected void doUnorderedLists(@NonNull Builder string) {
         doPattern(PATTERN_UNORDERED_LIST, string, matcher -> {
+            String itemIndentation = matcher.group(2);
             String itemContents = matcher.group(4);
             string.replace(matcher.start(), matcher.end(),
-                    renderListItem(itemContents));
+                    renderListItem(itemIndentation, itemContents));
         });
     }
 
     protected void doOrderedLists(@NonNull Builder string) {
         doPattern(PATTERN_ORDERED_LIST, string, matcher -> {
+            String itemIndentation = matcher.group(2);
             String itemContents = matcher.group(4);
             string.replace(matcher.start(), matcher.end(),
-                    renderListItem(itemContents));
+                    renderListItem(itemIndentation, itemContents));
         });
     }
 
@@ -168,11 +187,11 @@ public class MarkupProcessor {
 
 
     protected final class Builder {
-        private final SpannableStringBuilder storage;
+        private final MarkupString.Builder storage;
         private int offset = 0;
 
         public Builder(@NonNull String source) {
-            this.storage = new SpannableStringBuilder(source);
+            this.storage = new MarkupString.Builder(source);
         }
 
         private void prepare() {
@@ -184,7 +203,7 @@ public class MarkupProcessor {
         }
 
         public MarkupString build() {
-            return new MarkupString(storage);
+            return storage.build();
         }
 
         @Override

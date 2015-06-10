@@ -28,7 +28,7 @@ import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 
-public class MarkupURLSpan extends ClickableSpan implements MarkupSpan {
+public final class MarkupURLSpan extends ClickableSpan implements MarkupSpan {
     private final String url;
     private final String title;
 
@@ -89,6 +89,31 @@ public class MarkupURLSpan extends ClickableSpan implements MarkupSpan {
         } catch (ActivityNotFoundException e) {
             Log.w(getClass().getSimpleName(), "Activity was not found for intent, " + intent.toString());
         }
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        MarkupURLSpan that = (MarkupURLSpan) o;
+
+        return (url.equals(that.url) &&
+                !(title != null ? !title.equals(that.title) : that.title != null));
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = url.hashCode();
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        return result;
     }
 
     @Override

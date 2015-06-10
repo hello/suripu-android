@@ -20,7 +20,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.GetChars;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.util.Log;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -99,7 +101,7 @@ public class MarkupString implements CharSequence, GetChars, Spanned, Serializab
     @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeString(storage);
-        out.writeInt(spanData.length);
+        out.writeParcelableArray(spans, 0);
         out.writeIntArray(spanData);
     }
 
@@ -294,4 +296,34 @@ public class MarkupString implements CharSequence, GetChars, Spanned, Serializab
     }
 
     //endregion
+
+
+    public static class Builder extends SpannableStringBuilder {
+        public Builder() {
+        }
+
+        public Builder(CharSequence text) {
+            super(text);
+        }
+
+        public Builder(CharSequence text, int start, int end) {
+            super(text, start, end);
+        }
+
+
+        @Override
+        public void setSpan(Object what, int start, int end, int flags) {
+            if (what != null && !MarkupSpan.class.isInstance(what)) {
+                Log.w(getClass().getCanonicalName(), "Ignoring span `" + what + "` that does not implement MarkupSpan.");
+                return;
+            }
+
+            super.setSpan(what, start, end, flags);
+        }
+
+
+        public MarkupString build() {
+            return new MarkupString(this);
+        }
+    }
 }
