@@ -1,6 +1,7 @@
 package is.hello.sense.util.markup.text;
 
 import android.graphics.Typeface;
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -9,7 +10,7 @@ import android.text.style.MetricAffectingSpan;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SerializableStyleSpan extends MetricAffectingSpan implements SerializableSpan {
+public class MarkupStyleSpan extends MetricAffectingSpan implements MarkupSpan {
     private final int style;
 
     public static String styleToString(int style) {
@@ -30,10 +31,39 @@ public class SerializableStyleSpan extends MetricAffectingSpan implements Serial
         return TextUtils.join(" | ", flags);
     }
 
-    public SerializableStyleSpan(int style) {
+    public MarkupStyleSpan(int style) {
         this.style = style;
     }
 
+
+    //region Serialization
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(style);
+    }
+
+    public static final Creator<MarkupStyleSpan> CREATOR = new Creator<MarkupStyleSpan>() {
+        @Override
+        public MarkupStyleSpan createFromParcel(Parcel source) {
+            return new MarkupStyleSpan(source.readInt());
+        }
+
+        @Override
+        public MarkupStyleSpan[] newArray(int size) {
+            return new MarkupStyleSpan[size];
+        }
+    };
+
+    //endregion
+
+
+    //region Rendering
 
     @Override
     public void updateMeasureState(TextPaint textPaint) {
@@ -69,6 +99,8 @@ public class SerializableStyleSpan extends MetricAffectingSpan implements Serial
 
         textPaint.setTypeface(newTypeface);
     }
+
+    //endregion
 
 
     @Override

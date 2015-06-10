@@ -33,16 +33,17 @@ package is.hello.sense.util.markup;
 
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.util.Log;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import is.hello.sense.util.markup.text.MarkupSpan;
 import is.hello.sense.util.markup.text.MarkupString;
-import is.hello.sense.util.markup.text.SerializableSpan;
-import is.hello.sense.util.markup.text.SerializableStyleSpan;
-import is.hello.sense.util.markup.text.SerializableURLSpan;
+import is.hello.sense.util.markup.text.MarkupStyleSpan;
+import is.hello.sense.util.markup.text.MarkupURLSpan;
 import rx.functions.Action1;
 
 public class MarkupProcessor {
@@ -51,26 +52,41 @@ public class MarkupProcessor {
     private final Pattern PATTERN_BOLD = Pattern.compile("(\\*\\*|__)(?=\\S)(.+?[*_]*)(?<=\\S)\\1");
     private final Pattern PATTERN_ITALIC = Pattern.compile("(\\*|_)(?=\\S)(.+?)(?<=\\S)\\1");
 
-    private final Pattern PATTERN_LINK = Pattern.compile(
-            "(" +
+    private final Pattern PATTERN_LINK = Pattern.compile("(" +
             "\\[(.+?)\\]" + // title – group 2
             "\\(" +
             "([^)\\s]+?)" + // href – group 3
             "([\\s]+\"([^\"]+)\")?" + // title – group 5
             "\\)" +
-            ")"
-    );
+            ")");
+
+    private final Pattern PATTERN_UNORDERED_LIST = Pattern.compile("(" +
+            "^([ \\t]+)?" +
+            "[-*+]" +
+            "([ \\t]+)?" +
+            "(.+)$" + // list item content – group 4
+            ")",
+            Pattern.MULTILINE);
+    private final Pattern PATTERN_ORDERED_LIST = Pattern.compile("(" +
+            "^([ \\t]+)?" +
+            "\\d\\." +
+            "([ \\t]+)?" +
+            "(.+)$" + // list item content – group 4
+            ")",
+            Pattern.MULTILINE);
 
     //endregion
 
 
     //region Public Interface
 
-    public @NonNull CharSequence render(@NonNull String source) {
-        RenderStringBuilder string = new RenderStringBuilder(source);
+    public @NonNull MarkupString render(@NonNull String source) {
+        Builder string = new Builder(source);
 
         doEmphasis(string);
         doLinks(string);
+        doUnorderedLists(string);
+        doOrderedLists(string);
 
         return string.build();
     }
@@ -81,7 +97,7 @@ public class MarkupProcessor {
     //region Rendering
 
     protected void doPattern(@NonNull Pattern pattern,
-                             @NonNull RenderStringBuilder string,
+                             @NonNull Builder string,
                              @NonNull Action1<Matcher> visitor) {
         string.prepare();
 
@@ -91,52 +107,72 @@ public class MarkupProcessor {
         }
     }
 
-    protected void debugPrint(@NonNull RenderStringBuilder string) {
+    protected void debugPrint(@NonNull Builder string) {
         Log.d(getClass().getSimpleName(), string.toString());
     }
 
 
-    private void doBold(@NonNull RenderStringBuilder string) {
+    private void doBold(@NonNull Builder string) {
         doPattern(PATTERN_BOLD, string, matcher -> {
             string.replaceWithStyle(matcher.start(), matcher.end(),
                     matcher.group(2),
-                    new SerializableStyleSpan(Typeface.BOLD));
+                    new MarkupStyleSpan(Typeface.BOLD));
         });
     }
 
-    private void doItalic(@NonNull RenderStringBuilder string) {
+    private void doItalic(@NonNull Builder string) {
         doPattern(PATTERN_ITALIC, string, matcher -> {
             string.replaceWithStyle(matcher.start(), matcher.end(),
                     matcher.group(2),
-                    new SerializableStyleSpan(Typeface.ITALIC));
+                    new MarkupStyleSpan(Typeface.ITALIC));
         });
     }
 
-    protected void doEmphasis(@NonNull RenderStringBuilder string) {
+    protected void doEmphasis(@NonNull Builder string) {
         doBold(string);
         doItalic(string);
     }
 
-    protected void doLinks(@NonNull RenderStringBuilder string) {
+    protected void doLinks(@NonNull Builder string) {
         doPattern(PATTERN_LINK, string, matcher -> {
             String linkText = matcher.group(2);
             String linkUrl = matcher.group(3);
             String linkTitle = matcher.group(5);
             string.replaceWithStyle(matcher.start(), matcher.end(),
                     linkText,
-                    new SerializableURLSpan(linkUrl, linkTitle));
+                    new MarkupURLSpan(linkUrl, linkTitle));
+        });
+    }
+
+    protected String renderListItem(@NonNull String contents) {
+        return " • " + contents;
+    }
+
+    protected void doUnorderedLists(@NonNull Builder string) {
+        doPattern(PATTERN_UNORDERED_LIST, string, matcher -> {
+            String itemContents = matcher.group(4);
+            string.replace(matcher.start(), matcher.end(),
+                    renderListItem(itemContents));
+        });
+    }
+
+    protected void doOrderedLists(@NonNull Builder string) {
+        doPattern(PATTERN_ORDERED_LIST, string, matcher -> {
+            String itemContents = matcher.group(4);
+            string.replace(matcher.start(), matcher.end(),
+                    renderListItem(itemContents));
         });
     }
 
     //endregion
 
 
-    protected final class RenderStringBuilder {
-        private final MarkupString storage;
+    protected final class Builder {
+        private final SpannableStringBuilder storage;
         private int offset = 0;
 
-        public RenderStringBuilder(@NonNull String source) {
-            this.storage = new MarkupString(source);
+        public Builder(@NonNull String source) {
+            this.storage = new SpannableStringBuilder(source);
         }
 
         private void prepare() {
@@ -148,7 +184,7 @@ public class MarkupProcessor {
         }
 
         public MarkupString build() {
-            return storage;
+            return new MarkupString(storage);
         }
 
         @Override
@@ -158,11 +194,22 @@ public class MarkupProcessor {
 
         public void replaceWithStyle(int start, int end,
                                      @NonNull String replacement,
-                                     @NonNull SerializableSpan style) {
+                                     @NonNull MarkupSpan style) {
             int adjustedStart = start - offset;
             int adjustedEnd = end - offset;
 
             storage.setSpan(style, adjustedStart, adjustedEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            storage.replace(adjustedStart, adjustedEnd, replacement);
+
+            int offsetDelta = (end - start) - replacement.length();
+            offset += offsetDelta;
+        }
+
+        public void replace(int start, int end,
+                            @NonNull String replacement) {
+            int adjustedStart = start - offset;
+            int adjustedEnd = end - offset;
+
             storage.replace(adjustedStart, adjustedEnd, replacement);
 
             int offsetDelta = (end - start) - replacement.length();

@@ -20,6 +20,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Parcel;
 import android.provider.Browser;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,14 +28,44 @@ import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 
-public class SerializableURLSpan extends ClickableSpan implements SerializableSpan {
+public class MarkupURLSpan extends ClickableSpan implements MarkupSpan {
     private final String url;
     private final String title;
 
-    public SerializableURLSpan(@NonNull String url, @Nullable String title) {
+    public MarkupURLSpan(@NonNull String url, @Nullable String title) {
         this.url = url;
         this.title = title;
     }
+
+
+    //region Serialization
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(url);
+        out.writeString(title);
+    }
+
+    public static final Creator<MarkupURLSpan> CREATOR = new Creator<MarkupURLSpan>() {
+        @Override
+        public MarkupURLSpan createFromParcel(Parcel source) {
+            return new MarkupURLSpan(source.readString(), source.readString());
+        }
+
+        @Override
+        public MarkupURLSpan[] newArray(int size) {
+            return new MarkupURLSpan[size];
+        }
+    };
+
+    //endregion
+
+    //region Attributes
 
     public String getUrl() {
         return url;
@@ -43,6 +74,9 @@ public class SerializableURLSpan extends ClickableSpan implements SerializableSp
     public String getTitle() {
         return title;
     }
+
+    //endregion
+
 
     @Override
     public void onClick(View widget) {

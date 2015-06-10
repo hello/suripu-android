@@ -64,7 +64,7 @@ public class LaunchActivity extends InjectionActivity {
 
     private void bounce() {
         if (0==0) {
-            startActivity(new Intent(this, TestActivity.class));
+            startActivity(new Intent(this, TestActivity.class).putExtras(TestActivity.getArguments()));
             return;
         }
 
