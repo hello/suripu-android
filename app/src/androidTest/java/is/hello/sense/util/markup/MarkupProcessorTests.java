@@ -74,7 +74,16 @@ public class MarkupProcessorTests extends TestCase {
     }
 
     public void testEscaping() throws Exception {
-        fail();
+        MarkupString simple = processor.render("\\\\\\`\\*\\_\\{\\}\\[\\]\\(\\)\\#\\+\\-\\.\\!");
+        assertEquals("\\`*_{}[]()#+-.!", simple.toString());
+
+        MarkupString literalList = processor.render("\\- Item one\n" +
+                "\\- Item two\n");
+        assertEquals("- Item one\n" +
+                "- Item two\n", literalList.toString());
+
+        MarkupString literalEmphasis = processor.render("\\*Stars\\* \\_Underscores\\_");
+        assertEquals("*Stars* _Underscores_", literalEmphasis.toString());
     }
 
     public void testLinks() throws Exception {
