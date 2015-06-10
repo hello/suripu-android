@@ -50,16 +50,21 @@ public class ApiModule {
         this.applicationContext = applicationContext.getApplicationContext();
     }
 
-    @Provides @ApiAppContext Context providesApiApplicationContext() {
+    @Provides @ApiAppContext Context provideApiApplicationContext() {
         return applicationContext;
     }
 
-    @Provides ApiEndpoint providesApiEndpoint() {
-        return ApiEndpoint.createDefault();
+    @Provides
+    ApiEndpoint provideApiEndpoint() {
+        if (BuildConfig.DEBUG) {
+            return new DynamicApiEndpoint(applicationContext);
+        } else {
+            return new ApiEndpoint();
+        }
     }
 
-    @Singleton @Provides ApiSessionManager getApiSessionManager(@NonNull @ApiAppContext Context context,
-                                                                @NonNull ObjectMapper mapper) {
+    @Singleton @Provides ApiSessionManager provideApiSessionManager(@NonNull @ApiAppContext Context context,
+                                                                    @NonNull ObjectMapper mapper) {
         return new PersistentApiSessionManager(context, mapper);
     }
 

@@ -8,6 +8,10 @@
     <application>
 
         <activity
+            android:name="is.hello.sense.debug.EnvironmentActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
             android:name="net.hockeyapp.android.UpdateActivity" />
 
         <activity

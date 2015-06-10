@@ -1,9 +1,11 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +54,8 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     private final Account newAccount = Account.createDefault();
 
     @Inject ApiService apiService;
-    @Inject ApiEndpoint apiEndpoint;
+    @Inject
+    ApiEndpoint apiEndpoint;
     @Inject ApiSessionManager sessionManager;
     @Inject PreferencesPresenter preferencesPresenter;
 
@@ -84,14 +87,27 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
 
         if (BuildConfig.DEBUG) {
-            TextView hostView = new TextView(getActivity());
-            hostView.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_Dimmed);
-            hostView.setGravity(Gravity.CENTER);
-            hostView.setText(BuildConfig.BASE_URL);
+            Button selectHost = new Button(getActivity());
+            selectHost.setTextAppearance(getActivity(), R.style.AppTheme_Button_Borderless_Accent_Bounded);
+            selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
+            selectHost.setGravity(Gravity.CENTER);
+            selectHost.setText(apiEndpoint.getUrl());
+
+            int padding = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            selectHost.setPadding(padding, padding, padding, padding);
+
+            Views.setSafeOnClickListener(selectHost, ignored -> {
+                try {
+                    startActivity(new Intent(getActivity(), Class.forName("is.hello.sense.debug.EnvironmentActivity")));
+                    getFragmentManager().popBackStack();
+                } catch (ClassNotFoundException e) {
+                    Log.e(getClass().getSimpleName(), "Could not find environment activity", e);
+                }
+            });
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
-            credentialsContainer.addView(hostView, layoutParams);
+            credentialsContainer.addView(selectHost, layoutParams);
         }
 
         return view;

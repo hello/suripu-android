@@ -34,7 +34,8 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 public class ChangePasswordFragment extends InjectionFragment {
     private static final String ARG_EMAIL = ChangePasswordFragment.class.getName() + ".ARG_EMAIL";
 
-    @Inject ApiEndpoint apiEndpoint;
+    @Inject
+    ApiEndpoint apiEndpoint;
     @Inject ApiService apiService;
     @Inject ApiSessionManager apiSessionManager;
 

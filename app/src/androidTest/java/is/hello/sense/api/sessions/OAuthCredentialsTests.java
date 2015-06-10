@@ -11,7 +11,7 @@ import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static is.hello.sense.AssertExtensions.assertThrows;
 
 public class OAuthCredentialsTests extends TestCase {
-    private final ApiEndpoint defaultApiEndpoint = ApiEndpoint.createDefault();
+    private final ApiEndpoint defaultApiEndpoint = new ApiEndpoint();
 
     @SuppressWarnings("ConstantConditions")
     public void testConstraints() {

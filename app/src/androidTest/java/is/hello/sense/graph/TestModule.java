@@ -24,7 +24,6 @@ import is.hello.sense.bluetooth.stacks.TestBluetoothStackBehavior;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
-import is.hello.sense.graph.presenters.RoomConditionsPresenterTests;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.HardwarePresenterTests;
 import is.hello.sense.graph.presenters.InsightsPresenter;
@@ -34,6 +33,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenterTests;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenterTests;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
+import is.hello.sense.graph.presenters.RoomConditionsPresenterTests;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenterTests;
 import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
@@ -99,7 +99,7 @@ public final class TestModule {
         return applicationContext;
     }
 
-    @Provides @ApiAppContext Context providesApiApplicationContext() {
+    @Provides @ApiAppContext Context provideApiApplicationContext() {
         return applicationContext;
     }
 
