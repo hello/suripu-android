@@ -18,6 +18,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.sessions.ApiSessionManager;
@@ -34,6 +35,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 
 public class OnboardingSignInFragment extends InjectionFragment {
+    @Inject ApiEndpoint apiEndpoint;
     @Inject ApiSessionManager apiSessionManager;
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferencesPresenter;
@@ -106,7 +108,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
 
         LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
 
-        OAuthCredentials credentials = new OAuthCredentials(email, password);
+        OAuthCredentials credentials = new OAuthCredentials(apiEndpoint, email, password);
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             apiSessionManager.setSession(session);
             preferencesPresenter.pullAccountPreferences().subscribe();

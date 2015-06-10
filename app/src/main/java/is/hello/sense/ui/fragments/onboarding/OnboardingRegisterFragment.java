@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
@@ -51,6 +52,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     private final Account newAccount = Account.createDefault();
 
     @Inject ApiService apiService;
+    @Inject ApiEndpoint apiEndpoint;
     @Inject ApiSessionManager sessionManager;
     @Inject PreferencesPresenter preferencesPresenter;
 
@@ -197,7 +199,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     }
 
     public void login(@NonNull Account createdAccount) {
-        OAuthCredentials credentials = new OAuthCredentials(emailText.getText().toString(), passwordText.getText().toString());
+        OAuthCredentials credentials = new OAuthCredentials(apiEndpoint, emailText.getText().toString(), passwordText.getText().toString());
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             sessionManager.setSession(session);
             preferencesPresenter.pullAccountPreferences().subscribe();

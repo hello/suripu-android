@@ -13,6 +13,7 @@ import android.widget.EditText;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -33,6 +34,7 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 public class ChangePasswordFragment extends InjectionFragment {
     private static final String ARG_EMAIL = ChangePasswordFragment.class.getName() + ".ARG_EMAIL";
 
+    @Inject ApiEndpoint apiEndpoint;
     @Inject ApiService apiService;
     @Inject ApiSessionManager apiSessionManager;
 
@@ -129,7 +131,7 @@ public class ChangePasswordFragment extends InjectionFragment {
 
     public void recreateSession() {
         String password = newPassword.getText().toString();
-        Observable<OAuthSession> authorize = apiService.authorize(new OAuthCredentials(email, password));
+        Observable<OAuthSession> authorize = apiService.authorize(new OAuthCredentials(apiEndpoint, email, password));
         bindAndSubscribe(authorize,
                          session -> {
                              apiSessionManager.setSession(session);

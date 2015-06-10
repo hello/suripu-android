@@ -54,6 +54,10 @@ public class ApiModule {
         return applicationContext;
     }
 
+    @Provides ApiEndpoint providesApiEndpoint() {
+        return ApiEndpoint.createDefault();
+    }
+
     @Singleton @Provides ApiSessionManager getApiSessionManager(@NonNull @ApiAppContext Context context,
                                                                 @NonNull ObjectMapper mapper) {
         return new PersistentApiSessionManager(context, mapper);
@@ -83,11 +87,12 @@ public class ApiModule {
 
     @Singleton @Provides RestAdapter provideRestAdapter(@NonNull ObjectMapper mapper,
                                                         @NonNull OkHttpClient httpClient,
+                                                        @NonNull ApiEndpoint endpoint,
                                                         @NonNull ApiSessionManager sessionManager) {
         RestAdapter.Builder builder = new RestAdapter.Builder();
         builder.setClient(new OkClient(httpClient));
         builder.setConverter(new ApiJacksonConverter(mapper));
-        builder.setEndpoint(BuildConfig.BASE_URL);
+        builder.setEndpoint(endpoint);
         if (BuildConfig.DEBUG) {
             builder.setLogLevel(RestAdapter.LogLevel.FULL);
         } else {

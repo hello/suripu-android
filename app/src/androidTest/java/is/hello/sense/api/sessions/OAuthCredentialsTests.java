@@ -5,17 +5,20 @@ import junit.framework.TestCase;
 import java.io.ByteArrayOutputStream;
 
 import is.hello.sense.BuildConfig;
+import is.hello.sense.api.ApiEndpoint;
 
 import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static is.hello.sense.AssertExtensions.assertThrows;
 
 public class OAuthCredentialsTests extends TestCase {
+    private final ApiEndpoint defaultApiEndpoint = ApiEndpoint.createDefault();
+
     @SuppressWarnings("ConstantConditions")
     public void testConstraints() {
-        assertThrows(() -> new OAuthCredentials("", "password"));
-        assertThrows(() -> new OAuthCredentials("username", ""));
-        assertThrows(() -> new OAuthCredentials(null, "password"));
-        assertThrows(() -> new OAuthCredentials("username", null));
+        assertThrows(() -> new OAuthCredentials(defaultApiEndpoint, "", "password"));
+        assertThrows(() -> new OAuthCredentials(defaultApiEndpoint, "username", ""));
+        assertThrows(() -> new OAuthCredentials(defaultApiEndpoint, null, "password"));
+        assertThrows(() -> new OAuthCredentials(defaultApiEndpoint, "username", null));
     }
 
     public void testOutput() {
@@ -23,7 +26,7 @@ public class OAuthCredentialsTests extends TestCase {
                 "&client_secret=" + BuildConfig.CLIENT_SECRET +
                 "&username=test123&password=321tset");
 
-        OAuthCredentials credentials = new OAuthCredentials("test123", "321tset");
+        OAuthCredentials credentials = new OAuthCredentials(defaultApiEndpoint, "test123", "321tset");
         assertNull(credentials.fileName());
         assertEquals("application/x-www-form-urlencoded", credentials.mimeType());
         assertEquals(expected.length(), credentials.length());
