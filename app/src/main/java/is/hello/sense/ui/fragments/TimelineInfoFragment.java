@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.res.ColorStateList;
@@ -84,6 +85,8 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     private @Nullable Window window;
     private int oldStatusBarColor;
+    private TextView titleText;
+    private TextView summaryText;
 
     //region Lifecycle
 
@@ -219,14 +222,16 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             header.setBackground(headerBackground);
         }
 
-        TextView summaryText = (TextView) header.findViewById(R.id.fragment_timeline_info_summary);
+        this.titleText = (TextView) header.findViewById(R.id.fragment_timeline_info_title);
+        this.summaryText = (TextView) header.findViewById(R.id.fragment_timeline_info_summary);
         summaryText.setText(summary);
 
         this.recycler = (RecyclerView) rootView.findViewById(R.id.fragment_timeline_info_recycler);
         recycler.setVisibility(View.INVISIBLE);
         recycler.setLayoutManager(new GridLayoutManager(getActivity(), GRID_COLUMNS_PER_ROW));
-        recycler.addItemDecoration(new ItemDecoration(getResources()));
+        recycler.addItemDecoration(new Decoration(getResources()));
         recycler.setAdapter(new EmptyRecyclerAdapter());
+        recycler.addOnScrollListener(new CollapseHeaderScrollListener());
 
         return rootView;
     }
@@ -343,19 +348,20 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         View fromView = findSourceView();
         if (fromView != null) {
-            Rect fromRect = new Rect();
-            Views.getFrameInWindow(fromView, fromRect);
+            Rect initialRect = new Rect();
+            Views.getFrameInWindow(fromView, initialRect);
 
-            Rect toRect = Views.copyFrame(recycler);
-            toRect.top += header.getMeasuredHeight();
-            animator = Animation.createViewFrameAnimator(recycler, fromRect, toRect);
+            Rect finalRect = Views.copyFrame(recycler);
+            finalRect.top += header.getBottom();
+            animator = Animation.createViewFrameAnimator(recycler, initialRect, finalRect);
 
             this.finalRecyclerLayoutParams = recycler.getLayoutParams();
 
-            FrameLayout.LayoutParams initialLayoutParams = new FrameLayout.LayoutParams(fromRect.width(),
-                    fromRect.height(), Gravity.TOP | Gravity.START);
-            initialLayoutParams.setMarginStart(fromRect.left);
-            initialLayoutParams.topMargin = fromRect.top;
+            @SuppressLint("RtlHardcoded")
+            FrameLayout.LayoutParams initialLayoutParams = new FrameLayout.LayoutParams(initialRect.width(),
+                    initialRect.height(), Gravity.TOP | Gravity.LEFT);
+            initialLayoutParams.leftMargin = initialRect.left;
+            initialLayoutParams.topMargin = initialRect.top;
             recycler.setLayoutParams(initialLayoutParams);
         } else {
             animator = ObjectAnimator.ofFloat(recycler, "alpha", 0f, 1f);
@@ -384,13 +390,12 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         View fromView = findSourceView();
         if (fromView != null) {
-            Rect destination = new Rect();
-            Views.getFrameInWindow(fromView, destination);
+            Rect finalRect = new Rect();
+            Views.getFrameInWindow(fromView, finalRect);
 
-            Rect source = Views.copyFrame(recycler);
-            source.top += header.getMeasuredHeight();
-
-            animator = Animation.createViewFrameAnimator(recycler, source, destination);
+            Rect initialRect = Views.copyFrame(recycler);
+            initialRect.top += (header.getBottom() + header.getTranslationY());
+            animator = Animation.createViewFrameAnimator(recycler, initialRect, finalRect);
         } else {
             animator = ObjectAnimator.ofFloat(recycler, "alpha", 1f, 0f);
         }
@@ -416,7 +421,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                     endRadius = 0f;
             dismissAnimator = ViewAnimationUtils.createCircularReveal(header, centerX, centerY, startRadius, endRadius);
         } else {
-            dismissAnimator = ObjectAnimator.ofFloat(header, "translationY", 0f, -header.getMeasuredHeight());
+            dismissAnimator = ObjectAnimator.ofFloat(header, "translationY", header.getTranslationY(), -header.getMeasuredHeight());
         }
 
         dismissAnimator.addListener(new AnimatorListenerAdapter() {
@@ -483,13 +488,26 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     //endregion
 
 
-    public class ItemDecoration extends RecyclerView.ItemDecoration {
+    private class CollapseHeaderScrollListener extends RecyclerView.OnScrollListener {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            RecyclerView.ViewHolder topViewHolder = recycler.findViewHolderForAdapterPosition(0);
+            float headerHeight = header.getMeasuredHeight();
+            float amount = (topViewHolder == null) ? 0f : topViewHolder.itemView.getTop() / headerHeight;
+            header.setTranslationY(headerHeight * -(1f - amount));
+
+            titleText.setAlpha(amount);
+            summaryText.setAlpha(amount);
+        }
+    }
+    
+    private class Decoration extends RecyclerView.ItemDecoration {
         private final Rect lineRect = new Rect();
         private final Paint linePaint = new Paint();
         private final int dividerSize;
         private final int verticalDividerInset;
 
-        public ItemDecoration(@NonNull Resources resources) {
+        private Decoration(@NonNull Resources resources) {
             this.dividerSize = resources.getDimensionPixelSize(R.dimen.divider_size);
             this.verticalDividerInset = resources.getDimensionPixelSize(R.dimen.gap_medium);
 
@@ -528,7 +546,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         }
     }
 
-    public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
+    private class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         private final LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         @Override
