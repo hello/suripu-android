@@ -10,6 +10,7 @@
         android:layout_marginTop="@dimen/gap_medium"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:importantForAccessibility="yes"
         android:contentDescription="@string/sleep_score">
 
         <TextView
@@ -17,20 +18,54 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:importantForAccessibility="no"
             android:textAppearance="@style/AppTheme.Text.Score.Big" />
 
     </RelativeLayout>
 
-    <include
+    <LinearLayout
         android:id="@+id/view_timeline_header_card"
-        layout="@layout/sub_view_timeline_header_card"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@id/view_timeline_header_chart"
         android:layout_marginLeft="@dimen/gap_xsmall"
         android:layout_marginRight="@dimen/gap_xsmall"
         android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginBottom="@dimen/gap_xsmall" />
+        android:layout_marginBottom="@dimen/gap_xsmall"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/gap_medium"
+        android:paddingBottom="@dimen/gap_medium"
+        android:background="@drawable/background_timeline_header_card_selector">
+
+        <TextView
+            android:id="@+id/view_timeline_header_card_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/gap_medium"
+            android:layout_marginEnd="@dimen/gap_medium"
+            android:drawablePadding="@dimen/gap_small"
+            android:drawableEnd="@drawable/disclosure_chevron"
+            android:gravity="center_vertical|start"
+            android:textAppearance="@style/AppTheme.Text.SectionHeading"
+            android:text="@string/label_sleep_summary" />
+
+        <View style="@style/Divider.Horizontal.Padded" />
+
+        <TextView
+            android:id="@+id/view_timeline_header_card_contents"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/gap_medium"
+            android:layout_marginEnd="@dimen/gap_medium"
+            android:drawablePadding="@dimen/gap_medium"
+            android:minLines="2"
+            android:ellipsize="end"
+            android:gravity="start|center_vertical"
+            android:textAppearance="@style/AppTheme.Text.Body.MidSized"
+            android:lineSpacingMultiplier="@dimen/line_multiple_body_small"
+            android:text="@string/missing_data_placeholder"/>
+
+    </LinearLayout>
 
     <View
         android:id="@+id/view_timeline_header_fade"

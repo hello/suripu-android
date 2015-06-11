@@ -344,6 +344,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
             int iconRes = Styles.getTimelineSegmentIconRes(segment);
             iconImage.setImageResource(iconRes);
+            iconImage.setContentDescription(context.getString(segment.getEventType().accessibilityStringRes));
             messageText.setText(segment.getMessage());
             dateText.setText(dateFormatter.formatForTimelineEvent(segment.getShiftedTimestamp(), use24Time));
         }

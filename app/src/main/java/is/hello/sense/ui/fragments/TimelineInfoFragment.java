@@ -33,7 +33,6 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
@@ -84,7 +83,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     private @Nullable ViewGroup.LayoutParams finalRecyclerLayoutParams;
 
     private @Nullable Window window;
-    private int oldStatusBarColor;
+    private int savedStatusBarColor;
     private TextView titleText;
     private TextView summaryText;
 
@@ -253,9 +252,8 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     @Override
     protected void onSkipEnterAnimator() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
-            this.oldStatusBarColor = window.getStatusBarColor();
-            int newStatusBarColor = Drawing.darkenColorBy(scoreColor, 0.2f);
-            window.setStatusBarColor(newStatusBarColor);
+            this.savedStatusBarColor = window.getStatusBarColor();
+            window.setStatusBarColor(darkenedScoreColor);
         }
 
         header.setVisibility(View.VISIBLE);
@@ -303,13 +301,12 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
-            this.oldStatusBarColor = window.getStatusBarColor();
-            int newStatusBarColor = darkenedScoreColor;
+            this.savedStatusBarColor = window.getStatusBarColor();
             fadeIn.addUpdateListener(animator -> {
                 float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(fraction);
 
-                int statusBar = Drawing.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
+                int statusBar = Drawing.interpolateColors(fraction, savedStatusBarColor, darkenedScoreColor);
                 window.setStatusBarColor(statusBar);
             });
         } else {
@@ -322,24 +319,13 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     }
 
     private Animator createHeaderReveal() {
-        Animator animator;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int centerX = header.getMeasuredWidth() / 2,
-                centerY = 0;
-            float startRadius = 0f,
-                    endRadius = Math.max(header.getMeasuredWidth(), header.getMeasuredHeight());
-            animator = ViewAnimationUtils.createCircularReveal(header, centerX, centerY, startRadius, endRadius);
-        } else {
-            animator = ObjectAnimator.ofFloat(header, "translationY", -header.getMeasuredHeight(), 0f);
-        }
-
+        ObjectAnimator animator = ObjectAnimator.ofFloat(header, "translationY", -header.getMeasuredHeight(), 0f);
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
                 header.setVisibility(View.VISIBLE);
             }
         });
-
         return animator;
     }
 
@@ -412,25 +398,14 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     }
 
     private Animator createHeaderDismissal() {
-        Animator dismissAnimator;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int centerX = header.getMeasuredWidth() / 2,
-                centerY = 0;
-            float startRadius = Math.max(header.getMeasuredWidth(), header.getMeasuredHeight()),
-                    endRadius = 0f;
-            dismissAnimator = ViewAnimationUtils.createCircularReveal(header, centerX, centerY, startRadius, endRadius);
-        } else {
-            dismissAnimator = ObjectAnimator.ofFloat(header, "translationY", header.getTranslationY(), -header.getMeasuredHeight());
-        }
-
-        dismissAnimator.addListener(new AnimatorListenerAdapter() {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(header, "translationY", header.getTranslationY(), -header.getMeasuredHeight());
+        animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 header.setVisibility(View.INVISIBLE);
             }
         });
-        return dismissAnimator;
+        return animator;
     }
 
     private Animator createFadeOut() {
@@ -438,7 +413,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
             int oldStatusBarColor = window.getStatusBarColor();
-            int newStatusBarColor = this.oldStatusBarColor;
+            int newStatusBarColor = this.savedStatusBarColor;
             fadeOut.addUpdateListener(animator -> {
                 float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(1f - fraction);

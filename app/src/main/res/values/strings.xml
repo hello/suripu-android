@@ -40,24 +40,6 @@
 
     <string name="missing_data_placeholder">--</string>
 
-    <string name="event_type_motion">Tossing and Turning</string>
-    <string name="event_type_noise">Noise Disturbance</string>
-    <string name="event_type_snoring">Snoring</string>
-    <string name="event_type_sleep_talk">Sleep Talking</string>
-    <string name="event_type_light">Light Disturbance</string>
-    <string name="event_type_lights_out">Lights Out</string>
-    <string name="event_type_sleep_motion">Tossing and Turning</string>
-    <string name="event_type_sleep">Sleep</string>
-    <string name="event_type_sunset">Sunset</string>
-    <string name="event_type_sunrise">Sunrise</string>
-    <string name="event_type_wake_up">Woke Up</string>
-    <string name="event_type_partner_moved">Partner Moved</string>
-    <string name="event_type_out_of_bed">Out of Bed</string>
-    <string name="event_type_in_bed">In Bed</string>
-    <string name="event_type_sleeping">Sleeping</string>
-    <string name="event_type_alarm">Alarm</string>
-    <string name="event_type_unknown">Other</string>
-
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
     <string name="gender_other">Other</string>

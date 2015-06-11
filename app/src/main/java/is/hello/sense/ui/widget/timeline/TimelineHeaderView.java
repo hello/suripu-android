@@ -268,6 +268,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
             scoreDrawable.setValue(0);
             scoreText.setText(R.string.missing_data_placeholder);
+            scoreContainer.setContentDescription(getResources().getString(R.string.accessibility_sleep_score_unknown));
 
             setWillNotDraw(true);
         } else {
@@ -275,6 +276,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
             scoreDrawable.setValue(score);
             scoreText.setText(Integer.toString(score));
+            scoreContainer.setContentDescription(getResources().getString(R.string.accessibility_sleep_score_fmt, score));
 
             setWillNotDraw(false);
         }
@@ -344,6 +346,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             });
 
             setCardTitleTint(endColor);
+            scoreContainer.setContentDescription(getResources().getString(R.string.accessibility_sleep_score_fmt, score));
 
             scoreAnimator.addListener(animatorContext);
             animatorContext.runWhenIdle(scoreAnimator::start);
