@@ -16,11 +16,11 @@ import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -57,7 +57,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     private AnimatorContext animatorContext;
 
 
-    private @Nullable ValueAnimator colorAnimator;
+    private @Nullable ValueAnimator scoreAnimator;
     private @Nullable ValueAnimator pulseAnimator;
 
 
@@ -210,8 +210,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             pulseAnimator.cancel();
         }
 
-        if (colorAnimator != null) {
-            colorAnimator.cancel();
+        if (scoreAnimator != null) {
+            scoreAnimator.cancel();
         }
 
         PropertyAnimatorProxy.stop(scoreContainer, cardContainer);
@@ -295,19 +295,19 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
             setWillNotDraw(false);
 
-            if (colorAnimator != null) {
-                colorAnimator.cancel();
+            if (scoreAnimator != null) {
+                scoreAnimator.cancel();
             }
 
             this.hasAnimated = true;
 
-            this.colorAnimator = ValueAnimator.ofInt(scoreDrawable.getValue(), score);
-            colorAnimator.setDuration(Animation.DURATION_NORMAL);
-            colorAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
+            this.scoreAnimator = ValueAnimator.ofInt(scoreDrawable.getValue(), score);
+            scoreAnimator.setDuration(Animation.DURATION_NORMAL);
+            scoreAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
 
             int startColor = Styles.getSleepScoreColor(getContext(), scoreDrawable.getValue());
             int endColor = Styles.getSleepScoreColor(getContext(), score);
-            colorAnimator.addUpdateListener(a -> {
+            scoreAnimator.addUpdateListener(a -> {
                 Integer newScore = (Integer) a.getAnimatedValue();
                 int color = Drawing.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
 
@@ -317,7 +317,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
                 scoreText.setText(newScore.toString());
                 scoreText.setTextColor(color);
             });
-            colorAnimator.addListener(new AnimatorListenerAdapter() {
+            scoreAnimator.addListener(new AnimatorListenerAdapter() {
                 boolean wasCanceled = false;
 
                 @Override
@@ -333,11 +333,11 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    if (colorAnimator == animation) {
-                        TimelineHeaderView.this.colorAnimator = null;
+                    if (scoreAnimator == animation) {
+                        TimelineHeaderView.this.scoreAnimator = null;
 
                         if (!wasCanceled) {
-                            completeFirstScoreAnimation(fireAdapterAnimations);
+                            animateScoreIntoPlace(fireAdapterAnimations);
                         }
                     }
                 }
@@ -345,24 +345,19 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
             setCardTitleTint(endColor);
 
-            colorAnimator.addListener(animatorContext);
-            animatorContext.runWhenIdle(colorAnimator::start);
+            scoreAnimator.addListener(animatorContext);
+            animatorContext.runWhenIdle(scoreAnimator::start);
         }
     }
 
-    private void completeFirstScoreAnimation(@NonNull Runnable fireAdapterAnimations) {
+    private void animateScoreIntoPlace(@NonNull Runnable fireAdapterAnimations) {
         animatorContext.transaction(f -> {
             f.animate(scoreContainer)
-             .setInterpolator(new AccelerateDecelerateInterpolator())
+             .setInterpolator(new FastOutSlowInInterpolator())
              .translationY(0f);
-
-            f.animate(cardContainer)
-             .setStartDelay(Animation.DURATION_NORMAL / 2)
-             .fadeIn();
         }, finished -> {
             if (!finished) {
                 scoreContainer.setTranslationY(0f);
-                cardContainer.setAlpha(1f);
             }
 
             fireAdapterAnimations.run();
@@ -402,12 +397,15 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
     @Override
     public void onTimelineAnimationWillStart(@NonNull AnimatorContext animatorContext, @NonNull AnimatorContext.TransactionFacade f) {
-
+        f.animate(cardContainer)
+         .fadeIn();
     }
 
     @Override
     public void onTimelineAnimationDidEnd(boolean finished) {
-
+        if (!finished) {
+            cardContainer.setAlpha(1f);
+        }
     }
 
     //endregion

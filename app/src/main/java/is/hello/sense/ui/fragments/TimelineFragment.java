@@ -256,7 +256,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     public void showBreakdown(@NonNull View sender) {
-        bindAndSubscribe(timelinePresenter.rendered,
+        bindAndSubscribe(timelinePresenter.rendered.take(1),
                          rendered -> {
                              TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(rendered.timeline,
                                      rendered.message, headerView.getCardViewId());
