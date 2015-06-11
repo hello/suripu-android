@@ -9,7 +9,7 @@
 
         <activity
             android:name="is.hello.sense.debug.EnvironmentActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.Dialog.Simple"/>
 
         <activity
             android:name="net.hockeyapp.android.UpdateActivity" />

@@ -24,6 +24,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -34,13 +35,13 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
+import rx.Observable;
 
 public class OnboardingSignInFragment extends InjectionFragment {
-    @Inject
-    ApiEndpoint apiEndpoint;
+    @Inject ApiEndpoint apiEndpoint;
     @Inject ApiSessionManager apiSessionManager;
     @Inject ApiService apiService;
-    @Inject PreferencesPresenter preferencesPresenter;
+    @Inject PreferencesPresenter preferences;
 
     private EditText emailText;
     private EditText passwordText;
@@ -81,7 +82,8 @@ public class OnboardingSignInFragment extends InjectionFragment {
             selectHost.setTextAppearance(getActivity(), R.style.AppTheme_Button_Borderless_Accent_Bounded);
             selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
             selectHost.setGravity(Gravity.CENTER);
-            selectHost.setText(apiEndpoint.getUrl());
+            Observable<String> apiUrl = preferences.observableString(PreferencesPresenter.DEBUG_API_URL_OVERRIDE, apiEndpoint.getUrl());
+            bindAndSubscribe(apiUrl, selectHost::setText, Functions.LOG_ERROR);
 
             int padding = getResources().getDimensionPixelSize(R.dimen.gap_small);
             selectHost.setPadding(padding, padding, padding, padding);
@@ -89,12 +91,11 @@ public class OnboardingSignInFragment extends InjectionFragment {
             Views.setSafeOnClickListener(selectHost, ignored -> {
                 try {
                     startActivity(new Intent(getActivity(), Class.forName("is.hello.sense.debug.EnvironmentActivity")));
-                    getFragmentManager().popBackStack();
                 } catch (ClassNotFoundException e) {
                     Log.e(getClass().getSimpleName(), "Could not find environment activity", e);
                 }
             });
-            
+
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
             content.addView(selectHost, layoutParams);
@@ -126,7 +127,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         OAuthCredentials credentials = new OAuthCredentials(apiEndpoint, email, password);
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             apiSessionManager.setSession(session);
-            preferencesPresenter.pullAccountPreferences().subscribe();
+            preferences.pullAccountPreferences().subscribe();
 
             String accountId = session.getAccountId();
             Analytics.trackSignIn(accountId);
