@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    style="@style/AppTheme.Card">
+    style="@style/AppTheme.LargeCard">
 
     <Button
         android:id="@+id/fragment_dialog_welcome_item_next"
@@ -40,19 +40,23 @@
                 android:id="@+id/fragment_dialog_welcome_item_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_outer"
+                android:layout_marginTop="@dimen/gap_large"
                 android:layout_marginLeft="@dimen/gap_outer"
                 android:layout_marginRight="@dimen/gap_outer"
-                android:textAppearance="@style/AppTheme.Text.SectionHeading"
+                android:layout_marginBottom="@dimen/gap_medium"
+                android:textAppearance="@style/AppTheme.Text.ParagraphHeading"
+                android:lineSpacingMultiplier="@dimen/line_multiple_paragraph_heading"
                 android:text="@string/app_name"/>
 
             <TextView
                 android:id="@+id/fragment_dialog_welcome_item_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/gap_outer"
-                android:textAppearance="@style/AppTheme.Text.Body"
-                android:lineSpacingMultiplier="@dimen/line_multiple_body_small"
+                android:layout_marginLeft="@dimen/gap_outer"
+                android:layout_marginRight="@dimen/gap_outer"
+                android:layout_marginBottom="@dimen/gap_outer"
+                android:textAppearance="@style/AppTheme.Text.Body.MidSized"
+                android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
                 android:text="@string/app_name"/>
 
         </LinearLayout>

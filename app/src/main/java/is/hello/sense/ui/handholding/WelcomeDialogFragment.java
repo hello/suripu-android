@@ -136,7 +136,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
         this.viewPager = (ViewPager) dialog.findViewById(R.id.fragment_dialog_welcome_view_pager);
 
-        int pageMargin = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+        int pageMargin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
         viewPager.setClipToPadding(false);
         viewPager.setPadding(pageMargin, 0, pageMargin, 0);
         viewPager.setPageMargin(pageMargin);
