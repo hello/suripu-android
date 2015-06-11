@@ -106,7 +106,11 @@ import is.hello.sense.ui.widget.util.Styles;
 
     public @NonNull String formatAsTimelineNavigatorDate(@Nullable DateTime date) {
         if (date != null) {
-            return date.toString(context.getString(R.string.format_date_month));
+            if (!date.year().equals(now().year())) {
+                return date.toString(context.getString(R.string.format_date_month_year));
+            } else {
+                return date.toString(context.getString(R.string.format_date_month));
+            }
         } else {
             return context.getString(R.string.format_date_placeholder);
         }
