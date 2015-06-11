@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_dark_overlay">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fragment_timeline_info_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        android:background="@color/background_timeline" />
 
     <LinearLayout
         android:id="@+id/fragment_timeline_info_header"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="top"
         android:padding="@dimen/gap_outer"
         android:background="@color/sensor_ideal">
 
@@ -31,12 +39,4 @@
 
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/fragment_timeline_info_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/fragment_timeline_info_header"
-        android:overScrollMode="never"
-        android:background="@color/background_timeline" />
-
-</RelativeLayout>
+</FrameLayout>

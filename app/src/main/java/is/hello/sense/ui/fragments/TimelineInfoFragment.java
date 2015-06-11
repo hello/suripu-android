@@ -7,10 +7,14 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -25,12 +29,13 @@ import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
@@ -62,15 +67,17 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     private static final String ARG_ITEMS = TimelineInfoFragment.class.getName() + ".ARG_ITEMS";
     private static final String ARG_SOURCE_VIEW_ID = TimelineInfoFragment.class.getName() + ".ARG_SOURCE_VIEW_ID";
 
+    private static final int GRID_COLUMNS_PER_ROW = 2;
+
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
 
     private @Nullable CharSequence summary;
-    private int scoreColor;
+    private int scoreColor, darkenedScoreColor;
     private ArrayList<Item> items;
     private @IdRes int sourceViewId;
 
-    private RelativeLayout rootView;
+    private FrameLayout rootView;
     private View header;
     private RecyclerView recycler;
     private @Nullable ViewGroup.LayoutParams finalRecyclerLayoutParams;
@@ -166,6 +173,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         int score = arguments.getInt(ARG_SCORE);
         this.scoreColor = Styles.getSleepScoreColor(getActivity(), score);
+        this.darkenedScoreColor = Drawing.darkenColorBy(scoreColor, 0.2f);
         this.items = arguments.getParcelableArrayList(ARG_ITEMS);
         this.sourceViewId = arguments.getInt(ARG_SOURCE_VIEW_ID);
 
@@ -194,20 +202,29 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        this.rootView = (RelativeLayout) inflater.inflate(R.layout.fragment_timeline_info, container, false);
-        Views.setSafeOnClickListener(rootView, ignored -> {
-            getFragmentManager().popBackStack(TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        });
+        this.rootView = (FrameLayout) inflater.inflate(R.layout.fragment_timeline_info, container, false);
 
         this.header = rootView.findViewById(R.id.fragment_timeline_info_header);
-        header.setBackgroundColor(scoreColor);
+        Views.setSafeOnClickListener(header, ignored -> {
+            getFragmentManager().popBackStack(TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            RippleDrawable headerBackground = new RippleDrawable(ColorStateList.valueOf(darkenedScoreColor),
+                    new ColorDrawable(scoreColor), null);
+            header.setBackground(headerBackground);
+        } else {
+            StateListDrawable headerBackground = new StateListDrawable();
+            headerBackground.addState(new int[]{android.R.attr.state_pressed}, new ColorDrawable(darkenedScoreColor));
+            headerBackground.addState(new int[]{}, new ColorDrawable(scoreColor));
+            header.setBackground(headerBackground);
+        }
 
         TextView summaryText = (TextView) header.findViewById(R.id.fragment_timeline_info_summary);
         summaryText.setText(summary);
 
         this.recycler = (RecyclerView) rootView.findViewById(R.id.fragment_timeline_info_recycler);
         recycler.setVisibility(View.INVISIBLE);
-        recycler.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        recycler.setLayoutManager(new GridLayoutManager(getActivity(), GRID_COLUMNS_PER_ROW));
         recycler.addItemDecoration(new ItemDecoration(getResources()));
         recycler.setAdapter(new EmptyRecyclerAdapter());
 
@@ -282,7 +299,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
             this.oldStatusBarColor = window.getStatusBarColor();
-            int newStatusBarColor = Drawing.darkenColorBy(scoreColor, 0.2f);
+            int newStatusBarColor = darkenedScoreColor;
             fadeIn.addUpdateListener(animator -> {
                 float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(fraction);
@@ -329,12 +346,15 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             Rect fromRect = new Rect();
             Views.getFrameInWindow(fromView, fromRect);
 
-            animator = Animation.createViewFrameAnimator(recycler, fromRect, Views.copyFrame(recycler));
+            Rect toRect = Views.copyFrame(recycler);
+            toRect.top += header.getMeasuredHeight();
+            animator = Animation.createViewFrameAnimator(recycler, fromRect, toRect);
 
             this.finalRecyclerLayoutParams = recycler.getLayoutParams();
 
-            RelativeLayout.LayoutParams initialLayoutParams = new RelativeLayout.LayoutParams(fromRect.width(), fromRect.height());
-            initialLayoutParams.leftMargin = fromRect.left;
+            FrameLayout.LayoutParams initialLayoutParams = new FrameLayout.LayoutParams(fromRect.width(),
+                    fromRect.height(), Gravity.TOP | Gravity.START);
+            initialLayoutParams.setMarginStart(fromRect.left);
             initialLayoutParams.topMargin = fromRect.top;
             recycler.setLayoutParams(initialLayoutParams);
         } else {
@@ -364,10 +384,13 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         View fromView = findSourceView();
         if (fromView != null) {
-            Rect fromRect = new Rect();
-            Views.getFrameInWindow(fromView, fromRect);
+            Rect destination = new Rect();
+            Views.getFrameInWindow(fromView, destination);
 
-            animator = Animation.createViewFrameAnimator(recycler, Views.copyFrame(recycler), fromRect);
+            Rect source = Views.copyFrame(recycler);
+            source.top += header.getMeasuredHeight();
+
+            animator = Animation.createViewFrameAnimator(recycler, source, destination);
         } else {
             animator = ObjectAnimator.ofFloat(recycler, "alpha", 1f, 0f);
         }
@@ -392,7 +415,6 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             float startRadius = Math.max(header.getMeasuredWidth(), header.getMeasuredHeight()),
                     endRadius = 0f;
             dismissAnimator = ViewAnimationUtils.createCircularReveal(header, centerX, centerY, startRadius, endRadius);
-            dismissAnimator.setStartDelay(Animation.DURATION_NORMAL / 2);
         } else {
             dismissAnimator = ObjectAnimator.ofFloat(header, "translationY", 0f, -header.getMeasuredHeight());
         }
@@ -461,7 +483,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     //endregion
 
 
-    public static class ItemDecoration extends RecyclerView.ItemDecoration {
+    public class ItemDecoration extends RecyclerView.ItemDecoration {
         private final Rect lineRect = new Rect();
         private final Paint linePaint = new Paint();
         private final int dividerSize;
@@ -477,7 +499,12 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            if ((parent.getChildAdapterPosition(view) % 2) == 0) {
+            int adapterPosition = parent.getChildAdapterPosition(view);
+            if (adapterPosition < GRID_COLUMNS_PER_ROW) {
+                outRect.top += header.getMeasuredHeight();
+            }
+
+            if ((adapterPosition % GRID_COLUMNS_PER_ROW) == 0) {
                 outRect.right += dividerSize;
             }
 
