@@ -445,7 +445,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
                 timeout.reschedule();
                 Logger.info(Peripheral.LOG_TAG, "connection state update " + response.getWifiConnectionState().toString());
 
-                if( response.getWifiConnectionState() ==  wifi_connection_state.CONNECTED ) {
+                if (response.getWifiConnectionState() == wifi_connection_state.CONNECTED) {
                     timeout.unschedule();
 
                     Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
@@ -456,7 +456,17 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
                     dataHandler.clearListeners();
                 }
-            } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
+            } else if( response.getType() == CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT ) { //old fw
+                timeout.unschedule();
+
+                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+                unsubscribe.subscribe(ignored -> {
+                    subscriber.onNext(response);
+                    subscriber.onCompleted();
+                }, onError);
+
+                dataHandler.clearListeners();
+            }else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
                 timeout.unschedule();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
