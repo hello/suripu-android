@@ -17,6 +17,7 @@ import org.joda.time.LocalTime;
 import java.util.List;
 
 import is.hello.sense.R;
+import is.hello.sense.util.markup.text.MarkupString;
 
 public class TimelineSegment extends ApiResponse implements Cloneable {
     @JsonProperty("id")
@@ -29,7 +30,7 @@ public class TimelineSegment extends ApiResponse implements Cloneable {
     private long duration;
 
     @JsonProperty("message")
-    private String message;
+    private MarkupString message;
 
     @JsonProperty("sensors")
     @JsonDeserialize(contentAs = TimelineSensor.class)
@@ -69,7 +70,7 @@ public class TimelineSegment extends ApiResponse implements Cloneable {
         return duration;
     }
 
-    public String getMessage() {
+    public MarkupString getMessage() {
         return message;
     }
 
@@ -176,7 +177,7 @@ public class TimelineSegment extends ApiResponse implements Cloneable {
     }
 
 
-    public static enum EventType {
+    public enum EventType {
         MOTION(R.string.event_type_motion),
         SLEEPING(R.string.event_type_sleeping),
         SLEEP_MOTION(R.string.event_type_sleep_motion),
@@ -207,7 +208,7 @@ public class TimelineSegment extends ApiResponse implements Cloneable {
 
         public final @StringRes int nameString;
 
-        private EventType(@StringRes int nameString) {
+        EventType(@StringRes int nameString) {
             this.nameString = nameString;
         }
     }

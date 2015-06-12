@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
 
+import is.hello.sense.util.markup.text.MarkupString;
+
 public class Insight extends ApiResponse {
     @JsonProperty("account_id")
     private long accountId;
@@ -14,7 +16,7 @@ public class Insight extends ApiResponse {
     private String title;
 
     @JsonProperty("message")
-    private String message;
+    private MarkupString message;
 
     @JsonProperty("timestamp")
     private DateTime created;
@@ -28,7 +30,7 @@ public class Insight extends ApiResponse {
 
     public static Insight createError(@NonNull String message) {
         Insight insight = new Insight();
-        insight.message = message;
+        insight.message = new MarkupString(message);
         insight.category = InsightCategory.IN_APP_ERROR;
         return insight;
     }
@@ -42,7 +44,7 @@ public class Insight extends ApiResponse {
         return title;
     }
 
-    public String getMessage() {
+    public MarkupString getMessage() {
         return message;
     }
 
