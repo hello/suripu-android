@@ -3,6 +3,7 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
@@ -180,9 +181,12 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
     public void attach(@NonNull ViewPager viewPager) {
         viewPager.addOnPageChangeListener(this);
         PagerAdapter adapter = viewPager.getAdapter();
-        if (adapter != null) {
-            setCount(adapter.getCount());
+        if (adapter == null) {
+            throw new IllegalStateException("Cannot attach to a view pager without an adapter.");
         }
+
+        adapter.registerDataSetObserver(new AdapterChangeObserver(adapter));
+        setCount(adapter.getCount());
     }
 
     //endregion
@@ -204,4 +208,23 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
     }
 
     //endregion
+
+
+    private class AdapterChangeObserver extends DataSetObserver {
+        private final PagerAdapter adapter;
+
+        private AdapterChangeObserver(@NonNull PagerAdapter adapter) {
+            this.adapter = adapter;
+        }
+
+        @Override
+        public void onChanged() {
+            setCount(adapter.getCount());
+        }
+
+        @Override
+        public void onInvalidated() {
+            setCount(0);
+        }
+    }
 }
