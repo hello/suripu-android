@@ -1,5 +1,6 @@
 package is.hello.sense.ui.handholding;
 
+import android.animation.FloatEvaluator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -15,7 +16,6 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,7 +28,6 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
-import is.hello.sense.ui.handholding.util.DismissTutorialsDialog;
 import is.hello.sense.ui.handholding.util.WelcomeDialogParser;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
@@ -142,7 +141,6 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         viewPager.setPageMargin(pageMargin);
 
         this.adapter = new ItemAdapter();
-        viewPager.setAdapter(adapter);
 
         PageDots pageDots = (PageDots) dialog.findViewById(R.id.fragment_dialog_welcome_page_dots);
         if (items.size() > 1) {
@@ -156,13 +154,16 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
         int maxWidth = getResources().getDimensionPixelSize(R.dimen.dialog_max_width);
         int maxHeight = getResources().getDimensionPixelSize(R.dimen.dialog_max_height);
-        viewPager.setVisibility(View.INVISIBLE);
         Views.observeNextLayout(dialog.getWindow().getDecorView())
              .subscribe(v -> {
+                 boolean isFloating = false;
+
                  int height = viewPager.getMeasuredHeight();
                  if (height > maxHeight) {
                      viewPager.getLayoutParams().height = maxHeight;
                      viewPager.invalidate();
+
+                     isFloating = true;
                  }
 
                  int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
@@ -170,9 +171,15 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                      int newPageMargin = (viewPager.getMeasuredWidth() - maxWidth) / 2;
                      viewPager.setPadding(newPageMargin, 0, newPageMargin, 0);
                      viewPager.setPageMargin(newPageMargin);
+
+                     isFloating = true;
                  }
 
-                 viewPager.post(() -> viewPager.setVisibility(View.VISIBLE));
+                 if (!isFloating) {
+                     viewPager.setPageTransformer(true, new ParallaxTransformer(viewPager));
+                 }
+
+                 viewPager.setAdapter(adapter);
              });
 
         return dialog;
@@ -199,6 +206,37 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
     }
 
 
+    public static class ParallaxTransformer implements ViewPager.PageTransformer {
+        private static final float SMALL_SCALE = 0.9f;
+        private static final float BIG_SCALE = 1f;
+
+        private static final float SMALL_ALPHA = 0.7f;
+        private static final float BIG_ALPHA = 1f;
+
+        private final FloatEvaluator evaluator = new FloatEvaluator();
+        private final ViewPager parent;
+
+        public ParallaxTransformer(@NonNull ViewPager parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public void transformPage(View page, float position) {
+            // https://code.google.com/p/android/issues/detail?id=64046
+            float fixedUpPosition = (position - parent.getPaddingRight() / (float) page.getWidth());
+            float lockedPosition = Math.max(0f, fixedUpPosition);
+
+            float scale = evaluator.evaluate(lockedPosition, BIG_SCALE, SMALL_SCALE);
+            float alpha = evaluator.evaluate(lockedPosition, BIG_ALPHA, SMALL_ALPHA);
+            float translationX = evaluator.evaluate(lockedPosition, 0f, -(parent.getWidth() / 5f));
+
+            page.setScaleX(scale);
+            page.setScaleY(scale);
+            page.setTranslationX(translationX);
+            page.setAlpha(alpha);
+        }
+    }
+
     public class ItemAdapter extends ViewPagerAdapter<ItemAdapter.ViewHolder> {
         private final LayoutInflater inflater = LayoutInflater.from(getActivity());
 
@@ -224,27 +262,16 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
             final ImageView diagramImage;
             final TextView titleText;
             final TextView messageText;
+            final boolean lastItem;
 
             private ViewHolder(@NonNull View itemView, boolean lastItem) {
                 super(itemView);
 
+                this.lastItem = lastItem;
+
                 this.diagramImage = (ImageView) itemView.findViewById(R.id.fragment_dialog_welcome_item_diagram);
                 this.titleText = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_title);
                 this.messageText = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_message);
-
-                Button next = (Button) itemView.findViewById(R.id.fragment_dialog_welcome_item_next);
-                if (lastItem) {
-                    next.setText(android.R.string.ok);
-                } else {
-                    next.setText(R.string.action_next);
-                }
-                Views.setSafeOnClickListener(next, ignored -> next());
-                next.setOnLongClickListener(ignored -> {
-                    DismissTutorialsDialog tutorialsDialog = new DismissTutorialsDialog();
-                    tutorialsDialog.setTargetFragment(WelcomeDialogFragment.this, REQUEST_CODE_DISMISS_ALL);
-                    tutorialsDialog.show(getFragmentManager(), DismissTutorialsDialog.TAG);
-                    return true;
-                });
             }
 
             private void bindItem(@NonNull Item item) {
@@ -256,7 +283,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
                 if (item.scaleDiagram) {
                     diagramImage.setAdjustViewBounds(true);
-                    diagramImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    diagramImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 } else {
                     diagramImage.setAdjustViewBounds(false);
                     diagramImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);

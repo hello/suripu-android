@@ -1,65 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<is.hello.sense.ui.widget.RoundedRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:overScrollMode="never"
+    android:scrollbarAlwaysDrawHorizontalTrack="false"
+    android:scrollbarAlwaysDrawVerticalTrack="false"
+    android:fillViewport="true"
     style="@style/AppTheme.LargeCard">
 
-    <Button
-        android:id="@+id/fragment_dialog_welcome_item_next"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_outer"
-        android:layout_alignParentBottom="true"
-        android:text="@string/action_next"
-        style="@style/AppTheme.Button.Rounded"/>
+        android:orientation="vertical">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/fragment_dialog_welcome_item_next">
-
-        <LinearLayout
+        <ImageView
+            android:id="@+id/fragment_dialog_welcome_item_diagram"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top|start"
-            android:orientation="vertical">
+            tools:ignore="ContentDescription" />
 
-            <ImageView
-                android:id="@+id/fragment_dialog_welcome_item_diagram"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitCenter"
-                android:adjustViewBounds="true"
-                tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/fragment_dialog_welcome_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_large"
+            android:layout_marginLeft="@dimen/gap_outer"
+            android:layout_marginRight="@dimen/gap_outer"
+            android:textAppearance="@style/AppTheme.Text.ParagraphHeading"
+            android:lineSpacingMultiplier="@dimen/line_multiple_paragraph_heading" />
 
-            <TextView
-                android:id="@+id/fragment_dialog_welcome_item_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_large"
-                android:layout_marginLeft="@dimen/gap_outer"
-                android:layout_marginRight="@dimen/gap_outer"
-                android:textAppearance="@style/AppTheme.Text.ParagraphHeading"
-                android:lineSpacingMultiplier="@dimen/line_multiple_paragraph_heading"
-                android:text="@string/app_name"/>
+        <TextView
+            android:id="@+id/fragment_dialog_welcome_item_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_medium"
+            android:layout_marginLeft="@dimen/gap_outer"
+            android:layout_marginRight="@dimen/gap_outer"
+            android:layout_marginBottom="@dimen/gap_outer"
+            android:textAppearance="@style/AppTheme.Text.Body.MidSized"
+            android:lineSpacingMultiplier="@dimen/line_multiple_body_medium" />
 
-            <TextView
-                android:id="@+id/fragment_dialog_welcome_item_message"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_medium"
-                android:layout_marginLeft="@dimen/gap_outer"
-                android:layout_marginRight="@dimen/gap_outer"
-                android:layout_marginBottom="@dimen/gap_outer"
-                android:textAppearance="@style/AppTheme.Text.Body.MidSized"
-                android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
-                android:text="@string/app_name"/>
+    </LinearLayout>
 
-        </LinearLayout>
-
-    </ScrollView>
-
-</is.hello.sense.ui.widget.RoundedRelativeLayout>
+</ScrollView>
