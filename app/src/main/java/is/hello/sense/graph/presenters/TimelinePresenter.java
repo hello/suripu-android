@@ -15,21 +15,14 @@ import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.PresenterSubject;
-import is.hello.sense.util.Markdown;
 import rx.Observable;
 
 public class TimelinePresenter extends ValuePresenter<Timeline> {
-    @Inject Markdown markdown;
     @Inject ApiService service;
 
     private DateTime date;
 
     public final PresenterSubject<Timeline> timeline = subject;
-    public final Observable<Rendered> rendered = timeline.map(timeline -> {
-        String rawMessage = timeline.getMessage();
-        CharSequence renderedMessage = markdown.toSpanned(rawMessage);
-        return new Rendered(timeline, renderedMessage);
-    });
 
     @Override
     protected boolean isDataDisposable() {
@@ -71,17 +64,5 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
 
     public Observable<VoidResponse> submitCorrection(@NonNull Feedback correction) {
         return service.submitCorrect(correction);
-    }
-
-
-    public static class Rendered {
-        public final @NonNull Timeline timeline;
-        public final @NonNull CharSequence message;
-
-        public Rendered(@NonNull Timeline timeline,
-                        @NonNull CharSequence message) {
-            this.timeline = timeline;
-            this.message = message;
-        }
     }
 }

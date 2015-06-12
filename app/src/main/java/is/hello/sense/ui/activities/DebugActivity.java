@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.util.Util;
@@ -42,6 +43,7 @@ import is.hello.sense.util.SessionLogger;
 
 public class DebugActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject ApiSessionManager sessionManager;
+    @Inject ApiEndpoint apiEndpoint;
     @Inject Cache httpCache;
     @Inject BluetoothStack bluetoothStack;
 
@@ -89,8 +91,8 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         buildInfoItems.addTextItem("BLE Stack Config", Util.peripheralConfigToString(bluetoothStack.getDefaultConfig()));
         buildInfoItems.addTextItem("Access Token", sessionManager.getAccessToken());
         buildInfoItems.addTextItem("GCM ID", getSharedPreferences(Constants.NOTIFICATION_PREFS, 0).getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, "<none>"));
-        buildInfoItems.addTextItem("Host", BuildConfig.BASE_URL);
-        buildInfoItems.addTextItem("Client ID", BuildConfig.CLIENT_ID);
+        buildInfoItems.addTextItem("Host", apiEndpoint.getUrl());
+        buildInfoItems.addTextItem("Client ID", apiEndpoint.getClientId());
     }
 
     private void populateDebugActionItems() {

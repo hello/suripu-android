@@ -58,6 +58,7 @@ import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.markup.text.MarkupString;
 
 public class TimelineInfoFragment extends AnimatedInjectionFragment {
     public static final String TAG = TimelineInfoFragment.class.getSimpleName();
@@ -72,7 +73,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
 
-    private @Nullable CharSequence summary;
+    private @Nullable MarkupString summary;
     private int scoreColor, darkenedScoreColor;
     private ArrayList<Item> items;
     private @IdRes int sourceViewId;
@@ -89,22 +90,14 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     //region Lifecycle
 
-    public static TimelineInfoFragment newInstance(@Nullable CharSequence message,
+    public static TimelineInfoFragment newInstance(@Nullable MarkupString message,
                                                    int score,
                                                    @NonNull ArrayList<Item> items,
                                                    @IdRes int sourceViewId) {
         TimelineInfoFragment fragment = new TimelineInfoFragment();
 
         Bundle arguments = new Bundle();
-        if (!TextUtils.isEmpty(message)) {
-            Parcel messageParcel = Parcel.obtain();
-            try {
-                TextUtils.writeToParcel(message, messageParcel, 0);
-                arguments.putByteArray(ARG_SUMMARY, messageParcel.marshall());
-            } finally {
-                messageParcel.recycle();
-            }
-        }
+        arguments.putParcelable(ARG_SUMMARY, message);
         arguments.putInt(ARG_SCORE, score);
         arguments.putParcelableArrayList(ARG_ITEMS, items);
         arguments.putInt(ARG_SOURCE_VIEW_ID, sourceViewId);
@@ -113,9 +106,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         return fragment;
     }
 
-    public static TimelineInfoFragment newInstance(@NonNull Timeline timeline,
-                                                            @Nullable CharSequence message,
-                                                            @IdRes int sourceViewId) {
+    public static TimelineInfoFragment newInstance(@NonNull Timeline timeline, @IdRes int sourceViewId) {
         Timeline.Statistics statistics = timeline.getStatistics();
 
         ArrayList<Item> items = new ArrayList<>();
@@ -164,7 +155,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             items.add(new SensorItem(insight.getSensor(), insight.getCondition()));
         }
 
-        return newInstance(message, timeline.getScore(), items, sourceViewId);
+        return newInstance(timeline.getMessage(), timeline.getScore(), items, sourceViewId);
     }
 
     @Override
@@ -178,18 +169,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         this.darkenedScoreColor = Drawing.darkenColorBy(scoreColor, 0.2f);
         this.items = arguments.getParcelableArrayList(ARG_ITEMS);
         this.sourceViewId = arguments.getInt(ARG_SOURCE_VIEW_ID);
-
-        byte[] summaryBytes = arguments.getByteArray(ARG_SUMMARY);
-        if (summaryBytes != null) {
-            Parcel messageParcel = Parcel.obtain();
-            try {
-                messageParcel.unmarshall(summaryBytes, 0, summaryBytes.length);
-                messageParcel.setDataPosition(0);
-                this.summary = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(messageParcel);
-            } finally {
-                messageParcel.recycle();
-            }
-        }
+        this.summary = arguments.getParcelable(ARG_SUMMARY);
 
         setRetainInstance(true);
     }

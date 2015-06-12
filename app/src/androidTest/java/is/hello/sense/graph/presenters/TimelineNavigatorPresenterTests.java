@@ -8,6 +8,7 @@ import is.hello.sense.api.model.Timeline;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.LambdaVar;
 import is.hello.sense.util.Sync;
+import is.hello.sense.util.markup.text.MarkupString;
 
 import static is.hello.sense.util.ModelHelper.manipulate;
 
@@ -71,7 +72,7 @@ public class TimelineNavigatorPresenterTests extends InjectionTestCase {
     public void testCacheInjection() throws Exception {
         Timeline timeline = manipulate(new Timeline())
                 .set("date", DateTime.now())
-                .set("message", "This is a test")
+                .set("message", new MarkupString("This is a test"))
                 .unwrap();
 
         presenter.cacheSingleTimeline(timeline.getDate(), timeline);

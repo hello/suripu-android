@@ -182,8 +182,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         stateSafeExecutor.execute(headerView::startPulsing);
 
-        bindAndSubscribe(timelinePresenter.rendered,
-                this::bindRenderedTimeline,
+        bindAndSubscribe(timelinePresenter.timeline,
+                this::bindTimeline,
                 this::timelineUnavailable);
 
         bindAndSubscribe(preferences.observableUse24Time(),
@@ -256,10 +256,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     public void showBreakdown(@NonNull View sender) {
-        bindAndSubscribe(timelinePresenter.rendered.take(1),
-                         rendered -> {
-                             TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(rendered.timeline,
-                                     rendered.message, headerView.getCardViewId());
+        bindAndSubscribe(timelinePresenter.timeline.take(1),
+                         timeline -> {
+                             TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timeline, headerView.getCardViewId());
                              infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);
                          },
                          Functions.LOG_ERROR);
@@ -337,11 +336,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     //region Binding
 
-    public void bindRenderedTimeline(@NonNull TimelinePresenter.Rendered rendered) {
+    public void bindTimeline(@NonNull Timeline timeline) {
         // For timeline corrections
         LoadingDialogFragment.close(getFragmentManager());
-
-        Timeline timeline = rendered.timeline;
 
         boolean hasSegments = !Lists.isEmpty(timeline.getSegments());
         Runnable continuation = stateSafeExecutor.bind(() -> {
@@ -359,8 +356,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             headerView.bindScore(TimelineHeaderView.NULL_SCORE, continuation);
         }
 
-        CharSequence message = rendered.message;
-        headerView.bindMessage(message);
+        headerView.bindMessage(timeline.getMessage());
 
         headerView.setScoreClickEnabled(timeline.getStatistics() != null && hasSegments);
     }

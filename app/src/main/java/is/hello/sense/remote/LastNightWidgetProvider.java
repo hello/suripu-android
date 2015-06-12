@@ -46,34 +46,32 @@ public class LastNightWidgetProvider extends AppWidgetProvider {
     }
 
     public static class LastNightService extends WidgetService {
-        @Inject TimelinePresenter timelinePresenter;
+        @Inject TimelinePresenter presenter;
 
         public LastNightService() {
-            timelinePresenter.setDateWithTimeline(DateFormatter.lastNight(), null);
-            addPresenter(timelinePresenter);
+            presenter.setDateWithTimeline(DateFormatter.lastNight(), null);
+            addPresenter(presenter);
         }
 
         @Override
         protected void startUpdate(int widgetIds[]) {
-            bindAndSubscribe(timelinePresenter.rendered,
-                             rendered -> bindConditions(widgetIds, rendered),
+            bindAndSubscribe(presenter.timeline.take(1),
+                             timeline -> bindConditions(widgetIds, timeline),
                              e -> {
                                  Logger.error(LastNightWidgetProvider.class.getSimpleName(), "Could not fetch last night's timeline", e);
                                  bindConditions(widgetIds, null);
                              });
         }
 
-        private void bindConditions(int widgetIds[], @Nullable TimelinePresenter.Rendered rendered) {
+        private void bindConditions(int widgetIds[], @Nullable Timeline timeline) {
             Resources resources = getResources();
             RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.widget_last_night);
-            if (rendered != null) {
-                Timeline timeline = rendered.timeline;
+            if (timeline != null) {
                 int sleepScore = timeline.getScore();
                 remoteViews.setTextViewText(R.id.widget_last_night_score, Integer.toString(sleepScore));
                 remoteViews.setTextColor(R.id.widget_last_night_score, resources.getColor(Styles.getSleepScoreColorRes(sleepScore)));
 
-                CharSequence message = rendered.message;
-                remoteViews.setTextViewText(R.id.widget_last_night_message, message);
+                remoteViews.setTextViewText(R.id.widget_last_night_message, timeline.getMessage());
             } else {
                 remoteViews.setTextViewText(R.id.widget_last_night_score, getString(R.string.missing_data_placeholder));
                 remoteViews.setTextViewText(R.id.widget_last_night_message, getString(R.string.missing_data_placeholder));

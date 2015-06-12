@@ -2,6 +2,8 @@
 <resources>
     <!-- string resources related to localization and value formatting -->
 
+    <string name="format_markup_list_deliminator">"• "</string>
+
     <string name="format_date_placeholder">--</string>
 
     <string name="format_date">MMMM d</string>
