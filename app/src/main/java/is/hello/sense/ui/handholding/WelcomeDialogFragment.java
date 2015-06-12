@@ -144,9 +144,14 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         this.adapter = new ItemAdapter();
         viewPager.setAdapter(adapter);
 
+        PageDots pageDots = (PageDots) dialog.findViewById(R.id.fragment_dialog_welcome_page_dots);
         if (items.size() > 1) {
-            PageDots pageDots = (PageDots) dialog.findViewById(R.id.fragment_dialog_welcome_page_dots);
             pageDots.attach(viewPager);
+        } else {
+            pageDots.setVisibility(View.GONE);
+
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) viewPager.getLayoutParams();
+            layoutParams.bottomMargin = layoutParams.topMargin;
         }
 
         int maxWidth = getResources().getDimensionPixelSize(R.dimen.dialog_max_width);

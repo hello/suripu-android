@@ -47,8 +47,6 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
     private int count = 0;
     private int selection = 0;
 
-    private @Nullable ViewPager.OnPageChangeListener onPageChangeListener;
-
     //endregion
 
 
@@ -73,11 +71,10 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
         setGravity(Gravity.CENTER);
 
 
-        int dotSize = resources.getDimensionPixelSize(R.dimen.page_dot_size);
-        this.dotLayout = new LayoutParams(dotSize, dotSize);
+        this.dotLayout = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
         int dotMargin = resources.getDimensionPixelSize(R.dimen.page_dot_margin);
-        dotLayout.setMargins(dotMargin, dotMargin, dotMargin, dotMargin);
+        dotLayout.setMargins(dotMargin, 0, dotMargin, 0);
 
 
         if (attrs != null) {
@@ -195,24 +192,15 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        if (onPageChangeListener != null) {
-            onPageChangeListener.onPageScrolled(position, positionOffset, positionOffsetPixels);
-        }
     }
 
     @Override
     public void onPageSelected(int position) {
         setSelection(position);
-        if (onPageChangeListener != null) {
-            onPageChangeListener.onPageSelected(position);
-        }
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
-        if (onPageChangeListener != null) {
-            onPageChangeListener.onPageScrollStateChanged(state);
-        }
     }
 
     //endregion
