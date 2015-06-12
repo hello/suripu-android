@@ -182,9 +182,9 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
                     viewPager.setAdapter(adapter);
                     if (items.size() > 1) {
-                     pageDots.attach(viewPager);
-                 }
-             });
+                        pageDots.attach(viewPager);
+                    }
+                });
 
         return dialog;
     }
