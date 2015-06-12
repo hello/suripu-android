@@ -9,6 +9,11 @@
     android:fillViewport="true"
     style="@style/AppTheme.LargeCard">
 
+    <!--
+        We cannot use a RoundedLinearLayout here. It causes two major issues:
+        - Very slow rendering for ImageView on high resolution devices.
+        - Rendering artifacts on ImageView on some older devices (the Galaxy S4 specifically).
+     -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,6 +45,28 @@
             android:layout_marginBottom="@dimen/gap_outer"
             android:textAppearance="@style/AppTheme.Text.Body.MidSized"
             android:lineSpacingMultiplier="@dimen/line_multiple_body_medium" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:minHeight="@dimen/gap_medium"/>
+
+        <View
+            android:id="@+id/fragment_dialog_welcome_item_dismiss_border"
+            style="@style/Divider.Horizontal" />
+
+        <Button
+            android:id="@+id/fragment_dialog_welcome_item_dismiss"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/button_rounded_min_height"
+            android:padding="@dimen/gap_small"
+            android:textAllCaps="true"
+            android:text="@string/action_done"
+            android:textColor="@color/light_accent"
+            android:visibility="gone"
+            style="@style/AppTheme.Text.Body.Medium" />
 
     </LinearLayout>
 

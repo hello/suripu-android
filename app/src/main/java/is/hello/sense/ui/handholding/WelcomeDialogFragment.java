@@ -4,8 +4,8 @@ import android.animation.FloatEvaluator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
@@ -16,6 +16,8 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,6 +32,7 @@ import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.handholding.util.WelcomeDialogParser;
 import is.hello.sense.ui.widget.PageDots;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
@@ -37,12 +40,12 @@ import is.hello.sense.util.Logger;
 public class WelcomeDialogFragment extends SenseDialogFragment {
     public static final String TAG = WelcomeDialogFragment.class.getSimpleName();
 
-    private static final int REQUEST_CODE_DISMISS_ALL = 0x99;
     private static final String ARG_WELCOME_RES = WelcomeDialogFragment.class.getName() + ".ARG_WELCOME_RES";
 
     private List<Item> items;
     private ItemAdapter adapter;
     private ViewPager viewPager;
+    private PageDots pageDots;
 
 
     //region Lifecycle
@@ -135,50 +138,50 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
         this.viewPager = (ViewPager) dialog.findViewById(R.id.fragment_dialog_welcome_view_pager);
 
+        this.pageDots = (PageDots) dialog.findViewById(R.id.fragment_dialog_welcome_page_dots);
+        if (items.size() == 0) {
+            pageDots.setVisibility(View.GONE);
+
+            MarginLayoutParams layoutParams = (MarginLayoutParams) viewPager.getLayoutParams();
+            layoutParams.bottomMargin = layoutParams.topMargin;
+        }
+
+        this.adapter = new ItemAdapter();
+
         int pageMargin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
         viewPager.setClipToPadding(false);
         viewPager.setPadding(pageMargin, 0, pageMargin, 0);
         viewPager.setPageMargin(pageMargin);
 
-        this.adapter = new ItemAdapter();
-
-        PageDots pageDots = (PageDots) dialog.findViewById(R.id.fragment_dialog_welcome_page_dots);
-        if (items.size() == 0) {
-            pageDots.setVisibility(View.GONE);
-
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) viewPager.getLayoutParams();
-            layoutParams.bottomMargin = layoutParams.topMargin;
-        }
-
         int maxWidth = getResources().getDimensionPixelSize(R.dimen.dialog_max_width);
         int maxHeight = getResources().getDimensionPixelSize(R.dimen.dialog_max_height);
         Views.observeNextLayout(dialog.getWindow().getDecorView())
-             .subscribe(v -> {
-                 boolean isFloating = false;
+                .subscribe(v -> {
+                    boolean isFloating = false;
 
-                 int height = viewPager.getMeasuredHeight();
-                 if (height > maxHeight) {
-                     viewPager.getLayoutParams().height = maxHeight;
-                     viewPager.invalidate();
+                    int height = viewPager.getMeasuredHeight();
+                    if (height > maxHeight) {
+                        viewPager.getLayoutParams().height = maxHeight;
+                        viewPager.invalidate();
 
-                     isFloating = true;
-                 }
+                        isFloating = true;
+                    }
 
-                 int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
-                 if (width > maxWidth) {
-                     int newPageMargin = (viewPager.getMeasuredWidth() - maxWidth) / 2;
-                     viewPager.setPadding(newPageMargin, 0, newPageMargin, 0);
-                     viewPager.setPageMargin(newPageMargin);
+                    int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
+                    if (width > maxWidth) {
+                        int newPageMargin = (viewPager.getMeasuredWidth() - maxWidth) / 2;
+                        viewPager.setPadding(newPageMargin, 0, newPageMargin, 0);
+                        viewPager.setPageMargin(newPageMargin);
 
-                     isFloating = true;
-                 }
+                        isFloating = true;
+                    }
 
-                 if (!isFloating) {
-                     viewPager.setPageTransformer(true, new ParallaxTransformer(viewPager));
-                 }
+                    if (!isFloating) {
+                        viewPager.setPageTransformer(true, new ParallaxTransformer(viewPager));
+                    }
 
-                 viewPager.setAdapter(adapter);
-                 if (items.size() > 1) {
+                    viewPager.setAdapter(adapter);
+                    if (items.size() > 1) {
                      pageDots.attach(viewPager);
                  }
              });
@@ -186,25 +189,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         return dialog;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_DISMISS_ALL && resultCode == Activity.RESULT_OK) {
-            dismiss();
-        }
-    }
-
     //endregion
-
-
-    public void next() {
-        if (viewPager.getCurrentItem() < adapter.getCount() - 1) {
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
-        } else {
-            dismiss();
-        }
-    }
 
 
     public static class ParallaxTransformer implements ViewPager.PageTransformer {
@@ -238,6 +223,9 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         }
     }
 
+
+    //region Items
+
     public class ItemAdapter extends ViewPagerAdapter<ItemAdapter.ViewHolder> {
         private final LayoutInflater inflater = LayoutInflater.from(getActivity());
 
@@ -249,13 +237,14 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         @Override
         public ViewHolder createViewHolder(ViewGroup container, int position) {
             View itemView = inflater.inflate(R.layout.item_dialog_welcome, container, false);
-            return new ViewHolder(itemView, (position == getCount() - 1));
+            return new ViewHolder(itemView);
         }
 
         @Override
         public void bindViewHolder(ViewHolder holder, int position) {
             Item item = items.get(position);
             holder.bindItem(item);
+            holder.setLastItem(position == getCount() - 1);
         }
 
 
@@ -263,16 +252,35 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
             final ImageView diagramImage;
             final TextView titleText;
             final TextView messageText;
-            final boolean lastItem;
+            final Button dismissButton;
+            final View dismissButtonDivider;
 
-            private ViewHolder(@NonNull View itemView, boolean lastItem) {
+            private ViewHolder(@NonNull View itemView) {
                 super(itemView);
-
-                this.lastItem = lastItem;
 
                 this.diagramImage = (ImageView) itemView.findViewById(R.id.fragment_dialog_welcome_item_diagram);
                 this.titleText = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_title);
                 this.messageText = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_message);
+
+                this.dismissButtonDivider = itemView.findViewById(R.id.fragment_dialog_welcome_item_dismiss_border);
+                this.dismissButton = (Button) itemView.findViewById(R.id.fragment_dialog_welcome_item_dismiss);
+                Views.setSafeOnClickListener(dismissButton, ignored -> dismissAllowingStateLoss());
+
+                Resources resources = getResources();
+                float bottomCornerRadius = resources.getDimension(R.dimen.button_corner_radius);
+                int normal = resources.getColor(R.color.background_light);
+                int pressed = resources.getColor(R.color.light_accent_extra_dimmed);
+                dismissButton.setBackground(Styles.newRoundedBorderlessButtonBackground(0f, bottomCornerRadius, normal, pressed));
+            }
+
+            private void setLastItem(boolean lastItem) {
+                if (lastItem) {
+                    dismissButtonDivider.setVisibility(View.VISIBLE);
+                    dismissButton.setVisibility(View.VISIBLE);
+                } else {
+                    dismissButtonDivider.setVisibility(View.GONE);
+                    dismissButton.setVisibility(View.GONE);
+                }
             }
 
             private void bindItem(@NonNull Item item) {
@@ -332,4 +340,6 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                     '}';
         }
     }
+
+    //endregion
 }
