@@ -1,13 +1,18 @@
 package is.hello.sense.ui.animation;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+
+import is.hello.sense.ui.widget.RectEvaluatorCompat;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
@@ -109,5 +114,34 @@ public class Animation {
         colorAnimator.setInterpolator(INTERPOLATOR_DEFAULT);
         colorAnimator.setDuration(DURATION_NORMAL);
         return colorAnimator;
+    }
+
+    /**
+     * Creates and returns a ValueAnimator that will
+     * transition between the specified array of rectangles.
+     * <p/>
+     * The same Rect instance will be used in each call.
+     */
+    public static ValueAnimator createRectAnimator(@NonNull Rect... rectangles) {
+        ValueAnimator rectAnimator = ValueAnimator.ofObject(new RectEvaluatorCompat(), (Object[]) rectangles);
+        rectAnimator.setInterpolator(INTERPOLATOR_DEFAULT);
+        rectAnimator.setDuration(DURATION_NORMAL);
+        return rectAnimator;
+    }
+
+    public static ValueAnimator createViewFrameAnimator(@NonNull View view, @NonNull Rect... rectangles) {
+        ValueAnimator frameAnimator = createRectAnimator((Rect[]) rectangles);
+        frameAnimator.addUpdateListener(a -> {
+            Rect frame = (Rect) a.getAnimatedValue();
+            view.layout(frame.left, frame.top, frame.right, frame.bottom);
+        });
+        return frameAnimator;
+    }
+
+    /**
+     * Creates and returns an animator that does nothing.
+     */
+    public static Animator createEmptyAnimator() {
+        return new AnimatorSet();
     }
 }

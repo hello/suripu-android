@@ -26,10 +26,6 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.LambdaVar;
 
 public enum Tutorial {
-    SLEEP_SCORE_BREAKDOWN(R.string.tutorial_sleep_score_breakdown,
-                          Gravity.BOTTOM,
-                          R.id.fragment_timeline_sleep_score_chart,
-                          Interaction.TAP),
     SWIPE_TIMELINE(R.string.tutorial_swipe_timeline,
                    Gravity.BOTTOM,
                    R.id.activity_home_container,

@@ -178,23 +178,23 @@ public class TimelineSegment extends ApiResponse implements Cloneable {
 
 
     public enum EventType {
-        MOTION(R.string.event_type_motion),
-        SLEEPING(R.string.event_type_sleeping),
-        SLEEP_MOTION(R.string.event_type_sleep_motion),
-        PARTNER_MOTION(R.string.event_type_partner_moved),
-        NOISE(R.string.event_type_noise),
-        SNORING(R.string.event_type_snoring),
-        SLEEP_TALK(R.string.event_type_sleep_talk),
-        LIGHT(R.string.event_type_light),
-        LIGHTS_OUT(R.string.event_type_lights_out),
-        SUNSET(R.string.event_type_sunset),
-        SUNRISE(R.string.event_type_sunrise),
-        IN_BED(R.string.event_type_in_bed),
-        SLEEP(R.string.event_type_sleep),
-        OUT_OF_BED(R.string.event_type_out_of_bed),
-        WAKE_UP(R.string.event_type_wake_up),
-        ALARM(R.string.event_type_alarm),
-        UNKNOWN(R.string.event_type_unknown);
+        MOTION(R.string.accessibility_event_name_motion),
+        SLEEPING(R.string.accessibility_event_name_sleeping),
+        SLEEP_MOTION(R.string.accessibility_event_name_sleep_motion),
+        PARTNER_MOTION(R.string.accessibility_event_name_partner_moved),
+        NOISE(R.string.accessibility_event_name_noise),
+        SNORING(R.string.accessibility_event_name_snoring),
+        SLEEP_TALK(R.string.accessibility_event_name_talk),
+        LIGHT(R.string.accessibility_event_name_light),
+        LIGHTS_OUT(R.string.accessibility_event_name_lights_out),
+        SUNSET(R.string.accessibility_event_name_sunset),
+        SUNRISE(R.string.accessibility_event_name_sunrise),
+        IN_BED(R.string.accessibility_event_name_in_bed),
+        SLEEP(R.string.accessibility_event_name_sleep),
+        OUT_OF_BED(R.string.accessibility_event_name_out_of_bed),
+        WAKE_UP(R.string.accessibility_event_name_wake_up),
+        ALARM(R.string.accessibility_event_name_alarm),
+        UNKNOWN(R.string.accessibility_event_name_unknown);
 
         @JsonCreator
         @SuppressWarnings("UnusedDeclaration")
@@ -206,10 +206,10 @@ public class TimelineSegment extends ApiResponse implements Cloneable {
             }
         }
 
-        public final @StringRes int nameString;
+        public final @StringRes int accessibilityStringRes;
 
-        EventType(@StringRes int nameString) {
-            this.nameString = nameString;
+        EventType(@StringRes int accessibilityStringRes) {
+            this.accessibilityStringRes = accessibilityStringRes;
         }
     }
 }

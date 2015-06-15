@@ -18,6 +18,10 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
+    <style name="AppTheme.Text.Heading.Card">
+        <item name="android:textSize">@dimen/text_size_heading_card</item>
+    </style>
+
     <style name="AppTheme.Text.Subheading">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">@dimen/text_size_subheading</item>
@@ -76,6 +80,10 @@
         <item name="android:textSize">@dimen/text_size_body_mid_sized</item>
     </style>
 
+    <style name="AppTheme.Text.Body.MidSized.Neutral">
+        <item name="android:textColor">@color/text_neutral</item>
+    </style>
+
     <style name="AppTheme.Text.Body.Small">
         <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
@@ -119,17 +127,21 @@
 
     <!-- Non-generic -->
 
-    <style name="AppTheme.Text.BigScore">
+    <style name="AppTheme.Text.Score" />
+
+    <style name="AppTheme.Text.Score.Big">
         <item name="android:textSize">@dimen/text_size_big_score</item>
         <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
-    <style name="AppTheme.Text.SmallScore" parent="AppTheme.Text.BigScore">
+    <style name="AppTheme.Text.Score.Small">
         <item name="android:textSize">@dimen/text_size_small_score</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
-    <style name="AppTheme.Text.TinyScore" parent="AppTheme.Text.BigScore">
+    <style name="AppTheme.Text.Score.Tiny">
         <item name="android:textSize">@dimen/text_size_tiny_score</item>
+        <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
     <style name="AppTheme.Text.Condition">
@@ -139,15 +151,6 @@
 
     <style name="AppTheme.Text.Condition.Large">
         <item name="android:textSize">@dimen/text_size_big_score</item>
-    </style>
-
-    <style name="AppTheme.Text.Timestamp">
-        <item name="android:paddingTop">@dimen/gap_xsmall</item>
-        <item name="android:paddingBottom">@dimen/gap_xsmall</item>
-        <item name="android:paddingLeft">@dimen/gap_small</item>
-        <item name="android:paddingRight">@dimen/gap_small</item>
-        <item name="android:textColor">@color/text_section_header</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
     </style>
 
     <style name="AppTheme.Text.SmartAlarm" />
@@ -191,6 +194,25 @@
 
         <item name="android:textSize">@dimen/text_size_heading</item>
         <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="AppTheme.Text.Timeline" parent="AppTheme.Text.Body.MidSized" />
+
+    <style name="AppTheme.Text.Timeline.Timestamp">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">@dimen/text_size_timeline_time</item>
+        <item name="android:textColor">@color/light_accent</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="AppTheme.Text.Timeline.Timestamp.Event">
+        <item name="android:textColor">@color/text_dim</item>
+    </style>
+
+    <style name="AppTheme.Text.Timeline.Popup">
+        <item name="android:textColor">@color/text_dim</item>
+        <item name="android:textSize">@dimen/text_size_section_heading</item>
     </style>
 
 </resources>

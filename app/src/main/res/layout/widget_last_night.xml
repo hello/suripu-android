@@ -14,7 +14,7 @@
         android:layout_width="@dimen/little_sleep_summary_width"
         android:layout_height="@dimen/little_sleep_summary_height"
         android:layout_gravity="center"
-        android:textAppearance="@style/AppTheme.Text.TinyScore"
+        android:textAppearance="@style/AppTheme.Text.Score.Tiny"
         android:gravity="center"
         android:text="@string/missing_data_placeholder"/>
 

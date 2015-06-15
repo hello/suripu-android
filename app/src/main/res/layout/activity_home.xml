@@ -17,28 +17,56 @@
             android:layout_height="match_parent"
             android:background="@color/background" />
 
-        <FrameLayout
+        <RelativeLayout
             android:id="@+id/activity_home_content_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/background_timeline">
 
+            <ImageButton
+                android:id="@+id/activity_home_timeline_header_overflow"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/action_bar_height"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/icon_menu_closed"
+                android:scaleType="center"
+                tools:ignore="ContentDescription" />
+
+            <ImageButton
+                android:id="@+id/activity_home_timeline_header_share"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/action_bar_height"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/icon_share_enabled"
+                android:scaleType="center"
+                android:contentDescription="@string/action_share" />
+
+            <is.hello.sense.ui.widget.FragmentPageTitleStrip
+                android:id="@+id/activity_home_timeline_date"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/action_bar_height"
+                android:layout_toEndOf="@id/activity_home_timeline_header_overflow"
+                android:layout_toStartOf="@id/activity_home_timeline_header_share"
+                android:background="@drawable/selectable_dark_bounded"/>
+
             <is.hello.sense.ui.widget.FragmentPageView
                 android:id="@+id/activity_home_view_pager"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_below="@id/activity_home_timeline_date" />
 
             <ImageButton
                 android:id="@+id/fragment_timeline_smart_alarm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/gap_small"
-                android:layout_gravity="bottom|end"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
                 android:src="@drawable/timeline_smart_alarm"
                 android:contentDescription="@string/action_show_alarms"
                 style="@style/AppTheme.Button.Circular"/>
 
-        </FrameLayout>
+        </RelativeLayout>
 
     </is.hello.sense.ui.widget.SlidingLayersView>
 

@@ -39,11 +39,11 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
         Observable<ArrayList<Timeline>> update = service.timelineForDate(date.year().getAsString(),
                                                                          date.monthOfYear().getAsString(),
                                                                          date.dayOfMonth().getAsString());
-        return update.map(timelines -> {
+        return update.flatMap(timelines -> {
             if (Lists.isEmpty(timelines)) {
-                return null;
+                return Observable.error(new Throwable("No timelines found"));
             } else {
-                return timelines.get(0);
+                return Observable.just(timelines.get(0));
             }
         });
     }
@@ -63,7 +63,6 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
     }
 
     public Observable<VoidResponse> submitCorrection(@NonNull Feedback correction) {
-        return service.submitCorrect(correction)
-                      .doOnCompleted(this::update);
+        return service.submitCorrect(correction);
     }
 }

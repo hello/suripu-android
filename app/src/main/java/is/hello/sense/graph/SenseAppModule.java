@@ -35,13 +35,13 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
-import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
 import is.hello.sense.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.ui.fragments.SensorHistoryFragment;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
@@ -104,7 +104,7 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
 
         TimelineFragment.class,
         TimelinePresenter.class,
-        TimelineEventDialogFragment.class,
+        TimelineInfoFragment.class,
         TimelineNavigatorFragment.class,
         TimelineNavigatorPresenter.class,
 

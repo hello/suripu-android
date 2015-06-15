@@ -3,16 +3,23 @@ package is.hello.sense.ui.animation;
 import android.animation.Animator;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.functions.Action1;
 
 public class AnimatorContext implements Animator.AnimatorListener {
+    private static final boolean DEBUG = false;
+
     private static final int MSG_IDLE = 0;
 
     private final String name;
@@ -46,6 +53,10 @@ public class AnimatorContext implements Animator.AnimatorListener {
      * the animation context is currently idle.
      */
     public void runWhenIdle(@NonNull Runnable runnable) {
+        if (DEBUG) {
+            printTrace("runWhenIdle");
+        }
+
         if (activeAnimationCount == 0) {
             runnable.run();
         } else {
@@ -77,10 +88,26 @@ public class AnimatorContext implements Animator.AnimatorListener {
 
     //region Active Animations
 
+    private void printTrace(@NonNull String traceName) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int size = Math.min(stackTrace.length - 3, 4);
+        String[] partialTraceComponents = new String[size];
+        for (int i = 0; i < size; i++) {
+            StackTraceElement stackTraceElement = stackTrace[i + 3];
+            partialTraceComponents[i] = stackTraceElement.getClassName() + "#" + stackTraceElement.getMethodName();
+        }
+        String partialTrace = TextUtils.join(" -> ", partialTraceComponents);
+        Log.i(getClass().getSimpleName(), traceName + ": " + partialTrace);
+    }
+
     public void beginAnimation() {
         idleHandler.removeMessages(MSG_IDLE);
 
         this.activeAnimationCount++;
+
+        if (DEBUG) {
+            printTrace("beginAnimation [" + activeAnimationCount + "]");
+        }
     }
 
     public void endAnimation() {
@@ -89,6 +116,10 @@ public class AnimatorContext implements Animator.AnimatorListener {
         }
 
         this.activeAnimationCount--;
+
+        if (DEBUG) {
+            printTrace("endAnimation [" + activeAnimationCount + "]");
+        }
 
         if (activeAnimationCount == 0) {
             idleHandler.removeMessages(MSG_IDLE);
@@ -141,17 +172,18 @@ public class AnimatorContext implements Animator.AnimatorListener {
      * facade should then be used to construct animators. The callback
      * <em>should not</em> call start on the animators, this will be
      * done automatically by the animator context.
-     *
      * @param properties    An optional animation properties to apply to each animator.
+     * @param options       The options to apply to the transaction
      * @param animations    A callback that describes the animations to run against a given facade.
      * @param onCompleted   An optional listener to invoke when the longest animation completes.
      */
     public void transaction(@Nullable AnimatorConfig properties,
-                            @NonNull Action1<Facade> animations,
+                            @TransactionOptions int options,
+                            @NonNull Action1<TransactionFacade> animations,
                             @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
         List<PropertyAnimatorProxy> animators = new ArrayList<>(2);
 
-        Facade facade = view -> {
+        TransactionFacade facade = view -> {
             PropertyAnimatorProxy animator = PropertyAnimatorProxy.animate(view, this);
             if (properties != null) {
                 properties.apply(animator);
@@ -161,9 +193,21 @@ public class AnimatorContext implements Animator.AnimatorListener {
         };
         animations.call(facade);
 
+        if ((options & OPTION_START_ON_IDLE) == OPTION_START_ON_IDLE) {
+            runWhenIdle(() -> startTransaction(animators, onCompleted));
+        } else {
+            startTransaction(animators, onCompleted);
+        }
+    }
+
+    /**
+     * Internal. Second half of {@link #transaction(AnimatorConfig, int, Action1, PropertyAnimatorProxy.OnAnimationCompleted)}.
+     */
+    private void startTransaction(@NonNull List<PropertyAnimatorProxy> animators,
+                                  @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
         PropertyAnimatorProxy longestAnimator = null;
         for (PropertyAnimatorProxy animator : animators) {
-            if (longestAnimator == null || animator.getDuration() >= longestAnimator.getDuration()) {
+            if (longestAnimator == null || animator.getTotalDuration() >= longestAnimator.getTotalDuration()) {
                 longestAnimator = animator;
             }
 
@@ -178,11 +222,11 @@ public class AnimatorContext implements Animator.AnimatorListener {
     /**
      * Short-hand provided for common use-case.
      *
-     * @see #transaction(AnimatorConfig, rx.functions.Action1, is.hello.sense.ui.animation.PropertyAnimatorProxy.OnAnimationCompleted)
+     * @see #transaction(AnimatorConfig, int, Action1, PropertyAnimatorProxy.OnAnimationCompleted)
      */
-    public void transaction(@NonNull Action1<Facade> animations,
+    public void transaction(@NonNull Action1<TransactionFacade> animations,
                             @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
-        transaction(null, animations, onCompleted);
+        transaction(null, AnimatorContext.OPTIONS_DEFAULT, animations, onCompleted);
     }
 
     //endregion
@@ -206,9 +250,9 @@ public class AnimatorContext implements Animator.AnimatorListener {
     /**
      * Used for transaction callbacks to specify animations against views.
      *
-     * @see #transaction(AnimatorConfig, rx.functions.Action1, is.hello.sense.ui.animation.PropertyAnimatorProxy.OnAnimationCompleted)
+     * @see #transaction(AnimatorConfig, int, Action1, PropertyAnimatorProxy.OnAnimationCompleted)
      */
-    public interface Facade {
+    public interface TransactionFacade {
         /**
          * Create a property animator proxy for a given view,
          * applying any properties provided, and queuing it
@@ -219,6 +263,24 @@ public class AnimatorContext implements Animator.AnimatorListener {
          */
         PropertyAnimatorProxy animate(@NonNull View view);
     }
+
+    /**
+     * The transaction should start when the animator context is idle.
+     */
+    public static final int OPTION_START_ON_IDLE = (1 << 1);
+
+    /**
+     * Use the default transaction options.
+     */
+    public static final int OPTIONS_DEFAULT = (OPTION_START_ON_IDLE);
+
+    @IntDef(flag = true, value = {
+            OPTION_START_ON_IDLE,
+            OPTIONS_DEFAULT,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TransactionOptions {}
+
 
     public interface Scene {
         @NonNull AnimatorContext getAnimatorContext();

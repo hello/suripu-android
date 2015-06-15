@@ -31,9 +31,11 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
 
     private static final String ARG_DATE = TimePickerDialogFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CONFIG = TimePickerDialogFragment.class.getName() + ".ARG_CONFIG";
+    private static final String ARG_AFFECTED_POSITION = TimePickerDialogFragment.class.getName() + ".ARG_AFFECTED_POSITION";
 
     public static final String RESULT_HOUR = TimePickerDialogFragment.class.getName() + ".RESULT_HOUR";
     public static final String RESULT_MINUTE = TimePickerDialogFragment.class.getName() + ".RESULT_MINUTE";
+    public static final String RESULT_AFFECTED_POSITION = TimePickerDialogFragment.class.getName() + ".RESULT_AFFECTED_POSITION";
 
     private LocalTime time;
     private boolean use24Time;
@@ -79,6 +81,10 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
         }
     }
 
+    public void setAffectedPosition(int position) {
+        getArguments().putInt(ARG_AFFECTED_POSITION, position);
+    }
+
     @Override
     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
         onTimeSet(hour, minute);
@@ -94,6 +100,7 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
             Intent response = new Intent();
             response.putExtra(RESULT_HOUR, hour);
             response.putExtra(RESULT_MINUTE, minute);
+            response.putExtra(RESULT_AFFECTED_POSITION, getArguments().getInt(ARG_AFFECTED_POSITION, 0));
             getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, response);
         }
     }

@@ -124,7 +124,7 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
             this.score = (TextView) itemView.findViewById(R.id.item_timeline_navigator_score);
             this.timeline = (MiniTimelineView) itemView.findViewById(R.id.item_timeline_navigator_timeline);
 
-            this.pieDrawable = new SleepScoreDrawable(context.getResources());
+            this.pieDrawable = new SleepScoreDrawable(context.getResources(), false);
 
             View pieView = itemView.findViewById(R.id.item_timeline_navigator_pie);
             pieView.setBackground(pieDrawable);

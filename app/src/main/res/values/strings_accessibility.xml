@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_sleep_score_unknown">Sleep score omitted</string>
+    <string name="accessibility_sleep_score_fmt">Sleep score %1$d</string>
+
+    <string name="accessibility_event_name_motion">Tossing and turning</string>
+    <string name="accessibility_event_name_noise">Noise disturbance</string>
+    <string name="accessibility_event_name_snoring">Snoring</string>
+    <string name="accessibility_event_name_talk">Sleep talking</string>
+    <string name="accessibility_event_name_light">Light disturbance</string>
+    <string name="accessibility_event_name_lights_out">Lights out</string>
+    <string name="accessibility_event_name_sleep_motion">Tossing and turning</string>
+    <string name="accessibility_event_name_sleep">Sleep</string>
+    <string name="accessibility_event_name_sunset">Sunset</string>
+    <string name="accessibility_event_name_sunrise">Sunrise</string>
+    <string name="accessibility_event_name_wake_up">Woke up</string>
+    <string name="accessibility_event_name_partner_moved">Partner moved</string>
+    <string name="accessibility_event_name_out_of_bed">Out of bed</string>
+    <string name="accessibility_event_name_in_bed">In bed</string>
+    <string name="accessibility_event_name_sleeping">Sleeping</string>
+    <string name="accessibility_event_name_alarm">Alarm</string>
+    <string name="accessibility_event_name_unknown">Other</string>
+</resources>

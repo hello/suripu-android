@@ -1,10 +1,7 @@
 package is.hello.sense.api.model;
 
-import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -34,13 +31,6 @@ public class PreSleepInsight extends ApiResponse {
         return sensor;
     }
 
-    public Drawable getIcon(@NonNull Context context) {
-        int color = context.getResources().getColor(getCondition().colorRes);
-        Drawable icon = context.getResources().getDrawable(getSensor().iconRes);
-        icon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
-        return icon;
-    }
-
 
     @Override
     public String toString() {
@@ -52,18 +42,18 @@ public class PreSleepInsight extends ApiResponse {
     }
 
 
-    public static enum Sensor {
-        TEMPERATURE(R.drawable.before_sleep_insight_temperature),
-        HUMIDITY(R.drawable.before_sleep_insight_humidity),
-        PARTICULATES(R.drawable.before_sleep_insight_particulates),
-        SOUND(R.drawable.before_sleep_insight_noise),
-        LIGHT(R.drawable.before_sleep_insight_light),
-        UNKNOWN(R.drawable.before_sleep_insight_unknown);
+    public enum Sensor {
+        TEMPERATURE(R.string.condition_temperature),
+        HUMIDITY(R.string.condition_humidity),
+        PARTICULATES(R.string.condition_particulates),
+        SOUND(R.string.condition_sound),
+        LIGHT(R.string.condition_light),
+        UNKNOWN(R.string.missing_data_placeholder);
 
-        public final @DrawableRes int iconRes;
+        public final @StringRes int titleRes;
 
-        private Sensor(@DrawableRes int iconRes) {
-            this.iconRes = iconRes;
+        Sensor(@StringRes int titleRes) {
+            this.titleRes = titleRes;
         }
 
         @JsonCreator
