@@ -21,11 +21,11 @@ public class DynamicApiEndpoint extends ApiEndpoint {
 
     @Override
     public String getClientId() {
-        return preferences.getString(PreferencesPresenter.DEBUG_CLIENT_ID_OVERRIDE, super.getUrl());
+        return preferences.getString(PreferencesPresenter.DEBUG_CLIENT_ID_OVERRIDE, super.getClientId());
     }
 
     @Override
     public String getClientSecret() {
-        return preferences.getString(PreferencesPresenter.DEBUG_CLIENT_SECRET_OVERRIDE, super.getUrl());
+        return preferences.getString(PreferencesPresenter.DEBUG_CLIENT_SECRET_OVERRIDE, super.getClientSecret());
     }
 }
