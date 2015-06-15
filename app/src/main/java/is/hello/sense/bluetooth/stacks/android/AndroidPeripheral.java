@@ -427,13 +427,6 @@ public class AndroidPeripheral implements Peripheral {
     @Override
     public Observable<Peripheral> createBond() {
         return stack.newConfiguredObservable(s -> {
-            if (getConnectionStatus() != STATUS_CONNECTED) {
-                Logger.error(LOG_TAG, "Cannot create bond without device being connected.");
-
-                s.onError(new PeripheralConnectionError());
-                return;
-            }
-
             if (getBondStatus() == BOND_BONDED) {
                 Logger.info(Peripheral.LOG_TAG, "Device already bonded, skipping.");
 
