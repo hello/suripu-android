@@ -195,6 +195,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     public void onDestroyView() {
         super.onDestroyView();
 
+        headerView.clearAnimation();
+
         this.headerView = null;
         this.recyclerView = null;
         this.layoutManager = null;

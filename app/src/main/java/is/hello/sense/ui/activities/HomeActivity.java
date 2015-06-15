@@ -91,8 +91,6 @@ public class HomeActivity
     private boolean isFirstActivityRun;
     private boolean showUnderside;
 
-    private @Nullable FragmentManager.OnBackStackChangedListener navigatorStackListener;
-
     private @Nullable SensorManager sensorManager;
     private @Nullable ShakeDetector shakeDetector;
 
@@ -315,10 +313,6 @@ public class HomeActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        if (navigatorStackListener != null) {
-            getFragmentManager().removeOnBackStackChangedListener(navigatorStackListener);
-        }
-
         if (isFinishing()) {
             presenterContainer.onContainerDestroyed();
         }
@@ -426,10 +420,6 @@ public class HomeActivity
     @Override
     public @NonNull AnimatorContext getAnimatorContext() {
         return animatorContext;
-    }
-
-    public RelativeLayout getRootContainer() {
-        return rootContainer;
     }
 
     public void checkInForUpdates() {
