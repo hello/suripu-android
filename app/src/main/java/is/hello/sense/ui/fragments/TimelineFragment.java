@@ -324,8 +324,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(() -> {
                 if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
                     WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
-                } else if (Tutorial.SLEEP_SCORE_BREAKDOWN.shouldShow(getActivity())) {
-                    showTutorial(Tutorial.SLEEP_SCORE_BREAKDOWN);
                 } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
                     showTutorial(Tutorial.SWIPE_TIMELINE);
                 }
