@@ -82,12 +82,22 @@ public class TimelineSegment extends ApiResponse implements Cloneable {
         return sleepDepth;
     }
 
+    public int getDisplaySleepDepth() {
+        if (isBeforeSleep()) {
+            return 0;
+        } else {
+            return getSleepDepth();
+        }
+    }
+
     public boolean hasEventInfo() {
         return (eventType != null && eventType != EventType.SLEEPING);
     }
 
     public boolean isBeforeSleep() {
-        return (eventType == null);
+        return (eventType == null ||
+                eventType == EventType.IN_BED ||
+                eventType == EventType.LIGHTS_OUT);
     }
 
     public EventType getEventType() {

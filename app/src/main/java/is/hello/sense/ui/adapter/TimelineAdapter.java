@@ -10,8 +10,11 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -49,7 +52,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     private final int segmentEventStolenHeight;
 
     private final List<TimelineSegment> segments = new ArrayList<>();
-    private final Set<Integer> positionsWithTime = new HashSet<>();
+    private final SparseArray<LocalTime> itemTimes = new SparseArray<>();
     private final SparseArray<Pair<Integer, Integer>> stolenSleepDepths = new SparseArray<>();
     private int[] segmentHeights;
 
@@ -88,7 +91,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         int segmentCount = segments.size();
         this.segmentHeights = new int[segmentCount];
         stolenSleepDepths.clear();
-        positionsWithTime.clear();
+        itemTimes.clear();
 
         Set<Integer> hours = new HashSet<>();
         boolean previousSegmentWasEvent = false;
@@ -96,8 +99,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             TimelineSegment segment = segments.get(i);
 
             if (segment.hasEventInfo()) {
-                int previousDepth = i > 0 ? segments.get(i - 1).getSleepDepth() : 0;
-                int nextDepth = i < (segmentCount - 1) ? segments.get(i + 1).getSleepDepth() : 0;
+                int previousDepth = i > 0 ? segments.get(i - 1).getDisplaySleepDepth() : 0;
+                int nextDepth = i < (segmentCount - 1) ? segments.get(i + 1).getDisplaySleepDepth() : 0;
                 stolenSleepDepths.put(i + STATIC_ITEM_COUNT, Pair.create(previousDepth, nextDepth));
 
                 this.segmentHeights[i] = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -106,11 +109,22 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
                 int segmentHeight = calculateSegmentHeight(segment, previousSegmentWasEvent);
                 this.segmentHeights[i] = segmentHeight;
                 previousSegmentWasEvent = false;
+
             }
 
             int hour = segment.getShiftedTimestamp().getHourOfDay();
-            if (!hours.contains(hour) && !positionsWithTime.contains(hour)) {
-                positionsWithTime.add(i + STATIC_ITEM_COUNT);
+            if (!hours.contains(hour)) {
+                if (segment.hasEventInfo()) {
+                    int previous = (i - 1) + STATIC_ITEM_COUNT;
+                    if (i > 0 && itemTimes.get(previous) == null) {
+                        itemTimes.put(previous, segment.getShiftedTimestamp().toLocalTime());
+                    } else {
+                        continue;
+                    }
+                } else {
+                    itemTimes.put(i + STATIC_ITEM_COUNT, segment.getShiftedTimestamp().toLocalTime());
+                }
+
                 hours.add(hour);
             }
         }
@@ -123,7 +137,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     private void clearCache() {
         this.segmentHeights = null;
         stolenSleepDepths.clear();
-        positionsWithTime.clear();
+        itemTimes.clear();
     }
 
     //endregion
@@ -154,7 +168,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     public void setUse24Time(boolean use24Time) {
         this.use24Time = use24Time;
 
-        for (int positionWithTime : positionsWithTime) {
+        for (int i = 0, size = itemTimes.size(); i < size; i++) {
+            int positionWithTime = itemTimes.keyAt(i);
             notifyItemChanged(positionWithTime);
         }
     }
@@ -286,9 +301,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         }
 
         void bindSegment(int position, @NonNull TimelineSegment segment) {
-            drawable.setSleepDepth(segment.getSleepDepth());
-            if (positionsWithTime.contains(position)) {
-                drawable.setTimestamp(dateFormatter.formatForTimelineSegment(segment.getShiftedTimestamp(), use24Time));
+            drawable.setSleepDepth(segment.getDisplaySleepDepth());
+
+            LocalTime itemTime = itemTimes.get(position);
+            if (itemTime != null) {
+                drawable.setTimestamp(dateFormatter.formatForTimelineSegment(itemTime, use24Time));
             } else {
                 drawable.setTimestamp(null);
             }
@@ -309,10 +326,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
     public class EventViewHolder extends SegmentViewHolder {
         final ViewGroup container;
+        final MarginLayoutParams containerLayoutParams;
         final ImageView iconImage;
         final TextView messageText;
         final TextView dateText;
 
+        private boolean excludedFromParallax = false;
         private float centerDistanceAmount = 0f;
         private float bottomDistanceAmount = 1f;
 
@@ -320,6 +339,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             super(itemView);
 
             this.container = (ViewGroup) itemView.findViewById(R.id.item_timeline_segment_container);
+            this.containerLayoutParams = (MarginLayoutParams) container.getLayoutParams();
             this.iconImage = (ImageView) itemView.findViewById(R.id.item_timeline_segment_icon);
             this.messageText = (TextView) itemView.findViewById(R.id.item_timeline_segment_message);
             this.dateText = (TextView) itemView.findViewById(R.id.item_timeline_segment_date);
@@ -332,6 +352,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         @Override
         void bindSegment(int position, @NonNull TimelineSegment segment) {
             super.bindSegment(position, segment);
+
+            setExcludedFromParallax(segment.isBeforeSleep());
 
             Pair<Integer, Integer> stolenScores = stolenSleepDepths.get(position);
             if (stolenScores != null) {
@@ -354,6 +376,25 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
         //region Scroll Effect
 
+        public void setExcludedFromParallax(boolean excludedFromParallax) {
+            if (excludedFromParallax != this.excludedFromParallax) {
+                this.excludedFromParallax = excludedFromParallax;
+
+                if (excludedFromParallax) {
+                    container.setTranslationY(0f);
+
+                    containerLayoutParams.topMargin = 0;
+                    containerLayoutParams.bottomMargin = 0;
+                } else {
+                    float translation = Drawing.interpolateFloats(centerDistanceAmount, 0f, segmentEventOffsetMax);
+                    container.setTranslationY(translation);
+
+                    containerLayoutParams.topMargin = segmentEventOffsetMax;
+                    containerLayoutParams.bottomMargin = segmentEventOffsetMax;
+                }
+            }
+        }
+
         public void setDistanceAmounts(float bottomDistanceAmount, float centerDistanceAmount) {
             if (this.bottomDistanceAmount != bottomDistanceAmount) {
                 float scale = Drawing.interpolateFloats(bottomDistanceAmount, EVENT_SCALE_MIN, EVENT_SCALE_MAX);
@@ -365,8 +406,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             }
 
             if (this.centerDistanceAmount != centerDistanceAmount) {
-                float translation = Drawing.interpolateFloats(centerDistanceAmount, 0f, segmentEventOffsetMax);
-                container.setTranslationY(translation);
+                if (!excludedFromParallax) {
+                    float translation = Drawing.interpolateFloats(centerDistanceAmount, 0f, segmentEventOffsetMax);
+                    container.setTranslationY(translation);
+                }
 
                 this.centerDistanceAmount = centerDistanceAmount;
             }

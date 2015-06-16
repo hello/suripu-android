@@ -6,6 +6,7 @@ import android.text.format.DateFormat;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -86,8 +87,8 @@ public class DateFormatterTests extends InjectionTestCase {
 
     @SuppressWarnings("ConstantConditions")
     public void testFormatForTimelineSegment() {
-        assertEquals("2 PM", formatter.formatForTimelineSegment(new DateTime(2001, 2, 3, 14, 30), false).toString());
-        assertEquals("14:00", formatter.formatForTimelineSegment(new DateTime(2001, 2, 3, 14, 30), true).toString());
+        assertEquals("2 PM", formatter.formatForTimelineSegment(new LocalTime(14, 30), false).toString());
+        assertEquals("14:00", formatter.formatForTimelineSegment(new LocalTime(14, 30), true).toString());
         assertNull(formatter.formatForTimelineSegment(null, false));
         assertNull(formatter.formatForTimelineSegment(null, true));
     }

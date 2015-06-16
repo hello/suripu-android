@@ -144,7 +144,7 @@ import is.hello.sense.ui.widget.util.Styles;
         return context.getString(R.string.format_date_placeholder);
     }
 
-    public @Nullable CharSequence formatForTimelineSegment(@Nullable DateTime date, boolean use24Time) {
+    public @Nullable CharSequence formatForTimelineSegment(@Nullable LocalTime date, boolean use24Time) {
         if (date != null) {
             String hour, period;
             if (use24Time) {
