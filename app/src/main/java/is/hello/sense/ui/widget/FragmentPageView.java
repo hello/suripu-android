@@ -221,11 +221,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     public void animateToFragment(TFragment newFragment, @NonNull Position position) {
         assertFragmentManager();
 
+        FrameLayout offScreenView = getOffScreenView();
         getFragmentManager().beginTransaction()
-                .add(getOffScreenView().getId(), newFragment)
+                .add(offScreenView.getId(), newFragment)
                 .commit();
-
-        getOffScreenView().setVisibility(VISIBLE);
 
         if (decor != null) {
             decor.onSwipeBegan();
@@ -238,7 +237,11 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             decor.onSwipeMoved(position == Position.BEFORE ? 0.01f : -0f);
         }
 
-        finishSwipe(position, true, Animation.DURATION_FAST);
+        Drawable fragmentPlaceholder = adapter.getFragmentPlaceholder(newFragment, position);
+        offScreenView.setBackground(fragmentPlaceholder);
+        offScreenView.setVisibility(VISIBLE);
+
+        finishSwipe(position, Animation.DURATION_FAST);
     }
 
     public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
@@ -412,7 +415,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         getOnScreenView().setBackground(null);
     }
 
-    private void finishSwipe(Position position, boolean fadeOutOnScreen, long duration) {
+    private void finishSwipe(Position position, long duration) {
         PropertyAnimatorProxy onScreenViewAnimator = PropertyAnimatorProxy.animate(getOnScreenView(), animatorContext);
         animationConfig.apply(onScreenViewAnimator).setDuration(duration);
         PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView(), animatorContext);
@@ -420,19 +423,12 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
         offScreenViewAnimator.x(0f);
         onScreenViewAnimator.x(position == Position.BEFORE ? viewPortWidth : -viewPortWidth);
-        if (fadeOutOnScreen) {
-            onScreenViewAnimator.alpha(0f);
-        }
 
         if (decor != null) {
             decor.onSwipeCompleted(duration, animationConfig, animatorContext);
         }
 
         onScreenViewAnimator.addOnAnimationCompleted(finished -> {
-            if (fadeOutOnScreen) {
-                getOnScreenView().setAlpha(1f);
-            }
-
             if (!finished) {
                 return;
             }
@@ -584,7 +580,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
 
                     if (shouldCompleteTransition(onScreenViewX, velocity)) {
-                        finishSwipe(currentPosition, false, duration);
+                        finishSwipe(currentPosition, duration);
                     } else {
                         snapBack(currentPosition, duration);
                     }
@@ -688,7 +684,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             case MotionEvent.ACTION_UP: {
                 if (runningAnimation != RunningAnimation.NONE) {
                     if (runningAnimation == RunningAnimation.FINISH_SWIPE) {
-                        finishSwipe(currentPosition, false, Animation.DURATION_FAST);
+                        finishSwipe(currentPosition, Animation.DURATION_FAST);
                     } else if (runningAnimation == RunningAnimation.SNAP_BACK) {
                         snapBack(currentPosition, Animation.DURATION_FAST);
                     }
