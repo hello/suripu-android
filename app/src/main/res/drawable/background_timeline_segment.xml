@@ -5,6 +5,6 @@
     <gradient
         android:startColor="@color/timeline_segment_background_start"
         android:endColor="@color/timeline_segment_background_end"
-        android:angle="180" />
+        android:angle="0" />
 
 </shape>

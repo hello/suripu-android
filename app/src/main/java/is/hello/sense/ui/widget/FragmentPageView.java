@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -375,6 +376,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         }
 
         getOffScreenView().setVisibility(INVISIBLE);
+        getOffScreenView().setBackground(null);
     }
 
     private TFragment addOffScreenFragment(Position position) {
@@ -404,6 +406,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
         getOffScreenView().setVisibility(VISIBLE);
 
+        Drawable placeholder = adapter.getFragmentPlaceholder(newFragment, position);
+        getOffScreenView().setBackground(placeholder);
+
         return newFragment;
     }
 
@@ -412,6 +417,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
 
         removeOffScreenFragment();
         getOnScreenView().setX(0f);
+        getOnScreenView().setBackground(null);
     }
 
     private void finishSwipe(Position position, boolean fadeOutOnScreen, long duration) {
@@ -520,7 +526,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                     velocityTracker.addMovement(event);
 
                     if (Math.abs(y - lastEventY) < touchSlop) {
-                        float newX = viewX + deltaX;
+                        float newX = Math.round(viewX + deltaX);
                         Position position = newX > 0.0 ? Position.BEFORE : Position.AFTER;
                         if (position != currentPosition) {
                             removeOffScreenFragment();
@@ -863,6 +869,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         TFragment getFragmentAfterFragment(@NonNull TFragment fragment);
 
         @Nullable CharSequence getFragmentTitle(@NonNull TFragment fragment);
+        @Nullable Drawable getFragmentPlaceholder(@NonNull TFragment fragment, @NonNull Position position);
     }
 
     public interface OnTransitionObserver<TFragment extends Fragment> {

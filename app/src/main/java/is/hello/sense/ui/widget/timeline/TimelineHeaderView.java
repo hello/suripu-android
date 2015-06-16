@@ -8,7 +8,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
@@ -81,13 +80,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         dividerPaint.setColor(dividerColor);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
 
-        int backgroundColor = resources.getColor(R.color.background_timeline);
-        GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
-            backgroundColor,
-            backgroundColor,
-            resources.getColor(R.color.timeline_header_gradient_end),
-        });
-        setBackground(gradient);
+        setBackground(resources.getDrawable(R.drawable.background_timeline_header));
 
 
         LayoutInflater inflater = LayoutInflater.from(context);

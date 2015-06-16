@@ -37,8 +37,8 @@
     <color name="timeline_segment_underline_left">#26000000</color>
     <color name="timeline_segment_text_right">@color/light_accent</color>
     <color name="timeline_segment_underline_right">#62009cff</color>
-    <color name="timeline_segment_background_start">#D1EDFF</color>
-    <color name="timeline_segment_background_end">#E2F3FE</color>
+    <color name="timeline_segment_background_start">#E0F4FF</color>
+    <color name="timeline_segment_background_end">#C9EBFF</color>
 
     <color name="text_dark">#4D4D4D</color>
     <color name="text_medium">#878787</color>

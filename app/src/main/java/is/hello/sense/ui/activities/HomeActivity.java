@@ -3,6 +3,7 @@ package is.hello.sense.ui.activities;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -95,6 +96,7 @@ public class HomeActivity
     private @Nullable ShakeDetector shakeDetector;
 
     private final AnimatorContext animatorContext = new AnimatorContext(getClass().getSimpleName());
+    private TimelineFragmentAdapter viewPagerAdapter;
 
     //region Lifecycle
 
@@ -174,12 +176,16 @@ public class HomeActivity
 
         // noinspection unchecked
         this.viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
+
+        this.viewPagerAdapter = new TimelineFragmentAdapter(getResources());
+        viewPager.setAdapter(viewPagerAdapter);
+
         viewPager.setFragmentManager(getFragmentManager());
-        viewPager.setAdapter(new TimelineFragmentAdapter());
         viewPager.setOnTransitionObserver(this);
         viewPager.setDecor(pagerTitleStrip);
         viewPager.setStateSafeExecutor(stateSafeExecutor);
         viewPager.setAnimatorContext(animatorContext);
+
         if (viewPager.getCurrentFragment() == null) {
             jumpToLastNight(false);
         }
@@ -307,6 +313,10 @@ public class HomeActivity
         super.onTrimMemory(level);
 
         presenterContainer.onTrimMemory(level);
+
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
+            viewPagerAdapter.clearPlaceholder();
+        }
     }
 
     @Override
