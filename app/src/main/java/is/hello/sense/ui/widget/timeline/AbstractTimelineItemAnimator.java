@@ -3,6 +3,7 @@ package is.hello.sense.ui.widget.timeline;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,15 +13,12 @@ import is.hello.sense.ui.animation.AnimatorContext;
 
 public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnimator {
     private final AnimatorContext animatorContext;
-    private final Listener listener;
+    private final List<Listener> listeners = new ArrayList<>();
 
     protected boolean enabled = true;
 
-    protected AbstractTimelineItemAnimator(@NonNull AnimatorContext animatorContext,
-                                           @NonNull Listener listener) {
+    protected AbstractTimelineItemAnimator(@NonNull AnimatorContext animatorContext) {
         this.animatorContext = animatorContext;
-        this.listener = listener;
-
         setSupportsChangeAnimations(false);
     }
 
@@ -76,13 +74,29 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
 
     //region Listener
 
+    public void addListener(@NonNull Listener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(@NonNull Listener listener) {
+        listeners.remove(listener);
+    }
+
+    public void removeAllListeners() {
+        listeners.clear();
+    }
+
     protected void dispatchAnimationWillStart(@NonNull AnimatorContext.TransactionFacade transactionFacade) {
-        listener.onTimelineAnimationWillStart(animatorContext, transactionFacade);
+        for (Listener listener : listeners) {
+            listener.onTimelineAnimationWillStart(animatorContext, transactionFacade);
+        }
     }
 
     protected void dispatchAnimationDidEnd(boolean finished) {
         dispatchAnimationsFinished();
-        listener.onTimelineAnimationDidEnd(finished);
+        for (Listener listener : listeners) {
+            listener.onTimelineAnimationDidEnd(finished);
+        }
     }
 
     public interface Listener {

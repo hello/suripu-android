@@ -23,8 +23,8 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
     private final List<RecyclerView.ViewHolder> pending = new ArrayList<>();
     private final List<RecyclerView.ViewHolder> running = new ArrayList<>();
 
-    public TimelineFadeItemAnimator(@NonNull AnimatorContext animatorContext, @NonNull Listener listener) {
-        super(animatorContext, listener);
+    public TimelineFadeItemAnimator(@NonNull AnimatorContext animatorContext) {
+        super(animatorContext);
     }
 
     @Override

@@ -402,6 +402,10 @@ public class HomeActivity
         return getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false);
     }
 
+    public boolean isUndersideVisible() {
+        return slidingLayersView.isOpen();
+    }
+
     public boolean isCurrentFragmentLastNight() {
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));

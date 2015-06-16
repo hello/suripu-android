@@ -33,6 +33,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
+import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -162,8 +163,14 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             }
         });
 
-        this.itemAnimator = new TimelineFadeItemAnimator(getAnimatorContext(), headerView);
+        this.itemAnimator = new TimelineFadeItemAnimator(getAnimatorContext());
         itemAnimator.setEnabled(animationEnabled);
+        itemAnimator.addListener(headerView);
+        if (animationEnabled) {
+            itemAnimator.addListener(new HandholdingOneShotListener());
+        } else {
+            getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(this::showHandholdingIfAppropriate));
+        }
         recyclerView.setItemAnimator(itemAnimator);
         recyclerView.addItemDecoration(new BackgroundDecoration(getResources()));
 
@@ -196,6 +203,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         super.onDestroyView();
 
         headerView.clearAnimation();
+        itemAnimator.removeAllListeners();
 
         this.headerView = null;
         this.recyclerView = null;
@@ -320,14 +328,27 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     private void showHandholdingIfAppropriate() {
         if (homeActivity.getWillShowUnderside()) {
             WelcomeDialogFragment.markShown(homeActivity, R.xml.welcome_dialog_timeline);
-        } else {
-            getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(() -> {
-                if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
-                    WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
-                } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
-                    showTutorial(Tutorial.SWIPE_TIMELINE);
-                }
-            }));
+        } else if (!homeActivity.isUndersideVisible()) {
+            if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
+                WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
+            } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
+                showTutorial(Tutorial.SWIPE_TIMELINE);
+            }
+        }
+    }
+
+    private class HandholdingOneShotListener implements TimelineFadeItemAnimator.Listener {
+        @Override
+        public void onTimelineAnimationWillStart(@NonNull AnimatorContext animatorContext, @NonNull AnimatorContext.TransactionFacade transactionFacade) {
+        }
+
+        @Override
+        public void onTimelineAnimationDidEnd(boolean finished) {
+            if (finished) {
+                showHandholdingIfAppropriate();
+            }
+
+            itemAnimator.removeListener(this);
         }
     }
 

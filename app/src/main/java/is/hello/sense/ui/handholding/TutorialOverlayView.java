@@ -102,7 +102,7 @@ public class TutorialOverlayView extends RelativeLayout {
         if (interactionView == null) {
             this.anchorView = activity.findViewById(tutorial.anchorId);
             if (anchorView != null) {
-                if (anchorView.isLayoutRequested()) {
+                if (anchorView.getMeasuredWidth() == 0 || anchorView.getMeasuredHeight() == 0) {
                     bindAndSubscribe(Views.observeNextLayout(anchorView),
                                      ignored -> showInteractionFrom(),
                                      Functions.LOG_ERROR);
