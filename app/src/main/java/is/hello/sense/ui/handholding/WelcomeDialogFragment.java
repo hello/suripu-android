@@ -139,7 +139,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         this.viewPager = (ViewPager) dialog.findViewById(R.id.fragment_dialog_welcome_view_pager);
 
         this.pageDots = (PageDots) dialog.findViewById(R.id.fragment_dialog_welcome_page_dots);
-        if (items.size() == 0) {
+        if (items.size() < 2) {
             pageDots.setVisibility(View.GONE);
 
             MarginLayoutParams layoutParams = (MarginLayoutParams) viewPager.getLayoutParams();
