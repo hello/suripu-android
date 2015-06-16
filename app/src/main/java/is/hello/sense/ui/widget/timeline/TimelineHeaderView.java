@@ -114,7 +114,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
 
         this.cardContainer = (ViewGroup) findViewById(R.id.view_timeline_header_card);
-        cardContainer.setAlpha(0f);
+        cardContainer.setVisibility(INVISIBLE);
 
         this.cardTitle = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_title);
         this.cardContents = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_contents);
@@ -184,6 +184,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     public void setChildFadeAmount(float amount) {
         scoreDrawable.setAlpha(Math.round(255f * amount));
         scoreText.setAlpha(amount);
+
+        cardContainer.setAlpha(amount);
 
         topFadeView.setTranslationY(-getTop());
     }
@@ -285,7 +287,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         scoreText.setTextColor(color);
 
         scoreContainer.setTranslationY(0f);
-        cardContainer.setAlpha(1f);
+        cardContainer.setVisibility(VISIBLE);
     }
 
     private void animateToScore(int score, @NonNull Runnable fireAdapterAnimations) {
@@ -407,7 +409,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     @Override
     public void onTimelineAnimationDidEnd(boolean finished) {
         if (!finished) {
-            cardContainer.setAlpha(1f);
+            cardContainer.setVisibility(VISIBLE);
         }
     }
 
