@@ -17,6 +17,7 @@
             android:id="@+id/view_timeline_header_chart_score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_xsmall"
             android:layout_centerInParent="true"
             android:importantForAccessibility="no"
             android:textAppearance="@style/AppTheme.Text.Score.Big" />

@@ -73,6 +73,10 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
+    <style name="AppTheme.Text.ScreenTitle.Accent">
+        <item name="android:textColor">@color/light_accent</item>
+    </style>
+
     <style name="AppTheme.Text.Body">
         <item name="android:textSize">@dimen/text_size_body</item>
         <item name="android:fontFamily">sans-serif-light</item>

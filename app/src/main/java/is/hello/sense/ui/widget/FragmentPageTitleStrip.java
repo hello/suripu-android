@@ -106,7 +106,7 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
 
     private TextView createTextView() {
         TextView textView = new TextView(getContext());
-        textView.setTextAppearance(getContext(), R.style.AppTheme_Text_ScreenTitle);
+        textView.setTextAppearance(getContext(), R.style.AppTheme_Text_ScreenTitle_Accent);
         textView.setGravity(Gravity.CENTER);
         textView.setEllipsize(TextUtils.TruncateAt.END);
         textView.setSingleLine();
@@ -148,12 +148,12 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
     public void setDimmed(boolean dimmed) {
         int color;
         if (dimmed) {
-            color = getResources().getColor(R.color.text_dim);
+            icon.setAlpha(0x77);
+            color = getResources().getColor(R.color.light_accent_dimmed);
         } else {
-            color = getResources().getColor(R.color.text_dark);
+            icon.setAlpha(0xFF);
+            color = getResources().getColor(R.color.light_accent);
         }
-
-        icon.setAlpha(Color.alpha(color));
 
         textView1.setTextColor(color);
         textView2.setTextColor(color);
@@ -217,6 +217,10 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
             backgroundX = foregroundX + background.getMeasuredWidth();
         }
         background.setTranslationX(backgroundX);
+
+        float absAmount = Math.abs(newAmount);
+        foreground.setAlpha(1f - absAmount);
+        background.setAlpha(absAmount);
     }
 
     @Override
@@ -228,10 +232,12 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
         animatorContext.transaction(animatorConfig.withDuration(duration), 0, f -> {
             float viewWidth = getMeasuredWidth();
             f.animate(getForegroundTextView())
-             .x(0f);
+             .x(0f)
+             .alpha(1f);
 
             f.animate(getBackgroundTextView())
-             .x(swipeDirection == Position.BEFORE ? -viewWidth : viewWidth);
+             .x(swipeDirection == Position.BEFORE ? -viewWidth : viewWidth)
+             .alpha(0f);
         }, finished -> {
             if (!finished) {
                 return;
@@ -252,10 +258,12 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
         animatorContext.transaction(animatorConfig.withDuration(duration), 0, f -> {
             float viewWidth = getMeasuredWidth();
             f.animate(getForegroundTextView())
-             .x(swipeDirection == Position.BEFORE ? viewWidth : -viewWidth);
+             .x(swipeDirection == Position.BEFORE ? viewWidth : -viewWidth)
+             .alpha(0f);
 
             f.animate(getBackgroundTextView())
-             .x(0f);
+             .x(0f)
+             .alpha(1f);
         }, finished -> {
             if (!finished) {
                 return;
