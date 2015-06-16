@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.android.DeviceSupport;
 import rx.functions.Func1;
 
@@ -54,11 +53,6 @@ public final class PeripheralCriteria {
      * @see is.hello.sense.bluetooth.stacks.android.DeviceSupport#isHighPowerPreScanNeeded()
      */
     public boolean wantsHighPowerPreScan = DeviceSupport.isHighPowerPreScanNeeded();
-
-    /**
-     * The configuration to apply to the discovered peripherals.
-     */
-    public @Peripheral.Config int config = Peripheral.CONFIG_EMPTY;
 
     /**
      * Returns a configured criteria that will search for one instance of a given address.
@@ -149,14 +143,6 @@ public final class PeripheralCriteria {
      */
     public PeripheralCriteria setWantsHighPowerPreScan(boolean wantsHighPowerPreScan) {
         this.wantsHighPowerPreScan = wantsHighPowerPreScan;
-        return this;
-    }
-
-    /**
-     * Sets the peripheral config to be used by instances discovered through this criteria.
-     */
-    public PeripheralCriteria setConfig(@Peripheral.Config int config) {
-        this.config = config;
         return this;
     }
 

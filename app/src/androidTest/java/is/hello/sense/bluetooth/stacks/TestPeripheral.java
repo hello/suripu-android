@@ -18,13 +18,11 @@ public class TestPeripheral implements Peripheral {
     final TestPeripheralBehavior behavior;
 
     PacketHandler dataHandler;
-    @Config int config;
 
     public TestPeripheral(@NonNull BluetoothStack stack,
                           @NonNull TestPeripheralBehavior peripheralBehavior) {
         this.stack = stack;
         this.behavior = peripheralBehavior;
-        this.config = stack.getDefaultConfig();
     }
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "UnusedParameters"})
@@ -63,11 +61,6 @@ public class TestPeripheral implements Peripheral {
     @Override
     public BluetoothStack getStack() {
         return stack;
-    }
-
-    @Override
-    public void setConfig(@Config int newConfig) {
-        this.config = newConfig;
     }
 
     @NonNull
