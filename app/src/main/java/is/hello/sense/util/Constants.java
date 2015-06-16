@@ -12,7 +12,6 @@ public final class Constants {
     public static final String NOTIFICATION_PREF_APP_VERSION = "app_version_code";
 
     public static final String HANDHOLDING_PREFS = "handholding_prefs";
-    public static final String HANDHOLDING_SUPPRESSED = "is_suppressed";
 
     /**
      * The point at which a gesture's velocity dictates that

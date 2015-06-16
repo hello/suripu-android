@@ -72,6 +72,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     private boolean firstTimeline;
     private boolean hasCreatedView = false;
+    private boolean animationEnabled = true;
 
     private View contentShadow;
     private RecyclerView recyclerView;
@@ -145,7 +146,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        boolean animationEnabled = !hasCreatedView && !(firstTimeline && homeActivity.getWillShowUnderside());
+        this.animationEnabled = !hasCreatedView && !(firstTimeline && homeActivity.getWillShowUnderside());
 
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
@@ -166,11 +167,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         this.itemAnimator = new TimelineFadeItemAnimator(getAnimatorContext());
         itemAnimator.setEnabled(animationEnabled);
         itemAnimator.addListener(headerView);
-        if (animationEnabled) {
-            itemAnimator.addListener(new HandholdingOneShotListener());
-        } else {
-            getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(this::showHandholdingIfAppropriate));
-        }
         recyclerView.setItemAnimator(itemAnimator);
         recyclerView.addItemDecoration(new BackgroundDecoration(getResources()));
 
@@ -326,6 +322,10 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     private void showHandholdingIfAppropriate() {
+        if (WelcomeDialogFragment.isAnyVisible(getActivity())) {
+            return;
+        }
+
         if (homeActivity.getWillShowUnderside()) {
             WelcomeDialogFragment.markShown(homeActivity, R.xml.welcome_dialog_timeline);
         } else if (!homeActivity.isUndersideVisible()) {
@@ -363,6 +363,12 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         boolean hasSegments = !Lists.isEmpty(timeline.getSegments());
         Runnable continuation = stateSafeExecutor.bind(() -> {
+            if (animationEnabled) {
+                itemAnimator.addListener(new HandholdingOneShotListener());
+            } else {
+                getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(this::showHandholdingIfAppropriate));
+            }
+
             adapter.bindSegments(timeline.getSegments());
 
             if (controlsSharedChrome) {

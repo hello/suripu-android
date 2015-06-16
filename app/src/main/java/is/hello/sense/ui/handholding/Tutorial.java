@@ -36,10 +36,10 @@ public enum Tutorial {
     public final @IdRes int anchorId;
     public final Interaction interaction;
 
-    private Tutorial(@StringRes int descriptionRes,
-                     int descriptionGravity,
-                     @IdRes int anchorId,
-                     @NonNull Interaction interaction) {
+    Tutorial(@StringRes int descriptionRes,
+             int descriptionGravity,
+             @IdRes int anchorId,
+             @NonNull Interaction interaction) {
         this.descriptionRes = descriptionRes;
         this.descriptionGravity = descriptionGravity;
         this.anchorId = anchorId;
@@ -53,8 +53,7 @@ public enum Tutorial {
 
     public boolean shouldShow(@NonNull Context context) {
         SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-        return (!preferences.getBoolean(Constants.HANDHOLDING_SUPPRESSED, false) &&
-                !preferences.getBoolean(getShownKey(), false));
+        return !preferences.getBoolean(getShownKey(), false);
     }
 
     public void markShown(@NonNull Context context) {

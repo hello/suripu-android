@@ -23,15 +23,16 @@ public class AnimatorContext implements Animator.AnimatorListener {
     private static final int MSG_IDLE = 0;
 
     private final String name;
-    private final List<Listener> listeners = new ArrayList<>();
+    private final List<Runnable> pending = new ArrayList<>();
 
     private int activeAnimationCount = 0;
 
     private final Handler idleHandler = new Handler(Looper.getMainLooper(), message -> {
         if (message.what == MSG_IDLE) {
-            for (Listener listener : listeners) {
-                listener.onContextIdle();
+            for (Runnable runnable : pending) {
+                runnable.run();
             }
+            pending.clear();
 
             return true;
         }
@@ -60,27 +61,8 @@ public class AnimatorContext implements Animator.AnimatorListener {
         if (activeAnimationCount == 0) {
             runnable.run();
         } else {
-            addListener(new Listener() {
-                boolean consumed = false;
-
-                @Override
-                public void onContextIdle() {
-                    if (!consumed) {
-                        runnable.run();
-                        idleHandler.post(() -> listeners.remove(this));
-                        this.consumed = true;
-                    }
-                }
-            });
+            pending.add(runnable);
         }
-    }
-
-    public void addListener(@NonNull Listener listener) {
-        listeners.add(listener);
-    }
-
-    public void removeListener(@NonNull Listener listener) {
-        listeners.remove(listener);
     }
 
     //endregion
@@ -239,13 +221,6 @@ public class AnimatorContext implements Animator.AnimatorListener {
                 '}';
     }
 
-
-    /**
-     * An object that is interested in listening to state changes in the context.
-     */
-    public interface Listener {
-        void onContextIdle();
-    }
 
     /**
      * Used for transaction callbacks to specify animations against views.

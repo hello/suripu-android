@@ -70,8 +70,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         }
 
         SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-        return (!preferences.getBoolean(Constants.HANDHOLDING_SUPPRESSED, false) &&
-                !preferences.getBoolean(getPreferenceKey(context, welcomeRes), false));
+        return !preferences.getBoolean(getPreferenceKey(context, welcomeRes), false);
     }
 
     public static void markShown(@NonNull Context context, @XmlRes int welcomeRes) {
@@ -80,6 +79,10 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         preferences.edit()
                    .putBoolean(key, true)
                    .apply();
+    }
+
+    public static boolean isAnyVisible(@NonNull Activity activity) {
+        return (activity.getFragmentManager().findFragmentByTag(WelcomeDialogFragment.TAG) != null);
     }
 
     public static void show(@NonNull Activity activity, @XmlRes int welcomeRes) {
