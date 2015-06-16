@@ -2,9 +2,16 @@ package is.hello.sense.ui.widget.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
+import android.os.Build;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
@@ -353,6 +360,42 @@ public final class Styles {
         view.setBackgroundResource(R.color.border);
         view.setLayoutParams(new ViewGroup.LayoutParams(context.getResources().getDimensionPixelSize(R.dimen.divider_size), height));
         return view;
+    }
+
+    //endregion
+
+
+    //region Selectables
+
+    /**
+     * Creates a new drawable for use as a borderless button background.
+     * <p />
+     * Intended for use in places where a {@link is.hello.sense.ui.widget.RoundedLinearLayout}
+     * or {@link is.hello.sense.ui.widget.RoundedRelativeLayout} cannot be used due to
+     * performance or rendering compatibility issues.
+     */
+    public static Drawable newRoundedBorderlessButtonBackground(float topRadius,
+                                                                float bottomRadius,
+                                                                int normalColor,
+                                                                int selectedColor) {
+        float[] cornerRadii = {
+            topRadius, topRadius, topRadius, topRadius,
+            bottomRadius, bottomRadius, bottomRadius, bottomRadius,
+        };
+        RoundRectShape roundedRect = new RoundRectShape(cornerRadii, null, null);
+        ShapeDrawable normal = new ShapeDrawable(roundedRect);
+        normal.getPaint().setColor(normalColor);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return new RippleDrawable(ColorStateList.valueOf(selectedColor), normal, normal);
+        } else {
+            ShapeDrawable pressed = new ShapeDrawable(roundedRect);
+            pressed.getPaint().setColor(selectedColor);
+
+            StateListDrawable selector = new StateListDrawable();
+            selector.addState(new int[]{android.R.attr.state_pressed}, pressed);
+            selector.addState(new int[]{}, normal);
+            return selector;
+        }
     }
 
     //endregion

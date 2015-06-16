@@ -29,6 +29,13 @@
         <item name="android:textColor">@color/text_dark</item>
     </style>
 
+    <style name="AppTheme.Text.ParagraphHeading">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/text_size_paragraph_heading</item>
+        <item name="android:lineSpacingMultiplier">@dimen/line_multiple_paragraph_heading</item>
+        <item name="android:textColor">@color/text_dark</item>
+    </style>
+
     <style name="AppTheme.Text.Question">
         <item name="android:textSize">@dimen/text_size_question</item>
         <item name="android:fontFamily">sans-serif-thin</item>

@@ -31,6 +31,7 @@
     <dimen name="text_size_section_heading">11sp</dimen>
     <dimen name="text_size_timeline_time">11sp</dimen>
     <dimen name="text_size_subheading">16sp</dimen>
+    <dimen name="text_size_paragraph_heading">18sp</dimen>
     <dimen name="text_size_question">24sp</dimen>
     <dimen name="text_size_heading">24sp</dimen>
     <dimen name="text_size_tiny_score">28sp</dimen>
@@ -44,6 +45,7 @@
 
     <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
+    <item name="line_multiple_paragraph_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_body" format="float" type="dimen">1.3</item>
     <item name="line_multiple_body_medium" format="float" type="dimen">1.4</item>
     <item name="line_multiple_body_small" format="float" type="dimen">1.2</item>
@@ -62,10 +64,12 @@
     <dimen name="gap_raised_item_inset_side">1px</dimen>
     <dimen name="gap_raised_item_inset_bottom">2dp</dimen>
     <dimen name="raised_item_corner_radius">2dp</dimen>
+    <dimen name="card_large_corner_radius">3dp</dimen>
     <dimen name="widget_last_night_corner_radius">38dp</dimen>
 
-    <dimen name="page_dot_size">10dp</dimen>
     <dimen name="page_dot_margin">5dp</dimen>
+    <dimen name="page_dot_selected_size">10dp</dimen>
+    <dimen name="page_dot_unselected_size">6dp</dimen>
 
     <!-- Misc -->
 
@@ -158,8 +162,8 @@
 
     <!-- Dialogs -->
 
-    <dimen name="dialog_max_width">335dp</dimen>
-    <dimen name="dialog_max_height">500dp</dimen>
+    <dimen name="dialog_max_width">500dp</dimen>
+    <dimen name="dialog_max_height">700dp</dimen>
 
     <!-- Widget -->
 

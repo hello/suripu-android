@@ -450,6 +450,11 @@
         <item name="senseCornerRadius">@dimen/raised_item_corner_radius</item>
     </style>
 
+    <style name="AppTheme.LargeCard">
+        <item name="android:background">@drawable/background_card_large</item>
+        <item name="senseCornerRadius">@dimen/card_large_corner_radius</item>
+    </style>
+
     <style name="AppTheme.Card.Clickable">
         <item name="android:background">@drawable/raised_item_selector</item>
     </style>
