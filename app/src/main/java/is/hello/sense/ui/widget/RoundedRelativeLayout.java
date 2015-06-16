@@ -12,6 +12,14 @@ import android.widget.RelativeLayout;
 
 import is.hello.sense.R;
 
+/**
+ * Extends the standard <code>RelativeLinearLayout</code> to support
+ * rounded corners to ease implementation of card-style designs.
+ * <p />
+ * <b>Important:</b> combining this view with scale and alpha
+ * transformations as part of an interaction will result in less
+ * than acceptable performance.
+ */
 public class RoundedRelativeLayout extends RelativeLayout {
     //region Fields
 
