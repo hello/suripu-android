@@ -8,7 +8,6 @@
         android:id="@+id/fragment_timeline_info_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:overScrollMode="never"
         android:background="@color/background_timeline" />
 
     <LinearLayout

@@ -435,6 +435,14 @@
         <item name="android:selectAllOnFocus">true</item>
     </style>
 
+    <!-- Specific Tinting -->
+
+    <style name="TintOverride" />
+    <style name="TintOverride.SleepScore" />
+    <style name="TintOverride.SleepScore.Ideal" />
+    <style name="TintOverride.SleepScore.Warning" />
+    <style name="TintOverride.SleepScore.Alert" />
+
     <!-- Other -->
 
     <style name="AppTheme.ListView" />

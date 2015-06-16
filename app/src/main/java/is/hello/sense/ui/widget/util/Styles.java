@@ -98,6 +98,16 @@ public final class Styles {
         }
     }
 
+    public static @StyleRes @DrawableRes int getSleepScoreTintThemeRes(int sleepScore) {
+        if (sleepScore >= 80) {
+            return R.style.TintOverride_SleepScore_Ideal;
+        } else if (sleepScore >= 50) {
+            return R.style.TintOverride_SleepScore_Warning;
+        } else {
+            return R.style.TintOverride_SleepScore_Alert;
+        }
+    }
+
     public static @StringRes int getSleepDepthStringRes(int sleepDepth) {
         if (sleepDepth == 0) {
             return R.string.sleep_depth_awake;

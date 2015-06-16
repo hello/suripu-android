@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Specific Tinting -->
+
+    <style name="TintOverride" />
+
+    <style name="TintOverride.SleepScore">
+        <item name="android:colorEdgeEffect">?android:attr/tint</item>
+    </style>
+
+    <style name="TintOverride.SleepScore.Ideal">
+        <item name="android:tint">@color/sensor_ideal</item>
+    </style>
+
+    <style name="TintOverride.SleepScore.Warning">
+        <item name="android:tint">@color/sensor_warning</item>
+    </style>
+
+    <style name="TintOverride.SleepScore.Alert">
+        <item name="android:tint">@color/sensor_alert</item>
+    </style>
+</resources>

@@ -29,7 +29,7 @@ import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,6 +74,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     @Inject PreferencesPresenter preferences;
 
     private @Nullable MarkupString summary;
+    private int score;
     private int scoreColor, darkenedScoreColor;
     private ArrayList<Item> items;
     private @IdRes int sourceViewId;
@@ -164,7 +165,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         Bundle arguments = getArguments();
 
-        int score = arguments.getInt(ARG_SCORE);
+        this.score = arguments.getInt(ARG_SCORE);
         this.scoreColor = Styles.getSleepScoreColor(getActivity(), score);
         this.darkenedScoreColor = Drawing.darkenColorBy(scoreColor, 0.2f);
         this.items = arguments.getParcelableArrayList(ARG_ITEMS);
@@ -184,6 +185,13 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // For the negative space edge effect to have the right color. Yes, really.
+            int styleRes = Styles.getSleepScoreTintThemeRes(score);
+            ContextThemeWrapper themeContext = new ContextThemeWrapper(getActivity(), styleRes);
+            inflater = LayoutInflater.from(themeContext);
+        }
+
         this.rootView = (FrameLayout) inflater.inflate(R.layout.fragment_timeline_info, container, false);
 
         this.header = rootView.findViewById(R.id.fragment_timeline_info_header);
