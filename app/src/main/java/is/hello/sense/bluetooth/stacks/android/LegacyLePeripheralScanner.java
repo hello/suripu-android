@@ -112,9 +112,6 @@ final class LegacyLePeripheralScanner implements Observable.OnSubscribe<List<Per
         List<Peripheral> peripherals = new ArrayList<>();
         for (ScannedPeripheral scannedPeripheral : results.values()) {
             AndroidPeripheral peripheral = scannedPeripheral.createPeripheral(stack);
-            if (peripheralCriteria.config != Peripheral.CONFIG_EMPTY) {
-                peripheral.setConfig(peripheralCriteria.config);
-            }
             peripherals.add(peripheral);
         }
         Logger.info(BluetoothStack.LOG_TAG, "Completed Scan " + peripherals);

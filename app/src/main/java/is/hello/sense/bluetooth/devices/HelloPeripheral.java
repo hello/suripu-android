@@ -1,5 +1,6 @@
 package is.hello.sense.bluetooth.devices;
 
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -56,64 +57,55 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
      * @param timeout   A timeout object to apply to the service discovery portion of connection.
      */
     protected Observable<ConnectStatus> connect(@NonNull OperationTimeout timeout) {
-        return peripheral.getStack().newConfiguredObservable(s -> {
-            Logger.info(Peripheral.LOG_TAG, "connect to " + toString());
+        Observable<ConnectStatus> sequence;
 
-            s.onNext(ConnectStatus.CONNECTING);
-            peripheral.connect(timeout).subscribe(peripheral -> {
-                Logger.info(Peripheral.LOG_TAG, "connected to " + toString());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // Some Lollipop devices (not all!) do not support establishing
+            // bonds after connecting. This is the exact opposite of the
+            // behavior in KitKat and Gingerbread, which cannot establish
+            // bonds without an active connection.
+            sequence = Observable.concat(
+                Observable.just(ConnectStatus.BONDING),
+                peripheral.createBond().map(ignored -> ConnectStatus.CONNECTING),
+                peripheral.connect(timeout).map(ignored -> ConnectStatus.DISCOVERING_SERVICES),
+                peripheral.discoverService(getTargetServiceIdentifier(), timeout).map(service -> {
+                    this.peripheralService = service;
+                    return ConnectStatus.CONNECTED;
+                })
+            );
+        } else {
+            sequence = Observable.concat(
+                Observable.just(ConnectStatus.CONNECTING),
+                peripheral.connect(timeout).map(ignored -> ConnectStatus.BONDING),
+                peripheral.createBond().map(ignored -> ConnectStatus.DISCOVERING_SERVICES),
+                peripheral.discoverService(getTargetServiceIdentifier(), timeout).map(service -> {
+                    this.peripheralService = service;
+                    return ConnectStatus.CONNECTED;
+                })
+            );
+        }
 
-                s.onNext(ConnectStatus.BONDING);
-                peripheral.createBond().subscribe(peripheral1 -> {
-                    Logger.info(Peripheral.LOG_TAG, "bonded to " + toString());
-
-                    s.onNext(ConnectStatus.DISCOVERING_SERVICES);
-                    peripheral.discoverService(getTargetServiceIdentifier(), timeout).subscribe(service -> {
-                        Logger.info(Peripheral.LOG_TAG, "discovered service for " + toString());
-
-                        this.peripheralService = service;
-                        s.onNext(ConnectStatus.CONNECTED);
-                        s.onCompleted();
-                    }, e -> {
-                        // discoverServices took ownership of timeout,
-                        // we don't need to worry about it anymore.
-
-                        Logger.error(Peripheral.LOG_TAG, "Disconnecting due to service discovery failure", e);
-                        disconnect().subscribe(ignored -> {
-                            Logger.info(Peripheral.LOG_TAG, "Disconnected from service discovery failure");
-                            s.onError(e);
-                        }, disconnectError -> {
-                            Logger.error(Peripheral.LOG_TAG, "Could not disconnect for service discovery failure", disconnectError);
-                            s.onError(e);
-                        });
-                    });
-                }, e -> {
-                    timeout.unschedule();
-
-                    Logger.error(Peripheral.LOG_TAG, "Disconnecting due to bond change failure", e);
-                    disconnect().subscribe(ignored -> {
-                        Logger.info(Peripheral.LOG_TAG, "Disconnected from bond change failure");
-                        s.onError(e);
-                    }, disconnectError -> {
-                        Logger.error(Peripheral.LOG_TAG, "Could not disconnect for bond change failure", disconnectError);
-                        s.onError(e);
-                    });
-                });
-            }, e -> {
-                timeout.unschedule();
-
-                s.onError(e);
-            });
-        });
+        return sequence.subscribeOn(peripheral.getStack().getScheduler())
+                       .doOnNext(s -> Logger.info(getClass().getSimpleName(), "is " + s))
+                       .doOnError(connectError -> {
+                           if (isConnected()) {
+                               Logger.warn(getClass().getSimpleName(), "Disconnecting after failed connection attempt.", connectError);
+                               disconnect().subscribe(ignored -> {
+                                   Logger.info(getClass().getSimpleName(), "Disconnected after failed connection attempt.");
+                               }, disconnectError -> {
+                                   Logger.error(getClass().getSimpleName(), "Disconnected after failed connection attempt failed, ignoring.", disconnectError);
+                               });
+                           }
+                       });
     }
 
     public Observable<TSelf> disconnect() {
         //noinspection unchecked
         return peripheral.disconnect()
-                         .map(ignored -> (TSelf) this)
-                         .finallyDo(() -> {
-                             this.peripheralService = null;
-                         });
+                .map(ignored -> (TSelf) this)
+                .finallyDo(() -> {
+                    this.peripheralService = null;
+                });
     }
 
     public boolean isConnected() {
@@ -146,9 +138,9 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
         }
 
         return peripheral.subscribeNotification(getTargetService(),
-                                                characteristicIdentifier,
-                                                getDescriptorIdentifier(),
-                                                timeout);
+                characteristicIdentifier,
+                getDescriptorIdentifier(),
+                timeout);
     }
 
     protected Observable<UUID> unsubscribe(@NonNull UUID characteristicIdentifier,
@@ -157,9 +149,9 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
 
         if (isConnected()) {
             return peripheral.unsubscribeNotification(getTargetService(),
-                                                      characteristicIdentifier,
-                                                      getDescriptorIdentifier(),
-                                                      timeout);
+                    characteristicIdentifier,
+                    getDescriptorIdentifier(),
+                    timeout);
         } else {
             return Observable.just(characteristicIdentifier);
         }
@@ -174,7 +166,7 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
     }
 
 
-    public static enum ConnectStatus {
+    public enum ConnectStatus {
         CONNECTING(R.string.title_connecting),
         BONDING(R.string.title_pairing),
         DISCOVERING_SERVICES(R.string.title_discovering_services),
@@ -182,7 +174,7 @@ public abstract class HelloPeripheral<TSelf extends HelloPeripheral<TSelf>> {
 
         public final @StringRes int messageRes;
 
-        private ConnectStatus(@StringRes int messageRes) {
+        ConnectStatus(@StringRes int messageRes) {
             this.messageRes = messageRes;
         }
     }
