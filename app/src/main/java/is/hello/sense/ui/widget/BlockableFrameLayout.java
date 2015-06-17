@@ -4,20 +4,20 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 
-public class BlockableLinearLayout extends LinearLayout {
+public class BlockableFrameLayout extends FrameLayout {
     private boolean touchEnabled = true;
 
-    public BlockableLinearLayout(Context context) {
+    public BlockableFrameLayout(Context context) {
         super(context);
     }
 
-    public BlockableLinearLayout(Context context, AttributeSet attrs) {
+    public BlockableFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public BlockableLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public BlockableFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
