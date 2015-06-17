@@ -20,12 +20,12 @@ import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
+import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.EditorActionHandler;
 import rx.Observable;
 
@@ -110,7 +110,7 @@ public class ChangePasswordFragment extends InjectionFragment {
             return;
         }
 
-        if (newPassword.getText().length() < Constants.MIN_PASSWORD_LENGTH) {
+        if (!AccountPresenter.validatePassword(newPassword.getText())) {
             ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_account_password_too_short));
             errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
             newPassword.requestFocus();

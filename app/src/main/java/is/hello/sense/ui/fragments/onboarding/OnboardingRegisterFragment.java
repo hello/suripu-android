@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -16,8 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
-
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -32,6 +29,7 @@ import is.hello.sense.api.model.RegistrationError;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.AnimatorConfig;
@@ -41,13 +39,10 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.EditorActionHandler;
 import rx.Observable;
 
 public class OnboardingRegisterFragment extends InjectionFragment {
-    private static final Pattern EMAIL = Pattern.compile("^.+@.+\\..+$");
-
     private LinearLayout credentialsContainer;
     private EditText nameText;
     private EditText emailText;
@@ -163,27 +158,29 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
 
     public void register() {
-        String name = nameText.getText().toString().trim();
+        String name = AccountPresenter.normalizeInput(nameText.getText());
         nameText.setText(name);
 
-        String email = emailText.getText().toString().trim();
+        String email = AccountPresenter.normalizeInput(emailText.getText());
         emailText.setText(email);
 
-        if (TextUtils.isEmpty(name)) {
+        if (!AccountPresenter.validateName(name)) {
             displayRegistrationError(RegistrationError.NAME_TOO_SHORT);
             nameText.requestFocus();
             return;
         }
 
-        if (TextUtils.isEmpty(email) || !EMAIL.matcher(email).matches()) {
+        if (!AccountPresenter.validateEmail(email)) {
             displayRegistrationError(RegistrationError.EMAIL_INVALID);
+            emailText.requestFocus();
             return;
         }
 
 
         String password = passwordText.getText().toString();
-        if (password.length() < Constants.MIN_PASSWORD_LENGTH) {
+        if (!AccountPresenter.validatePassword(password)) {
             displayRegistrationError(RegistrationError.PASSWORD_TOO_SHORT);
+            passwordText.requestFocus();
             return;
         }
 

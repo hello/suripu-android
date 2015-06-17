@@ -3,6 +3,7 @@ package is.hello.sense.bluetooth.devices;
 import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -112,7 +113,9 @@ public class HelloPeripheralTests extends InjectionTestCase {
     public void testFailedConnect() throws Exception {
         Either<Peripheral, Throwable> successResponse = Either.left(peripheral.peripheral);
 
+        peripheralBehavior.setCreateBondResponse(successResponse);
         peripheralBehavior.setConnectResponse(Either.right(new BluetoothDisabledError()));
+        peripheralBehavior.setServicesResponse(Either.left(Collections.emptyMap()));
         peripheralBehavior.setDisconnectResponse(successResponse);
 
         Sync.wrap(peripheral.connect())
@@ -125,15 +128,11 @@ public class HelloPeripheralTests extends InjectionTestCase {
         peripheralBehavior.reset();
         peripheralBehavior.setConnectResponse(successResponse);
         peripheralBehavior.setCreateBondResponse(Either.right(new PeripheralBondAlterationError(PeripheralBondAlterationError.REASON_ANDROID_API_CHANGED)));
+        peripheralBehavior.setServicesResponse(Either.left(Collections.emptyMap()));
         peripheralBehavior.setDisconnectResponse(successResponse);
 
         Sync.wrap(peripheral.connect())
             .assertThrows(PeripheralBondAlterationError.class);
-
-        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CONNECT));
-        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CREATE_BOND));
-        assertFalse(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCOVER_SERVICES));
-        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
 
 
         // ---- //
@@ -147,11 +146,6 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
         Sync.wrap(peripheral.connect())
             .assertThrows(BluetoothGattError.class);
-
-        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CONNECT));
-        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.CREATE_BOND));
-        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCOVER_SERVICES));
-        assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
     }
 
     public void testDisconnect() throws Exception {

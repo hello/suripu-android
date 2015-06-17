@@ -26,7 +26,6 @@ import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.AccountEditingFragment;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -253,22 +252,19 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     //region Basic Info
 
     public void changeName() {
-        FragmentNavigation navigation = getNavigationContainer();
         ChangeNameFragment fragment = new ChangeNameFragment();
         fragment.setTargetFragment(this, 0x00);
-        navigation.pushFragmentAllowingStateLoss(fragment, getString(R.string.action_change_name), true);
+        getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.action_change_name), true);
     }
 
     public void changeEmail() {
-        FragmentNavigation navigation = getNavigationContainer();
         ChangeEmailFragment fragment = new ChangeEmailFragment();
         fragment.setTargetFragment(this, REQUEST_CODE_PASSWORD);
-        navigation.pushFragmentAllowingStateLoss(fragment, getString(R.string.title_change_email), true);
+        getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.title_change_email), true);
     }
 
     public void changePassword() {
-        FragmentNavigation navigation = getNavigationContainer();
-        navigation.pushFragmentAllowingStateLoss(ChangePasswordFragment.newInstance(currentAccount.getEmail()), getString(R.string.title_change_password), true);
+        getNavigationContainer().pushFragmentAllowingStateLoss(ChangePasswordFragment.newInstance(currentAccount.getEmail()), getString(R.string.title_change_password), true);
     }
 
     //endregion

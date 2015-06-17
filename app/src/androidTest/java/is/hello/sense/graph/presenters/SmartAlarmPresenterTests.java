@@ -70,15 +70,15 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
         LocalTime beforeCutOff = now.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
 
         alarm.setTime(now);
-        assertTrue(alarm.isTooSoon());
+        assertTrue(presenter.isAlarmTooSoon(alarm));
 
         alarm.setTime(tooSoon);
-        assertTrue(alarm.isTooSoon());
+        assertTrue(presenter.isAlarmTooSoon(alarm));
 
         alarm.setTime(pastCutOff);
-        assertFalse(alarm.isTooSoon());
+        assertFalse(presenter.isAlarmTooSoon(alarm));
 
         alarm.setTime(beforeCutOff);
-        assertFalse(alarm.isTooSoon());
+        assertFalse(presenter.isAlarmTooSoon(alarm));
     }
 }
