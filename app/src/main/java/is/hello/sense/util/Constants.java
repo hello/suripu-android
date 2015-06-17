@@ -27,8 +27,6 @@ public final class Constants {
 
     public static final long STALE_INTERVAL_MS = (10 * 60 * 1000); // 10 minutes
 
-    public static final int MIN_PASSWORD_LENGTH = 6;
-
     // From Retrofit
     public static final int HTTP_CONNECT_TIMEOUT_MILLIS = 15 * 1000; // 15s
     public static final int HTTP_READ_TIMEOUT_MILLIS = 20 * 1000; // 20s
