@@ -114,7 +114,7 @@ import rx.subjects.ReplaySubject;
     //region Modifying alarm list
 
     public Observable<VoidResponse> addSmartAlarm(@NonNull Alarm alarm) {
-        return alarms.take(1).flatMap(alarms -> {
+        return latest().flatMap(alarms -> {
             ArrayList<Alarm> newAlarms = new ArrayList<>(alarms);
             newAlarms.add(alarm);
             return save(newAlarms);
@@ -122,7 +122,7 @@ import rx.subjects.ReplaySubject;
     }
 
     public Observable<VoidResponse> saveSmartAlarm(int index, @NonNull Alarm alarm) {
-        return alarms.take(1).flatMap(alarms -> {
+        return latest().flatMap(alarms -> {
             ArrayList<Alarm> newAlarms = new ArrayList<>(alarms);
             newAlarms.set(index, alarm);
             return save(newAlarms);
@@ -130,7 +130,7 @@ import rx.subjects.ReplaySubject;
     }
 
     public Observable<VoidResponse> deleteSmartAlarm(int index) {
-        return alarms.take(1).flatMap(alarms -> {
+        return latest().flatMap(alarms -> {
             ArrayList<Alarm> newAlarms = new ArrayList<>(alarms);
             newAlarms.remove(index);
             return save(newAlarms);

@@ -55,7 +55,7 @@ public class LastNightWidgetProvider extends AppWidgetProvider {
 
         @Override
         protected void startUpdate(int widgetIds[]) {
-            bindAndSubscribe(presenter.timeline.take(1),
+            bindAndSubscribe(presenter.latest(),
                              timeline -> bindConditions(widgetIds, timeline),
                              e -> {
                                  Logger.error(LastNightWidgetProvider.class.getSimpleName(), "Could not fetch last night's timeline", e);

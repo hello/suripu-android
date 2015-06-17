@@ -78,7 +78,7 @@ public class AccountPresenter extends ValuePresenter<Account> {
     }
 
     public Observable<Account> updateEmail(@NonNull String email) {
-        return account.take(1).flatMap(account -> {
+        return latest().flatMap(account -> {
             Account updatedAccount = account.clone();
             updatedAccount.setEmail(email);
             return apiService.updateEmailAddress(updatedAccount)

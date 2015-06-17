@@ -69,6 +69,16 @@ public class ValuePresenterTests extends TestCase {
     }
 
 
+    public void testLatest() throws Exception {
+        CounterPresenter presenter = new CounterPresenter();
+        presenter.update();
+
+        // Tests that the latest() observable terminates.
+        int latest = Sync.last(presenter.latest());
+        assertEquals(1, latest);
+    }
+
+
     static class CounterPresenter extends ValuePresenter<Integer> {
         private int counter = 0;
 

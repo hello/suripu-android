@@ -49,7 +49,6 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
-import rx.Observable;
 
 public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener {
     // !! Important: Do not use setTargetFragment on TimelineFragment.
@@ -239,8 +238,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     public void share() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
 
-        Observable<Timeline> currentTimeline = timelinePresenter.timeline.take(1);
-        bindAndSubscribe(currentTimeline,
+        bindAndSubscribe(timelinePresenter.latest(),
                 timeline -> {
                     DateTime date = timelinePresenter.getDate();
                     String score = Integer.toString(timeline.getScore());
@@ -262,7 +260,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     public void showBreakdown(@NonNull View sender) {
-        bindAndSubscribe(timelinePresenter.timeline.take(1),
+        bindAndSubscribe(timelinePresenter.latest(),
                          timeline -> {
                              TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timeline, headerView.getCardViewId());
                              infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);

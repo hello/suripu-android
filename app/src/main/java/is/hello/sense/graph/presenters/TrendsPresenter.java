@@ -42,7 +42,7 @@ public class TrendsPresenter extends ScopedValuePresenter<ArrayList<TrendGraph>>
     public Observable<Void> updateTrend(int position, @NonNull String newTimePeriod) {
         logEvent("updateTrend(" + position + ", " + newTimePeriod + ")");
 
-        return trends.take(1).flatMap(trends -> {
+        return latest().flatMap(trends -> {
             TrendGraph trend = trends.get(position);
             return apiService.trendGraph(trend.getDataType().toQueryString(), newTimePeriod)
                              .doOnNext(newTrends -> {
