@@ -16,8 +16,6 @@ import android.widget.ArrayAdapter;
 
 import com.squareup.seismic.ShakeDetector;
 
-import org.joda.time.DateTime;
-
 import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
@@ -349,6 +347,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     @Override
     public Account getAccount() {
         if (account == null) {
+            Logger.warn(getClass().getSimpleName(), "getAccount() without account being specified before-hand. Creating default.");
             this.account = Account.createDefault();
         }
 
@@ -370,8 +369,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             // loading dialog, we close it when we wrap up here.
             Account account = getAccount();
             bindAndSubscribe(apiService.updateAccount(account), ignored -> {
-                Analytics.trackUserSignUp(account.getAccountId(), account.getName(), DateTime.now());
-
                 LoadingDialogFragment.close(getFragmentManager());
                 showEnhancedAudio();
             }, e -> {

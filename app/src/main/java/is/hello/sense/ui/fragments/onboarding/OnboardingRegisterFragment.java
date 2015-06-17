@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -221,8 +223,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
             sessionManager.setSession(session);
             preferences.pullAccountPreferences().subscribe();
 
-            String accountId = session.getAccountId();
-            Analytics.trackRegistration(accountId);
+            Analytics.trackRegistration(session.getAccountId(), createdAccount.getName(), DateTime.now());
 
             getOnboardingActivity().showBirthday(createdAccount);
             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {});
