@@ -47,14 +47,14 @@ public class Alarm extends ApiResponse {
     private int minuteOfHour;
 
     @JsonProperty("repeated")
-    private boolean isRepeated;
+    private boolean repeated;
 
 
     @JsonProperty("enabled")
-    private boolean isEnabled;
+    private boolean enabled;
 
     @JsonProperty("editable")
-    private boolean isEditable;
+    private boolean editable;
 
 
     @JsonProperty("day_of_week")
@@ -64,87 +64,17 @@ public class Alarm extends ApiResponse {
     private Sound sound;
 
     @JsonProperty("smart")
-    private boolean isSmart;
-
-
-    //region Validation
-
-    /**
-     * Make sure there is only one alarm per user per day
-     */
-    public static boolean validateAlarms(final List<Alarm> alarms) {
-        final Set<Integer> alarmDays = new HashSet<>();
-        for (final Alarm alarm : alarms) {
-            if (!alarm.isEnabled()) {
-                continue;
-            }
-
-            if (!alarm.isRepeated) {
-                if (!validateNonRepeatingAlarm(alarm)) {
-                    return false;
-                }
-
-                if (alarm.isSmart) {
-                    final DateTime expectedRingTime = new DateTime(alarm.year, alarm.month, alarm.dayOfMonth, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
-                    if (alarmDays.contains(expectedRingTime.getDayOfWeek())) {
-                        return false;
-                    }
-
-                    alarmDays.add(expectedRingTime.getDayOfWeek());
-                }
-            } else {
-                if (!alarm.isSmart) {
-                    continue;
-                }
-
-                for (final Integer dayOfWeek : alarm.getDaysOfWeek()) {
-                    if (alarmDays.contains(dayOfWeek)) {
-                        return false;
-                    }
-
-                    alarmDays.add(dayOfWeek);
-                }
-
-            }
-        }
-
-        return true;
-    }
-
-    public static boolean validateNonRepeatingAlarm(final Alarm alarm) {
-        if (alarm.isRepeated) {
-            return true;
-        }
-
-        try {
-            new DateTime(alarm.year, alarm.month, alarm.dayOfMonth, alarm.hourOfDay, alarm.minuteOfHour, DateTimeZone.UTC);
-        } catch (Exception ex) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean isTooSoon() {
-        LocalTime now = LocalTime.now(DateTimeZone.getDefault());
-        int minuteCutOff = now.getMinuteOfHour() + FUTURE_CUT_OFF_MINUTES;
-        LocalTime alarmTime = getTime();
-        return (alarmTime.getHourOfDay() == now.getHourOfDay() &&
-                alarmTime.getMinuteOfHour() >= now.getMinuteOfHour() &&
-                alarmTime.getMinuteOfHour() <= minuteCutOff);
-    }
-
-    //endregion
+    private boolean smart;
 
 
     public Alarm() {
         this.id = UUID.randomUUID().toString();
         this.hourOfDay = 7;
         this.minuteOfHour = 30;
-        this.isRepeated = true;
-        this.isEnabled = true;
-        this.isEditable = true;
-        this.isSmart = true;
+        this.repeated = true;
+        this.enabled = true;
+        this.editable = true;
+        this.smart = true;
         this.daysOfWeek = new HashSet<>();
     }
 
@@ -165,7 +95,12 @@ public class Alarm extends ApiResponse {
     }
 
     @JsonIgnore
-    public void fireOnce() {
+    public DateTime getExpectedRingTime() {
+        return new DateTime(year, month, dayOfMonth, hourOfDay, minuteOfHour, DateTimeZone.UTC);
+    }
+
+    @JsonIgnore
+    public void setRingOnce() {
         DateTime today = DateFormatter.now();
         if (getTime().isBefore(today.toLocalTime())) {
             DateTime tomorrow = today.plusDays(1);
@@ -184,32 +119,32 @@ public class Alarm extends ApiResponse {
 
 
     public boolean isRepeated() {
-        return isRepeated;
+        return repeated;
     }
 
     public void setRepeated(boolean isRepeated) {
-        this.isRepeated = isRepeated;
+        this.repeated = isRepeated;
     }
 
 
     public boolean isEnabled() {
-        return isEnabled;
+        return enabled;
     }
 
     public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
+        this.enabled = isEnabled;
     }
 
     public boolean isSmart() {
-        return this.isSmart;
+        return this.smart;
     }
 
     public void setSmart(final boolean isSmart) {
-        this.isSmart = isSmart;
+        this.smart = isSmart;
     }
 
     public boolean isEditable() {
-        return isEditable;
+        return editable;
     }
 
     /**
@@ -290,12 +225,12 @@ public class Alarm extends ApiResponse {
                 ", dayOfMonth=" + dayOfMonth +
                 ", hourOfDay=" + hourOfDay +
                 ", minuteOfHour=" + minuteOfHour +
-                ", isRepeated=" + isRepeated +
-                ", isEnabled=" + isEnabled +
-                ", isEditable=" + isEditable +
+                ", repeated=" + repeated +
+                ", enabled=" + enabled +
+                ", editable=" + editable +
                 ", daysOfWeek=" + daysOfWeek +
                 ", sound=" + sound +
-                ", isSmart=" + isSmart +
+                ", smart=" + smart +
                 '}';
     }
 

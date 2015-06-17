@@ -2,8 +2,14 @@ package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -17,6 +23,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.ReplaySubject;
 
 @Singleton public class SmartAlarmPresenter extends ValuePresenter<ArrayList<Alarm>> {
+    private static final int FUTURE_CUT_OFF_MINUTES = 5;
 
     private final ApiService apiService;
     private ArrayList<Alarm.Sound> availableAlarmSounds;
@@ -49,9 +56,62 @@ import rx.subjects.ReplaySubject;
         return apiService.smartAlarms();
     }
 
+
+    //region Validation
+
     public boolean validateAlarms(@NonNull List<Alarm> alarms) {
-        return Alarm.validateAlarms(alarms);
+        final Set<Integer> alarmDays = new HashSet<>();
+        for (final Alarm alarm : alarms) {
+            if (!alarm.isEnabled()) {
+                continue;
+            }
+
+            if (!alarm.isRepeated()) {
+                DateTime expectedRingTime;
+                try {
+                    expectedRingTime = alarm.getExpectedRingTime();
+                } catch (Exception ignored) {
+                    return false;
+                }
+
+                if (alarm.isSmart()) {
+                    if (alarmDays.contains(expectedRingTime.getDayOfWeek())) {
+                        return false;
+                    }
+
+                    alarmDays.add(expectedRingTime.getDayOfWeek());
+                }
+            } else {
+                if (!alarm.isSmart()) {
+                    continue;
+                }
+
+                for (final Integer dayOfWeek : alarm.getDaysOfWeek()) {
+                    if (alarmDays.contains(dayOfWeek)) {
+                        return false;
+                    }
+
+                    alarmDays.add(dayOfWeek);
+                }
+            }
+        }
+
+        return true;
     }
+
+    public boolean isAlarmTooSoon(@NonNull Alarm alarm) {
+        LocalTime now = LocalTime.now(DateTimeZone.getDefault());
+        int minuteCutOff = now.getMinuteOfHour() + FUTURE_CUT_OFF_MINUTES;
+        LocalTime alarmTime = alarm.getTime();
+        return (alarmTime.getHourOfDay() == now.getHourOfDay() &&
+                alarmTime.getMinuteOfHour() >= now.getMinuteOfHour() &&
+                alarmTime.getMinuteOfHour() <= minuteCutOff);
+    }
+
+    //endregion
+
+
+    //region Modifying alarm list
 
     public Observable<VoidResponse> addSmartAlarm(@NonNull Alarm alarm) {
         return alarms.take(1).flatMap(alarms -> {
@@ -89,6 +149,11 @@ import rx.subjects.ReplaySubject;
         }
     }
 
+    //endregion
+
+
+    //region Alarm Sounds
+
     public Observable<ArrayList<Alarm.Sound>> availableAlarmSounds() {
         if (availableAlarmSounds != null) {
             return Observable.just(availableAlarmSounds);
@@ -124,6 +189,8 @@ import rx.subjects.ReplaySubject;
     public void forgetAvailableAlarmSoundsCache() {
         this.availableAlarmSounds = null;
     }
+
+    //endregion
 
 
     public static class DayOverlapError extends Exception {
