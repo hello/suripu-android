@@ -27,8 +27,10 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
@@ -189,8 +191,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         }
     }
 
-    public FragmentNavigation getNavigationContainer() {
-        return (FragmentNavigation) getActivity();
+    public FragmentNavigationActivity getNavigationContainer() {
+        return (FragmentNavigationActivity) getActivity();
     }
 
     private void showLoadingIndicator() {
@@ -278,28 +280,28 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.label_dob), true);
+        getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_dob), true);
     }
 
     public void changeGender() {
         OnboardingRegisterGenderFragment fragment = new OnboardingRegisterGenderFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.label_gender), true);
+        getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_gender), true);
     }
 
     public void changeHeight() {
         OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.label_height), true);
+        getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_height), true);
     }
 
     public void changeWeight() {
         OnboardingRegisterWeightFragment fragment = new OnboardingRegisterWeightFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.label_weight), true);
+        getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_weight), true);
     }
 
     //endregion
@@ -356,17 +358,15 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     @Override
     public void onAccountUpdated(@NonNull AccountEditingFragment updatedBy) {
-        updatedBy.getFragmentManager().popBackStackImmediate();
-        saveAccount();
-    }
-
-    private void saveAccount() {
         stateSafeExecutor.execute(() -> {
-            showLoadingIndicator();
+            LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(accountPresenter.saveAccount(currentAccount),
-                    ignored -> hideLoadingIndicator(),
+                    ignored -> {
+                        LoadingDialogFragment.close(getFragmentManager());
+                        updatedBy.getFragmentManager().popBackStackImmediate();
+                    },
                     e -> {
-                        hideLoadingIndicator();
+                        LoadingDialogFragment.close(getFragmentManager());
                         ErrorDialogFragment.presentError(getFragmentManager(), e);
                     });
         });
