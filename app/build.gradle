@@ -30,8 +30,8 @@ def generateVersionCode() {
 }
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "22.0.0"
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "is.hello.sense"
@@ -44,7 +44,12 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file("../../Hello-Android-Internal.keystore")
+            def keyStore = file("../../Hello-Android-Internal.keystore")
+            if (keyStore.exists()) {
+                storeFile file("../../Hello-Android-Internal.keystore")
+            } else {
+                logger.warn("Could not find internal keystore, ignoring.")
+            }
         }
         release {
             storeFile file("../../Hello-Android-Release.keystore")
