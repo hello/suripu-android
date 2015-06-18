@@ -1,10 +1,10 @@
 package is.hello.sense.graph.presenters;
 
 import android.content.Intent;
-import android.test.FlakyTest;
 
 import javax.inject.Inject;
 
+import is.hello.sense.api.model.Question;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.functional.Lists;
@@ -39,15 +39,16 @@ public class QuestionsPresenterTests extends InjectionTestCase {
             .assertNotNull();
     }
 
-    @FlakyTest(tolerance = 2)
     public void testCurrentQuestion() throws Exception {
         Sync.wrap(presenter.currentQuestion).await();
 
         Sync.wrap(presenter.currentQuestion)
             .assertNotNull();
 
+        Question lastQuestion = Sync.wrap(presenter.currentQuestion).last();
+
         presenter.nextQuestion();
-        Sync.wrap(presenter.currentQuestion)
+        Sync.wrap(presenter.currentQuestion.takeFirst(q -> q != lastQuestion))
             .assertNull();
     }
 
