@@ -7,6 +7,6 @@ test:
         background: true
         parallel: true
     - circle-android wait-for-boot
-    - ./gradlew connectedAndroidTest
-    - cp -r suripu-android/build/outputs $CIRCLE_ARTIFACTS
-    - cp -r suripu-android/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
+    - ./gradlew connectedAndroidTest -PdisablePreDex
+    - cp -r app/build/outputs $CIRCLE_ARTIFACTS
+    - cp -r app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
