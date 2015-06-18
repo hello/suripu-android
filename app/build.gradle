@@ -48,7 +48,7 @@ android {
             if (keyStore.exists()) {
                 storeFile file("../../Hello-Android-Internal.keystore")
             } else {
-                logger.warning("Could not find internal keystore, ignoring.")
+                logger.warn("Could not find internal keystore, ignoring.")
             }
         }
         release {
