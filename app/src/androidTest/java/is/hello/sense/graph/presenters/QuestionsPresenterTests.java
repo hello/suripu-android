@@ -39,7 +39,7 @@ public class QuestionsPresenterTests extends InjectionTestCase {
             .assertNotNull();
     }
 
-    @FlakyTest
+    @FlakyTest(tolerance = 2)
     public void testCurrentQuestion() throws Exception {
         Sync.wrap(presenter.currentQuestion).await();
 

@@ -1,6 +1,11 @@
 machine:
   java:
     version: oraclejdk8
+general:
+  branches:
+    only:
+      - master
+      - develop
 test:
   override:
     - emulator -avd circleci-android22 -no-audio -no-window:

@@ -62,6 +62,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/build/dependency-cache" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
@@ -95,6 +96,8 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
+      <excludeFolder url="file://$MODULE_DIR$/build/retrolambda" />
+      <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 22 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -103,8 +106,8 @@
     <orderEntry type="library" exported="" name="play-services-base-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="rxjava-1.0.9" level="project" />
     <orderEntry type="library" exported="" name="dagger-1.2.2" level="project" />
-    <orderEntry type="library" exported="" name="jackson-databind-2.4.3" level="project" />
     <orderEntry type="library" exported="" name="jackson-core-2.4.3" level="project" />
+    <orderEntry type="library" exported="" name="jackson-databind-2.4.3" level="project" />
     <orderEntry type="library" exported="" name="jackson-datatype-joda-2.4.3" level="project" />
     <orderEntry type="library" exported="" name="okio-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="dagger-compiler-1.2.2" level="project" />
@@ -113,8 +116,8 @@
     <orderEntry type="library" exported="" name="play-services-gcm-7.5.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="espresso-1.1-r3" level="project" />
     <orderEntry type="library" exported="" name="okhttp-urlconnection-2.1.0" level="project" />
-    <orderEntry type="library" exported="" name="protobuf-java-2.5.0" level="project" />
     <orderEntry type="library" exported="" name="HockeySDK-3.5.0" level="project" />
+    <orderEntry type="library" exported="" name="protobuf-java-2.5.0" level="project" />
     <orderEntry type="library" exported="" name="converter-jackson-1.9.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-annotations-2.4.2" level="project" />
     <orderEntry type="library" exported="" name="joda-time-2.7-no-tzdb" level="project" />
