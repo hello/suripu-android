@@ -6,6 +6,7 @@ general:
     only:
       - master
       - develop
+      - /test\-.*/
 test:
   override:
     - emulator -avd circleci-android22 -no-audio -no-window:
