@@ -2,12 +2,11 @@ machine:
   java:
     version: oraclejdk8
 test:
-  pre:
-    - emulator -avd circleci-android22 -no-audio -no-window:
-      background: true
-      parallel: true
-    - circle-android wait-for-boot
   override:
+    - emulator -avd circleci-android22 -no-audio -no-window:
+        background: true
+        parallel: true
+    - circle-android wait-for-boot
     - ./gradlew connectedAndroidTest
     - cp -r suripu-android/build/outputs $CIRCLE_ARTIFACTS
     - cp -r suripu-android/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
