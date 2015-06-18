@@ -1,7 +1,6 @@
 package is.hello.sense.util;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.text.format.DateFormat;
 
 import org.joda.time.DateTime;
@@ -30,7 +29,7 @@ public class DateFormatterTests extends InjectionTests {
     @Before
     public void initialize() throws Exception {
         if (formatter == null) {
-            Context targetContext = InstrumentationRegistry.getTargetContext();
+            Context targetContext = getContext();
             this.formatter = new DateFormatter(targetContext);
             this.placeholder = targetContext.getString(R.string.format_date_placeholder);
         }
@@ -69,7 +68,7 @@ public class DateFormatterTests extends InjectionTests {
 
     @Test
     public void formatAsTimelineDate() {
-        String lastNightString = InstrumentationRegistry.getTargetContext().getString(R.string.format_date_last_night);
+        String lastNightString = getContext().getString(R.string.format_date_last_night);
         assertEquals(lastNightString, formatter.formatAsTimelineDate(DateFormatter.lastNight()));
 
         DateTime nightBefore = DateFormatter.lastNight().minusDays(1);
@@ -85,7 +84,7 @@ public class DateFormatterTests extends InjectionTests {
     public void formatAsBirthDate() {
         GregorianCalendar calendar = new GregorianCalendar(2001, 8, 3); // Months are 0-indexed in the Java API
         Date canonicalDate = new Date(calendar.getTimeInMillis());
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = getContext();
         String canonicalString = DateFormat.getDateFormat(context).format(canonicalDate);
         assertEquals(canonicalString, formatter.formatAsLocalizedDate(new LocalDate(2001, 9, 3)));
         assertEquals(placeholder, formatter.formatAsLocalizedDate(null));

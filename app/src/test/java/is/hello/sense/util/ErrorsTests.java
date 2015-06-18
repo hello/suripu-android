@@ -1,22 +1,19 @@
 package is.hello.sense.util;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import is.hello.sense.R;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.PeripheralBondAlterationError;
+import is.hello.sense.graph.SenseTestCase;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
-@RunWith(AndroidJUnit4.class)
-public class ErrorsTests {
+public class ErrorsTests extends SenseTestCase {
     @Test
     public void getType() throws Exception {
         assertEquals("java.lang.Throwable", Errors.getType(new Throwable()));
@@ -34,7 +31,7 @@ public class ErrorsTests {
 
     @Test
     public void getDisplayMessage() throws Exception {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = getContext();
 
         assertNull(Errors.getDisplayMessage(null));
 

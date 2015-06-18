@@ -33,7 +33,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     private int notificationId = 0;
 
     public NotificationReceiver() {
-        SenseApplication.getInstance().inject(this);
+        //SenseApplication.getInstance().inject(this);
     }
 
     @Override

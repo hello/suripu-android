@@ -1,7 +1,5 @@
 package is.hello.sense.util;
 
-import android.support.test.InstrumentationRegistry;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +25,7 @@ public class CachedObjectTests extends InjectionTests {
 
     @Before
     public void initialize() throws Exception {
-        File cacheDirectory = InstrumentationRegistry.getTargetContext().getCacheDir();
+        File cacheDirectory = getContext().getCacheDir();
         assertNotNull(cacheDirectory);
         this.cachedObject = new CachedObject<>(CachedObject.getFile(cacheDirectory, FILENAME),
                                                new TypeReference<Name>() {},

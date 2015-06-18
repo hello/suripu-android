@@ -6,18 +6,23 @@ import android.text.ParcelableSpan;
 import android.text.Spanned;
 
 import org.junit.Test;
+import org.robolectric.annotation.Config;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import is.hello.sense.BuildConfig;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.SenseTestCase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class MarkupStringTests {
+@Config(constants = BuildConfig.class, application = SenseApplication.class)
+public class MarkupStringTests extends SenseTestCase {
     private final MarkupString testString;
     private final MarkupSpan[] testSpans;
 
