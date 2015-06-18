@@ -3,14 +3,21 @@ package is.hello.sense.api.sessions;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.test.InstrumentationTestCase;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class ApiSessionManagerTests extends InstrumentationTestCase {
-    public void testFacade() {
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
+@RunWith(AndroidJUnit4.class)
+public class ApiSessionManagerTests {
+    @Test
+    public void facade() {
         OAuthSession testSession = new OAuthSession();
-        TestApiSessionManager testApiSessionManager = new TestApiSessionManager(getInstrumentation().getContext());
+        TestApiSessionManager testApiSessionManager = new TestApiSessionManager(InstrumentationRegistry.getContext());
         testApiSessionManager.setSession(testSession);
 
         assertTrue(testApiSessionManager.hasSession());
