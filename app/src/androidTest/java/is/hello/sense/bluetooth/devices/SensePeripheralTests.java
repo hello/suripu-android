@@ -1,5 +1,8 @@
 package is.hello.sense.bluetooth.devices;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import javax.inject.Inject;
 
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
@@ -10,13 +13,15 @@ import is.hello.sense.bluetooth.stacks.TestPeripheralBehavior;
 import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.functional.Either;
-import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.graph.InjectionTests;
 import is.hello.sense.util.AdvertisingDataBuilder;
 import is.hello.sense.util.Sync;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-public class SensePeripheralTests extends InjectionTestCase {
+public class SensePeripheralTests extends InjectionTests {
     private static final String TEST_DEVICE_ID = "CA154FFA";
 
     @Inject TestBluetoothStackBehavior stackBehavior;
@@ -25,10 +30,8 @@ public class SensePeripheralTests extends InjectionTestCase {
     private final TestPeripheralBehavior peripheralBehavior = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
     private SensePeripheral peripheral;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void initialize() throws Exception {
         stackBehavior.reset();
 
         if (peripheral == null) {
@@ -37,7 +40,8 @@ public class SensePeripheralTests extends InjectionTestCase {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void testDiscovery() throws Exception {
+    @Test
+    public void discovery() throws Exception {
         AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
         builder.add(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
         AdvertisingData advertisingData = builder.build();
@@ -55,7 +59,8 @@ public class SensePeripheralTests extends InjectionTestCase {
             .assertTrue(peripherals -> peripherals.size() == 2);
     }
 
-    public void testRediscovery() throws Exception {
+    @Test
+    public void rediscovery() throws Exception {
         AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
         builder.add(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
         builder.add(AdvertisingData.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + TEST_DEVICE_ID);
@@ -70,7 +75,8 @@ public class SensePeripheralTests extends InjectionTestCase {
     }
 
 
-    public void testGetDeviceId() throws Exception {
+    @Test
+    public void getDeviceId() throws Exception {
         AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
         builder.add(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
         builder.add(AdvertisingData.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + TEST_DEVICE_ID);
@@ -81,7 +87,8 @@ public class SensePeripheralTests extends InjectionTestCase {
         assertEquals(TEST_DEVICE_ID, peripheral.getDeviceId());
     }
 
-    public void testWriteLargeCommand() throws Exception {
+    @Test
+    public void writeLargeCommand() throws Exception {
         //noinspection ConstantConditions
         peripheralBehavior.setWriteCommandResponse(Either.left(null)); // Void could use a singleton instance...
 

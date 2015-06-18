@@ -3,17 +3,24 @@ package is.hello.sense.graph.presenters;
 import junit.framework.Assert;
 
 import org.joda.time.LocalDate;
+import org.junit.Test;
 
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.Account;
-import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.graph.InjectionTests;
 import is.hello.sense.util.Sync;
 
-public class AccountPresenterTests extends InjectionTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
+public class AccountPresenterTests extends InjectionTests {
     @Inject AccountPresenter accountPresenter;
 
-    public void testUpdate() throws Exception {
+    @Test
+    public void update() throws Exception {
         accountPresenter.update();
 
         Sync.wrap(accountPresenter.account)
@@ -22,7 +29,8 @@ public class AccountPresenterTests extends InjectionTestCase {
 
     //region Validation
 
-    public void testNormalizeInput() throws Exception {
+    @Test
+    public void normalizeInput() throws Exception {
         assertEquals("", AccountPresenter.normalizeInput(null));
         assertEquals("", AccountPresenter.normalizeInput(""));
         assertEquals("Trailing whitespace", AccountPresenter.normalizeInput("Trailing whitespace  "));
@@ -30,14 +38,16 @@ public class AccountPresenterTests extends InjectionTestCase {
         assertEquals("Just a lot of whitespace", AccountPresenter.normalizeInput("  Just a lot of whitespace  "));
     }
 
-    public void testValidateName() throws Exception {
+    @Test
+    public void validateName() throws Exception {
         assertFalse(AccountPresenter.validateName(null));
         assertFalse(AccountPresenter.validateName(""));
         assertTrue(AccountPresenter.validateName("Issac"));
         assertTrue(AccountPresenter.validateName("Issac Newton"));
     }
 
-    public void testValidateEmail() throws Exception {
+    @Test
+    public void validateEmail() throws Exception {
         assertFalse(AccountPresenter.validateEmail(null));
         assertFalse(AccountPresenter.validateEmail(""));
         assertFalse(AccountPresenter.validateEmail("not a valid email"));
@@ -48,7 +58,8 @@ public class AccountPresenterTests extends InjectionTestCase {
         assertTrue(AccountPresenter.validateEmail("my.name@me.com"));
     }
 
-    public void testValidatePassword() throws Exception {
+    @Test
+    public void validatePassword() throws Exception {
         assertFalse(AccountPresenter.validatePassword(null));
         assertFalse(AccountPresenter.validatePassword(""));
         assertFalse(AccountPresenter.validatePassword("123"));
@@ -62,7 +73,8 @@ public class AccountPresenterTests extends InjectionTestCase {
 
     //region Updates
 
-    public void testSaveAccount() throws Exception {
+    @Test
+    public void saveAccount() throws Exception {
         Account updatedAccount = new Account();
         updatedAccount.setWeight(120);
         updatedAccount.setHeight(2000);
@@ -74,7 +86,8 @@ public class AccountPresenterTests extends InjectionTestCase {
         assertEquals(updatedAccount.getBirthDate(), savedAccount.getBirthDate());
     }
 
-    public void testUpdateEmail() throws Exception {
+    @Test
+    public void updateEmail() throws Exception {
         Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
         Account accountAfter = Sync.last(accountPresenter.updateEmail("test@me.com"));
         assertNotSame(accountBefore.getEmail(), accountAfter.getEmail());

@@ -2,27 +2,29 @@ package is.hello.sense.graph.presenters;
 
 import android.annotation.SuppressLint;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import javax.inject.Inject;
 
-import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.graph.InjectionTests;
 import is.hello.sense.util.Sync;
 
 @SuppressLint("CommitPrefEdits")
-public class PreferencesPresenterTests extends InjectionTestCase {
+public class PreferencesPresenterTests extends InjectionTests {
     private static final String TEST_KEY = "test_key";
 
     @Inject PreferencesPresenter presenter;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void initialize() throws Exception {
         presenter.edit()
                  .remove(TEST_KEY)
                  .commit();
     }
 
-    public void testObservableString() throws Exception {
+    @Test
+    public void observableString() throws Exception {
         Sync.wrap(presenter.observableString(TEST_KEY, "placeholder").take(1))
             .assertEquals("placeholder");
 
@@ -34,7 +36,8 @@ public class PreferencesPresenterTests extends InjectionTestCase {
             .assertEquals("actual value");
     }
 
-    public void testObservableBoolean() throws Exception {
+    @Test
+    public void observableBoolean() throws Exception {
         Sync.wrap(presenter.observableBoolean(TEST_KEY, true).take(1))
             .assertEquals(true);
 
@@ -46,7 +49,8 @@ public class PreferencesPresenterTests extends InjectionTestCase {
             .assertEquals(false);
     }
 
-    public void testObservableInteger() throws Exception {
+    @Test
+    public void observableInteger() throws Exception {
         Sync.wrap(presenter.observableInteger(TEST_KEY, 10).take(1))
             .assertEquals(10);
 
@@ -58,7 +62,8 @@ public class PreferencesPresenterTests extends InjectionTestCase {
             .assertEquals(99);
     }
 
-    public void testObservableLong() throws Exception {
+    @Test
+    public void observableLong() throws Exception {
         Sync.wrap(presenter.observableLong(TEST_KEY, 10).take(1))
             .assertEquals(10L);
 
@@ -70,7 +75,8 @@ public class PreferencesPresenterTests extends InjectionTestCase {
             .assertEquals(99L);
     }
 
-    public void testObservableFloat() throws Exception {
+    @Test
+    public void observableFloat() throws Exception {
         Sync.wrap(presenter.observableFloat(TEST_KEY, 4f).take(1))
             .assertEquals(4f);
 
