@@ -1,10 +1,14 @@
 package is.hello.sense.bluetooth.stacks.util;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.util.Collection;
 
-public class AdvertisingDataTests extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
+public class AdvertisingDataTests {
     private static final byte[] TEST_PAYLOAD = {
             // Advertisement contents size
             (byte) 0x03,
@@ -18,7 +22,8 @@ public class AdvertisingDataTests extends TestCase {
     };
 
     @SuppressWarnings("ConstantConditions")
-    public void testParse() throws Exception {
+    @Test
+    public void parse() throws Exception {
         AdvertisingData advertisingData = AdvertisingData.parse(TEST_PAYLOAD);
         assertFalse(advertisingData.isEmpty());
 

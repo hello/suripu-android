@@ -1,19 +1,24 @@
 package is.hello.sense.units.systems;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class UsCustomaryUnitSystemTests extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class UsCustomaryUnitSystemTests {
     private final UsCustomaryUnitSystem unitSystem = new UsCustomaryUnitSystem();
 
-    public void testFormatMass() throws Exception {
+    @Test
+    public void formatMass() throws Exception {
         assertEquals("6 lbs", unitSystem.formatMass(2500).toString());
     }
 
-    public void testFormatTemperature() throws Exception {
+    @Test
+    public void formatTemperature() throws Exception {
         assertEquals("39 °", unitSystem.formatTemperature(4).toString());
     }
 
-    public void testFormatHeight() throws Exception {
+    @Test
+    public void formatHeight() throws Exception {
         assertEquals("8' 2''", unitSystem.formatHeight(250).toString());
     }
 }

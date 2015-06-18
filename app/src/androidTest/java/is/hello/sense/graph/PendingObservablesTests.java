@@ -1,17 +1,23 @@
 package is.hello.sense.graph;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import is.hello.sense.util.Sync;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
 
 import static is.hello.sense.AssertExtensions.assertThrows;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-public class PendingObservablesTests extends TestCase {
+public class PendingObservablesTests {
     private static final String TOKEN = "TOKEN";
 
-    public void testCoalesces() throws Exception {
+    @Test
+    public void coalesces() throws Exception {
         PendingObservables<String> test = new PendingObservables<>();
         Observable<String> neverEmits = Observable.create(s -> {});
         Observable<String> firstInstance = test.bind(TOKEN, neverEmits);
@@ -19,7 +25,8 @@ public class PendingObservablesTests extends TestCase {
         assertSame(firstInstance, secondInstance);
     }
 
-    public void testMirrorsValue() throws Exception {
+    @Test
+    public void mirrorsValue() throws Exception {
         PendingObservables<String> test = new PendingObservables<>();
         ReplaySubject<String> source = ReplaySubject.createWithSize(1);
         Observable<String> mirror = test.bind(TOKEN, source);
@@ -32,7 +39,8 @@ public class PendingObservablesTests extends TestCase {
         assertEquals("test", value);
     }
 
-    public void testMirrorsError() throws Exception {
+    @Test
+    public void mirrorsError() throws Exception {
         PendingObservables<String> test = new PendingObservables<>();
         ReplaySubject<String> source = ReplaySubject.createWithSize(1);
         Observable<String> mirror = test.bind(TOKEN, source);
@@ -43,7 +51,8 @@ public class PendingObservablesTests extends TestCase {
         });
     }
 
-    public void testClears() throws Exception {
+    @Test
+    public void clears() throws Exception {
         PendingObservables<String> test = new PendingObservables<>();
         ReplaySubject<String> source = ReplaySubject.createWithSize(1);
         Observable<String> mirror = test.bind(TOKEN, source);

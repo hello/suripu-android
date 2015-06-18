@@ -2,13 +2,19 @@ package is.hello.sense.graph;
 
 import android.os.Bundle;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import is.hello.sense.util.Sync;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions"})
-public class PresenterSubjectTests extends TestCase {
-    public void testSimplePropagation() throws Exception {
+public class PresenterSubjectTests {
+    @Test
+    public void simplePropagation() throws Exception {
         PresenterSubject<Integer> subject = PresenterSubject.create();
         subject.onNext(42);
 
@@ -24,7 +30,8 @@ public class PresenterSubjectTests extends TestCase {
         }
     }
 
-    public void testResumesAfterError() throws Exception {
+    @Test
+    public void resumesAfterError() throws Exception {
         PresenterSubject<Integer> subject = PresenterSubject.create();
         subject.onNext(42);
 
@@ -44,7 +51,8 @@ public class PresenterSubjectTests extends TestCase {
         assertEquals(9000, value2);
     }
 
-    public void testNonCompletion() throws Exception {
+    @Test
+    public void nonCompletion() throws Exception {
         PresenterSubject<Integer> subject = PresenterSubject.create();
         subject.onCompleted();
         subject.onNext(42);
@@ -53,7 +61,8 @@ public class PresenterSubjectTests extends TestCase {
         assertEquals(42, value);
     }
 
-    public void testSerialization() throws Exception {
+    @Test
+    public void serialization() throws Exception {
         PresenterSubject<Integer> test1 = PresenterSubject.create();
         test1.onNext(12);
 

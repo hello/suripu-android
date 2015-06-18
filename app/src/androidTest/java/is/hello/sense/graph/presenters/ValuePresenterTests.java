@@ -2,7 +2,7 @@ package is.hello.sense.graph.presenters;
 
 import android.os.Bundle;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
@@ -11,9 +11,14 @@ import is.hello.sense.util.LambdaVar;
 import is.hello.sense.util.Sync;
 import rx.Observable;
 
-public class ValuePresenterTests extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-    public void testOverlappingUpdates() throws Exception {
+public class ValuePresenterTests {
+
+    @Test
+    public void overlappingUpdates() throws Exception {
         CounterPresenter presenter = new CounterPresenter();
 
         presenter.update();
@@ -31,7 +36,8 @@ public class ValuePresenterTests extends TestCase {
         assertEquals(2, lastValue.get().intValue());
     }
 
-    public void testLowMemoryLogic() throws Exception {
+    @Test
+    public void lowMemoryLogic() throws Exception {
         CounterPresenter presenter = new CounterPresenter();
 
         Sync.wrapAfter(presenter::update, presenter.value)
@@ -46,7 +52,8 @@ public class ValuePresenterTests extends TestCase {
     }
 
 
-    public void testOnSaveStateLogic() throws Exception {
+    @Test
+    public void onSaveStateLogic() throws Exception {
         CounterPresenter presenter = new CounterPresenter();
 
         int value = Sync.wrapAfter(presenter::update, presenter.value).last();
@@ -56,7 +63,8 @@ public class ValuePresenterTests extends TestCase {
         assertEquals(value, savedState.getSerializable(ValuePresenter.SAVED_STATE_KEY));
     }
 
-    public void testOnRestoreStateLogic() throws Exception {
+    @Test
+    public void onRestoreStateLogic() throws Exception {
         CounterPresenter presenter = new CounterPresenter();
 
         Bundle bundle = new Bundle();
@@ -69,7 +77,8 @@ public class ValuePresenterTests extends TestCase {
     }
 
 
-    public void testLatest() throws Exception {
+    @Test
+    public void latest() throws Exception {
         CounterPresenter presenter = new CounterPresenter();
         presenter.update();
 

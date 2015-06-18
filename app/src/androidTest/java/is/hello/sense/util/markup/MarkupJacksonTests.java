@@ -5,12 +5,15 @@ import android.graphics.Typeface;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import is.hello.sense.util.markup.text.MarkupString;
 import is.hello.sense.util.markup.text.MarkupStyleSpan;
 
-public class MarkupJacksonTests extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public class MarkupJacksonTests {
     private final ObjectMapper mapper;
 
     public MarkupJacksonTests() {
@@ -19,7 +22,8 @@ public class MarkupJacksonTests extends TestCase {
     }
 
 
-    public void testDeserialize() throws Exception {
+    @Test
+    public void deserialize() throws Exception {
         String json = "{\"message\": \"This **really** works\"}";
         TestObject testObject = mapper.readValue(json, TestObject.class);
         assertNotNull(testObject);
