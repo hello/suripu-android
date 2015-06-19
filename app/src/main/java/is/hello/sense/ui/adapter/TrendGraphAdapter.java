@@ -7,37 +7,27 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.GraphType;
 import is.hello.sense.api.model.TrendGraph;
-import is.hello.sense.functional.Lists;
+import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.widget.graphing.Extremes;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.util.Logger;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import static is.hello.sense.api.model.TrendGraph.GraphSample;
 
 public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterProvider {
-    private static final int DAY_CUT_OFF = 9;
-    private static final int DAY_STEP = 5;
-
-    private static final int MONTH_CUT_OFF = 31;
-    private static final int MONTH_STEP = 28;
 
     private final Resources resources;
     private final List<ChangeObserver> observers = new ArrayList<>();
     private TrendGraph trendGraph;
-    private List<GraphSample> sectionSamples = Collections.emptyList();
+    private @NonNull List<GraphSample> sectionSamples = Collections.emptyList();
     private @Nullable Extremes<Float> extremes = null;
 
     public TrendGraphAdapter(@NonNull Resources resources) {
@@ -47,10 +37,10 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
     public static int getNumberOfLines(@Nullable TrendGraph trendGraph) {
         if (trendGraph != null) {
             int numberOfDataPoints = trendGraph.getDataPoints().size();
-            if (numberOfDataPoints >= MONTH_CUT_OFF) {
-                return (numberOfDataPoints / MONTH_STEP) + 1;
-            } else if (numberOfDataPoints > DAY_CUT_OFF) {
-                return (numberOfDataPoints / DAY_STEP) + 1;
+            if (numberOfDataPoints >= TrendsPresenter.MONTH_CUT_OFF) {
+                return (numberOfDataPoints / TrendsPresenter.MONTH_STEP) + 1;
+            } else if (numberOfDataPoints > TrendsPresenter.DAY_CUT_OFF) {
+                return (numberOfDataPoints / TrendsPresenter.DAY_STEP) + 1;
             } else {
                 return numberOfDataPoints;
             }
@@ -59,56 +49,20 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
         }
     }
 
-    public void bindTrendGraph(@Nullable TrendGraph trendGraph, @NonNull Runnable onDataChanged) {
-        if (trendGraph == null || Lists.isEmpty(trendGraph.getDataPoints())) {
-            this.trendGraph = null;
-            this.sectionSamples = Collections.emptyList();
-            this.extremes = null;
+    public void bind(@NonNull TrendsPresenter.Rendered rendered) {
+        this.trendGraph = rendered.graph;
+        this.sectionSamples = rendered.sectionSamples;
+        this.extremes = rendered.extremes;
 
-            onDataChanged.run();
-            notifyDataChanged();
-        } else {
-            Observable<Result> calculateMagnitudes = Observable.create(s -> {
-                List<GraphSample> dataPoints = trendGraph.getDataPoints();
+        notifyDataChanged();
+    }
 
-                Extremes<Float> extremes;
-                if (dataPoints.size() == 1) {
-                    extremes = new Extremes<>(0f, ApiService.PLACEHOLDER_VALUE,
-                                              dataPoints.get(0).getYValue(), ApiService.PLACEHOLDER_VALUE);
-                } else {
-                    Comparator<GraphSample> comparator = (l, r) -> Float.compare(l.getYValue(), r.getYValue());
-                    extremes = Extremes.of(dataPoints, comparator)
-                                       .map(GraphSample::getYValue);
-                }
+    public void clear() {
+        this.trendGraph = null;
+        this.sectionSamples = Collections.emptyList();
+        this.extremes = null;
 
-                List<GraphSample> sectionSamples;
-                if (TrendGraph.TIME_PERIOD_OVER_TIME_ALL.equals(trendGraph.getTimePeriod())) {
-                    sectionSamples = Collections.emptyList();
-                } else if (trendGraph.getDataPoints().size() > MONTH_CUT_OFF) {
-                    sectionSamples = Lists.takeEvery(trendGraph.getDataPoints(), MONTH_STEP);
-                } else if (trendGraph.getDataPoints().size() > DAY_CUT_OFF) {
-                    sectionSamples = Lists.takeEvery(trendGraph.getDataPoints(), DAY_STEP);
-                } else {
-                    sectionSamples = trendGraph.getDataPoints();
-                }
-
-                s.onNext(new Result(sectionSamples, extremes));
-                s.onCompleted();
-            });
-
-            calculateMagnitudes.subscribeOn(Schedulers.computation())
-                               .observeOn(AndroidSchedulers.mainThread())
-                               .subscribe(result -> {
-                                   this.trendGraph = trendGraph;
-                                   this.sectionSamples = result.sectionSamples;
-                                   this.extremes = result.extremes;
-
-                                   onDataChanged.run();
-                                   notifyDataChanged();
-                               }, e -> {
-                                   Logger.error(getClass().getSimpleName(), "Could not calculate min-max magnitudes", e);
-                               });
-        }
+        notifyDataChanged();
     }
 
     public LineGraphDrawable.Marker[] getMarkers() {

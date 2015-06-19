@@ -69,11 +69,26 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
     //region Hooks
 
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        for (ToggleButton button : buttons) {
+            button.setEnabled(enabled);
+        }
+
+        if (selectionAwareBackground != null) {
+            selectionAwareBackground.setEnabled(enabled);
+        }
+    }
+
     @Override
     public void addView(@NonNull View child, int index, ViewGroup.LayoutParams params) {
         if (child instanceof ToggleButton) {
             ToggleButton button = (ToggleButton) child;
             int buttonIndex = buttons.size();
+            button.setEnabled(isEnabled());
             button.setOnClickListener(this);
             button.setTag(R.id.layout_linear_selector_tag_key_index, buttonIndex);
             if (button.isChecked()) {
@@ -102,6 +117,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         }
 
         if (selectionAwareBackground != null) {
+            selectionAwareBackground.setEnabled(isEnabled());
             selectionAwareBackground.setNumberOfItems(buttons.size());
             selectionAwareBackground.setSelectedIndex(selectedIndex);
         }
@@ -205,6 +221,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     public static abstract class SelectionAwareDrawable extends Drawable {
         protected int numberOfItems = 0;
         protected int selectedIndex = EMPTY_SELECTION;
+        protected boolean enabled = true;
 
         protected boolean isSelectionValid() {
             return (numberOfItems > 0 && selectedIndex != EMPTY_SELECTION);
@@ -217,6 +234,11 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
         public void setSelectedIndex(int selectedIndex) {
             this.selectedIndex = selectedIndex;
+            invalidateSelf();
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
             invalidateSelf();
         }
     }

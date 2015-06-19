@@ -3,6 +3,7 @@ package is.hello.sense.api.model;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
@@ -155,6 +157,48 @@ public class TrendGraph extends ApiResponse {
                     ", dataLabel=" + dataLabel +
                     '}';
         }
+
+
+        @VisibleForTesting
+        public static class Builder {
+            private final GraphSample graphSample = new GraphSample();
+
+            public Builder() {
+                DateTimeZone timeZone = DateTimeZone.getDefault();
+                setDateTime(DateTime.now(timeZone));
+                setOffset(timeZone.getOffset(graphSample.dateTime));
+                setXValue("");
+            }
+
+            public Builder setDateTime(DateTime dateTime) {
+                graphSample.dateTime = dateTime;
+                return this;
+            }
+
+            public Builder setYValue(float yValue) {
+                graphSample.yValue = yValue;
+                return this;
+            }
+
+            public Builder setXValue(String xValue) {
+                graphSample.xValue = xValue;
+                return this;
+            }
+
+            public Builder setOffset(int offset) {
+                graphSample.offset = offset;
+                return this;
+            }
+
+            public Builder setDataLabel(DataLabel dataLabel) {
+                graphSample.dataLabel = dataLabel;
+                return this;
+            }
+
+            public GraphSample build() {
+                return graphSample;
+            }
+        }
     }
 
 
@@ -190,4 +234,51 @@ public class TrendGraph extends ApiResponse {
         }
     }
 
+
+    @VisibleForTesting
+    public static class Builder {
+        private final TrendGraph trendGraph = new TrendGraph();
+
+        public Builder() {
+            trendGraph.options = new ArrayList<>();
+            trendGraph.dataPoints = new ArrayList<>();
+        }
+
+        public Builder setTitle(String title) {
+            trendGraph.title = title;
+            return this;
+        }
+
+        public Builder setDataType(DataType dataType) {
+            trendGraph.dataType = dataType;
+            return this;
+        }
+
+        public Builder setTimePeriod(String timePeriod) {
+            trendGraph.timePeriod = timePeriod;
+            return this;
+        }
+
+        public Builder addOption(@NonNull String option) {
+            trendGraph.options.add(option);
+            return this;
+        }
+
+        public Builder addDataPoint(@NonNull GraphSample dataPoint) {
+            trendGraph.dataPoints.add(dataPoint);
+            return this;
+        }
+
+        public Builder duplicateDataPoint(int position, int times) {
+            GraphSample graphSample = trendGraph.dataPoints.get(position);
+            for (int i = 0; i < times; i++) {
+                trendGraph.dataPoints.add(graphSample);
+            }
+            return this;
+        }
+
+        public TrendGraph build() {
+            return trendGraph;
+        }
+    }
 }

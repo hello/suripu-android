@@ -15,13 +15,14 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.TrendGraph;
+import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 
-public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
+public class TrendsAdapter extends ArrayAdapter<TrendsPresenter.Rendered> {
     private final LayoutInflater inflater;
     private final Resources resources;
     private final int graphTintColor;
@@ -37,7 +38,7 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
     }
 
 
-    public void bindTrends(@NonNull ArrayList<TrendGraph> trends) {
+    public void bindTrends(@NonNull ArrayList<TrendsPresenter.Rendered> trends) {
         clear();
         addAll(trends);
     }
@@ -56,8 +57,9 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         }
 
         ViewHolder holder = (ViewHolder) view.getTag();
-        TrendGraph graph = getItem(position);
+        TrendsPresenter.Rendered rendered = getItem(position);
 
+        TrendGraph graph = rendered.graph;
         holder.title.setText(graph.getTitle());
 
         GraphDrawable graphDrawable = graph.getGraphType().createDrawable(resources);
@@ -74,12 +76,11 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
 
         holder.graphView.setNumberOfLines(TrendGraphAdapter.getNumberOfLines(graph));
         holder.graphView.setGridDrawable(graph.getGraphType().getGridDrawable());
-        holder.graphAdapter.bindTrendGraph(graph, () -> {
-            if (graphDrawable instanceof LineGraphDrawable) {
-                LineGraphDrawable lineGraph = (LineGraphDrawable) graphDrawable;
-                lineGraph.setMarkers(holder.graphAdapter.getMarkers());
-            }
-        });
+        holder.graphAdapter.bind(rendered);
+        if (graphDrawable instanceof LineGraphDrawable) {
+            LineGraphDrawable lineGraph = (LineGraphDrawable) graphDrawable;
+            lineGraph.setMarkers(holder.graphAdapter.getMarkers());
+        }
 
         return view;
     }
@@ -90,8 +91,7 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
         final TextView title;
         final GraphView graphView;
         final TrendGraphAdapter graphAdapter;
-        @Nullable
-        SelectorView optionSelector;
+        @Nullable SelectorView optionSelector;
 
         ViewHolder(@NonNull View view) {
             this.itemView = (ViewGroup) view;
@@ -109,6 +109,7 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
                 itemView.addView(optionSelector, 0);
             } else {
                 optionSelector.removeAllButtons();
+                optionSelector.setEnabled(true);
             }
 
             for (String option : options) {
@@ -136,6 +137,8 @@ public class TrendsAdapter extends ArrayAdapter<TrendGraph> {
                 int index = (int) optionSelector.getTag();
                 String option = optionSelector.getButtonTagAt(newSelectionIndex).toString();
                 onTrendOptionSelected.onTrendOptionSelected(index, option);
+
+                optionSelector.setEnabled(false);
             }
         }
     }

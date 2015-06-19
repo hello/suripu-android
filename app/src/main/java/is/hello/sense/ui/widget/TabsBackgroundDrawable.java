@@ -27,16 +27,6 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
 
     //region Creation
 
-    public TabsBackgroundDrawable(int selectionHeight, int dividerHeight,
-                                  int backgroundColor, int selectionColor, int dividerColor) {
-        this.selectionHeight = selectionHeight;
-        this.dividerHeight = dividerHeight;
-
-        this.backgroundColor = backgroundColor;
-        this.selectionColor = selectionColor;
-        this.dividerColor = dividerColor;
-    }
-
     public TabsBackgroundDrawable(@NonNull Resources resources, @NonNull Style style) {
         this.selectionHeight = resources.getDimensionPixelSize(style.selectionHeightRes);
         this.dividerHeight = resources.getDimensionPixelSize(style.dividerHeightRes);
@@ -66,6 +56,11 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
             int itemWidth = width / numberOfItems;
             float itemOffset = (itemWidth * selectedIndex) + (itemWidth * positionOffset);
             paint.setColor(selectionColor);
+            if (enabled) {
+                paint.setAlpha(0xFF);
+            } else {
+                paint.setAlpha(0x77);
+            }
             canvas.drawRect(itemOffset, height - selectionHeight, itemOffset + itemWidth, height, paint);
         }
     }
