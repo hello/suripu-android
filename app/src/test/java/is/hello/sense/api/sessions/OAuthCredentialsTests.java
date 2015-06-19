@@ -6,13 +6,14 @@ import java.io.ByteArrayOutputStream;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.api.ApiEndpoint;
+import is.hello.sense.graph.SenseTestCase;
 
 import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static is.hello.sense.AssertExtensions.assertThrows;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class OAuthCredentialsTests {
+public class OAuthCredentialsTests extends SenseTestCase {
     private final ApiEndpoint defaultApiEndpoint = new ApiEndpoint();
 
     @SuppressWarnings("ConstantConditions")

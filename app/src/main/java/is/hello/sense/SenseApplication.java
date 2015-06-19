@@ -3,7 +3,9 @@ package is.hello.sense;
 import android.app.Application;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -39,7 +41,15 @@ public class SenseApplication extends Application {
         // Always do this first.
         SenseApplication.instance = this;
 
-        JodaTimeAndroid.init(this);
+        try {
+            JodaTimeAndroid.init(this);
+        } catch (RuntimeException e) {
+            if ("robolectric".equals(Build.FINGERPRINT)) {
+                Log.w(getClass().getSimpleName(), "Swallowing JodaTimeAndroid#init failure", e);
+            } else {
+                throw e;
+            }
+        }
         Analytics.initialize(this);
         SessionLogger.init(this);
 

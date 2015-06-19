@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions"})
-public class PresenterSubjectTests {
+public class PresenterSubjectTests extends SenseTestCase {
     @Test
     public void simplePropagation() throws Exception {
         PresenterSubject<Integer> subject = PresenterSubject.create();

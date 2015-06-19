@@ -4,12 +4,14 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import is.hello.sense.graph.SenseTestCase;
+
 import static is.hello.sense.AssertExtensions.assertThrows;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class BytesTests {
+public class BytesTests extends SenseTestCase {
     @Test
     public void toStringWithBounds() throws Exception {
         byte[] emptyBytes = {};

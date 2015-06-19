@@ -6,12 +6,13 @@ import android.support.annotation.NonNull;
 import org.junit.Before;
 import org.junit.Test;
 
+import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.MockPresenter;
 import rx.functions.Action1;
 
 import static org.junit.Assert.assertTrue;
 
-public class PresenterContainerTests {
+public class PresenterContainerTests extends SenseTestCase {
     private static final int NUMBER_PRESENTERS = 3;
     private final PresenterContainer presenterContainer = new PresenterContainer();
 

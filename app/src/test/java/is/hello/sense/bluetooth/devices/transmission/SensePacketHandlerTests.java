@@ -5,11 +5,12 @@ import org.junit.Test;
 import java.util.List;
 
 import is.hello.sense.bluetooth.stacks.util.Bytes;
+import is.hello.sense.graph.SenseTestCase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class SensePacketHandlerTests {
+public class SensePacketHandlerTests extends SenseTestCase {
     private final SensePacketParser packetParser = new SensePacketParser();
     private final SensePacketHandler packetHandler = new SensePacketHandler(packetParser);
 

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import is.hello.sense.bluetooth.devices.SenseIdentifiers;
+import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.LambdaVar;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand;
@@ -17,7 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class SensePacketParserTests {
+public class SensePacketParserTests extends SenseTestCase {
     private SensePacketParser packetParser;
     private SensePacketHandler packetHandler;
 

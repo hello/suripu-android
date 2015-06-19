@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.LambdaVar;
 import is.hello.sense.util.Sync;
 import rx.Observable;
@@ -15,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class ValuePresenterTests {
+public class ValuePresenterTests extends SenseTestCase {
 
     @Test
     public void overlappingUpdates() throws Exception {

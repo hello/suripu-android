@@ -7,13 +7,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Test;
 
+import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.markup.text.MarkupString;
 import is.hello.sense.util.markup.text.MarkupStyleSpan;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class MarkupJacksonTests {
+public class MarkupJacksonTests extends SenseTestCase {
     private final ObjectMapper mapper;
 
     public MarkupJacksonTests() {

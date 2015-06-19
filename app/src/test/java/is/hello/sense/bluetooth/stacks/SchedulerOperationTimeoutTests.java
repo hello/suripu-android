@@ -1,17 +1,19 @@
 package is.hello.sense.bluetooth.stacks;
 
 import org.junit.Test;
+import org.robolectric.Robolectric;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import is.hello.sense.graph.SenseTestCase;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class SchedulerOperationTimeoutTests {
+public class SchedulerOperationTimeoutTests extends SenseTestCase {
     private static final Scheduler TEST_SCHEDULER = AndroidSchedulers.mainThread();
 
     @Test
@@ -25,6 +27,7 @@ public class SchedulerOperationTimeoutTests {
         assertFalse(called.get());
 
         timeout.schedule();
+        Robolectric.flushForegroundThreadScheduler();
         Thread.sleep(800, 0);
         timeout.unschedule();
         assertTrue(called.get());

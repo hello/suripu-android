@@ -5,12 +5,13 @@ import android.content.ComponentCallbacks2;
 import org.junit.Before;
 import org.junit.Test;
 
+import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.MockPresenter;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class PresenterTests {
+public class PresenterTests extends SenseTestCase {
     private MockPresenter presenter = new MockPresenter();
 
     @Before

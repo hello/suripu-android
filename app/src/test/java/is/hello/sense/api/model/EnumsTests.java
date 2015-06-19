@@ -6,9 +6,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 import org.junit.Test;
 
+import is.hello.sense.graph.SenseTestCase;
+
 import static junit.framework.Assert.assertEquals;
 
-public class EnumsTests {
+public class EnumsTests extends SenseTestCase {
     @Test
     public void fromString() {
         assertEquals(TestEnum.VALUE1, TestEnum.fromString("VALUE1"));

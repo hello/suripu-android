@@ -2,9 +2,11 @@ package is.hello.sense.units.systems;
 
 import org.junit.Test;
 
+import is.hello.sense.graph.SenseTestCase;
+
 import static org.junit.Assert.assertEquals;
 
-public class MetricUnitSystemTests {
+public class MetricUnitSystemTests extends SenseTestCase {
     private final MetricUnitSystem unitSystem = new MetricUnitSystem();
 
     @Test

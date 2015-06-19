@@ -39,8 +39,6 @@ android {
         targetSdkVersion 21
         versionCode generateVersionCode()
         versionName "1.1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
         debug {

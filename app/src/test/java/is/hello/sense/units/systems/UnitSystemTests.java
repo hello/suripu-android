@@ -4,12 +4,13 @@ import org.junit.Test;
 
 import java.util.Locale;
 
+import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.units.UnitSystem;
 
 import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings("deprecation")
-public class UnitSystemTests {
+public class UnitSystemTests extends SenseTestCase {
     private final UnitSystem testSystem = new UnitSystem();
 
     @Test
