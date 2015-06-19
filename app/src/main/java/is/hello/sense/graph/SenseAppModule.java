@@ -26,7 +26,6 @@ import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
-import is.hello.sense.remote.LastNightWidgetProvider;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.HomeActivity;
@@ -76,7 +75,6 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
         DebugActivity.class,
         PreferencesPresenter.class,
         NotificationRegistration.class,
-        LastNightWidgetProvider.LastNightService.class,
 
         LaunchActivity.class,
         HomeActivity.class,
