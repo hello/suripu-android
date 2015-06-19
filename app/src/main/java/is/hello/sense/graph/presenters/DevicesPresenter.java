@@ -5,6 +5,7 @@ import android.support.annotation.StringRes;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -61,30 +62,32 @@ public class DevicesPresenter extends ValuePresenter<ArrayList<Device>> {
         return apiService.removeSenseAssociations(senseDevice.getDeviceId());
     }
 
-    public Observable<Issue> topIssue() {
-        return devices.map(devices -> {
-            Map<Device.Type, Device> devicesMap = Device.getDevicesMap(devices);
-            Device sense = devicesMap.get(Device.Type.SENSE);
-            Device pill = devicesMap.get(Device.Type.PILL);
+    public static Issue topIssue(@NonNull List<Device> devices) {
+        Map<Device.Type, Device> devicesMap = Device.getDevicesMap(devices);
+        Device sense = devicesMap.get(Device.Type.SENSE);
+        Device pill = devicesMap.get(Device.Type.PILL);
 
-            if (sense != null) {
-                Analytics.setSenseId(sense.getDeviceId());
-            }
+        if (sense != null) {
+            Analytics.setSenseId(sense.getDeviceId());
+        }
 
-            if (sense == null) {
-                return Issue.NO_SENSE_PAIRED;
-            } else if (sense.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
-                return Issue.SENSE_MISSING;
-            } else if (pill == null) {
-                return Issue.NO_SLEEP_PILL_PAIRED;
-            } else if (pill.getState() == Device.State.LOW_BATTERY) {
-                return Issue.SLEEP_PILL_LOW_BATTERY;
-            } else if (pill.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
-                return Issue.SLEEP_PILL_MISSING;
-            }
+        if (sense == null) {
+            return Issue.NO_SENSE_PAIRED;
+        } else if (sense.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
+            return Issue.SENSE_MISSING;
+        } else if (pill == null) {
+            return Issue.NO_SLEEP_PILL_PAIRED;
+        } else if (pill.getState() == Device.State.LOW_BATTERY) {
+            return Issue.SLEEP_PILL_LOW_BATTERY;
+        } else if (pill.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
+            return Issue.SLEEP_PILL_MISSING;
+        }
 
-            return Issue.NONE;
-        });
+        return Issue.NONE;
+    }
+
+    public Observable<Issue> latestTopIssue() {
+        return latest().map(DevicesPresenter::topIssue);
     }
 
 

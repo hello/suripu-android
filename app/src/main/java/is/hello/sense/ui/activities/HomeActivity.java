@@ -234,7 +234,7 @@ public class HomeActivity
                          Functions.LOG_ERROR);
 
         if (isFirstActivityRun && !getWillShowUnderside()) {
-            bindAndSubscribe(devicesPresenter.topIssue(),
+            bindAndSubscribe(devicesPresenter.latestTopIssue(),
                              this::bindDeviceIssue,
                              Functions.LOG_ERROR);
         }
