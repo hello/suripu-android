@@ -113,22 +113,22 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         ArrayList<Item> items = new ArrayList<>();
         if (statistics.getTotalSleep() != null) {
             int totalSleep = statistics.getTotalSleep();
-            items.add(new DurationItem(R.string.timeline_breakdown_label_total_sleep, totalSleep));
+            items.add(new DurationItem(R.string.timeline_info_label_total_sleep, totalSleep));
         }
 
         if (statistics.getSoundSleep() != null) {
             int soundSleep = statistics.getSoundSleep();
-            items.add(new DurationItem(R.string.timeline_breakdown_label_sound_sleep, soundSleep));
+            items.add(new DurationItem(R.string.timeline_info_label_sound_sleep, soundSleep));
         }
 
         if (statistics.getTimeToSleep() != null) {
             int timeToSleep = statistics.getTimeToSleep();
-            items.add(new DurationItem(R.string.timeline_breakdown_label_total_sleep, timeToSleep));
+            items.add(new DurationItem(R.string.timeline_info_label_time_to_sleep, timeToSleep));
         }
 
         if (statistics.getTimesAwake() != null) {
             int timesAwake = statistics.getTimesAwake();
-            items.add(new CountItem(R.string.timeline_breakdown_label_times_awake, timesAwake));
+            items.add(new CountItem(R.string.timeline_info_label_times_awake, timesAwake));
         }
 
         DateTime fellAsleepTime = null,
@@ -145,11 +145,11 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         }
 
         if (fellAsleepTime != null) {
-            items.add(new TimeItem(R.string.timeline_breakdown_label_sleep_time, fellAsleepTime));
+            items.add(new TimeItem(R.string.timeline_info_label_sleep_time, fellAsleepTime));
         }
 
         if (wakeUpTime != null) {
-            items.add(new TimeItem(R.string.timeline_breakdown_label_wake_up_time, wakeUpTime));
+            items.add(new TimeItem(R.string.timeline_info_label_wake_up_time, wakeUpTime));
         }
 
         for (PreSleepInsight insight : timeline.getPreSleepInsights()) {
