@@ -9,10 +9,6 @@ general:
       - /test\-.*/
 test:
   override:
-    - emulator -avd circleci-android22 -no-audio -no-window:
-        background: true
-        parallel: true
-    - circle-android wait-for-boot
-    - ./gradlew clean connectedAndroidTest -PdisablePreDex
+    - ./gradlew clean testDebug -PdisablePreDex
     - cp -r app/build/outputs $CIRCLE_ARTIFACTS
-    - cp -r app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
+    - cp -r app/build/reports/tests/* $CIRCLE_TEST_REPORTS
