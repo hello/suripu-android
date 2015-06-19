@@ -334,8 +334,10 @@ public final class MarkupProcessor {
             this.offset = 0;
         }
 
-        private CharSequence getStorage() {
-            return storage;
+        private String getStorage() {
+            // Android will do this conversion implicitly,
+            // whereas Robolectric + Oracle JDK 8 will not.
+            return storage.toString();
         }
 
         private MarkupString build() {
