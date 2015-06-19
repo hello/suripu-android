@@ -4,25 +4,27 @@ import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class EnumsTests extends TestCase {
+import static junit.framework.Assert.assertEquals;
 
-    public void testFromString() {
-        assertEquals(Test.VALUE1, Test.fromString("VALUE1"));
-        assertEquals(Test.VALUE2, Test.fromString("VALUE2"));
-        assertEquals(Test.VALUE3, Test.fromString("VALUE3"));
-        assertEquals(Test.UNKNOWN, Test.fromString("VALUE4"));
+public class EnumsTests {
+    @Test
+    public void fromString() {
+        assertEquals(TestEnum.VALUE1, TestEnum.fromString("VALUE1"));
+        assertEquals(TestEnum.VALUE2, TestEnum.fromString("VALUE2"));
+        assertEquals(TestEnum.VALUE3, TestEnum.fromString("VALUE3"));
+        assertEquals(TestEnum.UNKNOWN, TestEnum.fromString("VALUE4"));
     }
 
-    private static enum Test {
+    private enum TestEnum {
         VALUE1,
         VALUE2,
         VALUE3,
         UNKNOWN;
 
         @JsonCreator
-        public static Test fromString(@Nullable String value) {
+        public static TestEnum fromString(@Nullable String value) {
             return Enums.fromString(value, values(), UNKNOWN);
         }
     }

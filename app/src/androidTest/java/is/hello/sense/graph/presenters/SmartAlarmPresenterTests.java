@@ -3,6 +3,7 @@ package is.hello.sense.graph.presenters;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 
@@ -10,19 +11,25 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.graph.InjectionTests;
 import is.hello.sense.util.Sync;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 @SuppressWarnings("ConstantConditions")
-public class SmartAlarmPresenterTests extends InjectionTestCase {
+public class SmartAlarmPresenterTests extends InjectionTests {
     @Inject SmartAlarmPresenter presenter;
 
-    public void testUpdate() throws Exception {
+    @Test
+    public void update() throws Exception {
         ArrayList<Alarm> smartAlarms = Sync.wrapAfter(presenter::update, presenter.alarms).last();
         assertEquals(1, smartAlarms.size());
     }
 
-    public void testValidateAlarms() throws Exception {
+    @Test
+    public void validateAlarms() throws Exception {
         Alarm sunday = new Alarm();
         sunday.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
         sunday.setSmart(true);
@@ -47,7 +54,8 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
         assertTrue(presenter.validateAlarms(Lists.newArrayList(sunday, disabledSunday)));
     }
 
-    public void testSave() throws Exception {
+    @Test
+    public void save() throws Exception {
         ArrayList<Alarm> goodAlarms = new ArrayList<>();
         Sync.wrap(presenter.save(goodAlarms))
             .assertNotNull();
@@ -61,7 +69,8 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
             .assertThrows(SmartAlarmPresenter.DayOverlapError.class);
     }
 
-    public void testIsTooSoon() throws Exception {
+    @Test
+    public void isTooSoon() throws Exception {
         Alarm alarm = new Alarm();
 
         LocalTime now = LocalTime.now(DateTimeZone.getDefault());

@@ -3,19 +3,20 @@ package is.hello.sense.graph.presenters;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import is.hello.sense.util.MockPresenter;
 import rx.functions.Action1;
 
-public class PresenterContainerTests extends TestCase {
+import static org.junit.Assert.assertTrue;
+
+public class PresenterContainerTests {
     private static final int NUMBER_PRESENTERS = 3;
     private final PresenterContainer presenterContainer = new PresenterContainer();
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+    @Before
+    public void initialize() {
         presenterContainer.getPresenters().clear();
 
         for (int i = 0; i < NUMBER_PRESENTERS; i++) {
@@ -31,27 +32,32 @@ public class PresenterContainerTests extends TestCase {
     }
 
 
-    public void testOnContainerDestroyed() {
+    @Test
+    public void onContainerDestroyed() {
         presenterContainer.onContainerDestroyed();
         assertAll(mock -> assertTrue(mock.onContainerDestroyedCalled));
     }
 
-    public void testOnTrimMemory() {
+    @Test
+    public void onTrimMemory() {
         presenterContainer.onTrimMemory(Presenter.BASE_TRIM_LEVEL);
         assertAll(mock -> assertTrue(mock.onTrimMemoryCalled));
     }
 
-    public void testOnContainerResumed() {
+    @Test
+    public void onContainerResumed() {
         presenterContainer.onContainerResumed();
         assertAll(mock -> assertTrue(mock.onContainerResumedCalled));
     }
 
-    public void testOnSaveState() {
+    @Test
+    public void onSaveState() {
         presenterContainer.onSaveState(new Bundle());
         assertAll(mock -> assertTrue(mock.onSaveStateCalled));
     }
 
-    public void testOnRestoreState() {
+    @Test
+    public void onRestoreState() {
         presenterContainer.onRestoreState(new Bundle());
         assertAll(mock -> assertTrue(mock.onRestoreStateCalled));
     }

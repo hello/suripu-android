@@ -2,16 +2,21 @@ package is.hello.sense.util.markup;
 
 import android.graphics.Typeface;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import is.hello.sense.util.markup.text.MarkupString;
 import is.hello.sense.util.markup.text.MarkupStyleSpan;
 import is.hello.sense.util.markup.text.MarkupURLSpan;
 
-public class MarkupProcessorTests extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+public class MarkupProcessorTests {
     private final MarkupProcessor processor = new MarkupProcessor();
 
-    public void testBoldEmphasis() throws Exception {
+    @Test
+    public void boldEmphasis() throws Exception {
         MarkupString string = processor.render("**This** is a string with __bold__ in it");
         assertEquals("This is a string with bold in it", string.toString());
 
@@ -28,7 +33,8 @@ public class MarkupProcessorTests extends TestCase {
         assertEquals(26, string.getSpanEnd(spans[1]));
     }
 
-    public void testItalicEmphasis() throws Exception {
+    @Test
+    public void italicEmphasis() throws Exception {
         MarkupString string = processor.render("*This* is a string with _italic_ in it");
         assertEquals("This is a string with italic in it", string.toString());
 
@@ -45,7 +51,8 @@ public class MarkupProcessorTests extends TestCase {
         assertEquals(28, string.getSpanEnd(spans[1]));
     }
 
-    public void testBoldItalicEmphasis() throws Exception {
+    @Test
+    public void boldItalicEmphasis() throws Exception {
         MarkupString string = processor.render("This is *__very__* important");
         assertEquals("This is very important", string.toString());
 
@@ -62,7 +69,8 @@ public class MarkupProcessorTests extends TestCase {
         assertEquals(12, string.getSpanEnd(spans[1]));
     }
 
-    public void testUnmatchedEmphasisMarkers() throws Exception {
+    @Test
+    public void unmatchedEmphasisMarkers() throws Exception {
         String contents = "The method to_a is re-entrant*\n\n" +
                 "*Except when it isn't.";
         MarkupString string = processor.render(contents);
@@ -73,7 +81,8 @@ public class MarkupProcessorTests extends TestCase {
         assertEquals(0, spans.length);
     }
 
-    public void testEscaping() throws Exception {
+    @Test
+    public void escaping() throws Exception {
         MarkupString simple = processor.render("\\\\\\`\\*\\_\\{\\}\\[\\]\\(\\)\\#\\+\\-\\.\\!");
         assertEquals("\\`*_{}[]()#+-.!", simple.toString());
 
@@ -86,7 +95,8 @@ public class MarkupProcessorTests extends TestCase {
         assertEquals("*Stars* _Underscores_", literalEmphasis.toString());
     }
 
-    public void testLinks() throws Exception {
+    @Test
+    public void links() throws Exception {
         MarkupString string = processor.render("[Call now](tel:555-867-5309) to order your brand new [Sense](http://hello.is \"not an order page\")!");
         assertEquals("Call now to order your brand new Sense!", string.toString());
 
@@ -101,7 +111,8 @@ public class MarkupProcessorTests extends TestCase {
         assertEquals("not an order page", spans[1].getTitle());
     }
 
-    public void testUnorderedList() throws Exception {
+    @Test
+    public void unorderedList() throws Exception {
         MarkupString noIndentationDash = processor.render("- Item one\n" +
                 "- Item Two\n" +
                 "- Item Three\n");
@@ -132,7 +143,8 @@ public class MarkupProcessorTests extends TestCase {
                 "• Item Two", indentationStar.toString());
     }
 
-    public void testOrderedList() throws Exception {
+    @Test
+    public void orderedList() throws Exception {
         MarkupString ordered = processor.render("1. Item one\n" +
                 "2. Item two\n" +
                 "3. Item three\n");

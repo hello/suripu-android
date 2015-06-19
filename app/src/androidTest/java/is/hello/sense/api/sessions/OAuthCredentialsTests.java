@@ -1,6 +1,6 @@
 package is.hello.sense.api.sessions;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 
@@ -9,19 +9,23 @@ import is.hello.sense.api.ApiEndpoint;
 
 import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static is.hello.sense.AssertExtensions.assertThrows;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-public class OAuthCredentialsTests extends TestCase {
+public class OAuthCredentialsTests {
     private final ApiEndpoint defaultApiEndpoint = new ApiEndpoint();
 
     @SuppressWarnings("ConstantConditions")
-    public void testConstraints() {
+    @Test
+    public void constraints() {
         assertThrows(() -> new OAuthCredentials(defaultApiEndpoint, "", "password"));
         assertThrows(() -> new OAuthCredentials(defaultApiEndpoint, "username", ""));
         assertThrows(() -> new OAuthCredentials(defaultApiEndpoint, null, "password"));
         assertThrows(() -> new OAuthCredentials(defaultApiEndpoint, "username", null));
     }
 
-    public void testOutput() {
+    @Test
+    public void output() {
         String expected = ("grant_type=password&client_id=" + BuildConfig.CLIENT_ID +
                 "&client_secret=" + BuildConfig.CLIENT_SECRET +
                 "&username=test123&password=321tset");

@@ -1,12 +1,15 @@
 package is.hello.sense.bluetooth.devices.transmission;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.util.List;
 
 import is.hello.sense.bluetooth.stacks.util.Bytes;
 
-public class SensePacketHandlerTests extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class SensePacketHandlerTests {
     private final SensePacketParser packetParser = new SensePacketParser();
     private final SensePacketHandler packetHandler = new SensePacketHandler(packetParser);
 
@@ -19,7 +22,8 @@ public class SensePacketHandlerTests extends TestCase {
             0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x07, 0x08, 0x09,
     };
 
-    public void testCreatePackets() throws Exception {
+    @Test
+    public void createPackets() throws Exception {
         List<byte[]> packets = packetHandler.createOutgoingPackets(LONG_SEQUENCE);
         assertEquals(4, packets.size());
         int index = 0;
@@ -28,7 +32,8 @@ public class SensePacketHandlerTests extends TestCase {
         }
     }
 
-    public void testAllPacketsRightLength() throws Exception {
+    @Test
+    public void allPacketsRightLength() throws Exception {
         byte[] failureCase = Bytes.fromString("08011002320832574952453137373A083257495245313737420A303132333435363738397803");
         List<byte[]> failureCasePackets = packetHandler.createOutgoingPackets(failureCase);
         for (byte[] packet : failureCasePackets) {
