@@ -1,27 +1,33 @@
 package is.hello.sense.util;
 
+import android.support.test.InstrumentationRegistry;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 
 import javax.inject.Inject;
 
-import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.graph.InjectionTests;
 
-public class CachedObjectTests extends InjectionTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public class CachedObjectTests extends InjectionTests {
     private static final String FILENAME = "Suripu-Unit-Test";
 
     @Inject ObjectMapper objectMapper;
 
     private CachedObject<Name> cachedObject;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        File cacheDirectory = getInstrumentation().getTargetContext().getCacheDir();
+    @Before
+    public void initialize() throws Exception {
+        File cacheDirectory = InstrumentationRegistry.getTargetContext().getCacheDir();
         assertNotNull(cacheDirectory);
         this.cachedObject = new CachedObject<>(CachedObject.getFile(cacheDirectory, FILENAME),
                                                new TypeReference<Name>() {},
@@ -29,7 +35,8 @@ public class CachedObjectTests extends InjectionTestCase {
     }
 
 
-    public void testGet() throws Exception {
+    @Test
+    public void get() throws Exception {
         Name name = new Name("John", "Smith");
         assertNotNull(Sync.last(cachedObject.set(name)));
 
@@ -37,7 +44,8 @@ public class CachedObjectTests extends InjectionTestCase {
         assertEquals(retrievedName, name);
     }
 
-    public void testSet() throws Exception {
+    @Test
+    public void set() throws Exception {
         Name name = new Name("John", "Smith");
         assertEquals(name, Sync.last(cachedObject.set(name)));
     }
@@ -63,12 +71,8 @@ public class CachedObjectTests extends InjectionTestCase {
 
             Name name = (Name) o;
 
-            if (firstName != null ? !firstName.equals(name.firstName) : name.firstName != null)
-                return false;
-            if (lastName != null ? !lastName.equals(name.lastName) : name.lastName != null)
-                return false;
-
-            return true;
+            return !(firstName != null ? !firstName.equals(name.firstName) : name.firstName != null) &&
+                    !(lastName != null ? !lastName.equals(name.lastName) : name.lastName != null);
         }
 
         @Override

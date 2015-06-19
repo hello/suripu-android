@@ -2,22 +2,25 @@ package is.hello.sense.graph.presenters;
 
 import android.content.ComponentCallbacks2;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import is.hello.sense.util.MockPresenter;
 
-public class PresenterTests extends TestCase {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class PresenterTests {
     private MockPresenter presenter = new MockPresenter();
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void initialize() {
         presenter.reset();
     }
 
 
-    public void testForgetData() {
+    @Test
+    public void forgetData() {
         presenter.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN);
         assertFalse(presenter.onForgetDataForLowMemoryCalled);
 

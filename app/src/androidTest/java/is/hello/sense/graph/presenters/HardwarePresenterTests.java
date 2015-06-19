@@ -2,6 +2,10 @@ package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -20,7 +24,7 @@ import is.hello.sense.bluetooth.stacks.TestPeripheralBehavior;
 import is.hello.sense.bluetooth.stacks.TestPeripheralService;
 import is.hello.sense.functional.Either;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.graph.InjectionTests;
 import is.hello.sense.util.Sync;
 import rx.Observable;
 
@@ -28,36 +32,39 @@ import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static is.hello.sense.AssertExtensions.assertThrows;
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint;
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-public class HardwarePresenterTests extends InjectionTestCase {
+public class HardwarePresenterTests extends InjectionTests {
     private final TestPeripheralBehavior peripheralBehavior = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
-    private TestPeripheral testPeripheral;
-    private SensePeripheral peripheral;
+    private final TestPeripheral testPeripheral;
+    private final SensePeripheral peripheral;
 
     @Inject BluetoothStack stack;
     @Inject HardwarePresenter presenter;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    public HardwarePresenterTests() {
+        this.testPeripheral = new TestPeripheral(stack, peripheralBehavior);
+        this.peripheral = new SensePeripheral(testPeripheral);
+    }
 
-        if (testPeripheral == null) {
-            this.testPeripheral = new TestPeripheral(stack, peripheralBehavior);
-            this.peripheral = new SensePeripheral(testPeripheral);
-        }
-
+    @Before
+    public void initialize() throws Exception {
         HelloPeripheral.Tests.setPeripheralService(peripheral, null);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+    public void tearDown() throws Exception {
         HardwarePresenter.Tests.setPeripheral(presenter, null);
         peripheralBehavior.reset();
     }
 
-    public void testErrorsResetPeripheral() throws Exception {
+    @Test
+    public void errorsResetPeripheral() throws Exception {
         HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
         assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
 
@@ -84,7 +91,8 @@ public class HardwarePresenterTests extends InjectionTestCase {
         assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
     }
 
-    public void testClearsPeripheralOnBluetoothDisable() throws Exception {
+    @Test
+    public void clearsPeripheralOnBluetoothDisable() throws Exception {
         HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
         presenter.onBluetoothEnabledChanged(true);
         assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
@@ -93,7 +101,8 @@ public class HardwarePresenterTests extends InjectionTestCase {
         assertNull(HardwarePresenter.Tests.getPeripheral(presenter));
     }
 
-    public void testConnectivityGetters() throws Exception {
+    @Test
+    public void connectivityGetters() throws Exception {
         TestPeripheralService service = new TestPeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY);
         HelloPeripheral.Tests.setPeripheralService(peripheral, service);
         HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
@@ -115,7 +124,8 @@ public class HardwarePresenterTests extends InjectionTestCase {
         HelloPeripheral.Tests.setPeripheralService(peripheral, null);
     }
 
-    public void testNoDeviceErrors() throws Exception {
+    @Test
+    public void noDeviceErrors() throws Exception {
         HardwarePresenter.Tests.setPeripheral(presenter, null);
 
         assertThrowsNoDeviceError(presenter.connectToPeripheral());
@@ -130,7 +140,8 @@ public class HardwarePresenterTests extends InjectionTestCase {
         assertThrowsNoDeviceError(presenter.factoryReset());
     }
 
-    public void testWifiSignalStrengthSort() throws Exception {
+    @Test
+    public void wifiSignalStrengthSort() throws Exception {
         // Not currently possible to test the actual wifi networks method
         // due to the relative complexity of mocking multiple responses.
         List<wifi_endpoint> endpoints = Lists.newArrayList(
@@ -145,7 +156,8 @@ public class HardwarePresenterTests extends InjectionTestCase {
         assertNoThrow(() -> HardwarePresenter.Tests.sortWifiNetworks(presenter, Lists.newArrayList()));
     }
 
-    public void testClearPeripheral() throws Exception {
+    @Test
+    public void clearPeripheral() throws Exception {
         TestPeripheralService service = new TestPeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY);
         HelloPeripheral.Tests.setPeripheralService(peripheral, service);
         HardwarePresenter.Tests.setPeripheral(presenter, peripheral);

@@ -1,6 +1,6 @@
 package is.hello.sense.util;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -8,12 +8,16 @@ import rx.Scheduler;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
-public class StateSafeSchedulerTests extends TestCase {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class StateSafeSchedulerTests {
     private boolean isResumed = false;
     private final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(() -> isResumed);
     private final StateSafeScheduler scheduler = new StateSafeScheduler(stateSafeExecutor, Schedulers.immediate());
 
-    public void testResumedBehavior() throws Exception {
+    @Test
+    public void resumedBehavior() throws Exception {
         this.isResumed = true;
         stateSafeExecutor.executePendingForResume();
 
@@ -25,7 +29,8 @@ public class StateSafeSchedulerTests extends TestCase {
         assertTrue(called.get());
     }
 
-    public void testPausedBehavior() throws Exception {
+    @Test
+    public void pausedBehavior() throws Exception {
         this.isResumed = false;
 
         AtomicBoolean called = new AtomicBoolean(false);

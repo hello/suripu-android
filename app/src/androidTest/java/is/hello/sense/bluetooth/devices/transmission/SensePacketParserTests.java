@@ -1,6 +1,7 @@
 package is.hello.sense.bluetooth.devices.transmission;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,25 +11,30 @@ import is.hello.sense.util.LambdaVar;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand;
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-public class SensePacketParserTests extends TestCase {
+public class SensePacketParserTests {
     private SensePacketParser packetParser;
     private SensePacketHandler packetHandler;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void initialize() {
         this.packetParser = new SensePacketParser();
         this.packetHandler = new SensePacketHandler(packetParser);
     }
 
-    public void testShouldProcessCharacteristic() throws Exception {
+    @Test
+    public void shouldProcessCharacteristic() throws Exception {
         assertTrue(packetParser.canProcessPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE));
         assertFalse(packetParser.canProcessPacket(UUID.fromString("D1700CFA-A6F8-47FC-92F5-9905D15F261C")));
     }
 
-    public void testProcessPacketOutOfOrder() throws Exception {
+    @Test
+    public void processPacketOutOfOrder() throws Exception {
         LambdaVar<MorpheusCommand> response = LambdaVar.empty();
         LambdaVar<Throwable> error = LambdaVar.empty();
         packetParser.responseListener = response::set;
@@ -40,7 +46,8 @@ public class SensePacketParserTests extends TestCase {
         assertNotNull(error.get());
     }
 
-    public void testStateCleanUp() throws Exception {
+    @Test
+    public void stateCleanUp() throws Exception {
         byte[] testPacket = { 0, /* packetCount */ 2, 0x00 };
 
         LambdaVar<MorpheusCommand> response = LambdaVar.empty();
@@ -68,7 +75,8 @@ public class SensePacketParserTests extends TestCase {
         assertNull(error.get());
     }
 
-    public void testProcessPacketInOrder() throws Exception {
+    @Test
+    public void processPacketInOrder() throws Exception {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(MorpheusCommand.CommandType.MORPHEUS_COMMAND_GET_WIFI_ENDPOINT)
                 .setWifiSSID("Mostly Radiation")

@@ -1,13 +1,17 @@
 package is.hello.sense.bluetooth.stacks.util;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.util.Arrays;
 
 import static is.hello.sense.AssertExtensions.assertThrows;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public class BytesTests extends TestCase {
-    public void testToStringWithBounds() throws Exception {
+public class BytesTests {
+    @Test
+    public void toStringWithBounds() throws Exception {
         byte[] emptyBytes = {};
         String emptyString = Bytes.toString(emptyBytes, 0, 0);
         assertEquals("", emptyString);
@@ -21,7 +25,8 @@ public class BytesTests extends TestCase {
         assertThrows(() -> Bytes.toString(testBytes, 3, 2));
     }
 
-    public void testToString() throws Exception {
+    @Test
+    public void toStringWithoutBounds() throws Exception {
         byte[] emptyBytes = {};
         String emptyString = Bytes.toString(emptyBytes);
         assertEquals("", emptyString);
@@ -32,7 +37,8 @@ public class BytesTests extends TestCase {
         assertEquals("12140F12", testString);
     }
 
-    public void testFromString() throws Exception {
+    @Test
+    public void fromString() throws Exception {
         byte[] emptyBytes = {};
         assertTrue(Arrays.equals(emptyBytes, Bytes.fromString("")));
 
@@ -42,13 +48,15 @@ public class BytesTests extends TestCase {
         assertThrows(() -> Bytes.fromString("121"));
     }
 
-    public void testStartWith() throws Exception {
+    @Test
+    public void startWith() throws Exception {
         byte[] sequence = { 0x1, 0x2, 0x3 };
         assertTrue(Bytes.startWith(sequence, new byte[] { 0x1, 0x2 }));
         assertFalse(Bytes.startWith(sequence, new byte[] { 0x2, 0x3 }));
     }
 
-    public void testContains() throws Exception {
+    @Test
+    public void contains() throws Exception {
         byte[] sequence = { 0x1, 0x2, 0x3 };
         assertTrue(Bytes.contains(sequence, (byte) 0x1));
         assertTrue(Bytes.contains(sequence, (byte) 0x2));

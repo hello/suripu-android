@@ -5,7 +5,7 @@ import android.os.Parcel;
 import android.text.ParcelableSpan;
 import android.text.Spanned;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,7 +14,10 @@ import java.io.ObjectOutputStream;
 
 import is.hello.sense.functional.Functions;
 
-public class MarkupStringTests extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public class MarkupStringTests {
     private final MarkupString testString;
     private final MarkupSpan[] testSpans;
 
@@ -33,7 +36,8 @@ public class MarkupStringTests extends TestCase {
     }
 
 
-    public void testSerialization() throws Exception {
+    @Test
+    public void serialization() throws Exception {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
         ObjectOutputStream outObjectStream = new ObjectOutputStream(outByteStream);
         byte[] bytes = null;
@@ -59,7 +63,8 @@ public class MarkupStringTests extends TestCase {
         }
     }
 
-    public void testParceling() throws Exception {
+    @Test
+    public void parceling() throws Exception {
         Parcel out = Parcel.obtain();
         byte[] bytes = null;
         try {
@@ -86,7 +91,8 @@ public class MarkupStringTests extends TestCase {
     }
 
 
-    public void testGetSpans() throws Exception {
+    @Test
+    public void getSpans() throws Exception {
         MarkupStyleSpan[] allSpans = testString.getSpans(0, testString.length(), MarkupStyleSpan.class);
         assertNotNull(allSpans);
         assertEquals(2, allSpans.length);
@@ -108,28 +114,32 @@ public class MarkupStringTests extends TestCase {
         assertEquals(Typeface.ITALIC, italicSpan[0].getStyle());
     }
 
-    public void testGetSpanStart() throws Exception {
+    @Test
+    public void getSpanStart() throws Exception {
         assertEquals(0, testString.getSpanStart(testSpans[0]));
         assertEquals(7, testString.getSpanStart(testSpans[1]));
         assertEquals(-1, testString.getSpanStart("not a span"));
         assertEquals(-1, testString.getSpanStart(null));
     }
 
-    public void testGetSpanEnd() throws Exception {
+    @Test
+    public void getSpanEnd() throws Exception {
         assertEquals(5, testString.getSpanEnd(testSpans[0]));
         assertEquals(12, testString.getSpanEnd(testSpans[1]));
         assertEquals(-1, testString.getSpanEnd("not a span"));
         assertEquals(-1, testString.getSpanEnd(null));
     }
 
-    public void testGetSpanFlags() throws Exception {
+    @Test
+    public void getSpanFlags() throws Exception {
         assertEquals(Spanned.SPAN_EXCLUSIVE_EXCLUSIVE, testString.getSpanFlags(testSpans[0]));
         assertEquals(Spanned.SPAN_EXCLUSIVE_EXCLUSIVE, testString.getSpanFlags(testSpans[1]));
         assertEquals(-1, testString.getSpanFlags("not a span"));
         assertEquals(-1, testString.getSpanFlags(null));
     }
 
-    public void testNextSpanTransition() throws Exception {
+    @Test
+    public void nextSpanTransition() throws Exception {
         assertEquals(5, testString.nextSpanTransition(0, testString.length(), null));
         assertEquals(5, testString.nextSpanTransition(0, testString.length(), MarkupStyleSpan.class));
         assertEquals(4, testString.nextSpanTransition(0, 4, MarkupStyleSpan.class));

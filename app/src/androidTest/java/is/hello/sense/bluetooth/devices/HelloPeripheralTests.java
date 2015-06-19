@@ -3,6 +3,9 @@ package is.hello.sense.bluetooth.devices;
 import android.bluetooth.BluetoothGatt;
 import android.support.annotation.NonNull;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,21 +25,23 @@ import is.hello.sense.bluetooth.stacks.TestPeripheral;
 import is.hello.sense.bluetooth.stacks.TestPeripheralBehavior;
 import is.hello.sense.bluetooth.stacks.TestPeripheralService;
 import is.hello.sense.functional.Either;
-import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.graph.InjectionTests;
 import is.hello.sense.util.Sync;
 import rx.Observable;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-public class HelloPeripheralTests extends InjectionTestCase {
+public class HelloPeripheralTests extends InjectionTests {
     @Inject BluetoothStack stack;
 
     private final TestPeripheralBehavior peripheralBehavior = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -90);
     private TestHelloPeripheral peripheral;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void initialize() throws Exception {
         peripheralBehavior.reset();
 
         if (peripheral == null) {
@@ -48,6 +53,7 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
     //region Delegated Methods
 
+    @Test
     public void testIsConnected() throws Exception {
         peripheralBehavior.setServicesResponse(null);
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
@@ -67,7 +73,8 @@ public class HelloPeripheralTests extends InjectionTestCase {
         assertFalse(peripheral.isConnected());
     }
 
-    public void testGetBondStatus() throws Exception {
+    @Test
+    public void getBondStatus() throws Exception {
         peripheralBehavior.setBondStatus(Peripheral.BOND_NONE);
         assertEquals(Peripheral.BOND_NONE, peripheral.getBondStatus());
 
@@ -78,15 +85,18 @@ public class HelloPeripheralTests extends InjectionTestCase {
         assertEquals(Peripheral.BOND_BONDED, peripheral.getBondStatus());
     }
 
-    public void testGetScannedRssi() throws Exception {
+    @Test
+    public void getScannedRssi() throws Exception {
         assertEquals(-90, peripheral.getScannedRssi());
     }
 
-    public void testGetAddress() throws Exception {
+    @Test
+    public void getAddress() throws Exception {
         assertEquals("ca:15:4f:fa:b7:0b", peripheral.getAddress());
     }
 
-    public void testGetName() throws Exception {
+    @Test
+    public void getName() throws Exception {
         assertEquals("Sense-Test", peripheral.getName());
     }
 
@@ -95,7 +105,8 @@ public class HelloPeripheralTests extends InjectionTestCase {
 
     //region Methods w/Logic
 
-    public void testSuccessfulConnect() throws Exception {
+    @Test
+    public void successfulConnect() throws Exception {
         Either<Peripheral, Throwable> successResponse = Either.left(peripheral.peripheral);
         TestPeripheralService service = new TestPeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY);
         Map<UUID, PeripheralService> services = new HashMap<>();
@@ -110,7 +121,8 @@ public class HelloPeripheralTests extends InjectionTestCase {
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCOVER_SERVICES));
     }
 
-    public void testFailedConnect() throws Exception {
+    @Test
+    public void failedConnect() throws Exception {
         Either<Peripheral, Throwable> successResponse = Either.left(peripheral.peripheral);
 
         peripheralBehavior.setCreateBondResponse(successResponse);
@@ -148,7 +160,8 @@ public class HelloPeripheralTests extends InjectionTestCase {
             .assertThrows(BluetoothGattError.class);
     }
 
-    public void testDisconnect() throws Exception {
+    @Test
+    public void disconnect() throws Exception {
         peripheralBehavior.setDisconnectResponse(Either.left(peripheral.peripheral));
 
         Sync.wrap(peripheral.disconnect())
@@ -162,7 +175,8 @@ public class HelloPeripheralTests extends InjectionTestCase {
             .assertThrows(BluetoothGattError.class);
     }
 
-    public void testSubscribe() throws Exception {
+    @Test
+    public void subscribe() throws Exception {
         PeripheralService service = new TestPeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY);
         HelloPeripheral.Tests.setPeripheralService(peripheral, service);
 
@@ -192,7 +206,8 @@ public class HelloPeripheralTests extends InjectionTestCase {
             .assertThrows(PeripheralConnectionError.class);
     }
 
-    public void testUnsubscribe() throws Exception {
+    @Test
+    public void unsubscribe() throws Exception {
         UUID id = SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE;
         TestOperationTimeout timeout = TestOperationTimeout.acquire("Unsubscribe");
 
