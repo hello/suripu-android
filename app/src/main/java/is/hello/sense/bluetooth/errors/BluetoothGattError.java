@@ -167,6 +167,7 @@ public class BluetoothGattError extends BluetoothError implements Errors.Reporti
     @Override
     public StringRef getDisplayMessage() {
         switch (statusCode) {
+            case BluetoothGattError.GATT_INTERNAL_ERROR:
             case BluetoothGattError.GATT_STACK_ERROR: {
                 return StringRef.from(R.string.error_bluetooth_gatt_stack);
             }
@@ -189,7 +190,7 @@ public class BluetoothGattError extends BluetoothError implements Errors.Reporti
         }
     }
 
-    public static enum Operation {
+    public enum Operation {
         CONNECT,
         DISCONNECT,
         DISCOVER_SERVICES,
