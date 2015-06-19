@@ -3,10 +3,8 @@ machine:
     version: oraclejdk8
 general:
   branches:
-    only:
-      - master
-      - develop
-      - /test\-.*/
+    ignore:
+      - /no\-test\-.*/
 dependencies:
   pre:
     - echo y | android update sdk --no-ui --all --filter "extra-android-support"
