@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -33,7 +34,11 @@ public class NotificationReceiver extends BroadcastReceiver {
     private int notificationId = 0;
 
     public NotificationReceiver() {
-        //SenseApplication.getInstance().inject(this);
+        // Robolectric implements the application lifecycle wrong and
+        // instantiates all receivers _before_ #onCreate is called.
+        if (!"robolectric".equals(Build.FINGERPRINT)) {
+            SenseApplication.getInstance().inject(this);
+        }
     }
 
     @Override
