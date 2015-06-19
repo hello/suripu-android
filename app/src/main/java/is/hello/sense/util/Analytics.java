@@ -403,7 +403,9 @@ public class Analytics {
     //region Lifecycle
 
     public static void initialize(@NonNull Context context) {
-        Analytics.provider = MixpanelAPI.getInstance(context, BuildConfig.MP_API_KEY);
+        if (provider == null) {
+            Analytics.provider = MixpanelAPI.getInstance(context, BuildConfig.MP_API_KEY);
+        }
     }
 
     @SuppressWarnings("UnusedParameters")

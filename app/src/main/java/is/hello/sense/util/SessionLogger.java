@@ -127,37 +127,37 @@ public final class SessionLogger {
 
 
     public static void init(@NonNull Context context) {
-        File file = new File(getLogFilePath(context));
-        init(context, file);
+        if (!SessionLogger.initialized) {
+            File file = new File(getLogFilePath(context));
+            init(context, file);
+        }
     }
 
     public static void init(@NonNull Context context, @NonNull File logFile) {
-        if (SessionLogger.initialized) {
-            throw new IllegalStateException("Cannot initialize SessionLogger more than once.");
-        }
+        if (!SessionLogger.initialized) {
+            try {
+                //noinspection PointlessBooleanExpression
+                SessionLogger.printWriter = new PrintWriter(new FileOutputStream(logFile, !BuildConfig.CLEAR_LOG_ON_START));
+                SessionLogger.logFile = logFile;
+                HandlerThread workerThread = new HandlerThread("SessionLogger.handlerThread");
+                workerThread.start();
+                SessionLogger.handler = new Handler(workerThread.getLooper());
+                SessionLogger.initialized = true;
 
-        try {
-            //noinspection PointlessBooleanExpression
-            SessionLogger.printWriter = new PrintWriter(new FileOutputStream(logFile, !BuildConfig.CLEAR_LOG_ON_START));
-            SessionLogger.logFile = logFile;
-            HandlerThread workerThread = new HandlerThread("SessionLogger.handlerThread");
-            workerThread.start();
-            SessionLogger.handler = new Handler(workerThread.getLooper());
-            SessionLogger.initialized = true;
+                println(Log.INFO, "Internal", "Session Began");
 
-            println(Log.INFO, "Internal", "Session Began");
+                Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+                logOutSignal.subscribe(intent ->
+                                clearLog().subscribe(ignored -> Log.i(SessionLogger.class.getSimpleName(), "Cleared session log for log out"),
+                                        e -> Log.e(SessionLogger.class.getSimpleName(), "Could not clear log.", e)),
+                        Functions.LOG_ERROR);
+            } catch (IOException e) {
+                Logger.error(SessionLogger.class.getSimpleName(), "Could not initialize session logger.", e);
 
-            Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
-            logOutSignal.subscribe(intent ->
-                    clearLog().subscribe(ignored -> Log.i(SessionLogger.class.getSimpleName(), "Cleared session log for log out"),
-                                         e -> Log.e(SessionLogger.class.getSimpleName(), "Could not clear log.", e)),
-                    Functions.LOG_ERROR);
-        } catch (IOException e) {
-            Logger.error(SessionLogger.class.getSimpleName(), "Could not initialize session logger.", e);
-
-            Functions.safeClose(printWriter);
-            SessionLogger.printWriter = null;
-            SessionLogger.initialized = false;
+                Functions.safeClose(printWriter);
+                SessionLogger.printWriter = null;
+                SessionLogger.initialized = false;
+            }
         }
     }
 }
