@@ -103,7 +103,7 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
             // we can only get the offset after layout.
 
             layoutManager.postLayout(() -> {
-                layoutManager.scrollToPositionWithOffset(position, -layoutManager.getItemWidth());
+                recyclerView.scrollBy(-layoutManager.getItemWidth(), 0);
                 recyclerView.post(presenter::retrieveTimelines);
             });
         } else {
@@ -189,24 +189,16 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
         }
 
         public boolean snapToNearestItem(RecyclerView recyclerView) {
-            int lastItem = layoutManager.findLastVisibleItemPosition();
-            int lastCompleteItem = layoutManager.findLastCompletelyVisibleItemPosition();
-            if (lastItem != lastCompleteItem) {
-                View itemView = recyclerView.findViewHolderForLayoutPosition(lastItem).itemView;
-                int width = itemView.getMeasuredWidth();
-                int x = Math.abs(itemView.getRight());
-
-                recyclerView.stopScroll();
-                if (x > width / 2) {
-                    recyclerView.smoothScrollToPosition(lastItem);
-                } else {
-                    recyclerView.smoothScrollToPosition(layoutManager.findFirstVisibleItemPosition());
-                }
-
+            int containerMidX = recyclerView.getWidth() / 2;
+            View centerView = recyclerView.findChildViewUnder(containerMidX, 0);
+            int centerViewMidX = (centerView.getLeft() + centerView.getRight()) / 2;
+            int distanceToNotch = centerViewMidX - containerMidX;
+            if (distanceToNotch != 0) {
+                recyclerView.smoothScrollBy(distanceToNotch, 0);
                 return true;
+            } else {
+                return false;
             }
-
-            return false;
         }
     }
 
