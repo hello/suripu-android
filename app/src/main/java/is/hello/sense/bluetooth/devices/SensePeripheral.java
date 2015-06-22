@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketHandler;
 import is.hello.sense.bluetooth.devices.transmission.SensePacketParser;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.sense.bluetooth.errors.BluetoothConnectionLostError;
 import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.bluetooth.errors.PeripheralBusyError;
@@ -48,29 +49,29 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     //region Versions
 
     /**
+     * The command version used by the app.
+     */
+    public static final int CLIENT_VERSION = 0;
+
+    /**
      * The command version used by the firmware hasn't been determined yet.
      */
-    public static final int VERSION_UNKNOWN = -1;
+    public static final int SENSE_VERSION_UNKNOWN = -1;
 
     /**
      * The command version used by the firmware on the original PVT units.
      */
-    public static final int VERSION_PVT = 0;
-
-    /**
-     * The command version used by the app.
-     */
-    public static final int VERSION_APP = 0;
+    public static final int SENSE_VERSION_PVT = 0;
 
     /**
      * The command version used by the firmware that
      * is able to parse WEP keys from ASCII strings.
      */
-    public static final int VERSION_WEP_FIX = 1;
+    public static final int SENSE_VERSION_WEP_FIX = 1;
 
-    @IntDef({VERSION_UNKNOWN, VERSION_PVT, VERSION_WEP_FIX})
+    @IntDef({SENSE_VERSION_UNKNOWN, SENSE_VERSION_PVT, SENSE_VERSION_WEP_FIX})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface Version {}
+    public @interface SenseVersion {}
 
     //endregion
 
@@ -85,7 +86,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
     private final PacketParser<MorpheusCommand> dataHandler;
     private final PacketHandler<MorpheusCommand> packetHandler;
 
-    private @Version int version = VERSION_UNKNOWN;
+    private @SenseVersion int senseVersion = SENSE_VERSION_UNKNOWN;
 
     public static Observable<List<SensePeripheral>> discover(@NonNull BluetoothStack bluetoothStack,
                                                              @NonNull PeripheralCriteria criteria) {
@@ -145,23 +146,16 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
     //region Versions
 
-    private void setFirmwareVersion(int firmwareVersion) {
-        this.version = firmwareVersion;
+    private void setCommandVersion(int firmwareVersion) {
+        this.senseVersion = firmwareVersion;
     }
 
     private int getCommandVersion() {
-        if (version == VERSION_UNKNOWN) {
-            return VERSION_PVT;
+        if (senseVersion == SENSE_VERSION_UNKNOWN) {
+            return SENSE_VERSION_PVT;
         } else {
-            return version;
+            return senseVersion;
         }
-    }
-
-    /**
-     * Returns the client-consumable firmware version of the peripheral, if known.
-     */
-    public @Version int getFirmwareVersion() {
-        return version;
     }
 
     //endregion
@@ -206,9 +200,9 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         return dataHandler.hasListeners();
     }
 
-    Observable<MorpheusCommand> performCommand(@NonNull MorpheusCommand command,
-                                               @NonNull OperationTimeout timeout,
-                                               @NonNull OnCommandResponse onCommandResponse) {
+    <R> Observable<R> performCommand(@NonNull MorpheusCommand command,
+                                     @NonNull OperationTimeout timeout,
+                                     @NonNull OnCommandResponse<R> onCommandResponse) {
         return peripheral.getStack().newConfiguredObservable(s -> {
             if (isBusy()) {
                 s.onError(busyError());
@@ -222,7 +216,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
                 MorpheusCommand timeoutResponse = MorpheusCommand.newBuilder()
                         .setVersion(getCommandVersion())
-                        .setAppVersion(VERSION_APP)
+                        .setAppVersion(CLIENT_VERSION)
                         .setType(CommandType.MORPHEUS_COMMAND_ERROR)
                         .setError(SenseCommandProtos.ErrorType.TIME_OUT)
                         .build();
@@ -237,7 +231,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
             subscribe.subscribe(subscribedCharacteristic -> {
                 dataHandler.responseListener = response -> {
                     Logger.info(Peripheral.LOG_TAG, "Got response to command " + command + ": " + response);
-                    setFirmwareVersion(response.getVersion());
+                    setCommandVersion(response.getVersion());
                     onCommandResponse.onResponse(response, s, timeout);
                 };
                 dataHandler.errorListener = dataError -> {
@@ -367,7 +361,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SWITCH_TO_NORMAL_MODE)
                 .setVersion(getCommandVersion())
-                .setAppVersion(VERSION_APP)
+                .setAppVersion(CLIENT_VERSION)
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
@@ -382,7 +376,7 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SWITCH_TO_PAIRING_MODE)
                 .setVersion(getCommandVersion())
-                .setAppVersion(VERSION_APP)
+                .setAppVersion(CLIENT_VERSION)
                 .build();
         return performDisconnectingCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
@@ -397,21 +391,21 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_ERASE_PAIRED_PHONE)
                 .setVersion(getCommandVersion())
-                .setAppVersion(VERSION_APP)
+                .setAppVersion(CLIENT_VERSION)
                 .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
     }
 
-    public Observable<Void> setWifiNetwork(String ssid,
-                                           SenseCommandProtos.wifi_endpoint.sec_type securityType,
-                                           String password) {
+    public Observable<wifi_connection_state> setWifiNetwork(String ssid,
+                                                            wifi_endpoint.sec_type securityType,
+                                                            String password) {
         Logger.info(Peripheral.LOG_TAG, "setWifiNetwork(" + ssid + ")");
 
         if (isBusy()) {
             return Observable.error(busyError());
         }
 
-        if (securityType != SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN &&
+        if (securityType != wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN &&
                 TextUtils.isEmpty(password)) {
             return Observable.error(new PeripheralSetWifiError(PeripheralSetWifiError.Reason.EMPTY_PASSWORD));
         }
@@ -420,10 +414,10 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         MorpheusCommand.Builder builder = MorpheusCommand.newBuilder()
                 .setType(CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
                 .setVersion(version)
-                .setAppVersion(VERSION_APP)
+                .setAppVersion(CLIENT_VERSION)
                 .setWifiSSID(ssid)
                 .setSecurityType(securityType);
-        if (version == VERSION_PVT && securityType == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
+        if (version == SENSE_VERSION_PVT && securityType == wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
             byte[] keyBytes = Bytes.tryFromString(password);
             if (keyBytes == null) {
                 return Observable.error(new PeripheralSetWifiError(PeripheralSetWifiError.Reason.MALFORMED_BYTES));
@@ -437,190 +431,35 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
         }
 
         MorpheusCommand morpheusCommand = builder.build();
-
-        return performCommand(morpheusCommand, peripheral.createOperationTimeout("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS), (response, subscriber, timeout) -> {
+        OperationTimeout commandTimeout = peripheral.createOperationTimeout("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS);
+        return performCommand(morpheusCommand, commandTimeout, (response, subscriber, timeout) -> {
             Action1<Throwable> onError = subscriber::onError;
 
             if (response.getType() == CommandType.MORPHEUS_COMMAND_CONNECTION_STATE) {
                 timeout.reschedule();
-                Logger.info(Peripheral.LOG_TAG, "connection state update " + response.getWifiConnectionState().toString());
 
-                if (response.getWifiConnectionState() == wifi_connection_state.CONNECTED) {
+                wifi_connection_state wifiConnectionState = response.getWifiConnectionState();
+                Logger.info(Peripheral.LOG_TAG, "connection state update " + wifiConnectionState.toString());
+
+                if (wifiConnectionState == wifi_connection_state.CONNECTED) {
                     timeout.unschedule();
 
                     Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                     unsubscribe.subscribe(ignored -> {
-                        subscriber.onNext(response);
+                        subscriber.onNext(wifi_connection_state.CONNECTED);
                         subscriber.onCompleted();
                     }, onError);
 
                     dataHandler.clearListeners();
+                } else {
+                    subscriber.onNext(wifiConnectionState);
                 }
-            } else if( response.getType() == CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT ) { //old fw
+            } else if (response.getType() == CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT) { //old fw
                 timeout.unschedule();
 
                 Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
                 unsubscribe.subscribe(ignored -> {
-                    subscriber.onNext(response);
-                    subscriber.onCompleted();
-                }, onError);
-
-                dataHandler.clearListeners();
-            }else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
-                timeout.unschedule();
-
-                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
-                unsubscribe.subscribe(ignored -> {
-                    if (response.getError() == SenseCommandProtos.ErrorType.TIME_OUT) {
-                        onError.call(new OperationTimeoutError(OperationTimeoutError.Operation.COMMAND_RESPONSE));
-                    } else {
-                        onError.call(new SensePeripheralError(response.getError()));
-                    }
-                }, e -> {
-                    if (response.getError() == SenseCommandProtos.ErrorType.TIME_OUT) {
-                        onError.call(new OperationTimeoutError(OperationTimeoutError.Operation.COMMAND_RESPONSE, e));
-                    } else {
-                        onError.call(new SensePeripheralError(response.getError(), e));
-                    }
-                });
-
-                dataHandler.clearListeners();
-            } else {
-                timeout.unschedule();
-
-                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
-                unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(SenseCommandProtos.ErrorType.INTERNAL_DATA_ERROR)), onError);
-
-                dataHandler.clearListeners();
-            }
-        }).map(Functions.TO_VOID);
-
-    }
-
-    public Observable<SenseWifiNetwork> getWifiNetwork() {
-        Logger.info(Peripheral.LOG_TAG, "getWifiNetwork()");
-
-        if (isBusy()) {
-            return Observable.error(busyError());
-        }
-
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(CommandType.MORPHEUS_COMMAND_GET_WIFI_ENDPOINT)
-                .setVersion(getCommandVersion())
-                .setAppVersion(VERSION_APP)
-                .build();
-
-        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(response ->
-                new SenseWifiNetwork(response.getWifiSSID(), response.getWifiConnectionState()));
-    }
-
-    public Observable<String> pairPill(final String accountToken) {
-        Logger.info(Peripheral.LOG_TAG, "pairPill(" + accountToken + ")");
-
-        if (isBusy()) {
-            return Observable.error(busyError());
-        }
-
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(CommandType.MORPHEUS_COMMAND_PAIR_PILL)
-                .setVersion(getCommandVersion())
-                .setAppVersion(VERSION_APP)
-                .setAccountId(accountToken)
-                .build();
-        return performSimpleCommand(morpheusCommand, createPairPillTimeout()).map(MorpheusCommand::getDeviceId);
-    }
-
-    public Observable<Void> linkAccount(final String accountToken) {
-        Logger.info(Peripheral.LOG_TAG, "linkAccount(" + accountToken + ")");
-
-        if (isBusy()) {
-            return Observable.error(busyError());
-        }
-
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
-                .setVersion(getCommandVersion())
-                .setAppVersion(VERSION_APP)
-                .setAccountId(accountToken)
-                .build();
-        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
-    }
-
-    public Observable<Void> factoryReset() {
-        Logger.info(Peripheral.LOG_TAG, "factoryReset()");
-
-        if (isBusy()) {
-            return Observable.error(busyError());
-        }
-
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(CommandType.MORPHEUS_COMMAND_FACTORY_RESET)
-                .setVersion(getCommandVersion())
-                .setAppVersion(VERSION_APP)
-                .build();
-        return performDisconnectingCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
-    }
-
-    public Observable<Void> pushData() {
-        Logger.info(Peripheral.LOG_TAG, "pushData()");
-
-        if (isBusy()) {
-            return Observable.error(busyError());
-        }
-
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(CommandType.MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE)
-                .setVersion(getCommandVersion())
-                .setAppVersion(VERSION_APP)
-                .build();
-        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
-    }
-
-    public Observable<Void> runLedAnimation(@NonNull LedAnimation animationType) {
-        Logger.info(Peripheral.LOG_TAG, "runLedAnimation(" + animationType + ")");
-
-        if (isBusy()) {
-            return Observable.error(busyError());
-        }
-
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(animationType.commandType)
-                .setVersion(getCommandVersion())
-                .setAppVersion(VERSION_APP)
-                .build();
-        return performSimpleCommand(morpheusCommand, createAnimationTimeout()).map(Functions.TO_VOID);
-    }
-
-    public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks() {
-        Logger.info(Peripheral.LOG_TAG, "scanForWifiNetworks()");
-
-        if (isBusy()) {
-            return Observable.error(busyError());
-        }
-
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                .setType(CommandType.MORPHEUS_COMMAND_START_WIFISCAN)
-                .setVersion(getCommandVersion())
-                .setAppVersion(VERSION_APP)
-                .build();
-
-        //noinspection MismatchedQueryAndUpdateOfCollection
-        List<SenseCommandProtos.wifi_endpoint> endpoints = new ArrayList<>();
-        return performCommand(morpheusCommand, createScanWifiTimeout(), (response, subscriber, timeout) -> {
-            Action1<Throwable> onError = subscriber::onError;
-
-            if (response.getType() == CommandType.MORPHEUS_COMMAND_START_WIFISCAN) {
-                timeout.reschedule();
-
-                if(response.getWifiScanResultCount() == 1) {
-                    endpoints.add(response.getWifiScanResult(0));
-                }
-            } else if (response.getType() == CommandType.MORPHEUS_COMMAND_STOP_WIFISCAN) {
-                timeout.unschedule();
-
-                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
-                unsubscribe.subscribe(ignored -> {
-                    subscriber.onNext(response);
+                    subscriber.onNext(wifi_connection_state.CONNECTED);
                     subscriber.onCompleted();
                 }, onError);
 
@@ -652,14 +491,173 @@ public final class SensePeripheral extends HelloPeripheral<SensePeripheral> {
 
                 dataHandler.clearListeners();
             }
-        }).map(ignored -> endpoints);
+        });
+
+    }
+
+    public Observable<SenseWifiNetwork> getWifiNetwork() {
+        Logger.info(Peripheral.LOG_TAG, "getWifiNetwork()");
+
+        if (isBusy()) {
+            return Observable.error(busyError());
+        }
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_GET_WIFI_ENDPOINT)
+                .setVersion(getCommandVersion())
+                .setAppVersion(CLIENT_VERSION)
+                .build();
+
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(response ->
+                new SenseWifiNetwork(response.getWifiSSID(), response.getWifiConnectionState()));
+    }
+
+    public Observable<String> pairPill(final String accountToken) {
+        Logger.info(Peripheral.LOG_TAG, "pairPill(" + accountToken + ")");
+
+        if (isBusy()) {
+            return Observable.error(busyError());
+        }
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_PAIR_PILL)
+                .setVersion(getCommandVersion())
+                .setAppVersion(CLIENT_VERSION)
+                .setAccountId(accountToken)
+                .build();
+        return performSimpleCommand(morpheusCommand, createPairPillTimeout()).map(MorpheusCommand::getDeviceId);
+    }
+
+    public Observable<Void> linkAccount(final String accountToken) {
+        Logger.info(Peripheral.LOG_TAG, "linkAccount(" + accountToken + ")");
+
+        if (isBusy()) {
+            return Observable.error(busyError());
+        }
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
+                .setVersion(getCommandVersion())
+                .setAppVersion(CLIENT_VERSION)
+                .setAccountId(accountToken)
+                .build();
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
+    }
+
+    public Observable<Void> factoryReset() {
+        Logger.info(Peripheral.LOG_TAG, "factoryReset()");
+
+        if (isBusy()) {
+            return Observable.error(busyError());
+        }
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_FACTORY_RESET)
+                .setVersion(getCommandVersion())
+                .setAppVersion(CLIENT_VERSION)
+                .build();
+        return performDisconnectingCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
+    }
+
+    public Observable<Void> pushData() {
+        Logger.info(Peripheral.LOG_TAG, "pushData()");
+
+        if (isBusy()) {
+            return Observable.error(busyError());
+        }
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE)
+                .setVersion(getCommandVersion())
+                .setAppVersion(CLIENT_VERSION)
+                .build();
+        return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout()).map(Functions.TO_VOID);
+    }
+
+    public Observable<Void> runLedAnimation(@NonNull LedAnimation animationType) {
+        Logger.info(Peripheral.LOG_TAG, "runLedAnimation(" + animationType + ")");
+
+        if (isBusy()) {
+            return Observable.error(busyError());
+        }
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(animationType.commandType)
+                .setVersion(getCommandVersion())
+                .setAppVersion(CLIENT_VERSION)
+                .build();
+        return performSimpleCommand(morpheusCommand, createAnimationTimeout()).map(Functions.TO_VOID);
+    }
+
+    public Observable<List<wifi_endpoint>> scanForWifiNetworks() {
+        Logger.info(Peripheral.LOG_TAG, "scanForWifiNetworks()");
+
+        if (isBusy()) {
+            return Observable.error(busyError());
+        }
+
+        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_START_WIFISCAN)
+                .setVersion(getCommandVersion())
+                .setAppVersion(CLIENT_VERSION)
+                .build();
+
+        //noinspection MismatchedQueryAndUpdateOfCollection
+        List<wifi_endpoint> endpoints = new ArrayList<>();
+        return performCommand(morpheusCommand, createScanWifiTimeout(), (response, subscriber, timeout) -> {
+            Action1<Throwable> onError = subscriber::onError;
+
+            if (response.getType() == CommandType.MORPHEUS_COMMAND_START_WIFISCAN) {
+                timeout.reschedule();
+
+                if (response.getWifiScanResultCount() == 1) {
+                    endpoints.add(response.getWifiScanResult(0));
+                }
+            } else if (response.getType() == CommandType.MORPHEUS_COMMAND_STOP_WIFISCAN) {
+                timeout.unschedule();
+
+                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+                unsubscribe.subscribe(ignored -> {
+                    subscriber.onNext(endpoints);
+                    subscriber.onCompleted();
+                }, onError);
+
+                dataHandler.clearListeners();
+            } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
+                timeout.unschedule();
+
+                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+                unsubscribe.subscribe(ignored -> {
+                    if (response.getError() == SenseCommandProtos.ErrorType.TIME_OUT) {
+                        onError.call(new OperationTimeoutError(OperationTimeoutError.Operation.COMMAND_RESPONSE));
+                    } else {
+                        onError.call(new SensePeripheralError(response.getError()));
+                    }
+                }, e -> {
+                    if (response.getError() == SenseCommandProtos.ErrorType.TIME_OUT) {
+                        onError.call(new OperationTimeoutError(OperationTimeoutError.Operation.COMMAND_RESPONSE, e));
+                    } else {
+                        onError.call(new SensePeripheralError(response.getError(), e));
+                    }
+                });
+
+                dataHandler.clearListeners();
+            } else {
+                timeout.unschedule();
+
+                Observable<UUID> unsubscribe = unsubscribe(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE, createOperationTimeout("Unsubscribe"));
+                unsubscribe.subscribe(ignored -> onError.call(new SensePeripheralError(SenseCommandProtos.ErrorType.INTERNAL_DATA_ERROR)), onError);
+
+                dataHandler.clearListeners();
+            }
+        });
     }
 
     //endregion
 
 
-    interface OnCommandResponse {
-        void onResponse(MorpheusCommand response, Subscriber<? super MorpheusCommand> subscriber, OperationTimeout timeout);
+    interface OnCommandResponse<R> {
+        void onResponse(MorpheusCommand response, Subscriber<? super R> subscriber, OperationTimeout timeout);
     }
 
 

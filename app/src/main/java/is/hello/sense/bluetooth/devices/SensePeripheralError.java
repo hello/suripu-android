@@ -73,6 +73,9 @@ public class SensePeripheralError extends BluetoothError implements Errors.Repor
             case FORCE_DATA_PUSH_FAILED:
                 return StringRef.from(R.string.error_force_push_data);
 
+            case SERVER_CONNECTION_TIMEOUT:
+                return StringRef.from(R.string.error_server_connection_timeout);
+
             default:
                 return StringRef.from(errorType.toString());
         }
