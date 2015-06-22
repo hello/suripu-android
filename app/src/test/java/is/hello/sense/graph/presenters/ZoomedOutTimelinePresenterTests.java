@@ -1,21 +1,26 @@
 package is.hello.sense.graph.presenters;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.CountDownLatch;
+
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.Timeline;
+import is.hello.sense.functional.Either;
 import is.hello.sense.graph.InjectionTests;
-import is.hello.sense.util.LambdaVar;
 import is.hello.sense.util.Sync;
-import is.hello.sense.util.markup.text.MarkupString;
+import rx.schedulers.Schedulers;
 
-import static is.hello.sense.util.ModelHelper.manipulate;
+import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -27,12 +32,9 @@ public class ZoomedOutTimelinePresenterTests extends InjectionTests {
 
     @Before
     public void initialize() throws Exception {
+        presenter.clearDataViews();
         presenter.setFirstDate(startTime);
-    }
-
-    @Test
-    public void getDateTimeAt() throws Exception {
-        assertEquals(startTime.plusDays(-5).withTimeAtStartOfDay(), presenter.getDateTimeAt(5));
+        presenter.setUpdateScheduler(Schedulers.computation());
     }
 
     @Test
@@ -44,64 +46,169 @@ public class ZoomedOutTimelinePresenterTests extends InjectionTests {
         assertEquals(0, presenter.getCachedTimelines().size());
     }
 
+
     @Test
-    public void postResumed() throws Exception {
-        LambdaVar<Boolean> called = LambdaVar.of(false);
-        presenter.post("tag", () -> called.set(true));
-        assertTrue(called.get());
+    public void getDateTimeAt() throws Exception {
+        assertEquals(startTime.minusDays(5).withTimeAtStartOfDay(), presenter.getDateTimeAt(5));
     }
 
     @Test
-    public void postSuspended() throws Exception {
-        LambdaVar<Boolean> called = LambdaVar.of(false);
-        presenter.suspend();
-        presenter.post("tag", () -> called.set(true));
-        assertFalse(called.get());
+    public void getDateTimePosition() throws Exception {
+        assertEquals(4, presenter.getDateTimePosition(startTime.minusDays(5)));
+    }
 
-        Sync.wrap(presenter.timelineForDate(startTime))
-            .assertThrows(IllegalStateException.class);
-        presenter.resume();
 
-        assertTrue(called.get());
+    @Test
+    public void caching() throws Exception {
+        assertNoThrow(() -> presenter.cacheTimeline(startTime, null));
+
+        Timeline toCache = new Timeline();
+        presenter.cacheTimeline(startTime, toCache);
+        assertNotNull(presenter.getCachedTimeline(startTime));
     }
 
     @Test
-    public void postCancel() throws Exception {
-        LambdaVar<Boolean> called = LambdaVar.of(false);
+    public void retrieveAndCacheTimelineFresh() throws Exception {
+        DateTime date = DateTime.now();
+        Timeline timeline = Sync.last(presenter.retrieveAndCacheTimeline(date));
+        assertNotNull(timeline);
 
-        presenter.suspend();
-        presenter.post("tag", () -> called.set(true));
-        assertFalse(called.get());
-
-        presenter.cancel("tag");
-
-        presenter.resume();
-        assertFalse(called.get());
+        Timeline cached = presenter.getCachedTimeline(date);
+        assertNotNull(cached);
+        assertSame(timeline, cached);
     }
 
     @Test
-    public void cacheInjection() throws Exception {
-        Timeline timeline = manipulate(new Timeline())
-                .set("date", DateTime.now())
-                .set("message", new MarkupString("This is a test"))
-                .unwrap();
+    public void retrieveAndCacheTimelineExisting() throws Exception {
+        DateTime date = DateTime.now();
+        Timeline toCache = new Timeline();
+        presenter.cacheTimeline(date, toCache);
 
-        presenter.cacheSingleTimeline(timeline.getDate(), timeline);
-
-        Timeline presenterTimeline = Sync.last(presenter.timelineForDate(timeline.getDate()));
-        assertNotNull(presenterTimeline);
-        assertSame(timeline, presenterTimeline);
+        assertSame(toCache, presenter.getCachedTimeline(date));
     }
 
     @Test
-    public void timelineForDate() throws Exception {
-        Timeline firstTimeline = Sync.last(presenter.timelineForDate(startTime));
-        assertNotNull(firstTimeline);
-        assertEquals(77, firstTimeline.getScore());
+    public void retrieveTimelines() throws Exception {
+        DateTime date = DateTime.now();
+        Batch firstBatch = Batch.create(date, 3).addTo(presenter);
 
-        Timeline secondTimeline = Sync.last(presenter.timelineForDate(startTime));
-        assertNotNull(secondTimeline);
-        assertEquals(77, secondTimeline.getScore());
-        assertSame(secondTimeline, firstTimeline);
+        presenter.retrieveTimelines();
+        firstBatch.await();
+        firstBatch.assertAllUpdated();
+        firstBatch.removeFrom(presenter);
+
+
+        Batch secondBatch = Batch.create(date, 3).addTo(presenter);
+
+        presenter.retrieveTimelines();
+        secondBatch.await();
+        secondBatch.assertAllUpdated();
+
+        firstBatch.assertNoneUpdated();
+    }
+
+
+    static class Batch {
+        final CountDownLatch countDownLatch;
+        final TestView[] testViews;
+
+        static Batch create(@NonNull DateTime dateTime, int size) {
+            TestView[] testViews = new TestView[size];
+            CountDownLatch countDownLatch = new CountDownLatch(size);
+            for (int i = 0; i < size; i++) {
+                testViews[i] = new TestView(dateTime.minusDays(i), countDownLatch);
+            }
+
+            return new Batch(countDownLatch, testViews);
+        }
+
+        Batch(@NonNull CountDownLatch countDownLatch, @NonNull TestView[] testViews) {
+            this.countDownLatch = countDownLatch;
+            this.testViews = testViews;
+        }
+
+
+        Batch addTo(@NonNull ZoomedOutTimelinePresenter presenter) {
+            for (TestView testView : testViews) {
+                presenter.addDataView(testView);
+            }
+
+            return this;
+        }
+
+        Batch removeFrom(@NonNull ZoomedOutTimelinePresenter presenter) {
+            for (TestView testView : testViews) {
+                testView.clearResult();
+                presenter.removeDataView(testView);
+            }
+            return this;
+        }
+
+        void await() throws InterruptedException {
+            countDownLatch.await();
+        }
+
+        void assertAllUpdated() {
+            for (TestView testView : testViews) {
+                Either<Timeline, Throwable> result = testView.getResult();
+                assertNotNull(result);
+                assertTrue(result.isLeft());
+                assertNotNull(result.getLeft());
+            }
+        }
+
+        void assertNoneUpdated() {
+            for (TestView testView : testViews) {
+                assertNull(testView.getResult());
+            }
+
+        }
+    }
+
+    static class TestView implements ZoomedOutTimelinePresenter.DataView {
+        private final DateTime dateTime;
+        private final CountDownLatch countDownLatch;
+
+        private boolean wantsUpdates = true;
+        private @Nullable Either<Timeline, Throwable> result = null;
+
+        TestView(@NonNull DateTime dateTime,
+                 @NonNull CountDownLatch countDownLatch) {
+            this.dateTime = dateTime;
+            this.countDownLatch = countDownLatch;
+        }
+
+
+        @Override
+        public DateTime getDate() {
+            return dateTime;
+        }
+
+        @Override
+        public boolean wantsUpdates() {
+            return wantsUpdates;
+        }
+
+
+        @Override
+        public void onUpdateAvailable(@NonNull Timeline timeline) {
+            this.result = Either.left(timeline);
+            countDownLatch.countDown();
+        }
+
+        @Override
+        public void onUpdateFailed(Throwable e) {
+            this.result = Either.right(e);
+            countDownLatch.countDown();
+        }
+
+
+        void clearResult() {
+            this.result = null;
+        }
+
+        @Nullable Either<Timeline, Throwable> getResult() {
+            return result;
+        }
     }
 }

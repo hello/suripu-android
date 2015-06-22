@@ -18,10 +18,9 @@ import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.TimelinePreviewView;
 import is.hello.sense.ui.widget.util.Styles;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
+import is.hello.sense.util.Logger;
 
-public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTimelineAdapter.ItemViewHolder> implements View.OnClickListener {
+public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTimelineAdapter.ViewHolder> {
     public static final int TOTAL_DAYS = 366;
 
     private final Context context;
@@ -31,8 +30,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
     private @Nullable OnItemClickedListener onItemClickedListener;
 
-    public ZoomedOutTimelineAdapter(@NonNull Context context,
-                                    @NonNull ZoomedOutTimelinePresenter presenter) {
+    public ZoomedOutTimelineAdapter(@NonNull Context context, @NonNull ZoomedOutTimelinePresenter presenter) {
         this.context = context;
         this.resources = context.getResources();
         this.inflater = LayoutInflater.from(context);
@@ -48,39 +46,40 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
     }
 
     @Override
-    public ItemViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
         View itemView = inflater.inflate(R.layout.item_zoomed_out_timeline, viewGroup, false);
-        itemView.setOnClickListener(this);
-        return new ItemViewHolder(itemView);
+        return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(ItemViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         DateTime date = presenter.getDateTimeAt(position);
+        Timeline timeline = presenter.getCachedTimeline(date);
+        holder.bind(date, timeline);
 
-        holder.itemView.setTag(position);
-
-        holder.date = date;
-        holder.dayNumber.setText(date.toString("d"));
-        holder.dayName.setText(date.toString("EE"));
-        holder.scoreDrawable.setValue(0);
-        holder.score.setText(R.string.missing_data_placeholder);
-        presenter.post(holder, holder::populate);
+        presenter.addDataView(holder);
     }
 
     @Override
-    public void onViewDetachedFromWindow(ItemViewHolder holder) {
+    public void onViewDetachedFromWindow(ViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
 
-        presenter.cancel(holder);
+        presenter.removeDataView(holder);
     }
 
     @Override
-    public void onViewRecycled(ItemViewHolder holder) {
+    public void onViewRecycled(ViewHolder holder) {
         super.onViewRecycled(holder);
 
-        presenter.cancel(holder);
-        holder.reset();
+        holder.unbind();
+        presenter.removeDataView(holder);
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+
+        presenter.clearDataViews();
     }
 
     //endregion
@@ -92,11 +91,9 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
         this.onItemClickedListener = onItemClickedListener;
     }
 
-    @Override
-    public void onClick(View view) {
+    private void dispatchClick(@NonNull ViewHolder viewHolder) {
         if (onItemClickedListener != null) {
-            int position = (int) view.getTag();
-            onItemClickedListener.onItemClicked(view, position);
+            onItemClickedListener.onItemClicked(viewHolder.itemView, viewHolder.getAdapterPosition());
         }
     }
 
@@ -107,19 +104,20 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
     //endregion
 
 
-    public class ItemViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, ZoomedOutTimelinePresenter.DataView {
         public final TextView dayNumber;
         public final TextView dayName;
         public final TextView score;
         public final TimelinePreviewView preview;
-
         public final SleepScoreDrawable scoreDrawable;
 
-        public @Nullable DateTime date;
+        private boolean hasTimeline = false;
+        private DateTime date;
 
-        private @Nullable Subscription loading;
 
-        private ItemViewHolder(View itemView) {
+        //region Lifecycle
+
+        private ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             this.dayNumber = (TextView) itemView.findViewById(R.id.item_zoomed_out_timeline_day_number);
@@ -131,18 +129,25 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
             View scoreContainer = itemView.findViewById(R.id.item_zoomed_out_timeline_score_container);
             scoreContainer.setBackground(scoreDrawable);
+
+            itemView.setOnClickListener(this);
         }
 
+        private void bind(@NonNull DateTime date, @Nullable Timeline timeline) {
+            this.date = date;
+            dayNumber.setText(date.toString("d"));
+            dayName.setText(date.toString("EE"));
 
-        void setTimeline(@Nullable Timeline timeline) {
             if (timeline == null) {
-                int sleepScoreColor = resources.getColor(R.color.sensor_warning);
+                int sleepScoreColor = resources.getColor(R.color.sensor_unknown);
                 score.setText(R.string.missing_data_placeholder);
                 score.setTextColor(sleepScoreColor);
                 scoreDrawable.setFillColor(sleepScoreColor);
-                scoreDrawable.setValue(100);
+                scoreDrawable.setValue(0);
 
-                this.preview.setTimelineSegments(null);
+                preview.setTimelineSegments(null);
+
+                this.hasTimeline = false;
             } else {
                 int sleepScore = timeline.getScore();
                 int sleepScoreColor = Styles.getSleepScoreColor(context, sleepScore);
@@ -151,32 +156,57 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
                 scoreDrawable.setFillColor(sleepScoreColor);
                 scoreDrawable.setValue(sleepScore);
 
-                this.preview.setTimelineSegments(timeline.getSegments());
+                preview.setTimelineSegments(timeline.getSegments());
+
+                this.hasTimeline = true;
             }
         }
 
-        void reset() {
-            if (loading != null) {
-                loading.unsubscribe();
-                this.loading = null;
-            }
-
+        private void unbind() {
+            this.hasTimeline = false;
             this.date = null;
-
-            scoreDrawable.setValue(0);
-            scoreDrawable.setTrackColor(resources.getColor(R.color.border));
-            score.setText(R.string.missing_data_placeholder);
-            score.setTextColor(resources.getColor(R.color.text_dark));
-
-            preview.setTimelineSegments(null);
         }
 
-        void populate() {
-            if (loading == null && date != null) {
-                this.loading = presenter.timelineForDate(date)
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(this::setTimeline, ignored -> setTimeline(null));
+        //endregion
+
+
+        //region Hooks
+
+        @Override
+        public DateTime getDate() {
+            return date;
+        }
+
+        @Override
+        public boolean wantsUpdates() {
+            return (getAdapterPosition() != RecyclerView.NO_POSITION && !hasTimeline);
+        }
+
+        @Override
+        public void onUpdateAvailable(@NonNull Timeline timeline) {
+            if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                bind(date, timeline);
             }
         }
+
+        @Override
+        public void onUpdateFailed(Throwable e) {
+            if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                Logger.error(getClass().getSimpleName(), "Could not load item " + getAdapterPosition(), e);
+                bind(date, null);
+            }
+        }
+
+        //endregion
+
+
+        //region Click Support
+
+        @Override
+        public void onClick(View ignored) {
+            dispatchClick(this);
+        }
+
+        //endregion
     }
 }

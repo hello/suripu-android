@@ -1,33 +1,40 @@
 package is.hello.sense.graph.presenters;
 
+import android.content.ComponentCallbacks2;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.util.LruCache;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Timeline;
 import rx.Observable;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class ZoomedOutTimelinePresenter extends Presenter {
-    private static final int CACHE_LIMIT = 7;
+    private static final int CACHE_LIMIT = 10;
 
     private static final String STATE_KEY_FIRST_DATE = "firstDate";
     private DateTime firstDate;
 
-    private final Map<Object, Runnable> posted = new HashMap<>();
-    private boolean suspended = false;
+    private final List<DataView> dataViews = new ArrayList<>();
+    private Scheduler updateScheduler = AndroidSchedulers.mainThread();
 
     private final ApiService apiService;
     private final LruCache<DateTime, Timeline> cachedTimelines = new LruCache<>(CACHE_LIMIT);
+
+
+    //region Lifecycle
 
     @Inject public ZoomedOutTimelinePresenter(@NonNull ApiService apiService) {
         this.apiService = apiService;
@@ -49,11 +56,18 @@ public class ZoomedOutTimelinePresenter extends Presenter {
     }
 
     @Override
-    protected boolean onForgetDataForLowMemory() {
-        cachedTimelines.evictAll();
-        return false;
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
+            cachedTimelines.evictAll();
+        }
     }
 
+    //endregion
+
+
+    //region Dates
 
     public void setFirstDate(@NonNull DateTime firstDate) {
         this.firstDate = firstDate;
@@ -61,40 +75,19 @@ public class ZoomedOutTimelinePresenter extends Presenter {
     }
 
     public @NonNull DateTime getDateTimeAt(int position) {
-        return firstDate.plusDays(-position).withTimeAtStartOfDay();
+        return firstDate.minusDays(position).withTimeAtStartOfDay();
     }
 
     public int getDateTimePosition(@NonNull DateTime dateTime) {
         return Days.daysBetween(dateTime.toLocalDate(), firstDate.toLocalDate()).getDays() - 1;
     }
 
+    //endregion
 
-    public void suspend() {
-        this.suspended = true;
-    }
 
-    public void resume() {
-        this.suspended = false;
+    //region Vending Timelines
 
-        for (Runnable task : posted.values()) {
-            task.run();
-        }
-        posted.clear();
-    }
-
-    public void post(@NonNull Object tag, @NonNull Runnable task) {
-        if (suspended) {
-            posted.put(tag, task);
-        } else {
-            task.run();
-        }
-    }
-
-    public void cancel(@NonNull Object tag) {
-        posted.remove(tag);
-    }
-
-    public void cacheSingleTimeline(@NonNull DateTime date, @Nullable Timeline timeline) {
+    public void cacheTimeline(@NonNull DateTime date, @Nullable Timeline timeline) {
         if (timeline != null) {
             cachedTimelines.put(date, timeline);
         } else {
@@ -102,30 +95,83 @@ public class ZoomedOutTimelinePresenter extends Presenter {
         }
     }
 
-    public @Nullable Timeline retrieveCachedTimeline(@NonNull DateTime date) {
+    public @Nullable Timeline getCachedTimeline(@NonNull DateTime date) {
         return cachedTimelines.get(date);
     }
 
+    public Observable<Timeline> retrieveTimeline(@NonNull DateTime date) {
+        String year = date.year().getAsString();
+        String month = date.monthOfYear().getAsString();
+        String day = date.dayOfMonth().getAsString();
 
-    public Observable<Timeline> timelineForDate(@NonNull DateTime date) {
-        Timeline cachedTimeline = retrieveCachedTimeline(date);
-        if (cachedTimeline != null) {
-            return Observable.just(cachedTimeline);
-        } else if (suspended) {
-            return Observable.error(new IllegalStateException("Cannot use timelineForDate when suspended"));
+        return apiService.timelineForDate(year, month, day)
+                         .map(ts -> ts.get(0))
+                         .observeOn(updateScheduler);
+    }
+
+    public Observable<Timeline> retrieveAndCacheTimeline(@NonNull DateTime date) {
+        Timeline existingTimeline = cachedTimelines.get(date);
+        if (existingTimeline != null) {
+            return Observable.just(existingTimeline);
         } else {
-            return apiService.timelineForDate(date.year().getAsString(), date.monthOfYear().getAsString(), date.dayOfMonth().getAsString())
-                             .flatMap(ts -> ts.isEmpty() ? Observable.error(new IllegalArgumentException()) : Observable.just(ts.get(0)))
-                             .doOnNext(timeline -> cacheSingleTimeline(date, timeline));
+            return retrieveTimeline(date)
+                    .map(timeline -> {
+                        cacheTimeline(date, timeline);
+                        return timeline;
+                    });
         }
     }
+
+    //endregion
+
+
+    //region View holder hooks
+
+    public void addDataView(@NonNull DataView presenterView) {
+        dataViews.add(presenterView);
+    }
+
+    public void removeDataView(@NonNull DataView presenterView) {
+        dataViews.remove(presenterView);
+    }
+
+    public void clearDataViews() {
+        dataViews.clear();
+    }
+
+    public void retrieveTimelines() {
+        for (DataView dataView : dataViews) {
+            if (!dataView.wantsUpdates()) {
+                continue;
+            }
+
+            Observable<Timeline> timeline = retrieveAndCacheTimeline(dataView.getDate());
+            timeline.subscribe(dataView::onUpdateAvailable, dataView::onUpdateFailed);
+        }
+    }
+
+    //endregion
 
 
     //region For Tests
 
+    @VisibleForTesting
     LruCache<DateTime, Timeline> getCachedTimelines() {
         return cachedTimelines;
     }
 
+    @VisibleForTesting
+    void setUpdateScheduler(@NonNull Scheduler scheduler) {
+        this.updateScheduler = scheduler;
+    }
+
     //endregion
+
+
+    public interface DataView {
+        DateTime getDate();
+        boolean wantsUpdates();
+        void onUpdateAvailable(@NonNull Timeline timeline);
+        void onUpdateFailed(Throwable e);
+    }
 }

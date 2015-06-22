@@ -1,8 +1,10 @@
 package is.hello.sense.ui.fragments;
 
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,7 +61,7 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
 
         if (getArguments().containsKey(ARG_FIRST_TIMELINE)) {
             Timeline firstTimeline = (Timeline) getArguments().getSerializable(ARG_FIRST_TIMELINE);
-            presenter.cacheSingleTimeline(startDate, firstTimeline);
+            presenter.cacheTimeline(startDate, firstTimeline);
         }
 
         addPresenter(presenter);
@@ -100,9 +102,13 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
             // a specific offset if we want it to be centered. Of course,
             // we can only get the offset after layout.
 
-            layoutManager.postLayout(() -> layoutManager.scrollToPositionWithOffset(position, -layoutManager.getItemWidth()));
+            layoutManager.postLayout(() -> {
+                layoutManager.scrollToPositionWithOffset(position, -layoutManager.getItemWidth());
+                recyclerView.post(presenter::retrieveTimelines);
+            });
         } else {
             layoutManager.scrollToPosition(position);
+            recyclerView.post(presenter::retrieveTimelines);
         }
 
         return view;
@@ -116,7 +122,24 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
     }
 
     public void jumpToToday(@NonNull View sender) {
-        recyclerView.smoothScrollToPosition(0);
+        LinearSmoothScroller smoothScroller = new LinearSmoothScroller(getActivity()) {
+            @Override
+            public PointF computeScrollVectorForPosition(int targetPosition) {
+                return layoutManager.computeScrollVectorForPosition(targetPosition);
+            }
+
+            @Override
+            protected int calculateTimeForScrolling(int dx) {
+                return super.calculateTimeForScrolling(dx) / 4;
+            }
+
+            @Override
+            protected int calculateTimeForDeceleration(int dx) {
+                return super.calculateTimeForDeceleration(dx) / 4;
+            }
+        };
+        smoothScroller.setTargetPosition(0);
+        layoutManager.startSmoothScroll(smoothScroller);
     }
 
     @Override
@@ -139,7 +162,7 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
             }
         } else {
             DateTime newDate = presenter.getDateTimeAt(position);
-            Timeline timeline = presenter.retrieveCachedTimeline(newDate);
+            Timeline timeline = presenter.getCachedTimeline(newDate);
             ((OnTimelineDateSelectedListener) getActivity()).onTimelineSelected(newDate, timeline);
         }
     }
@@ -150,23 +173,22 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            ZoomedOutTimelineAdapter.ItemViewHolder holder = (ZoomedOutTimelineAdapter.ItemViewHolder) recyclerView.findViewHolderForLayoutPosition(layoutManager.findLastVisibleItemPosition());
-            monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(holder.date));
+            ZoomedOutTimelineAdapter.ViewHolder holder = (ZoomedOutTimelineAdapter.ViewHolder) recyclerView.findViewHolderForLayoutPosition(layoutManager.findLastVisibleItemPosition());
+            monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(holder.getDate()));
         }
 
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            if (previousState == RecyclerView.SCROLL_STATE_IDLE && newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                presenter.suspend();
-            } else if (previousState != RecyclerView.SCROLL_STATE_IDLE && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                snapToNearestItem(recyclerView);
-                presenter.resume();
+            if (previousState != RecyclerView.SCROLL_STATE_IDLE && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                if (!snapToNearestItem(recyclerView)) {
+                    presenter.retrieveTimelines();
+                }
             }
 
             this.previousState = newState;
         }
 
-        public void snapToNearestItem(RecyclerView recyclerView) {
+        public boolean snapToNearestItem(RecyclerView recyclerView) {
             int lastItem = layoutManager.findLastVisibleItemPosition();
             int lastCompleteItem = layoutManager.findLastCompletelyVisibleItemPosition();
             if (lastItem != lastCompleteItem) {
@@ -180,7 +202,11 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
                 } else {
                     recyclerView.smoothScrollToPosition(layoutManager.findFirstVisibleItemPosition());
                 }
+
+                return true;
             }
+
+            return false;
         }
     }
 
