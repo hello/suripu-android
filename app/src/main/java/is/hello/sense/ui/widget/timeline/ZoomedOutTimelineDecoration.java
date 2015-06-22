@@ -12,14 +12,14 @@ import android.view.View;
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Drawing;
 
-public class TimelineNavigatorItemDecoration extends RecyclerView.ItemDecoration {
+public class ZoomedOutTimelineDecoration extends RecyclerView.ItemDecoration {
     private static final float MIN_SCALE = 0.7f;
     private static final float MAX_SCALE = 1f;
 
     private final Drawable drawable;
     private final int dividerWidth;
 
-    public TimelineNavigatorItemDecoration(@NonNull Resources resources) {
+    public ZoomedOutTimelineDecoration(@NonNull Resources resources) {
         this.drawable = ResourcesCompat.getDrawable(resources, R.drawable.graph_grid_fill_top_down, null);
         this.dividerWidth = resources.getDimensionPixelSize(R.dimen.divider_size);
     }

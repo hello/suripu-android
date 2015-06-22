@@ -17,29 +17,29 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
-import is.hello.sense.ui.adapter.TimelineNavigatorAdapter;
+import is.hello.sense.ui.adapter.ZoomedOutTimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.common.TimelineNavigatorLayoutManager;
-import is.hello.sense.ui.widget.timeline.TimelineNavigatorItemDecoration;
+import is.hello.sense.ui.common.ZoomedOutTimelineLayoutManager;
+import is.hello.sense.ui.widget.timeline.ZoomedOutTimelineDecoration;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
 
-public class TimelineNavigatorFragment extends InjectionFragment implements TimelineNavigatorAdapter.OnItemClickedListener {
-    public static final String TAG = TimelineNavigatorFragment.class.getSimpleName();
+public class ZoomedOutTimelineFragment extends InjectionFragment implements ZoomedOutTimelineAdapter.OnItemClickedListener {
+    public static final String TAG = ZoomedOutTimelineFragment.class.getSimpleName();
 
-    private static final String ARG_START_DATE = TimelineNavigatorFragment.class.getName() + ".ARG_START_DATE";
-    private static final String ARG_FIRST_TIMELINE = TimelineNavigatorFragment.class.getName() + ".ARG_FIRST_TIMELINE";
+    private static final String ARG_START_DATE = ZoomedOutTimelineFragment.class.getName() + ".ARG_START_DATE";
+    private static final String ARG_FIRST_TIMELINE = ZoomedOutTimelineFragment.class.getName() + ".ARG_FIRST_TIMELINE";
 
     @Inject TimelineNavigatorPresenter presenter;
     @Inject DateFormatter dateFormatter;
 
     private TextView monthText;
     private RecyclerView recyclerView;
-    private TimelineNavigatorLayoutManager layoutManager;
+    private ZoomedOutTimelineLayoutManager layoutManager;
     private DateTime startDate;
 
-    public static TimelineNavigatorFragment newInstance(@NonNull DateTime startTime, @Nullable Timeline firstTimeline) {
-        TimelineNavigatorFragment fragment = new TimelineNavigatorFragment();
+    public static ZoomedOutTimelineFragment newInstance(@NonNull DateTime startTime, @Nullable Timeline firstTimeline) {
+        ZoomedOutTimelineFragment fragment = new ZoomedOutTimelineFragment();
 
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_START_DATE, startTime);
@@ -70,25 +70,25 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_timeline_navigator, container, false);
+        View view = inflater.inflate(R.layout.fragment_zoomed_out_timeline, container, false);
         view.setClickable(true);
 
-        this.monthText = (TextView) view.findViewById(R.id.fragment_timeline_navigator_month);
+        this.monthText = (TextView) view.findViewById(R.id.fragment_zoomed_out_timeline_month);
         monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(startDate));
         Views.setSafeOnClickListener(monthText, ignored -> getFragmentManager().popBackStack());
 
-        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_navigator_recycler_view);
-        recyclerView.addItemDecoration(new TimelineNavigatorItemDecoration(getResources()));
-        recyclerView.addOnScrollListener(new TimelineScrollListener());
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_zoomed_out_timeline_recycler_view);
+        recyclerView.addItemDecoration(new ZoomedOutTimelineDecoration(getResources()));
+        recyclerView.addOnScrollListener(new SnappingScrollListener());
 
-        this.layoutManager = new TimelineNavigatorLayoutManager(getActivity());
+        this.layoutManager = new ZoomedOutTimelineLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        TimelineNavigatorAdapter adapter = new TimelineNavigatorAdapter(getActivity(), presenter);
+        ZoomedOutTimelineAdapter adapter = new ZoomedOutTimelineAdapter(getActivity(), presenter);
         adapter.setOnItemClickedListener(this);
         recyclerView.setAdapter(adapter);
 
-        Button todayButton = (Button) view.findViewById(R.id.fragment_timeline_navigator_today);
+        Button todayButton = (Button) view.findViewById(R.id.fragment_zoomed_out_timeline_today);
         todayButton.setOnClickListener(this::jumpToToday);
 
         int position = presenter.getDateTimePosition(startDate);
@@ -145,12 +145,12 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
     }
 
 
-    class TimelineScrollListener extends RecyclerView.OnScrollListener {
+    class SnappingScrollListener extends RecyclerView.OnScrollListener {
         int previousState = RecyclerView.SCROLL_STATE_IDLE;
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            TimelineNavigatorAdapter.ItemViewHolder holder = (TimelineNavigatorAdapter.ItemViewHolder) recyclerView.findViewHolderForLayoutPosition(layoutManager.findLastVisibleItemPosition());
+            ZoomedOutTimelineAdapter.ItemViewHolder holder = (ZoomedOutTimelineAdapter.ItemViewHolder) recyclerView.findViewHolderForLayoutPosition(layoutManager.findLastVisibleItemPosition());
             monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(holder.date));
         }
 

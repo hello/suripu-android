@@ -13,21 +13,21 @@ import java.util.List;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.widget.util.Styles;
 
-public class MiniTimelineView extends View {
+public class TimelinePreviewView extends View {
     private final Paint fillPaint = new Paint();
 
     private @Nullable List<TimelineSegment> timelineSegments;
 
 
-    public MiniTimelineView(Context context) {
+    public TimelinePreviewView(Context context) {
         this(context, null);
     }
 
-    public MiniTimelineView(Context context, AttributeSet attrs) {
+    public TimelinePreviewView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public MiniTimelineView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TimelinePreviewView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

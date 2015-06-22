@@ -1,6 +1,7 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -14,26 +15,28 @@ import org.joda.time.DateTime;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
-import is.hello.sense.ui.widget.MiniTimelineView;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
+import is.hello.sense.ui.widget.TimelinePreviewView;
 import is.hello.sense.ui.widget.util.Styles;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavigatorAdapter.ItemViewHolder> implements View.OnClickListener {
+public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTimelineAdapter.ItemViewHolder> implements View.OnClickListener {
     public static final int TOTAL_DAYS = 366;
 
     private final Context context;
     private final LayoutInflater inflater;
+    private final Resources resources;
     private final TimelineNavigatorPresenter presenter;
 
     private @Nullable OnItemClickedListener onItemClickedListener;
 
-    public TimelineNavigatorAdapter(@NonNull Context context,
+    public ZoomedOutTimelineAdapter(@NonNull Context context,
                                     @NonNull TimelineNavigatorPresenter presenter) {
         this.context = context;
-        this.presenter = presenter;
+        this.resources = context.getResources();
         this.inflater = LayoutInflater.from(context);
+        this.presenter = presenter;
     }
 
 
@@ -46,7 +49,7 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
 
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
-        View itemView = inflater.inflate(R.layout.item_timeline_navigator, viewGroup, false);
+        View itemView = inflater.inflate(R.layout.item_zoomed_out_timeline, viewGroup, false);
         itemView.setOnClickListener(this);
         return new ItemViewHolder(itemView);
     }
@@ -60,7 +63,7 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
         holder.date = date;
         holder.dayNumber.setText(date.toString("d"));
         holder.dayName.setText(date.toString("EE"));
-        holder.pieDrawable.setValue(0);
+        holder.scoreDrawable.setValue(0);
         holder.score.setText(R.string.missing_data_placeholder);
         presenter.post(holder, holder::populate);
     }
@@ -108,9 +111,9 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
         public final TextView dayNumber;
         public final TextView dayName;
         public final TextView score;
-        public final MiniTimelineView timeline;
+        public final TimelinePreviewView preview;
 
-        public final SleepScoreDrawable pieDrawable;
+        public final SleepScoreDrawable scoreDrawable;
 
         public @Nullable DateTime date;
 
@@ -119,36 +122,36 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
         private ItemViewHolder(View itemView) {
             super(itemView);
 
-            this.dayNumber = (TextView) itemView.findViewById(R.id.item_timeline_navigator_day_number);
-            this.dayName = (TextView) itemView.findViewById(R.id.item_timeline_navigator_day_name);
-            this.score = (TextView) itemView.findViewById(R.id.item_timeline_navigator_score);
-            this.timeline = (MiniTimelineView) itemView.findViewById(R.id.item_timeline_navigator_timeline);
+            this.dayNumber = (TextView) itemView.findViewById(R.id.item_zoomed_out_timeline_day_number);
+            this.dayName = (TextView) itemView.findViewById(R.id.item_zoomed_out_timeline_day_name);
+            this.score = (TextView) itemView.findViewById(R.id.item_zoomed_out_timeline_score);
+            this.preview = (TimelinePreviewView) itemView.findViewById(R.id.item_zoomed_out_timeline_preview);
 
-            this.pieDrawable = new SleepScoreDrawable(context.getResources(), false);
+            this.scoreDrawable = new SleepScoreDrawable(context.getResources(), false);
 
-            View pieView = itemView.findViewById(R.id.item_timeline_navigator_pie);
-            pieView.setBackground(pieDrawable);
+            View scoreContainer = itemView.findViewById(R.id.item_zoomed_out_timeline_score_container);
+            scoreContainer.setBackground(scoreDrawable);
         }
 
 
         void setTimeline(@Nullable Timeline timeline) {
             if (timeline == null) {
-                int sleepScoreColor = context.getResources().getColor(R.color.sensor_warning);
+                int sleepScoreColor = resources.getColor(R.color.sensor_warning);
                 score.setText(R.string.missing_data_placeholder);
                 score.setTextColor(sleepScoreColor);
-                pieDrawable.setFillColor(sleepScoreColor);
-                pieDrawable.setValue(100);
+                scoreDrawable.setFillColor(sleepScoreColor);
+                scoreDrawable.setValue(100);
 
-                this.timeline.setTimelineSegments(null);
+                this.preview.setTimelineSegments(null);
             } else {
                 int sleepScore = timeline.getScore();
                 int sleepScoreColor = Styles.getSleepScoreColor(context, sleepScore);
                 score.setText(Integer.toString(sleepScore));
                 score.setTextColor(sleepScoreColor);
-                pieDrawable.setFillColor(sleepScoreColor);
-                pieDrawable.setValue(sleepScore);
+                scoreDrawable.setFillColor(sleepScoreColor);
+                scoreDrawable.setValue(sleepScore);
 
-                this.timeline.setTimelineSegments(timeline.getSegments());
+                this.preview.setTimelineSegments(timeline.getSegments());
             }
         }
 
@@ -160,12 +163,12 @@ public class TimelineNavigatorAdapter extends RecyclerView.Adapter<TimelineNavig
 
             this.date = null;
 
-            pieDrawable.setValue(0);
-            pieDrawable.setTrackColor(context.getResources().getColor(R.color.border));
+            scoreDrawable.setValue(0);
+            scoreDrawable.setTrackColor(resources.getColor(R.color.border));
             score.setText(R.string.missing_data_placeholder);
-            score.setTextColor(context.getResources().getColor(R.color.text_dark));
+            score.setTextColor(resources.getColor(R.color.text_dark));
 
-            timeline.setTimelineSegments(null);
+            preview.setTimelineSegments(null);
         }
 
         void populate() {

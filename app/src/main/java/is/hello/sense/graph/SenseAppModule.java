@@ -41,8 +41,8 @@ import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
-import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
+import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
@@ -103,7 +103,7 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
         TimelineFragment.class,
         TimelinePresenter.class,
         TimelineInfoFragment.class,
-        TimelineNavigatorFragment.class,
+        ZoomedOutTimelineFragment.class,
         TimelineNavigatorPresenter.class,
 
         QuestionsPresenter.class,
