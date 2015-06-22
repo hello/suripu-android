@@ -8,6 +8,10 @@
     <application>
 
         <activity
+            android:name="is.hello.sense.debug.EnvironmentActivity"
+            android:theme="@style/AppTheme.Dialog.Simple"/>
+
+        <activity
             android:name="net.hockeyapp.android.UpdateActivity" />
 
         <activity
@@ -26,28 +30,6 @@
                 <category android:name="is.hello.sense.debug" />
             </intent-filter>
         </receiver>
-
-        <!--region Widgets-->
-
-        <receiver
-            android:name="is.hello.sense.remote.LastNightWidgetProvider"
-            android:label="@string/widget_label_last_night">
-
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="android.appwidget.action.ACTION_APPWIDGET_ENABLED" />
-                <action android:name="android.appwidget.action.ACTION_APPWIDGET_DELETED" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/last_night_appwidget_info" />
-
-        </receiver>
-
-        <service android:name="is.hello.sense.remote.LastNightWidgetProvider$LastNightService" />
-
-        <!--endregion-->
 
     </application>
 

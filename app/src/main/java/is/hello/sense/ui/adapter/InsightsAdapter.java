@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,6 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Errors;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.Markdown;
 import is.hello.sense.util.StringRef;
 
 public class InsightsAdapter extends BaseAdapter {
@@ -35,7 +35,6 @@ public class InsightsAdapter extends BaseAdapter {
 
     private final Context context;
     private final LayoutInflater inflater;
-    private final Markdown markdown;
     private final DateFormatter dateFormatter;
     private final Listener listener;
 
@@ -43,31 +42,33 @@ public class InsightsAdapter extends BaseAdapter {
     private Question currentQuestion;
 
     public InsightsAdapter(@NonNull Context context,
-                           @NonNull Markdown markdown,
                            @NonNull DateFormatter dateFormatter,
                            @NonNull Listener listener) {
         this.context = context;
         this.dateFormatter = dateFormatter;
         this.inflater = LayoutInflater.from(context);
-        this.markdown = markdown;
         this.listener = listener;
     }
 
 
     //region Bindings
 
-    public void bindInsights(@NonNull List<Insight> insights) {
+    public void bindData(@NonNull Pair<List<Insight>, Question> data) {
         listener.onDismissLoadingIndicator();
-        this.insights = insights;
+
+        this.insights = data.first;
+        this.currentQuestion = data.second;
+
         notifyDataSetChanged();
     }
 
-    public void insightsUnavailable(Throwable e) {
+    public void dataUnavailable(Throwable e) {
         Analytics.trackError(e, "Loading Insights");
         Logger.error(getClass().getSimpleName(), "Could not load insights", e);
 
         listener.onDismissLoadingIndicator();
         this.insights = new ArrayList<>();
+        this.currentQuestion = null;
 
         StringRef messageRef = Errors.getDisplayMessage(e);
         String message = messageRef != null
@@ -79,19 +80,6 @@ public class InsightsAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-
-    public void bindCurrentQuestion(@Nullable Question currentQuestion) {
-        this.currentQuestion = currentQuestion;
-        notifyDataSetChanged();
-    }
-
-    public void currentQuestionUnavailable(Throwable e) {
-        Analytics.trackError(e, "Loading Question");
-        Logger.error(getClass().getSimpleName(), "Could not load question", e);
-
-        this.currentQuestion = null;
-        notifyDataSetChanged();
-    }
 
     public void clearCurrentQuestion() {
         this.currentQuestion = null;
@@ -224,8 +212,6 @@ public class InsightsAdapter extends BaseAdapter {
         Insight insight = getInsightItem(position);
         InsightViewHolder holder = (InsightViewHolder) view.getTag();
 
-        markdown.renderInto(holder.body, insight.getMessage());
-
         DateTime insightCreated = insight.getCreated();
         if (insightCreated == null && insight.getCategory() == InsightCategory.IN_APP_ERROR) {
             holder.date.setText(R.string.dialog_error_title);
@@ -242,6 +228,8 @@ public class InsightsAdapter extends BaseAdapter {
             holder.previewDivider.setVisibility(View.GONE);
             holder.preview.setVisibility(View.GONE);
         }
+
+        holder.body.setText(insight.getMessage());
 
         return view;
     }

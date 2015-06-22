@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <gradient
+        android:startColor="@color/background_timeline"
+        android:centerColor="@color/background_timeline"
+        android:endColor="@color/timeline_header_gradient_end"
+        android:angle="-90" />
+
+</shape>

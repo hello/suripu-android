@@ -18,9 +18,6 @@ public class Account extends ApiResponse implements Cloneable {
     @JsonIgnore
     private String id;
 
-    @JsonProperty("account_id")
-    private String accountId;
-
     @JsonProperty("email")
     private String email;
 
@@ -77,14 +74,6 @@ public class Account extends ApiResponse implements Cloneable {
     @JsonProperty("id")
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
     }
 
     public String getEmail() {
@@ -184,7 +173,6 @@ public class Account extends ApiResponse implements Cloneable {
     public String toString() {
         return "Account{" +
                 "id='" + id + '\'' +
-                ", accountId='" + accountId + '\'' +
                 ", email='" + email + '\'' +
                 ", timeZoneOffset=" + timeZoneOffset +
                 ", name='" + name + '\'' +

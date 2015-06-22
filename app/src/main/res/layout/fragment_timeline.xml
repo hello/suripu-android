@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/list"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:divider="@null"
-    android:dividerHeight="0dp"
-    android:listSelector="@color/transparent"
-    android:scrollbars="none"
-    android:overScrollMode="ifContentScrolls"
-    android:clipChildren="false"
-    android:background="@color/background_timeline"/>
+    android:background="@color/background_timeline">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fragment_timeline_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/fragment_timeline_content_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:src="@drawable/timeline_top_shadow"
+        android:importantForAccessibility="no" />
+
+</RelativeLayout>

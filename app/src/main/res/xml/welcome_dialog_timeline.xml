@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dialog>
+
     <item
         diagram="@drawable/timeline_explain_sleep"
         title="@string/welcome_dialog_timeline_title_intro"
         message="@string/welcome_dialog_timeline_intro"/>
 
     <item
-        diagram="@drawable/timeline_explain_score"
-        scaleDiagram="false"
-        message="@string/welcome_dialog_timeline_score"/>
+        diagram="@drawable/timeline_explain_graph"
+        title="@string/welcome_dialog_timeline_title_events"
+        message="@string/welcome_dialog_timeline_events"/>
 
     <item
         diagram="@drawable/timeline_explain_before"
+        title="@string/welcome_dialog_timeline_title_before_sleep"
         message="@string/welcome_dialog_timeline_before_sleep"/>
 
     <item
-        diagram="@drawable/timeline_explain_graph"
-        message="@string/welcome_dialog_timeline_events"/>
+        diagram="@drawable/timeline_explain_score"
+        title="@string/welcome_dialog_timeline_title_score"
+        message="@string/welcome_dialog_timeline_score"/>
+
 </dialog>

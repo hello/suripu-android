@@ -36,27 +36,9 @@
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>
     <string name="condition_humidity">Humidity</string>
-    <string name="condition_particulates">AQI</string>
+    <string name="condition_particulates">Air Quality</string>
 
     <string name="missing_data_placeholder">--</string>
-
-    <string name="event_type_motion">Tossing and Turning</string>
-    <string name="event_type_noise">Noise Disturbance</string>
-    <string name="event_type_snoring">Snoring</string>
-    <string name="event_type_sleep_talk">Sleep Talking</string>
-    <string name="event_type_light">Light Disturbance</string>
-    <string name="event_type_lights_out">Lights Out</string>
-    <string name="event_type_sleep_motion">Tossing and Turning</string>
-    <string name="event_type_sleep">Sleep</string>
-    <string name="event_type_sunset">Sunset</string>
-    <string name="event_type_sunrise">Sunrise</string>
-    <string name="event_type_wake_up">Woke Up</string>
-    <string name="event_type_partner_moved">Partner Moved</string>
-    <string name="event_type_out_of_bed">Out of Bed</string>
-    <string name="event_type_in_bed">In Bed</string>
-    <string name="event_type_sleeping">Sleeping</string>
-    <string name="event_type_alarm">Alarm</string>
-    <string name="event_type_unknown">Other</string>
 
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
@@ -356,22 +338,25 @@ so you can sleep better.</string>
     <string name="action_fix_later">Later</string>
     <string name="action_fix_now">Fix Now</string>
 
-    <string name="alert_title_no_sense">Sense Not Paired</string>
-    <string name="alert_message_no_sense">Your account does not have a Sense paired.  Sense is required to track your sleep behavior.</string>
-    <string name="alert_title_no_pill">Sleep Pill Not Paired</string>
-    <string name="alert_message_no_pill">Your account does not have a Sleep Pill paired.  A Sleep Pill is required to track your sleep behavior.</string>
-    <string name="alert_title_missing_sense">Sense</string>
-    <string name="alert_message_missing_sense">Sense has not reported any data recently. Tap ‘Fix Now’ to troubleshoot.</string>
-    <string name="alert_title_missing_pill">Sleep Pill</string>
-    <string name="alert_message_missing_pill">Sleep Pill has not reported any data recently. Tap ‘Fix Now’ to troubleshoot.</string>
-    <string name="alert_title_low_battery">Low Battery</string>
-    <string name="alert_message_low_battery">The battery in your Sleep Pill is getting low. Replace it to continue tracking your sleep.</string>
+    <string name="issue_title_no_sense">Sense Not Paired</string>
+    <string name="issue_message_no_sense">Your account does not have a Sense paired.  Sense is required to track your sleep behavior.</string>
+    <string name="issue_title_no_pill">Sleep Pill Not Paired</string>
+    <string name="issue_message_no_pill">Your account does not have a Sleep Pill paired.  A Sleep Pill is required to track your sleep behavior.</string>
+    <string name="issue_title_missing_sense">Sense</string>
+    <string name="issue_message_missing_sense">Sense has not reported any data recently. Tap ‘Fix Now’ to troubleshoot.</string>
+    <string name="issue_title_missing_pill">Sleep Pill</string>
+    <string name="issue_message_missing_pill">Sleep Pill has not reported any data recently. Tap ‘Fix Now’ to troubleshoot.</string>
+    <string name="issue_title_low_battery">Low Battery</string>
+    <string name="issue_message_low_battery">The battery in your Sleep Pill is getting low. Replace it to continue tracking your sleep.</string>
 
-    <string name="welcome_dialog_timeline_title_intro">Understanding your sleep</string>
-    <string name="welcome_dialog_timeline_intro">Sense collects a significant amount of data about your sleep and the environment in your bedroom.\n\nWe take all this data and present it in a detailed but simple way — this quick walkthrough will show you how to read your first night of sleep data.</string>
-    <string name="welcome_dialog_timeline_score">Your Sleep Score is calculated based on all the sensor data from your bedroom, as well as how you actually slept. It‘s a simple, unique measure of your sleep quality - out of 100.</string>
-    <string name="welcome_dialog_timeline_before_sleep">The “Before Sleep” tab will summarize the conditions of your bedroom before you went to sleep.</string>
-    <string name="welcome_dialog_timeline_events">Your timeline shows you a minute-by-minute record of your night. The blue bars break your sleep out into three categories: Light, medium and deep sleep.\n\nThe wider the bar, the deeper the sleep. Press and hold on the timeline for more info.</string>
+    <string name="welcome_dialog_timeline_title_intro">Understand your sleep</string>
+    <string name="welcome_dialog_timeline_intro">Sense monitors the environment in your bedroom, and recognizes your movements during the night, giving you the full picture of your sleep.\n\nSwipe left to learn how this information is presented to you in a detailed yet easy to understand way.</string>
+    <string name="welcome_dialog_timeline_title_score">Sleep Score</string>
+    <string name="welcome_dialog_timeline_score">Each morning, you‘ll receive a personalized Sleep Score — out of 100 — based on the conditions of your room and how you slept the night before.</string>
+    <string name="welcome_dialog_timeline_title_before_sleep">Sleep Summary</string>
+    <string name="welcome_dialog_timeline_before_sleep">Tap on your Sleep Summary at the top of the Timeline to view detailed information about your night.\n\nYou‘ll see how long it took you to fall asleep, how much of your night was spent asleep, what the environmental conditions of your bedroom were like before and during your sleep, and more. </string>
+    <string name="welcome_dialog_timeline_title_events">Sleep Timeline</string>
+    <string name="welcome_dialog_timeline_events">Your Timeline shows you everything that happened during the night, from the moment you go to bed until the time you wake up.\n\nThe blue bars represent your time spent sleeping. The wider the bar, the deeper the sleep. Tap on any bar to view more details.\n\nYour Timeline will also show key events from your night, including time spent tossing and turning, loud noises and more.</string>
     <string name="welcome_dialog_current_conditions_title">Current Conditions</string>
     <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom: Temperature, Humidity, Light, and Sound. Tap a card for more details.</string>
     <string name="welcome_dialog_trends_title">Trends</string>
@@ -406,10 +391,12 @@ so you can sleep better.</string>
     <string name="trends_message_error">Trends could not be loaded.</string>
     <string name="onboarding_title_sleep_pill_intro">Sleep Pill</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>
-    <string name="timeline_breakdown_label_total_sleep">Total sleep</string>
-    <string name="timeline_breakdown_label_times_awake">Times Awake</string>
-    <string name="timeline_breakdown_label_sound_sleep">Deep Sleep</string>
-    <string name="timeline_breakdown_label_time_to_sleep">Time to sleep</string>
+    <string name="timeline_info_label_total_sleep">Total sleep</string>
+    <string name="timeline_info_label_times_awake">Times awake</string>
+    <string name="timeline_info_label_sound_sleep">Deep sleep</string>
+    <string name="timeline_info_label_time_to_sleep">Time to sleep</string>
+    <string name="timeline_info_label_sleep_time">Fell asleep</string>
+    <string name="timeline_info_label_wake_up_time">Woke up</string>
     <string name="notification_setting_alert_conditions">Alert Conditions</string>
     <string name="notification_setting_sleep_score">Daily Sleep Score</string>
     <string name="onboarding_room_check_info_failure">Could not complete room check. Go ahead and set up your first Smart Alarm.</string>
@@ -433,15 +420,11 @@ so you can sleep better.</string>
     <string name="action_more_info">More info</string>
     <string name="action_adjust_time">Adjust Time</string>
     <string name="action_submit">Submit</string>
-    <string name="sleep_depth_awake">awake</string>
-    <string name="sleep_depth_deep">in deep sleep</string>
-    <string name="sleep_depth_light">in light sleep</string>
-    <string name="sleep_depth_intermediate">in medium sleep</string>
-    <string name="waking_depth_awake">There was a lot of motion.</string>
-    <string name="waking_depth_light">There was a lot of motion.</string>
-    <string name="waking_depth_intermediate">There was a moderate amount of motion.</string>
-    <string name="waking_depth_deep">There was a slight amount of motion.</string>
-    <string name="tooltip_timeline_html_fmt"><![CDATA[You were <b>%1$s</b>.]]></string>
+    <string name="sleep_depth_awake">AWAKE</string>
+    <string name="sleep_depth_deep">IN DEEP SLEEP</string>
+    <string name="sleep_depth_light">IN LIGHT SLEEP</string>
+    <string name="sleep_depth_intermediate">IN MEDIUM SLEEP</string>
+    <string name="timeline_popup_info_prefix">"YOU WERE "</string>
     <string name="debug_action_scan">Scan</string>
     <string name="device_color_red">Red</string>
     <string name="device_color_blue">Blue</string>
@@ -452,7 +435,6 @@ so you can sleep better.</string>
     <string name="title_have_sense_ready">Have Sense ready?</string>
     <string name="info_have_sense_ready">You‘ll need Sense and Sleep Pill handy to continue. If you‘re not ready now, you can always come back later.</string>
 
-    <string name="tutorial_sleep_score_breakdown">Tap your Sleep Score to see a more detailed breakdown.</string>
     <string name="tutorial_swipe_timeline">Swipe left or right to navigate between days.</string>
 
     <string name="title_dismiss_all">Dismiss all tutorials</string>
@@ -486,4 +468,16 @@ so you can sleep better.</string>
     <string name="message_power_cycle_sense_factory_reset">Sense has been successfully restored to factory settings. Please unplug Sense, wait a few seconds, and plug it back in before you continue.</string>
     <string name="title_time">Time</string>
     <string name="title_acknowledgements">Acknowledgements</string>
+    <string name="action_timeline_mark_event_correct">This is correct – Coming soon</string>
+    <string name="action_timeline_event_adjust_time">Adjust the time</string>
+    <string name="action_timeline_event_remove">Remove this event – Coming soon</string>
+
+    <string name="condition_short_hand_alert_generic">was bad</string>
+    <string name="condition_short_hand_alert_temperature">was a bit hot</string>
+    <string name="condition_short_hand_alert_humidity">was a bit humid</string>
+    <string name="condition_short_hand_alert_particulates">was very poor</string>
+    <string name="condition_short_hand_alert_sound">a little loud</string>
+    <string name="condition_short_hand_alert_light">a little bright</string>
+    <string name="condition_short_hand_warning">a bit too high</string>
+    <string name="condition_short_hand_ideal">was ideal</string>
 </resources>

@@ -110,8 +110,9 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
 
         if (wantsBackStackEntry) {
             transaction.setBreadCrumbTitle(title);
-            transaction.addToBackStack(fragment.getClass().getSimpleName());
+            transaction.addToBackStack(tag);
         }
+
         return transaction;
     }
 
@@ -128,6 +129,20 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
                                               @Nullable String title,
                                               boolean wantsBackStackEntry) {
         FragmentTransaction transaction = createTransaction(fragment, title, wantsBackStackEntry);
+        transaction.commitAllowingStateLoss();
+    }
+
+    public void overlayFragmentAllowingStateLoss(@NonNull Fragment fragment,
+                                                 @Nullable String title,
+                                                 boolean wantsBackStackEntry) {
+        String tag = fragment.getClass().getSimpleName();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(R.id.activity_fragment_navigation_container, fragment, tag);
+        if (wantsBackStackEntry) {
+            transaction.setBreadCrumbTitle(title);
+            transaction.addToBackStack(tag);
+        }
         transaction.commitAllowingStateLoss();
     }
 

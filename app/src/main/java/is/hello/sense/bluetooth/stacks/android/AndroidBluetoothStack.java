@@ -22,7 +22,6 @@ import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.bluetooth.stacks.Peripheral;
 import is.hello.sense.bluetooth.stacks.util.ErrorListener;
 import is.hello.sense.bluetooth.stacks.util.PeripheralCriteria;
-import is.hello.sense.bluetooth.stacks.util.Util;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Scheduler;
@@ -207,11 +206,6 @@ public class AndroidBluetoothStack implements BluetoothStack {
     }
 
     @Override
-    public @Peripheral.Config int getDefaultConfig() {
-        return (Peripheral.CONFIG_WAIT_AFTER_SERVICE_DISCOVERY);
-    }
-
-    @Override
     public SupportLevel getDeviceSupportLevel() {
         return DeviceSupport.getDeviceSupportLevel();
     }
@@ -223,7 +217,6 @@ public class AndroidBluetoothStack implements BluetoothStack {
                 "applicationContext=" + applicationContext +
                 ", scheduler=" + scheduler +
                 ", adapter=" + adapter +
-                ", defaultConfig=" + Util.peripheralConfigToString(getDefaultConfig()) +
                 '}';
     }
 }

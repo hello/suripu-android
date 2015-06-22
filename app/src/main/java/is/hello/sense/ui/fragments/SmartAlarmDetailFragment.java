@@ -301,14 +301,14 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
             ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(R.string.error_no_smart_alarm_sound);
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-        } else if (alarm.isTooSoon()) {
+        } else if (smartAlarmPresenter.isAlarmTooSoon(alarm)) {
             LoadingDialogFragment.close(getFragmentManager());
 
             ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(R.string.error_alarm_too_soon);
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
             if (alarm.getDaysOfWeek().isEmpty()) {
-                alarm.fireOnce();
+                alarm.setRingOnce();
             }
 
             Observable<VoidResponse> saveOperation;

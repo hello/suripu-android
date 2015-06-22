@@ -131,7 +131,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         if (animationCompleted) {
             jumpToEnd(false);
         } else {
-            bindAndSubscribe(presenter.currentConditions.take(1),
+            bindAndSubscribe(presenter.latest(),
                              this::bindConditions,
                              this::conditionsUnavailable);
         }

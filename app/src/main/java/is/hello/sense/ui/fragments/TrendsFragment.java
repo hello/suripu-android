@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.TrendsPresenter;
@@ -99,7 +98,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         }
     }
 
-    public void bindTrends(@NonNull ArrayList<TrendGraph> trends) {
+    public void bindTrends(@NonNull ArrayList<TrendsPresenter.Rendered> trends) {
         swipeRefreshLayout.setRefreshing(false);
         trendsAdapter.bindTrends(trends);
 

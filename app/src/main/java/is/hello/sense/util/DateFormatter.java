@@ -3,7 +3,10 @@ package is.hello.sense.util;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.format.DateFormat;
+import android.text.style.RelativeSizeSpan;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -18,10 +21,13 @@ import org.joda.time.Seconds;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Styles;
 
 @Singleton public class DateFormatter {
     private final Context context;
@@ -98,6 +104,18 @@ import is.hello.sense.R;
         }
     }
 
+    public @NonNull String formatAsTimelineNavigatorDate(@Nullable DateTime date) {
+        if (date != null) {
+            if (!date.year().equals(now().year())) {
+                return date.toString(context.getString(R.string.format_date_month_year));
+            } else {
+                return date.toString(context.getString(R.string.format_date_month));
+            }
+        } else {
+            return context.getString(R.string.format_date_placeholder);
+        }
+    }
+
     public @NonNull String formatAsLocalizedDate(@Nullable LocalDate date) {
         if (date != null) {
             return DateFormat.getDateFormat(context).format(date.toDate());
@@ -106,12 +124,52 @@ import is.hello.sense.R;
         }
     }
 
-    public @NonNull String formatAsTimelineStamp(@Nullable DateTime date, boolean use24Time) {
+    public static @NonNull CharSequence assembleTimeAndPeriod(@NonNull CharSequence time, @NonNull CharSequence period) {
+        SpannableStringBuilder spannable = new SpannableStringBuilder(period);
+        spannable.setSpan(new RelativeSizeSpan(0.75f), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.insert(0, time);
+        return spannable;
+    }
+
+    public @NonNull CharSequence formatForTimelineEvent(@Nullable DateTime date, boolean use24Time) {
         if (date != null) {
-            if (use24Time)
-                return date.toString(context.getString(R.string.format_timeline_time_24_hr));
-            else
-                return date.toString(context.getString(R.string.format_timeline_time_12_hr));
+            if (use24Time) {
+                return date.toString(context.getString(R.string.format_timeline_event_time_24_hr));
+            } else {
+                String time = date.toString(context.getString(R.string.format_timeline_event_time_12_hr));
+                String period = date.toString(context.getString(R.string.format_timeline_12_hr_period_padded));
+                return assembleTimeAndPeriod(time, period);
+            }
+        }
+        return context.getString(R.string.format_date_placeholder);
+    }
+
+    public @Nullable CharSequence formatForTimelineSegment(@Nullable LocalTime date, boolean use24Time) {
+        if (date != null) {
+            String hour, period;
+            if (use24Time) {
+                hour = date.toString(context.getString(R.string.format_timeline_segment_time_24_hr));
+                period = context.getString(R.string.format_timeline_24_hr_period);
+            } else {
+                hour = date.toString(context.getString(R.string.format_timeline_segment_time_12_hr));
+                period = date.toString(context.getString(R.string.format_timeline_12_hr_period_padded));
+            }
+
+            return assembleTimeAndPeriod(hour, period);
+        } else {
+            return null;
+        }
+    }
+
+    public @NonNull CharSequence formatForTimelineInfo(@Nullable DateTime date, boolean use24Time) {
+        if (date != null) {
+            if (use24Time) {
+                return date.toString(context.getString(R.string.format_timeline_event_time_24_hr));
+            } else {
+                String time = date.toString(context.getString(R.string.format_timeline_event_time_12_hr));
+                String period = date.toString(context.getString(R.string.format_timeline_12_hr_period));
+                return Styles.assembleReadingAndUnit(time, period, Styles.UNIT_STYLE_SUBSCRIPT);
+            }
         }
         return context.getString(R.string.format_date_placeholder);
     }
@@ -191,6 +249,25 @@ import is.hello.sense.R;
             return context.getResources().getQuantityString(pluralRes, count, count);
         } else {
             return context.getString(R.string.format_date_placeholder);
+        }
+    }
+
+    public @NonNull CharSequence formatDuration(long duration, @NonNull TimeUnit unit) {
+        long totalMinutes = unit.toMinutes(duration);
+        if (totalMinutes < 60) {
+            return Styles.assembleReadingAndUnit(totalMinutes, context.getString(R.string.format_duration_abbrev_minutes));
+        } else {
+            float hours = totalMinutes / 60f;
+            long leftOverMinutes = totalMinutes % 60;
+
+            String reading;
+            if (leftOverMinutes == 0) {
+                reading = String.format("%.0f", hours);
+            } else {
+                reading = String.format("%.1f", hours);
+            }
+
+            return Styles.assembleReadingAndUnit(reading, context.getString(R.string.format_duration_abbrev_hours), Styles.UNIT_STYLE_SUBSCRIPT);
         }
     }
 

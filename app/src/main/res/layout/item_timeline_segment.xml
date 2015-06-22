@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingEnd="@dimen/timeline_segment_item_end_inset"
+    tools:ignore="RtlSymmetry">
+
+    <RelativeLayout
+        android:id="@+id/item_timeline_segment_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/timeline_segment_event_offset_max"
+        android:layout_marginBottom="@dimen/timeline_segment_event_offset_max"
+        android:background="@drawable/background_timeline_event"
+        tools:ignore="UselessParent">
+
+        <TextView
+            android:id="@+id/item_timeline_segment_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_tiny"
+            android:layout_marginBottom="@dimen/gap_tiny"
+            android:layout_marginEnd="@dimen/gap_medium"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:textAppearance="@style/AppTheme.Text.Timeline.Timestamp.Event" />
+
+        <ImageView
+            android:id="@+id/item_timeline_segment_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/timeline_event_start_inset"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:id="@+id/item_timeline_segment_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/timeline_event_end_inset"
+            android:layout_marginTop="@dimen/gap_small"
+            android:layout_marginBottom="@dimen/gap_small"
+            android:layout_toEndOf="@id/item_timeline_segment_icon"
+            android:layout_toStartOf="@id/item_timeline_segment_date"
+            android:layout_centerVertical="true"
+            android:gravity="start|center_vertical"
+            android:textAppearance="@style/AppTheme.Text.Timeline"
+            android:lineSpacingMultiplier="@dimen/line_multiple_body"
+            android:maxLines="2" />
+
+    </RelativeLayout>
+
+</FrameLayout>

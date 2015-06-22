@@ -12,7 +12,6 @@ public final class Constants {
     public static final String NOTIFICATION_PREF_APP_VERSION = "app_version_code";
 
     public static final String HANDHOLDING_PREFS = "handholding_prefs";
-    public static final String HANDHOLDING_SUPPRESSED = "is_suppressed";
 
     /**
      * The point at which a gesture's velocity dictates that
@@ -27,8 +26,6 @@ public final class Constants {
     public static final int ONBOARDING_CHECKPOINT_PILL = 4;
 
     public static final long STALE_INTERVAL_MS = (10 * 60 * 1000); // 10 minutes
-
-    public static final int MIN_PASSWORD_LENGTH = 6;
 
     // From Retrofit
     public static final int HTTP_CONNECT_TIMEOUT_MILLIS = 15 * 1000; // 15s

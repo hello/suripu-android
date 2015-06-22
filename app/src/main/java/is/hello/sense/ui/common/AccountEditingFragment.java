@@ -30,7 +30,7 @@ public class AccountEditingFragment extends SenseFragment {
         }
     }
 
-    public static interface Container {
+    public interface Container {
         @NonNull Account getAccount();
         void onAccountUpdated(@NonNull AccountEditingFragment updatedBy);
     }

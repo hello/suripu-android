@@ -403,7 +403,9 @@ public class Analytics {
     //region Lifecycle
 
     public static void initialize(@NonNull Context context) {
-        Analytics.provider = MixpanelAPI.getInstance(context, BuildConfig.MP_API_KEY);
+        if (provider == null) {
+            Analytics.provider = MixpanelAPI.getInstance(context, BuildConfig.MP_API_KEY);
+        }
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -430,51 +432,50 @@ public class Analytics {
         }
     }
 
-    public static void trackRegistration(@NonNull String userId) {
-        Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
-
-        if (provider != null) {
-            String distinctId = provider.getDistinctId();
-            provider.alias(userId, distinctId);
-            provider.getPeople().identify(distinctId);
-        }
-
-        trackUserIdentifier(userId);
-    }
-
-    public static void trackSignIn(@NonNull String userId) {
-        Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
-
-        if (provider != null) {
-            provider.identify(userId);
-            provider.getPeople().identify(userId);
-        }
-
-        trackUserIdentifier(userId);
-    }
-
-    public static void trackUserSignUp(@Nullable String accountId, @Nullable String name, @NonNull DateTime created) {
+    public static void trackRegistration(@Nullable String accountId, @Nullable String name, @NonNull DateTime created) {
         Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId + "', name: '" + name + "', created: '" + created + "' }");
 
+        Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
+
+        if (accountId == null) {
+            accountId = "";
+        }
+
         if (provider != null) {
-            if (accountId == null) {
-                accountId = "";
-            }
 
             if (name == null) {
                 name = "";
             }
 
-            provider.getPeople().set("$name", name);
-            provider.getPeople().set("$created", created.toString());
-            provider.getPeople().set(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
-            provider.getPeople().set(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+            MixpanelAPI.People people = provider.getPeople();
+
+            String distinctId = provider.getDistinctId();
+            provider.alias(accountId, distinctId);
+            people.identify(distinctId);
+
+            people.set("$name", name);
+            people.set("$created", created.toString());
+            people.set(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+            people.set(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
 
             provider.registerSuperProperties(createProperties(
                     Global.GLOBAL_PROP_NAME, name,
                     Global.GLOBAL_PROP_PLATFORM, PLATFORM
             ));
         }
+
+        trackUserIdentifier(accountId);
+    }
+
+    public static void trackSignIn(@NonNull String accountId) {
+        Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
+
+        if (provider != null) {
+            provider.identify(accountId);
+            provider.getPeople().identify(accountId);
+        }
+
+        trackUserIdentifier(accountId);
     }
 
     public static void setSenseId(@Nullable String senseId) {

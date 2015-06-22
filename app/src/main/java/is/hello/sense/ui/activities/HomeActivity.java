@@ -2,6 +2,8 @@ package is.hello.sense.ui.activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -11,31 +13,22 @@ import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Interpolator;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.squareup.seismic.ShakeDetector;
 
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.sessions.ApiSessionManager;
@@ -44,19 +37,19 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
+import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
-import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
+import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
-import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.widget.FragmentPageTitleStrip;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.util.Views;
@@ -74,7 +67,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends ScopedInjectionActivity
-        implements FragmentPageView.Adapter<TimelineFragment>, FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
+        implements FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
 {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
@@ -89,20 +82,21 @@ public class HomeActivity
     private RelativeLayout rootContainer;
     private FrameLayout undersideContainer;
     private SlidingLayersView slidingLayersView;
+
+    private ImageButton overflowButton;
+    private ImageButton shareButton;
+    private FragmentPageTitleStrip pagerTitleStrip;
     private FragmentPageView<TimelineFragment> viewPager;
     private ImageButton smartAlarmButton;
 
-    private @Nullable View deviceAlert;
-
     private boolean isFirstActivityRun;
     private boolean showUnderside;
-
-    private @Nullable FragmentManager.OnBackStackChangedListener navigatorStackListener;
 
     private @Nullable SensorManager sensorManager;
     private @Nullable ShakeDetector shakeDetector;
 
     private final AnimatorContext animatorContext = new AnimatorContext(getClass().getSimpleName());
+    private TimelineFragmentAdapter viewPagerAdapter;
 
     //region Lifecycle
 
@@ -149,6 +143,30 @@ public class HomeActivity
         this.rootContainer = (RelativeLayout) findViewById(R.id.activity_home_container);
 
 
+        this.overflowButton = (ImageButton) findViewById(R.id.activity_home_timeline_header_overflow);
+        Views.setSafeOnClickListener(overflowButton, ignored -> slidingLayersView.toggle());
+
+        this.shareButton = (ImageButton) findViewById(R.id.activity_home_timeline_header_share);
+        shareButton.setVisibility(View.INVISIBLE);
+        Views.setSafeOnClickListener(shareButton, ignored -> {
+            TimelineFragment currentTimeline = viewPager.getCurrentFragment();
+            if (currentTimeline == null) {
+                return;
+            }
+
+            currentTimeline.share();
+        });
+
+        this.pagerTitleStrip = (FragmentPageTitleStrip) findViewById(R.id.activity_home_timeline_date);
+        Views.setSafeOnClickListener(pagerTitleStrip, ignored -> {
+            TimelineFragment currentTimeline = viewPager.getCurrentFragment();
+            if (currentTimeline == null) {
+                return;
+            }
+
+            showTimelineNavigator(currentTimeline.getDate(), currentTimeline.getCachedTimeline());
+        });
+
         this.smartAlarmButton = (ImageButton) findViewById(R.id.fragment_timeline_smart_alarm);
         Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
             showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, true);
@@ -158,11 +176,16 @@ public class HomeActivity
 
         // noinspection unchecked
         this.viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
+
+        this.viewPagerAdapter = new TimelineFragmentAdapter(getResources());
+        viewPager.setAdapter(viewPagerAdapter);
+
         viewPager.setFragmentManager(getFragmentManager());
-        viewPager.setAdapter(this);
         viewPager.setOnTransitionObserver(this);
+        viewPager.setDecor(pagerTitleStrip);
         viewPager.setStateSafeExecutor(stateSafeExecutor);
         viewPager.setAnimatorContext(animatorContext);
+
         if (viewPager.getCurrentFragment() == null) {
             jumpToLastNight(false);
         }
@@ -211,9 +234,9 @@ public class HomeActivity
                          Functions.LOG_ERROR);
 
         if (isFirstActivityRun && !getWillShowUnderside()) {
-            bindAndSubscribe(devicesPresenter.devices.take(1),
-                             this::bindDevices,
-                             this::devicesUnavailable);
+            bindAndSubscribe(devicesPresenter.latestTopIssue(),
+                             this::bindDeviceIssue,
+                             Functions.LOG_ERROR);
         }
 
         UndersideFragment underside = getUndersideFragment();
@@ -258,9 +281,11 @@ public class HomeActivity
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, reloading.");
                 TimelineFragment fragment = viewPager.getCurrentFragment();
                 fragment.update();
+
+                this.lastUpdated = System.currentTimeMillis();
             } else {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
-                TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
+                TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null, true);
                 viewPager.setCurrentFragment(fragment);
             }
 
@@ -288,15 +313,15 @@ public class HomeActivity
         super.onTrimMemory(level);
 
         presenterContainer.onTrimMemory(level);
+
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
+            viewPagerAdapter.clearPlaceholder();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        if (navigatorStackListener != null) {
-            getFragmentManager().removeOnBackStackChangedListener(navigatorStackListener);
-        }
 
         if (isFinishing()) {
             presenterContainer.onContainerDestroyed();
@@ -320,12 +345,11 @@ public class HomeActivity
                     }
 
                     DateTime date = Notification.getDate(notification);
-                    TimelineFragment fragment = TimelineFragment.newInstance(date, null);
+                    TimelineFragment fragment = TimelineFragment.newInstance(date, null, false);
                     viewPager.setCurrentFragment(fragment);
 
                     break;
                 }
-
                 case SENSOR: {
                     showUndersideWithItem(UndersideFragment.ITEM_ROOM_CONDITIONS, animate);
 
@@ -336,22 +360,18 @@ public class HomeActivity
 
                     break;
                 }
-
                 case TRENDS: {
                     showUndersideWithItem(UndersideFragment.ITEM_TRENDS, animate);
                     break;
                 }
-
                 case ALARM: {
                     showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, animate);
                     break;
                 }
-
                 case SETTINGS: {
                     showUndersideWithItem(UndersideFragment.ITEM_APP_SETTINGS, animate);
                     break;
                 }
-
                 case INSIGHTS: {
                     showUndersideWithItem(UndersideFragment.ITEM_INSIGHTS, animate);
                     break;
@@ -365,25 +385,35 @@ public class HomeActivity
 
     @Override
     public void onBackPressed() {
-        if (slidingLayersView.isOpen()) {
-            if (!slidingLayersView.isAnimating() && !slidingLayersView.hasActiveGesture()) {
-                UndersideFragment undersideFragment = getUndersideFragment();
-                if (undersideFragment == null || !undersideFragment.onBackPressed()) {
-                    slidingLayersView.close();
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
+            if (slidingLayersView.isOpen()) {
+                if (!slidingLayersView.isAnimating() && !slidingLayersView.hasActiveGesture()) {
+                    UndersideFragment undersideFragment = getUndersideFragment();
+                    if (undersideFragment == null || !undersideFragment.onBackPressed()) {
+                        slidingLayersView.close();
+                    }
                 }
+
+                return;
+            } else if (!isCurrentFragmentLastNight()) {
+                if (!viewPager.isAnimating() && !viewPager.hasActiveGesture()) {
+                    jumpToLastNight(true);
+                }
+
+                return;
             }
-        } else if (!isCurrentFragmentLastNight()) {
-            if (!viewPager.isAnimating() && !viewPager.hasActiveGesture()) {
-                jumpToLastNight(true);
-            }
-        } else {
-            super.onBackPressed();
         }
+
+        super.onBackPressed();
     }
 
 
     public boolean getWillShowUnderside() {
         return getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false);
+    }
+
+    public boolean isUndersideVisible() {
+        return slidingLayersView.isOpen();
     }
 
     public boolean isCurrentFragmentLastNight() {
@@ -392,7 +422,7 @@ public class HomeActivity
     }
 
     public void jumpToLastNight(boolean animate) {
-        TimelineFragment lastNight = TimelineFragment.newInstance(DateFormatter.lastNight(), null);
+        TimelineFragment lastNight = TimelineFragment.newInstance(DateFormatter.lastNight(), null, !animate);
         if (animate) {
             viewPager.animateToFragment(lastNight, FragmentPageView.Position.AFTER);
         } else {
@@ -406,50 +436,27 @@ public class HomeActivity
         return animatorContext;
     }
 
-
     public void checkInForUpdates() {
         bindAndSubscribe(apiService.checkInForUpdates(new UpdateCheckIn()),
-                         response -> {
-                             if (response.isNewVersion()) {
-                                 AppUpdateDialogFragment dialogFragment = AppUpdateDialogFragment.newInstance(response);
-                                 dialogFragment.show(getFragmentManager(), AppUpdateDialogFragment.TAG);
-                             }
-                         },
-                         e -> Logger.error(HomeActivity.class.getSimpleName(), "Could not run update check in", e));
+                response -> {
+                    if (response.isNewVersion()) {
+                        AppUpdateDialogFragment dialogFragment = AppUpdateDialogFragment.newInstance(response);
+                        dialogFragment.show(getFragmentManager(), AppUpdateDialogFragment.TAG);
+                    }
+                },
+                e -> Logger.error(HomeActivity.class.getSimpleName(), "Could not run update check in", e));
     }
 
 
     //region Fragment Adapter
 
     @Override
-    public boolean hasFragmentBeforeFragment(@NonNull TimelineFragment fragment) {
-        return true;
-    }
-
-    @Override
-    public TimelineFragment getFragmentBeforeFragment(@NonNull TimelineFragment fragment) {
-        return TimelineFragment.newInstance(fragment.getDate().minusDays(1), null);
-    }
-
-
-    @Override
-    public boolean hasFragmentAfterFragment(@NonNull TimelineFragment fragment) {
-        DateTime fragmentTime = fragment.getDate();
-        return fragmentTime.isBefore(DateFormatter.lastNight().withTimeAtStartOfDay());
-    }
-
-    @Override
-    public TimelineFragment getFragmentAfterFragment(@NonNull TimelineFragment fragment) {
-        return TimelineFragment.newInstance(fragment.getDate().plusDays(1), null);
-    }
-
-
-    @Override
     public void onWillTransitionToFragment(@NonNull TimelineFragment fragment, boolean isInteractive) {
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
         if (currentFragment != null) {
-            currentFragment.setControlsAlarmShortcut(false);
+            currentFragment.setControlsSharedChrome(false);
         }
+        setShareButtonVisible(false);
 
         showAlarmShortcut();
     }
@@ -458,13 +465,15 @@ public class HomeActivity
     public void onDidTransitionToFragment(@NonNull TimelineFragment fragment, boolean isInteractive) {
         this.lastUpdated = System.currentTimeMillis();
 
-        fragment.setControlsAlarmShortcut(true);
+        fragment.setControlsSharedChrome(true);
+
+        setShareButtonVisible(fragment.getWantsShareButton());
 
         if (isInteractive) {
             Tutorial.SWIPE_TIMELINE.markShown(this);
 
             JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_DATE, fragment.getDate().toString()
+                    Analytics.Timeline.PROP_DATE, fragment.getDate().toString()
             );
             Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_SWIPE, properties);
         }
@@ -472,13 +481,14 @@ public class HomeActivity
 
     @Override
     public void onDidSnapBackToFragment(@NonNull TimelineFragment fragment) {
-        fragment.setControlsAlarmShortcut(true);
+        setShareButtonVisible(fragment.getWantsShareButton());
+        fragment.setControlsSharedChrome(true);
     }
 
     //endregion
 
 
-    //region Smart Alarm Button
+    //region Shared Chrome
 
     public void hideAlarmShortcut() {
         if (smartAlarmButton.getVisibility() == View.VISIBLE && !isAnimating(smartAlarmButton)) {
@@ -505,169 +515,33 @@ public class HomeActivity
         }
     }
 
+    public void setShareButtonVisible(boolean visible) {
+        if (visible && !slidingLayersView.isOpen()) {
+            shareButton.setVisibility(View.VISIBLE);
+        } else {
+            shareButton.setVisibility(View.INVISIBLE);
+        }
+    }
+
     //endregion
 
 
-    //region Alerts
+    //region Device Issues
 
-    public void showDevices() {
-        Bundle intentArguments = FragmentNavigationActivity.getArguments(getString(R.string.label_devices), DeviceListFragment.class, null);
-        Intent intent = new Intent(this, FragmentNavigationActivity.class);
-        intent.putExtras(intentArguments);
-        startActivity(intent);
-    }
-
-    public void bindDevices(@NonNull ArrayList<Device> devices) {
-        Map<Device.Type, Device> devicesMap = Device.getDevicesMap(devices);
-        Device sense = devicesMap.get(Device.Type.SENSE);
-        Device pill = devicesMap.get(Device.Type.PILL);
-
-        if (sense != null) {
-            Analytics.setSenseId(sense.getDeviceId());
-        }
-
-        if (sense == null) {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_PAIRED
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
-
-            showDeviceAlert(R.string.alert_title_no_sense,
-                            R.string.alert_message_no_sense,
-                            R.string.action_fix_now,
-                            this::showDevices);
-        } else if (sense.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_SEEN
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
-
-            showDeviceAlert(R.string.alert_title_missing_sense,
-                            R.string.alert_message_missing_sense,
-                            R.string.action_fix_now,
-                            this::showDevices);
-        } else if (pill == null) {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_PAIRED
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
-
-            showDeviceAlert(R.string.alert_title_no_pill,
-                            R.string.alert_message_no_pill,
-                            R.string.action_fix_now,
-                            this::showDevices);
-        } else if (pill.getState() == Device.State.LOW_BATTERY) {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_LOW_BATTERY
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
-
-            showDeviceAlert(R.string.alert_title_low_battery,
-                            R.string.alert_message_low_battery,
-                            R.string.action_replace,
-                            () -> UserSupport.showReplaceBattery(this));
-        } else if (pill.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_SEEN
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
-
-            showDeviceAlert(R.string.alert_title_missing_pill,
-                            R.string.alert_message_missing_pill,
-                            R.string.action_fix_now,
-                            this::showDevices);
-        } else {
-            hideDeviceAlert();
-        }
-    }
-
-    public void devicesUnavailable(Throwable e) {
-        Logger.error(getClass().getSimpleName(), "Devices list was unavailable.", e);
-        hideDeviceAlert();
-    }
-
-    public void showDeviceAlert(@StringRes int titleRes,
-                                @StringRes int messageRes,
-                                @StringRes int actionTitleRes,
-                                @NonNull Runnable action) {
-        if (deviceAlert != null) {
+    public void bindDeviceIssue(@NonNull DevicesPresenter.Issue issue) {
+        if (issue == DevicesPresenter.Issue.NONE ||
+                getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null) {
             return;
         }
 
-        LayoutInflater inflater = getLayoutInflater();
-        this.deviceAlert = inflater.inflate(R.layout.item_bottom_alert, rootContainer, false);
-
-        TextView title = (TextView) deviceAlert.findViewById(R.id.item_bottom_alert_title);
-        title.setText(titleRes);
-
-        TextView message = (TextView) deviceAlert.findViewById(R.id.item_bottom_alert_message);
-        message.setText(messageRes);
-
-        Button later = (Button) deviceAlert.findViewById(R.id.item_bottom_alert_later);
-        Views.setSafeOnClickListener(later, ignored -> {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_LATER
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
-            hideDeviceAlert();
-        });
-
-        Button fixNow = (Button) deviceAlert.findViewById(R.id.item_bottom_alert_fix_now);
-        fixNow.setText(actionTitleRes);
-        Views.setSafeOnClickListener(fixNow, ignored -> {
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_NOW
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
-
-            hideDeviceAlert();
-            action.run();
-        });
-
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) deviceAlert.getLayoutParams();
-        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        deviceAlert.setVisibility(View.INVISIBLE);
-
-        Views.observeNextLayout(deviceAlert).subscribe(container -> {
-            int alertViewHeight = deviceAlert.getMeasuredHeight();
-            int alertViewY = (int) deviceAlert.getY();
-
-            deviceAlert.setY(alertViewY + alertViewHeight);
-            deviceAlert.setVisibility(View.VISIBLE);
-
-            animate(deviceAlert, animatorContext)
-                    .y(alertViewY)
-                    .start();
-        });
-        rootContainer.post(() -> rootContainer.addView(deviceAlert));
-    }
-
-    public void hideDeviceAlert() {
-        if (deviceAlert == null) {
-            return;
-        }
-
-        stateSafeExecutor.execute(() -> {
-            int alertViewHeight = deviceAlert.getMeasuredHeight();
-            int alertViewY = (int) deviceAlert.getY();
-            animate(deviceAlert, animatorContext)
-                    .y(alertViewY + alertViewHeight)
-                    .addOnAnimationCompleted(finished -> {
-                        rootContainer.removeView(deviceAlert);
-                        this.deviceAlert = null;
-                    })
-                    .start();
-        });
+        DeviceIssueDialogFragment deviceIssueDialogFragment = DeviceIssueDialogFragment.newInstance(issue);
+        deviceIssueDialogFragment.show(getFragmentManager(), DeviceIssueDialogFragment.TAG);
     }
 
     //endregion
 
 
     //region Sliding Layers
-
-    public SlidingLayersView getSlidingLayersView() {
-        return slidingLayersView;
-    }
 
     private @Nullable UndersideFragment getUndersideFragment() {
         return (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
@@ -684,7 +558,9 @@ public class HomeActivity
                     .commit();
         }
 
-        viewPager.getCurrentFragment().onUserWillPullDownTopView();
+        setShareButtonVisible(false);
+        overflowButton.setImageResource(R.drawable.icon_menu_open);
+        pagerTitleStrip.setDimmed(true);
 
         this.isFirstActivityRun = false;
     }
@@ -703,7 +579,10 @@ public class HomeActivity
             });
         }
 
-        viewPager.getCurrentFragment().onUserDidPushUpTopView();
+        TimelineFragment currentFragment = viewPager.getCurrentFragment();
+        setShareButtonVisible(currentFragment != null && currentFragment.getWantsShareButton());
+        overflowButton.setImageResource(R.drawable.icon_menu_closed);
+        pagerTitleStrip.setDimmed(false);
     }
 
     public void showUndersideWithItem(int item, boolean animate) {
@@ -797,45 +676,13 @@ public class HomeActivity
     public void showTimelineNavigator(@NonNull DateTime startDate, @Nullable Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
 
-        ViewGroup undersideContainer = (ViewGroup) findViewById(R.id.activity_home_content_container);
-
         TimelineNavigatorFragment navigatorFragment = TimelineNavigatorFragment.newInstance(startDate, timeline);
-        navigatorFragment.show(getFragmentManager(), 0, TimelineNavigatorFragment.TAG);
-
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.executePendingTransactions();
-
-        View view = navigatorFragment.getView();
-        if (view == null) {
-            throw new IllegalStateException();
-        }
-
-        this.navigatorStackListener = () -> {
-            if (!navigatorFragment.isAdded() && !isDestroyed()) {
-                showAlarmShortcut();
-                animate(viewPager, animatorContext)
-                        .zoomInFrom(0.7f)
-                        .addOnAnimationCompleted(finished -> {
-                            if (finished) {
-                                undersideContainer.removeView(view);
-                                slidingLayersView.setEnabled(true);
-                            }
-                        })
-                        .start();
-
-                fragmentManager.removeOnBackStackChangedListener(navigatorStackListener);
-                this.navigatorStackListener = null;
-            }
-        };
-        fragmentManager.addOnBackStackChangedListener(navigatorStackListener);
-
-        slidingLayersView.setEnabled(false);
-        undersideContainer.addView(view, 0);
-
-        hideAlarmShortcut();
-        animate(viewPager, animatorContext)
-                .zoomOutTo(View.GONE, 0.7f)
-                .start();
+        getFragmentManager()
+                .beginTransaction()
+                .add(R.id.activity_home_container, navigatorFragment, TimelineNavigatorFragment.TAG)
+                .addToBackStack(TimelineNavigatorFragment.TAG)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
     }
 
     @Override
@@ -844,7 +691,7 @@ public class HomeActivity
 
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
         if (!date.equals(currentFragment.getDate())) {
-            viewPager.setCurrentFragment(TimelineFragment.newInstance(date, timeline));
+            viewPager.setCurrentFragment(TimelineFragment.newInstance(date, timeline, false));
         } else {
             currentFragment.scrollToTop();
         }

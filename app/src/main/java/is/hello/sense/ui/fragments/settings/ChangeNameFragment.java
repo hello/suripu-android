@@ -3,7 +3,6 @@ package is.hello.sense.ui.fragments.settings;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.EditorActionHandler;
@@ -43,12 +43,14 @@ public class ChangeNameFragment extends AccountEditingFragment {
     }
 
     public void submit(@NonNull View sender) {
-        if (TextUtils.isEmpty(nameText.getText())) {
+        String name = AccountPresenter.normalizeInput(nameText.getText());
+        nameText.setText(name);
+        if (!AccountPresenter.validateName(name)) {
             animate(nameText).simplePop(1.4f).start();
             return;
         }
 
-        getContainer().getAccount().setName(nameText.getText().toString());
+        getContainer().getAccount().setName(name);
         getContainer().onAccountUpdated(this);
     }
 }

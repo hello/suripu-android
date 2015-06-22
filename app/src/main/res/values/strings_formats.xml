@@ -2,11 +2,15 @@
 <resources>
     <!-- string resources related to localization and value formatting -->
 
+    <string name="format_markup_list_deliminator">"• "</string>
+
     <string name="format_date_placeholder">--</string>
 
     <string name="format_date">MMMM d</string>
     <string name="format_date_last_night">Last Night</string>
     <string name="format_date_weekday">EEEE</string>
+    <string name="format_date_month">MMMM</string>
+    <string name="format_date_month_year">MMMM yyyy</string>
 
     <string name="format_time_12_hr">h:mm a</string>
     <string name="format_time_24_hr">H:mm</string>
@@ -14,8 +18,17 @@
     <string name="format_day_and_time_12_hr">EEEE – h:mm a</string>
     <string name="format_day_and_time_24_hr">EEEE – H:mm</string>
 
-    <string name="format_timeline_time_12_hr">h:mm</string>
-    <string name="format_timeline_time_24_hr">H:mm</string>
+    <string name="format_timeline_segment_time_24_hr">H</string>
+    <string name="format_timeline_segment_time_12_hr">h</string>
+    <string name="format_timeline_event_time_24_hr">H:mm</string>
+    <string name="format_timeline_event_time_12_hr">h:mm</string>
+    <string name="format_timeline_24_hr_period">:00</string>
+    <string name="format_timeline_12_hr_period">a</string>
+    <string name="format_timeline_12_hr_period_padded">" a"</string>
+
+    <string name="format_duration_abbrev_minutes">min</string>
+    <string name="format_duration_abbrev_hours">hr</string>
+    <string name="format_duration_divider">.</string>
 
     <plurals name="format_relative_time_seconds">
         <item quantity="one">%1$d second ago</item>

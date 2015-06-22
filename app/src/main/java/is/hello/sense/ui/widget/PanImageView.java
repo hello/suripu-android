@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -22,6 +23,9 @@ public class PanImageView extends View {
     private int scaledImageWidth = 0;
 
     private @Nullable ValueAnimator currentAnimator = null;
+
+
+    //region Lifecycle
 
     public PanImageView(Context context) {
         this(context, null, 0);
@@ -44,33 +48,15 @@ public class PanImageView extends View {
         setBackgroundColor(Color.BLACK);
     }
 
+    //endregion
+
+
+    //region Drawing
 
     @Override
     protected void onSizeChanged(int w, int h, int oldW, int oldH) {
         super.onSizeChanged(w, h, oldW, oldH);
         calculateScaledImageWidth();
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-        if (image != null) {
-            int offScreenWidth = scaledImageWidth - canvas.getWidth();
-            int panOffset = Math.round(offScreenWidth * panAmount);
-            image.setBounds(-panOffset, 0, scaledImageWidth - panOffset, canvas.getHeight());
-            image.draw(canvas);
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        if (currentAnimator != null) {
-            currentAnimator.cancel();
-            this.currentAnimator = null;
-        }
     }
 
     protected void calculateScaledImageWidth() {
@@ -92,6 +78,23 @@ public class PanImageView extends View {
         }
     }
 
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        if (image != null) {
+            int offScreenWidth = scaledImageWidth - canvas.getWidth();
+            int panOffset = Math.round(offScreenWidth * panAmount);
+            image.setBounds(-panOffset, 0, scaledImageWidth - panOffset, canvas.getHeight());
+            image.draw(canvas);
+        }
+    }
+
+    //endregion
+
+
+    //region Attributes
+
     public void setImageDrawable(@Nullable Drawable image) {
         this.image = image;
         this.panAmount = 0;
@@ -106,6 +109,8 @@ public class PanImageView extends View {
     }
 
     public void setPanAmount(float panAmount) {
+        clearAnimation();
+
         if (panAmount > 1f) {
             panAmount = 1f;
         } else if (panAmount < 0f) {
@@ -117,14 +122,39 @@ public class PanImageView extends View {
         invalidate();
     }
 
+    //endregion
+
+
+    //region Animation
+
+    @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+
+        if (visibility != VISIBLE) {
+            clearAnimation();
+        }
+    }
+
+    @Override
+    public void clearAnimation() {
+        super.clearAnimation();
+
+        if (currentAnimator != null) {
+            currentAnimator.cancel();
+        }
+    }
+
     public void animateToPanAmount(float endAmount, long duration, @Nullable Runnable onCompletion) {
-        if (panAmount == endAmount) {
+        if (currentAnimator == null && panAmount == endAmount) {
             if (onCompletion != null) {
                 onCompletion.run();
             }
 
             return;
         }
+
+        clearAnimation();
 
         this.currentAnimator = ValueAnimator.ofFloat(panAmount, endAmount);
         currentAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
@@ -133,20 +163,21 @@ public class PanImageView extends View {
             this.panAmount = (float) a.getAnimatedValue();
             invalidate();
         });
-        if (onCompletion != null) {
-            currentAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
+        currentAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (currentAnimator == animation) {
                     PanImageView.this.currentAnimator = null;
-                    onCompletion.run();
                 }
 
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    PanImageView.this.currentAnimator = null;
+                if (onCompletion != null) {
+                    onCompletion.run();
                 }
-            });
-        }
+            }
+        });
+
         currentAnimator.start();
     }
+
+    //endregion
 }

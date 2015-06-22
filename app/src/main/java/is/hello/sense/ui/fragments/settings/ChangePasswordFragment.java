@@ -13,18 +13,19 @@ import android.widget.EditText;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
+import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.EditorActionHandler;
 import rx.Observable;
 
@@ -33,6 +34,8 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 public class ChangePasswordFragment extends InjectionFragment {
     private static final String ARG_EMAIL = ChangePasswordFragment.class.getName() + ".ARG_EMAIL";
 
+    @Inject
+    ApiEndpoint apiEndpoint;
     @Inject ApiService apiService;
     @Inject ApiSessionManager apiSessionManager;
 
@@ -107,7 +110,7 @@ public class ChangePasswordFragment extends InjectionFragment {
             return;
         }
 
-        if (newPassword.getText().length() < Constants.MIN_PASSWORD_LENGTH) {
+        if (!AccountPresenter.validatePassword(newPassword.getText())) {
             ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_account_password_too_short));
             errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
             newPassword.requestFocus();
@@ -129,7 +132,7 @@ public class ChangePasswordFragment extends InjectionFragment {
 
     public void recreateSession() {
         String password = newPassword.getText().toString();
-        Observable<OAuthSession> authorize = apiService.authorize(new OAuthCredentials(email, password));
+        Observable<OAuthSession> authorize = apiService.authorize(new OAuthCredentials(apiEndpoint, email, password));
         bindAndSubscribe(authorize,
                          session -> {
                              apiSessionManager.setSession(session);

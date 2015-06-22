@@ -1,0 +1,15 @@
+machine:
+  java:
+    version: oraclejdk8
+general:
+  branches:
+    ignore:
+      - /no\-test\-.*/
+dependencies:
+  pre:
+    - echo y | android update sdk --no-ui --all --filter "extra-android-support"
+test:
+  override:
+    - ./gradlew clean testDebug -PdisablePreDex
+    - cp -r app/build/outputs $CIRCLE_ARTIFACTS
+    - cp -r app/build/reports/tests/* $CIRCLE_TEST_REPORTS

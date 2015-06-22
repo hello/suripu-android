@@ -29,23 +29,25 @@
     <color name="border_underside_tabs">#d0d0d0</color>
     <color name="shadow_end">#18000000</color>
 
+    <color name="timeline_header_border">#C5E7FF</color>
+    <color name="timeline_header_gradient_end">#ffF0F3F7</color>
     <color name="timeline_segment_stripe">#40009cff</color>
     <color name="timeline_segment_stripe_dimmed">#40a2a2a2</color>
     <color name="timeline_segment_text_left">@color/text_dim</color>
     <color name="timeline_segment_underline_left">#26000000</color>
     <color name="timeline_segment_text_right">@color/light_accent</color>
     <color name="timeline_segment_underline_right">#62009cff</color>
-    <color name="timeline_tabs_border">#ededed</color>
-    <color name="timeline_tabs_gradient_start">#ffffff</color>
-    <color name="timeline_tabs_gradient_end">#f7f7f7</color>
-
+    <color name="timeline_segment_background_start">#E0F4FF</color>
+    <color name="timeline_segment_background_end">#C9EBFF</color>
 
     <color name="text_dark">#4D4D4D</color>
     <color name="text_medium">#878787</color>
     <color name="text_light">#b2b2b2</color>
     <color name="text_dim">#77000000</color>
+    <color name="text_dim_light">#b2ffffff</color>
     <color name="text_section_header">#878787</color>
     <color name="text_dim_placeholder">#e0e0e0</color>
+    <color name="text_neutral">#ACB4BF</color>
     <color name="text_footer">#7e7e7e</color>
     <color name="text_link">#009CFF</color>
 
@@ -66,15 +68,10 @@
     <color name="sensor_unknown">#565961</color>
     <color name="sensor_empty">#B5B5B5</color>
 
-    <color name="sleep_awake">#ffffff</color>
-    <color name="sleep_light">#ffccecff</color>
-    <color name="sleep_intermediate">#ffa6ddff</color>
-    <color name="sleep_deep">#ff7fceff</color>
-
-    <color name="sleep_awake_dimmed">#ffffff</color>
-    <color name="sleep_light_dimmed">#fff7f7f7</color>
-    <color name="sleep_intermediate_dimmed">#ffebebeb</color>
-    <color name="sleep_deep_dimmed">#ffe5e5e5</color>
+    <color name="sleep_awake">@color/transparent</color>
+    <color name="sleep_light">#4d009cff</color>
+    <color name="sleep_intermediate">#80009cff</color>
+    <color name="sleep_deep">#cc009cff</color>
 
     <color name="graph_stroke_color">#66000000</color>
     <color name="graph_fill_gradient_top">#22000000</color>
@@ -83,8 +80,4 @@
 
     <color name="view_scale_tick_normal">#dfdfdf</color>
     <color name="view_scale_tick_emphasized">#c1c1c1</color>
-
-    <color name="share_image_shadow">#40009CFF</color>
-    <color name="share_image_tint">#13009CFF</color>
-
 </resources>

@@ -3,17 +3,21 @@ package is.hello.sense.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightCategory;
+import is.hello.sense.api.model.Question;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.adapter.InsightsAdapter;
@@ -22,11 +26,10 @@ import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.Markdown;
+import rx.Observable;
 
 public class InsightsFragment extends UndersideTabFragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.Listener {
     @Inject InsightsPresenter insightsPresenter;
-    @Inject Markdown markdown;
     @Inject DateFormatter dateFormatter;
 
     @Inject QuestionsPresenter questionsPresenter;
@@ -60,7 +63,7 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
 
         Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER, null);
 
-        this.insightsAdapter = new InsightsAdapter(getActivity(), markdown, dateFormatter, this);
+        this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this);
         listView.setAdapter(insightsAdapter);
 
         return view;
@@ -70,13 +73,11 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(insightsPresenter.insights,
-                         insightsAdapter::bindInsights,
-                         insightsAdapter::insightsUnavailable);
-
-        bindAndSubscribe(questionsPresenter.currentQuestion,
-                         insightsAdapter::bindCurrentQuestion,
-                         insightsAdapter::currentQuestionUnavailable);
+        Observable<Pair<List<Insight>, Question>> data = Observable.combineLatest(insightsPresenter.insights,
+                questionsPresenter.currentQuestion, Pair::new);
+        bindAndSubscribe(data,
+                         insightsAdapter::bindData,
+                         insightsAdapter::dataUnavailable);
     }
 
     @Override

@@ -11,13 +11,14 @@ import org.joda.time.DateTime;
 import java.util.List;
 
 import is.hello.sense.api.ApiService;
+import is.hello.sense.util.markup.text.MarkupString;
 
 public class Timeline extends ApiResponse {
     @JsonProperty("score")
     private int score;
 
     @JsonProperty("message")
-    private String message;
+    private MarkupString message;
 
     @JsonProperty("date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.DATE_FORMAT)
@@ -39,7 +40,7 @@ public class Timeline extends ApiResponse {
         return score;
     }
 
-    public String getMessage() {
+    public MarkupString getMessage() {
         return message;
     }
 

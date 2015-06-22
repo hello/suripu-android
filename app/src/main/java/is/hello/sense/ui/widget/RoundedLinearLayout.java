@@ -12,6 +12,14 @@ import android.widget.LinearLayout;
 
 import is.hello.sense.R;
 
+/**
+ * Extends the standard <code>LinearLayout</code> to support
+ * rounded corners to ease implementation of card-style designs.
+ * <p />
+ * <b>Important:</b> combining this view with scale and alpha
+ * transformations as part of an interaction will result in less
+ * than acceptable performance.
+ */
 public class RoundedLinearLayout extends LinearLayout {
     //region Fields
 

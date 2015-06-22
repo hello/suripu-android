@@ -26,10 +26,6 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.LambdaVar;
 
 public enum Tutorial {
-    SLEEP_SCORE_BREAKDOWN(R.string.tutorial_sleep_score_breakdown,
-                          Gravity.BOTTOM,
-                          R.id.fragment_timeline_sleep_score_chart,
-                          Interaction.TAP),
     SWIPE_TIMELINE(R.string.tutorial_swipe_timeline,
                    Gravity.BOTTOM,
                    R.id.activity_home_container,
@@ -40,10 +36,10 @@ public enum Tutorial {
     public final @IdRes int anchorId;
     public final Interaction interaction;
 
-    private Tutorial(@StringRes int descriptionRes,
-                     int descriptionGravity,
-                     @IdRes int anchorId,
-                     @NonNull Interaction interaction) {
+    Tutorial(@StringRes int descriptionRes,
+             int descriptionGravity,
+             @IdRes int anchorId,
+             @NonNull Interaction interaction) {
         this.descriptionRes = descriptionRes;
         this.descriptionGravity = descriptionGravity;
         this.anchorId = anchorId;
@@ -57,8 +53,7 @@ public enum Tutorial {
 
     public boolean shouldShow(@NonNull Context context) {
         SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-        return (!preferences.getBoolean(Constants.HANDHOLDING_SUPPRESSED, false) &&
-                !preferences.getBoolean(getShownKey(), false));
+        return !preferences.getBoolean(getShownKey(), false);
     }
 
     public void markShown(@NonNull Context context) {

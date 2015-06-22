@@ -25,7 +25,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
     //region Constants
 
     public static final long MIN_SPIN_DURATION_MS = 20;
-    public static final @StyleRes int TEXT_APPEARANCE = R.style.AppTheme_Text_BigScore;
+    public static final @StyleRes int TEXT_APPEARANCE = R.style.AppTheme_Text_Score_Big;
 
     //endregion
 
@@ -287,7 +287,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
             this.rotations = rotations;
 
             int digitsShown = (totalDigits * rotations) + targetDigit;
-            this.singleSpinDuration = Math.max(MIN_SPIN_DURATION_MS, targetDuration / digitsShown);
+            this.singleSpinDuration = digitsShown == 0 ? 0 : Math.max(MIN_SPIN_DURATION_MS, targetDuration / digitsShown);
             this.adjacentDuration = singleSpinDuration * totalDigits;
             this.totalDuration = singleSpinDuration * digitsShown;
         }

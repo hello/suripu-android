@@ -19,31 +19,36 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.VideoPlayerActivity;
+import is.hello.sense.ui.widget.BlockableFrameLayout;
 import is.hello.sense.ui.widget.PanImageView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.stop;
 
 public class OnboardingIntroductionFragment extends SenseFragment implements FragmentNavigation.BackInterceptingFragment {
+    private BlockableFrameLayout rootView;
 
     private PanImageView sceneBackground;
     private TextView titleText;
     private TextView infoText;
+
     private ImageView play;
+
     private ViewGroup accountActions;
     private ViewGroup getStartedActions;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_introduction, container, false);
+        this.rootView = (BlockableFrameLayout) inflater.inflate(R.layout.fragment_onboarding_introduction, container, false);
 
-        this.sceneBackground = (PanImageView) view.findViewById(R.id.fragment_onboarding_introduction_scene);
+        this.sceneBackground = (PanImageView) rootView.findViewById(R.id.fragment_onboarding_introduction_scene);
 
-        this.titleText = (TextView) view.findViewById(R.id.fragment_onboarding_intro_title);
-        this.infoText = (TextView) view.findViewById(R.id.fragment_onboarding_intro_info);
+        this.titleText = (TextView) rootView.findViewById(R.id.fragment_onboarding_intro_title);
+        this.infoText = (TextView) rootView.findViewById(R.id.fragment_onboarding_intro_info);
 
-        this.getStartedActions = (ViewGroup) view.findViewById(R.id.fragment_onboarding_intro_account_get_started);
+        this.getStartedActions = (ViewGroup) rootView.findViewById(R.id.fragment_onboarding_intro_account_get_started);
 
         Button getStarted = (Button) getStartedActions.findViewById(R.id.fragment_onboarding_intro_get_started);
         Views.setSafeOnClickListener(getStarted, this::getStarted);
@@ -52,11 +57,11 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
         Views.setSafeOnClickListener(buySense, this::buySense);
 
 
-        this.play = (ImageView) view.findViewById(R.id.fragment_onboarding_intro_play);
+        this.play = (ImageView) rootView.findViewById(R.id.fragment_onboarding_intro_play);
         Views.setSafeOnClickListener(play, this::playIntroVideo);
 
 
-        this.accountActions = (ViewGroup) view.findViewById(R.id.fragment_onboarding_intro_account_actions);
+        this.accountActions = (ViewGroup) rootView.findViewById(R.id.fragment_onboarding_intro_account_actions);
 
         Button register = (Button) accountActions.findViewById(R.id.fragment_onboarding_intro_register);
         Views.setSafeOnClickListener(register, this::showRegister);
@@ -68,7 +73,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
         Views.setSafeOnClickListener(cancel, this::cancel);
 
 
-        return view;
+        return rootView;
     }
 
     @Override
@@ -87,6 +92,10 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
 
 
     public void getStarted(@NonNull View sender) {
+        stop(sceneBackground, getStartedActions, accountActions, infoText, play, titleText);
+
+        rootView.setTouchEnabled(false);
+
         animate(getStartedActions)
                 .fadeOut(View.INVISIBLE)
                 .start();
@@ -116,6 +125,11 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
                 })
                 .andThen()
                 .fadeIn()
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        rootView.setTouchEnabled(true);
+                    }
+                })
                 .start();
 
         sceneBackground.animateToPanAmount(1f, Animation.DURATION_NORMAL, null);
@@ -144,6 +158,10 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
     }
 
     public void cancel(@NonNull View sender) {
+        stop(sceneBackground, getStartedActions, accountActions, infoText, play, titleText);
+
+        rootView.setTouchEnabled(false);
+
         animate(getStartedActions)
                 .fadeIn()
                 .start();
@@ -161,13 +179,18 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
                 .start();
 
         animate(titleText)
-                .setDuration(Animation.DURATION_NORMAL /2)
+                .setDuration(Animation.DURATION_NORMAL / 2)
                 .fadeOut(View.INVISIBLE)
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.title_introduction);
                 })
                 .andThen()
                 .fadeIn()
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        rootView.setTouchEnabled(true);
+                    }
+                })
                 .start();
 
         sceneBackground.animateToPanAmount(0f, Animation.DURATION_NORMAL, null);

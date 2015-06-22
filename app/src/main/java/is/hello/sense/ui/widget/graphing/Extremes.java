@@ -2,12 +2,13 @@ package is.hello.sense.ui.widget.graphing;
 
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Iterator;
 
 import rx.functions.Func1;
 
-public final class Extremes<T> {
+public final class Extremes<T> implements Serializable {
     public final T minValue;
     public final int minPosition;
 
@@ -64,17 +65,21 @@ public final class Extremes<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Extremes extremes = (Extremes) o;
 
-        if (maxPosition != extremes.maxPosition) return false;
-        if (minPosition != extremes.minPosition) return false;
-        if (maxValue != null ? !maxValue.equals(extremes.maxValue) : extremes.maxValue != null) return false;
-        if (minValue != null ? !minValue.equals(extremes.minValue) : extremes.minValue != null) return false;
+        return maxPosition == extremes.maxPosition &&
+                minPosition == extremes.minPosition &&
+                !(maxValue != null ? !maxValue.equals(extremes.maxValue) : extremes.maxValue != null) &&
+                !(minValue != null ? !minValue.equals(extremes.minValue) : extremes.minValue != null);
 
-        return true;
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.annotation.VisibleForTesting;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -149,7 +150,7 @@ public class Device extends ApiResponse {
     }
 
 
-    public static enum Type {
+    public enum Type {
         PILL(R.drawable.pill_icon, R.string.device_pill),
         SENSE(R.drawable.sense_icon, R.string.device_sense),
         OTHER(R.drawable.sense_icon, R.string.device_unknown);
@@ -158,7 +159,7 @@ public class Device extends ApiResponse {
         public final @DrawableRes int iconRes;
         public final @StringRes int nameRes;
 
-        private Type(@DrawableRes int iconRes, @StringRes int nameRes) {
+        Type(@DrawableRes int iconRes, @StringRes int nameRes) {
             this.iconRes = iconRes;
             this.nameRes = nameRes;
         }
@@ -170,7 +171,7 @@ public class Device extends ApiResponse {
         }
     }
 
-    public static enum State {
+    public enum State {
         NORMAL(R.string.device_state_normal, R.color.text_dark),
         LOW_BATTERY(R.string.device_state_low_battery, R.color.destructive_accent),
         UNKNOWN(R.string.device_state_unknown, R.color.destructive_accent);
@@ -178,7 +179,7 @@ public class Device extends ApiResponse {
         public final @StringRes int nameRes;
         public final @ColorRes int colorRes;
 
-        private State(@StringRes int nameRes, @ColorRes int colorRes) {
+        State(@StringRes int nameRes, @ColorRes int colorRes) {
             this.nameRes = nameRes;
             this.colorRes = colorRes;
         }
@@ -189,7 +190,7 @@ public class Device extends ApiResponse {
         }
     }
 
-    public static enum Color {
+    public enum Color {
         BLACK(R.string.device_color_black),
         WHITE(R.string.device_color_white),
         BLUE(R.string.device_color_blue),
@@ -198,13 +199,56 @@ public class Device extends ApiResponse {
 
         public final @StringRes int nameRes;
 
-        private Color(int nameRes) {
+        Color(int nameRes) {
             this.nameRes = nameRes;
         }
 
         @JsonCreator
         public static Color fromString(@NonNull String string) {
             return Enums.fromString(string, values(), UNKNOWN);
+        }
+    }
+
+
+    @VisibleForTesting
+    public static class Builder {
+        private final Device device = new Device();
+
+        public Builder(@NonNull Type type) {
+            device.type = type;
+            setDeviceId("473CC31A-D5D7-4AAD-B9EE-31B6785E6A0E");
+            setState(State.UNKNOWN);
+            setFirmwareVersion("ffffff");
+            setColor(Color.UNKNOWN);
+        }
+
+        public Builder setDeviceId(@NonNull String deviceId) {
+            device.deviceId = deviceId;
+            return this;
+        }
+
+        public Builder setState(@NonNull State state) {
+            device.state = state;
+            return this;
+        }
+
+        public Builder setFirmwareVersion(@NonNull String firmwareVersion) {
+            device.firmwareVersion = firmwareVersion;
+            return this;
+        }
+
+        public Builder setLastUpdated(@NonNull DateTime lastUpdated) {
+            device.lastUpdated = lastUpdated;
+            return this;
+        }
+
+        public Builder setColor(@NonNull Color color) {
+            device.color = color;
+            return this;
+        }
+
+        public Device build() {
+            return device;
         }
     }
 }

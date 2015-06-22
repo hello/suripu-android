@@ -29,10 +29,12 @@
     <dimen name="text_size_button">16sp</dimen>
     <dimen name="text_size_large_button">20sp</dimen>
     <dimen name="text_size_section_heading">11sp</dimen>
-    <dimen name="text_size_timeline_time">11sp</dimen>
+    <dimen name="text_size_timeline_time">12sp</dimen>
     <dimen name="text_size_subheading">16sp</dimen>
+    <dimen name="text_size_paragraph_heading">18sp</dimen>
     <dimen name="text_size_question">24sp</dimen>
     <dimen name="text_size_heading">24sp</dimen>
+    <dimen name="text_size_heading_card">22sp</dimen>
     <dimen name="text_size_tiny_score">28sp</dimen>
     <dimen name="text_size_small_score">40sp</dimen>
     <dimen name="text_size_big_score">76sp</dimen>
@@ -44,6 +46,7 @@
 
     <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
+    <item name="line_multiple_paragraph_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_body" format="float" type="dimen">1.3</item>
     <item name="line_multiple_body_medium" format="float" type="dimen">1.4</item>
     <item name="line_multiple_body_small" format="float" type="dimen">1.2</item>
@@ -62,10 +65,12 @@
     <dimen name="gap_raised_item_inset_side">1px</dimen>
     <dimen name="gap_raised_item_inset_bottom">2dp</dimen>
     <dimen name="raised_item_corner_radius">2dp</dimen>
+    <dimen name="card_large_corner_radius">3dp</dimen>
     <dimen name="widget_last_night_corner_radius">38dp</dimen>
 
-    <dimen name="page_dot_size">10dp</dimen>
     <dimen name="page_dot_margin">5dp</dimen>
+    <dimen name="page_dot_selected_size">10dp</dimen>
+    <dimen name="page_dot_unselected_size">6dp</dimen>
 
     <!-- Misc -->
 
@@ -89,23 +94,6 @@
     <dimen name="scale_view_tick">1dp</dimen>
     <dimen name="scale_view_segment">12dp</dimen>
 
-    <dimen name="timeline_segment_min_height">9dp</dimen>
-    <dimen name="timeline_segment_event_image_height">45dp</dimen>
-    <dimen name="timeline_segment_event_image_shadow">3dp</dimen>
-
-    <dimen name="timeline_header_min_height">282dp</dimen>
-
-    <dimen name="timeline_header_tab_height">50dp</dimen>
-    <dimen name="timeline_header_gradient_height">30dp</dimen>
-    <dimen name="timeline_header_stroke_width">1px</dimen>
-
-    <dimen name="timeline_triangle_width">16dp</dimen>
-    <!-- The 2:1 relationship should be maintained here-->
-    <dimen name="timeline_triangle_height">8dp</dimen>
-
-    <dimen name="timeline_tooltip_padding_bottom">13dp</dimen>
-    <dimen name="timeline_tooltip_padding">10dp</dimen>
-
     <dimen name="gap_smart_alarm_list_bottom">96dp</dimen>
     <dimen name="smart_alarm_details_row_height">72dp</dimen>
 
@@ -128,11 +116,26 @@
     <dimen name="series_graph_line_size">1dp</dimen>
     <dimen name="series_graph_shadow_radius">4dp</dimen>
 
-    <dimen name="view_timeline_segment_left_inset">@dimen/gap_outer</dimen>
-    <dimen name="view_timeline_segment_right_inset">@dimen/gap_outer</dimen>
-    <dimen name="view_timeline_segment_text_inset">10dp</dimen>
-    <dimen name="view_timeline_segment_stripe_width">@dimen/divider_size</dimen>
-    <dimen name="view_timeline_segment_stroke_gap">2dp</dimen>
+    <!-- Timeline -->
+
+    <dimen name="timeline_header_estimated_height">323dp</dimen>
+    <dimen name="timeline_gap_bottom">96dp</dimen>
+
+    <dimen name="timeline_segment_min_height">16dp</dimen>
+    <dimen name="timeline_segment_height_per_hour">96dp</dimen>
+    <dimen name="timeline_segment_item_end_inset">40dp</dimen>
+    <dimen name="timeline_segment_text_inset">6dp</dimen>
+    <dimen name="timeline_segment_event_vertical_inset">4dp</dimen>
+    <dimen name="timeline_segment_event_offset_max">7dp</dimen>
+    <dimen name="timeline_segment_stolen_height">16dp</dimen>
+    <dimen name="timeline_segment_stroke_gap">2dp</dimen>
+
+    <dimen name="timeline_detail_reading_height">2dp</dimen>
+    <dimen name="timeline_detail_reading_height_large">4dp</dimen>
+
+    <dimen name="timeline_event_start_inset">0dp</dimen>
+    <dimen name="timeline_event_end_inset">8dp</dimen>
+
 
     <!-- Buttons -->
 
@@ -158,19 +161,12 @@
 
     <!-- Dialogs -->
 
-    <dimen name="dialog_max_width">335dp</dimen>
-    <dimen name="dialog_max_height">500dp</dimen>
+    <dimen name="dialog_max_width">500dp</dimen>
+    <dimen name="dialog_max_height">700dp</dimen>
 
     <!-- Widget -->
 
     <dimen name="widget_last_night_min_width">200dp</dimen>
     <dimen name="widget_last_night_min_height">70dp</dimen>
-
-    <!-- Sharing -->
-
-    <dimen name="share_image_width">500dp</dimen>
-    <dimen name="share_image_height">500dp</dimen>
-    <dimen name="share_image_footer_height">50dp</dimen>
-    <dimen name="share_image_footer_inset">12dp</dimen>
 
 </resources>

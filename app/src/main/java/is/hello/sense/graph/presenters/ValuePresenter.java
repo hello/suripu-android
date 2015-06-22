@@ -119,5 +119,13 @@ public abstract class ValuePresenter<T extends Serializable> extends Presenter {
         }
     }
 
+    /**
+     * Returns an terminating observable that will emit the
+     * latest value contained in the value presenter.
+     */
+    public Observable<T> latest() {
+        return subject.take(1);
+    }
+
     //endregion
 }

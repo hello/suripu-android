@@ -20,7 +20,8 @@ import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.ui.adapter.TimelineNavigatorAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.TimelineNavigatorLayoutManager;
-import is.hello.sense.ui.widget.TimelineItemDecoration;
+import is.hello.sense.ui.widget.timeline.TimelineNavigatorItemDecoration;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
 
 public class TimelineNavigatorFragment extends InjectionFragment implements TimelineNavigatorAdapter.OnItemClickedListener {
@@ -30,6 +31,7 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
     private static final String ARG_FIRST_TIMELINE = TimelineNavigatorFragment.class.getName() + ".ARG_FIRST_TIMELINE";
 
     @Inject TimelineNavigatorPresenter presenter;
+    @Inject DateFormatter dateFormatter;
 
     private TextView monthText;
     private RecyclerView recyclerView;
@@ -69,14 +71,17 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline_navigator, container, false);
+        view.setClickable(true);
 
         this.monthText = (TextView) view.findViewById(R.id.fragment_timeline_navigator_month);
+        monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(startDate));
+        Views.setSafeOnClickListener(monthText, ignored -> getFragmentManager().popBackStack());
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_navigator_recycler_view);
-        recyclerView.addItemDecoration(new TimelineItemDecoration(getResources(), R.drawable.graph_grid_fill_top_down, R.dimen.divider_size));
+        recyclerView.addItemDecoration(new TimelineNavigatorItemDecoration(getResources(), R.drawable.graph_grid_fill_top_down, R.dimen.divider_size));
 
         TimelineScrollListener timelineScrollListener = new TimelineScrollListener();
-        recyclerView.setOnScrollListener(timelineScrollListener);
+        recyclerView.addOnScrollListener(timelineScrollListener);
 
         this.layoutManager = new TimelineNavigatorLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -111,6 +116,12 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        recyclerView.clearOnScrollListeners();
+    }
 
     public void jumpToToday(@NonNull View sender) {
         recyclerView.smoothScrollToPosition(0);
@@ -172,11 +183,7 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
             }
 
             TimelineNavigatorAdapter.ItemViewHolder holder = (TimelineNavigatorAdapter.ItemViewHolder) recyclerView.findViewHolderForLayoutPosition(layoutManager.findLastVisibleItemPosition());
-            if (holder.date != null) {
-                monthText.setText(holder.date.toString("MMMM"));
-            } else {
-                monthText.setText(null);
-            }
+            monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(holder.date));
         }
 
         @Override

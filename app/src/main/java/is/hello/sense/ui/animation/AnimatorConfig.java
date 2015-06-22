@@ -6,46 +6,65 @@ import android.support.annotation.NonNull;
 import android.view.animation.Interpolator;
 
 public final class AnimatorConfig {
-    public long duration = Animation.DURATION_NORMAL;
-    public Interpolator interpolator = Animation.INTERPOLATOR_DEFAULT;
-    public long startDelay = 0;
+    //region Attributes
 
-    public static final AnimatorConfig DEFAULT = AnimatorConfig.create();
+    public final long duration;
+    public final @NonNull Interpolator interpolator;
 
-    public static @NonNull AnimatorConfig create() {
-        return new AnimatorConfig();
+    //endregion
+
+
+    //region Creation
+
+    /**
+     * The global default animator config. Uses {@link Animation#DURATION_NORMAL}
+     * and {@link Animation#INTERPOLATOR_DEFAULT}.
+     */
+    public static final AnimatorConfig DEFAULT = new AnimatorConfig(Animation.DURATION_NORMAL, Animation.INTERPOLATOR_DEFAULT);
+
+    public AnimatorConfig(long duration, @NonNull Interpolator interpolator) {
+        this.duration = duration;
+        this.interpolator = interpolator;
     }
 
-    public static @NonNull AnimatorConfig createWithDelay(long delay) {
-        AnimatorConfig properties = create();
-        properties.startDelay = delay;
-        return properties;
+    public AnimatorConfig(long duration) {
+        this(duration, Animation.INTERPOLATOR_DEFAULT);
     }
 
+    public AnimatorConfig(@NonNull Interpolator interpolator) {
+        this(Animation.DURATION_NORMAL, interpolator);
+    }
+
+    //endregion
+
+
+    //region Updating
+
+    public AnimatorConfig withDuration(long newDuration) {
+        return new AnimatorConfig(newDuration, interpolator);
+    }
+
+    //endregion
+
+
+    //region Applying
 
     public <T extends Animator> T apply(@NonNull T animator) {
         animator.setDuration(duration);
         animator.setInterpolator(interpolator);
-        animator.setStartDelay(startDelay);
 
         return animator;
     }
 
     public PropertyAnimatorProxy apply(@NonNull PropertyAnimatorProxy animator) {
         return animator.setDuration(duration)
-                       .setInterpolator(interpolator)
-                       .setStartDelay(startDelay);
+                       .setInterpolator(interpolator);
     }
 
     public LayoutTransition apply(@NonNull LayoutTransition transition) {
         transition.setDuration(duration);
-
-        for (int transitionType = LayoutTransition.CHANGE_APPEARING;
-             transitionType <= LayoutTransition.CHANGING;
-             transitionType++) {
-            transition.setStartDelay(transitionType, startDelay);
-        }
-
         return transition;
     }
+
+    //endregion
 }

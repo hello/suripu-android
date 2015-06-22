@@ -1,45 +1,30 @@
 package is.hello.sense.ui.fragments;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.Context;
+import android.app.Dialog;
 import android.content.res.Resources;
-import android.graphics.Point;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Html;
-import android.view.Display;
-import android.view.Gravity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 import org.json.JSONObject;
 
-import java.util.Collections;
-import java.util.List;
+import java.lang.ref.WeakReference;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Feedback;
-import is.hello.sense.api.model.PreSleepInsight;
 import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.functional.Functions;
@@ -47,77 +32,75 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
-import is.hello.sense.ui.adapter.TimelineSegmentAdapter;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.AnimatorConfig;
+import is.hello.sense.ui.adapter.TimelineAdapter;
+import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.TimelineEventDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.widget.BlockableLinearLayout;
-import is.hello.sense.ui.widget.SelectorView;
-import is.hello.sense.ui.widget.SleepScoreDrawable;
-import is.hello.sense.ui.widget.SlidingLayersView;
-import is.hello.sense.ui.widget.TimelineHeaderDrawable;
-import is.hello.sense.ui.widget.TimelineTooltipDrawable;
-import is.hello.sense.ui.widget.util.ListViews;
-import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.ui.widget.RotaryTimePickerDialog;
+import is.hello.sense.ui.widget.SenseBottomSheet;
+import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
+import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
+import is.hello.sense.ui.widget.timeline.TimelineInfoPopup;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.Markdown;
-import is.hello.sense.util.SafeOnClickListener;
 import is.hello.sense.util.Share;
-import rx.Observable;
-import rx.functions.Action1;
 
-import static is.hello.sense.ui.animation.Animation.Transition;
+public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener {
+    // !! Important: Do not use setTargetFragment on TimelineFragment.
+    // It is not guaranteed to exist at the time of state restoration.
 
-public class TimelineFragment extends InjectionFragment implements SlidingLayersView.OnInteractionListener, AdapterView.OnItemClickListener, SelectorView.OnSelectionChangedListener, TimelineEventDialogFragment.AdjustTimeFragment, AdapterView.OnItemLongClickListener {
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
+    private static final String ARG_IS_FIRST_TIMELINE = TimelineFragment.class.getName() + ".ARG_IS_FIRST_TIMELINE";
 
-    @Inject DateFormatter dateFormatter;
+    private static final int ID_EVENT_CORRECT = 0;
+    private static final int ID_EVENT_ADJUST_TIME = 1;
+    private static final int ID_EVENT_REMOVE = 2;
+
+
     @Inject TimelinePresenter timelinePresenter;
+    @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
-    @Inject Markdown markdown;
-
-    private ListView listView;
-    private TimelineSegmentAdapter segmentAdapter;
-
-    private ImageButton menuButton;
-    private ImageButton shareButton;
-
-    private BlockableLinearLayout headerView;
-    private TextView dateText;
-    private FrameLayout headerViewContainer;
-    private HeaderViewMode headerMode;
-    private SelectorView headerModeSelector;
-
-    private ScoreViewMode timelineScore;
-    private BeforeSleepHeaderMode beforeSleep;
-    private @Nullable BreakdownHeaderMode breakdownHeaderMode;
-
-    private View timelineEventsHeader;
 
     private HomeActivity homeActivity;
-    private boolean controlsAlarmShortcut = false;
-    private TimelineHeaderDrawable headerTabsBackground;
 
-    private @Nullable PopupWindow timelinePopup;
+    private boolean firstTimeline;
+    private boolean hasCreatedView = false;
+    private boolean animationEnabled = true;
+
+    private View contentShadow;
+    private RecyclerView recyclerView;
+
+    private LinearLayoutManager layoutManager;
+    private TimelineHeaderView headerView;
+    private TimelineAdapter adapter;
+    private TimelineFadeItemAnimator itemAnimator;
+
+    private boolean wantsShareButton = false;
+    private boolean controlsSharedChrome = false;
 
     private @Nullable TutorialOverlayView tutorialOverlay;
+    private @Nullable WeakReference<Dialog> activeDialog;
+
+    private TimelineInfoPopup infoPopup;
 
 
-    public static TimelineFragment newInstance(@NonNull DateTime date, @Nullable Timeline cachedTimeline) {
+    //region Lifecycle
+
+    public static TimelineFragment newInstance(@NonNull DateTime date,
+                                               @Nullable Timeline cachedTimeline,
+                                               boolean isFirstTimeline) {
         TimelineFragment fragment = new TimelineFragment();
 
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_DATE, date.withTimeAtStartOfDay());
         arguments.putSerializable(ARG_CACHED_TIMELINE, cachedTimeline);
+        arguments.putBoolean(ARG_IS_FIRST_TIMELINE, isFirstTimeline);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -140,356 +123,188 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
         );
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE, properties);
 
+        this.firstTimeline = getArguments().getBoolean(ARG_IS_FIRST_TIMELINE, false);
+
         timelinePresenter.setDateWithTimeline(date, getCachedTimeline());
         addPresenter(timelinePresenter);
 
         setRetainInstance(true);
     }
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
-        this.segmentAdapter = new TimelineSegmentAdapter(getActivity(), dateFormatter);
+        this.contentShadow = view.findViewById(R.id.fragment_timeline_content_shadow);
 
-        Observable<Boolean> use24HourTime = preferences.observableUse24Time();
-        track(use24HourTime.subscribe(segmentAdapter::setUse24Time));
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_recycler);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addOnScrollListener(new ScrollListener());
 
-        this.listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOnItemClickListener(this);
-        listView.setOnItemLongClickListener(this);
+        this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
 
+        this.animationEnabled = !hasCreatedView && !(firstTimeline && homeActivity.getWillShowUnderside());
 
-        this.headerView = (BlockableLinearLayout) inflater.inflate(R.layout.sub_fragment_timeline_header, listView, false);
-        this.headerTabsBackground = new TimelineHeaderDrawable(getResources());
+        this.headerView = new TimelineHeaderView(getActivity());
+        headerView.setAnimatorContext(getAnimatorContext());
+        headerView.setAnimationEnabled(animationEnabled);
+        headerView.setOnScoreClickListener(this::showBreakdown);
+        headerView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View v) {
+                contentShadow.setVisibility(View.INVISIBLE);
+            }
 
-        this.dateText = (TextView) headerView.findViewById(R.id.fragment_timeline_date);
-        dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
-        dateText.setOnClickListener(ignored -> {
-            Timeline timeline = (Timeline) dateText.getTag();
-            homeActivity.showTimelineNavigator(getDate(), timeline);
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+                contentShadow.setVisibility(View.VISIBLE);
+            }
         });
 
-        this.headerViewContainer = (FrameLayout) headerView.findViewById(R.id.sub_fragment_timeline_header_container);
+        this.itemAnimator = new TimelineFadeItemAnimator(getAnimatorContext());
+        itemAnimator.setEnabled(animationEnabled);
+        itemAnimator.addListener(headerView);
+        recyclerView.setItemAnimator(itemAnimator);
+        recyclerView.addItemDecoration(new BackgroundDecoration(getResources()));
 
-        this.headerModeSelector = (SelectorView) headerView.findViewById(R.id.sub_fragment_timeline_header_mode);
-        headerModeSelector.setVisibility(View.INVISIBLE);
-        headerModeSelector.setSelectionAwareDrawable(headerTabsBackground);
-        headerModeSelector.setOnSelectionChangedListener(this);
-        headerModeSelector.setSelectedIndex(0);
+        this.adapter = new TimelineAdapter(getActivity(), headerView, dateFormatter);
+        adapter.setOnItemClickListener(stateSafeExecutor, this);
+        recyclerView.setAdapter(adapter);
 
-        this.timelineScore = new ScoreViewMode(inflater, headerViewContainer);
-        this.beforeSleep = new BeforeSleepHeaderMode(inflater, headerViewContainer);
-
-        setHeaderMode(timelineScore, null);
-
-        ListViews.addHeaderView(listView, headerView, null, false);
-
-
-        this.timelineEventsHeader = new View(getActivity());
-        timelineEventsHeader.setBackgroundResource(R.drawable.background_timeline_top);
-        timelineEventsHeader.setVisibility(View.INVISIBLE);
-        timelineEventsHeader.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.timeline_header_gradient_height));
-        ListViews.addHeaderView(listView, timelineEventsHeader, null, false);
-
-
-        this.menuButton = (ImageButton) headerView.findViewById(R.id.fragment_timeline_header_menu);
-        Views.setSafeOnClickListener(menuButton, ignored -> {
-            homeActivity.getSlidingLayersView().toggle();
-            scrollToTop();
-        });
-
-        this.shareButton = (ImageButton) headerView.findViewById(R.id.fragment_timeline_header_share);
-        shareButton.setVisibility(View.INVISIBLE);
-        Views.setSafeOnClickListener(shareButton, this::share);
-
-        listView.setAdapter(segmentAdapter);
-        listView.setOnScrollListener(new TimelineScrollListener());
+        this.hasCreatedView = true;
 
         return view;
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Timeline> boundMainTimeline = bind(timelinePresenter.timeline);
-        subscribe(boundMainTimeline, this::bindTimeline, this::timelineUnavailable);
+        stateSafeExecutor.execute(headerView::startPulsing);
 
-        Observable<List<TimelineSegment>> segments = boundMainTimeline.map(timeline -> {
-            if (timeline != null) {
-                return timeline.getSegments();
-            } else {
-                return Collections.emptyList();
-            }
-        });
-        subscribe(segments, segmentAdapter::bindSegments, segmentAdapter::handleError);
+        bindAndSubscribe(timelinePresenter.timeline,
+                this::bindTimeline,
+                this::timelineUnavailable);
 
-        bindAndSubscribe(timelinePresenter.message,
-                         timelineScore.messageText::setText,
-                         Functions.LOG_ERROR);
+        bindAndSubscribe(preferences.observableUse24Time(),
+                adapter::setUse24Time,
+                Functions.LOG_ERROR);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
+        headerView.clearAnimation();
+        itemAnimator.removeAllListeners();
+
+        this.headerView = null;
+        this.recyclerView = null;
+        this.layoutManager = null;
+        this.adapter = null;
+        this.itemAnimator = null;
+
+        if (infoPopup != null) {
+            infoPopup.dismiss();
+            this.infoPopup = null;
+        }
+
         if (tutorialOverlay != null) {
             tutorialOverlay.dismiss(false);
         }
 
-        this.breakdownHeaderMode = null;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if (timelinePopup != null) {
-            timelinePopup.dismiss();
-            this.timelinePopup = null;
+        if (activeDialog != null) {
+            Dialog dialog = activeDialog.get();
+            if (dialog != null) {
+                dialog.dismiss();
+            }
         }
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onDetach() {
+        super.onDetach();
 
-        dateText.setText(dateFormatter.formatAsTimelineDate(timelinePresenter.getDate()));
-    }
-
-
-    //region Headers
-
-    private void setHeaderMode(@NonNull HeaderViewMode headerMode,
-                               @Nullable Transition<ViewGroup, ViewGroup.LayoutParams> transition) {
-        if (this.headerMode == headerMode) {
-            return;
-        }
-
-        View oldView = null;
-        if (this.headerMode != null) {
-            oldView = this.headerMode.view;
-        }
-
-        this.headerMode = headerMode;
-
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                                             ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.gravity = headerMode.gravity;
-        if (transition != null) {
-            headerView.setTouchEnabled(false);
-            transition.perform(headerViewContainer, headerMode.view, layoutParams, () -> {
-                headerView.setTouchEnabled(true);
-            });
-        } else {
-            if (oldView != null) {
-                headerViewContainer.removeView(oldView);
-            }
-            headerViewContainer.addView(headerMode.view, layoutParams);
-        }
-    }
-
-    @Override
-    public void onSelectionChanged(int newSelectionIndex) {
-        switch (newSelectionIndex) {
-            case 0:
-                if (breakdownHeaderMode != null) {
-                    setHeaderMode(timelineScore, this::hideBreakdownTransition);
-                } else {
-                    setHeaderMode(timelineScore, Animation::crossFade);
-                }
-                break;
-            case 1:
-                Analytics.trackEvent(Analytics.Timeline.EVENT_BEFORE_SLEEP_TAPPED, null);
-                setHeaderMode(beforeSleep, Animation::crossFade);
-                this.breakdownHeaderMode = null;
-                break;
-            default:
-                break;
-        }
-
-    }
-
-    public void showBreakdownTransition(@NonNull ViewGroup container,
-                                        @Nullable View newView,
-                                        @Nullable ViewGroup.LayoutParams layoutParams,
-                                        @Nullable Runnable onCompletion) {
-        if (newView == null || breakdownHeaderMode == null) {
-            throw new IllegalArgumentException();
-        }
-
-        View leftItemsView = breakdownHeaderMode.leftItems,
-             rightItemsView = breakdownHeaderMode.rightItems,
-             smallScore = breakdownHeaderMode.score;
-
-        leftItemsView.setAlpha(0f);
-        rightItemsView.setAlpha(0f);
-        newView.setAlpha(0f);
-        container.addView(newView, 0, layoutParams);
-
-        AnimatorConfig config = AnimatorConfig.create();
-        config.duration = Animation.DURATION_FAST;
-        getAnimatorContext().transaction(config, f -> {
-            f.animate(timelineScore.messageText).fadeOut(View.VISIBLE);
-            f.animate(timelineScore.scoreTextLabel).fadeOut(View.VISIBLE);
-        }, firstFinished -> {
-            if (!firstFinished) {
-                return;
-            }
-
-            Resources resources = getResources();
-            float bigWidth = resources.getDimension(R.dimen.grand_sleep_summary_width);
-            float smallWidth = resources.getDimension(R.dimen.little_sleep_summary_width);
-
-            View bigScore = timelineScore.sleepScoreContainer;
-            bigScore.setPivotX(bigWidth / 2f);
-            bigScore.setPivotY(0.0f);
-
-            smallScore.setPivotX(smallWidth / 2f);
-            smallScore.setPivotY(0.0f);
-
-            smallScore.setScaleX(bigWidth / smallWidth);
-            smallScore.setScaleY(bigWidth / smallWidth);
-
-            getAnimatorContext().transaction(config, f -> {
-                f.animate(bigScore).scale(smallWidth / bigWidth);
-                f.animate(smallScore).scale(1f);
-                f.animate(timelineScore.view).fadeOut(View.VISIBLE);
-                f.animate(newView).fadeIn();
-            }, finished -> {
-                if (!finished) {
-                    return;
-                }
-
-                bigScore.setScaleX(1f);
-                bigScore.setScaleY(1f);
-
-                timelineScore.messageText.setAlpha(1f);
-                timelineScore.scoreTextLabel.setAlpha(1f);
-
-                container.removeView(timelineScore.view);
-                timelineScore.view.setAlpha(1f);
-
-                float delta = resources.getDimension(R.dimen.gap_tiny);
-                getAnimatorContext().transaction(f -> {
-                    f.animate(leftItemsView).slideXAndFade(delta, 0f, 0f, 1f);
-                    f.animate(rightItemsView).slideXAndFade(-delta, 0f, 0f, 1f);
-                }, finishedLast -> {
-                    if (finishedLast && onCompletion != null) {
-                        onCompletion.run();
-                    }
-                });
-            });
-        });
-    }
-
-    public void hideBreakdownTransition(@NonNull ViewGroup container,
-                                        @Nullable View newView,
-                                        @Nullable ViewGroup.LayoutParams layoutParams,
-                                        @Nullable Runnable onCompletion) {
-        if (newView == null || breakdownHeaderMode == null) {
-            throw new IllegalArgumentException();
-        }
-
-        View breakdownModeView = breakdownHeaderMode.view;
-
-        newView.setAlpha(0f);
-        container.addView(newView, 0, layoutParams);
-
-        timelineScore.messageText.setAlpha(0f);
-        timelineScore.scoreTextLabel.setAlpha(0f);
-
-        Resources resources = getResources();
-        float bigWidth = resources.getDimension(R.dimen.grand_sleep_summary_width);
-        float smallWidth = resources.getDimension(R.dimen.little_sleep_summary_width);
-
-        View bigScore = timelineScore.sleepScoreContainer;
-        bigScore.setPivotX(bigWidth / 2f);
-        bigScore.setPivotY(0.0f);
-
-        View smallScore = breakdownHeaderMode.score;
-        smallScore.setPivotX(smallWidth / 2f);
-        smallScore.setPivotY(0.0f);
-
-        bigScore.setScaleX(smallWidth / bigWidth);
-        bigScore.setScaleY(smallWidth / bigWidth);
-
-        AnimatorConfig config = AnimatorConfig.create();
-        config.duration = Animation.DURATION_FAST;
-        getAnimatorContext().transaction(config, f -> {
-            f.animate(bigScore).scale(1f);
-            f.animate(smallScore).scale(bigWidth / smallWidth);
-            f.animate(breakdownModeView).fadeOut(View.VISIBLE);
-            f.animate(newView).fadeIn();
-        }, finished -> {
-            if (!finished) {
-                return;
-            }
-
-            container.removeView(breakdownModeView);
-            this.breakdownHeaderMode = null;
-
-            getAnimatorContext().transaction(f -> {
-                f.animate(timelineScore.messageText).fadeIn();
-                f.animate(timelineScore.scoreTextLabel).fadeIn();
-            }, finishedLast -> {
-                if (finishedLast && onCompletion != null) {
-                    onCompletion.run();
-                }
-            });
-        });
-    }
-
-    public void hideBreakdown(@NonNull View sender) {
-        setHeaderMode(timelineScore, this::hideBreakdownTransition);
-        headerModeSelector.setSelectedIndex(0);
-    }
-
-    public void showBreakdown(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.Timeline.EVENT_SLEEP_SCORE_BREAKDOWN, null);
-
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        this.breakdownHeaderMode = new BreakdownHeaderMode(inflater, headerViewContainer);
-        bindAndSubscribe(timelinePresenter.timeline.take(1),
-                         breakdownHeaderMode::bindTimeline,
-                         breakdownHeaderMode::timelineUnavailable);
-        setHeaderMode(breakdownHeaderMode, this::showBreakdownTransition);
-
-        Tutorial.SLEEP_SCORE_BREAKDOWN.markShown(getActivity());
-    }
-
-    public void share(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
-
-        Observable<Timeline> currentTimeline = timelinePresenter.timeline.take(1);
-        bindAndSubscribe(currentTimeline,
-                         timeline -> {
-                             DateTime date = timelinePresenter.getDate();
-                             String score = Integer.toString(timeline.getScore());
-                             String shareCopy;
-                             if (DateFormatter.isLastNight(date)) {
-                                 shareCopy = getString(R.string.timeline_share_last_night_fmt, score);
-                             } else {
-                                 String dateString = dateFormatter.formatAsTimelineDate(date);
-                                 shareCopy = getString(R.string.timeline_share_other_days_fmt, score, dateString);
-                             }
-
-                             Share.text(shareCopy)
-                                  .withSubject(getString(R.string.app_name))
-                                  .send(getActivity());
-                         },
-                         e -> {
-                             Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
-                         });
+        this.homeActivity = null;
     }
 
     //endregion
 
 
+    //region Actions
+
+    public void share() {
+        Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
+
+        bindAndSubscribe(timelinePresenter.latest(),
+                timeline -> {
+                    DateTime date = timelinePresenter.getDate();
+                    String score = Integer.toString(timeline.getScore());
+                    String shareCopy;
+                    if (DateFormatter.isLastNight(date)) {
+                        shareCopy = getString(R.string.timeline_share_last_night_fmt, score);
+                    } else {
+                        String dateString = dateFormatter.formatAsTimelineDate(date);
+                        shareCopy = getString(R.string.timeline_share_other_days_fmt, score, dateString);
+                    }
+
+                    Share.text(shareCopy)
+                            .withSubject(getString(R.string.app_name))
+                            .send(getActivity());
+                },
+                e -> {
+                    Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
+                });
+    }
+
+    public void showBreakdown(@NonNull View sender) {
+        bindAndSubscribe(timelinePresenter.latest(),
+                         timeline -> {
+                             TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timeline, headerView.getCardViewId());
+                             infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);
+                         },
+                         Functions.LOG_ERROR);
+    }
+
+    //endregion
+
+
+    //region Hooks
+
+    public @NonNull DateTime getDate() {
+        return (DateTime) getArguments().getSerializable(ARG_DATE);
+    }
+
+    public @Nullable Timeline getCachedTimeline() {
+        return (Timeline) getArguments().getSerializable(ARG_CACHED_TIMELINE);
+    }
+
+    public @NonNull String getTitle() {
+        return dateFormatter.formatAsTimelineDate(getDate());
+    }
+
+    public boolean getWantsShareButton() {
+        return wantsShareButton;
+    }
+
+    public void setControlsSharedChrome(boolean controlsSharedChrome) {
+        this.controlsSharedChrome = controlsSharedChrome;
+    }
+
+    public void scrollToTop() {
+        recyclerView.smoothScrollToPosition(0);
+    }
+
     public void update() {
         timelinePresenter.update();
     }
+
+    //endregion
+
+
+    //region Handholding
 
     private void showTutorial(@NonNull Tutorial tutorial) {
         if (tutorialOverlay != null) {
@@ -505,464 +320,284 @@ public class TimelineFragment extends InjectionFragment implements SlidingLayers
     }
 
     private void showHandholdingIfAppropriate() {
+        if (WelcomeDialogFragment.isAnyVisible(getActivity())) {
+            return;
+        }
+
         if (homeActivity.getWillShowUnderside()) {
             WelcomeDialogFragment.markShown(homeActivity, R.xml.welcome_dialog_timeline);
-        } else {
-            getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(() -> {
-                if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
-                    WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
-                } else if (Tutorial.SLEEP_SCORE_BREAKDOWN.shouldShow(getActivity())) {
-                    showTutorial(Tutorial.SLEEP_SCORE_BREAKDOWN);
-                } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
-                    showTutorial(Tutorial.SWIPE_TIMELINE);
-                }
-            }));
+        } else if (!homeActivity.isUndersideVisible()) {
+            if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
+                WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
+            } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
+                showTutorial(Tutorial.SWIPE_TIMELINE);
+            }
         }
     }
 
-    public void bindTimeline(@Nullable Timeline timeline) {
-        if (timeline != null) {
-            boolean hasSegments = !Lists.isEmpty(timeline.getSegments());
-            timelineScore.showSleepScore(hasSegments ? timeline.getScore() : -1);
+    private class HandholdingOneShotListener implements TimelineFadeItemAnimator.Listener {
+        @Override
+        public void onTimelineAnimationWillStart(@NonNull AnimatorContext animatorContext, @NonNull AnimatorContext.TransactionFacade transactionFacade) {
+        }
 
-            if (hasSegments) {
-                timelineEventsHeader.setVisibility(View.VISIBLE);
-                if (!homeActivity.getSlidingLayersView().isOpen()) {
-                    shareButton.setVisibility(View.VISIBLE);
-                }
-
-                headerView.setBackground(headerTabsBackground);
-                headerModeSelector.setVisibility(View.VISIBLE);
-
+        @Override
+        public void onTimelineAnimationDidEnd(boolean finished) {
+            if (finished) {
                 showHandholdingIfAppropriate();
+            }
+
+            itemAnimator.removeListener(this);
+        }
+    }
+
+    //endregion
+
+
+    //region Binding
+
+    public void bindTimeline(@NonNull Timeline timeline) {
+        // For timeline corrections
+        LoadingDialogFragment.close(getFragmentManager());
+
+        boolean hasSegments = !Lists.isEmpty(timeline.getSegments());
+        Runnable continuation = stateSafeExecutor.bind(() -> {
+            if (animationEnabled) {
+                itemAnimator.addListener(new HandholdingOneShotListener());
             } else {
-                timelineEventsHeader.setVisibility(View.INVISIBLE);
-                shareButton.setVisibility(View.INVISIBLE);
+                getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(this::showHandholdingIfAppropriate));
             }
-        } else {
-            timelineScore.showSleepScore(-1);
-            timelineEventsHeader.setVisibility(View.INVISIBLE);
-            shareButton.setVisibility(View.INVISIBLE);
-        }
 
-        beforeSleep.bindTimeline(timeline);
-        dateText.setTag(timeline);
-    }
+            adapter.bindSegments(timeline.getSegments());
 
-    public void timelineUnavailable(@Nullable Throwable e) {
-        timelineScore.presentError(e);
-        beforeSleep.presentError(e);
-        shareButton.setVisibility(View.INVISIBLE);
-        dateText.setTag(null);
-    }
-
-
-    public @NonNull DateTime getDate() {
-        return (DateTime) getArguments().getSerializable(ARG_DATE);
-    }
-
-    public @Nullable Timeline getCachedTimeline() {
-        return (Timeline) getArguments().getSerializable(ARG_CACHED_TIMELINE);
-    }
-
-
-    @Override
-    public void onUserWillPullDownTopView() {
-        menuButton.setImageResource(R.drawable.icon_menu_open);
-        dateText.setTextColor(getResources().getColor(R.color.text_dim));
-        shareButton.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void onUserDidPushUpTopView() {
-        menuButton.setImageResource(R.drawable.icon_menu_closed);
-        dateText.setTextColor(getResources().getColor(R.color.text_dark));
-        if (segmentAdapter.getCount() > 0) {
-            shareButton.setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void scrollToTop() {
-        listView.smoothScrollToPositionFromTop(0, 0);
-    }
-
-
-    //region Event Details
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        TimelineSegment segment = (TimelineSegment) adapterView.getItemAtPosition(position);
-        if (segment.hasEventInfo()) {
-            Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
-
-            TimelineEventDialogFragment dialogFragment = TimelineEventDialogFragment.newInstance(segment);
-            dialogFragment.setTargetFragment(this, 0x00);
-            dialogFragment.showAllowingStateLoss(getFragmentManager(), TimelineEventDialogFragment.TAG);
-        }
-
-        Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        if (timelinePopup != null) {
-            timelinePopup.dismiss();
-            this.timelinePopup = null;
-        }
-
-        TimelineSegment segment = (TimelineSegment) parent.getItemAtPosition(position);
-        if (segment == null) {
-            return false;
-        }
-
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        TextView contents = (TextView) inflater.inflate(R.layout.tooltip_timeline_overlay, parent, false);
-        contents.setBackground(new TimelineTooltipDrawable(getResources()));
-
-        if (segment.getEventType() == null) {
-            contents.setText(Styles.getWakingDepthStringRes(segment.getSleepDepth()));
-        } else {
-            String sleepDepthSummary = getString(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
-            String tooltipHtml = getString(R.string.tooltip_timeline_html_fmt, sleepDepthSummary);
-            contents.setText(Html.fromHtml(tooltipHtml));
-        }
-
-        this.timelinePopup = new PopupWindow(contents);
-        timelinePopup.setAnimationStyle(R.style.WindowAnimations_PopSlideAndFade);
-        timelinePopup.setTouchable(true);
-        timelinePopup.setOutsideTouchable(true);
-        timelinePopup.setBackgroundDrawable(new ColorDrawable()); // Required for touch to dismiss
-        timelinePopup.setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        // Lollipop does not correctly inset popup windows for the soft
-        // navigation bar on the bottom of the screen, we have to do it
-        // ourselves. So stupid.
-        int navigationBarHeight = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Display display = getActivity().getWindowManager().getDefaultDisplay();
-
-            Point realSize = new Point();
-            display.getRealSize(realSize);
-
-            Point visibleArea = new Point();
-            display.getSize(visibleArea);
-
-            // Status bar is counted as part of the display's height,
-            // so the delta just gives us the navigation bar height.
-            navigationBarHeight = realSize.y - visibleArea.y;
-        }
-
-        int parentHeight = parent.getMeasuredHeight();
-        int bottomInset = parentHeight - view.getTop() + navigationBarHeight;
-        timelinePopup.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, bottomInset);
-        parent.setOnTouchListener((ignored, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                if (timelinePopup != null) {
-                    contents.postDelayed(timelinePopup::dismiss, 1000);
-                }
-                parent.setOnTouchListener(null);
+            if (controlsSharedChrome) {
+                homeActivity.setShareButtonVisible(wantsShareButton);
             }
-            return false;
         });
 
-        Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
+        this.wantsShareButton = hasSegments;
+        if (hasSegments) {
+            headerView.bindScore(timeline.getScore(), continuation);
+        } else {
+            headerView.bindScore(TimelineHeaderView.NULL_SCORE, continuation);
+        }
 
-        return true;
+        headerView.bindMessage(timeline.getMessage());
+
+        headerView.setScoreClickEnabled(timeline.getStatistics() != null && hasSegments);
+    }
+
+    public void timelineUnavailable(Throwable e) {
+        // For timeline corrections
+        LoadingDialogFragment.close(getFragmentManager());
+
+        adapter.clear();
+        headerView.bindError(e);
+    }
+
+    //endregion
+
+
+    //region Acting on Items
+
+    @Override
+    public void onSegmentItemClicked(int position, View view, @NonNull TimelineSegment segment) {
+        if (infoPopup != null) {
+            infoPopup.dismiss();
+        }
+
+        this.infoPopup = new TimelineInfoPopup(getActivity());
+        infoPopup.bindSegment(segment);
+        infoPopup.show(view);
+
+        Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
     }
 
     @Override
-    public void onAdjustSegmentTime(@NonNull TimelineSegment.EventType eventType,
-                                    @NonNull DateTime shiftedTimestamp,
-                                    @NonNull LocalTime newTime,
-                                    @NonNull Action1<Boolean> continuation) {
-        Feedback correction = new Feedback();
-        correction.setEventType(eventType);
-        correction.setNight(getDate().toLocalDate());
-        correction.setOldTime(shiftedTimestamp.toLocalTime());
-        correction.setNewTime(newTime);
-        bindAndSubscribe(timelinePresenter.submitCorrection(correction),
+    public void onEventItemClicked(int segmentPosition, @NonNull TimelineSegment segment) {
+        if (infoPopup != null) {
+            infoPopup.dismiss();
+        }
+
+        SenseBottomSheet actions = new SenseBottomSheet(getActivity());
+
+        actions.addOption(
+                new SenseBottomSheet.Option(ID_EVENT_CORRECT)
+                        .setTitle(R.string.action_timeline_mark_event_correct)
+                        .setIcon(R.drawable.timeline_action_correct)
+                        .setEnabled(false)
+        );
+        if (segment.isTimeAdjustable()) {
+            actions.addOption(
+                    new SenseBottomSheet.Option(ID_EVENT_ADJUST_TIME)
+                            .setTitle(R.string.action_timeline_event_adjust_time)
+                            .setIcon(R.drawable.timeline_action_adjust)
+            );
+        }
+        actions.addOption(
+                new SenseBottomSheet.Option(ID_EVENT_REMOVE)
+                        .setTitle(R.string.action_timeline_event_remove)
+                        .setIcon(R.drawable.timeline_action_remove)
+                        .setEnabled(false)
+        );
+
+        actions.setWantsDividers(true);
+        actions.setOnOptionSelectedListener((optionPosition, option) -> {
+            switch (option.getOptionId()) {
+                case ID_EVENT_CORRECT: {
+                    markCorrect(segmentPosition);
+                    break;
+                }
+
+                case ID_EVENT_ADJUST_TIME: {
+                    adjustTime(segmentPosition);
+                    break;
+                }
+
+                case ID_EVENT_REMOVE: {
+                    removeEvent(segmentPosition);
+                    break;
+                }
+
+                default: {
+                    Logger.warn(getClass().getSimpleName(), "Unknown option " + option);
+                    break;
+                }
+            }
+        });
+        actions.show();
+
+        this.activeDialog = new WeakReference<>(actions);
+    }
+
+    private void adjustTime(int position) {
+        TimelineSegment segment = adapter.getSegment(position);
+        DateTime initialTime = segment.getShiftedTimestamp();
+        RotaryTimePickerDialog.OnTimeSetListener listener = (pickerView, hourOfDay, minuteOfHour) -> {
+            LocalTime newTime = new LocalTime(hourOfDay, minuteOfHour, 0);
+            completeAdjustTime(position, newTime);
+        };
+        RotaryTimePickerDialog timePicker = new RotaryTimePickerDialog(
+                getActivity(),
+                listener,
+                initialTime.getHourOfDay(),
+                initialTime.getMinuteOfHour(),
+                preferences.getUse24Time()
+        );
+        timePicker.show();
+
+        this.activeDialog = new WeakReference<>(timePicker);
+    }
+
+    private void completeAdjustTime(int position, @NonNull LocalTime newTime) {
+        TimelineSegment segment = adapter.getSegment(position);
+        DateTime originalTime = segment.getShiftedTimestamp();
+
+        Feedback feedback = new Feedback();
+        feedback.setEventType(segment.getEventType());
+        feedback.setNight(getDate().toLocalDate());
+        feedback.setOldTime(originalTime.toLocalTime());
+        feedback.setNewTime(newTime);
+
+        LoadingDialogFragment.show(getFragmentManager());
+        bindAndSubscribe(timelinePresenter.submitCorrection(feedback),
                 ignored -> {
-                    continuation.call(true);
-                }, e -> {
-                    ErrorDialogFragment.presentError(getFragmentManager(), e);
-                    continuation.call(false);
+                    // Loading dialog is dismissed in #bindRenderedTimeline
+                    timelinePresenter.update();
+                },
+                e -> {
+                    LoadingDialogFragment.close(getFragmentManager());
+                    ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
                 });
+    }
+
+    private void markCorrect(int segmentPosition) {
+
+    }
+
+    private void removeEvent(int segmentPosition) {
+
     }
 
     //endregion
 
 
-    //region Alarm Button
-
-    public void setControlsAlarmShortcut(boolean controlsAlarmShortcut) {
-        this.controlsAlarmShortcut = controlsAlarmShortcut;
-    }
-
-    private class TimelineScrollListener implements AbsListView.OnScrollListener {
+    private class ScrollListener extends RecyclerView.OnScrollListener {
         @Override
-        public void onScroll(AbsListView listView, int firstVisiblePosition, int visibleItemCount, int totalItemCount) {
-            if (!controlsAlarmShortcut) {
-                return;
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            if (headerView.getParent() != null) {
+                float headerBottom = headerView.getBottom();
+                float headerHeight = headerView.getMeasuredHeight();
+                float headerFadeAmount = headerBottom / headerHeight;
+                headerView.setChildFadeAmount(headerFadeAmount);
             }
 
-            if (firstVisiblePosition == 0 && ListViews.getEstimatedScrollY(listView) == 0) {
-                homeActivity.showAlarmShortcut();
-            } else {
-                homeActivity.hideAlarmShortcut();
-            }
-        }
+            if (!itemAnimator.isRunning()) {
+                int recyclerHeight = recyclerView.getMeasuredHeight(),
+                    recyclerCenter = recyclerHeight / 2;
+                for (int i = recyclerView.getChildCount() - 1; i >= 0; i--) {
+                    View view = recyclerView.getChildAt(i);
+                    RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
+                    if (viewHolder instanceof TimelineAdapter.EventViewHolder) {
+                        TimelineAdapter.EventViewHolder eventViewHolder = (TimelineAdapter.EventViewHolder) viewHolder;
+                        int viewTop = view.getTop(),
+                            viewBottom = view.getBottom(),
+                            viewHeight = viewBottom - viewTop,
+                            viewCenter = (viewTop + viewBottom) / 2;
 
-        @Override
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
-        }
-    }
-
-    //endregion
-
-
-    //region Header Modes
-
-    class HeaderViewMode {
-        final View view;
-        final int gravity;
-
-        HeaderViewMode(@LayoutRes int layoutRes,
-                       @NonNull LayoutInflater inflater,
-                       @NonNull ViewGroup container,
-                       int gravity) {
-            this.view = inflater.inflate(layoutRes, container, false);
-            this.gravity = gravity;
-        }
-    }
-
-    class ScoreViewMode extends HeaderViewMode {
-        final LinearLayout sleepScoreContainer;
-        final SleepScoreDrawable scoreGraph;
-        final TextView scoreTextLabel;
-        final TextView scoreText;
-        final TextView messageText;
-
-        ScoreViewMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-            super(R.layout.sub_fragment_timeline_score, inflater, container, Gravity.TOP);
-
-            this.sleepScoreContainer = (LinearLayout) view.findViewById(R.id.fragment_timeline_sleep_score_chart);
-            Views.setSafeOnClickListener(sleepScoreContainer, TimelineFragment.this::showBreakdown);
-            sleepScoreContainer.setClickable(false);
-
-            this.scoreTextLabel = (TextView) sleepScoreContainer.findViewById(R.id.fragment_timeline_sleep_score_label);
-            this.scoreText = (TextView) sleepScoreContainer.findViewById(R.id.fragment_timeline_sleep_score);
-            this.messageText = (TextView) view.findViewById(R.id.fragment_timeline_message);
-            Views.makeTextViewLinksClickable(messageText);
-
-            this.scoreGraph = new SleepScoreDrawable(getResources());
-            sleepScoreContainer.setBackground(scoreGraph);
-        }
-
-
-        void showSleepScore(int sleepScore) {
-            if (sleepScore < 0) {
-                sleepScoreContainer.setClickable(false);
-                scoreGraph.setFillColor(getResources().getColor(R.color.sensor_unknown));
-                scoreText.setText(R.string.missing_data_placeholder);
-                scoreGraph.setValue(0);
-            } else {
-                sleepScoreContainer.setClickable(true);
-
-                if (sleepScore != scoreGraph.getValue()) {
-                    ValueAnimator updateAnimation = ValueAnimator.ofInt(scoreGraph.getValue(), sleepScore);
-                    AnimatorConfig.createWithDelay(250).apply(updateAnimation);
-
-                    ArgbEvaluator colorEvaluator = new ArgbEvaluator();
-                    int startColor = Styles.getSleepScoreColor(getActivity(), scoreGraph.getValue());
-                    int endColor = Styles.getSleepScoreColor(getActivity(), sleepScore);
-                    updateAnimation.addUpdateListener(a -> {
-                        Integer score = (Integer) a.getAnimatedValue();
-                        int color = (int) colorEvaluator.evaluate(a.getAnimatedFraction(), startColor, endColor);
-
-                        scoreGraph.setValue(score);
-                        scoreGraph.setFillColor(color);
-
-                        scoreText.setText(score.toString());
-                        scoreText.setTextColor(color);
-                    });
-                    updateAnimation.addListener(getAnimatorContext());
-
-                    getAnimatorContext().runWhenIdle(updateAnimation::start);
-                }
-            }
-        }
-
-        void presentError(Throwable e) {
-            sleepScoreContainer.setClickable(false);
-
-            scoreGraph.setTrackColor(getResources().getColor(R.color.border));
-            scoreGraph.setValue(0);
-
-            scoreText.setText(R.string.missing_data_placeholder);
-            scoreText.setTextColor(getResources().getColor(R.color.text_dark));
-
-            if (e != null) {
-                messageText.setText(getString(R.string.timeline_error_message, e.getMessage()));
-            } else {
-                messageText.setText(R.string.missing_data_placeholder);
-            }
-        }
-    }
-
-    class BeforeSleepHeaderMode extends HeaderViewMode {
-        final LinearLayout container;
-        final LayoutInflater inflater;
-
-        BeforeSleepHeaderMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-            super(R.layout.sub_fragment_timeline_before_sleep, inflater, container, Gravity.CENTER_VERTICAL);
-
-            this.container = (LinearLayout) view.findViewById(R.id.sub_fragment_timeline_before_sleep_container);
-            this.inflater = inflater;
-        }
-
-
-        TextView inflateNewItem() {
-            return (TextView) inflater.inflate(R.layout.item_before_sleep_insight, container, false);
-        }
-
-        void bindTimeline(@Nullable Timeline timeline) {
-            container.removeAllViews();
-
-            if (timeline != null && !Lists.isEmpty(timeline.getPreSleepInsights())) {
-                Context context = getActivity();
-                View.OnClickListener onClick = new SafeOnClickListener(ignored -> {
-                    Analytics.trackEvent(Analytics.Timeline.EVENT_BEFORE_SLEEP_EVENT_TAPPED, null);
-                });
-                for (PreSleepInsight insight : timeline.getPreSleepInsights()) {
-                    TextView text = inflateNewItem();
-                    text.setCompoundDrawablesRelativeWithIntrinsicBounds(insight.getIcon(context), null, null, null);
-                    text.setText(insight.getMessage());
-                    text.setOnClickListener(onClick);
-                    markdown.renderInto(text, insight.getMessage());
-                    container.addView(text);
-                }
-            } else {
-                TextView text = inflateNewItem();
-                text.setGravity(Gravity.CENTER);
-                text.setText(R.string.placeholder_no_before_sleep_insights);
-                container.addView(text);
-            }
-        }
-
-        void presentError(@Nullable Throwable e) {
-            container.removeAllViews();
-
-            TextView text = inflateNewItem();
-            text.setGravity(Gravity.CENTER);
-            if (e != null) {
-                text.setText(getString(R.string.timeline_error_message, e.getMessage()));
-            } else {
-                text.setText(R.string.missing_data_placeholder);
-            }
-            container.addView(text);
-        }
-    }
-
-    class BreakdownHeaderMode extends HeaderViewMode {
-        final TextView score;
-
-        final View leftItems;
-        final TextView totalSleep;
-        final TextView timesAwake;
-
-        final View rightItems;
-        final TextView soundSleep;
-        final TextView timeToSleep;
-
-        final SleepScoreDrawable sleepScorePie;
-
-        BreakdownHeaderMode(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-            super(R.layout.sub_fragment_timeline_breakdown, inflater, container, Gravity.TOP);
-
-            this.score = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_score);
-
-            this.leftItems = view.findViewById(R.id.sub_fragment_timeline_breakdown_left);
-            this.totalSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_total);
-            this.timesAwake = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_awake);
-
-            this.rightItems = view.findViewById(R.id.sub_fragment_timeline_breakdown_right);
-            this.soundSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_sound);
-            this.timeToSleep = (TextView) view.findViewById(R.id.sub_fragment_timeline_breakdown_time);
-
-            this.sleepScorePie = new SleepScoreDrawable(getResources());
-            score.setBackground(sleepScorePie);
-            Views.setSafeOnClickListener(score, TimelineFragment.this::hideBreakdown);
-        }
-
-        @NonNull String formatTime(@Nullable Integer time) {
-            if (time == null) {
-                return getString(R.string.missing_data_placeholder);
-            } else {
-                if (time < 60) {
-                    return getString(R.string.duration_minutes_fmt, time);
-                } else {
-                    float hours = time / 60f;
-                    if ((time % 60) == 0) {
-                        return getString(R.string.duration_hours_whole_fmt, hours);
-                    } else {
-                        return getString(R.string.duration_hours_fraction_fmt, hours);
+                        float centerDistanceAmount = (viewCenter - recyclerCenter) / (float) recyclerCenter;
+                        float bottomDistanceAmount;
+                        if (viewBottom < recyclerHeight) {
+                            bottomDistanceAmount = 1f;
+                        } else {
+                            float offScreen = viewBottom - recyclerHeight;
+                            bottomDistanceAmount = 1f - (offScreen / viewHeight);
+                        }
+                        eventViewHolder.setDistanceAmounts(bottomDistanceAmount, centerDistanceAmount);
                     }
                 }
             }
-        }
 
-        void bindTimeline(@NonNull Timeline timeline) {
-            int sleepScore = timeline.getScore();
-            score.setText(Integer.toString(sleepScore));
-
-            int color = Styles.getSleepScoreColor(getActivity(), sleepScore);
-            sleepScorePie.setTrackColor(color);
-            score.setTextColor(color);
-
-            Timeline.Statistics statistics = timeline.getStatistics();
-            if (statistics != null) {
-                totalSleep.setTextColor(color);
-                totalSleep.setText(formatTime(statistics.getTotalSleep()));
-
-                timesAwake.setTextColor(color);
-                if (statistics.getTimesAwake() != null) {
-                    timesAwake.setText(statistics.getTimesAwake().toString());
+            if (controlsSharedChrome) {
+                if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
+                    homeActivity.showAlarmShortcut();
                 } else {
-                    timesAwake.setText(R.string.missing_data_placeholder);
+                    homeActivity.hideAlarmShortcut();
                 }
-
-                soundSleep.setTextColor(color);
-                soundSleep.setText(formatTime(statistics.getSoundSleep()));
-
-                timeToSleep.setText(formatTime(statistics.getTimeToSleep()));
-                timeToSleep.setTextColor(color);
-            } else {
-                int noDataColor = getResources().getColor(R.color.sensor_unknown);
-
-                totalSleep.setTextColor(noDataColor);
-                totalSleep.setText(R.string.missing_data_placeholder);
-
-                timesAwake.setTextColor(noDataColor);
-                timesAwake.setText(R.string.missing_data_placeholder);
-
-                soundSleep.setTextColor(noDataColor);
-                soundSleep.setText(R.string.missing_data_placeholder);
-
-                timeToSleep.setTextColor(noDataColor);
-                timeToSleep.setText(R.string.missing_data_placeholder);
             }
-        }
-
-        void timelineUnavailable(Throwable e) {
-            sleepScorePie.setValue(0);
-            score.setText(R.string.missing_data_placeholder);
-
-            totalSleep.setText(R.string.missing_data_placeholder);
-            timesAwake.setText(R.string.missing_data_placeholder);
-            soundSleep.setText(R.string.missing_data_placeholder);
-            timeToSleep.setText(R.string.missing_data_placeholder);
         }
     }
 
-    //endregion
+    static class BackgroundDecoration extends RecyclerView.ItemDecoration {
+        private final Drawable background;
+        private final int bottomPadding;
+
+        public BackgroundDecoration(@NonNull Resources resources) {
+            this.background = resources.getDrawable(R.drawable.background_timeline_segment);
+            this.bottomPadding = resources.getDimensionPixelSize(R.dimen.timeline_gap_bottom);
+        }
+
+        @Override
+        public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+            int left = 0,
+                top = 0,
+                right = canvas.getWidth(),
+                bottom = canvas.getHeight();
+
+            RecyclerView.ViewHolder headerView = parent.findViewHolderForAdapterPosition(0);
+            if (headerView != null) {
+                top = headerView.itemView.getBottom();
+            }
+
+            background.setBounds(left, top, right, bottom);
+            background.draw(canvas);
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view);
+            if (position > 0 && position == parent.getAdapter().getItemCount() - 1) {
+                outRect.bottom = bottomPadding;
+            }
+        }
+    }
 }
