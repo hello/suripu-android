@@ -180,24 +180,20 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             if (previousState != RecyclerView.SCROLL_STATE_IDLE && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                if (!snapToNearestItem(recyclerView)) {
-                    presenter.retrieveTimelines();
-                }
+                snapToNearestItem(recyclerView);
+                presenter.retrieveTimelines();
             }
 
             this.previousState = newState;
         }
 
-        public boolean snapToNearestItem(RecyclerView recyclerView) {
+        public void snapToNearestItem(RecyclerView recyclerView) {
             int containerMidX = recyclerView.getWidth() / 2;
             View centerView = recyclerView.findChildViewUnder(containerMidX, 0);
             int centerViewMidX = (centerView.getLeft() + centerView.getRight()) / 2;
             int distanceToNotch = centerViewMidX - containerMidX;
             if (distanceToNotch != 0) {
                 recyclerView.smoothScrollBy(distanceToNotch, 0);
-                return true;
-            } else {
-                return false;
             }
         }
     }
