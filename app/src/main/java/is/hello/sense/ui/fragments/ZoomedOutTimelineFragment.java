@@ -16,7 +16,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Timeline;
-import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
+import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.ui.adapter.ZoomedOutTimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ZoomedOutTimelineLayoutManager;
@@ -30,7 +30,7 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
     private static final String ARG_START_DATE = ZoomedOutTimelineFragment.class.getName() + ".ARG_START_DATE";
     private static final String ARG_FIRST_TIMELINE = ZoomedOutTimelineFragment.class.getName() + ".ARG_FIRST_TIMELINE";
 
-    @Inject TimelineNavigatorPresenter presenter;
+    @Inject ZoomedOutTimelinePresenter presenter;
     @Inject DateFormatter dateFormatter;
 
     private TextView monthText;

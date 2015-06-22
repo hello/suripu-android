@@ -17,7 +17,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Timeline;
 import rx.Observable;
 
-public class TimelineNavigatorPresenter extends Presenter {
+public class ZoomedOutTimelinePresenter extends Presenter {
     private static final int CACHE_LIMIT = 7;
 
     private static final String STATE_KEY_FIRST_DATE = "firstDate";
@@ -29,7 +29,7 @@ public class TimelineNavigatorPresenter extends Presenter {
     private final ApiService apiService;
     private final LruCache<DateTime, Timeline> cachedTimelines = new LruCache<>(CACHE_LIMIT);
 
-    @Inject public TimelineNavigatorPresenter(@NonNull ApiService apiService) {
+    @Inject public ZoomedOutTimelinePresenter(@NonNull ApiService apiService) {
         this.apiService = apiService;
     }
 

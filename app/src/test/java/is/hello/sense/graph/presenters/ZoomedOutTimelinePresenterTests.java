@@ -20,10 +20,10 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-public class TimelineNavigatorPresenterTests extends InjectionTests {
+public class ZoomedOutTimelinePresenterTests extends InjectionTests {
     private final DateTime startTime = DateTime.now();
 
-    @Inject TimelineNavigatorPresenter presenter;
+    @Inject ZoomedOutTimelinePresenter presenter;
 
     @Before
     public void initialize() throws Exception {

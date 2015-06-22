@@ -21,9 +21,9 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
-import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TrendsPresenter;
+import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.ui.activities.DebugActivity;
@@ -104,7 +104,7 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
         TimelinePresenter.class,
         TimelineInfoFragment.class,
         ZoomedOutTimelineFragment.class,
-        TimelineNavigatorPresenter.class,
+        ZoomedOutTimelinePresenter.class,
 
         QuestionsPresenter.class,
         QuestionsDialogFragment.class,

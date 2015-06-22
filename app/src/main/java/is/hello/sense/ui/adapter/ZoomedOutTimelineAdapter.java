@@ -14,7 +14,7 @@ import org.joda.time.DateTime;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Timeline;
-import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
+import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.TimelinePreviewView;
 import is.hello.sense.ui.widget.util.Styles;
@@ -27,12 +27,12 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
     private final Context context;
     private final LayoutInflater inflater;
     private final Resources resources;
-    private final TimelineNavigatorPresenter presenter;
+    private final ZoomedOutTimelinePresenter presenter;
 
     private @Nullable OnItemClickedListener onItemClickedListener;
 
     public ZoomedOutTimelineAdapter(@NonNull Context context,
-                                    @NonNull TimelineNavigatorPresenter presenter) {
+                                    @NonNull ZoomedOutTimelinePresenter presenter) {
         this.context = context;
         this.resources = context.getResources();
         this.inflater = LayoutInflater.from(context);

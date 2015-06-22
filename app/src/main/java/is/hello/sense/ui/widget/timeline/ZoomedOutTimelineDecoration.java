@@ -16,6 +16,9 @@ public class ZoomedOutTimelineDecoration extends RecyclerView.ItemDecoration {
     private static final float MIN_SCALE = 0.7f;
     private static final float MAX_SCALE = 1f;
 
+    private static final float MIN_ALPHA = 0.4f;
+    private static final float MAX_ALPHA = 1f;
+
     private final Drawable drawable;
     private final int dividerWidth;
 
@@ -48,6 +51,9 @@ public class ZoomedOutTimelineDecoration extends RecyclerView.ItemDecoration {
             float childScale = Drawing.interpolateFloats(distanceAmount, MIN_SCALE, MAX_SCALE);
             child.setScaleX(childScale);
             child.setScaleY(childScale);
+
+            float childAlpha = Drawing.interpolateFloats(distanceAmount, MIN_ALPHA, MAX_ALPHA);
+            child.setAlpha(childAlpha);
         }
     }
 
