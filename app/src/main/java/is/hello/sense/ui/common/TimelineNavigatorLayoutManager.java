@@ -22,6 +22,7 @@ public class TimelineNavigatorLayoutManager extends LinearLayoutManager {
 
         if (onPostLayout != null) {
             onPostLayout.run();
+            this.onPostLayout = null;
         }
     }
 
@@ -44,7 +45,7 @@ public class TimelineNavigatorLayoutManager extends LinearLayoutManager {
         return params;
     }
 
-    public void setOnPostLayout(@Nullable Runnable onPostLayout) {
+    public void postLayout(@Nullable Runnable onPostLayout) {
         this.onPostLayout = onPostLayout;
     }
 }

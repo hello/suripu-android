@@ -78,10 +78,8 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
         Views.setSafeOnClickListener(monthText, ignored -> getFragmentManager().popBackStack());
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_navigator_recycler_view);
-        recyclerView.addItemDecoration(new TimelineNavigatorItemDecoration(getResources(), R.drawable.graph_grid_fill_top_down, R.dimen.divider_size));
-
-        TimelineScrollListener timelineScrollListener = new TimelineScrollListener();
-        recyclerView.addOnScrollListener(timelineScrollListener);
+        recyclerView.addItemDecoration(new TimelineNavigatorItemDecoration(getResources()));
+        recyclerView.addOnScrollListener(new TimelineScrollListener());
 
         this.layoutManager = new TimelineNavigatorLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -93,7 +91,6 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
         Button todayButton = (Button) view.findViewById(R.id.fragment_timeline_navigator_today);
         todayButton.setOnClickListener(this::jumpToToday);
 
-        Runnable transform = timelineScrollListener::transformChildren;
         int position = presenter.getDateTimePosition(startDate);
         if (position == 0) {
             // The second item from the right at the beginning of the
@@ -103,13 +100,8 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
             // a specific offset if we want it to be centered. Of course,
             // we can only get the offset after layout.
 
-            layoutManager.setOnPostLayout(() -> {
-                layoutManager.setOnPostLayout(transform);
-                layoutManager.scrollToPositionWithOffset(position, -layoutManager.getItemWidth());
-                recyclerView.postDelayed(transform, 100); // delay = post-layout
-            });
+            layoutManager.postLayout(() -> layoutManager.scrollToPositionWithOffset(position, -layoutManager.getItemWidth()));
         } else {
-            layoutManager.setOnPostLayout(transform);
             layoutManager.scrollToPosition(position);
         }
 
@@ -154,41 +146,12 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
 
 
     class TimelineScrollListener extends RecyclerView.OnScrollListener {
-        final float BASE_SCALE = 0.8f;
-        final float BASE_SCALE_REMAINDER = 0.2f;
-        final float ACTIVE_DISTANCE = getResources().getDimensionPixelSize(R.dimen.timeline_navigator_active_distance);
-
         int previousState = RecyclerView.SCROLL_STATE_IDLE;
-
-        public void transformChildren() {
-            // 1:1 port of Delisa's iOS code
-
-            float itemWidth = layoutManager.getItemWidth();
-            float centerX = recyclerView.getMeasuredWidth() / 2f;
-            for (int i = 0, size = recyclerView.getChildCount(); i < size; i++) {
-                View child = recyclerView.getChildAt(i);
-
-                float childCenter = child.getRight() - itemWidth / 2f;
-                float childDistance = Math.abs(centerX - childCenter);
-                float percentage = 1f / (childDistance / ACTIVE_DISTANCE);
-
-                float alpha = Math.max(percentage, 0.4f);
-                child.setAlpha(alpha);
-
-                if (childDistance > ACTIVE_DISTANCE) {
-                    float scale = BASE_SCALE + (BASE_SCALE_REMAINDER * percentage);
-                    child.setScaleX(scale);
-                    child.setScaleY(scale);
-                }
-            }
-
-            TimelineNavigatorAdapter.ItemViewHolder holder = (TimelineNavigatorAdapter.ItemViewHolder) recyclerView.findViewHolderForLayoutPosition(layoutManager.findLastVisibleItemPosition());
-            monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(holder.date));
-        }
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            transformChildren();
+            TimelineNavigatorAdapter.ItemViewHolder holder = (TimelineNavigatorAdapter.ItemViewHolder) recyclerView.findViewHolderForLayoutPosition(layoutManager.findLastVisibleItemPosition());
+            monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(holder.date));
         }
 
         @Override
@@ -217,8 +180,6 @@ public class TimelineNavigatorFragment extends InjectionFragment implements Time
                 } else {
                     recyclerView.smoothScrollToPosition(layoutManager.findFirstVisibleItemPosition());
                 }
-            } else {
-                transformChildren();
             }
         }
     }
