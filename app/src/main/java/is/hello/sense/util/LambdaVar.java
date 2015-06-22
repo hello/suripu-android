@@ -47,6 +47,10 @@ public final class LambdaVar<T> {
         return oldValue;
     }
 
+    public boolean isNull() {
+        return (value == null);
+    }
+
     //endregion
 
 

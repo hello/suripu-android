@@ -71,6 +71,10 @@ public final class SenseCommandProtos {
     NO_ENDPOINT_IN_RANGE(7, 7),
     /**
      * <code>WLAN_CONNECTION_ERROR = 8;</code>
+     *
+     * <pre>
+     *factory reset failed to remove stored wifi endpoint
+     * </pre>
      */
     WLAN_CONNECTION_ERROR(8, 8),
     /**
@@ -83,10 +87,18 @@ public final class SenseCommandProtos {
     WLAN_ENDPOINT_DELETE_FAILED(10, 10),
     /**
      * <code>INVALID_ACCOUNT_ID = 11;</code>
+     *
+     * <pre>
+     *pair device command doesn't contain a valid account ID
+     * </pre>
      */
     INVALID_ACCOUNT_ID(11, 11),
     /**
      * <code>FORCE_DATA_PUSH_FAILED = 12;</code>
+     *
+     * <pre>
+     *error from pushing data after MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE
+     * </pre>
      */
     FORCE_DATA_PUSH_FAILED(12, 12),
     /**
@@ -97,6 +109,10 @@ public final class SenseCommandProtos {
      * <code>PROTOBUF_DECODE_FAILED = 14;</code>
      */
     PROTOBUF_DECODE_FAILED(14, 14),
+    /**
+     * <code>SERVER_CONNECTION_TIMEOUT = 15;</code>
+     */
+    SERVER_CONNECTION_TIMEOUT(15, 15),
     ;
 
     /**
@@ -157,6 +173,10 @@ public final class SenseCommandProtos {
     public static final int NO_ENDPOINT_IN_RANGE_VALUE = 7;
     /**
      * <code>WLAN_CONNECTION_ERROR = 8;</code>
+     *
+     * <pre>
+     *factory reset failed to remove stored wifi endpoint
+     * </pre>
      */
     public static final int WLAN_CONNECTION_ERROR_VALUE = 8;
     /**
@@ -169,10 +189,18 @@ public final class SenseCommandProtos {
     public static final int WLAN_ENDPOINT_DELETE_FAILED_VALUE = 10;
     /**
      * <code>INVALID_ACCOUNT_ID = 11;</code>
+     *
+     * <pre>
+     *pair device command doesn't contain a valid account ID
+     * </pre>
      */
     public static final int INVALID_ACCOUNT_ID_VALUE = 11;
     /**
      * <code>FORCE_DATA_PUSH_FAILED = 12;</code>
+     *
+     * <pre>
+     *error from pushing data after MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE
+     * </pre>
      */
     public static final int FORCE_DATA_PUSH_FAILED_VALUE = 12;
     /**
@@ -183,6 +211,10 @@ public final class SenseCommandProtos {
      * <code>PROTOBUF_DECODE_FAILED = 14;</code>
      */
     public static final int PROTOBUF_DECODE_FAILED_VALUE = 14;
+    /**
+     * <code>SERVER_CONNECTION_TIMEOUT = 15;</code>
+     */
+    public static final int SERVER_CONNECTION_TIMEOUT_VALUE = 15;
 
 
     public final int getNumber() { return value; }
@@ -204,6 +236,7 @@ public final class SenseCommandProtos {
         case 12: return FORCE_DATA_PUSH_FAILED;
         case 13: return PROTOBUF_ENCODE_FAILED;
         case 14: return PROTOBUF_DECODE_FAILED;
+        case 15: return SERVER_CONNECTION_TIMEOUT;
         default: return null;
       }
     }
@@ -276,6 +309,38 @@ public final class SenseCommandProtos {
      * <code>IP_RETRIEVED = 3;</code>
      */
     IP_RETRIEVED(3, 3),
+    /**
+     * <code>DNS_RESOLVED = 4;</code>
+     */
+    DNS_RESOLVED(4, 4),
+    /**
+     * <code>SOCKET_CONNECTED = 5;</code>
+     */
+    SOCKET_CONNECTED(5, 5),
+    /**
+     * <code>REQUEST_SENT = 6;</code>
+     */
+    REQUEST_SENT(6, 6),
+    /**
+     * <code>CONNECTED = 7;</code>
+     */
+    CONNECTED(7, 7),
+    /**
+     * <code>SSL_FAIL = 8;</code>
+     */
+    SSL_FAIL(8, 8),
+    /**
+     * <code>HELLO_KEY_FAIL = 9;</code>
+     */
+    HELLO_KEY_FAIL(9, 9),
+    /**
+     * <code>DNS_FAILED = 10;</code>
+     */
+    DNS_FAILED(10, 10),
+    /**
+     * <code>CONNECT_FAILED = 11;</code>
+     */
+    CONNECT_FAILED(11, 11),
     ;
 
     /**
@@ -294,6 +359,38 @@ public final class SenseCommandProtos {
      * <code>IP_RETRIEVED = 3;</code>
      */
     public static final int IP_RETRIEVED_VALUE = 3;
+    /**
+     * <code>DNS_RESOLVED = 4;</code>
+     */
+    public static final int DNS_RESOLVED_VALUE = 4;
+    /**
+     * <code>SOCKET_CONNECTED = 5;</code>
+     */
+    public static final int SOCKET_CONNECTED_VALUE = 5;
+    /**
+     * <code>REQUEST_SENT = 6;</code>
+     */
+    public static final int REQUEST_SENT_VALUE = 6;
+    /**
+     * <code>CONNECTED = 7;</code>
+     */
+    public static final int CONNECTED_VALUE = 7;
+    /**
+     * <code>SSL_FAIL = 8;</code>
+     */
+    public static final int SSL_FAIL_VALUE = 8;
+    /**
+     * <code>HELLO_KEY_FAIL = 9;</code>
+     */
+    public static final int HELLO_KEY_FAIL_VALUE = 9;
+    /**
+     * <code>DNS_FAILED = 10;</code>
+     */
+    public static final int DNS_FAILED_VALUE = 10;
+    /**
+     * <code>CONNECT_FAILED = 11;</code>
+     */
+    public static final int CONNECT_FAILED_VALUE = 11;
 
 
     public final int getNumber() { return value; }
@@ -304,6 +401,14 @@ public final class SenseCommandProtos {
         case 1: return WLAN_CONNECTING;
         case 2: return WLAN_CONNECTED;
         case 3: return IP_RETRIEVED;
+        case 4: return DNS_RESOLVED;
+        case 5: return SOCKET_CONNECTED;
+        case 6: return REQUEST_SENT;
+        case 7: return CONNECTED;
+        case 8: return SSL_FAIL;
+        case 9: return HELLO_KEY_FAIL;
+        case 10: return DNS_FAILED;
+        case 11: return CONNECT_FAILED;
         default: return null;
       }
     }
@@ -355,10 +460,10 @@ public final class SenseCommandProtos {
     // @@protoc_insertion_point(enum_scope:wifi_connection_state)
   }
 
-  public interface wifi_endpointOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:wifi_endpoint)
-      com.google.protobuf.MessageOrBuilder {
+  public interface wifi_endpointOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
 
+    // required string ssid = 1;
     /**
      * <code>required string ssid = 1;</code>
      */
@@ -373,6 +478,7 @@ public final class SenseCommandProtos {
     com.google.protobuf.ByteString
         getSsidBytes();
 
+    // optional bytes bssid = 2;
     /**
      * <code>optional bytes bssid = 2;</code>
      */
@@ -382,6 +488,7 @@ public final class SenseCommandProtos {
      */
     com.google.protobuf.ByteString getBssid();
 
+    // required int32 rssi = 4;
     /**
      * <code>required int32 rssi = 4;</code>
      */
@@ -391,6 +498,7 @@ public final class SenseCommandProtos {
      */
     int getRssi();
 
+    // required .wifi_endpoint.sec_type security_type = 5;
     /**
      * <code>required .wifi_endpoint.sec_type security_type = 5;</code>
      */
@@ -404,9 +512,8 @@ public final class SenseCommandProtos {
    * Protobuf type {@code wifi_endpoint}
    */
   public static final class wifi_endpoint extends
-      com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:wifi_endpoint)
-      wifi_endpointOrBuilder {
+      com.google.protobuf.GeneratedMessage
+      implements wifi_endpointOrBuilder {
     // Use wifi_endpoint.newBuilder() to construct.
     private wifi_endpoint(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -453,9 +560,8 @@ public final class SenseCommandProtos {
               break;
             }
             case 10: {
-              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              ssid_ = bs;
+              ssid_ = input.readBytes();
               break;
             }
             case 18: {
@@ -522,6 +628,7 @@ public final class SenseCommandProtos {
      * Protobuf enum {@code wifi_endpoint.sec_type}
      *
      * <pre>
+     *
      *_u8 ssid[MAXIMAL_SSID_LENGTH];
      *_u8 ssid_len;
      *_u8 sec_type;
@@ -627,6 +734,7 @@ public final class SenseCommandProtos {
     }
 
     private int bitField0_;
+    // required string ssid = 1;
     public static final int SSID_FIELD_NUMBER = 1;
     private java.lang.Object ssid_;
     /**
@@ -669,6 +777,7 @@ public final class SenseCommandProtos {
       }
     }
 
+    // optional bytes bssid = 2;
     public static final int BSSID_FIELD_NUMBER = 2;
     private com.google.protobuf.ByteString bssid_;
     /**
@@ -684,6 +793,7 @@ public final class SenseCommandProtos {
       return bssid_;
     }
 
+    // required int32 rssi = 4;
     public static final int RSSI_FIELD_NUMBER = 4;
     private int rssi_;
     /**
@@ -699,6 +809,7 @@ public final class SenseCommandProtos {
       return rssi_;
     }
 
+    // required .wifi_endpoint.sec_type security_type = 5;
     public static final int SECURITY_TYPE_FIELD_NUMBER = 5;
     private is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type securityType_;
     /**
@@ -723,8 +834,7 @@ public final class SenseCommandProtos {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
+      if (isInitialized != -1) return isInitialized == 1;
 
       if (!hasSsid()) {
         memoizedIsInitialized = 0;
@@ -864,9 +974,8 @@ public final class SenseCommandProtos {
      * Protobuf type {@code wifi_endpoint}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:wifi_endpoint)
-        is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpointOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpointOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.internal_static_wifi_endpoint_descriptor;
@@ -1020,6 +1129,7 @@ public final class SenseCommandProtos {
       }
       private int bitField0_;
 
+      // required string ssid = 1;
       private java.lang.Object ssid_ = "";
       /**
        * <code>required string ssid = 1;</code>
@@ -1033,12 +1143,9 @@ public final class SenseCommandProtos {
       public java.lang.String getSsid() {
         java.lang.Object ref = ssid_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            ssid_ = s;
-          }
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          ssid_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -1096,6 +1203,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional bytes bssid = 2;
       private com.google.protobuf.ByteString bssid_ = com.google.protobuf.ByteString.EMPTY;
       /**
        * <code>optional bytes bssid = 2;</code>
@@ -1131,6 +1239,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // required int32 rssi = 4;
       private int rssi_ ;
       /**
        * <code>required int32 rssi = 4;</code>
@@ -1163,6 +1272,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // required .wifi_endpoint.sec_type security_type = 5;
       private is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type securityType_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN;
       /**
        * <code>required .wifi_endpoint.sec_type security_type = 5;</code>
@@ -1209,10 +1319,10 @@ public final class SenseCommandProtos {
     // @@protoc_insertion_point(class_scope:wifi_endpoint)
   }
 
-  public interface pill_dataOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:pill_data)
-      com.google.protobuf.MessageOrBuilder {
+  public interface pill_dataOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
 
+    // required string device_id = 1;
     /**
      * <code>required string device_id = 1;</code>
      */
@@ -1227,6 +1337,7 @@ public final class SenseCommandProtos {
     com.google.protobuf.ByteString
         getDeviceIdBytes();
 
+    // optional int32 battery_level = 2;
     /**
      * <code>optional int32 battery_level = 2;</code>
      */
@@ -1236,6 +1347,7 @@ public final class SenseCommandProtos {
      */
     int getBatteryLevel();
 
+    // optional int32 uptime = 3;
     /**
      * <code>optional int32 uptime = 3;</code>
      */
@@ -1245,6 +1357,7 @@ public final class SenseCommandProtos {
      */
     int getUptime();
 
+    // optional bytes motion_data_entrypted = 4;
     /**
      * <code>optional bytes motion_data_entrypted = 4;</code>
      */
@@ -1254,6 +1367,7 @@ public final class SenseCommandProtos {
      */
     com.google.protobuf.ByteString getMotionDataEntrypted();
 
+    // optional int32 firmware_version = 5;
     /**
      * <code>optional int32 firmware_version = 5;</code>
      */
@@ -1263,6 +1377,7 @@ public final class SenseCommandProtos {
      */
     int getFirmwareVersion();
 
+    // required uint64 timestamp = 6;
     /**
      * <code>required uint64 timestamp = 6;</code>
      */
@@ -1276,9 +1391,8 @@ public final class SenseCommandProtos {
    * Protobuf type {@code pill_data}
    */
   public static final class pill_data extends
-      com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:pill_data)
-      pill_dataOrBuilder {
+      com.google.protobuf.GeneratedMessage
+      implements pill_dataOrBuilder {
     // Use pill_data.newBuilder() to construct.
     private pill_data(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -1325,9 +1439,8 @@ public final class SenseCommandProtos {
               break;
             }
             case 10: {
-              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              deviceId_ = bs;
+              deviceId_ = input.readBytes();
               break;
             }
             case 16: {
@@ -1395,6 +1508,7 @@ public final class SenseCommandProtos {
     }
 
     private int bitField0_;
+    // required string device_id = 1;
     public static final int DEVICE_ID_FIELD_NUMBER = 1;
     private java.lang.Object deviceId_;
     /**
@@ -1437,6 +1551,7 @@ public final class SenseCommandProtos {
       }
     }
 
+    // optional int32 battery_level = 2;
     public static final int BATTERY_LEVEL_FIELD_NUMBER = 2;
     private int batteryLevel_;
     /**
@@ -1452,6 +1567,7 @@ public final class SenseCommandProtos {
       return batteryLevel_;
     }
 
+    // optional int32 uptime = 3;
     public static final int UPTIME_FIELD_NUMBER = 3;
     private int uptime_;
     /**
@@ -1467,6 +1583,7 @@ public final class SenseCommandProtos {
       return uptime_;
     }
 
+    // optional bytes motion_data_entrypted = 4;
     public static final int MOTION_DATA_ENTRYPTED_FIELD_NUMBER = 4;
     private com.google.protobuf.ByteString motionDataEntrypted_;
     /**
@@ -1482,6 +1599,7 @@ public final class SenseCommandProtos {
       return motionDataEntrypted_;
     }
 
+    // optional int32 firmware_version = 5;
     public static final int FIRMWARE_VERSION_FIELD_NUMBER = 5;
     private int firmwareVersion_;
     /**
@@ -1497,6 +1615,7 @@ public final class SenseCommandProtos {
       return firmwareVersion_;
     }
 
+    // required uint64 timestamp = 6;
     public static final int TIMESTAMP_FIELD_NUMBER = 6;
     private long timestamp_;
     /**
@@ -1523,8 +1642,7 @@ public final class SenseCommandProtos {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
+      if (isInitialized != -1) return isInitialized == 1;
 
       if (!hasDeviceId()) {
         memoizedIsInitialized = 0;
@@ -1674,9 +1792,8 @@ public final class SenseCommandProtos {
      * Protobuf type {@code pill_data}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:pill_data)
-        is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_dataOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_dataOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.internal_static_pill_data_descriptor;
@@ -1844,6 +1961,7 @@ public final class SenseCommandProtos {
       }
       private int bitField0_;
 
+      // required string device_id = 1;
       private java.lang.Object deviceId_ = "";
       /**
        * <code>required string device_id = 1;</code>
@@ -1857,12 +1975,9 @@ public final class SenseCommandProtos {
       public java.lang.String getDeviceId() {
         java.lang.Object ref = deviceId_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            deviceId_ = s;
-          }
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          deviceId_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -1920,6 +2035,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional int32 battery_level = 2;
       private int batteryLevel_ ;
       /**
        * <code>optional int32 battery_level = 2;</code>
@@ -1952,6 +2068,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional int32 uptime = 3;
       private int uptime_ ;
       /**
        * <code>optional int32 uptime = 3;</code>
@@ -1984,6 +2101,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional bytes motion_data_entrypted = 4;
       private com.google.protobuf.ByteString motionDataEntrypted_ = com.google.protobuf.ByteString.EMPTY;
       /**
        * <code>optional bytes motion_data_entrypted = 4;</code>
@@ -2019,6 +2137,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional int32 firmware_version = 5;
       private int firmwareVersion_ ;
       /**
        * <code>optional int32 firmware_version = 5;</code>
@@ -2051,6 +2170,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // required uint64 timestamp = 6;
       private long timestamp_ ;
       /**
        * <code>required uint64 timestamp = 6;</code>
@@ -2094,10 +2214,10 @@ public final class SenseCommandProtos {
     // @@protoc_insertion_point(class_scope:pill_data)
   }
 
-  public interface MorpheusCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:MorpheusCommand)
-      com.google.protobuf.MessageOrBuilder {
+  public interface MorpheusCommandOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
 
+    // required int32 version = 1;
     /**
      * <code>required int32 version = 1;</code>
      */
@@ -2107,6 +2227,7 @@ public final class SenseCommandProtos {
      */
     int getVersion();
 
+    // required .MorpheusCommand.CommandType type = 2;
     /**
      * <code>required .MorpheusCommand.CommandType type = 2;</code>
      */
@@ -2116,6 +2237,7 @@ public final class SenseCommandProtos {
      */
     is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand.CommandType getType();
 
+    // optional string deviceId = 3;
     /**
      * <code>optional string deviceId = 3;</code>
      */
@@ -2130,6 +2252,7 @@ public final class SenseCommandProtos {
     com.google.protobuf.ByteString
         getDeviceIdBytes();
 
+    // optional string accountId = 4;
     /**
      * <code>optional string accountId = 4;</code>
      *
@@ -2156,6 +2279,7 @@ public final class SenseCommandProtos {
     com.google.protobuf.ByteString
         getAccountIdBytes();
 
+    // optional .ErrorType error = 5;
     /**
      * <code>optional .ErrorType error = 5;</code>
      *
@@ -2173,6 +2297,7 @@ public final class SenseCommandProtos {
      */
     is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.ErrorType getError();
 
+    // optional string wifiName = 6;
     /**
      * <code>optional string wifiName = 6;</code>
      */
@@ -2187,6 +2312,7 @@ public final class SenseCommandProtos {
     com.google.protobuf.ByteString
         getWifiNameBytes();
 
+    // optional string wifiSSID = 7;
     /**
      * <code>optional string wifiSSID = 7;</code>
      */
@@ -2201,6 +2327,7 @@ public final class SenseCommandProtos {
     com.google.protobuf.ByteString
         getWifiSSIDBytes();
 
+    // optional string wifiPassword = 8;
     /**
      * <code>optional string wifiPassword = 8;</code>
      */
@@ -2215,6 +2342,7 @@ public final class SenseCommandProtos {
     com.google.protobuf.ByteString
         getWifiPasswordBytes();
 
+    // optional int32 firmwareVersion = 13;
     /**
      * <code>optional int32 firmwareVersion = 13;</code>
      *
@@ -2238,6 +2366,7 @@ public final class SenseCommandProtos {
      */
     int getFirmwareVersion();
 
+    // repeated .wifi_endpoint wifi_scan_result = 14;
     /**
      * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
      */
@@ -2262,6 +2391,7 @@ public final class SenseCommandProtos {
     is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpointOrBuilder getWifiScanResultOrBuilder(
         int index);
 
+    // optional .wifi_endpoint.sec_type security_type = 15;
     /**
      * <code>optional .wifi_endpoint.sec_type security_type = 15;</code>
      */
@@ -2271,6 +2401,7 @@ public final class SenseCommandProtos {
      */
     is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type getSecurityType();
 
+    // optional .pill_data pill_data = 16;
     /**
      * <code>optional .pill_data pill_data = 16;</code>
      */
@@ -2284,6 +2415,7 @@ public final class SenseCommandProtos {
      */
     is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_dataOrBuilder getPillDataOrBuilder();
 
+    // optional .wifi_connection_state wifi_connection_state = 17;
     /**
      * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
      */
@@ -2293,6 +2425,7 @@ public final class SenseCommandProtos {
      */
     is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state getWifiConnectionState();
 
+    // optional int32 ble_bond_count = 18;
     /**
      * <code>optional int32 ble_bond_count = 18;</code>
      */
@@ -2302,6 +2435,7 @@ public final class SenseCommandProtos {
      */
     int getBleBondCount();
 
+    // optional string country_code = 19;
     /**
      * <code>optional string country_code = 19;</code>
      */
@@ -2316,6 +2450,7 @@ public final class SenseCommandProtos {
     com.google.protobuf.ByteString
         getCountryCodeBytes();
 
+    // optional bytes aes_key = 20;
     /**
      * <code>optional bytes aes_key = 20;</code>
      */
@@ -2324,14 +2459,73 @@ public final class SenseCommandProtos {
      * <code>optional bytes aes_key = 20;</code>
      */
     com.google.protobuf.ByteString getAesKey();
+
+    // optional string top_version = 21;
+    /**
+     * <code>optional string top_version = 21;</code>
+     */
+    boolean hasTopVersion();
+    /**
+     * <code>optional string top_version = 21;</code>
+     */
+    java.lang.String getTopVersion();
+    /**
+     * <code>optional string top_version = 21;</code>
+     */
+    com.google.protobuf.ByteString
+        getTopVersionBytes();
+
+    // optional uint32 server_ip = 22;
+    /**
+     * <code>optional uint32 server_ip = 22;</code>
+     */
+    boolean hasServerIp();
+    /**
+     * <code>optional uint32 server_ip = 22;</code>
+     */
+    int getServerIp();
+
+    // optional uint32 socket_error_code = 23;
+    /**
+     * <code>optional uint32 socket_error_code = 23;</code>
+     */
+    boolean hasSocketErrorCode();
+    /**
+     * <code>optional uint32 socket_error_code = 23;</code>
+     */
+    int getSocketErrorCode();
+
+    // optional string http_response_code = 24;
+    /**
+     * <code>optional string http_response_code = 24;</code>
+     */
+    boolean hasHttpResponseCode();
+    /**
+     * <code>optional string http_response_code = 24;</code>
+     */
+    java.lang.String getHttpResponseCode();
+    /**
+     * <code>optional string http_response_code = 24;</code>
+     */
+    com.google.protobuf.ByteString
+        getHttpResponseCodeBytes();
+
+    // optional int32 app_version = 25;
+    /**
+     * <code>optional int32 app_version = 25;</code>
+     */
+    boolean hasAppVersion();
+    /**
+     * <code>optional int32 app_version = 25;</code>
+     */
+    int getAppVersion();
   }
   /**
    * Protobuf type {@code MorpheusCommand}
    */
   public static final class MorpheusCommand extends
-      com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:MorpheusCommand)
-      MorpheusCommandOrBuilder {
+      com.google.protobuf.GeneratedMessage
+      implements MorpheusCommandOrBuilder {
     // Use MorpheusCommand.newBuilder() to construct.
     private MorpheusCommand(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -2394,15 +2588,13 @@ public final class SenseCommandProtos {
               break;
             }
             case 26: {
-              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000004;
-              deviceId_ = bs;
+              deviceId_ = input.readBytes();
               break;
             }
             case 34: {
-              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000008;
-              accountId_ = bs;
+              accountId_ = input.readBytes();
               break;
             }
             case 40: {
@@ -2417,21 +2609,18 @@ public final class SenseCommandProtos {
               break;
             }
             case 50: {
-              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000020;
-              wifiName_ = bs;
+              wifiName_ = input.readBytes();
               break;
             }
             case 58: {
-              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000040;
-              wifiSSID_ = bs;
+              wifiSSID_ = input.readBytes();
               break;
             }
             case 66: {
-              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000080;
-              wifiPassword_ = bs;
+              wifiPassword_ = input.readBytes();
               break;
             }
             case 104: {
@@ -2488,14 +2677,38 @@ public final class SenseCommandProtos {
               break;
             }
             case 154: {
-              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00002000;
-              countryCode_ = bs;
+              countryCode_ = input.readBytes();
               break;
             }
             case 162: {
               bitField0_ |= 0x00004000;
               aesKey_ = input.readBytes();
+              break;
+            }
+            case 170: {
+              bitField0_ |= 0x00008000;
+              topVersion_ = input.readBytes();
+              break;
+            }
+            case 176: {
+              bitField0_ |= 0x00010000;
+              serverIp_ = input.readUInt32();
+              break;
+            }
+            case 184: {
+              bitField0_ |= 0x00020000;
+              socketErrorCode_ = input.readUInt32();
+              break;
+            }
+            case 194: {
+              bitField0_ |= 0x00040000;
+              httpResponseCode_ = input.readBytes();
+              break;
+            }
+            case 200: {
+              bitField0_ |= 0x00080000;
+              appVersion_ = input.readInt32();
               break;
             }
           }
@@ -2681,6 +2894,14 @@ public final class SenseCommandProtos {
        * <code>MORPHEUS_COMMAND_SET_COUNTRY_CODE = 32;</code>
        */
       MORPHEUS_COMMAND_SET_COUNTRY_CODE(32, 32),
+      /**
+       * <code>MORPHEUS_COMMAND_SET_SERVER_IP = 33;</code>
+       */
+      MORPHEUS_COMMAND_SET_SERVER_IP(33, 33),
+      /**
+       * <code>MORPHEUS_COMMAND_CONNECTION_STATE = 34;</code>
+       */
+      MORPHEUS_COMMAND_CONNECTION_STATE(34, 34),
       ;
 
       /**
@@ -2819,6 +3040,14 @@ public final class SenseCommandProtos {
        * <code>MORPHEUS_COMMAND_SET_COUNTRY_CODE = 32;</code>
        */
       public static final int MORPHEUS_COMMAND_SET_COUNTRY_CODE_VALUE = 32;
+      /**
+       * <code>MORPHEUS_COMMAND_SET_SERVER_IP = 33;</code>
+       */
+      public static final int MORPHEUS_COMMAND_SET_SERVER_IP_VALUE = 33;
+      /**
+       * <code>MORPHEUS_COMMAND_CONNECTION_STATE = 34;</code>
+       */
+      public static final int MORPHEUS_COMMAND_CONNECTION_STATE_VALUE = 34;
 
 
       public final int getNumber() { return value; }
@@ -2858,6 +3087,8 @@ public final class SenseCommandProtos {
           case 30: return MORPHEUS_COMMAND_LED_OPERATION_SUCCESS;
           case 31: return MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE;
           case 32: return MORPHEUS_COMMAND_SET_COUNTRY_CODE;
+          case 33: return MORPHEUS_COMMAND_SET_SERVER_IP;
+          case 34: return MORPHEUS_COMMAND_CONNECTION_STATE;
           default: return null;
         }
       }
@@ -2910,6 +3141,7 @@ public final class SenseCommandProtos {
     }
 
     private int bitField0_;
+    // required int32 version = 1;
     public static final int VERSION_FIELD_NUMBER = 1;
     private int version_;
     /**
@@ -2925,6 +3157,7 @@ public final class SenseCommandProtos {
       return version_;
     }
 
+    // required .MorpheusCommand.CommandType type = 2;
     public static final int TYPE_FIELD_NUMBER = 2;
     private is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand.CommandType type_;
     /**
@@ -2940,6 +3173,7 @@ public final class SenseCommandProtos {
       return type_;
     }
 
+    // optional string deviceId = 3;
     public static final int DEVICEID_FIELD_NUMBER = 3;
     private java.lang.Object deviceId_;
     /**
@@ -2982,6 +3216,7 @@ public final class SenseCommandProtos {
       }
     }
 
+    // optional string accountId = 4;
     public static final int ACCOUNTID_FIELD_NUMBER = 4;
     private java.lang.Object accountId_;
     /**
@@ -3036,6 +3271,7 @@ public final class SenseCommandProtos {
       }
     }
 
+    // optional .ErrorType error = 5;
     public static final int ERROR_FIELD_NUMBER = 5;
     private is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.ErrorType error_;
     /**
@@ -3059,6 +3295,7 @@ public final class SenseCommandProtos {
       return error_;
     }
 
+    // optional string wifiName = 6;
     public static final int WIFINAME_FIELD_NUMBER = 6;
     private java.lang.Object wifiName_;
     /**
@@ -3101,6 +3338,7 @@ public final class SenseCommandProtos {
       }
     }
 
+    // optional string wifiSSID = 7;
     public static final int WIFISSID_FIELD_NUMBER = 7;
     private java.lang.Object wifiSSID_;
     /**
@@ -3143,6 +3381,7 @@ public final class SenseCommandProtos {
       }
     }
 
+    // optional string wifiPassword = 8;
     public static final int WIFIPASSWORD_FIELD_NUMBER = 8;
     private java.lang.Object wifiPassword_;
     /**
@@ -3185,6 +3424,7 @@ public final class SenseCommandProtos {
       }
     }
 
+    // optional int32 firmwareVersion = 13;
     public static final int FIRMWAREVERSION_FIELD_NUMBER = 13;
     private int firmwareVersion_;
     /**
@@ -3214,6 +3454,7 @@ public final class SenseCommandProtos {
       return firmwareVersion_;
     }
 
+    // repeated .wifi_endpoint wifi_scan_result = 14;
     public static final int WIFI_SCAN_RESULT_FIELD_NUMBER = 14;
     private java.util.List<is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint> wifiScanResult_;
     /**
@@ -3249,6 +3490,7 @@ public final class SenseCommandProtos {
       return wifiScanResult_.get(index);
     }
 
+    // optional .wifi_endpoint.sec_type security_type = 15;
     public static final int SECURITY_TYPE_FIELD_NUMBER = 15;
     private is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type securityType_;
     /**
@@ -3264,6 +3506,7 @@ public final class SenseCommandProtos {
       return securityType_;
     }
 
+    // optional .pill_data pill_data = 16;
     public static final int PILL_DATA_FIELD_NUMBER = 16;
     private is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data pillData_;
     /**
@@ -3285,6 +3528,7 @@ public final class SenseCommandProtos {
       return pillData_;
     }
 
+    // optional .wifi_connection_state wifi_connection_state = 17;
     public static final int WIFI_CONNECTION_STATE_FIELD_NUMBER = 17;
     private is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state wifiConnectionState_;
     /**
@@ -3300,6 +3544,7 @@ public final class SenseCommandProtos {
       return wifiConnectionState_;
     }
 
+    // optional int32 ble_bond_count = 18;
     public static final int BLE_BOND_COUNT_FIELD_NUMBER = 18;
     private int bleBondCount_;
     /**
@@ -3315,6 +3560,7 @@ public final class SenseCommandProtos {
       return bleBondCount_;
     }
 
+    // optional string country_code = 19;
     public static final int COUNTRY_CODE_FIELD_NUMBER = 19;
     private java.lang.Object countryCode_;
     /**
@@ -3357,6 +3603,7 @@ public final class SenseCommandProtos {
       }
     }
 
+    // optional bytes aes_key = 20;
     public static final int AES_KEY_FIELD_NUMBER = 20;
     private com.google.protobuf.ByteString aesKey_;
     /**
@@ -3370,6 +3617,140 @@ public final class SenseCommandProtos {
      */
     public com.google.protobuf.ByteString getAesKey() {
       return aesKey_;
+    }
+
+    // optional string top_version = 21;
+    public static final int TOP_VERSION_FIELD_NUMBER = 21;
+    private java.lang.Object topVersion_;
+    /**
+     * <code>optional string top_version = 21;</code>
+     */
+    public boolean hasTopVersion() {
+      return ((bitField0_ & 0x00008000) == 0x00008000);
+    }
+    /**
+     * <code>optional string top_version = 21;</code>
+     */
+    public java.lang.String getTopVersion() {
+      java.lang.Object ref = topVersion_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          topVersion_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string top_version = 21;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTopVersionBytes() {
+      java.lang.Object ref = topVersion_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        topVersion_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional uint32 server_ip = 22;
+    public static final int SERVER_IP_FIELD_NUMBER = 22;
+    private int serverIp_;
+    /**
+     * <code>optional uint32 server_ip = 22;</code>
+     */
+    public boolean hasServerIp() {
+      return ((bitField0_ & 0x00010000) == 0x00010000);
+    }
+    /**
+     * <code>optional uint32 server_ip = 22;</code>
+     */
+    public int getServerIp() {
+      return serverIp_;
+    }
+
+    // optional uint32 socket_error_code = 23;
+    public static final int SOCKET_ERROR_CODE_FIELD_NUMBER = 23;
+    private int socketErrorCode_;
+    /**
+     * <code>optional uint32 socket_error_code = 23;</code>
+     */
+    public boolean hasSocketErrorCode() {
+      return ((bitField0_ & 0x00020000) == 0x00020000);
+    }
+    /**
+     * <code>optional uint32 socket_error_code = 23;</code>
+     */
+    public int getSocketErrorCode() {
+      return socketErrorCode_;
+    }
+
+    // optional string http_response_code = 24;
+    public static final int HTTP_RESPONSE_CODE_FIELD_NUMBER = 24;
+    private java.lang.Object httpResponseCode_;
+    /**
+     * <code>optional string http_response_code = 24;</code>
+     */
+    public boolean hasHttpResponseCode() {
+      return ((bitField0_ & 0x00040000) == 0x00040000);
+    }
+    /**
+     * <code>optional string http_response_code = 24;</code>
+     */
+    public java.lang.String getHttpResponseCode() {
+      java.lang.Object ref = httpResponseCode_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          httpResponseCode_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string http_response_code = 24;</code>
+     */
+    public com.google.protobuf.ByteString
+        getHttpResponseCodeBytes() {
+      java.lang.Object ref = httpResponseCode_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        httpResponseCode_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional int32 app_version = 25;
+    public static final int APP_VERSION_FIELD_NUMBER = 25;
+    private int appVersion_;
+    /**
+     * <code>optional int32 app_version = 25;</code>
+     */
+    public boolean hasAppVersion() {
+      return ((bitField0_ & 0x00080000) == 0x00080000);
+    }
+    /**
+     * <code>optional int32 app_version = 25;</code>
+     */
+    public int getAppVersion() {
+      return appVersion_;
     }
 
     private void initFields() {
@@ -3389,12 +3770,16 @@ public final class SenseCommandProtos {
       bleBondCount_ = 0;
       countryCode_ = "";
       aesKey_ = com.google.protobuf.ByteString.EMPTY;
+      topVersion_ = "";
+      serverIp_ = 0;
+      socketErrorCode_ = 0;
+      httpResponseCode_ = "";
+      appVersion_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
+      if (isInitialized != -1) return isInitialized == 1;
 
       if (!hasVersion()) {
         memoizedIsInitialized = 0;
@@ -3471,6 +3856,21 @@ public final class SenseCommandProtos {
       if (((bitField0_ & 0x00004000) == 0x00004000)) {
         output.writeBytes(20, aesKey_);
       }
+      if (((bitField0_ & 0x00008000) == 0x00008000)) {
+        output.writeBytes(21, getTopVersionBytes());
+      }
+      if (((bitField0_ & 0x00010000) == 0x00010000)) {
+        output.writeUInt32(22, serverIp_);
+      }
+      if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        output.writeUInt32(23, socketErrorCode_);
+      }
+      if (((bitField0_ & 0x00040000) == 0x00040000)) {
+        output.writeBytes(24, getHttpResponseCodeBytes());
+      }
+      if (((bitField0_ & 0x00080000) == 0x00080000)) {
+        output.writeInt32(25, appVersion_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -3543,6 +3943,26 @@ public final class SenseCommandProtos {
       if (((bitField0_ & 0x00004000) == 0x00004000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(20, aesKey_);
+      }
+      if (((bitField0_ & 0x00008000) == 0x00008000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(21, getTopVersionBytes());
+      }
+      if (((bitField0_ & 0x00010000) == 0x00010000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(22, serverIp_);
+      }
+      if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(23, socketErrorCode_);
+      }
+      if (((bitField0_ & 0x00040000) == 0x00040000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(24, getHttpResponseCodeBytes());
+      }
+      if (((bitField0_ & 0x00080000) == 0x00080000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(25, appVersion_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3626,9 +4046,8 @@ public final class SenseCommandProtos {
      * Protobuf type {@code MorpheusCommand}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:MorpheusCommand)
-        is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommandOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommandOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.internal_static_MorpheusCommand_descriptor;
@@ -3703,6 +4122,16 @@ public final class SenseCommandProtos {
         bitField0_ = (bitField0_ & ~0x00004000);
         aesKey_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00008000);
+        topVersion_ = "";
+        bitField0_ = (bitField0_ & ~0x00010000);
+        serverIp_ = 0;
+        bitField0_ = (bitField0_ & ~0x00020000);
+        socketErrorCode_ = 0;
+        bitField0_ = (bitField0_ & ~0x00040000);
+        httpResponseCode_ = "";
+        bitField0_ = (bitField0_ & ~0x00080000);
+        appVersion_ = 0;
+        bitField0_ = (bitField0_ & ~0x00100000);
         return this;
       }
 
@@ -3804,6 +4233,26 @@ public final class SenseCommandProtos {
           to_bitField0_ |= 0x00004000;
         }
         result.aesKey_ = aesKey_;
+        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
+          to_bitField0_ |= 0x00008000;
+        }
+        result.topVersion_ = topVersion_;
+        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
+          to_bitField0_ |= 0x00010000;
+        }
+        result.serverIp_ = serverIp_;
+        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
+          to_bitField0_ |= 0x00020000;
+        }
+        result.socketErrorCode_ = socketErrorCode_;
+        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
+          to_bitField0_ |= 0x00040000;
+        }
+        result.httpResponseCode_ = httpResponseCode_;
+        if (((from_bitField0_ & 0x00100000) == 0x00100000)) {
+          to_bitField0_ |= 0x00080000;
+        }
+        result.appVersion_ = appVersion_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3903,6 +4352,25 @@ public final class SenseCommandProtos {
         if (other.hasAesKey()) {
           setAesKey(other.getAesKey());
         }
+        if (other.hasTopVersion()) {
+          bitField0_ |= 0x00010000;
+          topVersion_ = other.topVersion_;
+          onChanged();
+        }
+        if (other.hasServerIp()) {
+          setServerIp(other.getServerIp());
+        }
+        if (other.hasSocketErrorCode()) {
+          setSocketErrorCode(other.getSocketErrorCode());
+        }
+        if (other.hasHttpResponseCode()) {
+          bitField0_ |= 0x00080000;
+          httpResponseCode_ = other.httpResponseCode_;
+          onChanged();
+        }
+        if (other.hasAppVersion()) {
+          setAppVersion(other.getAppVersion());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -3950,6 +4418,7 @@ public final class SenseCommandProtos {
       }
       private int bitField0_;
 
+      // required int32 version = 1;
       private int version_ ;
       /**
        * <code>required int32 version = 1;</code>
@@ -3982,6 +4451,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // required .MorpheusCommand.CommandType type = 2;
       private is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand.CommandType type_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.MorpheusCommand.CommandType.MORPHEUS_COMMAND_SET_TIME;
       /**
        * <code>required .MorpheusCommand.CommandType type = 2;</code>
@@ -4017,6 +4487,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional string deviceId = 3;
       private java.lang.Object deviceId_ = "";
       /**
        * <code>optional string deviceId = 3;</code>
@@ -4030,12 +4501,9 @@ public final class SenseCommandProtos {
       public java.lang.String getDeviceId() {
         java.lang.Object ref = deviceId_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            deviceId_ = s;
-          }
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          deviceId_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -4093,6 +4561,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional string accountId = 4;
       private java.lang.Object accountId_ = "";
       /**
        * <code>optional string accountId = 4;</code>
@@ -4114,12 +4583,9 @@ public final class SenseCommandProtos {
       public java.lang.String getAccountId() {
         java.lang.Object ref = accountId_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            accountId_ = s;
-          }
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          accountId_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -4193,6 +4659,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional .ErrorType error = 5;
       private is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.ErrorType error_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.ErrorType.TIME_OUT;
       /**
        * <code>optional .ErrorType error = 5;</code>
@@ -4244,6 +4711,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional string wifiName = 6;
       private java.lang.Object wifiName_ = "";
       /**
        * <code>optional string wifiName = 6;</code>
@@ -4257,12 +4725,9 @@ public final class SenseCommandProtos {
       public java.lang.String getWifiName() {
         java.lang.Object ref = wifiName_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            wifiName_ = s;
-          }
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          wifiName_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -4320,6 +4785,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional string wifiSSID = 7;
       private java.lang.Object wifiSSID_ = "";
       /**
        * <code>optional string wifiSSID = 7;</code>
@@ -4333,12 +4799,9 @@ public final class SenseCommandProtos {
       public java.lang.String getWifiSSID() {
         java.lang.Object ref = wifiSSID_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            wifiSSID_ = s;
-          }
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          wifiSSID_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -4396,6 +4859,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional string wifiPassword = 8;
       private java.lang.Object wifiPassword_ = "";
       /**
        * <code>optional string wifiPassword = 8;</code>
@@ -4409,12 +4873,9 @@ public final class SenseCommandProtos {
       public java.lang.String getWifiPassword() {
         java.lang.Object ref = wifiPassword_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            wifiPassword_ = s;
-          }
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          wifiPassword_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -4472,6 +4933,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional int32 firmwareVersion = 13;
       private int firmwareVersion_ ;
       /**
        * <code>optional int32 firmwareVersion = 13;</code>
@@ -4532,6 +4994,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // repeated .wifi_endpoint wifi_scan_result = 14;
       private java.util.List<is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint> wifiScanResult_ =
         java.util.Collections.emptyList();
       private void ensureWifiScanResultIsMutable() {
@@ -4673,8 +5136,7 @@ public final class SenseCommandProtos {
           java.lang.Iterable<? extends is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint> values) {
         if (wifiScanResultBuilder_ == null) {
           ensureWifiScanResultIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, wifiScanResult_);
+          super.addAll(values, wifiScanResult_);
           onChanged();
         } else {
           wifiScanResultBuilder_.addAllMessages(values);
@@ -4772,6 +5234,7 @@ public final class SenseCommandProtos {
         return wifiScanResultBuilder_;
       }
 
+      // optional .wifi_endpoint.sec_type security_type = 15;
       private is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type securityType_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN;
       /**
        * <code>optional .wifi_endpoint.sec_type security_type = 15;</code>
@@ -4807,6 +5270,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional .pill_data pill_data = 16;
       private is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data pillData_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data, is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.Builder, is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_dataOrBuilder> pillDataBuilder_;
@@ -4915,7 +5379,7 @@ public final class SenseCommandProtos {
         if (pillDataBuilder_ == null) {
           pillDataBuilder_ = new com.google.protobuf.SingleFieldBuilder<
               is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data, is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data.Builder, is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_dataOrBuilder>(
-                  getPillData(),
+                  pillData_,
                   getParentForChildren(),
                   isClean());
           pillData_ = null;
@@ -4923,6 +5387,7 @@ public final class SenseCommandProtos {
         return pillDataBuilder_;
       }
 
+      // optional .wifi_connection_state wifi_connection_state = 17;
       private is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state wifiConnectionState_ = is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state.NO_WLAN_CONNECTED;
       /**
        * <code>optional .wifi_connection_state wifi_connection_state = 17;</code>
@@ -4958,6 +5423,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional int32 ble_bond_count = 18;
       private int bleBondCount_ ;
       /**
        * <code>optional int32 ble_bond_count = 18;</code>
@@ -4990,6 +5456,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional string country_code = 19;
       private java.lang.Object countryCode_ = "";
       /**
        * <code>optional string country_code = 19;</code>
@@ -5003,12 +5470,9 @@ public final class SenseCommandProtos {
       public java.lang.String getCountryCode() {
         java.lang.Object ref = countryCode_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            countryCode_ = s;
-          }
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          countryCode_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -5066,6 +5530,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional bytes aes_key = 20;
       private com.google.protobuf.ByteString aesKey_ = com.google.protobuf.ByteString.EMPTY;
       /**
        * <code>optional bytes aes_key = 20;</code>
@@ -5101,6 +5566,253 @@ public final class SenseCommandProtos {
         return this;
       }
 
+      // optional string top_version = 21;
+      private java.lang.Object topVersion_ = "";
+      /**
+       * <code>optional string top_version = 21;</code>
+       */
+      public boolean hasTopVersion() {
+        return ((bitField0_ & 0x00010000) == 0x00010000);
+      }
+      /**
+       * <code>optional string top_version = 21;</code>
+       */
+      public java.lang.String getTopVersion() {
+        java.lang.Object ref = topVersion_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          topVersion_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string top_version = 21;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTopVersionBytes() {
+        java.lang.Object ref = topVersion_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          topVersion_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string top_version = 21;</code>
+       */
+      public Builder setTopVersion(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00010000;
+        topVersion_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string top_version = 21;</code>
+       */
+      public Builder clearTopVersion() {
+        bitField0_ = (bitField0_ & ~0x00010000);
+        topVersion_ = getDefaultInstance().getTopVersion();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string top_version = 21;</code>
+       */
+      public Builder setTopVersionBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00010000;
+        topVersion_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional uint32 server_ip = 22;
+      private int serverIp_ ;
+      /**
+       * <code>optional uint32 server_ip = 22;</code>
+       */
+      public boolean hasServerIp() {
+        return ((bitField0_ & 0x00020000) == 0x00020000);
+      }
+      /**
+       * <code>optional uint32 server_ip = 22;</code>
+       */
+      public int getServerIp() {
+        return serverIp_;
+      }
+      /**
+       * <code>optional uint32 server_ip = 22;</code>
+       */
+      public Builder setServerIp(int value) {
+        bitField0_ |= 0x00020000;
+        serverIp_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 server_ip = 22;</code>
+       */
+      public Builder clearServerIp() {
+        bitField0_ = (bitField0_ & ~0x00020000);
+        serverIp_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional uint32 socket_error_code = 23;
+      private int socketErrorCode_ ;
+      /**
+       * <code>optional uint32 socket_error_code = 23;</code>
+       */
+      public boolean hasSocketErrorCode() {
+        return ((bitField0_ & 0x00040000) == 0x00040000);
+      }
+      /**
+       * <code>optional uint32 socket_error_code = 23;</code>
+       */
+      public int getSocketErrorCode() {
+        return socketErrorCode_;
+      }
+      /**
+       * <code>optional uint32 socket_error_code = 23;</code>
+       */
+      public Builder setSocketErrorCode(int value) {
+        bitField0_ |= 0x00040000;
+        socketErrorCode_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 socket_error_code = 23;</code>
+       */
+      public Builder clearSocketErrorCode() {
+        bitField0_ = (bitField0_ & ~0x00040000);
+        socketErrorCode_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional string http_response_code = 24;
+      private java.lang.Object httpResponseCode_ = "";
+      /**
+       * <code>optional string http_response_code = 24;</code>
+       */
+      public boolean hasHttpResponseCode() {
+        return ((bitField0_ & 0x00080000) == 0x00080000);
+      }
+      /**
+       * <code>optional string http_response_code = 24;</code>
+       */
+      public java.lang.String getHttpResponseCode() {
+        java.lang.Object ref = httpResponseCode_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          httpResponseCode_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string http_response_code = 24;</code>
+       */
+      public com.google.protobuf.ByteString
+          getHttpResponseCodeBytes() {
+        java.lang.Object ref = httpResponseCode_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          httpResponseCode_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string http_response_code = 24;</code>
+       */
+      public Builder setHttpResponseCode(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00080000;
+        httpResponseCode_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string http_response_code = 24;</code>
+       */
+      public Builder clearHttpResponseCode() {
+        bitField0_ = (bitField0_ & ~0x00080000);
+        httpResponseCode_ = getDefaultInstance().getHttpResponseCode();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string http_response_code = 24;</code>
+       */
+      public Builder setHttpResponseCodeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00080000;
+        httpResponseCode_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional int32 app_version = 25;
+      private int appVersion_ ;
+      /**
+       * <code>optional int32 app_version = 25;</code>
+       */
+      public boolean hasAppVersion() {
+        return ((bitField0_ & 0x00100000) == 0x00100000);
+      }
+      /**
+       * <code>optional int32 app_version = 25;</code>
+       */
+      public int getAppVersion() {
+        return appVersion_;
+      }
+      /**
+       * <code>optional int32 app_version = 25;</code>
+       */
+      public Builder setAppVersion(int value) {
+        bitField0_ |= 0x00100000;
+        appVersion_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 app_version = 25;</code>
+       */
+      public Builder clearAppVersion() {
+        bitField0_ = (bitField0_ & ~0x00100000);
+        appVersion_ = 0;
+        onChanged();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:MorpheusCommand)
     }
 
@@ -5112,10 +5824,10 @@ public final class SenseCommandProtos {
     // @@protoc_insertion_point(class_scope:MorpheusCommand)
   }
 
-  public interface batched_pill_dataOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:batched_pill_data)
-      com.google.protobuf.MessageOrBuilder {
+  public interface batched_pill_dataOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
 
+    // repeated .pill_data pills = 1;
     /**
      * <code>repeated .pill_data pills = 1;</code>
      */
@@ -5140,6 +5852,7 @@ public final class SenseCommandProtos {
     is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_dataOrBuilder getPillsOrBuilder(
         int index);
 
+    // required string device_id = 2;
     /**
      * <code>required string device_id = 2;</code>
      */
@@ -5158,9 +5871,8 @@ public final class SenseCommandProtos {
    * Protobuf type {@code batched_pill_data}
    */
   public static final class batched_pill_data extends
-      com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:batched_pill_data)
-      batched_pill_dataOrBuilder {
+      com.google.protobuf.GeneratedMessage
+      implements batched_pill_dataOrBuilder {
     // Use batched_pill_data.newBuilder() to construct.
     private batched_pill_data(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -5215,9 +5927,8 @@ public final class SenseCommandProtos {
               break;
             }
             case 18: {
-              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              deviceId_ = bs;
+              deviceId_ = input.readBytes();
               break;
             }
           }
@@ -5263,6 +5974,7 @@ public final class SenseCommandProtos {
     }
 
     private int bitField0_;
+    // repeated .pill_data pills = 1;
     public static final int PILLS_FIELD_NUMBER = 1;
     private java.util.List<is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data> pills_;
     /**
@@ -5298,6 +6010,7 @@ public final class SenseCommandProtos {
       return pills_.get(index);
     }
 
+    // required string device_id = 2;
     public static final int DEVICE_ID_FIELD_NUMBER = 2;
     private java.lang.Object deviceId_;
     /**
@@ -5347,8 +6060,7 @@ public final class SenseCommandProtos {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
+      if (isInitialized != -1) return isInitialized == 1;
 
       if (!hasDeviceId()) {
         memoizedIsInitialized = 0;
@@ -5472,9 +6184,8 @@ public final class SenseCommandProtos {
      * Protobuf type {@code batched_pill_data}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:batched_pill_data)
-        is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.batched_pill_dataOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.batched_pill_dataOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.internal_static_batched_pill_data_descriptor;
@@ -5641,6 +6352,7 @@ public final class SenseCommandProtos {
       }
       private int bitField0_;
 
+      // repeated .pill_data pills = 1;
       private java.util.List<is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data> pills_ =
         java.util.Collections.emptyList();
       private void ensurePillsIsMutable() {
@@ -5782,8 +6494,7 @@ public final class SenseCommandProtos {
           java.lang.Iterable<? extends is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.pill_data> values) {
         if (pillsBuilder_ == null) {
           ensurePillsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, pills_);
+          super.addAll(values, pills_);
           onChanged();
         } else {
           pillsBuilder_.addAllMessages(values);
@@ -5881,6 +6592,7 @@ public final class SenseCommandProtos {
         return pillsBuilder_;
       }
 
+      // required string device_id = 2;
       private java.lang.Object deviceId_ = "";
       /**
        * <code>required string device_id = 2;</code>
@@ -5894,12 +6606,9 @@ public final class SenseCommandProtos {
       public java.lang.String getDeviceId() {
         java.lang.Object ref = deviceId_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            deviceId_ = s;
-          }
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          deviceId_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -5968,22 +6677,22 @@ public final class SenseCommandProtos {
     // @@protoc_insertion_point(class_scope:batched_pill_data)
   }
 
-  private static final com.google.protobuf.Descriptors.Descriptor
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_wifi_endpoint_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_wifi_endpoint_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_pill_data_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_pill_data_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_MorpheusCommand_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_MorpheusCommand_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_batched_pill_data_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -6006,7 +6715,7 @@ public final class SenseCommandProtos {
       "_WPA2\020\003\"\221\001\n\tpill_data\022\021\n\tdevice_id\030\001 \002(\t" +
       "\022\025\n\rbattery_level\030\002 \001(\005\022\016\n\006uptime\030\003 \001(\005\022" +
       "\035\n\025motion_data_entrypted\030\004 \001(\014\022\030\n\020firmwa" +
-      "re_version\030\005 \001(\005\022\021\n\ttimestamp\030\006 \002(\004\"\245\r\n\017",
+      "re_version\030\005 \001(\005\022\021\n\ttimestamp\030\006 \002(\004\"\344\016\n\017",
       "MorpheusCommand\022\017\n\007version\030\001 \002(\005\022*\n\004type" +
       "\030\002 \002(\0162\034.MorpheusCommand.CommandType\022\020\n\010" +
       "deviceId\030\003 \001(\t\022\021\n\taccountId\030\004 \001(\t\022\031\n\005err" +
@@ -6018,90 +6727,100 @@ public final class SenseCommandProtos {
       "l_data\030\020 \001(\0132\n.pill_data\0225\n\025wifi_connect" +
       "ion_state\030\021 \001(\0162\026.wifi_connection_state\022",
       "\026\n\016ble_bond_count\030\022 \001(\005\022\024\n\014country_code\030" +
-      "\023 \001(\t\022\017\n\007aes_key\030\024 \001(\014\"\322\t\n\013CommandType\022\035" +
-      "\n\031MORPHEUS_COMMAND_SET_TIME\020\000\022\035\n\031MORPHEU" +
-      "S_COMMAND_GET_TIME\020\001\022&\n\"MORPHEUS_COMMAND" +
-      "_SET_WIFI_ENDPOINT\020\002\022&\n\"MORPHEUS_COMMAND" +
-      "_GET_WIFI_ENDPOINT\020\003\022\037\n\033MORPHEUS_COMMAND" +
-      "_SET_ALARMS\020\004\022\037\n\033MORPHEUS_COMMAND_GET_AL" +
-      "ARMS\020\005\022+\n\'MORPHEUS_COMMAND_SWITCH_TO_PAI" +
-      "RING_MODE\020\006\022*\n&MORPHEUS_COMMAND_SWITCH_T" +
-      "O_NORMAL_MODE\020\007\022#\n\037MORPHEUS_COMMAND_STAR",
-      "T_WIFISCAN\020\010\022\"\n\036MORPHEUS_COMMAND_STOP_WI" +
-      "FISCAN\020\t\022\"\n\036MORPHEUS_COMMAND_GET_DEVICE_" +
-      "ID\020\n\022\'\n#MORPHEUS_COMMAND_ERASE_PAIRED_PH" +
-      "ONE\020\013\022\036\n\032MORPHEUS_COMMAND_PAIR_PILL\020\014\022\032\n" +
-      "\026MORPHEUS_COMMAND_ERROR\020\r\022\037\n\033MORPHEUS_CO" +
-      "MMAND_PAIR_SENSE\020\016\022 \n\034MORPHEUS_COMMAND_U" +
-      "NPAIR_PILL\020\017\022\'\n#MORPHEUS_COMMAND_MORPHEU" +
-      "S_DFU_BEGIN\020\020\022\036\n\032MORPHEUS_COMMAND_PILL_D" +
-      "ATA\020\021\022#\n\037MORPHEUS_COMMAND_PILL_HEARTBEAT" +
-      "\020\022\022#\n\037MORPHEUS_COMMAND_PILL_DFU_BEGIN\020\023\022",
-      "\"\n\036MORPHEUS_COMMAND_FACTORY_RESET\020\024\022 \n\034M" +
-      "ORPHEUS_COMMAND_PILL_SHAKES\020\025\022#\n\037MORPHEU" +
-      "S_COMMAND_SYNC_DEVICE_ID\020\026\022(\n$MORPHEUS_C" +
-      "OMMAND_PHONE_BLE_CONNECTED\020\027\022%\n!MORPHEUS" +
-      "_COMMAND_PHONE_BLE_BONDED\020\030\022\035\n\031MORPHEUS_" +
-      "COMMAND_LED_BUSY\020\031\022\037\n\033MORPHEUS_COMMAND_L" +
-      "ED_TRIPPY\020\032\022)\n%MORPHEUS_COMMAND_LED_OPER" +
-      "ATION_FAILED\020\033\022\036\n\032MORPHEUS_COMMAND_SCAN_" +
-      "WIFI\020\034\022%\n!MORPHEUS_COMMAND_GET_NEXT_WIFI" +
-      "_AP\020\035\022*\n&MORPHEUS_COMMAND_LED_OPERATION_",
-      "SUCCESS\020\036\0221\n-MORPHEUS_COMMAND_PUSH_DATA_" +
-      "AFTER_SET_TIMEZONE\020\037\022%\n!MORPHEUS_COMMAND" +
-      "_SET_COUNTRY_CODE\020 \"A\n\021batched_pill_data" +
-      "\022\031\n\005pills\030\001 \003(\0132\n.pill_data\022\021\n\tdevice_id" +
-      "\030\002 \002(\t*\210\003\n\tErrorType\022\014\n\010TIME_OUT\020\000\022\021\n\rNE" +
-      "TWORK_ERROR\020\001\022\031\n\025DEVICE_ALREADY_PAIRED\020\002" +
-      "\022\027\n\023INTERNAL_DATA_ERROR\020\003\022\030\n\024DEVICE_DATA" +
-      "BASE_FULL\020\004\022\024\n\020DEVICE_NO_MEMORY\020\005\022\035\n\031INT" +
-      "ERNAL_OPERATION_FAILED\020\006\022\030\n\024NO_ENDPOINT_" +
-      "IN_RANGE\020\007\022\031\n\025WLAN_CONNECTION_ERROR\020\010\022\025\n",
-      "\021FAIL_TO_OBTAIN_IP\020\t\022\037\n\033WLAN_ENDPOINT_DE" +
-      "LETE_FAILED\020\n\022\026\n\022INVALID_ACCOUNT_ID\020\013\022\032\n" +
-      "\026FORCE_DATA_PUSH_FAILED\020\014\022\032\n\026PROTOBUF_EN" +
-      "CODE_FAILED\020\r\022\032\n\026PROTOBUF_DECODE_FAILED\020" +
-      "\016*i\n\025wifi_connection_state\022\025\n\021NO_WLAN_CO" +
-      "NNECTED\020\000\022\023\n\017WLAN_CONNECTING\020\001\022\022\n\016WLAN_C" +
-      "ONNECTED\020\002\022\020\n\014IP_RETRIEVED\020\003B.\n\030com.hell" +
-      "o.suripu.api.bleB\022SenseCommandProtos"
+      "\023 \001(\t\022\017\n\007aes_key\030\024 \001(\014\022\023\n\013top_version\030\025 " +
+      "\001(\t\022\021\n\tserver_ip\030\026 \001(\r\022\031\n\021socket_error_c" +
+      "ode\030\027 \001(\r\022\032\n\022http_response_code\030\030 \001(\t\022\023\n" +
+      "\013app_version\030\031 \001(\005\"\235\n\n\013CommandType\022\035\n\031MO" +
+      "RPHEUS_COMMAND_SET_TIME\020\000\022\035\n\031MORPHEUS_CO" +
+      "MMAND_GET_TIME\020\001\022&\n\"MORPHEUS_COMMAND_SET" +
+      "_WIFI_ENDPOINT\020\002\022&\n\"MORPHEUS_COMMAND_GET" +
+      "_WIFI_ENDPOINT\020\003\022\037\n\033MORPHEUS_COMMAND_SET" +
+      "_ALARMS\020\004\022\037\n\033MORPHEUS_COMMAND_GET_ALARMS",
+      "\020\005\022+\n\'MORPHEUS_COMMAND_SWITCH_TO_PAIRING" +
+      "_MODE\020\006\022*\n&MORPHEUS_COMMAND_SWITCH_TO_NO" +
+      "RMAL_MODE\020\007\022#\n\037MORPHEUS_COMMAND_START_WI" +
+      "FISCAN\020\010\022\"\n\036MORPHEUS_COMMAND_STOP_WIFISC" +
+      "AN\020\t\022\"\n\036MORPHEUS_COMMAND_GET_DEVICE_ID\020\n" +
+      "\022\'\n#MORPHEUS_COMMAND_ERASE_PAIRED_PHONE\020" +
+      "\013\022\036\n\032MORPHEUS_COMMAND_PAIR_PILL\020\014\022\032\n\026MOR" +
+      "PHEUS_COMMAND_ERROR\020\r\022\037\n\033MORPHEUS_COMMAN" +
+      "D_PAIR_SENSE\020\016\022 \n\034MORPHEUS_COMMAND_UNPAI" +
+      "R_PILL\020\017\022\'\n#MORPHEUS_COMMAND_MORPHEUS_DF",
+      "U_BEGIN\020\020\022\036\n\032MORPHEUS_COMMAND_PILL_DATA\020" +
+      "\021\022#\n\037MORPHEUS_COMMAND_PILL_HEARTBEAT\020\022\022#" +
+      "\n\037MORPHEUS_COMMAND_PILL_DFU_BEGIN\020\023\022\"\n\036M" +
+      "ORPHEUS_COMMAND_FACTORY_RESET\020\024\022 \n\034MORPH" +
+      "EUS_COMMAND_PILL_SHAKES\020\025\022#\n\037MORPHEUS_CO" +
+      "MMAND_SYNC_DEVICE_ID\020\026\022(\n$MORPHEUS_COMMA" +
+      "ND_PHONE_BLE_CONNECTED\020\027\022%\n!MORPHEUS_COM" +
+      "MAND_PHONE_BLE_BONDED\020\030\022\035\n\031MORPHEUS_COMM" +
+      "AND_LED_BUSY\020\031\022\037\n\033MORPHEUS_COMMAND_LED_T" +
+      "RIPPY\020\032\022)\n%MORPHEUS_COMMAND_LED_OPERATIO",
+      "N_FAILED\020\033\022\036\n\032MORPHEUS_COMMAND_SCAN_WIFI" +
+      "\020\034\022%\n!MORPHEUS_COMMAND_GET_NEXT_WIFI_AP\020" +
+      "\035\022*\n&MORPHEUS_COMMAND_LED_OPERATION_SUCC" +
+      "ESS\020\036\0221\n-MORPHEUS_COMMAND_PUSH_DATA_AFTE" +
+      "R_SET_TIMEZONE\020\037\022%\n!MORPHEUS_COMMAND_SET" +
+      "_COUNTRY_CODE\020 \022\"\n\036MORPHEUS_COMMAND_SET_" +
+      "SERVER_IP\020!\022%\n!MORPHEUS_COMMAND_CONNECTI" +
+      "ON_STATE\020\"\"A\n\021batched_pill_data\022\031\n\005pills" +
+      "\030\001 \003(\0132\n.pill_data\022\021\n\tdevice_id\030\002 \002(\t*\247\003" +
+      "\n\tErrorType\022\014\n\010TIME_OUT\020\000\022\021\n\rNETWORK_ERR",
+      "OR\020\001\022\031\n\025DEVICE_ALREADY_PAIRED\020\002\022\027\n\023INTER" +
+      "NAL_DATA_ERROR\020\003\022\030\n\024DEVICE_DATABASE_FULL" +
+      "\020\004\022\024\n\020DEVICE_NO_MEMORY\020\005\022\035\n\031INTERNAL_OPE" +
+      "RATION_FAILED\020\006\022\030\n\024NO_ENDPOINT_IN_RANGE\020" +
+      "\007\022\031\n\025WLAN_CONNECTION_ERROR\020\010\022\025\n\021FAIL_TO_" +
+      "OBTAIN_IP\020\t\022\037\n\033WLAN_ENDPOINT_DELETE_FAIL" +
+      "ED\020\n\022\026\n\022INVALID_ACCOUNT_ID\020\013\022\032\n\026FORCE_DA" +
+      "TA_PUSH_FAILED\020\014\022\032\n\026PROTOBUF_ENCODE_FAIL" +
+      "ED\020\r\022\032\n\026PROTOBUF_DECODE_FAILED\020\016\022\035\n\031SERV" +
+      "ER_CONNECTION_TIMEOUT\020\017*\370\001\n\025wifi_connect",
+      "ion_state\022\025\n\021NO_WLAN_CONNECTED\020\000\022\023\n\017WLAN" +
+      "_CONNECTING\020\001\022\022\n\016WLAN_CONNECTED\020\002\022\020\n\014IP_" +
+      "RETRIEVED\020\003\022\020\n\014DNS_RESOLVED\020\004\022\024\n\020SOCKET_" +
+      "CONNECTED\020\005\022\020\n\014REQUEST_SENT\020\006\022\r\n\tCONNECT" +
+      "ED\020\007\022\014\n\010SSL_FAIL\020\010\022\022\n\016HELLO_KEY_FAIL\020\t\022\016" +
+      "\n\nDNS_FAILED\020\n\022\022\n\016CONNECT_FAILED\020\013BL\n6is" +
+      ".hello.sense.bluetooth.devices.transmiss" +
+      "ion.protobufB\022SenseCommandProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
+      new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
+        public com.google.protobuf.ExtensionRegistry assignDescriptors(
+            com.google.protobuf.Descriptors.FileDescriptor root) {
+          descriptor = root;
+          internal_static_wifi_endpoint_descriptor =
+            getDescriptor().getMessageTypes().get(0);
+          internal_static_wifi_endpoint_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_wifi_endpoint_descriptor,
+              new java.lang.String[] { "Ssid", "Bssid", "Rssi", "SecurityType", });
+          internal_static_pill_data_descriptor =
+            getDescriptor().getMessageTypes().get(1);
+          internal_static_pill_data_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_pill_data_descriptor,
+              new java.lang.String[] { "DeviceId", "BatteryLevel", "Uptime", "MotionDataEntrypted", "FirmwareVersion", "Timestamp", });
+          internal_static_MorpheusCommand_descriptor =
+            getDescriptor().getMessageTypes().get(2);
+          internal_static_MorpheusCommand_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_MorpheusCommand_descriptor,
+              new java.lang.String[] { "Version", "Type", "DeviceId", "AccountId", "Error", "WifiName", "WifiSSID", "WifiPassword", "FirmwareVersion", "WifiScanResult", "SecurityType", "PillData", "WifiConnectionState", "BleBondCount", "CountryCode", "AesKey", "TopVersion", "ServerIp", "SocketErrorCode", "HttpResponseCode", "AppVersion", });
+          internal_static_batched_pill_data_descriptor =
+            getDescriptor().getMessageTypes().get(3);
+          internal_static_batched_pill_data_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_batched_pill_data_descriptor,
+              new java.lang.String[] { "Pills", "DeviceId", });
+          return null;
+        }
+      };
     com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
-    internal_static_wifi_endpoint_descriptor =
-      getDescriptor().getMessageTypes().get(0);
-    internal_static_wifi_endpoint_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_wifi_endpoint_descriptor,
-        new java.lang.String[] { "Ssid", "Bssid", "Rssi", "SecurityType", });
-    internal_static_pill_data_descriptor =
-      getDescriptor().getMessageTypes().get(1);
-    internal_static_pill_data_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_pill_data_descriptor,
-        new java.lang.String[] { "DeviceId", "BatteryLevel", "Uptime", "MotionDataEntrypted", "FirmwareVersion", "Timestamp", });
-    internal_static_MorpheusCommand_descriptor =
-      getDescriptor().getMessageTypes().get(2);
-    internal_static_MorpheusCommand_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_MorpheusCommand_descriptor,
-        new java.lang.String[] { "Version", "Type", "DeviceId", "AccountId", "Error", "WifiName", "WifiSSID", "WifiPassword", "FirmwareVersion", "WifiScanResult", "SecurityType", "PillData", "WifiConnectionState", "BleBondCount", "CountryCode", "AesKey", });
-    internal_static_batched_pill_data_descriptor =
-      getDescriptor().getMessageTypes().get(3);
-    internal_static_batched_pill_data_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_batched_pill_data_descriptor,
-        new java.lang.String[] { "Pills", "DeviceId", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

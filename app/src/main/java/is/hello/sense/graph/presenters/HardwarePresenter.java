@@ -20,6 +20,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.SensePeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state;
 import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.bluetooth.errors.PeripheralConnectionError;
 import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
@@ -338,9 +339,9 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
                                                             .doOnError(this.respondToError));
     }
 
-    public Observable<Void> sendWifiCredentials(@NonNull String ssid,
-                                                @NonNull SenseCommandProtos.wifi_endpoint.sec_type securityType,
-                                                @NonNull String password) {
+    public Observable<wifi_connection_state> sendWifiCredentials(@NonNull String ssid,
+                                                                 @NonNull SenseCommandProtos.wifi_endpoint.sec_type securityType,
+                                                                 @NonNull String password) {
         logEvent("sendWifiCredentials()");
 
         if (peripheral == null) {

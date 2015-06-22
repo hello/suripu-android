@@ -31,6 +31,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -40,6 +41,7 @@ import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
+import is.hello.sense.util.LambdaVar;
 import is.hello.sense.util.Logger;
 
 import static is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
@@ -261,24 +263,43 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
             }
 
             sec_type securityType = getSecurityType();
+            boolean isWifiOnlySession = isWifiOnlySession();
 
-            JSONObject properties = Analytics.createProperties(
-                Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
+            JSONObject submitProperties = Analytics.createProperties(
+                    Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
             );
-            if (isWifiOnlySession()) {
-                Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP, properties);
+            String updateEvent;
+            if (isWifiOnlySession) {
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP, submitProperties);
+                updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE_IN_APP;
             } else {
-                Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED, properties);
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED, submitProperties);
+                updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE;
             }
 
-            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), ignored -> {
-                this.hasConnectedToNetwork = true;
-                preferences.edit()
-                        .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
-                        .apply();
-                sendAccessToken();
-            }, e -> presentError(e, "Setting WiFi"));
-        }, e -> presentError(e, "Turning on LEDs"));
+            LambdaVar<wifi_connection_state> lastState = LambdaVar.empty();
+            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), status -> {
+                JSONObject updateProperties = Analytics.createProperties(
+                    Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, status.toString()
+                );
+                Analytics.trackEvent(updateEvent, updateProperties);
+
+                lastState.set(status);
+
+                if (status == wifi_connection_state.CONNECTED) {
+                    this.hasConnectedToNetwork = true;
+                    preferences.edit()
+                            .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
+                            .apply();
+                    sendAccessToken();
+                }
+            }, e -> {
+                String operation = lastState.isNull() ? "Setting WiFi" : lastState.get().toString();
+                presentError(e, operation);
+            });
+        }, e -> {
+            presentError(e, "Turning on LEDs");
+        });
     }
 
     private void sendAccessToken() {
