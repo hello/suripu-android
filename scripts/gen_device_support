@@ -15,13 +15,13 @@ import java.util.regex.Pattern;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 
 public final class DeviceSupport {
-    static boolean isModelSupported(@NonNull String manufacturerPattern, @NonNull String model) {
+    private static boolean isModelSupported(@NonNull String manufacturerPattern, @NonNull String model) {
         return Pattern.compile(manufacturerPattern, Pattern.CASE_INSENSITIVE)
                       .matcher(model)
                       .matches();
     }
 
-    static String getManufacturerSupportedPattern(@NonNull String manufacturer) {
+    private static String getManufacturerSupportedPattern(@NonNull String manufacturer) {
         switch (manufacturer.toLowerCase()) {
 <<#SWITCH_CASES#>>
         }

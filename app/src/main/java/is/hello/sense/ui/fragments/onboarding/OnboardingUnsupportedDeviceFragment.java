@@ -45,14 +45,12 @@ public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
             case UNTESTED: {
                 builder.setHeadingText(R.string.onboarding_title_untested_device);
                 builder.setSubheadingText(R.string.onboarding_message_untested_device);
-                builder.initializeSubheadingSupportLinks(getActivity());
-
+                builder.initializeSupportLinksForSubheading(getActivity());
                 break;
             }
 
             default: {
                 continueAnyway();
-
                 break;
             }
         }

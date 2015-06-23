@@ -9,13 +9,13 @@ import java.util.regex.Pattern;
 import is.hello.sense.bluetooth.stacks.BluetoothStack;
 
 public final class DeviceSupport {
-    static boolean isModelSupported(@NonNull String manufacturerPattern, @NonNull String model) {
+    private static boolean isModelSupported(@NonNull String manufacturerPattern, @NonNull String model) {
         return Pattern.compile(manufacturerPattern, Pattern.CASE_INSENSITIVE)
                       .matcher(model)
                       .matches();
     }
 
-    static String getManufacturerSupportedPattern(@NonNull String manufacturer) {
+    private static String getManufacturerSupportedPattern(@NonNull String manufacturer) {
         switch (manufacturer.toLowerCase()) {
             case "samsung": {
                 return "((GT\\-|SCH\\-|SGH\\-|SHV\\-|SPH\\-|SM\\-|N)(I9301I|I9305(N|T)|I535|J021|R530|S960L|S968C|I747(m)?|T999(Lv|L)?|E210(K|L|S)|I9500|I9502|I9505(G)?|I9506|I9508|I545|I959|R970(X|C)?|I337(M)?|M919(V)?|N045|E300(K|L|S)|E330(K|L|S)|L720|G900(A|FD|F|H|I|R4|T|V|RZWAUSC|P|W8)|G920(F|I|T)|G925(F|I)|I605|R950|L900|N910(FD|FQ|F|K|L|S|C|H|G|U|W8)|N915(FY|A|T|K|L|S|G|D)|7100|900(0|2|5)))";

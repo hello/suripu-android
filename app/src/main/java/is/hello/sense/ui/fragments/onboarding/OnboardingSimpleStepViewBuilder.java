@@ -180,7 +180,7 @@ public final class OnboardingSimpleStepViewBuilder {
         return this;
     }
 
-    public OnboardingSimpleStepViewBuilder initializeSubheadingSupportLinks(@NonNull Activity fromActivity) {
+    public OnboardingSimpleStepViewBuilder initializeSupportLinksForSubheading(@NonNull Activity fromActivity) {
         Styles.initializeSupportFooter(fromActivity, subheadingText);
         return this;
     }
