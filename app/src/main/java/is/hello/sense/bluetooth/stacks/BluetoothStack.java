@@ -101,7 +101,7 @@ public interface BluetoothStack {
         /**
          * The device is tested and known to work.
          */
-        SUPPORTED;
+        TESTED;
 
 
         /**
