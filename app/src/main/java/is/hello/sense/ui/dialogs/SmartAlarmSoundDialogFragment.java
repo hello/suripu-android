@@ -48,7 +48,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.soundPlayer = new SoundPlayer(getActivity(), this);
+        this.soundPlayer = new SoundPlayer(getActivity(), this, false);
     }
 
     @Override

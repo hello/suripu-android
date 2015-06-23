@@ -16,7 +16,7 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     private final OnEventListener onEventListener;
 
     private final MediaPlayer mediaPlayer;
-    private final Handler timerHandler = new Handler(Looper.getMainLooper());
+    private final Handler timerHandler;
     private final Runnable timerPulse;
     private boolean timerRunning = false;
 
@@ -26,7 +26,7 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     //region Lifecycle
 
-    public SoundPlayer(@NonNull Context context, @NonNull OnEventListener onEventListener) {
+    public SoundPlayer(@NonNull Context context, @NonNull OnEventListener onEventListener, boolean wantsPulse) {
         this.context = context;
         this.onEventListener = onEventListener;
 
@@ -36,15 +36,21 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnSeekCompleteListener(this);
 
-        this.timerPulse = new Runnable() {
-            @Override
-            public void run() {
-                if (timerRunning) {
-                    onEventListener.onPlaybackPulse(SoundPlayer.this, mediaPlayer.getCurrentPosition());
-                    timerHandler.postDelayed(this, TIMER_PULSE);
+        if (wantsPulse) {
+            this.timerHandler = new Handler(Looper.getMainLooper());
+            this.timerPulse = new Runnable() {
+                @Override
+                public void run() {
+                    if (timerRunning) {
+                        onEventListener.onPlaybackPulse(SoundPlayer.this, mediaPlayer.getCurrentPosition());
+                        timerHandler.postDelayed(this, TIMER_PULSE);
+                    }
                 }
-            }
-        };
+            };
+        } else {
+            this.timerHandler = null;
+            this.timerPulse = null;
+        }
 
         setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
@@ -75,13 +81,17 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     //region Time Pulse
 
     private void scheduleTimePulse() {
-        this.timerRunning = true;
-        timerHandler.postDelayed(timerPulse, TIMER_PULSE);
+        if (timerHandler != null) {
+            this.timerRunning = true;
+            timerHandler.postDelayed(timerPulse, TIMER_PULSE);
+        }
     }
 
     private void unscheduleTimePulse() {
-        this.timerRunning = false;
-        timerHandler.removeCallbacks(timerPulse);
+        if (timerHandler != null) {
+            this.timerRunning = false;
+            timerHandler.removeCallbacks(timerPulse);
+        }
     }
 
     //endregion
@@ -118,8 +128,10 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     @Override
     public void onSeekComplete(MediaPlayer mp) {
-        timerHandler.removeCallbacks(timerPulse);
-        timerPulse.run();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacks(timerPulse);
+            timerPulse.run();
+        }
     }
 
     //endregion
@@ -201,9 +213,9 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
         return mediaPlayer.getDuration();
     }
 
-    public boolean seekTo(int msec) {
+    public boolean seekTo(int position) {
         try {
-            mediaPlayer.seekTo(msec);
+            mediaPlayer.seekTo(position);
             return true;
         } catch (Throwable e) {
             return false;

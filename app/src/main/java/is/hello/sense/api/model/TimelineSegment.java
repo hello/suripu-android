@@ -134,6 +134,10 @@ public class TimelineSegment extends ApiResponse implements Cloneable {
         return timestamp.toLocalTime();
     }
 
+    public boolean hasSound() {
+        return (sound != null && sound.getUrl() != null);
+    }
+
     public SoundInfo getSound() {
         return sound;
     }

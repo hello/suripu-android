@@ -195,11 +195,20 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        adapter.stopPlayback();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
 
         headerView.clearAnimation();
         itemAnimator.removeAllListeners();
+
+        recyclerView.setAdapter(null);
 
         this.headerView = null;
         this.recyclerView = null;

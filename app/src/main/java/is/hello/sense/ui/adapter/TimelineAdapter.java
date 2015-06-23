@@ -2,6 +2,7 @@ package is.hello.sense.ui.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -27,10 +28,13 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Logger;
+import is.hello.sense.util.SoundPlayer;
 import is.hello.sense.util.StateSafeExecutor;
 
-public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder> {
+public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder> implements SoundPlayer.OnEventListener {
     private static final int VIEW_TYPE_HEADER = 0;
     private static final int VIEW_TYPE_SEGMENT = 1;
     private static final int VIEW_TYPE_EVENT = 2;
@@ -59,6 +63,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     private boolean use24Time = false;
     private @Nullable StateSafeExecutor onItemClickExecutor;
     private @Nullable OnItemClickListener onItemClickListener;
+
+    private @Nullable SoundPlayer soundPlayer;
+    private int playingPosition = RecyclerView.NO_POSITION;
+
 
     public TimelineAdapter(@NonNull Context context,
                            @NonNull View headerView,
@@ -175,6 +183,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     }
 
     public void bindSegments(@Nullable List<TimelineSegment> newSegments) {
+        stopPlayback();
+
         int oldSize = segments.size();
         int newSize = newSegments != null ? newSegments.size() : 0;
 
@@ -196,6 +206,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     }
 
     public void clear() {
+        stopPlayback();
+
         int oldSize = segments.size();
         segments.clear();
         clearCache();
@@ -225,6 +237,83 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
                     onItemClickListener.onSegmentItemClicked(position, holder.itemView, segment);
                 }
             });
+        }
+    }
+
+    //endregion
+
+
+    //region Playback
+
+    private void setPlayingPosition(int newPosition) {
+        int oldPosition = this.playingPosition;
+        if (oldPosition != newPosition) {
+            this.playingPosition = newPosition;
+
+            if (oldPosition != RecyclerView.NO_POSITION) {
+                notifyItemChanged(oldPosition);
+            }
+
+            if (newPosition != RecyclerView.NO_POSITION) {
+                notifyItemChanged(newPosition);
+            }
+        }
+    }
+
+    private void playSegmentSound(int position) {
+        TimelineSegment segment = getSegment(position);
+        if (segment.hasSound()) {
+            if (soundPlayer == null) {
+                this.soundPlayer = new SoundPlayer(context, this, false);
+            }
+
+            String url = segment.getSound().getUrl();
+            soundPlayer.play(Uri.parse(url));
+
+            setPlayingPosition(position);
+        } else {
+            stopPlayback();
+        }
+    }
+
+    public void stopPlayback() {
+        if (soundPlayer != null) {
+            soundPlayer.stopPlayback();
+        }
+    }
+
+
+    @Override
+    public void onPlaybackStarted(@NonNull SoundPlayer player) {
+        Logger.debug(getClass().getSimpleName(), "onPlaybackStarted(" + player + ")");
+    }
+
+    @Override
+    public void onPlaybackStopped(@NonNull SoundPlayer player, boolean finished) {
+        Logger.debug(getClass().getSimpleName(), "onPlaybackStopped(" + player + ", " + finished + ")");
+        setPlayingPosition(RecyclerView.NO_POSITION);
+    }
+
+    @Override
+    public void onPlaybackError(@NonNull SoundPlayer player, @NonNull Throwable error) {
+        Logger.debug(getClass().getSimpleName(), "onPlaybackError(" + player + ", " + error + ")");
+        setPlayingPosition(RecyclerView.NO_POSITION);
+    }
+
+    @Override
+    public void onPlaybackPulse(@NonNull SoundPlayer player, int position) {
+    }
+
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+
+        if (soundPlayer != null) {
+            soundPlayer.stopPlayback();
+            soundPlayer.recycle();
+
+            this.soundPlayer = null;
         }
     }
 
@@ -369,6 +458,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             iconImage.setContentDescription(context.getString(segment.getEventType().accessibilityStringRes));
             messageText.setText(segment.getMessage());
             dateText.setText(dateFormatter.formatForTimelineEvent(segment.getShiftedTimestamp(), use24Time));
+
+            if (segment.hasSound()) {
+                Views.setSafeOnClickListener(iconImage, ignored -> playSegmentSound(position));
+            } else {
+                iconImage.setOnClickListener(null);
+            }
         }
 
         //endregion
