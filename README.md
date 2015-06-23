@@ -8,29 +8,25 @@ Prerequisites
 
 - [Java](http://support.apple.com/kb/DL1572) (on Yosemite).
 - [Android Studio](http://developer.android.com/sdk/index.html).
-- The [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) for lambda support.
-- The correct SDK and build tools (now automatically installed by Android Studio.)
+- The [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) (for lambda support).
+- The correct SDK and build tools. These will be automatically installed by Android Studio and the Square SDK manager gradle plugin.
 - The key stores `Hello-Android-Internal.keystore` and `Hello-Android-Release.keystore`. Acquire these from another team member.
 
 Building
 ========
 
-Place the `.keystore` files into the same directory as your local copy of the `suripu-android` repository. 
+Place the `.keystore` files into the same directory as your local copy of the `suripu-android` repository.
 
-Once all of the above prerequisites have been fulfilled, it should be possible to build Sense for Android by pressing the Run button in Android Studio.
+_Warning:_ In order to support continuous integration without external assets, the build process will default to your global user keystore if you don't have `Hello-Android-Internal.keystore` in the correct location. This means you cannot generate builds for internal distribution.
+
+If you're building the app on a platform other than OS X, you will need to define JAVA_HOME in order for the project to find your installation of the JDK 8.
 
 Branching
 =========
 
-	develop
-		-> branch timeline-animations
-		-> github pull request
-		-> merge into develop
-	develop
-		-> merge into master
-		-> tag `version`
+The project follows [gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for the most part. The `master` branch contains the latest stable snapshot of the project, and releases are tagged.
 
-The project currently has a single `master` branch, which should be considered semi-stable. All changes larger than 5 or so lines should ideally be made on branches made off `master`, later reviewed through the github pull request process. Stable builds should be archived using tags. The tag names should be of the form `major.minor.bugfix` and should have a monotonically increasing release candidate suffix. E.g. `1.0.0rc1`.
+When creating releases, you should merge `develop` into `master`, and then create a new tag from the contents of master. Tags should follow the form `<major>.<minor>.<bugfix>rc<number>`. The rc number should be incremented as candidate builds for public release are created internally.
 
 Bug fixes on stable code should be made by creating a new branch from the target tag, and then submitting a pull request into master. Once the code has been reviewed and tested, a build should be deployed from the branch, a tag should be created from the branch, and the branch should be merged into master and deleted.
 
@@ -66,6 +62,8 @@ Testing
 =======
 
 The project currently contains unit tests for most parts of the project with major logic. All of the presenters have accompanying synchronous unit tests, and most of the Bluetooth stack's non-radio related functionality is equipped. Any new presenters introduced into the project should have unit tests accompanying them when merged into `master`.
+
+All tests are run within Robolectric on both your local computer, and on circleCI. If you have a branch that should not be run on continuous integration before merging, prefix your branch with `no-test-`.
 
 Deploying Internally
 ====================
