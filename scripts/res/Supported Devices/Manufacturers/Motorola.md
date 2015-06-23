@@ -1,0 +1,66 @@
+# Manufacturer
+
+	motorola
+
+# Regex
+
+	(MotoE2|Nexus 6|XT10(31|32|33|34|39|40|42|45|63|64|68|69|72|79|49|50|52|53|55|56|58|60|85|92|93|94|95|96|97|21|22|23|80))
+
+# Moto G
+
+- XT1031
+- XT1032
+- XT1033
+- XT1034
+- XT1039
+- XT1040
+- XT1042
+- XT1045
+
+# Moto G 2nd Gen
+
+- XT1063
+- XT1064
+- XT1068
+- XT1069	
+- XT1072
+- XT1079
+
+# Moto X
+
+- XT1049
+- XT1050
+- XT1052
+- XT1053
+- XT1055
+- XT1056
+- XT1058
+- XT1060
+
+# Moto X 2nd gen
+
+- XT1085
+- XT1092
+- XT1093
+- XT1094
+- XT1095
+- XT1096
+- XT1097
+
+# Moto E
+
+- XT1021
+- Xt1022
+- Xt1023
+
+# Moto E 2nd gen
+
+- MotoE2
+
+# Droid
+
+- XT1080
+
+# Nexus
+
+- Nexus 6
