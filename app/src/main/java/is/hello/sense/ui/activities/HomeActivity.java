@@ -46,8 +46,8 @@ import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
-import is.hello.sense.ui.fragments.TimelineNavigatorFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
+import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.widget.FragmentPageTitleStrip;
 import is.hello.sense.ui.widget.FragmentPageView;
@@ -67,7 +67,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends ScopedInjectionActivity
-        implements FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, TimelineNavigatorFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
+        implements FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, ZoomedOutTimelineFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
 {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
@@ -203,9 +203,9 @@ public class HomeActivity
         }
 
 
-        Fragment navigatorFragment = getFragmentManager().findFragmentByTag(TimelineNavigatorFragment.TAG);
+        Fragment navigatorFragment = getFragmentManager().findFragmentByTag(ZoomedOutTimelineFragment.TAG);
         if (navigatorFragment != null) {
-            getFragmentManager().popBackStack(TimelineNavigatorFragment.TAG,
+            getFragmentManager().popBackStack(ZoomedOutTimelineFragment.TAG,
                                               FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
     }
@@ -290,7 +290,7 @@ public class HomeActivity
             }
 
 
-            Fragment navigatorFragment = getFragmentManager().findFragmentByTag(TimelineNavigatorFragment.TAG);
+            Fragment navigatorFragment = getFragmentManager().findFragmentByTag(ZoomedOutTimelineFragment.TAG);
             if (navigatorFragment != null) {
                 getFragmentManager().popBackStack();
             }
@@ -676,11 +676,11 @@ public class HomeActivity
     public void showTimelineNavigator(@NonNull DateTime startDate, @Nullable Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
 
-        TimelineNavigatorFragment navigatorFragment = TimelineNavigatorFragment.newInstance(startDate, timeline);
+        ZoomedOutTimelineFragment navigatorFragment = ZoomedOutTimelineFragment.newInstance(startDate, timeline);
         getFragmentManager()
                 .beginTransaction()
-                .add(R.id.activity_home_container, navigatorFragment, TimelineNavigatorFragment.TAG)
-                .addToBackStack(TimelineNavigatorFragment.TAG)
+                .add(R.id.activity_home_container, navigatorFragment, ZoomedOutTimelineFragment.TAG)
+                .addToBackStack(ZoomedOutTimelineFragment.TAG)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
     }

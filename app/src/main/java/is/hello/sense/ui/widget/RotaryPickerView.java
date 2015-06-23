@@ -78,7 +78,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         setLayoutManager(layoutManager);
         setAdapter(adapter);
         addItemDecoration(new Decoration());
-        setOnScrollListener(new ScrollListener());
+        addOnScrollListener(new ScrollListener());
 
         setBackgroundColor(Color.WHITE);
         setOverScrollMode(OVER_SCROLL_NEVER);

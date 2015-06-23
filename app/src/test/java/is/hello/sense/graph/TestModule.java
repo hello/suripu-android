@@ -36,12 +36,12 @@ import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.RoomConditionsPresenterTests;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenterTests;
-import is.hello.sense.graph.presenters.TimelineNavigatorPresenter;
-import is.hello.sense.graph.presenters.TimelineNavigatorPresenterTests;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.graph.presenters.TrendsPresenterTests;
+import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
+import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenterTests;
 import is.hello.sense.util.CachedObjectTests;
 import is.hello.sense.util.DateFormatterTests;
 import is.hello.sense.util.markup.MarkupProcessor;
@@ -79,8 +79,8 @@ import is.hello.sense.util.markup.MarkupProcessor;
         HelloPeripheralTests.class,
         SensePeripheralTests.class,
 
-        TimelineNavigatorPresenterTests.class,
-        TimelineNavigatorPresenter.class,
+        ZoomedOutTimelinePresenterTests.class,
+        ZoomedOutTimelinePresenter.class,
 
         TrendsPresenterTests.class,
         TrendsPresenter.class,

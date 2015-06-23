@@ -5,7 +5,7 @@
     android:background="@color/background_timeline">
 
     <TextView
-        android:id="@+id/fragment_timeline_navigator_month"
+        android:id="@+id/fragment_zoomed_out_timeline_month"
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_height"
         android:layout_alignParentTop="true"
@@ -17,13 +17,13 @@
         android:background="@drawable/selectable_dark_bounded" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/fragment_timeline_navigator_recycler_view"
+        android:id="@+id/fragment_zoomed_out_timeline_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/fragment_timeline_navigator_month" />
+        android:layout_below="@id/fragment_zoomed_out_timeline_month" />
 
     <Button
-        android:id="@+id/fragment_timeline_navigator_today"
+        android:id="@+id/fragment_zoomed_out_timeline_today"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
