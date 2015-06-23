@@ -261,6 +261,13 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     }
 
     private void playSegmentSound(int position) {
+        Logger.debug(getClass().getSimpleName(), "playSegmentSound(" + position + ")");
+
+        if (position == this.playingPosition) {
+            stopPlayback();
+            return;
+        }
+
         TimelineSegment segment = getSegment(position);
         if (segment.hasSound()) {
             if (soundPlayer == null) {
@@ -276,7 +283,13 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         }
     }
 
+    private boolean isSegmentPlaybackActive(int position) {
+        return (this.playingPosition == position && soundPlayer != null);
+    }
+
     public void stopPlayback() {
+        Logger.debug(getClass().getSimpleName(), "stopPlayback()");
+
         if (soundPlayer != null) {
             soundPlayer.stopPlayback();
         }
@@ -453,16 +466,27 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
                 drawable.setStolenTopSleepDepth(0);
             }
 
-            int iconRes = Styles.getTimelineSegmentIconRes(segment);
-            iconImage.setImageResource(iconRes);
-            iconImage.setContentDescription(context.getString(segment.getEventType().accessibilityStringRes));
             messageText.setText(segment.getMessage());
             dateText.setText(dateFormatter.formatForTimelineEvent(segment.getShiftedTimestamp(), use24Time));
 
             if (segment.hasSound()) {
+                if (isSegmentPlaybackActive(position)) {
+                    iconImage.setImageResource(R.drawable.timeline_event_stop);
+                    iconImage.setContentDescription(context.getString(R.string.accessibility_event_stop));
+                } else {
+                    iconImage.setImageResource(R.drawable.timeline_event_play);
+                    iconImage.setContentDescription(context.getString(R.string.accessibility_event_play));
+                }
+
                 Views.setSafeOnClickListener(iconImage, ignored -> playSegmentSound(position));
+                iconImage.setBackgroundResource(R.drawable.selectable_dark);
             } else {
+                int iconRes = Styles.getTimelineSegmentIconRes(segment);
+                iconImage.setImageResource(iconRes);
+                iconImage.setContentDescription(context.getString(segment.getEventType().accessibilityStringRes));
+
                 iconImage.setOnClickListener(null);
+                iconImage.setBackground(null);
             }
         }
 

@@ -3,6 +3,9 @@
     <string name="accessibility_sleep_score_unknown">Sleep score omitted</string>
     <string name="accessibility_sleep_score_fmt">Sleep score %1$d</string>
 
+    <string name="accessibility_event_play">Play event sound</string>
+    <string name="accessibility_event_stop">Stop event sound</string>
+
     <string name="accessibility_event_name_motion">Tossing and turning</string>
     <string name="accessibility_event_name_noise">Noise disturbance</string>
     <string name="accessibility_event_name_snoring">Snoring</string>

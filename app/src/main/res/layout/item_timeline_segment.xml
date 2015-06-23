@@ -33,8 +33,7 @@
             android:layout_marginStart="@dimen/timeline_event_start_inset"
             android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
-            android:importantForAccessibility="no"
-            android:background="@drawable/selectable_dark" />
+            android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/item_timeline_segment_message"
