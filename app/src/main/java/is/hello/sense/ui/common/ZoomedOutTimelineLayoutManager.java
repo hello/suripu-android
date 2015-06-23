@@ -7,12 +7,12 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 
-public class TimelineNavigatorLayoutManager extends LinearLayoutManager {
+public class ZoomedOutTimelineLayoutManager extends LinearLayoutManager {
     public static final int NUMBER_ITEMS_ON_SCREEN = 3;
 
     private @Nullable Runnable onPostLayout;
 
-    public TimelineNavigatorLayoutManager(Context context) {
+    public ZoomedOutTimelineLayoutManager(Context context) {
         super(context, HORIZONTAL, true);
     }
 
@@ -22,6 +22,7 @@ public class TimelineNavigatorLayoutManager extends LinearLayoutManager {
 
         if (onPostLayout != null) {
             onPostLayout.run();
+            this.onPostLayout = null;
         }
     }
 
@@ -44,7 +45,7 @@ public class TimelineNavigatorLayoutManager extends LinearLayoutManager {
         return params;
     }
 
-    public void setOnPostLayout(@Nullable Runnable onPostLayout) {
+    public void postLayout(@Nullable Runnable onPostLayout) {
         this.onPostLayout = onPostLayout;
     }
 }

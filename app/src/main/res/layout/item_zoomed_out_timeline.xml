@@ -7,7 +7,7 @@
     android:paddingBottom="@dimen/gap_outer">
 
     <TextView
-        android:id="@+id/item_timeline_navigator_day_number"
+        android:id="@+id/item_zoomed_out_timeline_day_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/gap_tiny"
@@ -17,7 +17,7 @@
         android:text="@string/missing_data_placeholder" />
 
     <TextView
-        android:id="@+id/item_timeline_navigator_day_name"
+        android:id="@+id/item_zoomed_out_timeline_day_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/gap_large"
@@ -27,7 +27,7 @@
         android:text="@string/missing_data_placeholder"/>
 
     <FrameLayout
-        android:id="@+id/item_timeline_navigator_pie"
+        android:id="@+id/item_zoomed_out_timeline_score_container"
         android:layout_width="match_parent"
         android:layout_height="75dp"
         android:layout_marginLeft="@dimen/gap_small"
@@ -35,7 +35,7 @@
         android:layout_gravity="center">
 
         <TextView
-            android:id="@+id/item_timeline_navigator_score"
+            android:id="@+id/item_zoomed_out_timeline_score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -44,8 +44,8 @@
 
     </FrameLayout>
 
-    <is.hello.sense.ui.widget.MiniTimelineView
-        android:id="@+id/item_timeline_navigator_timeline"
+    <is.hello.sense.ui.widget.TimelinePreviewView
+        android:id="@+id/item_zoomed_out_timeline_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/gap_large"

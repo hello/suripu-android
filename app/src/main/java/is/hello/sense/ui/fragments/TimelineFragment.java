@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -572,7 +573,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         private final int bottomPadding;
 
         public BackgroundDecoration(@NonNull Resources resources) {
-            this.background = resources.getDrawable(R.drawable.background_timeline_segment);
+            this.background = ResourcesCompat.getDrawable(resources, R.drawable.background_timeline_segment, null);
             this.bottomPadding = resources.getDimensionPixelSize(R.dimen.timeline_gap_bottom);
         }
 
