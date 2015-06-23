@@ -173,7 +173,8 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            ZoomedOutTimelineAdapter.ViewHolder holder = (ZoomedOutTimelineAdapter.ViewHolder) recyclerView.findViewHolderForLayoutPosition(layoutManager.findLastVisibleItemPosition());
+            View centerChild = recyclerView.findChildViewUnder(recyclerView.getWidth() / 2, 0);
+            ZoomedOutTimelineAdapter.ViewHolder holder = (ZoomedOutTimelineAdapter.ViewHolder) recyclerView.getChildViewHolder(centerChild);
             monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(holder.getDate()));
         }
 
