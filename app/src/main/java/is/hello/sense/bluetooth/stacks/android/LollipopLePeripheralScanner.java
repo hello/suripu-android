@@ -141,10 +141,12 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
 
         this.scanning = false;
 
+        boolean bluetoothOn = (adapter.getState() == BluetoothAdapter.STATE_ON);
+
         // The BluetoothLeScanner#stopScan(ScanCallback) method requires
         // that its associated BluetoothAdapter be in the on state to stop
         // the scan (how does this make sense?)
-        if (adapter.getState() == BluetoothAdapter.STATE_ON) {
+        if (bluetoothOn) {
             // State could conceivably change between getState and stopScan calls.
             try {
                 scanner.stopScan(this);
@@ -159,10 +161,14 @@ class LollipopLePeripheralScanner extends ScanCallback implements Observable.OnS
         }
 
         List<Peripheral> peripherals = new ArrayList<>();
-        for (ScannedPeripheral scannedPeripheral : results.values()) {
-            AndroidPeripheral peripheral = scannedPeripheral.createPeripheral(stack);
-            peripherals.add(peripheral);
+
+        if (bluetoothOn) {
+            for (ScannedPeripheral scannedPeripheral : results.values()) {
+                AndroidPeripheral peripheral = scannedPeripheral.createPeripheral(stack);
+                peripherals.add(peripheral);
+            }
         }
+
         Logger.info(BluetoothStack.LOG_TAG, "Completed Scan " + peripherals);
 
         if (subscriber != null) {
