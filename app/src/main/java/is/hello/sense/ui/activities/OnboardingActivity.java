@@ -25,6 +25,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -128,7 +129,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_QUESTIONS:
-                    showSetupSense(false);
+                    showSetupSense();
                     break;
 
                 case Constants.ONBOARDING_CHECKPOINT_SENSE:
@@ -313,15 +314,19 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         pushFragment(new OnboardingSignInFragment(), null, true);
     }
 
-    public void showRegistration() {
-        OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
-        builder.setHeadingText(R.string.title_have_sense_ready);
-        builder.setSubheadingText(R.string.info_have_sense_ready);
-        builder.setDiagramImage(R.drawable.onboarding_have_sense_ready);
-        builder.setWantsBack(true);
-        builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_START);
-        builder.setNextFragmentClass(OnboardingRegisterFragment.class);
-        pushFragment(builder.toFragment(), null, true);
+    public void showRegistration(boolean overrideDeviceUnsupported) {
+        if (!overrideDeviceUnsupported && hardwarePresenter.getDeviceSupportLevel() != BluetoothStack.SupportLevel.TESTED) {
+            pushFragment(new OnboardingUnsupportedDeviceFragment(), null, true);
+        } else {
+            OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
+            builder.setHeadingText(R.string.title_have_sense_ready);
+            builder.setSubheadingText(R.string.info_have_sense_ready);
+            builder.setDiagramImage(R.drawable.onboarding_have_sense_ready);
+            builder.setWantsBack(true);
+            builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_START);
+            builder.setNextFragmentClass(OnboardingRegisterFragment.class);
+            pushFragment(builder.toFragment(), null, true);
+        }
     }
 
     public void showBirthday(@Nullable Account account) {
@@ -382,26 +387,22 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         pushFragment(new OnboardingRegisterAudioFragment(), null, false);
     }
 
-    public void showSetupSense(boolean overrideUnsupportedDevice) {
+    public void showSetupSense() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
 
         if (bluetoothAdapter.isEnabled()) {
-            if (!overrideUnsupportedDevice && hardwarePresenter.getDeviceSupportLevel().isUnsupported()) {
-                pushFragment(new OnboardingUnsupportedDeviceFragment(), null, false);
+            OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
+            builder.setHeadingText(R.string.title_setup_sense);
+            builder.setSubheadingText(R.string.info_setup_sense);
+            builder.setDiagramImage(R.drawable.onboarding_sense_intro);
+            builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
+            if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
+                builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP_IN_APP);
             } else {
-                OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
-                builder.setHeadingText(R.string.title_setup_sense);
-                builder.setSubheadingText(R.string.info_setup_sense);
-                builder.setDiagramImage(R.drawable.onboarding_sense_intro);
-                builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
-                if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
-                    builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP_IN_APP);
-                } else {
-                    builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
-                }
-                builder.setHelpStep(UserSupport.OnboardingStep.SETTING_UP_SENSE);
-                pushFragment(builder.toFragment(), null, false);
+                builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
             }
+            builder.setHelpStep(UserSupport.OnboardingStep.SETTING_UP_SENSE);
+            pushFragment(builder.toFragment(), null, false);
         } else {
             pushFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
         }

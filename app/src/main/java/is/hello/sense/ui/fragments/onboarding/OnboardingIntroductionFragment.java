@@ -150,7 +150,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
     }
 
     public void showRegister(@NonNull View sender) {
-        getOnboardingActivity().showRegistration();
+        getOnboardingActivity().showRegistration(false);
     }
 
     public void showSignIn(@NonNull View sender) {

@@ -381,10 +381,10 @@ so you can sleep better.</string>
     <string name="action_support">Support</string>
     <string name="error_cannot_retrieve_condition">Cannot retrieve current %1$s reading.</string>
     <string name="action_open_phone_settings">Open Device Settings</string>
-    <string name="onboarding_title_unsupported_os">Unsupported Android Version</string>
-    <string name="onboarding_message_unsupported_os">Your device is running a version of Android known to have issues setting up Sense for the first time. Please check for system updates in your phone\'s settings before continuing.</string>
     <string name="onboarding_title_unsupported_device">Unsupported Device</string>
     <string name="onboarding_message_unsupported_device">Your device is known to have issues setting up Sense for the first time. If you have a different phone or tablet available, it is recommended that you use it to perform the next steps.</string>
+    <string name="onboarding_title_untested_device">Your device may not be supported</string>
+    <string name="onboarding_message_untested_device">We‘ve detected that you‘re using a device that may not work optimally with Sense. Your device does meet the basic hardware and operating system requirements, but it has not been put through thorough compatibility testing with Sense, and may not work as expected. If your device is not compatible, you may need to use a device from our <a href="#supported-devices">Supported Devices</a> list.</string>
     <string name="action_continue_anyway">Continue Anyway</string>
     <string name="message_not_enough_data">Not enough data yet, check back later.</string>
     <string name="sensor_history_message_error">Could not load graph.</string>

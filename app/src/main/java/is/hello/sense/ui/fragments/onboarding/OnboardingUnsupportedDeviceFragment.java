@@ -1,17 +1,12 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import is.hello.sense.R;
-import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.HardwareFragment;
 
 public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
@@ -20,31 +15,38 @@ public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         OnboardingSimpleStepViewBuilder builder = new OnboardingSimpleStepViewBuilder(this, inflater, container);
 
-        if (hardwarePresenter.getDeviceSupportLevel() == BluetoothStack.SupportLevel.UNSUPPORTED_OS) {
-            builder.setHeadingText(R.string.onboarding_title_unsupported_os);
-            builder.setSubheadingText(R.string.onboarding_message_unsupported_os);
+        switch (hardwarePresenter.getDeviceSupportLevel()) {
+            case UNSUPPORTED: {
+                builder.setHeadingText(R.string.onboarding_title_unsupported_device);
+                builder.setSubheadingText(R.string.onboarding_message_unsupported_device);
+                break;
+            }
 
-            builder.setSecondaryButtonText(R.string.action_open_phone_settings);
-            builder.setSecondaryOnClickListener(this::checkForUpdates);
-        } else {
-            builder.setHeadingText(R.string.onboarding_title_unsupported_device);
-            builder.setSubheadingText(R.string.onboarding_message_unsupported_device);
+            case UNTESTED: {
+                builder.setHeadingText(R.string.onboarding_title_untested_device);
+                builder.setSubheadingText(R.string.onboarding_message_untested_device);
+                builder.initializeSubheadingSupportLinks(getActivity());
 
-            builder.setWantsSecondaryButton(false);
+                break;
+            }
+
+            default: {
+                continueAnyway();
+
+                break;
+            }
         }
 
         builder.setPrimaryButtonText(R.string.action_continue_anyway);
-        builder.setPrimaryOnClickListener(this::continueAnyway);
+        builder.setPrimaryOnClickListener(ignored -> continueAnyway());
+        builder.setToolbarWantsBackButton(true);
         builder.setToolbarWantsHelpButton(false);
+        builder.setWantsSecondaryButton(false);
 
         return builder.create();
     }
 
-    public void checkForUpdates(@NonNull View sender) {
-        startActivity(new Intent(Settings.ACTION_DEVICE_INFO_SETTINGS));
-    }
-
-    public void continueAnyway(@NonNull View sender) {
-        getOnboardingActivity().showSetupSense(true);
+    public void continueAnyway() {
+        getOnboardingActivity().showRegistration(true);
     }
 }

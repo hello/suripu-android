@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.OnboardingToolbar;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import rx.functions.Action1;
 
@@ -175,6 +177,11 @@ public final class OnboardingSimpleStepViewBuilder {
 
     public OnboardingSimpleStepViewBuilder setSubheadingText(@StringRes int resId) {
         subheadingText.setText(resId);
+        return this;
+    }
+
+    public OnboardingSimpleStepViewBuilder initializeSubheadingSupportLinks(@NonNull Activity fromActivity) {
+        Styles.initializeSupportFooter(fromActivity, subheadingText);
         return this;
     }
 
