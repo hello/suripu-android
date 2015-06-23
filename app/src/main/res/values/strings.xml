@@ -480,4 +480,5 @@ so you can sleep better.</string>
     <string name="condition_short_hand_alert_light">a little bright</string>
     <string name="condition_short_hand_warning">a bit too high</string>
     <string name="condition_short_hand_ideal">was ideal</string>
+    <string name="error_timeline_sound_playback_failed">Could not play sound</string>
 </resources>

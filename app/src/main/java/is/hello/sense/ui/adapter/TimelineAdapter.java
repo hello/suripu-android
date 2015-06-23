@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.joda.time.LocalTime;
 
@@ -29,6 +30,7 @@ import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.SoundPlayer;
@@ -183,7 +185,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     }
 
     public void bindSegments(@Nullable List<TimelineSegment> newSegments) {
-        stopPlayback();
+        stopSoundPlayer();
 
         int oldSize = segments.size();
         int newSize = newSegments != null ? newSegments.size() : 0;
@@ -206,7 +208,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     }
 
     public void clear() {
-        stopPlayback();
+        stopSoundPlayer();
 
         int oldSize = segments.size();
         segments.clear();
@@ -261,15 +263,15 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     }
 
     private void playSegmentSound(int position) {
-        Logger.debug(getClass().getSimpleName(), "playSegmentSound(" + position + ")");
-
         if (position == this.playingPosition) {
-            stopPlayback();
+            stopSoundPlayer();
             return;
         }
 
         TimelineSegment segment = getSegment(position);
         if (segment.hasSound()) {
+            Logger.debug(getClass().getSimpleName(), "playSegmentSound(" + position + ")");
+
             if (soundPlayer == null) {
                 this.soundPlayer = new SoundPlayer(context, this, false);
             }
@@ -279,7 +281,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
             setPlayingPosition(position);
         } else {
-            stopPlayback();
+            stopSoundPlayer();
         }
     }
 
@@ -287,11 +289,26 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         return (this.playingPosition == position && soundPlayer != null);
     }
 
-    public void stopPlayback() {
-        Logger.debug(getClass().getSimpleName(), "stopPlayback()");
-
+    public void stopSoundPlayer() {
         if (soundPlayer != null) {
+            Logger.debug(getClass().getSimpleName(), "stopSoundPlayer()");
+
             soundPlayer.stopPlayback();
+        }
+    }
+
+    public boolean isSoundPlayerDisposable() {
+        return (soundPlayer != null && !soundPlayer.isPlaying() && !soundPlayer.isLoading());
+    }
+
+    public void destroySoundPlayer() {
+        if (soundPlayer != null) {
+            Logger.debug(getClass().getSimpleName(), "destroySoundPlayer()");
+
+            soundPlayer.stopPlayback();
+            soundPlayer.recycle();
+
+            this.soundPlayer = null;
         }
     }
 
@@ -310,7 +327,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     @Override
     public void onPlaybackError(@NonNull SoundPlayer player, @NonNull Throwable error) {
         Logger.debug(getClass().getSimpleName(), "onPlaybackError(" + player + ", " + error + ")");
+
+        Toast.makeText(context.getApplicationContext(), R.string.error_timeline_sound_playback_failed, Toast.LENGTH_SHORT).show();
         setPlayingPosition(RecyclerView.NO_POSITION);
+
+        Analytics.trackError(error, "Timeline event playback");
     }
 
     @Override
@@ -322,12 +343,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
 
-        if (soundPlayer != null) {
-            soundPlayer.stopPlayback();
-            soundPlayer.recycle();
-
-            this.soundPlayer = null;
-        }
+        destroySoundPlayer();
     }
 
     //endregion
