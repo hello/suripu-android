@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    style="@style/AppTheme.FadingScrollView">
+    android:background="@color/background">
 
     <LinearLayout
         android:id="@+id/fragment_device_details_container"
@@ -13,8 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/gap_outer"
-        android:animateLayoutChanges="true"
-        android:background="@color/background"
         style="@style/AppTheme.ListView.Cards">
 
         <LinearLayout

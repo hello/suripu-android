@@ -104,7 +104,7 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
         if (getTopFragment() == null) {
             transaction.add(R.id.activity_fragment_navigation_container, fragment, tag);
         } else {
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             transaction.replace(R.id.activity_fragment_navigation_container, fragment, tag);
         }
 

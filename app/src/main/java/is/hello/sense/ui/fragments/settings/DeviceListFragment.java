@@ -133,21 +133,13 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
 
 
     public void bindDevices(@NonNull List<Device> devices) {
-        animate(loadingIndicator)
-                .fadeOut(View.GONE)
-                .addOnAnimationCompleted(finished -> {
-                    if (finished) {
-                        adapter.bindDevices(devices);
-                        supportInfoFooter.setVisibility(View.VISIBLE);
-                    }
-                })
-                .start();
+        adapter.bindDevices(devices);
+        loadingIndicator.setVisibility(View.GONE);
+        supportInfoFooter.setVisibility(View.VISIBLE);
     }
 
     public void devicesUnavailable(Throwable e) {
-        animate(loadingIndicator)
-                .fadeOut(View.GONE)
-                .start();
+        loadingIndicator.setVisibility(View.GONE);
 
         adapter.devicesUnavailable(e);
 
