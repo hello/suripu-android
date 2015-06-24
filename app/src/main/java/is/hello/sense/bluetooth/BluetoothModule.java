@@ -7,10 +7,11 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.bluetooth.stacks.android.AndroidBluetoothStack;
-import is.hello.sense.bluetooth.stacks.util.ErrorListener;
-import is.hello.sense.util.Errors;
+import is.hello.buruberi.bluetooth.Buruberi;
+import is.hello.buruberi.bluetooth.errors.BluetoothError;
+import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
+import is.hello.buruberi.bluetooth.stacks.util.ErrorListener;
+import is.hello.sense.util.Analytics;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -28,12 +29,22 @@ public class BluetoothModule {
     }
 
     @Provides ErrorListener provideErrorListener() {
-        return Errors.REPORT_UNEXPECTED;
+        return new ErrorListener() {
+            @Override
+            public void call(Throwable e) {
+                if (e != null && !(e instanceof BluetoothError)) {
+                    Analytics.trackUnexpectedError(e);
+                }
+            }
+        };
     }
 
     @Provides @Singleton BluetoothStack provideDeviceCenter(@NonNull Context applicationContext,
                                                             @NonNull Scheduler scheduler,
                                                             @NonNull ErrorListener errorListener) {
-        return new AndroidBluetoothStack(applicationContext, scheduler, errorListener);
+        return new Buruberi()
+                .setApplicationContext(applicationContext)
+                .setErrorListener(errorListener)
+                .build();
     }
 }

@@ -4,9 +4,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import is.hello.buruberi.util.Errors;
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.util.Errors;
-import is.hello.sense.util.StringRef;
 import retrofit.RetrofitError;
 
 public class ApiException extends Exception implements Errors.Reporting {

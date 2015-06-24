@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 
 import org.json.JSONObject;
 
+import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
-import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.util.Analytics;
 

@@ -6,8 +6,8 @@ import android.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
-import is.hello.sense.bluetooth.stacks.util.AdvertisingData;
-import is.hello.sense.bluetooth.stacks.util.Bytes;
+import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
+import is.hello.buruberi.bluetooth.stacks.util.Bytes;
 
 public class AdvertisingDataBuilder {
     private static final int HEADER_LENGTH = 2;

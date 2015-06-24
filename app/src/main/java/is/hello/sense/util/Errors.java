@@ -3,9 +3,9 @@ package is.hello.sense.util;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import is.hello.buruberi.bluetooth.errors.BluetoothError;
+import is.hello.buruberi.bluetooth.stacks.util.ErrorListener;
 import is.hello.sense.api.model.ApiException;
-import is.hello.sense.bluetooth.errors.BluetoothError;
-import is.hello.sense.bluetooth.stacks.util.ErrorListener;
 
 public class Errors {
     /**
@@ -43,7 +43,7 @@ public class Errors {
     /**
      * Returns the context of a given error object.
      *
-     * @see is.hello.sense.util.Errors.Reporting#getContextInfo()
+     * @see is.hello.buruberi.util.Errors.Reporting#getContextInfo()
      */
     public static @Nullable String getContextInfo(@Nullable Throwable e) {
         if (e != null && e instanceof Reporting) {
@@ -56,7 +56,7 @@ public class Errors {
     /**
      * Returns the human readable message for a given error object.
      *
-     * @see is.hello.sense.util.Errors.Reporting#getDisplayMessage()
+     * @see is.hello.buruberi.util.Errors.Reporting#getDisplayMessage()
      */
     public static @Nullable StringRef getDisplayMessage(@Nullable Throwable e) {
         if (e != null) {

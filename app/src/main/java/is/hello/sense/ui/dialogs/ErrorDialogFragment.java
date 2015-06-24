@@ -10,17 +10,17 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.SpannableStringBuilder;
 
+import is.hello.buruberi.bluetooth.errors.BluetoothError;
+import is.hello.buruberi.util.Errors;
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
-import is.hello.sense.bluetooth.errors.BluetoothError;
 import is.hello.sense.ui.activities.SupportActivity;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Errors;
-import is.hello.sense.util.StringRef;
 
 public class ErrorDialogFragment extends SenseDialogFragment {
     public static final String TAG = ErrorDialogFragment.class.getSimpleName();

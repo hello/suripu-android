@@ -10,17 +10,15 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
+import is.hello.buruberi.bluetooth.stacks.test.TestBluetoothStack;
+import is.hello.buruberi.bluetooth.stacks.test.TestBluetoothStackBehavior;
 import is.hello.sense.api.ApiAppContext;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TransientApiSessionManager;
-import is.hello.sense.bluetooth.devices.HelloPeripheralTests;
-import is.hello.sense.bluetooth.devices.SensePeripheralTests;
-import is.hello.sense.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.bluetooth.stacks.TestBluetoothStack;
-import is.hello.sense.bluetooth.stacks.TestBluetoothStackBehavior;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
@@ -76,9 +74,6 @@ import is.hello.sense.util.markup.MarkupProcessor;
 
         DateFormatterTests.class,
 
-        HelloPeripheralTests.class,
-        SensePeripheralTests.class,
-
         ZoomedOutTimelinePresenterTests.class,
         ZoomedOutTimelinePresenter.class,
 
@@ -89,11 +84,9 @@ import is.hello.sense.util.markup.MarkupProcessor;
 @SuppressWarnings("UnusedDeclaration")
 public final class TestModule {
     private final Context applicationContext;
-    private final Context targetContext;
 
-    public TestModule(@NonNull Context applicationContext, @NonNull Context targetContext) {
+    public TestModule(@NonNull Context applicationContext) {
         this.applicationContext = applicationContext;
-        this.targetContext = targetContext;
     }
 
     @Provides Context provideApplicationContext() {

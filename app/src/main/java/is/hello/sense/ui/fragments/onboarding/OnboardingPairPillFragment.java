@@ -11,12 +11,12 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
+import is.hello.buruberi.bluetooth.devices.SensePeripheralError;
+import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.buruberi.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.bluetooth.devices.HelloPeripheral;
-import is.hello.sense.bluetooth.devices.SensePeripheralError;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
-import is.hello.sense.bluetooth.errors.OperationTimeoutError;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -24,6 +24,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
@@ -150,7 +151,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                     pairPill();
                 } else {
-                    showBlockingActivity(status.messageRes);
+                    showBlockingActivity(Styles.getConnectStatusMessage(status));
                 }
             }, this::presentError);
             return;
