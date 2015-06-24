@@ -86,12 +86,7 @@ public interface BluetoothStack {
         /**
          * The device is unsupported, one or more core operations are known to fail.
          */
-        UNSUPPORTED_DEVICE,
-
-        /**
-         * The device + OS configuration is unsupported, one or more core operations are known to fail.
-         */
-        UNSUPPORTED_OS,
+        UNSUPPORTED,
 
         /**
          * The device has not been tested, so one or more core operations may not work.
@@ -101,14 +96,6 @@ public interface BluetoothStack {
         /**
          * The device is tested and known to work.
          */
-        SUPPORTED;
-
-
-        /**
-         * Returns whether or not the level of support is unsupported.
-         */
-        public boolean isUnsupported() {
-            return (this == UNSUPPORTED_OS || this == UNSUPPORTED_DEVICE);
-        }
+        TESTED
     }
 }

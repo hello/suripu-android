@@ -105,6 +105,15 @@ public class Analytics {
         String EVENT_START = "Onboarding Start";
 
         /**
+         * When the user lands on the unsupported device screen.
+         *
+         * @see #PROP_DEVICE_SUPPORT_LEVEL
+         */
+        String EVENT_UNSUPPORTED_DEVICE = "Onboarding Unsupported Device";
+
+        String PROP_DEVICE_SUPPORT_LEVEL = "device_support_level";
+
+        /**
          * When user lands on the Sign Up screen
          */
         String EVENT_ACCOUNT = "Onboarding Account";
