@@ -480,4 +480,8 @@ so you can sleep better.</string>
     <string name="condition_short_hand_alert_light">a little bright</string>
     <string name="condition_short_hand_warning">a bit too high</string>
     <string name="condition_short_hand_ideal">was ideal</string>
+    <string name="dialog_title_alarm_sound_volume_low">Low Volume</string>
+    <string name="dialog_message_alarm_sound_volume_low">Your device‘s volume may be too low for you to be able to hear the alarm sound preview. Would you like us to turn it up?</string>
+    <string name="dialog_positive_alarm_sound_volume_low">Turn it up</string>
+    <string name="dialog_negative_alarm_sound_volume_low">No, thanks</string>
 </resources>

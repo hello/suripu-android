@@ -4,17 +4,21 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
 public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener {
+    public static final int PLAYBACK_STREAM_TYPE = AudioManager.STREAM_MUSIC;
+
     private static final int CHANGING_TO_REMOTE_STREAM_ERROR = -38;
     private static final int TIMER_PULSE = 1000;
 
     private final Context context;
     private final OnEventListener onEventListener;
 
+    private final AudioManager audioManager;
     private final MediaPlayer mediaPlayer;
     private final Handler timerHandler = new Handler(Looper.getMainLooper());
     private final Runnable timerPulse;
@@ -30,6 +34,7 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
         this.context = context;
         this.onEventListener = onEventListener;
 
+        this.audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         this.mediaPlayer = new MediaPlayer();
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnErrorListener(this);
@@ -46,7 +51,7 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
             }
         };
 
-        setAudioStreamType(AudioManager.STREAM_MUSIC);
+        setAudioStreamType(PLAYBACK_STREAM_TYPE);
     }
 
     public void recycle() {
@@ -212,6 +217,45 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     public void setAudioStreamType(int streamType) {
         mediaPlayer.setAudioStreamType(streamType);
+    }
+
+    //endregion
+
+
+    //region Sound
+
+    public void setStreamVolume(int index, int flags) {
+        audioManager.setStreamVolume(PLAYBACK_STREAM_TYPE, index, flags);
+    }
+
+    public int getMaxStreamVolume() {
+        return audioManager.getStreamMaxVolume(PLAYBACK_STREAM_TYPE);
+    }
+
+    public int getRecommendedStreamVolume() {
+        // AudioManager#isWiredHeadsetOn() does not appear to actually
+        // be deprecated, it seems they changed what it means at some
+        // point in the past and attached a deprecation warning to it.
+
+        //noinspection deprecation
+        if (audioManager.isWiredHeadsetOn() || audioManager.isBluetoothA2dpOn()) {
+            return getMaxStreamVolume() / 2;
+        } else {
+            return getMaxStreamVolume();
+        }
+    }
+
+    public int getStreamVolume() {
+        return audioManager.getStreamVolume(PLAYBACK_STREAM_TYPE);
+    }
+
+    public boolean isStreamVolumeAdjustable() {
+        //noinspection SimplifiableIfStatement
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return !audioManager.isVolumeFixed();
+        } else {
+            return true;
+        }
     }
 
     //endregion

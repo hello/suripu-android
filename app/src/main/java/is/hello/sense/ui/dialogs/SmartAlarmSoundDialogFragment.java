@@ -3,6 +3,7 @@ package is.hello.sense.ui.dialogs;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,6 +19,7 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.adapter.SmartAlarmSoundAdapter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseListDialog;
 import is.hello.sense.util.SoundPlayer;
 
@@ -92,14 +94,34 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     }
 
 
+    private void promptToIncreaseVolume(@NonNull Alarm.Sound sound) {
+        SenseAlertDialog prompt = new SenseAlertDialog(getActivity());
+        prompt.setTitle(R.string.dialog_title_alarm_sound_volume_low);
+        prompt.setMessage(R.string.dialog_message_alarm_sound_volume_low);
+        prompt.setNegativeButton(R.string.dialog_negative_alarm_sound_volume_low, (dialog, which) -> {
+            playSound(sound);
+        });
+        prompt.setPositiveButton(R.string.dialog_positive_alarm_sound_volume_low, (dialog, which) -> {
+            int targetVolume = soundPlayer.getRecommendedStreamVolume();
+            soundPlayer.setStreamVolume(targetVolume, AudioManager.FLAG_SHOW_UI);
+            playSound(sound);
+        });
+        prompt.show();
+    }
+
     @Override
     public void onItemClicked(@NonNull SenseListDialog<Alarm.Sound> dialog, int position, @NonNull Alarm.Sound sound) {
         this.selectedSound = sound;
+
         adapter.setSelectedSoundId(sound.id);
         getArguments().putSerializable(ARG_SELECTED_SOUND, selectedSound);
         dialog.setDoneButtonEnabled(true);
 
-        playSound(sound);
+        if (soundPlayer.isStreamVolumeAdjustable() && soundPlayer.getStreamVolume() < soundPlayer.getRecommendedStreamVolume()) {
+            promptToIncreaseVolume(sound);
+        } else {
+            playSound(sound);
+        }
     }
 
     @Override
