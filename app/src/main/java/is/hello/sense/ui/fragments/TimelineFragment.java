@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ComponentCallbacks2;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -195,11 +196,30 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW &&
+                adapter != null && adapter.isSoundPlayerDisposable()) {
+            adapter.destroySoundPlayer();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        adapter.stopSoundPlayer();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
 
         headerView.clearAnimation();
         itemAnimator.removeAllListeners();
+
+        recyclerView.setAdapter(null);
 
         this.headerView = null;
         this.recyclerView = null;

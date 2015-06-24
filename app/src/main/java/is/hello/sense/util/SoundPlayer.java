@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener {
     private static final int CHANGING_TO_REMOTE_STREAM_ERROR = -38;
@@ -16,17 +17,18 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     private final OnEventListener onEventListener;
 
     private final MediaPlayer mediaPlayer;
-    private final Handler timerHandler = new Handler(Looper.getMainLooper());
+    private final Handler timerHandler;
     private final Runnable timerPulse;
     private boolean timerRunning = false;
 
-    private boolean isPaused = false;
+    private boolean loading = false;
+    private boolean paused = false;
     private boolean recycled = false;
 
 
     //region Lifecycle
 
-    public SoundPlayer(@NonNull Context context, @NonNull OnEventListener onEventListener) {
+    public SoundPlayer(@NonNull Context context, @NonNull OnEventListener onEventListener, boolean wantsPulse) {
         this.context = context;
         this.onEventListener = onEventListener;
 
@@ -36,15 +38,21 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnSeekCompleteListener(this);
 
-        this.timerPulse = new Runnable() {
-            @Override
-            public void run() {
-                if (timerRunning) {
-                    onEventListener.onPlaybackPulse(SoundPlayer.this, mediaPlayer.getCurrentPosition());
-                    timerHandler.postDelayed(this, TIMER_PULSE);
+        if (wantsPulse) {
+            this.timerHandler = new Handler(Looper.getMainLooper());
+            this.timerPulse = new Runnable() {
+                @Override
+                public void run() {
+                    if (timerRunning) {
+                        onEventListener.onPlaybackPulse(SoundPlayer.this, mediaPlayer.getCurrentPosition());
+                        timerHandler.postDelayed(this, TIMER_PULSE);
+                    }
                 }
-            }
-        };
+            };
+        } else {
+            this.timerHandler = null;
+            this.timerPulse = null;
+        }
 
         setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
@@ -75,13 +83,17 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     //region Time Pulse
 
     private void scheduleTimePulse() {
-        this.timerRunning = true;
-        timerHandler.postDelayed(timerPulse, TIMER_PULSE);
+        if (timerHandler != null) {
+            this.timerRunning = true;
+            timerHandler.postDelayed(timerPulse, TIMER_PULSE);
+        }
     }
 
     private void unscheduleTimePulse() {
-        this.timerRunning = false;
-        timerHandler.removeCallbacks(timerPulse);
+        if (timerHandler != null) {
+            this.timerRunning = false;
+            timerHandler.removeCallbacks(timerPulse);
+        }
     }
 
     //endregion
@@ -91,7 +103,9 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        if (!isPaused) {
+        this.loading = false;
+
+        if (!paused) {
             start();
         }
 
@@ -118,8 +132,10 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     @Override
     public void onSeekComplete(MediaPlayer mp) {
-        timerHandler.removeCallbacks(timerPulse);
-        timerPulse.run();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacks(timerPulse);
+            timerPulse.run();
+        }
     }
 
     //endregion
@@ -139,7 +155,8 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     private void reset() {
         unscheduleTimePulse();
-        this.isPaused = false;
+        this.loading = false;
+        this.paused = false;
     }
 
 
@@ -155,6 +172,8 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
                 mediaPlayer.reset();
                 mediaPlayer.setDataSource(context, source);
             }
+
+            this.loading = true;
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
             onEventListener.onPlaybackError(this, e);
@@ -170,13 +189,13 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
 
     public void togglePaused() {
-        if (isPaused) {
+        if (paused) {
             start();
-            this.isPaused = false;
+            this.paused = false;
         } else {
             unscheduleTimePulse();
             mediaPlayer.pause();
-            this.isPaused = true;
+            this.paused = true;
         }
     }
 
@@ -185,12 +204,16 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     //region Properties
 
+    public boolean isLoading() {
+        return loading;
+    }
+
     public boolean isPlaying() {
         return mediaPlayer.isPlaying();
     }
 
     public boolean isPaused() {
-        return isPaused;
+        return paused;
     }
 
     public int getCurrentPosition() {
@@ -201,9 +224,9 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
         return mediaPlayer.getDuration();
     }
 
-    public boolean seekTo(int msec) {
+    public boolean seekTo(int position) {
         try {
-            mediaPlayer.seekTo(msec);
+            mediaPlayer.seekTo(position);
             return true;
         } catch (Throwable e) {
             return false;
@@ -224,41 +247,77 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
         void onPlaybackPulse(@NonNull SoundPlayer player, int position);
     }
 
-    public static class PlaybackError extends Exception {
+    public static class PlaybackError extends Exception implements Errors.Reporting {
         public final int what;
         public final int extra;
 
-        public static String getStringForCode(int what) {
+        public static String codeToString(int what) {
             switch (what) {
-                default:
                 case MediaPlayer.MEDIA_ERROR_UNKNOWN:
-                    return "An unknown playback error has occurred";
+                    return "MEDIA_ERROR_UNKNOWN";
 
                 case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-                    return "Player lost connection with server";
+                    return "MEDIA_ERROR_SERVER_DIED";
 
                 case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
-                    return "Your device does not support progressive playback";
+                    return "MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK";
 
                 case MediaPlayer.MEDIA_ERROR_IO:
-                    return "Player encountered an IO issue";
+                    return "MEDIA_ERROR_IO";
 
                 case MediaPlayer.MEDIA_ERROR_MALFORMED:
-                    return "The sound is malformed";
+                    return "MEDIA_ERROR_MALFORMED";
 
                 case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
-                    return "The sound cannot be played on your phone";
+                    return "MEDIA_ERROR_UNSUPPORTED";
 
                 case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
-                    return "Player timed out";
+                    return "MEDIA_ERROR_TIMED_OUT";
+
+                default:
+                    return "UNKNOWN: " + what;
             }
         }
 
         public PlaybackError(int what, int extra) {
-            super(getStringForCode(what) + "(" + extra + ")");
+            super(codeToString(what));
 
             this.what = what;
             this.extra = extra;
+        }
+
+        @Nullable
+        @Override
+        public String getContextInfo() {
+            return codeToString(what) + " (" + Integer.toString(extra) + ")";
+        }
+
+        @NonNull
+        @Override
+        public StringRef getDisplayMessage() {
+            switch (what) {
+                default:
+                case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+                    return StringRef.from("An unknown playback error has occurred");
+
+                case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+                    return StringRef.from("Player lost connection with server");
+
+                case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
+                    return StringRef.from("Your device does not support progressive playback");
+
+                case MediaPlayer.MEDIA_ERROR_IO:
+                    return StringRef.from("Player encountered an IO issue");
+
+                case MediaPlayer.MEDIA_ERROR_MALFORMED:
+                    return StringRef.from("The sound is malformed");
+
+                case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
+                    return StringRef.from("The sound cannot be played on your phone");
+
+                case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
+                    return StringRef.from("Player timed out");
+            }
         }
     }
 }
