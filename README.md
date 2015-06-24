@@ -11,6 +11,7 @@ Prerequisites
 - The [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) (for lambda support).
 - The correct SDK and build tools. These will be automatically installed by Android Studio and the Square SDK manager gradle plugin.
 - The key stores `Hello-Android-Internal.keystore` and `Hello-Android-Release.keystore`. Acquire these from another team member.
+- The buruberi project checked out into the same directory as `suripu-android`.
 
 Building
 ========
