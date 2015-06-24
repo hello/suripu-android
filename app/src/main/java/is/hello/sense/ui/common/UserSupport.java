@@ -109,6 +109,18 @@ public class UserSupport {
         from.startActivity(SupportActivity.getIntent(from, issueUri));
     }
 
+    public static void showSupportedDevices(@NonNull Context from) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE, "enhanced-audio"));
+
+        Uri issueUri = new Uri.Builder()
+                .scheme("http")
+                .authority(BuildConfig.SUPPORT_AUTHORITY)
+                .appendPath("app")
+                .appendPath("supported-devices")
+                .build();
+        from.startActivity(SupportActivity.getIntent(from, issueUri));
+    }
+
 
     private static Uri buildSupportUrl(@NonNull String slug) {
         return new Uri.Builder()

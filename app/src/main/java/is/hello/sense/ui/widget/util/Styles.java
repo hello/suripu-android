@@ -346,6 +346,11 @@ public final class Styles {
                     break;
                 }
 
+                case "#supported-devices": {
+                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showSupportedDevices(activity));
+                    break;
+                }
+
                 default: {
                     throw new IllegalArgumentException("Unknown deep link url " + url);
                 }

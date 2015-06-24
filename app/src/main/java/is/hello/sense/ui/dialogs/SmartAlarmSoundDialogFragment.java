@@ -21,6 +21,7 @@ import is.hello.sense.ui.adapter.SmartAlarmSoundAdapter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseListDialog;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SoundPlayer;
 
 public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment implements SenseListDialog.Listener<Alarm.Sound>, SoundPlayer.OnEventListener {
@@ -50,7 +51,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.soundPlayer = new SoundPlayer(getActivity(), this);
+        this.soundPlayer = new SoundPlayer(getActivity(), this, false);
     }
 
     @Override
@@ -152,6 +153,8 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
 
     @Override
     public void onPlaybackError(@NonNull SoundPlayer player, @NonNull Throwable error) {
+        Analytics.trackError(error, "Alarm sound preview");
+
         Toast.makeText(getActivity().getApplicationContext(), R.string.error_failed_to_play_alarm_sound, Toast.LENGTH_SHORT).show();
         adapter.setPlayingSoundId(SmartAlarmSoundAdapter.NONE, false);
     }
