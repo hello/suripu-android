@@ -7,7 +7,8 @@ general:
       - /no\-test\-.*/
 dependencies:
   pre:
-    - git clone --depth 1 --branch master git@github.com:hello/buruberi.git
+    - rm -rf ../buruberi
+    - git clone --depth 1 --branch master git@github.com:hello/buruberi.git ../buruberi
     - echo y | android update sdk --no-ui --all --filter "extra-android-support"
 test:
   override:
