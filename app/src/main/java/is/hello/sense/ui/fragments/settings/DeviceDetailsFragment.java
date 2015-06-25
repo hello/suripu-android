@@ -15,11 +15,11 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;
-import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.util.Styles;
 
-public abstract class DeviceDetailsFragment extends HardwareFragment {
+public abstract class DeviceDetailsFragment extends InjectionFragment {
     public static final int RESULT_REPLACED_DEVICE = 0x66;
 
     public static final String ARG_DEVICE = SenseDetailsFragment.class.getName() + ".ARG_DEVICE";

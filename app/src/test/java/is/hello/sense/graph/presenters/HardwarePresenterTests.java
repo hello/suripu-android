@@ -23,6 +23,7 @@ import is.hello.buruberi.bluetooth.stacks.test.TestPeripheral;
 import is.hello.buruberi.bluetooth.stacks.test.TestPeripheralBehavior;
 import is.hello.buruberi.bluetooth.stacks.test.TestPeripheralService;
 import is.hello.buruberi.util.Either;
+import is.hello.sense.api.model.Device;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTests;
 import is.hello.sense.util.Sync;
@@ -137,7 +138,7 @@ public class HardwarePresenterTests extends InjectionTests {
         assertThrowsNoDeviceError(presenter.linkPill());
         assertThrowsNoDeviceError(presenter.pushData());
         assertThrowsNoDeviceError(presenter.putIntoPairingMode());
-        assertThrowsNoDeviceError(presenter.factoryReset());
+        assertThrowsNoDeviceError(presenter.factoryReset(new Device()));
     }
 
     @Test
