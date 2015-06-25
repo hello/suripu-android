@@ -163,6 +163,8 @@
     <dimen name="dialog_max_width">500dp</dimen>
     <dimen name="dialog_max_height">700dp</dimen>
 
+    <dimen name="dialog_bottom_max_height">400dp</dimen>
+
     <!-- Widget -->
 
     <dimen name="widget_last_night_min_width">200dp</dimen>
