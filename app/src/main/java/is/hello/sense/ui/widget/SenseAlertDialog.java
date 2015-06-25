@@ -3,11 +3,13 @@ package is.hello.sense.ui.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,24 +22,21 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
 
 public class SenseAlertDialog extends Dialog {
-    private LinearLayout container;
+    private final LinearLayout container;
 
-    private TextView titleText;
-    private TextView messageText;
+    private final TextView titleText;
+    private final TextView messageText;
 
-    private View buttonDivider;
-    private Button negativeButton;
-    private Button positiveButton;
+    private final View buttonDivider;
+    private final Button negativeButton;
+    private final Button positiveButton;
 
     private View view;
     private View topViewDivider, bottomViewDivider;
 
     public SenseAlertDialog(@NonNull Context context) {
         super(context, R.style.AppTheme_Dialog_Simple);
-        initialize();
-    }
 
-    protected void initialize() {
         setContentView(R.layout.dialog_sense_alert);
 
         this.container = (LinearLayout) findViewById(R.id.dialog_sense_alert_container);
@@ -49,6 +48,26 @@ public class SenseAlertDialog extends Dialog {
         this.buttonDivider = findViewById(R.id.dialog_sense_alert_button_divider);
         this.negativeButton = (Button) findViewById(R.id.dialog_sense_alert_cancel);
         this.positiveButton = (Button) findViewById(R.id.dialog_sense_alert_ok);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Views.observeNextLayout(container)
+             .subscribe(view -> {
+                 DisplayMetrics metrics = new DisplayMetrics();
+                 getWindow().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+                 int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_outer);
+                 int maxHeight = metrics.heightPixels - (padding * 2);
+
+                 if (view.getMeasuredHeight() > maxHeight) {
+                     view.getLayoutParams().height = maxHeight;
+                     view.requestLayout();
+                     view.invalidate();
+                 }
+             });
     }
 
     private void updatePaddingAndDividers() {

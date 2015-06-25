@@ -37,6 +37,8 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
 
     private SoundPlayer soundPlayer;
 
+    private boolean showVolumePrompts = true;
+
     public static SmartAlarmSoundDialogFragment newInstance(@Nullable Alarm.Sound sound) {
         SmartAlarmSoundDialogFragment dialogFragment = new SmartAlarmSoundDialogFragment();
 
@@ -50,6 +52,10 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            this.showVolumePrompts = savedInstanceState.getBoolean("showVolumePrompts", true);
+        }
 
         this.soundPlayer = new SoundPlayer(getActivity(), this, false);
     }
@@ -77,6 +83,13 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("showVolumePrompts", showVolumePrompts);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
@@ -100,9 +113,11 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
         prompt.setTitle(R.string.dialog_title_alarm_sound_volume_low);
         prompt.setMessage(R.string.dialog_message_alarm_sound_volume_low);
         prompt.setNegativeButton(R.string.dialog_negative_alarm_sound_volume_low, (dialog, which) -> {
+            this.showVolumePrompts = false;
             playSound(sound);
         });
         prompt.setPositiveButton(R.string.dialog_positive_alarm_sound_volume_low, (dialog, which) -> {
+            this.showVolumePrompts = false;
             int targetVolume = soundPlayer.getRecommendedStreamVolume();
             soundPlayer.setStreamVolume(targetVolume, AudioManager.FLAG_SHOW_UI);
             playSound(sound);
@@ -118,7 +133,8 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
         getArguments().putSerializable(ARG_SELECTED_SOUND, selectedSound);
         dialog.setDoneButtonEnabled(true);
 
-        if (soundPlayer.isStreamVolumeAdjustable() && soundPlayer.getStreamVolume() < soundPlayer.getRecommendedStreamVolume()) {
+        if (showVolumePrompts && soundPlayer.isStreamVolumeAdjustable() &&
+                soundPlayer.getStreamVolume() < soundPlayer.getRecommendedStreamVolume()) {
             promptToIncreaseVolume(sound);
         } else {
             playSound(sound);

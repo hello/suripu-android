@@ -3,21 +3,28 @@ package is.hello.sense.ui.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.method.LinkMovementMethod;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Views;
 
 public class SenseBottomAlertDialog extends Dialog {
+    private final LinearLayout container;
+
     private final TextView titleText;
     private final TextView messageText;
 
@@ -36,11 +43,38 @@ public class SenseBottomAlertDialog extends Dialog {
         window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
 
-        this.titleText = (TextView) findViewById(R.id.dialog_bottom_alert);
-        this.messageText = (TextView) findViewById(R.id.dialog_bottom_alert_message);
+        this.container = (LinearLayout) findViewById(R.id.item_bottom_alert);
 
-        this.neutralButton = (Button) findViewById(R.id.dialog_bottom_alert_neutral);
-        this.positiveButton = (Button) findViewById(R.id.dialog_bottom_alert_positive);
+        this.titleText = (TextView) container.findViewById(R.id.dialog_bottom_alert);
+        this.messageText = (TextView) container.findViewById(R.id.dialog_bottom_alert_message);
+        messageText.setMovementMethod(LinkMovementMethod.getInstance());
+
+        this.neutralButton = (Button) container.findViewById(R.id.dialog_bottom_alert_neutral);
+        this.positiveButton = (Button) container.findViewById(R.id.dialog_bottom_alert_positive);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Views.observeNextLayout(container)
+             .subscribe(view -> {
+                 DisplayMetrics metrics = new DisplayMetrics();
+                 getWindow().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+                 Resources resources = getContext().getResources();
+
+                 int padding = resources.getDimensionPixelSize(R.dimen.gap_outer);
+                 int paddedScreenHeight = metrics.heightPixels - (padding * 2);
+                 int maxDialogHeight = resources.getDimensionPixelSize(R.dimen.dialog_bottom_max_height);
+                 int maxHeight = Math.min(paddedScreenHeight, maxDialogHeight);
+
+                 if (view.getMeasuredHeight() > maxHeight) {
+                     view.getLayoutParams().height = maxHeight;
+                     view.requestLayout();
+                     view.invalidate();
+                 }
+             });
     }
 
     //region Text
