@@ -36,6 +36,7 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -43,6 +44,7 @@ import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
+import rx.Observable;
 
 import static is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state;
 
@@ -56,6 +58,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     @Inject DevicesPresenter devicesPresenter;
     @Inject PreferencesPresenter preferences;
+    @Inject HardwarePresenter hardwarePresenter;
 
     private View pairingMode;
     private View changeWiFi;
@@ -64,6 +67,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private boolean factoryResetting = false;
     private boolean didEnableBluetooth = false;
 
+    private @Nullable SensePeripheral.SenseWifiNetwork currentWifiNetwork;
+
     private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -71,12 +76,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                 return;
             }
 
-            hideBlockingActivity(false, () -> {
-                showTroubleshootingAlert(R.string.error_peripheral_connection_lost,
-                        R.string.action_reconnect,
-                        SenseDetailsFragment.this::connectToPeripheral);
-                showRestrictedSenseActions();
-            });
+            stateSafeExecutor.execute(() -> LoadingDialogFragment.close(getFragmentManager()));
+            showTroubleshootingAlert(R.string.error_peripheral_connection_lost,
+                    R.string.action_reconnect,
+                    SenseDetailsFragment.this::connectToPeripheral);
+            showRestrictedSenseActions();
         }
     };
 
@@ -285,52 +289,67 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     public void presentError(@NonNull Throwable e) {
         hideAlert();
-        hideAllActivityForFailure(() -> {
-            if (e instanceof PeripheralNotFoundError) {
-                hardwarePresenter.trackPeripheralNotFound();
+        LoadingDialogFragment.close(getFragmentManager());
+        runLedAnimation(SensePeripheral.LedAnimation.STOP).subscribe(Functions.NO_OP, Functions.LOG_ERROR);
 
-                showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE));
+        if (e instanceof PeripheralNotFoundError) {
+            hardwarePresenter.trackPeripheralNotFound();
 
-                if (hardwarePresenter.shouldPromptForHighPowerScan()) {
-                    PromptForHighPowerDialogFragment dialogFragment = new PromptForHighPowerDialogFragment();
-                    dialogFragment.setTargetFragment(this, REQUEST_CODE_HIGH_POWER_RETRY);
-                    dialogFragment.show(getFragmentManager(), PromptForHighPowerDialogFragment.TAG);
-                }
+            showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE));
 
-                Analytics.trackError(e, "Sense Details");
-            } else {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
-                dialogFragment.setErrorOperation("Sense Details");
+            if (hardwarePresenter.shouldPromptForHighPowerScan()) {
+                PromptForHighPowerDialogFragment dialogFragment = new PromptForHighPowerDialogFragment();
+                dialogFragment.setTargetFragment(this, REQUEST_CODE_HIGH_POWER_RETRY);
+                dialogFragment.show(getFragmentManager(), PromptForHighPowerDialogFragment.TAG);
             }
 
-            showRestrictedSenseActions();
+            Analytics.trackError(e, "Sense Details");
+        } else {
+            ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
+            dialogFragment.setErrorOperation("Sense Details");
+        }
 
-            Logger.error(SenseDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
-        });
+        showRestrictedSenseActions();
+
+        Logger.error(SenseDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
     }
 
 
     public void checkConnectivityState() {
-        bindAndSubscribe(hardwarePresenter.currentWifiNetwork(),
-                         network -> {
-                             preferences.edit()
-                                        .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
-                                        .apply();
+        if (currentWifiNetwork != null) {
+            showConnectedSenseActions(currentWifiNetwork);
+        } else {
+            bindAndSubscribe(hardwarePresenter.currentWifiNetwork(),
+                    network -> {
+                        preferences.edit()
+                                .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
+                                .apply();
 
-                             showConnectedSenseActions(network);
-                         },
-                         e -> {
-                             Logger.error(getClass().getSimpleName(), "Could not get connectivity state, ignoring.", e);
-                             showConnectedSenseActions(null);
+                        this.currentWifiNetwork = network;
 
-                             Analytics.trackError(e, "Sense Details");
-                         });
+                        showConnectedSenseActions(network);
+                    },
+                    e -> {
+                        Logger.error(getClass().getSimpleName(), "Could not get connectivity state, ignoring.", e);
+                        showConnectedSenseActions(null);
+
+                        Analytics.trackError(e, "Sense Details");
+                    });
+        }
     }
 
     //endregion
 
 
     //region Sense Actions
+
+    private Observable<Void> runLedAnimation(@NonNull SensePeripheral.LedAnimation animation) {
+        if (hardwarePresenter.isConnected()) {
+            return hardwarePresenter.runLedAnimation(animation);
+        } else {
+            return Observable.just(null);
+        }
+    }
 
     public void changeWifiNetwork() {
         if (!hardwarePresenter.hasPeripheral()) {
@@ -351,12 +370,18 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         Analytics.trackEvent(Analytics.TopView.EVENT_PUT_INTO_PAIRING_MODE, null);
 
-        showBlockingActivity(R.string.dialog_loading_message);
-        showHardwareActivity(() -> {
-            bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                    ignored -> hideBlockingActivity(true, () -> getFragmentManager().popBackStackImmediate()),
-                    this::presentError);
-        }, this::presentError);
+        LoadingDialogFragment.show(getFragmentManager());
+        hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.BUSY)
+                .subscribe(ignored -> {
+                    bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
+                            ignored1 -> {
+                                LoadingDialogFragment.close(getFragmentManager());
+                                getFragmentManager().popBackStackImmediate();
+                            },
+                            this::presentError);
+                }, e -> {
+                    stateSafeExecutor.execute(() -> presentError(e));
+                });
     }
 
     public void changeTimeZone() {
@@ -403,34 +428,29 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         dialog.setMessage(message);
 
         dialog.setNegativeButton(android.R.string.cancel, null);
-        dialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> resetAllDevices());
+        dialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> completeFactoryReset());
         dialog.show();
     }
 
-    private void resetAllDevices() {
-        showBlockingActivity(R.string.dialog_loading_message);
-        showHardwareActivity(() -> {
-            bindAndSubscribe(devicesPresenter.removeSenseAssociations(device),
-                             ignored -> completeFactoryReset(),
-                             this::presentError);
-        }, this::presentError);
-    }
-
     private void completeFactoryReset() {
-        this.factoryResetting = true;
+        LoadingDialogFragment.show(getFragmentManager());
+        runLedAnimation(SensePeripheral.LedAnimation.BUSY).subscribe(ignored -> {
+            this.factoryResetting = true;
 
-        bindAndSubscribe(hardwarePresenter.factoryReset(),
-                         device -> {
-                             hideBlockingActivity(true, () -> {
-                                 Analytics.setSenseId("unpaired");
+            bindAndSubscribe(hardwarePresenter.factoryReset(device),
+                    device -> {
+                        LoadingDialogFragment.close(getFragmentManager());
+                        Analytics.setSenseId("unpaired");
 
-                                 MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset, R.string.message_power_cycle_sense_factory_reset);
-                                 powerCycleDialog.show(getFragmentManager(), MessageDialogFragment.TAG);
+                        MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset, R.string.message_power_cycle_sense_factory_reset);
+                        powerCycleDialog.show(getFragmentManager(), MessageDialogFragment.TAG);
 
-                                 finishWithResult(RESULT_REPLACED_DEVICE, null);
-                             });
-                         },
-                         this::presentError);
+                        finishWithResult(RESULT_REPLACED_DEVICE, null);
+                    },
+                    this::presentError);
+        }, e -> {
+            stateSafeExecutor.execute(() -> presentError(e));
+        });
     }
 
     public void replaceDevice() {

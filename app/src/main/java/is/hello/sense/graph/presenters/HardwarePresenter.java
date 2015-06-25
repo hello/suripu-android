@@ -25,6 +25,7 @@ import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.Peripheral;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PendingObservables;
@@ -41,10 +42,12 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
     private static final String TOKEN_DISCOVERY = HardwarePresenter.class.getSimpleName() + ".TOKEN_DISCOVERY";
     private static final String TOKEN_CONNECT = HardwarePresenter.class.getSimpleName() + ".TOKEN_CONNECT";
     private static final String TOKEN_GET_WIFI = HardwarePresenter.class.getSimpleName() + ".TOKEN_GET_WIFI";
+    private static final String TOKEN_FACTORY_RESET = HardwarePresenter.class.getSimpleName() + ".TOKEN_FACTORY_RESET";
 
     private final Context context;
     private final PreferencesPresenter preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
+    private final DevicesPresenter devicesPresenter;
     private final BluetoothStack bluetoothStack;
 
     private final PendingObservables<String> pending = new PendingObservables<>();
@@ -61,10 +64,12 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
     @Inject public HardwarePresenter(@NonNull Context context,
                                      @NonNull PreferencesPresenter preferencesPresenter,
                                      @NonNull ApiSessionManager apiSessionManager,
+                                     @NonNull DevicesPresenter devicesPresenter,
                                      @NonNull BluetoothStack bluetoothStack) {
         this.context = context;
         this.preferencesPresenter = preferencesPresenter;
         this.apiSessionManager = apiSessionManager;
+        this.devicesPresenter = devicesPresenter;
         this.bluetoothStack = bluetoothStack;
         this.respondToError = e -> {
             if (bluetoothStack.errorRequiresReconnect(e)) {
@@ -279,7 +284,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
             return noDeviceError();
         }
 
-        if (peripheral.isConnected() && peripheral.getBondStatus() != Peripheral.BOND_BONDED) {
+        if (peripheral.isConnected()) {
             logEvent("already paired with peripheral " + peripheral);
 
             return Observable.just(HelloPeripheral.ConnectStatus.CONNECTED);
@@ -335,7 +340,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
         }
 
         return pending.bind(TOKEN_GET_WIFI, () -> peripheral.getWifiNetwork()
-                                                            .doOnError(this.respondToError));
+                .doOnError(this.respondToError));
     }
 
     public Observable<Void> sendWifiCredentials(@NonNull String ssid,
@@ -401,15 +406,19 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
                          .doOnCompleted(this::clearPeripheral);
     }
 
-    public Observable<Void> factoryReset() {
+    public Observable<Void> factoryReset(@NonNull Device apiDevice) {
         logEvent("factoryReset()");
 
         if (peripheral == null) {
             return noDeviceError();
         }
 
-        return peripheral.factoryReset()
-                         .doOnError(this.respondToError);
+        return pending.bind(TOKEN_FACTORY_RESET, () -> {
+            Observable<VoidResponse> resetBackEnd = devicesPresenter.removeSenseAssociations(apiDevice);
+            Observable<Void> resetSense = peripheral.factoryReset();
+            return resetBackEnd.flatMap(ignored -> resetSense)
+                               .doOnError(this.respondToError);
+        });
     }
 
     public void clearPeripheral() {
