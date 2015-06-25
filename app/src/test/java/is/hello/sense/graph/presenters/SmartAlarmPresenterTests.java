@@ -1,7 +1,6 @@
 package is.hello.sense.graph.presenters;
 
 import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 import org.junit.Test;
 
@@ -73,21 +72,39 @@ public class SmartAlarmPresenterTests extends InjectionTests {
     public void isTooSoon() throws Exception {
         Alarm alarm = new Alarm();
 
-        LocalTime now = LocalTime.now(DateTimeZone.getDefault());
-        LocalTime tooSoon = now.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES / 2);
-        LocalTime pastCutOff = now.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
-        LocalTime beforeCutOff = now.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
+        LocalTime midHour = new LocalTime(9, 30, 0);
+        LocalTime tooSoonMidHour = midHour.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES / 2);
+        LocalTime pastCutOffMidHour = midHour.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
+        LocalTime beforeCutOffMidHour = midHour.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
 
-        alarm.setTime(now);
-        assertTrue(presenter.isAlarmTooSoon(alarm));
+        alarm.setTime(midHour);
+        assertTrue(presenter.isAlarmTooSoon(midHour, alarm));
 
-        alarm.setTime(tooSoon);
-        assertTrue(presenter.isAlarmTooSoon(alarm));
+        alarm.setTime(tooSoonMidHour);
+        assertTrue(presenter.isAlarmTooSoon(midHour, alarm));
 
-        alarm.setTime(pastCutOff);
-        assertFalse(presenter.isAlarmTooSoon(alarm));
+        alarm.setTime(pastCutOffMidHour);
+        assertFalse(presenter.isAlarmTooSoon(midHour, alarm));
 
-        alarm.setTime(beforeCutOff);
-        assertFalse(presenter.isAlarmTooSoon(alarm));
+        alarm.setTime(beforeCutOffMidHour);
+        assertFalse(presenter.isAlarmTooSoon(midHour, alarm));
+
+
+        LocalTime hourBoundary = new LocalTime(9, 59, 0);
+        LocalTime tooSoonBoundary = hourBoundary.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES / 2);
+        LocalTime pastCutOffBoundary = hourBoundary.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
+        LocalTime beforeCutOffBoundary = hourBoundary.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
+
+        alarm.setTime(hourBoundary);
+        assertTrue(presenter.isAlarmTooSoon(hourBoundary, alarm));
+
+        alarm.setTime(tooSoonBoundary);
+        assertTrue(presenter.isAlarmTooSoon(hourBoundary, alarm));
+
+        alarm.setTime(pastCutOffBoundary);
+        assertFalse(presenter.isAlarmTooSoon(hourBoundary, alarm));
+
+        alarm.setTime(beforeCutOffBoundary);
+        assertFalse(presenter.isAlarmTooSoon(hourBoundary, alarm));
     }
 }

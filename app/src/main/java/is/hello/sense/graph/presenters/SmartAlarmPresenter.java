@@ -1,9 +1,11 @@
 package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Interval;
 import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
@@ -99,13 +101,17 @@ import rx.subjects.ReplaySubject;
         return true;
     }
 
+    @VisibleForTesting
+    boolean isAlarmTooSoon(@NonNull LocalTime nowTime, @NonNull Alarm alarm) {
+        DateTime nowDate = nowTime.toDateTimeToday();
+        DateTime cutOff = nowDate.plusMinutes(FUTURE_CUT_OFF_MINUTES);
+        DateTime alarmTime = alarm.getTime().toDateTimeToday();
+        return new Interval(nowDate, cutOff).contains(alarmTime);
+    }
+
     public boolean isAlarmTooSoon(@NonNull Alarm alarm) {
-        LocalTime now = LocalTime.now(DateTimeZone.getDefault());
-        int minuteCutOff = now.getMinuteOfHour() + FUTURE_CUT_OFF_MINUTES;
-        LocalTime alarmTime = alarm.getTime();
-        return (alarmTime.getHourOfDay() == now.getHourOfDay() &&
-                alarmTime.getMinuteOfHour() >= now.getMinuteOfHour() &&
-                alarmTime.getMinuteOfHour() <= minuteCutOff);
+        LocalTime nowTime = LocalTime.now(DateTimeZone.getDefault());
+        return isAlarmTooSoon(nowTime, alarm);
     }
 
     //endregion
