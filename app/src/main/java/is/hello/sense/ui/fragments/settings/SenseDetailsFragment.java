@@ -370,7 +370,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         Analytics.trackEvent(Analytics.TopView.EVENT_PUT_INTO_PAIRING_MODE, null);
 
-        LoadingDialogFragment.show(getFragmentManager());
+        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
         hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.BUSY)
                 .subscribe(ignored -> {
                     bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
@@ -433,7 +433,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     private void completeFactoryReset() {
-        LoadingDialogFragment.show(getFragmentManager());
+        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
         runLedAnimation(SensePeripheral.LedAnimation.BUSY).subscribe(ignored -> {
             this.factoryResetting = true;
 
