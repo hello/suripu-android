@@ -92,17 +92,31 @@ public class DevicesPresenter extends ValuePresenter<ArrayList<Device>> {
 
 
     public enum Issue {
-        NONE(0, 0),
-        NO_SENSE_PAIRED(R.string.issue_title_no_sense, R.string.issue_message_no_sense),
-        SENSE_MISSING(R.string.issue_title_missing_sense, R.string.issue_message_missing_sense),
-        NO_SLEEP_PILL_PAIRED(R.string.issue_title_no_pill, R.string.issue_message_no_pill),
-        SLEEP_PILL_LOW_BATTERY(R.string.issue_title_low_battery, R.string.issue_message_low_battery),
-        SLEEP_PILL_MISSING(R.string.issue_title_missing_pill, R.string.issue_message_missing_pill);
+        NONE(0, 0, 0),
+        NO_SENSE_PAIRED(Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_PAIRED,
+                R.string.issue_title_no_sense,
+                R.string.issue_message_no_sense),
+        SENSE_MISSING(Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_SEEN,
+                R.string.issue_title_missing_sense,
+                R.string.issue_message_missing_sense),
+        NO_SLEEP_PILL_PAIRED(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_PAIRED,
+                R.string.issue_title_no_pill,
+                R.string.issue_message_no_pill),
+        SLEEP_PILL_LOW_BATTERY(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_LOW_BATTERY,
+                R.string.issue_title_low_battery,
+                R.string.issue_message_low_battery),
+        SLEEP_PILL_MISSING(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_SEEN,
+                R.string.issue_title_missing_pill,
+                R.string.issue_message_missing_pill);
 
+        public final int systemAlertType;
         public final @StringRes int titleRes;
         public final @StringRes int messageRes;
 
-        Issue(@StringRes int titleRes, @StringRes int messageRes) {
+        Issue(int systemAlertType,
+              @StringRes int titleRes,
+              @StringRes int messageRes) {
+            this.systemAlertType = systemAlertType;
             this.titleRes = titleRes;
             this.messageRes = messageRes;
         }

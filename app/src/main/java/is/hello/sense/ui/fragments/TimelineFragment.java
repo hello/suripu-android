@@ -281,12 +281,14 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     public void showBreakdown(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.Timeline.EVENT_SLEEP_SCORE_BREAKDOWN, null);
+
         bindAndSubscribe(timelinePresenter.latest(),
-                         timeline -> {
-                             TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timeline, headerView.getCardViewId());
-                             infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);
-                         },
-                         Functions.LOG_ERROR);
+                timeline -> {
+                    TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timeline, headerView.getCardViewId());
+                    infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);
+                },
+                Functions.LOG_ERROR);
     }
 
     //endregion
@@ -430,6 +432,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         infoPopup.bindSegment(segment);
         infoPopup.show(view);
 
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
         Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
     }
 
@@ -488,6 +491,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         actions.show();
 
         this.activeDialog = new WeakReference<>(actions);
+
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
     }
 
     private void adjustTime(int position) {
@@ -507,6 +512,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         timePicker.show();
 
         this.activeDialog = new WeakReference<>(timePicker);
+
+        Analytics.trackEvent(Analytics.Timeline.EVENT_ADJUST_TIME, null);
     }
 
     private void completeAdjustTime(int position, @NonNull LocalTime newTime) {

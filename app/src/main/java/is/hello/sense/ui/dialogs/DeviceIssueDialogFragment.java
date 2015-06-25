@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import org.json.JSONObject;
+
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -12,6 +14,7 @@ import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.widget.SenseBottomAlertDialog;
+import is.hello.sense.util.Analytics;
 
 public class DeviceIssueDialogFragment extends SenseDialogFragment {
     public static final String TAG = DeviceIssueDialogFragment.class.getSimpleName();
@@ -20,6 +23,9 @@ public class DeviceIssueDialogFragment extends SenseDialogFragment {
     private static final String ARG_MESSAGE_RES = DeviceIssueDialogFragment.class.getName() + ".ARG_MESSAGE_RES";
     private static final String ARG_ACTION_RES = DeviceIssueDialogFragment.class.getName() + ".ARG_ACT_RES";
     private static final String ARG_ISSUE_ORDINAL = DeviceIssueDialogFragment.class.getName() + ".ARG_ISSUE_ORDINAL";
+
+
+    private DevicesPresenter.Issue issue;
 
 
     //region Lifecycle
@@ -46,6 +52,21 @@ public class DeviceIssueDialogFragment extends SenseDialogFragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        int issueOrdinal = getArguments().getInt(ARG_ISSUE_ORDINAL);
+        this.issue = DevicesPresenter.Issue.values()[issueOrdinal];
+
+        if (savedInstanceState == null) {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, issue.systemAlertType
+            );
+            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
+        }
+    }
+
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         SenseBottomAlertDialog alertDialog = new SenseBottomAlertDialog(getActivity());
 
@@ -53,7 +74,7 @@ public class DeviceIssueDialogFragment extends SenseDialogFragment {
         alertDialog.setTitle(arguments.getInt(ARG_TITLE_RES));
         alertDialog.setMessage(arguments.getInt(ARG_MESSAGE_RES));
 
-        alertDialog.setNeutralButton(R.string.action_fix_later, null);
+        alertDialog.setNeutralButton(R.string.action_fix_later, (ignored, which) -> dispatchLater());
         alertDialog.setPositiveButton(arguments.getInt(ARG_ACTION_RES), (ignored, which) -> dispatchIssue());
 
         return alertDialog;
@@ -71,15 +92,24 @@ public class DeviceIssueDialogFragment extends SenseDialogFragment {
         startActivity(intent);
     }
 
+    private void dispatchLater() {
+        JSONObject properties = Analytics.createProperties(
+            Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_LATER
+        );
+        Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
+    }
+
     private void dispatchIssue() {
-        int issueOrdinal = getArguments().getInt(ARG_ISSUE_ORDINAL);
-        DevicesPresenter.Issue issue = DevicesPresenter.Issue.values()[issueOrdinal];
+        JSONObject properties = Analytics.createProperties(
+            Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_NOW
+        );
+        Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
+
         if (issue == DevicesPresenter.Issue.SLEEP_PILL_LOW_BATTERY) {
             UserSupport.showReplaceBattery(getActivity());
         } else {
             showDevices();
         }
-        dismissSafely();
     }
 
     //endregion

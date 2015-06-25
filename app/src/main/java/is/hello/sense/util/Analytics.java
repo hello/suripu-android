@@ -315,14 +315,10 @@ public class Analytics {
         String EVENT_ZOOMED_OUT = "Timeline zoomed out";
         String EVENT_ZOOMED_IN = "Timeline zoomed in";
 
-        String EVENT_BEFORE_SLEEP_TAPPED = "Timeline before sleep tab tapped";
-
         String EVENT_TAP = "Timeline tap";
         String EVENT_TIMELINE_EVENT_TAPPED = "Timeline Event tapped";
         String EVENT_LONG_PRESS_EVENT = "Long press sleep duration bar";
         String EVENT_ADJUST_TIME = "Timeline adjust time tapped";
-
-        String EVENT_BEFORE_SLEEP_EVENT_TAPPED = "Before sleep event tapped";
 
 
         String EVENT_SYSTEM_ALERT = "System Alert";
@@ -393,19 +389,6 @@ public class Analytics {
         String EVENT_HELP = "Settings Help";
         String EVENT_SEND_FEEDBACK = "Send Feedback";
         String EVENT_CONTACT_SUPPORT = "Contact Support";
-    }
-
-    public interface Widgets {
-        /**
-         * When the user creates their first home screen widget of a certain type.
-         */
-        String EVENT_CREATED = "Widget Created";
-        /**
-         * When the user deletes a home screen widget.
-         */
-        String EVENT_DELETED = "Widget Deleted";
-
-        String PROP_NAME = "widget_name";
     }
 
 
