@@ -13,14 +13,14 @@ import android.view.ViewGroup;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
+import is.hello.buruberi.bluetooth.devices.SensePeripheral;
+import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.bluetooth.devices.HelloPeripheral;
-import is.hello.sense.bluetooth.devices.SensePeripheral;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
-import is.hello.sense.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.UserSupport;
@@ -29,6 +29,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -209,7 +210,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                 checkConnectivityAndContinue();
             } else {
-                showBlockingActivity(status.messageRes);
+                showBlockingActivity(Styles.getConnectStatusMessage(status));
             }
         }, e -> presentError(e, "Connecting to Sense"));
     }

@@ -17,6 +17,8 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import is.hello.buruberi.util.Errors;
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightCategory;
@@ -24,9 +26,7 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.Errors;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.StringRef;
 
 public class InsightsAdapter extends BaseAdapter {
     private static final int TYPE_QUESTION = 0;

@@ -37,6 +37,7 @@ import android.widget.TextView;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.R;
 import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.common.UserSupport;
@@ -122,6 +123,24 @@ public final class Styles {
 
     public static int getSleepScoreColor(@NonNull Context context, int sleepScore) {
         return context.getResources().getColor(getSleepScoreColorRes(sleepScore));
+    }
+
+
+    public static @StringRes int getConnectStatusMessage(@NonNull HelloPeripheral.ConnectStatus status) {
+        switch (status) {
+            case CONNECTING:
+                return R.string.title_connecting;
+
+            case BONDING:
+                return R.string.title_pairing;
+
+            case DISCOVERING_SERVICES:
+                return R.string.title_discovering_services;
+
+            default:
+            case CONNECTED:
+                return R.string.title_connecting;
+        }
     }
 
 

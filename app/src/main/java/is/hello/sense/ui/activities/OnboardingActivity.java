@@ -18,14 +18,14 @@ import com.squareup.seismic.ShakeDetector;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
-import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;

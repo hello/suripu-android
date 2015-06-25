@@ -6,7 +6,7 @@ import android.support.annotation.StringRes;
 
 import javax.inject.Inject;
 
-import is.hello.sense.bluetooth.devices.SensePeripheral;
+import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;

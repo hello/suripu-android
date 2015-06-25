@@ -9,7 +9,7 @@ buildscript {
         classpath 'me.tatarka:gradle-retrolambda:3.1.0'
         //noinspection GradleDynamicVersion
         classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
-        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.+'
+        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
     }
 }
 
@@ -178,7 +178,6 @@ dependencies {
 
     compile 'net.danlew:android.joda:2.7.2'
     compile "com.mixpanel.android:mixpanel-android:4.5.3"
-    compile 'com.google.protobuf:protobuf-java:2.5.0'
 
     compile 'com.android.support:support-v4:22.2.0'
     compile 'com.android.support:support-v13:22.0.0'
@@ -191,11 +190,11 @@ dependencies {
     compile 'com.squareup:seismic:1.0.1'
     compile 'me.grantland:autofittextview:0.2.1'
 
+    compile project(':buruberi:library')
+
     debugCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
     betaCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
 
-    androidTestCompile 'com.android.support.test:runner:0.3'
-    androidTestCompile 'com.android.support.test:rules:0.3'
 
     testCompile "org.robolectric:robolectric:3.0-rc3"
     testCompile 'junit:junit:4.12'

@@ -1,1 +1,2 @@
-include ':app'
+include ':app', ':buruberi:library'
+project(':buruberi:library').projectDir = new File('../buruberi/library')

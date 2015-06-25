@@ -21,11 +21,11 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionActivity;
