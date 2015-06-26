@@ -104,7 +104,7 @@ public class ZoomedOutTimelinePresenter extends Presenter {
         String month = date.monthOfYear().getAsString();
         String day = date.dayOfMonth().getAsString();
 
-        return apiService.timelineForDate(year, month, day)
+        return apiService.timelineForDate_v1(year, month, day)
                          .map(ts -> ts.get(0))
                          .observeOn(updateScheduler);
     }

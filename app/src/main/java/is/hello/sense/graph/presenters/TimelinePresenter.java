@@ -36,9 +36,9 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
 
     @Override
     protected Observable<Timeline> provideUpdateObservable() {
-        Observable<ArrayList<Timeline>> update = service.timelineForDate(date.year().getAsString(),
-                                                                         date.monthOfYear().getAsString(),
-                                                                         date.dayOfMonth().getAsString());
+        Observable<ArrayList<Timeline>> update = service.timelineForDate_v1(date.year().getAsString(),
+                date.monthOfYear().getAsString(),
+                date.dayOfMonth().getAsString());
         return update.flatMap(timelines -> {
             if (Lists.isEmpty(timelines)) {
                 return Observable.error(new Throwable("No timelines found"));

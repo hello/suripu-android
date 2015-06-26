@@ -23,7 +23,6 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
-import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
@@ -113,9 +112,14 @@ public interface ApiService {
     //region Timeline
 
     @GET("/v1/timeline/{year}-{month}-{day}")
-    Observable<ArrayList<Timeline>> timelineForDate(@NonNull @Path("year") String year,
-                                                    @NonNull @Path("month") String month,
-                                                    @NonNull @Path("day") String day);
+    Observable<ArrayList<is.hello.sense.api.model.Timeline>> timelineForDate_v1(@NonNull @Path("year") String year,
+                                                                                @NonNull @Path("month") String month,
+                                                                                @NonNull @Path("day") String day);
+
+    @GET("/v2/timeline/{year}-{month}-{day}")
+    Observable<is.hello.sense.api.model.v2.Timeline> timelineForDate_v2(@NonNull @Path("year") String year,
+                                                                        @NonNull @Path("month") String month,
+                                                                        @NonNull @Path("day") String day);
 
     @GET("/v1/insights")
     Observable<ArrayList<Insight>> currentInsights();

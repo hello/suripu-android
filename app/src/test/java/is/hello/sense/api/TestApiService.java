@@ -30,7 +30,6 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
-import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
@@ -85,7 +84,8 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Account> getAccount() {
-        return loadResponse("account", new TypeReference<Account>() {});
+        return loadResponse("account", new TypeReference<Account>() {
+        });
     }
 
     @Override
@@ -134,10 +134,15 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<Timeline>> timelineForDate(@NonNull @Path("year") String year,
-                                                      @NonNull @Path("month") String month,
-                                                      @NonNull @Path("day") String day) {
-        return loadResponse("timeline", new TypeReference<ArrayList<Timeline>>() {});
+    public Observable<ArrayList<is.hello.sense.api.model.Timeline>> timelineForDate_v1(@NonNull @Path("year") String year,
+                                                                                       @NonNull @Path("month") String month,
+                                                                                       @NonNull @Path("day") String day) {
+        return loadResponse("timeline", new TypeReference<ArrayList<is.hello.sense.api.model.Timeline>>() {});
+    }
+
+    @Override
+    public Observable<is.hello.sense.api.model.v2.Timeline> timelineForDate_v2(@NonNull @Path("year") String year, @NonNull @Path("month") String month, @NonNull @Path("day") String day) {
+        return unimplemented();
     }
 
     @Override
