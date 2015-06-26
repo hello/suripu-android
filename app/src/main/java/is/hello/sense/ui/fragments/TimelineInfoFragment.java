@@ -18,13 +18,9 @@ import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.widget.GridLayoutManager;
@@ -38,26 +34,18 @@ import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
-import is.hello.sense.api.model.PreSleepInsight;
-import is.hello.sense.api.model.Timeline;
-import is.hello.sense.api.model.TimelineSegment;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.api.model.v2.TimelineMetric;
 import is.hello.sense.ui.adapter.EmptyRecyclerAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class TimelineInfoFragment extends AnimatedInjectionFragment {
@@ -65,18 +53,16 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     private static final String ARG_SUMMARY = TimelineInfoFragment.class.getName() + ".ARG_SUMMARY";
     private static final String ARG_SCORE = TimelineInfoFragment.class.getName() + ".ARG_SCORE";
-    private static final String ARG_ITEMS = TimelineInfoFragment.class.getName() + ".ARG_ITEMS";
+    private static final String ARG_SCORE_CONDITION = TimelineInfoFragment.class.getName() + ".ARG_SCORE_CONDITION";
+    private static final String ARG_METRICS = TimelineInfoFragment.class.getName() + ".ARG_METRICS";
     private static final String ARG_SOURCE_VIEW_ID = TimelineInfoFragment.class.getName() + ".ARG_SOURCE_VIEW_ID";
 
     private static final int GRID_COLUMNS_PER_ROW = 2;
 
-    @Inject DateFormatter dateFormatter;
-    @Inject PreferencesPresenter preferences;
-
     private @Nullable MarkupString summary;
     private int score;
     private int scoreColor, darkenedScoreColor;
-    private ArrayList<Item> items;
+    private ArrayList<TimelineMetric> metrics;
     private @IdRes int sourceViewId;
 
     private FrameLayout rootView;
@@ -91,72 +77,19 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     //region Lifecycle
 
-    public static TimelineInfoFragment newInstance(@Nullable MarkupString message,
-                                                   int score,
-                                                   @NonNull ArrayList<Item> items,
-                                                   @IdRes int sourceViewId) {
+    public static TimelineInfoFragment newInstance(@NonNull Timeline timeline, @IdRes int sourceViewId) {
         TimelineInfoFragment fragment = new TimelineInfoFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putParcelable(ARG_SUMMARY, message);
-        arguments.putInt(ARG_SCORE, score);
-        arguments.putParcelableArrayList(ARG_ITEMS, items);
+        arguments.putParcelable(ARG_SUMMARY, timeline.getMessage());
+        arguments.putInt(ARG_SCORE, timeline.getScore());
+        arguments.putString(ARG_SCORE_CONDITION, timeline.getScoreCondition().toString());
+        arguments.putParcelableArrayList(ARG_METRICS, timeline.getMetrics());
         arguments.putInt(ARG_SOURCE_VIEW_ID, sourceViewId);
         fragment.setArguments(arguments);
 
         return fragment;
-    }
 
-    public static TimelineInfoFragment newInstance(@NonNull Timeline timeline, @IdRes int sourceViewId) {
-        Timeline.Statistics statistics = timeline.getStatistics();
-
-        ArrayList<Item> items = new ArrayList<>();
-        if (statistics.getTotalSleep() != null) {
-            int totalSleep = statistics.getTotalSleep();
-            items.add(new DurationItem(R.string.timeline_info_label_total_sleep, totalSleep));
-        }
-
-        if (statistics.getSoundSleep() != null) {
-            int soundSleep = statistics.getSoundSleep();
-            items.add(new DurationItem(R.string.timeline_info_label_sound_sleep, soundSleep));
-        }
-
-        if (statistics.getTimeToSleep() != null) {
-            int timeToSleep = statistics.getTimeToSleep();
-            items.add(new DurationItem(R.string.timeline_info_label_time_to_sleep, timeToSleep));
-        }
-
-        if (statistics.getTimesAwake() != null) {
-            int timesAwake = statistics.getTimesAwake();
-            items.add(new CountItem(R.string.timeline_info_label_times_awake, timesAwake));
-        }
-
-        DateTime fellAsleepTime = null,
-                 wakeUpTime = null;
-        for (TimelineSegment segment : timeline.getSegments()) {
-            TimelineSegment.EventType eventType = segment.getEventType();
-            if (fellAsleepTime == null && eventType == TimelineSegment.EventType.SLEEP) {
-                fellAsleepTime = segment.getShiftedTimestamp();
-            }
-
-            if (eventType == TimelineSegment.EventType.WAKE_UP) {
-                wakeUpTime = segment.getShiftedTimestamp();
-            }
-        }
-
-        if (fellAsleepTime != null) {
-            items.add(new TimeItem(R.string.timeline_info_label_sleep_time, fellAsleepTime));
-        }
-
-        if (wakeUpTime != null) {
-            items.add(new TimeItem(R.string.timeline_info_label_wake_up_time, wakeUpTime));
-        }
-
-        for (PreSleepInsight insight : timeline.getPreSleepInsights()) {
-            items.add(new SensorItem(insight.getSensor(), insight.getCondition()));
-        }
-
-        return newInstance(timeline.getMessage(), timeline.getScore(), items, sourceViewId);
     }
 
     @Override
@@ -166,9 +99,10 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         Bundle arguments = getArguments();
 
         this.score = arguments.getInt(ARG_SCORE);
-        this.scoreColor = Styles.getSleepScoreColor(getActivity(), score);
+        Condition scoreCondition = Condition.fromString(arguments.getString(ARG_SCORE_CONDITION));
+        this.scoreColor = getResources().getColor(scoreCondition.colorRes);
         this.darkenedScoreColor = Drawing.darkenColorBy(scoreColor, 0.2f);
-        this.items = arguments.getParcelableArrayList(ARG_ITEMS);
+        this.metrics = arguments.getParcelableArrayList(ARG_METRICS);
         this.sourceViewId = arguments.getInt(ARG_SOURCE_VIEW_ID);
         this.summary = arguments.getParcelable(ARG_SUMMARY);
 
@@ -436,7 +370,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             recycler.setLayoutParams(finalRecyclerLayoutParams);
             this.finalRecyclerLayoutParams = null;
         }
-        recycler.setAdapter(new ItemAdapter());
+        recycler.setAdapter(new MetricAdapter());
     }
 
     private void tearDownRecycler() {
@@ -507,12 +441,12 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         }
     }
 
-    private class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
+    private class MetricAdapter extends RecyclerView.Adapter<MetricAdapter.ViewHolder> {
         private final LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         @Override
         public int getItemCount() {
-            return items.size();
+            return metrics.size();
         }
 
         @Override
@@ -523,17 +457,13 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            Item item = items.get(position);
+            TimelineMetric metric = metrics.get(position);
 
-            holder.titleText.setText(item.getTitleRes());
-            holder.readingText.setText(item.getDisplayString(TimelineInfoFragment.this));
+            holder.titleText.setText(metric.getName());
+            holder.readingText.setText(Styles.assembleReadingAndUnit(metric.getValue(), metric.getUnit(), Styles.UNIT_STYLE_SUBSCRIPT));
 
-            int valueColorRes = item.getTintColorRes();
-            if (valueColorRes == 0) {
-                holder.readingText.setTextColor(scoreColor);
-            } else {
-                holder.readingText.setTextColor(getResources().getColor(valueColorRes));
-            }
+            int valueColorRes = metric.getCondition().colorRes;
+            holder.readingText.setTextColor(getResources().getColor(valueColorRes));
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
@@ -547,242 +477,5 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 this.readingText = (TextView) itemView.findViewById(R.id.item_timeline_info_reading);
             }
         }
-    }
-
-    public static abstract class Item implements Parcelable {
-        private final int titleRes;
-
-        protected Item(@StringRes int titleRes) {
-            this.titleRes = titleRes;
-        }
-
-        public @StringRes int getTitleRes() {
-            return titleRes;
-        }
-
-        public abstract CharSequence getDisplayString(@NonNull TimelineInfoFragment parent);
-
-        public @ColorRes int getTintColorRes() {
-            return 0;
-        }
-
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-    }
-
-    public static class DurationItem extends Item {
-        private final int minutes;
-
-        public DurationItem(@StringRes int titleRes, int minutes) {
-            super(titleRes);
-            this.minutes = minutes;
-        }
-
-        public DurationItem(@NonNull Parcel in) {
-            this(in.readInt(), in.readInt());
-        }
-
-
-        @Override
-        public CharSequence getDisplayString(@NonNull TimelineInfoFragment parent) {
-            return parent.dateFormatter.formatDuration(minutes, TimeUnit.MINUTES);
-        }
-
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            out.writeInt(getTitleRes());
-            out.writeInt(minutes);
-        }
-
-        public static final Creator<DurationItem> CREATOR = new Creator<DurationItem>() {
-            @Override
-            public DurationItem createFromParcel(Parcel source) {
-                return new DurationItem(source);
-            }
-
-            @Override
-            public DurationItem[] newArray(int size) {
-                return new DurationItem[size];
-            }
-        };
-    }
-
-    public static class CountItem extends Item {
-        private final int count;
-
-        public CountItem(@StringRes int titleRes, int count) {
-            super(titleRes);
-            this.count = count;
-        }
-
-        public CountItem(@NonNull Parcel in) {
-            this(in.readInt(), in.readInt());
-        }
-
-
-        @Override
-        public CharSequence getDisplayString(@NonNull TimelineInfoFragment parent) {
-            return Integer.toString(count);
-        }
-
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            out.writeInt(getTitleRes());
-            out.writeInt(count);
-        }
-
-
-        public static final Creator<CountItem> CREATOR = new Creator<CountItem>() {
-            @Override
-            public CountItem createFromParcel(Parcel source) {
-                return new CountItem(source);
-            }
-
-            @Override
-            public CountItem[] newArray(int size) {
-                return new CountItem[size];
-            }
-        };
-    }
-
-    public static class TimeItem extends Item {
-        private final DateTime dateTime;
-
-        public TimeItem(@StringRes int titleRes, @NonNull DateTime dateTime) {
-            super(titleRes);
-            this.dateTime = dateTime;
-        }
-
-        public TimeItem(@NonNull Parcel in) {
-            this(in.readInt(), new DateTime(in.readLong()));
-        }
-
-
-        @Override
-        public CharSequence getDisplayString(@NonNull TimelineInfoFragment parent) {
-            boolean use24Time = parent.preferences.getUse24Time();
-            return parent.dateFormatter.formatForTimelineInfo(dateTime, use24Time);
-        }
-
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            out.writeInt(getTitleRes());
-            out.writeLong(dateTime.getMillis());
-        }
-
-
-        public static final Creator<TimeItem> CREATOR = new Creator<TimeItem>() {
-            @Override
-            public TimeItem createFromParcel(Parcel source) {
-                return new TimeItem(source);
-            }
-
-            @Override
-            public TimeItem[] newArray(int size) {
-                return new TimeItem[size];
-            }
-        };
-    }
-
-    public static class SensorItem extends Item {
-        private final PreSleepInsight.Sensor sensor;
-        private final Condition condition;
-
-        public SensorItem(@NonNull PreSleepInsight.Sensor sensor,
-                          @NonNull Condition condition) {
-            super(sensor.titleRes);
-            this.sensor = sensor;
-            this.condition = condition;
-        }
-
-        public SensorItem(@NonNull Parcel in) {
-            this(PreSleepInsight.Sensor.values()[in.readInt()], Condition.values()[in.readInt()]);
-        }
-
-
-        @Override
-        public CharSequence getDisplayString(@NonNull TimelineInfoFragment parent) {
-            switch (condition) {
-                case UNKNOWN: {
-                    return parent.getString(R.string.missing_data_placeholder);
-                }
-                case ALERT: {
-                    switch (sensor) {
-                        case TEMPERATURE:
-                            return parent.getString(R.string.condition_short_hand_alert_temperature);
-
-                        case HUMIDITY:
-                            return parent.getString(R.string.condition_short_hand_alert_humidity);
-
-                        case PARTICULATES:
-                            return parent.getString(R.string.condition_short_hand_alert_particulates);
-
-                        case SOUND:
-                            return parent.getString(R.string.condition_short_hand_alert_sound);
-
-                        case LIGHT:
-                            return parent.getString(R.string.condition_short_hand_alert_light);
-
-                        case UNKNOWN:
-                            return parent.getString(R.string.condition_short_hand_alert_generic);
-                    }
-                }
-                case WARNING: {
-                    return parent.getString(R.string.condition_short_hand_warning);
-                }
-                case IDEAL: {
-                    return parent.getString(R.string.condition_short_hand_ideal);
-                }
-                default: {
-                    throw new IllegalStateException("Unknown condition '" + condition + "'");
-                }
-            }
-        }
-
-        @Override
-        public @ColorRes int getTintColorRes() {
-            switch (condition) {
-                case UNKNOWN:
-                    return R.color.sensor_unknown;
-
-                case ALERT:
-                    return R.color.sensor_alert;
-
-                case WARNING:
-                    return R.color.sensor_warning;
-
-                case IDEAL:
-                    return R.color.sensor_ideal;
-
-                default:
-                    throw new IllegalStateException("Unknown condition '" + condition + "'");
-            }
-        }
-
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            out.writeInt(sensor.ordinal());
-            out.writeInt(condition.ordinal());
-        }
-
-
-        public static final Creator<SensorItem> CREATOR = new Creator<SensorItem>() {
-            @Override
-            public SensorItem createFromParcel(Parcel source) {
-                return new SensorItem(source);
-            }
-
-            @Override
-            public SensorItem[] newArray(int size) {
-                return new SensorItem[size];
-            }
-        };
     }
 }

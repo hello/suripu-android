@@ -2,6 +2,7 @@ package is.hello.sense.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@Deprecated
 public class TimelineSensor extends ApiResponse {
     @JsonProperty("name")
     private String name;

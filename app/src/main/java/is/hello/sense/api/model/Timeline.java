@@ -13,6 +13,7 @@ import java.util.List;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.util.markup.text.MarkupString;
 
+@Deprecated
 public class Timeline extends ApiResponse {
     @JsonProperty("score")
     private int score;

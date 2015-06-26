@@ -18,6 +18,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.util.markup.text.MarkupString;
 
+@Deprecated
 public class TimelineSegment extends ApiResponse implements Cloneable {
     @JsonProperty("id")
     private String id;
@@ -180,8 +181,8 @@ public class TimelineSegment extends ApiResponse implements Cloneable {
 
 
     public enum EventType {
-        MOTION(R.string.accessibility_event_name_motion),
-        SLEEPING(R.string.accessibility_event_name_sleeping),
+        MOTION(R.string.accessibility_event_name_generic_motion),
+        SLEEPING(R.string.accessibility_event_name_fell_asleep),
         SLEEP_MOTION(R.string.accessibility_event_name_sleep_motion),
         PARTNER_MOTION(R.string.accessibility_event_name_partner_moved),
         NOISE(R.string.accessibility_event_name_noise),
@@ -191,11 +192,11 @@ public class TimelineSegment extends ApiResponse implements Cloneable {
         LIGHTS_OUT(R.string.accessibility_event_name_lights_out),
         SUNSET(R.string.accessibility_event_name_sunset),
         SUNRISE(R.string.accessibility_event_name_sunrise),
-        IN_BED(R.string.accessibility_event_name_in_bed),
+        IN_BED(R.string.accessibility_event_name_got_in_bed),
         SLEEP(R.string.accessibility_event_name_sleep),
-        OUT_OF_BED(R.string.accessibility_event_name_out_of_bed),
-        WAKE_UP(R.string.accessibility_event_name_wake_up),
-        ALARM(R.string.accessibility_event_name_alarm),
+        OUT_OF_BED(R.string.accessibility_event_name_got_out_of_bed),
+        WAKE_UP(R.string.accessibility_event_name_woke_up),
+        ALARM(R.string.accessibility_event_name_alarm_rang),
         UNKNOWN(R.string.accessibility_event_name_unknown);
 
         @JsonCreator

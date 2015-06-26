@@ -1,5 +1,7 @@
 package is.hello.sense.api.model.v2;
 
+import android.support.annotation.VisibleForTesting;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -13,24 +15,30 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class Timeline extends ApiResponse {
+    @VisibleForTesting
     @JsonProperty("score")
-    private int score;
+    int score;
 
+    @VisibleForTesting
     @JsonProperty("score_condition")
-    private Condition scoreCondition;
+    Condition scoreCondition;
 
+    @VisibleForTesting
     @JsonProperty("message")
-    private MarkupString message;
+    MarkupString message;
 
+    @VisibleForTesting
     @JsonProperty("date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.DATE_FORMAT)
-    private DateTime date;
+    DateTime date;
 
+    @VisibleForTesting
     @JsonProperty("events")
-    private ArrayList<TimelineEvent> events;
+    ArrayList<TimelineEvent> events;
 
+    @VisibleForTesting
     @JsonProperty("metrics")
-    private ArrayList<TimelineMetric> metrics;
+    ArrayList<TimelineMetric> metrics;
 
 
     public int getScore() {

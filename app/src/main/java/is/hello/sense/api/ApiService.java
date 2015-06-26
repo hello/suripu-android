@@ -112,6 +112,7 @@ public interface ApiService {
     //region Timeline
 
     @GET("/v1/timeline/{year}-{month}-{day}")
+    @Deprecated
     Observable<ArrayList<is.hello.sense.api.model.Timeline>> timelineForDate_v1(@NonNull @Path("year") String year,
                                                                                 @NonNull @Path("month") String month,
                                                                                 @NonNull @Path("day") String day);
@@ -121,14 +122,9 @@ public interface ApiService {
                                                                         @NonNull @Path("month") String month,
                                                                         @NonNull @Path("day") String day);
 
-    @GET("/v1/insights")
-    Observable<ArrayList<Insight>> currentInsights();
-
-    @GET("/v1/insights/info/{category}")
-    Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") InsightCategory category);
-
     @POST("/v1/feedback/sleep")
-    Observable<VoidResponse> submitCorrect(@NonNull @Body Feedback correction);
+    @Deprecated
+    Observable<VoidResponse> submitCorrection_v1(@NonNull @Body Feedback correction);
 
     //endregion
 
@@ -149,6 +145,17 @@ public interface ApiService {
     @GET("/v1/room/{sensor}/week")
     Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
                                                                   @Query("from") long timestamp);
+
+    //endregion
+
+
+    //region Insights
+
+    @GET("/v1/insights")
+    Observable<ArrayList<Insight>> currentInsights();
+
+    @GET("/v1/insights/info/{category}")
+    Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") InsightCategory category);
 
     //endregion
 

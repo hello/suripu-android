@@ -3,6 +3,7 @@ package is.hello.sense.api.model.v2;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,17 +11,21 @@ import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Condition;
 
 public class TimelineMetric extends ApiResponse implements Parcelable {
+    @VisibleForTesting
     @JsonProperty("name")
-    private String name;
+    String name;
 
+    @VisibleForTesting
     @JsonProperty("value")
-    private String value;
+    String value;
 
+    @VisibleForTesting
     @JsonProperty("unit")
-    private String unit;
+    String unit;
 
+    @VisibleForTesting
     @JsonProperty("condition")
-    private Condition condition;
+    Condition condition;
 
 
     public TimelineMetric() {

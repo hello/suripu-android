@@ -80,11 +80,11 @@ public final class Styles {
         if (sleepDepth == 0) {
             return R.color.sleep_awake;
         } else if (sleepDepth == 100) {
-            return R.color.sleep_deep;
+            return R.color.sleep_sound;
         } else if (sleepDepth < 60) {
             return R.color.sleep_light;
         } else {
-            return R.color.sleep_intermediate;
+            return R.color.sleep_medium;
         }
     }
 
@@ -112,11 +112,11 @@ public final class Styles {
         if (sleepDepth == 0) {
             return R.string.sleep_depth_awake;
         } else if (sleepDepth == 100) {
-            return R.string.sleep_depth_deep;
+            return R.string.sleep_depth_sound;
         } else if (sleepDepth < 60) {
             return R.string.sleep_depth_light;
         } else {
-            return R.string.sleep_depth_intermediate;
+            return R.string.sleep_depth_medium;
         }
     }
 
@@ -143,6 +143,7 @@ public final class Styles {
     }
 
 
+    @Deprecated
     public static @DrawableRes int getTimelineSegmentIconRes(@NonNull TimelineSegment segment) {
         if (!segment.hasEventInfo()) {
             return 0;
@@ -150,7 +151,7 @@ public final class Styles {
 
         switch (segment.getEventType()) {
             case MOTION: {
-                return R.drawable.timeline_movement;
+                return R.drawable.timeline_generic_motion;
             }
 
             case NOISE: {
@@ -174,15 +175,15 @@ public final class Styles {
             }
 
             case SLEEP_MOTION: {
-                return R.drawable.timeline_movement;
+                return R.drawable.timeline_generic_motion;
             }
 
             case IN_BED: {
-                return R.drawable.timeline_in_bed;
+                return R.drawable.timeline_got_in_bed;
             }
 
             case SLEEP: {
-                return R.drawable.timeline_asleep;
+                return R.drawable.timeline_fell_asleep;
             }
 
             case SUNSET: {
@@ -198,15 +199,15 @@ public final class Styles {
             }
 
             case OUT_OF_BED: {
-                return R.drawable.timeline_out_of_bed;
+                return R.drawable.timeline_got_out_of_bed;
             }
 
             case WAKE_UP: {
-                return R.drawable.timeline_wakeup;
+                return R.drawable.timeline_woke_up;
             }
 
             case ALARM: {
-                return R.drawable.timeline_alarm;
+                return R.drawable.timeline_alarm_rang;
             }
 
             default:

@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 
-import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.graph.InjectionTests;
 import is.hello.sense.util.Sync;
 import is.hello.sense.util.markup.text.MarkupString;

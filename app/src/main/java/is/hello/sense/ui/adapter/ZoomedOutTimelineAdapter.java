@@ -13,7 +13,7 @@ import android.widget.TextView;
 import org.joda.time.DateTime;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.TimelinePreviewView;
@@ -145,7 +145,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
                 scoreDrawable.setFillColor(sleepScoreColor);
                 scoreDrawable.setValue(0);
 
-                preview.setTimelineSegments(null);
+                preview.setTimelineEvents(null);
 
                 this.hasTimeline = false;
             } else {
@@ -156,7 +156,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
                 scoreDrawable.setFillColor(sleepScoreColor);
                 scoreDrawable.setValue(sleepScore);
 
-                preview.setTimelineSegments(timeline.getSegments());
+                preview.setTimelineEvents(timeline.getEvents());
 
                 this.hasTimeline = true;
             }

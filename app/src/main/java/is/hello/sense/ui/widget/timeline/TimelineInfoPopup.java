@@ -18,8 +18,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.TimelineSegment;
-import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.api.model.v2.TimelineEvent;
 
 public class TimelineInfoPopup {
     public static final long VISIBLE_DURATION = 2000;
@@ -73,8 +72,8 @@ public class TimelineInfoPopup {
         }
     }
 
-    public void bindSegment(@NonNull TimelineSegment segment) {
-        String sleepDepth = activity.getString(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
+    public void bindEvent(@NonNull TimelineEvent event) {
+        String sleepDepth = activity.getString(event.getSleepState().stringRes);
         String prefix = activity.getString(R.string.timeline_popup_info_prefix);
 
         SpannableStringBuilder reading = new SpannableStringBuilder(sleepDepth);

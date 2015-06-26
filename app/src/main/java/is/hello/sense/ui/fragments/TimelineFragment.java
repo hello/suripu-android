@@ -26,9 +26,8 @@ import java.lang.ref.WeakReference;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Feedback;
-import is.hello.sense.api.model.Timeline;
-import is.hello.sense.api.model.TimelineSegment;
+import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -37,7 +36,6 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
@@ -382,7 +380,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         // For timeline corrections
         LoadingDialogFragment.close(getFragmentManager());
 
-        boolean hasSegments = !Lists.isEmpty(timeline.getSegments());
+        boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
         Runnable continuation = stateSafeExecutor.bind(() -> {
             if (animationEnabled) {
                 itemAnimator.addListener(new HandholdingOneShotListener());
@@ -390,15 +388,15 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(this::showHandholdingIfAppropriate));
             }
 
-            adapter.bindSegments(timeline.getSegments());
+            adapter.bindEvents(timeline.getEvents());
 
             if (controlsSharedChrome) {
                 homeActivity.setShareButtonVisible(wantsShareButton);
             }
         });
 
-        this.wantsShareButton = hasSegments;
-        if (hasSegments) {
+        this.wantsShareButton = hasEvents;
+        if (hasEvents) {
             headerView.bindScore(timeline.getScore(), continuation);
         } else {
             headerView.bindScore(TimelineHeaderView.NULL_SCORE, continuation);
@@ -406,7 +404,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         headerView.bindMessage(timeline.getMessage());
 
-        headerView.setScoreClickEnabled(timeline.getStatistics() != null && hasSegments);
+        headerView.setScoreClickEnabled(!Lists.isEmpty(timeline.getMetrics()) && hasEvents);
     }
 
     public void timelineUnavailable(Throwable e) {
@@ -423,13 +421,13 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     //region Acting on Items
 
     @Override
-    public void onSegmentItemClicked(int position, View view, @NonNull TimelineSegment segment) {
+    public void onSegmentItemClicked(int position, View view, @NonNull TimelineEvent event) {
         if (infoPopup != null) {
             infoPopup.dismiss();
         }
 
         this.infoPopup = new TimelineInfoPopup(getActivity());
-        infoPopup.bindSegment(segment);
+        infoPopup.bindEvent(event);
         infoPopup.show(view);
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
@@ -437,32 +435,36 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     @Override
-    public void onEventItemClicked(int segmentPosition, @NonNull TimelineSegment segment) {
+    public void onEventItemClicked(int segmentPosition, @NonNull TimelineEvent event) {
         if (infoPopup != null) {
             infoPopup.dismiss();
         }
 
         SenseBottomSheet actions = new SenseBottomSheet(getActivity());
 
-        actions.addOption(
-                new SenseBottomSheet.Option(ID_EVENT_CORRECT)
-                        .setTitle(R.string.action_timeline_mark_event_correct)
-                        .setIcon(R.drawable.timeline_action_correct)
-                        .setEnabled(false)
-        );
-        if (segment.isTimeAdjustable()) {
+        if (event.supportsAction(TimelineEvent.Action.VERIFY)) {
+            actions.addOption(
+                    new SenseBottomSheet.Option(ID_EVENT_CORRECT)
+                            .setTitle(R.string.action_timeline_mark_event_correct)
+                            .setIcon(R.drawable.timeline_action_correct)
+                            .setEnabled(false)
+            );
+        }
+        if (event.supportsAction(TimelineEvent.Action.ADJUST_TIME)) {
             actions.addOption(
                     new SenseBottomSheet.Option(ID_EVENT_ADJUST_TIME)
                             .setTitle(R.string.action_timeline_event_adjust_time)
                             .setIcon(R.drawable.timeline_action_adjust)
             );
         }
-        actions.addOption(
-                new SenseBottomSheet.Option(ID_EVENT_REMOVE)
-                        .setTitle(R.string.action_timeline_event_remove)
-                        .setIcon(R.drawable.timeline_action_remove)
-                        .setEnabled(false)
-        );
+        if (event.supportsAction(TimelineEvent.Action.REMOVE)) {
+            actions.addOption(
+                    new SenseBottomSheet.Option(ID_EVENT_REMOVE)
+                            .setTitle(R.string.action_timeline_event_remove)
+                            .setIcon(R.drawable.timeline_action_remove)
+                            .setEnabled(false)
+            );
+        }
 
         actions.setWantsDividers(true);
         actions.setOnOptionSelectedListener((optionPosition, option) -> {
@@ -496,8 +498,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     private void adjustTime(int position) {
-        TimelineSegment segment = adapter.getSegment(position);
-        DateTime initialTime = segment.getShiftedTimestamp();
+        TimelineEvent event = adapter.getEvent(position);
+        DateTime initialTime = event.getShiftedTimestamp();
         RotaryTimePickerDialog.OnTimeSetListener listener = (hourOfDay, minuteOfHour) -> {
             LocalTime newTime = new LocalTime(hourOfDay, minuteOfHour, 0);
             completeAdjustTime(position, newTime);
@@ -517,17 +519,17 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     private void completeAdjustTime(int position, @NonNull LocalTime newTime) {
-        TimelineSegment segment = adapter.getSegment(position);
-        DateTime originalTime = segment.getShiftedTimestamp();
+        /*TimelineEvent event = adapter.getEvent(position);
+        DateTime originalTime = event.getShiftedTimestamp();
 
         Feedback feedback = new Feedback();
-        feedback.setEventType(segment.getEventType());
+        feedback.setEventType(event.getEventType());
         feedback.setNight(getDate().toLocalDate());
         feedback.setOldTime(originalTime.toLocalTime());
         feedback.setNewTime(newTime);
 
         LoadingDialogFragment.show(getFragmentManager());
-        bindAndSubscribe(timelinePresenter.submitCorrection(feedback),
+        bindAndSubscribe(timelinePresenter.submitCorrection_v1(feedback),
                 ignored -> {
                     // Loading dialog is dismissed in #bindRenderedTimeline
                     timelinePresenter.update();
@@ -535,7 +537,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 e -> {
                     LoadingDialogFragment.close(getFragmentManager());
                     ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
-                });
+                });*/
     }
 
     private void markCorrect(int segmentPosition) {

@@ -1,16 +1,20 @@
 package is.hello.sense.api.model.v2;
 
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.annotation.VisibleForTesting;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.R;
@@ -19,32 +23,39 @@ import is.hello.sense.api.model.Enums;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class TimelineEvent extends ApiResponse {
+    @VisibleForTesting
     @JsonProperty("timestamp")
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private DateTime timestamp;
+    DateTime timestamp;
 
+    @VisibleForTesting
     @JsonProperty("timezone_offset")
-    private int timezoneOffset;
+    int timezoneOffset;
 
+    @VisibleForTesting
     @JsonProperty("duration_millis")
-    private long durationMillis;
+    long durationMillis;
 
+    @VisibleForTesting
     @JsonProperty("message")
-    private MarkupString message;
+    MarkupString message;
 
+    @VisibleForTesting
     @JsonProperty("sleep_depth")
-    private int sleepDepth;
+    int sleepDepth;
 
+    @VisibleForTesting
     @JsonProperty("sleep_state")
-    private SleepState sleepState;
+    SleepState sleepState;
 
+    @VisibleForTesting
     @JsonProperty("event_type")
-    private Type eventType;
+    Type eventType;
 
+    @VisibleForTesting
+    @JsonProperty("valid_actions")
+    ArrayList<Action> validActions;
 
-    public DateTime getTimestamp() {
-        return timestamp;
-    }
 
     public DateTimeZone getTimezone() {
         return DateTimeZone.forOffsetMillis(timezoneOffset);
@@ -74,13 +85,30 @@ public class TimelineEvent extends ApiResponse {
         return eventType;
     }
 
+    @JsonIgnore
+    public boolean hasInfo() {
+        return eventType != null;
+    }
+
+    @JsonIgnore
+    public boolean hasSound() {
+        return false;
+    }
+
+    @JsonIgnore
+    public String getSoundUrl() {
+        return null;
+    }
+
+    public boolean supportsAction(@NonNull Action action) {
+        return (validActions != null && validActions.contains(action));
+    }
+
 
     @Override
     public String toString() {
         return "TimelineEvent{" +
-                "timestamp=" + timestamp +
-                ", timezoneOffset=" + timezoneOffset +
-                ", durationMillis=" + durationMillis +
+                "timestamp=" + getShiftedTimestamp() +
                 ", message=" + message +
                 ", sleepDepth=" + sleepDepth +
                 ", sleepState='" + sleepState + '\'' +
@@ -90,14 +118,17 @@ public class TimelineEvent extends ApiResponse {
 
 
     public enum SleepState {
-        AWAKE(R.string.sleep_depth_awake),
-        LIGHT_SLEEP(R.string.sleep_depth_light),
-        MEDIUM_SLEEP(R.string.sleep_depth_intermediate),
-        DEEP_SLEEP(R.string.sleep_depth_deep);
+        AWAKE(R.color.sleep_awake, R.string.sleep_depth_awake),
+        LIGHT(R.color.sleep_light, R.string.sleep_depth_light),
+        MEDIUM(R.color.sleep_medium, R.string.sleep_depth_medium),
+        SOUND(R.color.sleep_sound, R.string.sleep_depth_sound);
 
+        public final @ColorRes int colorRes;
         public final @StringRes int stringRes;
 
-        SleepState(@StringRes int stringRes) {
+        SleepState(@ColorRes int colorRes,
+                   @StringRes int stringRes) {
+            this.colorRes = colorRes;
             this.stringRes = stringRes;
         }
 
@@ -107,7 +138,27 @@ public class TimelineEvent extends ApiResponse {
         }
     }
 
+    public enum Action {
+        ADJUST_TIME,
+        VERIFY,
+        REMOVE
+    }
+
     public enum Type {
+        GENERIC_MOTION(R.drawable.timeline_generic_motion, R.string.accessibility_event_name_generic_motion),
+        PARTNER_MOTION(R.drawable.timeline_partner, R.string.accessibility_event_name_partner_moved),
+        GENERIC_SOUND(R.drawable.timeline_sound, R.string.accessibility_event_name_noise),
+        SNORED(R.drawable.timeline_sound, R.string.accessibility_event_name_snoring),
+        SLEEP_TALKED(R.drawable.timeline_sound, R.string.accessibility_event_name_talk),
+        LIGHT(R.drawable.timeline_light, R.string.accessibility_event_name_light),
+        LIGHTS_OUT(R.drawable.timeline_lights_out, R.string.accessibility_event_name_lights_out),
+        SUNSET(R.drawable.timeline_sunset, R.string.accessibility_event_name_sunset),
+        SUNRISE(R.drawable.timeline_sunrise, R.string.accessibility_event_name_sunrise),
+        GOT_IN_BED(R.drawable.timeline_got_in_bed, R.string.accessibility_event_name_got_in_bed),
+        FELL_ASLEEP(R.drawable.timeline_fell_asleep, R.string.accessibility_event_name_fell_asleep),
+        GOT_OUT_OF_BED(R.drawable.timeline_got_out_of_bed, R.string.accessibility_event_name_got_out_of_bed),
+        WOKE_UP(R.drawable.timeline_woke_up, R.string.accessibility_event_name_woke_up),
+        ALARM_RANG(R.drawable.timeline_alarm_rang, R.string.accessibility_event_name_alarm_rang),
         UNKNOWN(R.drawable.timeline_unknown, R.string.accessibility_event_name_unknown);
 
         public final @DrawableRes int iconDrawableRes;

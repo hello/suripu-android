@@ -16,7 +16,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.v2.Timeline;
 import rx.Observable;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
@@ -104,8 +104,7 @@ public class ZoomedOutTimelinePresenter extends Presenter {
         String month = date.monthOfYear().getAsString();
         String day = date.dayOfMonth().getAsString();
 
-        return apiService.timelineForDate_v1(year, month, day)
-                         .map(ts -> ts.get(0))
+        return apiService.timelineForDate_v2(year, month, day)
                          .observeOn(updateScheduler);
     }
 

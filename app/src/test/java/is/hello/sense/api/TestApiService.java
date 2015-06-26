@@ -146,7 +146,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<VoidResponse> submitCorrect(@NonNull @Body Feedback correction) {
+    public Observable<VoidResponse> submitCorrection_v1(@NonNull @Body Feedback correction) {
         return safeJust(new VoidResponse());
     }
 
