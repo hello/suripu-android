@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.api.DynamicApiEndpoint;
 import is.hello.sense.ui.activities.SenseActivity;
 
 public class EnvironmentActivity extends SenseActivity implements AdapterView.OnItemClickListener {
@@ -32,8 +32,8 @@ public class EnvironmentActivity extends SenseActivity implements AdapterView.On
         listView.setOnItemClickListener(this);
 
         Adapter adapter = new Adapter(this,
-            new ApiEndpoint("android_dev", "99999secret", "https://dev-api.hello.is/v1"),
-            new ApiEndpoint("8d3c1664-05ae-47e4-bcdb-477489590aa4", "4f771f6f-5c10-4104-bbc6-3333f5b11bf9", "https://api.hello.is/v1")
+            new NamedApiEndpoint("android_dev", "99999secret", "https://dev-api.hello.is", "Dev"),
+            new NamedApiEndpoint("8d3c1664-05ae-47e4-bcdb-477489590aa4", "4f771f6f-5c10-4104-bbc6-3333f5b11bf9", "https://api.hello.is", "Production")
         );
         listView.setAdapter(adapter);
     }
@@ -43,9 +43,9 @@ public class EnvironmentActivity extends SenseActivity implements AdapterView.On
         ApiEndpoint endpoint = (ApiEndpoint) parent.getItemAtPosition(position);
 
         preferences.edit()
-                .putString(PreferencesPresenter.DEBUG_CLIENT_ID_OVERRIDE, endpoint.getClientId())
-                .putString(PreferencesPresenter.DEBUG_CLIENT_SECRET_OVERRIDE, endpoint.getClientSecret())
-                .putString(PreferencesPresenter.DEBUG_API_URL_OVERRIDE, endpoint.getUrl())
+                .putString(DynamicApiEndpoint.PREF_CLIENT_ID_OVERRIDE, endpoint.getClientId())
+                .putString(DynamicApiEndpoint.PREF_CLIENT_SECRET_OVERRIDE, endpoint.getClientSecret())
+                .putString(DynamicApiEndpoint.PREF_API_ENDPOINT_OVERRIDE, endpoint.getUrl())
                 .apply();
 
         finish();
@@ -65,6 +65,24 @@ public class EnvironmentActivity extends SenseActivity implements AdapterView.On
             text.setText(endpoint.getName());
 
             return text;
+        }
+    }
+
+    static class NamedApiEndpoint extends ApiEndpoint {
+        private final String name;
+
+        public NamedApiEndpoint(@NonNull String clientId,
+                                @NonNull String clientSecret,
+                                @NonNull String url,
+                                @NonNull String name) {
+            super(clientId, clientSecret, url);
+
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
         }
     }
 }
