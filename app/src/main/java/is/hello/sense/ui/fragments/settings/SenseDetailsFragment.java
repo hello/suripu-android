@@ -17,6 +17,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -101,7 +103,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
             this.didEnableBluetooth = savedInstanceState.getBoolean("didEnableBluetooth", false);
             this.factoryResetting = savedInstanceState.getBoolean("factoryResetting", false);
         } else {
-            Analytics.trackEvent(Analytics.TopView.EVENT_SENSE_DETAIL, null);
+            JSONObject properties = Analytics.createBluetoothTrackingProperties(getActivity());
+            Analytics.trackEvent(Analytics.TopView.EVENT_SENSE_DETAIL, properties);
         }
 
         devicesPresenter.update();

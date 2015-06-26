@@ -1,6 +1,10 @@
 package is.hello.sense.util;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +15,8 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Set;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
@@ -74,6 +80,13 @@ public class Analytics {
          * When the user agrees to using high power scans.
          */
         String EVENT_TURN_ON_HIGH_POWER = "High power mode enabled";
+
+
+        String PROP_BLUETOOTH_PAIRED_DEVICE_COUNT = "Paired device count";
+        String PROP_BLUETOOTH_CONNECTED_DEVICE_COUNT = "Connected device count";
+        String PROP_BLUETOOTH_HEADSET_CONNECTED = "Headset connected";
+        String PROP_BLUETOOTH_A2DP_CONNECTED = "A2DP connected";
+        String PROP_BLUETOOTH_HEALTH_DEVICE_CONNECTED = "Health device connected";
     }
 
     public interface Onboarding {
@@ -496,6 +509,48 @@ public class Analytics {
         } catch (JSONException ignored) {
         }
         return properties;
+    }
+
+    private static boolean isConnected(int connectionState) {
+        return (connectionState == BluetoothAdapter.STATE_CONNECTING ||
+                connectionState == BluetoothAdapter.STATE_CONNECTED);
+    }
+
+    public static @NonNull JSONObject createBluetoothTrackingProperties(@NonNull Context context) {
+        int bondedCount = 0,
+            connectedCount = 0;
+
+        boolean headsetConnected = false,
+                a2dpConnected = false,
+                healthConnected = false;
+
+        BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+        if (bluetoothManager != null) {
+            BluetoothAdapter adapter = bluetoothManager.getAdapter();
+
+            if (adapter != null && adapter.isEnabled()) {
+                Set<BluetoothDevice> bondedDevices = adapter.getBondedDevices();
+                bondedCount = bondedDevices.size();
+                for (BluetoothDevice bondedDevice : bondedDevices) {
+                    int gattConnectionState = bluetoothManager.getConnectionState(bondedDevice, BluetoothProfile.GATT);
+                    if (isConnected(gattConnectionState)) {
+                        connectedCount++;
+                    }
+                }
+
+                headsetConnected = isConnected(adapter.getProfileConnectionState(BluetoothProfile.HEADSET));
+                a2dpConnected = isConnected(adapter.getProfileConnectionState(BluetoothProfile.A2DP));
+                healthConnected = isConnected(adapter.getProfileConnectionState(BluetoothProfile.HEALTH));
+            }
+        }
+
+        return createProperties(
+            Global.PROP_BLUETOOTH_PAIRED_DEVICE_COUNT, bondedCount,
+            Global.PROP_BLUETOOTH_CONNECTED_DEVICE_COUNT, connectedCount,
+            Global.PROP_BLUETOOTH_HEADSET_CONNECTED, headsetConnected,
+            Global.PROP_BLUETOOTH_A2DP_CONNECTED, a2dpConnected,
+            Global.PROP_BLUETOOTH_HEALTH_DEVICE_CONNECTED, healthConnected
+        );
     }
 
     public static void trackEvent(@NonNull String event, @Nullable JSONObject properties) {

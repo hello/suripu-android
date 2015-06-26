@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import java.lang.ref.WeakReference;
 
 import is.hello.sense.R;
@@ -31,7 +33,8 @@ public class OnboardingDoneFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_END, null);
+            JSONObject properties = Analytics.createBluetoothTrackingProperties(getActivity());
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_END, properties);
         }
     }
 

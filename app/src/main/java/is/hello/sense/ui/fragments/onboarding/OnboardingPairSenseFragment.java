@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.json.JSONObject;
+
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
@@ -58,10 +60,11 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             this.hasLinkedAccount = savedInstanceState.getBoolean("hasLinkedAccount", false);
         }
 
+        JSONObject properties = Analytics.createBluetoothTrackingProperties(getActivity());
         if (isPairOnlySession()) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_SENSE_IN_APP, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_SENSE_IN_APP, properties);
         } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_SENSE, null);
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_SENSE, properties);
         }
 
         setRetainInstance(true);
