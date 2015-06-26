@@ -8,6 +8,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.res.ResourcesCompat;
 
 import is.hello.sense.R;
 
@@ -24,8 +25,8 @@ public class TimelinePlaceholderDrawable extends Drawable {
     private final int dividerHeight;
 
     public TimelinePlaceholderDrawable(@NonNull Resources resources) {
-        this.header = resources.getDrawable(R.drawable.background_timeline_header);
-        this.contents = resources.getDrawable(R.drawable.background_timeline_segment);
+        this.header = ResourcesCompat.getDrawable(resources, R.drawable.background_timeline_header, null);
+        this.contents = ResourcesCompat.getDrawable(resources, R.color.timeline_background_fill, null);
 
         dividerPaint.setColor(resources.getColor(R.color.timeline_header_border));
 

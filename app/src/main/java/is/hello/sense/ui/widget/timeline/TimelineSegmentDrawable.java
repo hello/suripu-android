@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.TextDrawable;
@@ -23,6 +24,9 @@ public class TimelineSegmentDrawable extends Drawable {
     private final int rightInset;
     private final int dividerHeight;
     private final int stolenScoreHeight;
+
+    private final Drawable overlayDrawable;
+    private final Rect fillRect = new Rect();
 
     private final TextDrawable timestampDrawable;
 
@@ -45,6 +49,7 @@ public class TimelineSegmentDrawable extends Drawable {
         this.stolenScoreHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_stolen_height);
 
         this.timestampDrawable = new TextDrawable(context, R.style.AppTheme_Text_Timeline_Timestamp);
+        this.overlayDrawable = ResourcesCompat.getDrawable(resources, R.drawable.timeline_segment_shading, null);
 
         stripePaint.setColor(resources.getColor(R.color.timeline_segment_stripe));
 
@@ -66,26 +71,37 @@ public class TimelineSegmentDrawable extends Drawable {
         if (sleepDepthFraction > 0f) {
             fillPaint.setColor(sleepDepthColor);
 
-            float fillRight = contentRight * sleepDepthFraction;
-            float fillTop = hasStolenTopSleepDepth ? stolenScoreHeight : 0f;
-            float fillBottom = hasStolenBottomSleepDepth ? canvasBottom - stolenScoreHeight : canvasBottom;
-            canvas.drawRect(0f, fillTop, fillRight, fillBottom, fillPaint);
+            fillRect.right = Math.round(contentRight * sleepDepthFraction);
+            fillRect.top = hasStolenTopSleepDepth ? stolenScoreHeight : 0;
+            fillRect.bottom = hasStolenBottomSleepDepth ? canvasBottom - stolenScoreHeight : canvasBottom;
+
+            canvas.drawRect(fillRect, fillPaint);
+            overlayDrawable.setBounds(fillRect);
+            overlayDrawable.draw(canvas);
         }
 
         if (hasStolenTopSleepDepth) {
             fillPaint.setColor(stolenTopSleepDepthColor);
 
-            float fillRight = contentRight * stolenTopSleepDepthFraction;
-            float fillBottom = stolenScoreHeight;
-            canvas.drawRect(0f, 0f, fillRight, fillBottom, fillPaint);
+            fillRect.right = Math.round(contentRight * stolenTopSleepDepthFraction);
+            fillRect.top = 0;
+            fillRect.bottom = stolenScoreHeight;
+
+            canvas.drawRect(fillRect, fillPaint);
+            overlayDrawable.setBounds(fillRect);
+            overlayDrawable.draw(canvas);
         }
 
         if (hasStolenBottomSleepDepth) {
             fillPaint.setColor(stolenBottomSleepDepthColor);
 
-            float fillRight = contentRight * stolenBottomSleepDepthFraction;
-            float fillTop = canvasBottom - stolenScoreHeight;
-            canvas.drawRect(0f, fillTop, fillRight, canvasBottom, fillPaint);
+            fillRect.right = Math.round(contentRight * stolenBottomSleepDepthFraction);
+            fillRect.top = canvasBottom - stolenScoreHeight;
+            fillRect.bottom = canvasBottom;
+
+            canvas.drawRect(fillRect, fillPaint);
+            overlayDrawable.setBounds(fillRect);
+            overlayDrawable.draw(canvas);
         }
 
         //endregion

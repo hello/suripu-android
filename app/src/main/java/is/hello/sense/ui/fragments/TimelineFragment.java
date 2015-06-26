@@ -600,7 +600,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         private final int bottomPadding;
 
         public BackgroundDecoration(@NonNull Resources resources) {
-            this.background = ResourcesCompat.getDrawable(resources, R.drawable.background_timeline_segment, null);
+            this.background = ResourcesCompat.getDrawable(resources, R.color.timeline_background_fill, null);
             this.bottomPadding = resources.getDimensionPixelSize(R.dimen.timeline_gap_bottom);
         }
 
