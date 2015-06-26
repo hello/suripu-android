@@ -108,20 +108,23 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
                 if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
                     preferences.edit()
-                               .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
-                               .apply();
+                            .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
+                            .apply();
 
                     linkAccount();
                 } else {
-                    hideAllActivityForSuccess(() -> getOnboardingActivity().showSelectWifiNetwork(true),
-                                              e -> presentError(e, "Turning off LEDs"));
+                    continueToWifi();
                 }
             }, e -> {
                 Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not get Sense's wifi network", e);
-                hideAllActivityForSuccess(() -> getOnboardingActivity().showSelectWifiNetwork(true),
-                                          ignored -> presentError(e, "Turning off LEDs"));
+                continueToWifi();
             });
         }, e -> presentError(e, "Turning on LEDs"));
+    }
+
+    private void continueToWifi() {
+        hideAllActivityForSuccess(() -> getOnboardingActivity().showSelectWifiNetwork(true),
+                                  e -> presentError(e, "Turning off LEDs"));
     }
 
     private void linkAccount() {
@@ -151,7 +154,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                              Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
 
                              preferences.edit()
-                                        .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
+                                     .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
                                         .apply();
 
                              pushDeviceData();
@@ -163,14 +166,14 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         showBlockingActivity(R.string.title_pushing_data);
 
         bindAndSubscribe(hardwarePresenter.pushData(),
-                         ignored -> finished(),
+                         ignored -> finishedLinking(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not push data from Sense, ignoring.", error);
-                             finished();
+                             finishedLinking();
                          });
     }
 
-    private void finished() {
+    private void finishedLinking() {
         hideAllActivityForSuccess(() -> {
             if (isPairOnlySession()) {
                 getOnboardingActivity().finish();
