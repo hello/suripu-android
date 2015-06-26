@@ -32,7 +32,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -282,7 +281,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
     }
 
     private void sendAccessToken() {
-        if (hasSentAccessToken || getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false)) {
+        if (hasSentAccessToken || isWifiOnlySession()) {
             setDeviceTimeZone();
         } else {
             showBlockingActivity(R.string.title_linking_account);
@@ -325,8 +324,8 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
     }
 
     private void finished() {
-        if (getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false)) {
-            completeHardwareActivity(() -> getOnboardingActivity().showPairPill(true), null);
+        if (isWifiOnlySession() || isPairOnlySession()) {
+            completeHardwareActivity(() -> getOnboardingActivity().finish(), null);
         } else {
             hideAllActivityForSuccess(() -> getOnboardingActivity().showPairPill(true),
                                       e -> presentError(e, "Turning off LEDs"));
