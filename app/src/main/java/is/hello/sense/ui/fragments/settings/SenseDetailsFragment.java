@@ -332,12 +332,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
                         showConnectedSenseActions(network);
                     },
-                    e -> {
-                        Logger.error(getClass().getSimpleName(), "Could not get connectivity state, ignoring.", e);
-                        showConnectedSenseActions(null);
-
-                        Analytics.trackError(e, "Sense Details");
-                    });
+                    this::presentError);
         }
     }
 
