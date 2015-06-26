@@ -164,6 +164,14 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
         return (peripheral != null && peripheral.isConnected());
     }
 
+    public @Peripheral.BondStatus int getBondStatus() {
+        if (peripheral != null) {
+            return peripheral.getBondStatus();
+        } else {
+            return Peripheral.BOND_NONE;
+        }
+    }
+
     public @Nullable String getDeviceId() {
         if (peripheral != null) {
             return peripheral.getDeviceId();
@@ -298,6 +306,18 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
                 logEvent("failed to pair with peripheral " + peripheral + ": " + e);
             });
         });
+    }
+
+    public Observable<Void> clearBond() {
+        logEvent("clearBond()");
+
+        if (peripheral == null) {
+            return noDeviceError();
+        }
+
+        return peripheral.removeBond()
+                .doOnError(this.respondToError)
+                .map(ignored -> null);
     }
 
     public Observable<Void> runLedAnimation(@NonNull SensePeripheral.LedAnimation animationType) {
