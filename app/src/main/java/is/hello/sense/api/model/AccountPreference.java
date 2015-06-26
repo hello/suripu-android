@@ -30,9 +30,8 @@ public class AccountPreference extends ApiResponse {
         return enabled;
     }
 
-    public AccountPreference setEnabled(boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        return this;
     }
 
 

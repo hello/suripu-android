@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -232,7 +233,7 @@ public class SensorConditionView extends View {
     }
 
     public void setFill(@DrawableRes int fillRes) {
-        setFill(resources.getDrawable(fillRes));
+        setFill(ResourcesCompat.getDrawable(resources, fillRes, null));
     }
 
     public void crossFadeToFill(@NonNull Drawable newFill, boolean rotate, @Nullable Runnable onCompletion) {
@@ -293,7 +294,7 @@ public class SensorConditionView extends View {
     }
 
     public void crossFadeToFill(@DrawableRes int fillRes, boolean rotate, @Nullable Runnable onCompletion) {
-        crossFadeToFill(resources.getDrawable(fillRes), rotate, onCompletion);
+        crossFadeToFill(ResourcesCompat.getDrawable(resources, fillRes, null), rotate, onCompletion);
     }
 
     public void stopAnimating() {

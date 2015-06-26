@@ -8,6 +8,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,7 +68,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
             optionsContainer.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
         }
 
-        Drawable divider = getContext().getResources().getDrawable(R.drawable.divider_horizontal_inset);
+        Drawable divider = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.divider_horizontal_inset, null);
         optionsContainer.setDividerDrawable(divider);
 
         for (Option option : options) {

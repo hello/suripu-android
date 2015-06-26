@@ -4,4 +4,6 @@
     <string name="timeline_error_message">Could not load timeline (%1$s)</string>
 
     <string name="error_invalid_account_id">Your account could not be linked with Sense. Do the environments on your app and Sense match?</string>
+
+    <string name="title_select_environment">Select Environment</string>
 </resources>

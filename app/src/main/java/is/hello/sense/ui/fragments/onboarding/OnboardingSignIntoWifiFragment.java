@@ -325,7 +325,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
 
     private void finished() {
         if (isWifiOnlySession() || isPairOnlySession()) {
-            completeHardwareActivity(() -> getOnboardingActivity().finish(), null);
+            completeHardwareActivity(() -> getOnboardingActivity().finish());
         } else {
             hideAllActivityForSuccess(() -> getOnboardingActivity().showPairPill(true),
                                       e -> presentError(e, "Turning off LEDs"));

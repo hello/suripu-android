@@ -78,7 +78,7 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
         Account account = getContainer().getAccount();
         if (!hasAnimated && account.getHeight() != null) {
             scale.setValue(scale.getMinValue(), true);
-            scale.postDelayed(() -> scale.animateToValue(account.getHeight(), null), 250);
+            scale.postDelayed(() -> scale.animateToValue(account.getHeight()), 250);
             this.hasAnimated = true;
         }
     }

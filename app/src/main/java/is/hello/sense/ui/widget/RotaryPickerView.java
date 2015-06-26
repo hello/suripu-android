@@ -309,7 +309,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
             int newValue = getValueForView(view);
             RotaryPickerView.this.value = newValue;
             if (onSelectionListener != null) {
-                onSelectionListener.onSelectionChanged(RotaryPickerView.this, newValue);
+                onSelectionListener.onSelectionChanged(newValue);
             }
         }
 
@@ -317,7 +317,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             if (previousState == SCROLL_STATE_IDLE && newState == SCROLL_STATE_DRAGGING) {
                 if (onSelectionListener != null) {
-                    onSelectionListener.onSelectionWillChange(RotaryPickerView.this);
+                    onSelectionListener.onSelectionWillChange();
                 }
             } else if (previousState != SCROLL_STATE_IDLE && newState == SCROLL_STATE_IDLE) {
                 View centerView = findCenterView();
@@ -470,8 +470,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     //region Interfaces
 
     public interface OnSelectionListener {
-        void onSelectionWillChange(@NonNull RotaryPickerView pickerView);
-        void onSelectionChanged(@NonNull RotaryPickerView pickerView, int newValue);
+        void onSelectionWillChange();
+        void onSelectionChanged(int newValue);
     }
 
     //endregion

@@ -265,13 +265,11 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         return compound;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        // Don't clear any of the view fields, we need
-        // them around for the dismissal animator.
-    }
+    /*
+     *  #onDestroyView() intentionally omitted.
+     *  Don't clear any of the view fields, we need
+     *  them around for the dismissal animator.
+     */
 
     @Override
     public void onDetach() {

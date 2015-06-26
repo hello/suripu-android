@@ -49,7 +49,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
         logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
     }
 
-    public void onUserLoggedOut(@NonNull Intent intent) {
+    public void onUserLoggedOut(@NonNull Intent ignored) {
         questions.onNext(new ArrayList<>());
         currentQuestion.onNext(null);
     }

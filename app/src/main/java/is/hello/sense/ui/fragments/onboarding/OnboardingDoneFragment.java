@@ -3,13 +3,16 @@ package is.hello.sense.ui.fragments.onboarding;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.lang.ref.WeakReference;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -19,28 +22,7 @@ import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.stop;
 
 public class OnboardingDoneFragment extends Fragment {
-    private final int SHOW_SECOND_MESSAGE = 2;
-    private final int SHOW_COMPLETE_MESSAGE = 3;
-    private final int DELAY = 2 * 1000;
-
-    private final Handler stepHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-
-            switch (msg.what) {
-                case SHOW_SECOND_MESSAGE: {
-                    showSecondMessage();
-                    break;
-                }
-
-                case SHOW_COMPLETE_MESSAGE: {
-                    showCompleteMessage();
-                    break;
-                }
-            }
-        }
-    };
+    private final StepHandler stepHandler = new StepHandler(this);
 
     private TextView message;
 
@@ -70,15 +52,14 @@ public class OnboardingDoneFragment extends Fragment {
         message.setVisibility(View.VISIBLE);
         message.setAlpha(1f);
 
-        stepHandler.sendEmptyMessageDelayed(SHOW_SECOND_MESSAGE, DELAY);
+        stepHandler.postShowSecond();
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        stepHandler.removeMessages(SHOW_SECOND_MESSAGE);
-        stepHandler.removeMessages(SHOW_COMPLETE_MESSAGE);
+        stepHandler.cancelPending();
 
         stop(message);
     }
@@ -94,13 +75,65 @@ public class OnboardingDoneFragment extends Fragment {
                 .fadeIn()
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
-                        stepHandler.sendEmptyMessageDelayed(SHOW_COMPLETE_MESSAGE, DELAY);
+                        stepHandler.postShowComplete();
                     }
                 })
                 .start();
     }
 
-    public void showCompleteMessage() {
+    public void complete() {
         ((OnboardingActivity) getActivity()).showHomeActivity();
+    }
+
+
+    static class StepHandler extends Handler {
+        static final int MSG_SHOW_SECOND = 2;
+        static final int SHOW_COMPLETE_MESSAGE = 3;
+        static final int DELAY = 2 * 1000;
+
+        private final WeakReference<OnboardingDoneFragment> fragment;
+
+        public StepHandler(@NonNull OnboardingDoneFragment fragment) {
+            super(Looper.getMainLooper());
+            this.fragment = new WeakReference<>(fragment);
+        }
+
+        void cancelPending() {
+            removeMessages(MSG_SHOW_SECOND);
+            removeMessages(SHOW_COMPLETE_MESSAGE);
+        }
+
+        void postShowSecond() {
+            sendEmptyMessageDelayed(MSG_SHOW_SECOND, DELAY);
+        }
+
+        void postShowComplete() {
+            sendEmptyMessageDelayed(SHOW_COMPLETE_MESSAGE, DELAY);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_SHOW_SECOND: {
+                    OnboardingDoneFragment fragment = this.fragment.get();
+                    if (fragment != null) {
+                        fragment.showSecondMessage();
+                    }
+                    break;
+                }
+
+                case SHOW_COMPLETE_MESSAGE: {
+                    OnboardingDoneFragment fragment = this.fragment.get();
+                    if (fragment != null) {
+                        fragment.complete();
+                    }
+                    break;
+                }
+
+                default: {
+                    super.handleMessage(msg);
+                }
+            }
+        }
     }
 }

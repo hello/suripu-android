@@ -61,7 +61,7 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER, null);
+        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER);
 
         this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this);
         listView.setAdapter(insightsAdapter);

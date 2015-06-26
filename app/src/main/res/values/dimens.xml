@@ -66,7 +66,6 @@
     <dimen name="gap_raised_item_inset_bottom">2dp</dimen>
     <dimen name="raised_item_corner_radius">2dp</dimen>
     <dimen name="card_large_corner_radius">3dp</dimen>
-    <dimen name="widget_last_night_corner_radius">38dp</dimen>
 
     <dimen name="page_dot_margin">5dp</dimen>
     <dimen name="page_dot_selected_size">10dp</dimen>
@@ -79,14 +78,9 @@
     <dimen name="grand_sleep_summary_width">175dp</dimen>
     <dimen name="grand_sleep_summary_height">175dp</dimen>
 
-    <dimen name="little_sleep_summary_width">70dp</dimen>
-    <dimen name="little_sleep_summary_height">70dp</dimen>
-
     <dimen name="item_room_sensor_condition_min_height">80dp</dimen>
     <dimen name="item_room_sensor_condition_reading_min_width">100dp</dimen>
     <dimen name="item_room_sensor_condition_graph_inset">8dp</dimen>
-
-    <dimen name="view_mini_timeline_stripe_width">@dimen/divider_size</dimen>
 
     <dimen name="scale_view_size">90dp</dimen>
     <dimen name="scale_view_diamond">2dp</dimen>
@@ -123,11 +117,9 @@
     <dimen name="timeline_segment_min_height">16dp</dimen>
     <dimen name="timeline_segment_height_per_hour">96dp</dimen>
     <dimen name="timeline_segment_item_end_inset">40dp</dimen>
-    <dimen name="timeline_segment_text_inset">6dp</dimen>
     <dimen name="timeline_segment_event_vertical_inset">4dp</dimen>
     <dimen name="timeline_segment_event_offset_max">7dp</dimen>
     <dimen name="timeline_segment_stolen_height">16dp</dimen>
-    <dimen name="timeline_segment_stroke_gap">2dp</dimen>
 
     <dimen name="timeline_detail_reading_height">2dp</dimen>
     <dimen name="timeline_detail_reading_height_large">4dp</dimen>
@@ -164,10 +156,5 @@
     <dimen name="dialog_max_height">700dp</dimen>
 
     <dimen name="dialog_bottom_max_height">400dp</dimen>
-
-    <!-- Widget -->
-
-    <dimen name="widget_last_night_min_width">200dp</dimen>
-    <dimen name="widget_last_night_min_height">70dp</dimen>
 
 </resources>

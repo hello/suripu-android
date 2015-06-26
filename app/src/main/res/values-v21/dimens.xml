@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="timeline_tooltip_padding_bottom">20dp</dimen>
-
     <!-- Switch -->
 
     <dimen name="widget_switch_width">44dp</dimen>

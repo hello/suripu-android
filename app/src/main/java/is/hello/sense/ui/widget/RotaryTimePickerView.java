@@ -224,16 +224,16 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
 
     @Override
-    public void onSelectionWillChange(@NonNull RotaryPickerView pickerView) {
+    public void onSelectionWillChange() {
         if (onSelectionListener != null) {
-            onSelectionListener.onSelectionWillChange(this);
+            onSelectionListener.onSelectionWillChange();
         }
     }
 
     @Override
-    public void onSelectionChanged(@NonNull RotaryPickerView pickerView, int newValue) {
+    public void onSelectionChanged(int newValue) {
         if (onSelectionListener != null) {
-            onSelectionListener.onSelectionChanged(this);
+            onSelectionListener.onSelectionChanged();
         }
     }
 
@@ -285,7 +285,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
 
     public interface OnSelectionListener {
-        void onSelectionWillChange(@NonNull RotaryTimePickerView timePickerView);
-        void onSelectionChanged(@NonNull RotaryTimePickerView timePickerView);
+        void onSelectionWillChange();
+        void onSelectionChanged();
     }
 }

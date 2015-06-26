@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,7 +91,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         this.animationCompleted = (savedInstanceState != null);
 
         this.resources = getResources();
-        this.graySense = resources.getDrawable(R.drawable.room_check_sense_gray);
+        this.graySense = ResourcesCompat.getDrawable(resources, R.drawable.room_check_sense_gray, null);
         this.startColor = resources.getColor(Condition.ALERT.colorRes);
 
         addPresenter(presenter);
@@ -323,15 +324,15 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     private Drawable getConditionDrawable(@NonNull Condition condition) {
         switch (condition) {
             case ALERT: {
-                return resources.getDrawable(R.drawable.room_check_sense_red);
+                return ResourcesCompat.getDrawable(resources, R.drawable.room_check_sense_red, null);
             }
 
             case WARNING: {
-                return resources.getDrawable(R.drawable.room_check_sense_yellow);
+                return ResourcesCompat.getDrawable(resources, R.drawable.room_check_sense_yellow, null);
             }
 
             case IDEAL: {
-                return resources.getDrawable(R.drawable.room_check_sense_green);
+                return ResourcesCompat.getDrawable(resources, R.drawable.room_check_sense_green, null);
             }
 
             default:

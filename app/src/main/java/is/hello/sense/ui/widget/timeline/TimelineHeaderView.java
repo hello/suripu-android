@@ -15,6 +15,7 @@ import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -80,7 +81,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         dividerPaint.setColor(dividerColor);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
 
-        setBackground(resources.getDrawable(R.drawable.background_timeline_header));
+        setBackground(ResourcesCompat.getDrawable(resources, R.drawable.background_timeline_header, null));
 
 
         LayoutInflater inflater = LayoutInflater.from(context);

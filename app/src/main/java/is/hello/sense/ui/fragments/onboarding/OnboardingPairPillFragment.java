@@ -125,7 +125,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         confirmation.setTitle(R.string.alert_title_skip_pair_pill);
         confirmation.setMessage(R.string.alert_message_skip_pair_pill);
         confirmation.setPositiveButton(R.string.action_skip, (dialog, which) -> {
-            completeHardwareActivity(() -> finishedPairing(false), null);
+            completeHardwareActivity(() -> finishedPairing(false));
         });
         confirmation.setNegativeButton(android.R.string.cancel, null);
         confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
@@ -161,7 +161,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         showHardwareActivity(() -> {
             hideBlockingActivity(false, () -> {
                 bindAndSubscribe(hardwarePresenter.linkPill(),
-                                 ignored -> completeHardwareActivity(() -> finishedPairing(true), null),
+                                 ignored -> completeHardwareActivity(() -> finishedPairing(true)),
                                  this::presentError);
             });
         }, this::presentError);

@@ -17,7 +17,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import is.hello.sense.ui.widget.RotaryTimePickerDialog;
-import is.hello.sense.ui.widget.RotaryTimePickerView;
 
 public class TimePickerDialogFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener, RotaryTimePickerDialog.OnTimeSetListener {
     public static final String TAG = TimePickerDialogFragment.class.getSimpleName();
@@ -91,11 +90,7 @@ public class TimePickerDialogFragment extends DialogFragment implements TimePick
     }
 
     @Override
-    public void onTimeSet(RotaryTimePickerView view, int hour, int minute) {
-        onTimeSet(hour, minute);
-    }
-
-    private void onTimeSet(int hour, int minute) {
+    public void onTimeSet(int hour, int minute) {
         if (getTargetFragment() != null) {
             Intent response = new Intent();
             response.putExtra(RESULT_HOUR, hour);

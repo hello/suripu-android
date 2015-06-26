@@ -31,8 +31,11 @@ public class SenseHtmlTextView extends TextView {
     protected void initialize(@Nullable AttributeSet attrs, int defStyle) {
         if (attrs != null) {
             TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.SenseHtmlTextView, defStyle, 0);
+
             String senseHtml = styles.getString(R.styleable.SenseHtmlTextView_senseHtml);
             setSenseHtml(senseHtml);
+
+            styles.recycle();
         }
     }
 }

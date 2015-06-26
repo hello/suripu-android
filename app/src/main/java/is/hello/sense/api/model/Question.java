@@ -112,7 +112,7 @@ public class Question extends ApiResponse {
         }
     }
 
-    public static enum Type {
+    public enum Type {
         CHOICE,
         CHECKBOX,
         QUANTITY,
@@ -127,7 +127,7 @@ public class Question extends ApiResponse {
         }
     }
 
-    public static enum AskTime {
+    public enum AskTime {
         MORNING,
         AFTERNOON,
         EVENING,

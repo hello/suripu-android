@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * A fragment which has complex enter and exit animations.
  */
 public abstract class AnimatedInjectionFragment extends InjectionFragment {
-    protected static final String SAVED_HAS_ANIMATED = AnimatedInjectionFragment.class.getName() + ".SAVED_HAS_ANIMATED";
+    private static final String SAVED_HAS_ANIMATED = AnimatedInjectionFragment.class.getName() + ".SAVED_HAS_ANIMATED";
 
     private boolean hasAnimated = false;
 

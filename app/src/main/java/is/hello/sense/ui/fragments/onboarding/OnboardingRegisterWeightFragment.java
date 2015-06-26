@@ -84,7 +84,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
             scale.postDelayed(() -> {
                 int weightInGrams = Math.round(account.getWeight());
                 int pounds = UnitOperations.gramsToPounds(weightInGrams);
-                scale.animateToValue(pounds, null);
+                scale.animateToValue(pounds);
             }, 250);
             this.hasAnimated = true;
         }

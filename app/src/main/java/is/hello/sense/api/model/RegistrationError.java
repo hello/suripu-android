@@ -15,7 +15,7 @@ public enum RegistrationError {
 
     public final @StringRes int messageRes;
 
-    private RegistrationError(@StringRes int messageRes) {
+    RegistrationError(@StringRes int messageRes) {
         this.messageRes = messageRes;
     }
 

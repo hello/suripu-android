@@ -12,7 +12,7 @@ public enum Gender {
 
     public final @StringRes int nameRes;
 
-    private Gender(int nameRes) {
+    Gender(int nameRes) {
         this.nameRes = nameRes;
     }
 

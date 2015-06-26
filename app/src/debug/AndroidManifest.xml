@@ -31,6 +31,8 @@
             </intent-filter>
         </receiver>
 
+        <meta-data android:name="com.mixpanel.android.MPConfig.ResourcePackageName" android:value="is.hello.sense" />
+
     </application>
 
 </manifest>

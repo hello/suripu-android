@@ -89,7 +89,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
         bluetoothEnabled.subscribe(this::onBluetoothEnabledChanged, Functions.LOG_ERROR);
     }
 
-    public void onUserLoggedOut(@NonNull Intent intent) {
+    public void onUserLoggedOut(@NonNull Intent ignored) {
         setLastPeripheralAddress(null);
         setPairedPillId(null);
     }

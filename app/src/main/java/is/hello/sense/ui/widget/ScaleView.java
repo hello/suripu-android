@@ -90,7 +90,7 @@ public class ScaleView extends FrameLayout {
             throw new IllegalStateException();
         }
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 notifyValueChangedListener();
@@ -234,7 +234,7 @@ public class ScaleView extends FrameLayout {
         }
     }
 
-    public void animateToValue(int newValue, @Nullable Runnable onStop) {
+    public void animateToValue(int newValue) {
         LinearSmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
             final float timePerPx = ANIMATION_MS_PER_PX / getResources().getDisplayMetrics().densityDpi;
 
@@ -260,10 +260,6 @@ public class ScaleView extends FrameLayout {
                 super.onStop();
 
                 ScaleView.this.animating = false;
-
-                if (onStop != null) {
-                    onStop.run();
-                }
             }
         };
         int newPosition = Math.max(minValue, (newValue - minValue - 1));

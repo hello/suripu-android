@@ -16,7 +16,6 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -303,13 +302,7 @@ public final class Styles {
         paint.setStrokeCap(Paint.Cap.ROUND);
     }
 
-    public static void addCardSpacing(@NonNull ListView listView,
-                                      @CardSpacing int spacing,
-                                      @Nullable View[] outSpacers) {
-        if (outSpacers != null && outSpacers.length != CARD_SPACING_OUT_COUNT) {
-            throw new IllegalArgumentException("outSpacers must have length of " + CARD_SPACING_OUT_COUNT);
-        }
-
+    public static void addCardSpacing(@NonNull ListView listView, @CardSpacing int spacing) {
         Context context = listView.getContext();
         Resources resources = listView.getResources();
 
@@ -325,19 +318,12 @@ public final class Styles {
             topSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
             ListViews.addHeaderView(listView, topSpacing, null, false);
 
-            if (outSpacers != null) {
-                outSpacers[0] = topSpacing;
-            }
         }
 
         if ((spacing & CARD_SPACING_FOOTER) == CARD_SPACING_FOOTER) {
             View bottomSpacing = new View(context);
             bottomSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
             ListViews.addFooterView(listView, bottomSpacing, null, false);
-
-            if (outSpacers != null) {
-                outSpacers[1] = bottomSpacing;
-            }
         }
     }
 

@@ -162,11 +162,11 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         }
     }
 
-    public void updateCallToAction(boolean animate) {
+    public void updateCallToAction() {
         if (selectedAnswers.isEmpty()) {
-            showSkipButton(animate);
+            showSkipButton(true);
         } else {
-            showNextButton(animate);
+            showNextButton(true);
         }
     }
 
@@ -435,7 +435,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         }
 
         flipChoiceDrawables(choiceButton);
-        updateCallToAction(true);
+        updateCallToAction();
     }
 
     private final View.OnTouchListener POP_LISTENER = (View view, MotionEvent motionEvent) -> {

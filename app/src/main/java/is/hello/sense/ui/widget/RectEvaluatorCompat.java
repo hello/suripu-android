@@ -19,7 +19,7 @@ import android.animation.TypeEvaluator;
 import android.graphics.Rect;
 
 public class RectEvaluatorCompat implements TypeEvaluator<Rect> {
-    private Rect rect;
+    private final Rect rect;
 
     public RectEvaluatorCompat() {
         this(new Rect());

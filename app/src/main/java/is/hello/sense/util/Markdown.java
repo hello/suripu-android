@@ -31,7 +31,6 @@ import rx.schedulers.Schedulers;
         }
     }
 
-    @Deprecated
     public @NonNull Observable<CharSequence> render(@Nullable String markdown) {
         if (TextUtils.isEmpty(markdown)) {
             return Observable.just((CharSequence) "")
@@ -51,7 +50,6 @@ import rx.schedulers.Schedulers;
                          .observeOn(AndroidSchedulers.mainThread());
     }
 
-    @Deprecated
     public void renderInto(@NonNull TextView textView, @Nullable String markdown) {
         render(markdown)
                 .observeOn(AndroidSchedulers.mainThread())

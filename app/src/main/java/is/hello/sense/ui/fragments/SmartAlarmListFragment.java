@@ -94,7 +94,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
         spacer.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         ListViews.addFooterView(listView, spacer, null, false);
 
-        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER | Styles.CARD_SPACING_USE_COMPACT, null);
+        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER | Styles.CARD_SPACING_USE_COMPACT);
 
         ImageButton addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
         Views.setSafeOnClickListener(addButton, this::newAlarm);

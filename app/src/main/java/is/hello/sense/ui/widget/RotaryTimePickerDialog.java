@@ -70,18 +70,18 @@ public class RotaryTimePickerDialog extends SenseAlertDialog implements RotaryTi
     }
 
     private void onTimeSet() {
-        onTimeSetListener.onTimeSet(rotaryTimePickerView, rotaryTimePickerView.getHours(), rotaryTimePickerView.getMinutes());
+        onTimeSetListener.onTimeSet(rotaryTimePickerView.getHours(), rotaryTimePickerView.getMinutes());
         dismiss();
     }
 
 
     @Override
-    public void onSelectionWillChange(@NonNull RotaryTimePickerView timePickerView) {
+    public void onSelectionWillChange() {
         this.waitingForSelectionChange = true;
     }
 
     @Override
-    public void onSelectionChanged(@NonNull RotaryTimePickerView timePickerView) {
+    public void onSelectionChanged() {
         this.waitingForSelectionChange = false;
         if (afterSelectionChange != null) {
             afterSelectionChange.run();
@@ -90,6 +90,6 @@ public class RotaryTimePickerDialog extends SenseAlertDialog implements RotaryTi
 
 
     public interface OnTimeSetListener {
-        void onTimeSet(RotaryTimePickerView view, int hourOfDay, int minute);
+        void onTimeSet(int hourOfDay, int minute);
     }
 }

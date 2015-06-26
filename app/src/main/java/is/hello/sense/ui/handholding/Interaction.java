@@ -9,7 +9,7 @@ public enum Interaction {
 
     public final boolean isVertical;
 
-    private Interaction(boolean isVertical) {
+    Interaction(boolean isVertical) {
         this.isVertical = isVertical;
     }
 }

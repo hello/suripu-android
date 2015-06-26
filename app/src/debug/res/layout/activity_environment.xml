@@ -14,7 +14,7 @@
         android:layout_marginBottom="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Heading.Strong"
         android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-        android:text="Select Environment" />
+        android:text="@string/title_select_environment" />
 
     <View style="@style/Divider.Horizontal" />
 

@@ -92,12 +92,9 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         markShown(activity, welcomeRes);
     }
 
-    public static boolean showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes) {
+    public static void showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes) {
         if (shouldShow(activity, welcomeRes)) {
             show(activity, welcomeRes);
-            return true;
-        } else {
-            return false;
         }
     }
 

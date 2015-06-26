@@ -498,7 +498,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     private void adjustTime(int position) {
         TimelineSegment segment = adapter.getSegment(position);
         DateTime initialTime = segment.getShiftedTimestamp();
-        RotaryTimePickerDialog.OnTimeSetListener listener = (pickerView, hourOfDay, minuteOfHour) -> {
+        RotaryTimePickerDialog.OnTimeSetListener listener = (hourOfDay, minuteOfHour) -> {
             LocalTime newTime = new LocalTime(hourOfDay, minuteOfHour, 0);
             completeAdjustTime(position, newTime);
         };

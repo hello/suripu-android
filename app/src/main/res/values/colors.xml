@@ -22,7 +22,6 @@
     <color name="background_questions">#F7f8f8f8</color>
     <color name="background_onboarding">@color/white</color>
 
-    <color name="background_raised_item_normal">@color/background_light</color>
     <color name="background_raised_item_clicked">#fafafa</color>
 
     <color name="border">#e5e5e5</color>
@@ -33,11 +32,6 @@
     <color name="timeline_header_gradient_end">#ffF0F3F7</color>
     <color name="timeline_background_fill">#E0F4FF</color>
     <color name="timeline_segment_stripe">#40009cff</color>
-    <color name="timeline_segment_stripe_dimmed">#40a2a2a2</color>
-    <color name="timeline_segment_text_left">@color/text_dim</color>
-    <color name="timeline_segment_underline_left">#26000000</color>
-    <color name="timeline_segment_text_right">@color/light_accent</color>
-    <color name="timeline_segment_underline_right">#62009cff</color>
 
     <color name="text_dark">#4D4D4D</color>
     <color name="text_medium">#878787</color>

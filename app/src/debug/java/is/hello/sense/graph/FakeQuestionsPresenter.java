@@ -2,12 +2,9 @@ package is.hello.sense.graph;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +15,6 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import rx.Observable;
 import rx.schedulers.Schedulers;

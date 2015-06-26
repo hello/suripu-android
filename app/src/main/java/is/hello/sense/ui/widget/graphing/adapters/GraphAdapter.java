@@ -12,7 +12,7 @@ public interface GraphAdapter {
     void registerObserver(@NonNull ChangeObserver observer);
     void unregisterObserver(@NonNull ChangeObserver observer);
 
-    public interface ChangeObserver {
+    interface ChangeObserver {
         void onGraphAdapterChanged();
     }
 }

@@ -16,7 +16,7 @@ public enum Condition {
 
     public final @ColorRes @DrawableRes int colorRes;
 
-    private Condition(@ColorRes int colorRes) {
+    Condition(@ColorRes int colorRes) {
         this.colorRes = colorRes;
     }
 

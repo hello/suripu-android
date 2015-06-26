@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -105,7 +106,7 @@ public class PanImageView extends View {
     }
 
     public void setImageResource(@DrawableRes int drawableRes) {
-        setImageDrawable(getResources().getDrawable(drawableRes));
+        setImageDrawable(ResourcesCompat.getDrawable(getResources(), drawableRes, null));
     }
 
     public void setPanAmount(float panAmount) {
