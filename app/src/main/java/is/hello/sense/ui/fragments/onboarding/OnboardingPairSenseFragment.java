@@ -17,6 +17,7 @@ import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
+import is.hello.buruberi.bluetooth.stacks.Peripheral;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
@@ -150,16 +151,16 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
         SenseTimeZone timeZone = SenseTimeZone.fromDefault();
         bindAndSubscribe(apiService.updateTimeZone(timeZone),
-                         ignored -> {
-                             Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
+                ignored -> {
+                    Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
 
-                             preferences.edit()
-                                     .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
-                                        .apply();
+                    preferences.edit()
+                            .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
+                            .apply();
 
-                             pushDeviceData();
-                         },
-                         e -> presentError(e, "Updating time zone"));
+                    pushDeviceData();
+                },
+                e -> presentError(e, "Updating time zone"));
     }
 
     private void pushDeviceData() {
@@ -209,13 +210,24 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
     public void completePeripheralPair() {
         Analytics.setSenseId(hardwarePresenter.getDeviceId());
-        bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-            if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
-                checkConnectivityAndContinue();
-            } else {
-                showBlockingActivity(Styles.getConnectStatusMessage(status));
-            }
-        }, e -> presentError(e, "Connecting to Sense"));
+
+        if (hardwarePresenter.getBondStatus() == Peripheral.BOND_BONDED) {
+            showBlockingActivity(R.string.title_clearing_bond);
+            bindAndSubscribe(hardwarePresenter.clearBond(),
+                    ignored -> {
+                        completePeripheralPair();
+                    },
+                    e -> presentError(e, "Clearing Bond"));
+        } else {
+            showBlockingActivity(R.string.title_connecting);
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
+                if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
+                    checkConnectivityAndContinue();
+                } else {
+                    showBlockingActivity(Styles.getConnectStatusMessage(status));
+                }
+            }, e -> presentError(e, "Connecting to Sense"));
+        }
     }
 
     public void presentError(Throwable e, @NonNull String operation) {

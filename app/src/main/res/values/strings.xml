@@ -163,6 +163,7 @@ so you can sleep better.</string>
     <string name="action_select_wifi_network">Edit Wi-Fi</string>
     <string name="title_scanning_for_sense">Looking for Sense</string>
     <string name="title_waiting_for_sense">Waiting for Sense</string>
+    <string name="title_clearing_bond">Preparing…</string>
     <string name="title_connecting">Connecting with Sense</string>
     <string name="title_discovering_services">Pairing</string>
     <string name="title_linking_account">Linking your account</string>
