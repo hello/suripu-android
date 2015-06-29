@@ -2,8 +2,8 @@ package is.hello.sense.util;
 
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.concurrent.Executor;
 
 /**
@@ -12,7 +12,7 @@ import java.util.concurrent.Executor;
  */
 public class StateSafeExecutor implements Executor {
     private final Resumes host;
-    private final List<Runnable> pending = new ArrayList<>(); //Synchronize all access to this!
+    private final Queue<Runnable> pending = new ArrayDeque<>(8); //Synchronize all access to this!
 
     /**
      * Constructs a state-safe executor that will
@@ -28,10 +28,10 @@ public class StateSafeExecutor implements Executor {
      */
     public void executePendingForResume() {
         synchronized(pending) {
-            for (Runnable runnable : pending) {
+            Runnable runnable;
+            while (host.isResumed() && (runnable = pending.poll()) != null) {
                 runnable.run();
             }
-            pending.clear();
         }
     }
 
@@ -46,7 +46,7 @@ public class StateSafeExecutor implements Executor {
             command.run();
         } else {
             synchronized(pending) {
-                pending.add(command);
+                pending.offer(command);
             }
         }
     }
@@ -58,6 +58,15 @@ public class StateSafeExecutor implements Executor {
     public boolean cancelPending(@NonNull Runnable command) {
         synchronized(pending) {
             return pending.remove(command);
+        }
+    }
+
+    /**
+     * Removes all pending units of work from the executor.
+     */
+    public void clearPending() {
+        synchronized(pending) {
+            pending.clear();
         }
     }
 
