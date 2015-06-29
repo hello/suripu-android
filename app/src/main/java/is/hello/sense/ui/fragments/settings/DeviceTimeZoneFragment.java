@@ -136,10 +136,10 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
                              );
                              Analytics.trackEvent(Analytics.TopView.EVENT_TIME_ZONE_CHANGED, properties);
 
-                             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-                                 FragmentNavigation navigation = (FragmentNavigation) getActivity();
-                                 navigation.popFragment(this, true);
-                             });
+                             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+
+                             FragmentNavigation navigation = (FragmentNavigation) getActivity();
+                             navigation.popFragment(this, true);
                          },
                          this::presentError);
     }

@@ -136,7 +136,7 @@ public class ChangePasswordFragment extends InjectionFragment {
         bindAndSubscribe(authorize,
                          session -> {
                              apiSessionManager.setSession(session);
-                             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {});
+                             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
                              getFragmentManager().popBackStack();
                          },
                          this::presentError);
