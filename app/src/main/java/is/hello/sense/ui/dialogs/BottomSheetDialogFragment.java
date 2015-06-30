@@ -20,12 +20,10 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
     public static final String TAG = BottomSheetDialogFragment.class.getSimpleName();
 
     public static final String RESULT_OPTION_ID = BottomSheetDialogFragment.class.getName() + ".RESULT_OPTION_ID";
-    public static final String RESULT_AFFECTED_POSITION = BottomSheetDialogFragment.class.getName() + ".RESULT_AFFECTED_POSITION";
 
     private static final String ARG_TITLE = BottomSheetDialogFragment.class.getName() + ".ARG_TITLE";
     private static final String ARG_OPTIONS = BottomSheetDialogFragment.class.getName() + ".ARG_OPTIONS";
     private static final String ARG_WANTS_DIVIDERS = BottomSheetDialogFragment.class.getName() + ".ARG_WANTS_DIVIDERS";
-    private static final String ARG_AFFECTED_POSITION = BottomSheetDialogFragment.class.getName() + ".ARG_AFFECTED_POSITION";
 
     //region Lifecycle
 
@@ -35,7 +33,7 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
 
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_TITLE, title);
-        arguments.putSerializable(ARG_OPTIONS, options);
+        arguments.putParcelableArrayList(ARG_OPTIONS, options);
         dialogFragment.setArguments(arguments);
 
         return dialogFragment;
@@ -69,8 +67,7 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
             }
             bottomSheet.setWantsDividers(getArguments().getBoolean(ARG_WANTS_DIVIDERS, false));
 
-            //noinspection unchecked
-            ArrayList<Option> options = (ArrayList<Option>) getArguments().getSerializable(ARG_OPTIONS);
+            ArrayList<Option> options = getArguments().getParcelableArrayList(ARG_OPTIONS);
             bottomSheet.addOptions(options);
         }
 
@@ -81,10 +78,6 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
         getArguments().putBoolean(ARG_WANTS_DIVIDERS, wantsDividers);
     }
 
-    public void setAffectedPosition(int affectedPosition) {
-        getArguments().putInt(ARG_AFFECTED_POSITION, affectedPosition);
-    }
-
     //endregion
 
 
@@ -93,7 +86,6 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
         if (getTargetFragment() != null) {
             Intent result = new Intent();
             result.putExtra(RESULT_OPTION_ID, option.getOptionId());
-            result.putExtra(RESULT_AFFECTED_POSITION, getArguments().getInt(ARG_AFFECTED_POSITION, 0));
             getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, result);
         }
     }

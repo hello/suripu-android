@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_bottom_sheet_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/dialog_bottom_sheet_container"
-        android:orientation="vertical"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -13,6 +12,7 @@
             android:id="@+id/dialog_bottom_sheet_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/gap_outer"
             android:layout_marginRight="@dimen/gap_outer"
             android:layout_marginTop="@dimen/gap_outer"
@@ -26,6 +26,7 @@
             android:id="@+id/dialog_bottom_sheet_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/dialog_bottom_sheet_title"
             android:layout_marginLeft="@dimen/gap_outer"
             android:layout_marginRight="@dimen/gap_outer"
             android:layout_marginBottom="@dimen/gap_outer"
@@ -35,6 +36,7 @@
 
         <View
             android:id="@+id/dialog_bottom_sheet_message_divider"
+            android:layout_below="@id/dialog_bottom_sheet_message"
             style="@style/Divider.Horizontal" />
 
         <LinearLayout
@@ -42,9 +44,10 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/dialog_bottom_sheet_message_divider"
             android:divider="@drawable/divider_horizontal_inset"
             android:showDividers="middle" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </ScrollView>
