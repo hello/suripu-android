@@ -3,11 +3,13 @@ package is.hello.sense.ui.dialogs;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,6 +27,9 @@ public class LoadingDialogFragment extends SenseDialogFragment {
 
     protected static final String ARG_TITLE = LoadingDialogFragment.class.getName() + ".ARG_TITLE";
     protected static final String ARG_WANTS_OPAQUE_BACKGROUND = LoadingDialogFragment.class.getName() + ".ARG_WANTS_OPAQUE_BACKGROUND";
+    protected static final String ARG_HEIGHT = LoadingDialogFragment.class.getName() + ".ARG_HEIGHT";
+    protected static final String ARG_WINDOW_GRAVITY = LoadingDialogFragment.class.getName() + ".ARG_WINDOW_GRAVITY";
+    protected static final String ARG_WINDOW_DIMMED = LoadingDialogFragment.class.getName() + ".ARG_WINDOW_DIMMED";
 
     private TextView titleText;
     private ProgressBar activityIndicator;
@@ -99,12 +104,29 @@ public class LoadingDialogFragment extends SenseDialogFragment {
 
         if (getArguments() != null) {
             Bundle arguments = getArguments();
+            View root = dialog.findViewById(R.id.fragment_dialog_loading_container);
+
             if (arguments.getBoolean(ARG_WANTS_OPAQUE_BACKGROUND, false)) {
-                View container = dialog.findViewById(R.id.fragment_dialog_loading_container);
-                container.setBackgroundColor(getResources().getColor(R.color.background));
+                root.setBackgroundColor(getResources().getColor(R.color.background));
             }
 
             titleText.setText(arguments.getString(ARG_TITLE));
+
+            Window window = dialog.getWindow();
+            WindowManager.LayoutParams windowAttributes = window.getAttributes();
+
+            if (arguments.getBoolean(ARG_WINDOW_DIMMED)) {
+                window.setDimAmount(0.5f);
+                window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            }
+
+            if (arguments.containsKey(ARG_HEIGHT)) {
+                root.getLayoutParams().height = arguments.getInt(ARG_HEIGHT);
+                root.requestLayout();
+                window.setLayout(windowAttributes.width, ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+
+            window.setGravity(arguments.getInt(ARG_WINDOW_GRAVITY, windowAttributes.gravity));
         }
 
         return dialog;
@@ -115,6 +137,18 @@ public class LoadingDialogFragment extends SenseDialogFragment {
         if (titleText != null) {
             titleText.setText(title);
         }
+    }
+
+    public void setHeight(int height) {
+        getArguments().putInt(ARG_HEIGHT, height);
+    }
+
+    public void setWindowGravity(int gravity) {
+        getArguments().putInt(ARG_WINDOW_GRAVITY, gravity);
+    }
+
+    public void setWindowDimmed(boolean dimmed) {
+        getArguments().putBoolean(ARG_WINDOW_DIMMED, dimmed);
     }
 
     public void dismissWithDoneTransition(@Nullable Runnable onCompletion) {
@@ -134,14 +168,17 @@ public class LoadingDialogFragment extends SenseDialogFragment {
                                 .zoomInFrom(0f)
                                 .start();
 
-                        titleText.setText(R.string.action_done);
+                        if (!TextUtils.isEmpty(titleText.getText())) {
+                            titleText.setText(R.string.action_done);
+                        }
+
                         animate(titleText)
                                 .fadeIn()
                                 .addOnAnimationCompleted(finished1 -> {
                                     if (!finished1)
                                         return;
 
-                                    new Handler().postDelayed(() -> {
+                                    titleText.postDelayed(() -> {
                                         if (onCompletion != null) {
                                             onCompletion.run();
                                         }

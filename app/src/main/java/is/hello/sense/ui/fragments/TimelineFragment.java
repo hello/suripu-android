@@ -382,7 +382,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     public void bindTimeline(@NonNull Timeline timeline) {
         // For timeline corrections
-        LoadingDialogFragment.close(getFragmentManager());
+        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
 
         boolean hasSegments = !Lists.isEmpty(timeline.getSegments());
         Runnable continuation = stateSafeExecutor.bind(() -> {
@@ -452,12 +452,14 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             actions.setMessage(R.string.timeline_actions_intro_message);
             actions.setWantsBigTitle(true);
         }
+        actions.setWantsDividers(true);
+        actions.setFadesOut(true);
 
         actions.addOption(
                 new SenseBottomSheet.Option(ID_EVENT_CORRECT)
                         .setTitle(R.string.action_timeline_mark_event_correct)
                         .setIcon(R.drawable.timeline_action_correct)
-                        .setEnabled(false)
+                //.setEnabled(false)
         );
         if (segment.isTimeAdjustable()) {
             actions.addOption(
@@ -473,7 +475,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                         .setEnabled(false)
         );
 
-        actions.setWantsDividers(true);
         actions.setOnOptionSelectedListener((optionPosition, option) -> {
             preferences
                     .edit()
@@ -482,7 +483,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
             switch (option.getOptionId()) {
                 case ID_EVENT_CORRECT: {
-                    markCorrect(segmentPosition);
+                    markCorrect(actions.getVisibleHeight(), segmentPosition);
                     break;
                 }
 
@@ -492,7 +493,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 }
 
                 case ID_EVENT_REMOVE: {
-                    removeEvent(segmentPosition);
+                    removeEvent(actions.getVisibleHeight(), segmentPosition);
                     break;
                 }
 
@@ -540,7 +541,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         feedback.setOldTime(originalTime.toLocalTime());
         feedback.setNewTime(newTime);
 
-        LoadingDialogFragment.show(getFragmentManager());
+        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
         bindAndSubscribe(timelinePresenter.submitCorrection(feedback),
                 ignored -> {
                     // Loading dialog is dismissed in #bindRenderedTimeline
@@ -552,11 +553,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 });
     }
 
-    private void markCorrect(int segmentPosition) {
+    private void markCorrect(int height, int segmentPosition) {
 
     }
 
-    private void removeEvent(int segmentPosition) {
+    private void removeEvent(int height, int segmentPosition) {
 
     }
 

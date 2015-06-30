@@ -68,13 +68,8 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         optionsContainer.setDividerDrawable(divider);
 
         this.titleText = (TextView) findViewById(R.id.dialog_bottom_sheet_title);
-        titleText.setVisibility(View.GONE);
-
         this.messageText = (TextView) findViewById(R.id.dialog_bottom_sheet_message);
-        messageText.setVisibility(View.GONE);
-
         this.messageDivider = findViewById(R.id.dialog_bottom_sheet_message_divider);
-        messageDivider.setVisibility(View.GONE);
     }
 
     @Override
@@ -245,6 +240,18 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         }
 
         return root.getMeasuredHeight();
+    }
+
+    public void setFadesOut(boolean fadesOut) {
+        if (isShowing()) {
+            Logger.warn(getClass().getSimpleName(), "Window does not support changing animations after show");
+        }
+
+        if (fadesOut) {
+            getWindow().setWindowAnimations(R.style.WindowAnimations_BottomSlide_FadeOutOnly);
+        } else {
+            getWindow().setWindowAnimations(R.style.WindowAnimations_BottomSlide);
+        }
     }
 
     //endregion
