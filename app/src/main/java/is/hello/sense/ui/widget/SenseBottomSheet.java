@@ -4,11 +4,14 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.res.ResourcesCompat;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,81 +20,77 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.util.Logger;
 
 public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     private static final String SAVED_DIALOG_STATE = SenseBottomSheet.class.getSimpleName() + "#SAVED_DIALOG_STATE";
     private static final String SAVED_TITLE = SenseBottomSheet.class.getSimpleName() + "#SAVED_TITLE";
+    private static final String SAVED_MESSAGE = SenseBottomSheet.class.getSimpleName() + "#SAVED_MESSAGE";
     private static final String SAVED_OPTIONS = SenseBottomSheet.class.getSimpleName() + "#SAVED_OPTIONS";
     private static final String SAVED_WANTS_DIVIDERS = SenseBottomSheet.class.getSimpleName() + "#SAVED_WANTS_DIVIDERS";
+    private static final String SAVED_WANTS_BIG_TITLE = SenseBottomSheet.class.getSimpleName() + "#SAVED_WANTS_BIG_TITLE";
 
     private final ArrayList<Option> options = new ArrayList<>();
     private final LayoutInflater inflater;
 
-    private @Nullable String title;
-    private boolean wantsDividers = false;
+    private final ViewGroup root;
+    private final LinearLayout optionsContainer;
+    private final TextView titleText;
+    private final TextView messageText;
+    private final View messageDivider;
 
-    private @Nullable LinearLayout optionsContainer;
-    private @Nullable TextView titleText;
+    private boolean wantsDividers = false;
+    private boolean wantsBigTitle = false;
 
     private @Nullable OnOptionSelectedListener onOptionSelectedListener;
+
 
     //region Lifecycle
 
     public SenseBottomSheet(@NonNull Context context) {
         super(context, R.style.AppTheme_Dialog_BottomSheet);
 
+        setContentView(R.layout.dialog_bottom_sheet);
+        setCancelable(true);
+        setCanceledOnTouchOutside(true);
+
         this.inflater = LayoutInflater.from(context);
+
+        this.root = (ViewGroup) findViewById(R.id.dialog_bottom_sheet_root);
+        this.optionsContainer = (LinearLayout) findViewById(R.id.dialog_bottom_sheet_options);
+
+        Drawable divider = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.divider_horizontal_inset, null);
+        optionsContainer.setDividerDrawable(divider);
+
+        this.titleText = (TextView) findViewById(R.id.dialog_bottom_sheet_title);
+        this.messageText = (TextView) findViewById(R.id.dialog_bottom_sheet_message);
+        this.messageDivider = findViewById(R.id.dialog_bottom_sheet_message_divider);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.dialog_bottom_sheet);
-        setCancelable(true);
-        setCanceledOnTouchOutside(true);
-
         Window window = getWindow();
         window.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        this.optionsContainer = (LinearLayout) findViewById(R.id.dialog_bottom_sheet_options);
-        if (wantsDividers) {
-            optionsContainer.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-        } else {
-            optionsContainer.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
-        }
-
-        Drawable divider = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.divider_horizontal_inset, null);
-        optionsContainer.setDividerDrawable(divider);
-
-        for (Option option : options) {
-            addViewForOption(option);
-        }
-
-        this.titleText = (TextView) findViewById(R.id.dialog_bottom_sheet_title);
-        if (title != null) {
-            titleText.setText(title);
-        } else {
-            titleText.setVisibility(View.GONE);
-        }
     }
 
     @Override
     public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        this.title = savedInstanceState.getString(SAVED_TITLE);
-        this.wantsDividers = savedInstanceState.getBoolean(SAVED_WANTS_DIVIDERS);
+        setTitle(savedInstanceState.getString(SAVED_TITLE));
+        setMessage(savedInstanceState.getString(SAVED_MESSAGE));
+        setWantsDividers(savedInstanceState.getBoolean(SAVED_WANTS_DIVIDERS));
+        setWantsBigTitle(savedInstanceState.getBoolean(SAVED_WANTS_BIG_TITLE));
 
-        //noinspection unchecked
-        ArrayList<Option> savedOptions = (ArrayList<Option>) savedInstanceState.getSerializable(SAVED_OPTIONS);
-        options.clear();
-        options.addAll(savedOptions);
+        ArrayList<Option> savedOptions = savedInstanceState.getParcelableArrayList(SAVED_OPTIONS);
+        clearOptions();
+        addOptions(savedOptions);
 
         Bundle dialogState = savedInstanceState.getParcelable(SAVED_DIALOG_STATE);
         super.onRestoreInstanceState(dialogState);
@@ -100,10 +99,17 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     @Override
     public Bundle onSaveInstanceState() {
         Bundle savedState = new Bundle();
-        savedState.putString(SAVED_TITLE, title);
-        savedState.putSerializable(SAVED_OPTIONS, options);
+
+        savedState.putString(SAVED_TITLE, titleText.getText().toString());
+        savedState.putString(SAVED_MESSAGE, messageText.getText().toString());
+
+        savedState.putParcelableArrayList(SAVED_OPTIONS, options);
+
         savedState.putBoolean(SAVED_WANTS_DIVIDERS, wantsDividers);
+        savedState.putBoolean(SAVED_WANTS_BIG_TITLE, wantsBigTitle);
+
         savedState.putParcelable(SAVED_DIALOG_STATE, super.onSaveInstanceState());
+
         return savedState;
     }
 
@@ -113,10 +119,6 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     //region Populating
 
     protected void addViewForOption(@NonNull Option option) {
-        if (optionsContainer == null) {
-            return;
-        }
-
         View optionView = inflater.inflate(R.layout.item_bottom_sheet_option, optionsContainer, false);
 
         TextView title = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_title);
@@ -158,8 +160,13 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         optionsContainer.addView(optionView);
     }
 
+    protected void clearOptions() {
+        options.clear();
+        optionsContainer.removeAllViews();
+    }
+
     public void addOption(@NonNull Option option) {
-        this.options.add(option);
+        options.add(option);
         addViewForOption(option);
     }
 
@@ -177,36 +184,74 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
     @Override
     public void setTitle(@Nullable CharSequence title) {
-        if (title != null) {
-            this.title = title.toString();
-        } else {
-            this.title = null;
-        }
+        titleText.setText(title);
 
-        if (titleText != null) {
-            titleText.setText(title);
-            if (title != null) {
-                titleText.setVisibility(View.VISIBLE);
-            } else {
-                titleText.setVisibility(View.GONE);
-            }
+        if (!TextUtils.isEmpty(title)) {
+            titleText.setVisibility(View.VISIBLE);
+        } else {
+            titleText.setVisibility(View.GONE);
         }
+    }
+
+    public void setMessage(@Nullable String message) {
+        messageText.setText(message);
+
+        if (!TextUtils.isEmpty(message)) {
+            messageText.setVisibility(View.VISIBLE);
+            messageDivider.setVisibility(View.VISIBLE);
+        } else {
+            messageText.setVisibility(View.GONE);
+            messageDivider.setVisibility(View.GONE);
+        }
+    }
+
+    public void setMessage(@StringRes int messageRes) {
+        setMessage(getContext().getString(messageRes));
     }
 
     public void setWantsDividers(boolean wantsDividers) {
         this.wantsDividers = wantsDividers;
 
-        if (optionsContainer != null) {
-            if (wantsDividers) {
-                optionsContainer.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-            } else {
-                optionsContainer.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
-            }
+        if (wantsDividers) {
+            optionsContainer.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+        } else {
+            optionsContainer.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
+        }
+    }
+
+    public void setWantsBigTitle(boolean wantsBigTitle) {
+        this.wantsBigTitle = wantsBigTitle;
+
+        if (wantsBigTitle) {
+            titleText.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Medium);
+        } else {
+            titleText.setTextAppearance(getContext(), R.style.AppTheme_Text_SectionHeading);
         }
     }
 
     public void setOnOptionSelectedListener(@Nullable OnOptionSelectedListener onOptionSelectedListener) {
         this.onOptionSelectedListener = onOptionSelectedListener;
+    }
+
+    public int getVisibleHeight() {
+        if (!isShowing()) {
+            Logger.warn(getClass().getSimpleName(), "#getVisibleHeight() called before #show()");
+            return 0;
+        }
+
+        return root.getMeasuredHeight();
+    }
+
+    public void setFadesOut(boolean fadesOut) {
+        if (isShowing()) {
+            Logger.warn(getClass().getSimpleName(), "Window does not support changing animations after show");
+        }
+
+        if (fadesOut) {
+            getWindow().setWindowAnimations(R.style.WindowAnimations_BottomSlide_FadeOutOnly);
+        } else {
+            getWindow().setWindowAnimations(R.style.WindowAnimations_BottomSlide);
+        }
     }
 
     //endregion
@@ -228,7 +273,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         void onOptionSelected(int position, @NonNull Option option);
     }
 
-    public static class Option implements Serializable {
+    public static class Option implements Parcelable {
         private final int optionId;
         private @Nullable Integer titleColor;
         private @Nullable StringRef title;
@@ -244,6 +289,46 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
             return optionId;
         }
 
+
+        //region Parceling
+
+        public Option(Parcel in) {
+            this.optionId = in.readInt();
+            this.titleColor = (Integer) in.readValue(Integer.class.getClassLoader());
+            this.title = in.readParcelable(StringRef.class.getClassLoader());
+            this.description = in.readParcelable(StringRef.class.getClassLoader());
+            this.iconRes = in.readInt();
+            this.enabled = in.readByte() != 0;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            out.writeInt(optionId);
+            out.writeValue(titleColor);
+            out.writeParcelable(title, flags);
+            out.writeParcelable(description, flags);
+            out.writeInt(iconRes);
+            out.writeByte((byte) (enabled ? 1 : 0));
+        }
+
+        public static final Creator<Option> CREATOR = new Creator<Option>() {
+            @Override
+            public Option createFromParcel(Parcel in) {
+                return new Option(in);
+            }
+
+            @Override
+            public Option[] newArray(int size) {
+                return new Option[size];
+            }
+        };
+
+        //endregion
 
         //region Text
 

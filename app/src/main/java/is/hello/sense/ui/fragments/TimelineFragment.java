@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ComponentCallbacks2;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -46,6 +47,7 @@ import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineInfoPopup;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
@@ -378,7 +380,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     public void bindTimeline(@NonNull Timeline timeline) {
         // For timeline corrections
-        LoadingDialogFragment.close(getFragmentManager());
+        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
 
         boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
         Runnable continuation = stateSafeExecutor.bind(() -> {
@@ -440,9 +442,18 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             infoPopup.dismiss();
         }
 
-        SenseBottomSheet actions = new SenseBottomSheet(getActivity());
+        SharedPreferences preferences = homeActivity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
 
-        if (event.supportsAction(TimelineEvent.Action.VERIFY)) {
+        SenseBottomSheet actions = new SenseBottomSheet(getActivity());
+        if (!preferences.getBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, false)) {
+            actions.setTitle(R.string.timeline_actions_intro_title);
+            actions.setMessage(R.string.timeline_actions_intro_message);
+            actions.setWantsBigTitle(true);
+        }
+        actions.setWantsDividers(true);
+        actions.setFadesOut(true);
+
+        if (segment.isTimeAdjustable()) {
             actions.addOption(
                     new SenseBottomSheet.Option(ID_EVENT_CORRECT)
                             .setTitle(R.string.action_timeline_mark_event_correct)
@@ -466,11 +477,15 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             );
         }
 
-        actions.setWantsDividers(true);
         actions.setOnOptionSelectedListener((optionPosition, option) -> {
+            preferences
+                    .edit()
+                    .putBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, true)
+                    .apply();
+
             switch (option.getOptionId()) {
                 case ID_EVENT_CORRECT: {
-                    markCorrect(segmentPosition);
+                    markCorrect(actions.getVisibleHeight(), segmentPosition);
                     break;
                 }
 
@@ -480,7 +495,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 }
 
                 case ID_EVENT_REMOVE: {
-                    removeEvent(segmentPosition);
+                    removeEvent(actions.getVisibleHeight(), segmentPosition);
                     break;
                 }
 
@@ -528,7 +543,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         feedback.setOldTime(originalTime.toLocalTime());
         feedback.setNewTime(newTime);
 
-        LoadingDialogFragment.show(getFragmentManager());
+        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
         bindAndSubscribe(timelinePresenter.submitCorrection_v1(feedback),
                 ignored -> {
                     // Loading dialog is dismissed in #bindRenderedTimeline
@@ -540,11 +555,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 });*/
     }
 
-    private void markCorrect(int segmentPosition) {
+    private void markCorrect(int height, int segmentPosition) {
 
     }
 
-    private void removeEvent(int segmentPosition) {
+    private void removeEvent(int height, int segmentPosition) {
 
     }
 

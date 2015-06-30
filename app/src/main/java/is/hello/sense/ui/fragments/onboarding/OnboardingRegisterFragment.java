@@ -224,7 +224,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
             Analytics.trackRegistration(session.getAccountId(), createdAccount.getName(), DateTime.now());
 
             getOnboardingActivity().showBirthday(createdAccount);
-            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {});
+            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getFragmentManager(), error);
