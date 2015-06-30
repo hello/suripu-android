@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Enums;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class TimelineEvent extends ApiResponse {
@@ -61,6 +62,10 @@ public class TimelineEvent extends ApiResponse {
         return DateTimeZone.forOffsetMillis(timezoneOffset);
     }
 
+    public DateTime getRawTimestamp() {
+        return timestamp;
+    }
+
     public DateTime getShiftedTimestamp() {
         return timestamp.withZone(getTimezone());
     }
@@ -98,6 +103,10 @@ public class TimelineEvent extends ApiResponse {
     @JsonIgnore
     public String getSoundUrl() {
         return null;
+    }
+
+    public boolean supportsAnyAction() {
+        return !Lists.isEmpty(validActions);
     }
 
     public boolean supportsAction(@NonNull Action action) {

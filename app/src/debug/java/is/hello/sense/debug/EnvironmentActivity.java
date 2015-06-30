@@ -33,6 +33,7 @@ public class EnvironmentActivity extends SenseActivity implements AdapterView.On
 
         Adapter adapter = new Adapter(this,
             new NamedApiEndpoint("android_dev", "99999secret", "https://dev-api.hello.is", "Dev"),
+            new NamedApiEndpoint("8d3c1664-05ae-47e4-bcdb-477489590aa4", "4f771f6f-5c10-4104-bbc6-3333f5b11bf9", "https://canary-api.hello.is", "Canary"),
             new NamedApiEndpoint("8d3c1664-05ae-47e4-bcdb-477489590aa4", "4f771f6f-5c10-4104-bbc6-3333f5b11bf9", "https://api.hello.is", "Production")
         );
         listView.setAdapter(adapter);
