@@ -27,17 +27,23 @@ import is.hello.sense.R;
 public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     private static final String SAVED_DIALOG_STATE = SenseBottomSheet.class.getSimpleName() + "#SAVED_DIALOG_STATE";
     private static final String SAVED_TITLE = SenseBottomSheet.class.getSimpleName() + "#SAVED_TITLE";
+    private static final String SAVED_MESSAGE = SenseBottomSheet.class.getSimpleName() + "#SAVED_MESSAGE";
     private static final String SAVED_OPTIONS = SenseBottomSheet.class.getSimpleName() + "#SAVED_OPTIONS";
     private static final String SAVED_WANTS_DIVIDERS = SenseBottomSheet.class.getSimpleName() + "#SAVED_WANTS_DIVIDERS";
+    private static final String SAVED_WANTS_BIG_TITLE = SenseBottomSheet.class.getSimpleName() + "#SAVED_WANTS_BIG_TITLE";
 
     private final ArrayList<Option> options = new ArrayList<>();
     private final LayoutInflater inflater;
 
     private @Nullable String title;
+    private @Nullable String message;
     private boolean wantsDividers = false;
+    private boolean wantsBigTitle = false;
 
     private @Nullable LinearLayout optionsContainer;
     private @Nullable TextView titleText;
+    private @Nullable TextView messageText;
+    private View messageDivider;
 
     private @Nullable OnOptionSelectedListener onOptionSelectedListener;
 
@@ -81,12 +87,30 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         } else {
             titleText.setVisibility(View.GONE);
         }
+
+        this.messageText = (TextView) findViewById(R.id.dialog_bottom_sheet_message);
+        this.messageDivider = findViewById(R.id.dialog_bottom_sheet_message_divider);
+        if (message != null) {
+            messageText.setText(message);
+            messageDivider.setVisibility(View.VISIBLE);
+        } else {
+            messageText.setVisibility(View.GONE);
+            messageDivider.setVisibility(View.GONE);
+        }
+
+        if (wantsBigTitle) {
+            titleText.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Medium);
+        } else {
+            titleText.setTextAppearance(getContext(), R.style.AppTheme_Text_SectionHeading);
+        }
     }
 
     @Override
     public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         this.title = savedInstanceState.getString(SAVED_TITLE);
+        this.message = savedInstanceState.getString(SAVED_MESSAGE);
         this.wantsDividers = savedInstanceState.getBoolean(SAVED_WANTS_DIVIDERS);
+        this.wantsBigTitle = savedInstanceState.getBoolean(SAVED_WANTS_BIG_TITLE);
 
         //noinspection unchecked
         ArrayList<Option> savedOptions = (ArrayList<Option>) savedInstanceState.getSerializable(SAVED_OPTIONS);
@@ -101,8 +125,10 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     public Bundle onSaveInstanceState() {
         Bundle savedState = new Bundle();
         savedState.putString(SAVED_TITLE, title);
+        savedState.putString(SAVED_MESSAGE, message);
         savedState.putSerializable(SAVED_OPTIONS, options);
         savedState.putBoolean(SAVED_WANTS_DIVIDERS, wantsDividers);
+        savedState.putBoolean(SAVED_WANTS_BIG_TITLE, wantsBigTitle);
         savedState.putParcelable(SAVED_DIALOG_STATE, super.onSaveInstanceState());
         return savedState;
     }
@@ -193,6 +219,25 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         }
     }
 
+    public void setMessage(@Nullable String message) {
+        this.message = message;
+
+        if (messageText != null) {
+            messageText.setText(message);
+            if (message != null) {
+                messageText.setVisibility(View.VISIBLE);
+                messageDivider.setVisibility(View.VISIBLE);
+            } else {
+                messageText.setVisibility(View.GONE);
+                messageDivider.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    public void setMessage(@StringRes int messageRes) {
+        setMessage(getContext().getString(messageRes));
+    }
+
     public void setWantsDividers(boolean wantsDividers) {
         this.wantsDividers = wantsDividers;
 
@@ -201,6 +246,18 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
                 optionsContainer.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
             } else {
                 optionsContainer.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
+            }
+        }
+    }
+
+    public void setWantsBigTitle(boolean wantsBigTitle) {
+        this.wantsBigTitle = wantsBigTitle;
+
+        if (titleText != null) {
+            if (wantsBigTitle) {
+                titleText.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Medium);
+            } else {
+                titleText.setTextAppearance(getContext(), R.style.AppTheme_Text_SectionHeading);
             }
         }
     }

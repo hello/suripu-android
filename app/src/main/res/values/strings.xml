@@ -440,4 +440,6 @@ so you can sleep better.</string>
     <string name="dialog_positive_alarm_sound_volume_low">Turn it up</string>
     <string name="dialog_negative_alarm_sound_volume_low">No, thanks</string>
     <string name="error_timeline_sound_playback_failed">Could not play sound</string>
+    <string name="timeline_actions_intro_message">Making corrections to your timeline helps improve the algorithms Sense uses to detect and analyze your sleep.</string>
+    <string name="timeline_actions_intro_title">Sense learns</string>
 </resources>

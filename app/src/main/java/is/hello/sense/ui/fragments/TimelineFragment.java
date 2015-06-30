@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ComponentCallbacks2;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -48,6 +49,7 @@ import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineInfoPopup;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
@@ -442,7 +444,14 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             infoPopup.dismiss();
         }
 
+        SharedPreferences preferences = homeActivity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+
         SenseBottomSheet actions = new SenseBottomSheet(getActivity());
+        if (!preferences.getBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, false)) {
+            actions.setTitle(R.string.timeline_actions_intro_title);
+            actions.setMessage(R.string.timeline_actions_intro_message);
+            actions.setWantsBigTitle(true);
+        }
 
         actions.addOption(
                 new SenseBottomSheet.Option(ID_EVENT_CORRECT)
@@ -466,6 +475,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         actions.setWantsDividers(true);
         actions.setOnOptionSelectedListener((optionPosition, option) -> {
+            preferences
+                    .edit()
+                    .putBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, true)
+                    .apply();
+
             switch (option.getOptionId()) {
                 case ID_EVENT_CORRECT: {
                     markCorrect(segmentPosition);
