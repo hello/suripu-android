@@ -124,7 +124,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
             int hour = event.getShiftedTimestamp().getHourOfDay();
             if (!hours.contains(hour)) {
-                if (event.getEventType() != null) {
+                if (event.getType() != null) {
                     int previous = (i - 1) + STATIC_ITEM_COUNT;
                     if (i > 0 && itemTimes.get(previous) == null) {
                         itemTimes.put(previous, event.getShiftedTimestamp().toLocalTime());
@@ -497,8 +497,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
                 Views.setSafeOnClickListener(iconImage, ignored -> playSegmentSound(position));
                 iconImage.setBackgroundResource(R.drawable.selectable_dark);
             } else {
-                iconImage.setImageResource(event.getEventType().iconDrawableRes);
-                iconImage.setContentDescription(context.getString(event.getEventType().accessibilityStringRes));
+                iconImage.setImageResource(event.getType().iconDrawableRes);
+                iconImage.setContentDescription(context.getString(event.getType().accessibilityStringRes));
 
                 iconImage.setOnClickListener(null);
                 iconImage.setBackground(null);

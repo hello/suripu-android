@@ -12,7 +12,6 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.DevicesInfo;
-import is.hello.sense.api.model.Feedback;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
@@ -26,7 +25,8 @@ import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
-import is.hello.sense.api.model.v2.TimelineFeedback;
+import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.api.model.v2.TimelineUpdate;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
@@ -113,38 +113,28 @@ public interface ApiService {
 
     //region Timeline
 
-    @GET("/v1/timeline/{year}-{month}-{day}")
-    @Deprecated
-    Observable<ArrayList<is.hello.sense.api.model.Timeline>> timelineForDate_v1(@NonNull @Path("year") String year,
-                                                                                @NonNull @Path("month") String month,
-                                                                                @NonNull @Path("day") String day);
-
-    @POST("/v1/feedback/sleep")
-    @Deprecated
-    Observable<VoidResponse> submitCorrection_v1(@NonNull @Body Feedback correction);
-
     @GET("/v2/timeline/{year}-{month}-{day}")
-    Observable<is.hello.sense.api.model.v2.Timeline> timelineForDate_v2(@NonNull @Path("year") String year,
-                                                                        @NonNull @Path("month") String month,
-                                                                        @NonNull @Path("day") String day);
+    Observable<Timeline> timelineForDate(@NonNull @Path("year") String year,
+                                         @NonNull @Path("month") String month,
+                                         @NonNull @Path("day") String day);
 
     @PATCH("/v2/timeline/{year}-{month}-{day}/event")
-    Observable<VoidResponse> amendTimelineEventTime_v2(@NonNull @Path("year") String year,
-                                                       @NonNull @Path("month") String month,
-                                                       @NonNull @Path("day") String day,
-                                                       @NonNull @Body TimelineFeedback update);
+    Observable<VoidResponse> amendTimelineEventTime(@NonNull @Path("year") String year,
+                                                    @NonNull @Path("month") String month,
+                                                    @NonNull @Path("day") String day,
+                                                    @NonNull @Body TimelineUpdate update);
 
     @DELETE("/v2/timeline/{year}-{month}-{day}/event")
-    Observable<VoidResponse> deleteTimelineEvent_v2(@NonNull @Path("year") String year,
-                                                    @NonNull @Path("month") String month,
-                                                    @NonNull @Path("day") String day,
-                                                    @NonNull @Body TimelineFeedback update);
+    Observable<VoidResponse> deleteTimelineEvent(@NonNull @Path("year") String year,
+                                                 @NonNull @Path("month") String month,
+                                                 @NonNull @Path("day") String day,
+                                                 @NonNull @Body TimelineUpdate update);
 
     @PUT("/v2/timeline/{year}-{month}-{day}/event")
-    Observable<VoidResponse> verifyTimelineEvent_v2(@NonNull @Path("year") String year,
-                                                    @NonNull @Path("month") String month,
-                                                    @NonNull @Path("day") String day,
-                                                    @NonNull @Body TimelineFeedback update);
+    Observable<VoidResponse> verifyTimelineEvent(@NonNull @Path("year") String year,
+                                                 @NonNull @Path("month") String month,
+                                                 @NonNull @Path("day") String day,
+                                                 @NonNull @Body TimelineUpdate update);
 
     //endregion
 

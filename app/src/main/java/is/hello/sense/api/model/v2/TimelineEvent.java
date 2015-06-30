@@ -51,7 +51,7 @@ public class TimelineEvent extends ApiResponse {
 
     @VisibleForTesting
     @JsonProperty("event_type")
-    Type eventType;
+    Type type;
 
     @VisibleForTesting
     @JsonProperty("valid_actions")
@@ -86,13 +86,13 @@ public class TimelineEvent extends ApiResponse {
         return sleepState;
     }
 
-    public Type getEventType() {
-        return eventType;
+    public Type getType() {
+        return type;
     }
 
     @JsonIgnore
     public boolean hasInfo() {
-        return eventType != null;
+        return (type != Type.IN_BED);
     }
 
     @JsonIgnore
@@ -121,7 +121,7 @@ public class TimelineEvent extends ApiResponse {
                 ", message=" + message +
                 ", sleepDepth=" + sleepDepth +
                 ", sleepState='" + sleepState + '\'' +
-                ", eventType='" + eventType + '\'' +
+                ", type='" + type + '\'' +
                 '}';
     }
 
@@ -154,6 +154,7 @@ public class TimelineEvent extends ApiResponse {
     }
 
     public enum Type {
+        IN_BED(0, 0),
         GENERIC_MOTION(R.drawable.timeline_generic_motion, R.string.accessibility_event_name_generic_motion),
         PARTNER_MOTION(R.drawable.timeline_partner, R.string.accessibility_event_name_partner_moved),
         GENERIC_SOUND(R.drawable.timeline_sound, R.string.accessibility_event_name_noise),

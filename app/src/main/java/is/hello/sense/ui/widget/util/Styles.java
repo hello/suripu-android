@@ -38,7 +38,6 @@ import java.lang.annotation.RetentionPolicy;
 
 import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.R;
-import is.hello.sense.api.model.TimelineSegment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.units.UnitSystem;
@@ -139,81 +138,6 @@ public final class Styles {
             default:
             case CONNECTED:
                 return R.string.title_connecting;
-        }
-    }
-
-
-    @Deprecated
-    public static @DrawableRes int getTimelineSegmentIconRes(@NonNull TimelineSegment segment) {
-        if (!segment.hasEventInfo()) {
-            return 0;
-        }
-
-        switch (segment.getEventType()) {
-            case MOTION: {
-                return R.drawable.timeline_generic_motion;
-            }
-
-            case NOISE: {
-                return R.drawable.timeline_sound;
-            }
-
-            case SNORING: {
-                return R.drawable.timeline_sound;
-            }
-
-            case SLEEP_TALK: {
-                return R.drawable.timeline_sound;
-            }
-
-            case LIGHT: {
-                return R.drawable.timeline_light;
-            }
-
-            case LIGHTS_OUT: {
-                return R.drawable.timeline_lights_out;
-            }
-
-            case SLEEP_MOTION: {
-                return R.drawable.timeline_generic_motion;
-            }
-
-            case IN_BED: {
-                return R.drawable.timeline_got_in_bed;
-            }
-
-            case SLEEP: {
-                return R.drawable.timeline_fell_asleep;
-            }
-
-            case SUNSET: {
-                return R.drawable.timeline_sunset;
-            }
-
-            case SUNRISE: {
-                return R.drawable.timeline_sunrise;
-            }
-
-            case PARTNER_MOTION: {
-                return R.drawable.timeline_partner;
-            }
-
-            case OUT_OF_BED: {
-                return R.drawable.timeline_got_out_of_bed;
-            }
-
-            case WAKE_UP: {
-                return R.drawable.timeline_woke_up;
-            }
-
-            case ALARM: {
-                return R.drawable.timeline_alarm_rang;
-            }
-
-            default:
-            case UNKNOWN: {
-                return R.drawable.timeline_unknown;
-            }
         }
     }
 

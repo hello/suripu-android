@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.joda.time.DateTime;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,9 +19,9 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
+import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.DevicesInfo;
-import is.hello.sense.api.model.Feedback;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
@@ -33,9 +35,13 @@ import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.api.model.v2.TimelineBuilder;
+import is.hello.sense.api.model.v2.TimelineUpdate;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.markup.text.MarkupString;
 import retrofit.http.Body;
 import retrofit.http.Path;
 import retrofit.http.Query;
@@ -134,19 +140,39 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<is.hello.sense.api.model.Timeline>> timelineForDate_v1(@NonNull @Path("year") String year,
-                                                                                       @NonNull @Path("month") String month,
-                                                                                       @NonNull @Path("day") String day) {
-        return loadResponse("timeline", new TypeReference<ArrayList<is.hello.sense.api.model.Timeline>>() {});
+    public Observable<Timeline> timelineForDate(@NonNull @Path("year") String year,
+                                                @NonNull @Path("month") String month,
+                                                @NonNull @Path("day") String day) {
+        return safeJust(
+                new TimelineBuilder()
+                        .setDate(new DateTime(Integer.parseInt(year, 10), Integer.parseInt(month, 10), Integer.parseInt(day, 10), 0, 0))
+                        .setScore(90, Condition.IDEAL)
+                        .setMessage(new MarkupString("This is *just* a test."))
+                        .build()
+        );
     }
 
     @Override
-    public Observable<is.hello.sense.api.model.v2.Timeline> timelineForDate_v2(@NonNull @Path("year") String year, @NonNull @Path("month") String month, @NonNull @Path("day") String day) {
-        return unimplemented();
+    public Observable<VoidResponse> verifyTimelineEvent(@NonNull @Path("year") String year,
+                                                        @NonNull @Path("month") String month,
+                                                        @NonNull @Path("day") String day,
+                                                        @NonNull @Body TimelineUpdate update) {
+        return safeJust(new VoidResponse());
     }
 
     @Override
-    public Observable<VoidResponse> submitCorrection_v1(@NonNull @Body Feedback correction) {
+    public Observable<VoidResponse> amendTimelineEventTime(@NonNull @Path("year") String year,
+                                                           @NonNull @Path("month") String month,
+                                                           @NonNull @Path("day") String day,
+                                                           @NonNull @Body TimelineUpdate update) {
+        return safeJust(new VoidResponse());
+    }
+
+    @Override
+    public Observable<VoidResponse> deleteTimelineEvent(@NonNull @Path("year") String year,
+                                                        @NonNull @Path("month") String month,
+                                                        @NonNull @Path("day") String day,
+                                                        @NonNull @Body TimelineUpdate update) {
         return safeJust(new VoidResponse());
     }
 

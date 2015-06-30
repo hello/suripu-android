@@ -12,7 +12,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
-import is.hello.sense.api.model.v2.TimelineFeedback;
+import is.hello.sense.api.model.v2.TimelineUpdate;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
@@ -35,9 +35,9 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
 
     @Override
     protected Observable<Timeline> provideUpdateObservable() {
-        return service.timelineForDate_v2(date.year().getAsString(),
-                                          date.monthOfYear().getAsString(),
-                                          date.dayOfMonth().getAsString());
+        return service.timelineForDate(date.year().getAsString(),
+                date.monthOfYear().getAsString(),
+                date.dayOfMonth().getAsString());
     }
 
 
@@ -60,8 +60,8 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
             String year = timelineDate.year().getAsString();
             String month = timelineDate.monthOfYear().getAsString();
             String day = timelineDate.dayOfMonth().getAsString();
-            TimelineFeedback amendment = TimelineFeedback.amendTime(event, newTime);
-            return service.amendTimelineEventTime_v2(year, month, day, amendment);
+            TimelineUpdate amendment = TimelineUpdate.amendTime(event, newTime);
+            return service.amendTimelineEventTime(year, month, day, amendment);
         });
     }
 
@@ -71,8 +71,8 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
             String year = timelineDate.year().getAsString();
             String month = timelineDate.monthOfYear().getAsString();
             String day = timelineDate.dayOfMonth().getAsString();
-            TimelineFeedback feedback = TimelineFeedback.from(event);
-            return service.verifyTimelineEvent_v2(year, month, day, feedback);
+            TimelineUpdate update = TimelineUpdate.from(event);
+            return service.verifyTimelineEvent(year, month, day, update);
         });
     }
 
@@ -82,8 +82,8 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
             String year = timelineDate.year().getAsString();
             String month = timelineDate.monthOfYear().getAsString();
             String day = timelineDate.dayOfMonth().getAsString();
-            TimelineFeedback feedback = TimelineFeedback.from(event);
-            return service.verifyTimelineEvent_v2(year, month, day, feedback);
+            TimelineUpdate update = TimelineUpdate.from(event);
+            return service.deleteTimelineEvent(year, month, day, update);
         });
     }
 }

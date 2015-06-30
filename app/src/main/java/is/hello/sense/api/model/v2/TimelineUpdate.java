@@ -12,7 +12,7 @@ import org.joda.time.LocalTime;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiResponse;
 
-public final class TimelineFeedback extends ApiResponse {
+public final class TimelineUpdate extends ApiResponse {
     @JsonProperty("event_timestamp")
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private DateTime timestamp;
@@ -27,21 +27,21 @@ public final class TimelineFeedback extends ApiResponse {
 
     //region Creation
 
-    public static TimelineFeedback amendTime(@NonNull TimelineEvent event, @NonNull LocalTime newTime) {
-        return new TimelineFeedback(event.getRawTimestamp(), event.getEventType(), newTime);
+    public static TimelineUpdate amendTime(@NonNull TimelineEvent event, @NonNull LocalTime newTime) {
+        return new TimelineUpdate(event.getRawTimestamp(), event.getType(), newTime);
     }
 
-    public static TimelineFeedback from(@NonNull TimelineEvent event) {
-        return new TimelineFeedback(event.getRawTimestamp(), event.getEventType(), null);
+    public static TimelineUpdate from(@NonNull TimelineEvent event) {
+        return new TimelineUpdate(event.getRawTimestamp(), event.getType(), null);
     }
 
-    public TimelineFeedback() {
+    public TimelineUpdate() {
 
     }
 
-    private TimelineFeedback(@NonNull DateTime timestamp,
-                             @NonNull TimelineEvent.Type eventType,
-                             @Nullable LocalTime newTime) {
+    private TimelineUpdate(@NonNull DateTime timestamp,
+                           @NonNull TimelineEvent.Type eventType,
+                           @Nullable LocalTime newTime) {
         this.timestamp = timestamp;
         this.newTime = newTime;
         this.eventType = eventType;
@@ -67,10 +67,10 @@ public final class TimelineFeedback extends ApiResponse {
 
     @Override
     public String toString() {
-        return "TimelineFeedback{" +
+        return "TimelineUpdate{" +
                 "timestamp=" + timestamp +
                 ", newTime=" + newTime +
-                ", eventType=" + eventType +
+                ", type=" + eventType +
                 '}';
     }
 
