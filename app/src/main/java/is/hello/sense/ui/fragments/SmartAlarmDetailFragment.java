@@ -195,7 +195,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         super.onResume();
 
         if (getDetailActivity().skipUI()) {
-            LoadingDialogFragment.show(getFragmentManager(), null, false);
+            LoadingDialogFragment.show(getFragmentManager(),
+                    null, LoadingDialogFragment.DEFAULTS);
         } else {
             WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm);
         }
@@ -282,7 +283,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         SenseAlertDialog confirmDelete = new SenseAlertDialog(getActivity());
         confirmDelete.setMessage(R.string.dialog_message_confirm_delete_alarm);
         confirmDelete.setPositiveButton(R.string.action_delete, (dialog, which) -> {
-            LoadingDialogFragment.show(getFragmentManager(), null, false);
+            LoadingDialogFragment.show(getFragmentManager(),
+                    null, LoadingDialogFragment.DEFAULTS);
             bindAndSubscribe(smartAlarmPresenter.deleteSmartAlarm(index), ignored -> finish(), this::presentError);
         });
         confirmDelete.setNegativeButton(android.R.string.cancel, null);
@@ -318,7 +320,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 saveOperation = smartAlarmPresenter.saveSmartAlarm(index, alarm);
             }
 
-            LoadingDialogFragment.show(getFragmentManager(), null, false);
+            LoadingDialogFragment.show(getFragmentManager(),
+                    null, LoadingDialogFragment.DEFAULTS);
             bindAndSubscribe(saveOperation, ignored -> finish(), this::presentError);
         }
     }

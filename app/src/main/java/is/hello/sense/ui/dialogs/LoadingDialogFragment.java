@@ -3,8 +3,10 @@ package is.hello.sense.ui.dialogs;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,43 +16,63 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.SenseDialogFragment;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
-public class LoadingDialogFragment extends SenseDialogFragment {
+public final class LoadingDialogFragment extends SenseDialogFragment {
     public static final String TAG = LoadingDialogFragment.class.getSimpleName();
 
-    protected static final long DURATION_DONE_MESSAGE = 2 * 1000;
+    private static final long DURATION_DONE_MESSAGE = 2 * 1000;
 
-    protected static final String ARG_TITLE = LoadingDialogFragment.class.getName() + ".ARG_TITLE";
-    protected static final String ARG_WANTS_OPAQUE_BACKGROUND = LoadingDialogFragment.class.getName() + ".ARG_WANTS_OPAQUE_BACKGROUND";
-    protected static final String ARG_HEIGHT = LoadingDialogFragment.class.getName() + ".ARG_HEIGHT";
-    protected static final String ARG_WINDOW_GRAVITY = LoadingDialogFragment.class.getName() + ".ARG_WINDOW_GRAVITY";
-    protected static final String ARG_WINDOW_DIMMED = LoadingDialogFragment.class.getName() + ".ARG_WINDOW_DIMMED";
+    private static final String ARG_TITLE = LoadingDialogFragment.class.getName() + ".ARG_TITLE";
+    private static final String ARG_FLAGS = LoadingDialogFragment.class.getName() + ".ARG_FLAGS";
+    private static final String ARG_HEIGHT = LoadingDialogFragment.class.getName() + ".ARG_HEIGHT";
+    private static final String ARG_GRAVITY = LoadingDialogFragment.class.getName() + ".ARG_GRAVITY";
+    private static final String ARG_DISMISS_MSG = LoadingDialogFragment.class.getName() + ".ARG_DISMISS_MSG";
+
+
+    //region Config
+
+    public static final int OPAQUE_BACKGROUND = (1 << 1);
+    public static final int DIM_ENABLED = (1 << 2);
+    public static final int DEFAULTS = 0;
+
+    @IntDef(flag = true, value = {DEFAULTS, OPAQUE_BACKGROUND, DIM_ENABLED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Config {}
+
+    //endregion
+
 
     private TextView titleText;
     private ProgressBar activityIndicator;
     private ImageView checkMark;
 
+
+    //region Shortcuts
+
     public static @NonNull LoadingDialogFragment show(@NonNull FragmentManager fm,
                                                       @Nullable String title,
-                                                      boolean wantsOpaqueBackground) {
+                                                      int flags) {
         LoadingDialogFragment preexistingDialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
         if (preexistingDialog != null) {
             preexistingDialog.dismiss();
         }
 
-        LoadingDialogFragment dialog = LoadingDialogFragment.newInstance(title, wantsOpaqueBackground);
+        LoadingDialogFragment dialog = LoadingDialogFragment.newInstance(title, flags);
         dialog.show(fm, TAG);
 
         return dialog;
     }
 
     public static @NonNull LoadingDialogFragment show(@NonNull FragmentManager fm) {
-        return show(fm, null, false);
+        return show(fm, null, DEFAULTS);
     }
 
     public static void close(@NonNull FragmentManager fm) {
@@ -69,15 +91,19 @@ public class LoadingDialogFragment extends SenseDialogFragment {
         }
     }
 
+    //endregion
 
-    public static LoadingDialogFragment newInstance(@Nullable String title, boolean wantsOpaqueBackground) {
+
+    //region Lifecycle
+
+    public static LoadingDialogFragment newInstance(@Nullable String title, @Config int flags) {
         LoadingDialogFragment fragment = new LoadingDialogFragment();
 
         Bundle arguments = new Bundle();
         if (!TextUtils.isEmpty(title)) {
             arguments.putString(ARG_TITLE, title);
         }
-        arguments.putBoolean(ARG_WANTS_OPAQUE_BACKGROUND, wantsOpaqueBackground);
+        arguments.putInt(ARG_FLAGS, flags);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -106,7 +132,9 @@ public class LoadingDialogFragment extends SenseDialogFragment {
             Bundle arguments = getArguments();
             View root = dialog.findViewById(R.id.fragment_dialog_loading_container);
 
-            if (arguments.getBoolean(ARG_WANTS_OPAQUE_BACKGROUND, false)) {
+            @Config int flags = arguments.getInt(ARG_FLAGS, DEFAULTS);
+
+            if ((flags & OPAQUE_BACKGROUND) == OPAQUE_BACKGROUND) {
                 root.setBackgroundColor(getResources().getColor(R.color.background));
             }
 
@@ -115,7 +143,7 @@ public class LoadingDialogFragment extends SenseDialogFragment {
             Window window = dialog.getWindow();
             WindowManager.LayoutParams windowAttributes = window.getAttributes();
 
-            if (arguments.getBoolean(ARG_WINDOW_DIMMED)) {
+            if ((flags & DIM_ENABLED) == DIM_ENABLED) {
                 window.setDimAmount(0.5f);
                 window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             }
@@ -126,11 +154,16 @@ public class LoadingDialogFragment extends SenseDialogFragment {
                 window.setLayout(windowAttributes.width, ViewGroup.LayoutParams.WRAP_CONTENT);
             }
 
-            window.setGravity(arguments.getInt(ARG_WINDOW_GRAVITY, windowAttributes.gravity));
+            window.setGravity(arguments.getInt(ARG_GRAVITY, windowAttributes.gravity));
         }
 
         return dialog;
     }
+
+    //endregion
+
+
+    //region Attributes
 
     public void setTitle(@Nullable String title) {
         getArguments().putString(ARG_TITLE, title);
@@ -143,13 +176,18 @@ public class LoadingDialogFragment extends SenseDialogFragment {
         getArguments().putInt(ARG_HEIGHT, height);
     }
 
-    public void setWindowGravity(int gravity) {
-        getArguments().putInt(ARG_WINDOW_GRAVITY, gravity);
+    public void setGravity(int gravity) {
+        getArguments().putInt(ARG_GRAVITY, gravity);
     }
 
-    public void setWindowDimmed(boolean dimmed) {
-        getArguments().putBoolean(ARG_WINDOW_DIMMED, dimmed);
+    public void setDismissMessage(@StringRes int messageRes) {
+        getArguments().putInt(ARG_DISMISS_MSG, messageRes);
     }
+
+    //endregion
+
+
+    //region Dismissing
 
     public void dismissWithDoneTransition(@Nullable Runnable onCompletion) {
         if (titleText != null) {
@@ -168,8 +206,12 @@ public class LoadingDialogFragment extends SenseDialogFragment {
                                 .zoomInFrom(0f)
                                 .start();
 
-                        if (!TextUtils.isEmpty(titleText.getText())) {
-                            titleText.setText(R.string.action_done);
+
+                        int messageRes = getArguments().getInt(ARG_DISMISS_MSG, R.string.action_done);
+                        if (messageRes != 0) {
+                            titleText.setText(messageRes);
+                        } else {
+                            titleText.setText(null);
                         }
 
                         animate(titleText)
@@ -192,4 +234,6 @@ public class LoadingDialogFragment extends SenseDialogFragment {
             dismiss();
         }
     }
+
+    //endregion
 }

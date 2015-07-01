@@ -100,7 +100,8 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     }
 
     private void finishedPairing(boolean success) {
-        LoadingDialogFragment.show(getFragmentManager(), null, true);
+        LoadingDialogFragment.show(getFragmentManager(),
+                null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         getFragmentManager().executePendingTransactions();
         LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
             stateSafeExecutor.execute(() -> {

@@ -122,7 +122,9 @@ public class OnboardingSignInFragment extends InjectionFragment {
             return;
         }
 
-        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
+        LoadingDialogFragment.show(getFragmentManager(),
+                getString(R.string.dialog_loading_message),
+                LoadingDialogFragment.OPAQUE_BACKGROUND);
 
         OAuthCredentials credentials = new OAuthCredentials(apiEndpoint, email, password);
         bindAndSubscribe(apiService.authorize(credentials), session -> {

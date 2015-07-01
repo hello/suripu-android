@@ -126,7 +126,8 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
 
         DateTimeZone timeZone = DateTimeZone.forID(timeZoneId);
         SenseTimeZone senseTimeZone = SenseTimeZone.fromDateTimeZone(timeZone);
-        LoadingDialogFragment.show(getFragmentManager(), null, true);
+        LoadingDialogFragment.show(getFragmentManager(),
+                null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         bindAndSubscribe(accountPresenter.updateTimeZone(senseTimeZone),
                          ignored -> {
                              Logger.info(getClass().getSimpleName(), "Updated time zone");

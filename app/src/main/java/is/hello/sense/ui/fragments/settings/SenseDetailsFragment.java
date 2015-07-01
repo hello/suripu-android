@@ -370,7 +370,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         this.blockConnection = true;
 
-        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
+        LoadingDialogFragment.show(getFragmentManager(),
+                getString(R.string.dialog_loading_message),
+                LoadingDialogFragment.OPAQUE_BACKGROUND);
         hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.BUSY)
                 .subscribe(ignored -> {
                     bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
@@ -433,7 +435,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     private void completeFactoryReset() {
-        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
+        LoadingDialogFragment.show(getFragmentManager(),
+                getString(R.string.dialog_loading_message),
+                LoadingDialogFragment.OPAQUE_BACKGROUND);
         runLedAnimation(SensePeripheral.LedAnimation.BUSY).subscribe(ignored -> {
             this.blockConnection = true;
 

@@ -459,7 +459,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 new SenseBottomSheet.Option(ID_EVENT_CORRECT)
                         .setTitle(R.string.action_timeline_mark_event_correct)
                         .setIcon(R.drawable.timeline_action_correct)
-                //.setEnabled(false)
+                        .setEnabled(false)
         );
         if (segment.isTimeAdjustable()) {
             actions.addOption(
@@ -541,7 +541,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         feedback.setOldTime(originalTime.toLocalTime());
         feedback.setNewTime(newTime);
 
-        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
+        LoadingDialogFragment loadingDialog = LoadingDialogFragment.newInstance(
+                getString(R.string.dialog_loading_message),
+                LoadingDialogFragment.OPAQUE_BACKGROUND);
+        loadingDialog.setDismissMessage(R.string.title_thank_you);
+        loadingDialog.show(getFragmentManager(), LoadingDialogFragment.TAG);
         bindAndSubscribe(timelinePresenter.submitCorrection(feedback),
                 ignored -> {
                     // Loading dialog is dismissed in #bindRenderedTimeline

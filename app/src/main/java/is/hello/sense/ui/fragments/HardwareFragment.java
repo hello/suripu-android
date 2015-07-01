@@ -34,7 +34,8 @@ public abstract class HardwareFragment extends InjectionFragment {
     protected void showBlockingActivity(@StringRes int titleRes) {
         if (loadingDialogFragment == null) {
             stateSafeExecutor.execute(() -> {
-                this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(), getString(titleRes), true);
+                this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
+                        getString(titleRes), LoadingDialogFragment.OPAQUE_BACKGROUND);
             });
         } else {
             loadingDialogFragment.setTitle(getString(titleRes));
